@@ -5,13 +5,15 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.jcr.rest;
+package com.wegas.core.rest;
 
 import com.sun.jersey.multipart.FormDataBodyPart;
 import com.sun.jersey.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.jcr.content.*;
+import com.wegas.core.rest.util.annotations.CacheMaxAge;
+import com.wegas.core.rest.util.annotations.NoCache;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +22,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
@@ -32,7 +35,6 @@ import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
-import javax.ws.rs.core.CacheControl;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -159,6 +161,7 @@ public class FileController {
      */
     @GET
     @Path("read{absolutePath : .*?}")
+    @CacheMaxAge(time = 1, unit = TimeUnit.DAYS)
     public Response read(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
@@ -184,10 +187,6 @@ public class FileController {
             response = Response.ok(new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512));
             response.header("Content-Type", fileDescriptor.getMimeType());
             response.header("Description", fileDescriptor.getDescription());
-            CacheControl cc = new CacheControl();
-            cc.setMaxAge(3600);
-            cc.setPrivate(true);
-            response.cacheControl(cc);
             response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
 
             if (connector != null) {
@@ -207,6 +206,7 @@ public class FileController {
     @GET
     @Path("list{absoluteDirectoryPath : .*?}")
     @Produces(MediaType.APPLICATION_JSON)
+    @NoCache
     public List<AbstractContentDescriptor> listDirectory(@PathParam("gameModelId") Long gameModelId, @PathParam("absoluteDirectoryPath") String directory) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
