@@ -244,14 +244,14 @@ YUI.add('wegas-plugin', function(Y) {
                     guest = host.get("root"),
                     variable = this.get("variable.evaluated"),
                     data = variable.get("name") + ".properties",
-                    script = data + ".clear();", i;
+                    script = this.get("clearStorage") ? data + ".clear();" : "", i;
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
                 overlayGuest.showOverlay();
             }
 
             for (i in e.value) {
-                script += data + ".put('" + i + "','" + e.value[i] + "');";
+                script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
             Wegas.Facade.VariableDescriptor.sendRequest({
@@ -296,6 +296,14 @@ YUI.add('wegas-plugin', function(Y) {
             },
             targetEvent: {
                 value: "submit"
+            },
+            clearStorage: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Replace Storage",
+                    description: "Will remove existing data. Else add them to the existing one."
+                }
             }
         }
     });
