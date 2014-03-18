@@ -243,10 +243,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         scriptManager.eval(player, validateReply.getResult().getImpact());
         try {
             scriptEvent.fire(player, "replyValidate", new EventObject(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance()));
-// Throw a global event
-//            scriptManager.eval(player,
-//                    new Script("eventManager.fire(\"replyValidate\", {reply: selectedReply, choice:selectedChoice, question:selectedQuestion});"),
-//                    arguments);
         } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
         }
