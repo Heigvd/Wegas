@@ -100,4 +100,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
     public int getUnreadCount(Player player) {
         return this.getInstance(player).getUnreadCount();
     }
+
+    public void setUnreadCount() {
+        // only used to explicitely ignore while serializing
+    }
 }
