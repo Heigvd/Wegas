@@ -130,6 +130,10 @@ public class InboxInstance extends VariableInstance {
         return unread;
     }
 
+    public void setUnreadCount() {
+        // only used to explicitely ignore while serializing
+    }
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "( " + getId() + ", msgs: " + this.getMessages().size() + " )";
