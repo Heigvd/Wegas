@@ -370,6 +370,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     label: 'Maximum'
                 }
             },
+            value: {
+                "transient": true,
+                getter: function() {
+                    return this.getInstance().get("value");
+                }
+            },
             defaultValue: {
                 type: STRING,
                 "transient": true

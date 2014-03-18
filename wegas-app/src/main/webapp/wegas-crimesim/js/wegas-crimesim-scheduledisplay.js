@@ -11,8 +11,7 @@
 YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
-            ScheduleDisplay;
+    var CONTENTBOX = 'contentBox', ScheduleDisplay;
 
     /**
      *  The schedule display class.
@@ -23,13 +22,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 + '<div class="schedule-gallery"></div><h2>Anaylses</h2><div class="schedule-analysis"></div>'
                 + '</div></div>',
         // *** Fields *** /
-        menu: null,
-        handlers: null,
-        gallery: null,
-        datatable: null,
-        data: null,
         currentQuestionId: null,
-        translator: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.data = [];
@@ -55,7 +48,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             // cb.on("clickoutside", this.hideMenu, this);
 
-            this.menu.on("button:mouseenter", function(e) {
+            this.menu.on("button:mouseenter", function(e) {                     // Display tooltip on menu mouse over
                 if (!ScheduleDisplay.EXTENDEDQUESTIONS) {
                     return;                                                     // @fixme @hack
                 }
@@ -93,7 +86,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.menu.attachTo(e.target);                                   // Display the menu button next to the arrow
             }, ".schedule-available .icon", this);
 
-            cb.delegate("click", function(e) {                                  // Show the question detail on left label click
+            cb.delegate("click", this.onCancelReplyClick, ".icon .close-icon", this);// Cancel question on close icon click
+
+            cb.delegate("click", function(e) {                                  // Show the question details on left label click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid");
                 this.currentQuestionId = +questionId;
                 this.get("contentBox").all(".schedule-leftcolum-selected").removeClass("schedule-leftcolum-selected");
@@ -101,10 +96,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 this.syncDetailsPanel();
             }, "td.schedule-leftcolum", this);
 
-            cb.delegate("click", this.hideDetails, ".schedule-icon-close", this);// Hide the question detail on close icon click
-
-            cb.delegate("click", this.onCancelReplyClick, ".icon .close-icon", this);// Hide the question detail on close icon click
-
+            cb.delegate("click", this.hideDetails, ".schedule-icon-close", this);// Hide the question details on close icon click
 
             this.handlers.response = // If data changes, refresh
                     Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
@@ -116,7 +108,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var cb = this.get(CONTENTBOX).one(".schedule-questions"),
                     evidences = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences");
 
-            if (!Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period")) {
+            if (!this.get("timeVariable")) {
                 cb.setContent("Unable to find time variable.");
                 return;
             }
@@ -161,13 +153,12 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     questionInstance, reply, i, j, k, question, cols, replies, names,
                     questionsVarDesc = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten(),
                     questionInstances = [],
-                    period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
-                    periodInstance = period.getInstance(),
+                    period = this.get("timeVariable"),
                     maxValue = period.get("maxValue"),
                     totalPeriods = period.get("maxValue") - period.get("minValue"),
                     acc = ['<table class="schedule-table"><tr><th class="schedule-leftcolum">' + this.translator.getRB().Evidence + '</th>'],
                     cb = this.get(CONTENTBOX).one(".schedule-questions"),
-                    currentTime = periodInstance.get("value") - period.get("minValue");
+                    currentTime = period.get("value") - period.get("minValue");
 
             this.currentTime = currentTime;
             this.perPeriodLoad = perPeriodLoad;
@@ -367,7 +358,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             if (topValue > cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().height - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height) {
                 topValue = cb.one(".schedule-leftcolum-selected").ancestor("table").getDOMNode().getBoundingClientRect().height - cb.one(".schedule-detail").getDOMNode().getBoundingClientRect().height;
             }
-            maxWidth = cb.one(".schedule-item").getDOMNode().getBoundingClientRect().width * Y.Wegas.Facade.VariableDescriptor.cache.find("name", "period").get("maxValue");
+            maxWidth = cb.one(".schedule-item").getDOMNode().getBoundingClientRect().width * this.get("timeVariable").get("maxValue");
             cb.one(".schedule-detail").setStyles({
                 position: 'display',
                 display: "block",
@@ -419,6 +410,9 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 }});
         },
         onMenuClick: function(e) {
+            if (e.target.get("disabled")) {                                     // Prevent click on disabled buttons
+                return;
+            }
             var data = e.target.get("data");
 
             this.showOverlay();
@@ -434,7 +428,14 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
          * Return a list of possible actions on a given action at a given time.
          */
         genMenuItems: function(question, startTime) {
-            var perPeriodBudget = 15, ret = [], i, j, disabled, choice, choiceInstance;
+            var ret = [], i, j, disabled, choice, choiceInstance, perPeriodBudget
+
+            if (startTime + 1 === this.get("timeVariable").get("value")) {      // If the clicked cell is in current period,
+                perPeriodBudget = this.get("resourceVariable").get("value");    // use current resource variable value has a limit
+            } else {                                                            // Otherwise, use variable default value
+                perPeriodBudget = this.get("resourceVariable").get("defaultValue") - this.perPeriodLoad[startTime];
+            }
+
             for (i = 0; i < question.get("items").length; i += 1) {
                 choice = question.get("items")[i];
                 choiceInstance = choice.getInstance();
@@ -443,8 +444,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                     continue;
                 }
 
-                disabled = this.perPeriodLoad[startTime] + choice.get("cost")   // and if we have enough resources
-                        > perPeriodBudget;
+                disabled = choice.get("cost") > perPeriodBudget;                // and if we have enough resources
 
                 for (j = 0; j < choice.get("duration"); j = j + 1) {
                     disabled = disabled                                         // finally we check if there is no other task assigned for this timeslot
@@ -466,8 +466,20 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             return ret;
         }
     }, {
-        EXTENDEDQUESTIONS: null
-    });
+        EXTENDEDQUESTIONS: null,
+        ATTRS: {
+            timeVariable: {
+                getter: function() {
+                    return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "period");
+                }
+            },
+            resourceVariable: {
+                getter: function() {
+                    return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "humanResources");
+                }
+            }
 
+        }
+    });
     Y.namespace('Wegas').ScheduleDisplay = ScheduleDisplay;
 });
