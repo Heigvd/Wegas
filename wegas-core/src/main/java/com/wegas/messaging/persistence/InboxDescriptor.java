@@ -76,8 +76,8 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from
      * @param subject
      * @param body
-     * @param attachements
-     * @return {@link Message} the sent message
+     * @param attachements 
+    * @return {@link Message} the sent message
      */
     public Message sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
         return this.getInstance(p).sendMessage(from, subject, body, attachements);
@@ -99,9 +99,5 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      */
     public int getUnreadCount(Player player) {
         return this.getInstance(player).getUnreadCount();
-    }
-
-    public void setUnreadCount() {
-        // only used to explicitely ignore while serializing
     }
 }
