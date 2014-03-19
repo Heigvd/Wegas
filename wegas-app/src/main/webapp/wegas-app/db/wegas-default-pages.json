@@ -23,19 +23,17 @@
                                 "children": [{
                                         "custom": "",
                                         "data": {},
-                                        "type": "Template",
+                                        "type": "TitleTemplate",
                                         "variable": {
                                             "name": "phases"
-                                        },
-                                        "template": "title"
+                                        }
                                     }, {
-                                        "type": "Template",
+                                        "type": "ValueboxTemplate",
                                         "custom": "",
                                         "data": {},
                                         "variable": {
                                             "name": "phases"
-                                        },
-                                        "template": "valuebox"
+                                        }
                                     }]
                             }, {
                                 "disabled": false,
@@ -59,13 +57,12 @@
                                         }
                                     }]
                             }, {
-                                "type": "Template",
+                                "type": "BoxTemplate",
                                 "cssClass": "fr timecards",
                                 "variable": {
                                     "name": "humanResources"
                                 },
                                 "custom": "",
-                                "template": "box",
                                 "data": {
                                     "label": "Time cards"
                                 }

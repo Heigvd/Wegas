@@ -9,12 +9,13 @@
                 "cssClass": "leaderway-indicators",
                 "direction": "horizontal",
                 "children": [{
-                        "type": "VariableDisplay",
-                        "label": "Semaine N° : ",
+                        "type": "FractionTemplate",
                         "cssClass": "indicators-fraction",
-                        "view": "fraction",
                         "variable": {
                             "name": "week"
+                        },
+                        "data": {
+                            "label": "Semaine N° : "
                         }
                     }, {
                         "type": "Button",
@@ -31,39 +32,44 @@
                                 }
                             }]
                     }, {
-                        "type": "VariableDisplay",
-                        "label": "Budget : ",
+                        "type": "NumberTemplate",
                         "cssClass": "indicators-text",
-                        "view": "text",
                         "variable": {
                             "name": "budget"
+                        },
+                        "data": {
+                            "label": "Budget : "
                         }
                     }, {
-                        "type": "VariableDisplay",
+                        "type": "BoxTemplate",
                         "cssClass": "indicators-gauge",
-                        "label": "Motivation générale",
                         "variable": {
                             "name": "teamMotivation"
                         },
+                        "data": {
+                            "label": "Motivation générale"
+                        },
                         "view": "box"
                     },
                     {
-                        "type": "VariableDisplay",
+                        "type": "BoxTemplate",
                         "cssClass": "indicators-gauge",
-                        "label": "Satisfaction client",
                         "variable": {
                             "name": "clientsSatisfaction"
                         },
-                        "view": "box"
+                        "data": {
+                             "label": "Satisfaction client"
+                        }
                     },
                     {
-                        "type": "VariableDisplay",
+                        "type": "BoxTemplate",
                         "cssClass": "indicators-block",
-                        "label": "Actions restantes",
                         "variable": {
                             "name": "actions"
                         },
-                        "view": "box"
+                        "data": {
+                            "label": "Actions restantes",
+                        }
                     }]
             },
             {

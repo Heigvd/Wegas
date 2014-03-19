@@ -47,10 +47,6 @@
     text-align: left;
 }
 
-.leaderway-indicators .indicators-fraction .wegas-variabledisplay-fraction-minSeparator,
-.leaderway-indicators .indicators-fraction .wegas-variabledisplay-fraction-minValue{
-    display:none;
-}
 
 .leaderway-indicators  button{
     margin: 36px 30px 0 5px;
@@ -61,7 +57,7 @@
     margin:24px 20px 0 0;
 }
 
-.leaderway-indicators .indicators-gauge .wegas-variabledisplay-box-units{
+.leaderway-indicators .indicators-gauge .wegas-template-box{
     display:block;
     background-color:#93C34F;
     background-image:url(../../wegas-leaderway/images/gauge_background_large.png);
@@ -74,7 +70,7 @@
     overflow: hidden;
 }
 
-.leaderway-indicators .indicators-gauge .wegas-variabledisplay-box-unit{
+.leaderway-indicators .indicators-gauge .wegas-template-box-unit{
     display:block;
     background-color:#6F89A2;
     background-image:url(../../wegas-leaderway/images/gaugeFiller-background.png);
@@ -84,12 +80,12 @@
     height:20px;
 }
 
-.leaderway-indicators .indicators-gauge .wegas-variabledisplay-box-value{
+.leaderway-indicators .indicators-gauge .wegas-template-box-value{
     margin-left: 5px;
     font-size: 0.8em;
 }
 
-.leaderway-indicators .wegas-variabledisplay:last-child{
+.leaderway-indicators .wegas-template:last-child{
     float:right;
 }
 
@@ -99,20 +95,20 @@
     float:right;
 }
 
-.leaderway-indicators .indicators-block .wegas-variabledisplay-box-label{
+.leaderway-indicators .indicators-block .wegas-template-box label{
     margin-right:5px;
 }
 
-.leaderway-indicators .indicators-block .wegas-variabledisplay-box-valueMax{
+/*.leaderway-indicators .indicators-block .wegas-template-box-valueMax{
     display:none;
-}
+}*/
 
-.leaderway-indicators .indicators-block .wegas-variabledisplay-box-units{
+.leaderway-indicators .indicators-block .wegas-template-box span {
     display: block;
     width:110px;
 }
 
-.leaderway-indicators .indicators-block .wegas-variabledisplay-box-unit{
+.leaderway-indicators .indicators-block .wegas-template-box-unit {
     width:7px;
     height:15px;
     margin:0 2px 2px 0;

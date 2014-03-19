@@ -31,9 +31,8 @@
                 "label": "Restart",
                 "cssClass": "wegas-monopoly-restart"
             },{
-                "type": "VariableDisplay",
+                "type": "NumberTemplate",
                 "label": "Money",
-                "view": "text",
                 "variable": {
                     "name": "money"
                 }
