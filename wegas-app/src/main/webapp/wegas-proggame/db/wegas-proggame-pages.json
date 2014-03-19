@@ -415,7 +415,6 @@
             }],
         "children": [{
                 "type": "Template",
-                "template": "value",
                 "data": {},
                 "custom": "YOU HAVE <%= this.value || 0 %> GOLD COINS",
                 "variable": {
