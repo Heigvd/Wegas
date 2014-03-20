@@ -134,7 +134,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                         type: "boolean",
                         name: "remember",
                         rightLabel: "&nbsp;Remember me",
-                        className: "inputEx-Field remember"
+                        className: "inputEx-Field remember",
+                        value: true
                     }],
                 parentEl: cb.one(".login")
             });

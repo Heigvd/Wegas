@@ -224,7 +224,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         debug: function() {
             Y.log("debug()", "info", "Wegas.ProgGameLevel");
 
-            var code = this.instrument(),
+            var code = this.instrument(this.mainEditorTab.aceField.getValue()),
                     breakpoints = Y.Object.keys(this.mainEditorTab.aceField.editor.getSession().getBreakpoints());
 
             Y.log("Sending request: current step: " + this.currentBreakpointStep

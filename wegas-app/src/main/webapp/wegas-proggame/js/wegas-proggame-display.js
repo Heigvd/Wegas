@@ -18,12 +18,9 @@ YUI.add('wegas-proggame-display', function(Y) {
     /**
      * Level display, should handle canvas, for now renders the level as a
      * table element.
-     *
      */
     ProgGameDisplay = Y.Base.create("wegas-proggame-display", Y.Widget, [], {
         CONTENT_TEMPLATE: '<div><div class="object-layer"></div><div id="cr-stage"></div></div>',
-        gridH: null,
-        gridW: null,
         initializer: function() {
             this.entities = [];
             this.allowNextCommand = false;
