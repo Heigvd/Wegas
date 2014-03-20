@@ -64,7 +64,11 @@
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter</param-value>
+            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter;com.wegas.core.rest.util.CacheResponseFilter</param-value>
+        </init-param>
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
+            <param-value>com.wegas.core.rest.util.CacheFilterFactory</param-value>
         </init-param>
         <!--        <init-param>
             <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>

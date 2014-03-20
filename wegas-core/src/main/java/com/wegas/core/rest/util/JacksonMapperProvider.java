@@ -84,16 +84,13 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 //                });
 //            }
 //        });
-
         //mapper.getDeserializationConfig().withAnnotationIntrospector(pair);
         //mapper.getSerializationConfig().withAnnotationIntrospector(pair);
-
         //mapper.configure(Feature.INDENT_OUTPUT, true);
         //mapper.getSerializationConfig().setDateFormat(myDateFormat);
         //mapper.configure(DeserializationConfig.Feature.USE_ANNOTATIONS, true);
         //mapper.configure(SerializationConfig.Feature.USE_ANNOTATIONS, true);
         //MapperConfigurator mapperConfigurator = new MapperConfigurator(null,new Annotations[]{Annotations.JAXB});
-
         return mapper;
     }
 }

@@ -19,6 +19,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.*;
+import javax.ws.rs.core.Response.ResponseBuilder;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,9 +65,13 @@ public class ComboController {
     @GET
     @Produces({MediaTypeJs, MediaTypeCss})
     public Response index(@Context Request req) throws IOException {
-
+        final CacheControl cc = new CacheControl();
+        cc.setMaxAge(60 * 60 * 3);
+        cc.setNoTransform(false);
+        //cc.setPrivate(true);
+        //cc.setMustRevalidate(false);
+        //cc.setNoCache(false);
         //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
-
         ArrayList<String> files = new ArrayList<>();                            // New version, with parameters in the right order
         for (String parameter : this.uriInfo.getRequestUri().getQuery().split("&")) {
             String split = parameter.split("=")[0];
@@ -74,7 +79,11 @@ public class ComboController {
                 files.add(split);
             }
         }
-
+        EntityTag etag = new EntityTag(files.hashCode() + "");
+        ResponseBuilder rb = req.evaluatePreconditions(etag);
+        if (rb != null && (files.contains("v") || files.contains("version"))) { //if no version string, version change are not tracked
+            return rb.cacheControl(cc).tag(etag).build();
+        }
         files.remove("v");
         files.remove("version");
 
@@ -84,21 +93,13 @@ public class ComboController {
         // MediaType types[] = {"application/json", "application/xml"};
         // List<Variant> vars = Variant.mediaTypes(types).add().build();
         // Variant var = req.selectVariant(vars);
-
-        final CacheControl cc = new CacheControl();
-        cc.setMaxAge(60 * 60 * 3);
-        cc.setNoTransform(false);
-        //cc.setPrivate(true);
-        //cc.setMustRevalidate(false);
-        //cc.setNoCache(false);
-
         //EntityTag etag = new EntityTag();
         //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
-
         return Response.ok(this.getCombinedFile(files, mediaType))
                 .type(mediaType)
                 .cacheControl(cc)
                 .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
+                .tag(etag)
                 .build();
     }
 
