@@ -56,7 +56,9 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             this.srcField.el.cols = 100;
 
             this.renderRunButton();
-            this.srcField.viewSrc.get("contentBox")._node.attributes.style.value = "";
+            
+            this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc");
+            
             innerHTML = this.srcField.viewSrc.get("contentBox").get("innerHTML");
             this.srcField.viewSrc.get("contentBox").set("innerHTML", innerHTML + "Source");
             this.toolbar.add(this.srcField.viewSrc);
