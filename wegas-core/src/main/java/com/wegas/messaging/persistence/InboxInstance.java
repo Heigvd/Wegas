@@ -130,7 +130,7 @@ public class InboxInstance extends VariableInstance {
         return unread;
     }
 
-    public void setUnreadCount() {
+    public void setUnreadCount(int count) {
         // only used to explicitely ignore while serializing
     }
 
