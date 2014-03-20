@@ -23,16 +23,13 @@
                                 "children": [{
                                         "type": "Template",
                                         "data": {},
-                                        "template": "text",
                                         "custom": "<div class='wegas-template-title'><label>Phase</label><div><%= this.variable.getLabel() || 'Undefined' %></div></div>",
                                         "variable": {
                                             "name": "phases"
                                         }
                                     }, {
-                                        "type": "Template",
+                                        "type": "ValueboxTemplate",
                                         "data": {},
-                                        "template": "valuebox",
-                                        "custom": "",
                                         "variable": {
                                             "name": "phases"
                                         },
@@ -62,9 +59,7 @@
                                     }],
                                 "cssClass": "fl"
                             }, {
-                                "type": "Template",
-                                "template": "box",
-                                "custom": "",
+                                "type": "BoxTemplate",
                                 "data": {
                                     "label": "Time cards"
                                 },
@@ -238,7 +233,6 @@
         "type": "Template",
         "custom": "<%== this.value || 'Unable to find welcome text' %>",
         "data": {},
-        "template": "text",
         "variable": {
             "name": "welcomeText"
         }

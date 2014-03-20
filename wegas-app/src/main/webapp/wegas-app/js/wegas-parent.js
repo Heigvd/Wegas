@@ -91,7 +91,7 @@ YUI.add("wegas-parent", function(Y) {
                             //event: "mouseenter",
                             children: [{
                                     type: BUTTON,
-                                    label: "Basic",
+                                    label: "Static",
                                     plugins: [{
                                             fn: "WidgetMenu",
                                             cfg: {
@@ -169,20 +169,69 @@ YUI.add("wegas-parent", function(Y) {
                                                 event: "mouseenter",
                                                 children: [{
                                                         type: BUTTON,
-                                                        label: "Template",
+                                                        label: "Number",
                                                         plugins: [{
-                                                                fn: "AddChildWidgetAction",
+                                                                fn: "WidgetMenu",
                                                                 cfg: {
-                                                                    childType: "Template"
+                                                                    menuCfg: {
+                                                                        points: ["tl", "tr"]
+                                                                    },
+                                                                    event: "mouseenter",
+                                                                    children: [{
+                                                                            type: BUTTON,
+                                                                            label: "Boxes",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "BoxTemplate"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
+                                                                            label: "Gauge",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "GaugeDisplay"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
+                                                                            label: "Serie",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "ValueboxTemplate"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
+                                                                            label: "Fraction",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "FractionTemplate"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
+                                                                            label: "Custom",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "Template"
+                                                                                    }
+                                                                                }]
+                                                                        }]
                                                                 }
                                                             }]
                                                     }, {
                                                         type: BUTTON,
-                                                        label: "Gauge",
+                                                        label: "Text",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
-                                                                    childType: "GaugeDisplay"
+                                                                    childType: "TextTemplate"
                                                                 }
                                                             }]
                                                     }, {

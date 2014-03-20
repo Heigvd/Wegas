@@ -23,10 +23,8 @@
                         "content": "Crimesim",
                         "cssClass": "wegas-crimesim-title"
                     }, {
-                        "type": "Template",
+                        "type": "ValueboxTemplate",
                         "data": {},
-                        "custom": null,
-                        "template": "valuebox",
                         "variable": {
                             "name": "period"
                         }
@@ -52,20 +50,16 @@
                             }
                         ]
                     }, {
-                        "type": "Template",
-                        "template": "text",
+                        "type": "NumberTemplate",
                         "data": {},
-                        "custom": null,
                         "variable": {
                             "name": "cost"
                         }
                     }, {
-                        "type": "Template",
-                        "template": "box",
+                        "type": "BoxTemplate",
                         "data": {
                             "maxValue": 15
                         },
-                        "custom": null,
                         "variable": {
                             "name": "humanResources"
                         }
@@ -191,7 +185,6 @@
         "type": "Template",
         "custom": "<%== this.value || 'Unable to find welcome text' %>",
         "data": {},
-        "template": "text",
         "variable": {
             "name": "welcomeText"
         }

@@ -193,10 +193,6 @@ YUI().use(function(Y) {
                     path: 'css/wegas-tabview-min.css',
                     type: "css"
                 },
-                'wegas-variabledisplay': {
-                    path: 'js/widget/wegas-variabledisplay-min.js',
-                    ws_provides: 'VariableDisplay'
-                },
                 'wegas-gaugedisplay': {
                     path: 'js/widget/wegas-gaugedisplay-min.js',
                     requires: ["gauge", "wegas-templatecss"],

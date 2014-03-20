@@ -18,12 +18,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             HTML = "html",
             Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
             IDATTRDEF = {
-                type: STRING,
-                optional: true, // The id is optional for entites that have not been persisted
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     /**
      * VariableDescriptor mapper
@@ -373,7 +373,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             value: {
                 "transient": true,
                 getter: function() {
-                    return this.getInstance().get("value");
+                    if (this.getInstance()) {
+                        return this.getInstance().get("value");
+                    } else {
+                        return null;
+                    }
                 }
             },
             defaultValue: {
@@ -486,18 +490,18 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         flatten: function() {
             var acc = [],
                     doFlatten = function(items) {
-                        var i, it;
-                        for (i = 0; i < items.length; i += 1) {
-                            it = items[i];
-                            if (it instanceof persistence.QuestionDescriptor) {
-                                acc.push(it);
-                            } else if (it instanceof persistence.ListDescriptor) {
-                                doFlatten(it.get(ITEMS));
-                            } else {
-                                acc.push(it);
-                            }
-                        }
-                    };
+                var i, it;
+                for (i = 0; i < items.length; i += 1) {
+                    it = items[i];
+                    if (it instanceof persistence.QuestionDescriptor) {
+                        acc.push(it);
+                    } else if (it instanceof persistence.ListDescriptor) {
+                        doFlatten(it.get(ITEMS));
+                    } else {
+                        acc.push(it);
+                    }
+                }
+            };
             doFlatten(this.get(ITEMS));
             return acc;
 
@@ -508,15 +512,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         depthFirstSearch: function(id) {
             var needle,
                     filterFn = function(it) {
-                        if (it.get("id") === +id) {
-                            needle = it;
-                            return false;
-                        } else if (it instanceof persistence.ListDescriptor) {
-                            return Y.Array.every(it.get(ITEMS), filterFn);
-                        } else {
-                            return true;
-                        }
-                    };
+                if (it.get("id") === +id) {
+                    needle = it;
+                    return false;
+                } else if (it instanceof persistence.ListDescriptor) {
+                    return Y.Array.every(it.get(ITEMS), filterFn);
+                } else {
+                    return true;
+                }
+            };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
         }

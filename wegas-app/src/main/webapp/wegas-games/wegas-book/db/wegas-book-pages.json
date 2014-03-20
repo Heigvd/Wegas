@@ -11,8 +11,7 @@
                 "cssClass": "menu",
                 "children": [
                     {
-                        "type": "Template",
-                        "template": "text",
+                        "type": "NumberTemplate",
                         "variable": {
                             "name": "combatSkill"
                         },
@@ -20,8 +19,7 @@
                             "label": "Combat skills"
                         }
                     }, {
-                        "type": "Template",
-                        "template": "text",
+                        "type": "NumberTemplate",
                         "variable": {
                             "name": "stamina"
                         },

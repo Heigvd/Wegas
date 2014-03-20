@@ -5,8 +5,7 @@
         "type": "List",
         "cssClass": "content",
         "children": [{
-            "type": "Template",
-            "template": "text",
+            "type": "NumberTemplate",
             "cssClass": "icecream",
             "variable": {
                 "name": "icecream"
