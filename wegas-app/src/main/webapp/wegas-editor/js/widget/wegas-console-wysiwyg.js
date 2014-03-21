@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-console-wysiwyg', function(Y) {
     'use strict';
 
@@ -42,7 +40,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description create and render the Y.inputEx.WysiwygScript.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX), innerHTML;
+            var cb = this.get(CONTENTBOX);
 
             this.get("boundingBox").addClass("wegas-form");
 
@@ -56,11 +54,10 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             this.srcField.el.cols = 100;
 
             this.renderRunButton();
-            
+
             this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc");
-            
-            innerHTML = this.srcField.viewSrc.get("contentBox").get("innerHTML");
-            this.srcField.viewSrc.get("contentBox").set("innerHTML", innerHTML + "Source");
+
+            this.srcField.viewSrc.get("contentBox").append("Source");
             this.toolbar.add(this.srcField.viewSrc);
         },
         /**
