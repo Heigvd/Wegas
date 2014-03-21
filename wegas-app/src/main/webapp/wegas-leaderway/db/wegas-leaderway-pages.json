@@ -48,8 +48,7 @@
                         },
                         "data": {
                             "label": "Motivation générale"
-                        },
-                        "view": "box"
+                        }
                     },
                     {
                         "type": "BoxTemplate",
@@ -68,7 +67,7 @@
                             "name": "actions"
                         },
                         "data": {
-                            "label": "Actions restantes",
+                            "label": "Actions restantes"
                         }
                     }]
             },
