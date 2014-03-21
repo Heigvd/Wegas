@@ -17,6 +17,7 @@
     </appender>-->
     <logger name="org.apache" level="WARN"/>
     <logger name="com.wegas.core" level="WARN"/>
+    <logger name="net.sf.ehcache" level="WARN"/>
 
     <root level="DEBUG">
         <appender-ref ref="STDOUT" />
