@@ -21,6 +21,7 @@ import javax.ws.rs.core.HttpHeaders;
  */
 public class CacheResponseFilter implements ResourceFilter, ContainerResponseFilter {
 
+    public static final String NO_CACHE = "no-cache, no-store";
     private final String headers;
 
     protected CacheResponseFilter(String headers) {
@@ -29,7 +30,7 @@ public class CacheResponseFilter implements ResourceFilter, ContainerResponseFil
 
     public CacheResponseFilter() {
         /*Default to no-cache as most clients have this behaviour*/
-        this.headers = "no-cache";
+        this.headers = NO_CACHE;
     }
 
     @Override

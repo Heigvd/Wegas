@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
@@ -34,7 +35,9 @@ import javax.jcr.LoginException;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
 import javax.xml.parsers.ParserConfigurationException;
@@ -160,8 +163,8 @@ public class FileController {
      */
     @GET
     @Path("read{absolutePath : .*?}")
-    @CacheMaxAge(time = 1, unit = TimeUnit.DAYS)
-    public Response read(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name) {
+    @CacheMaxAge(time = 1, unit = TimeUnit.SECONDS)
+    public Response read(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name, @Context Request request) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
@@ -183,9 +186,13 @@ public class FileController {
             return response.build();
         }
         if (fileDescriptor instanceof FileDescriptor) {
-            response = Response.ok(new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512));
-            response.header("Content-Type", fileDescriptor.getMimeType());
-            response.header("Description", fileDescriptor.getDescription());
+            Date lastModified = ((FileDescriptor) fileDescriptor).getDataLastModified().getTime();
+            response = request.evaluatePreconditions(lastModified);
+            if (response == null) {
+                response = Response.ok(new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512));
+                response.header("Content-Type", fileDescriptor.getMimeType());
+                response.header("Description", fileDescriptor.getDescription());
+            }
             response.lastModified(((FileDescriptor) fileDescriptor).getDataLastModified().getTime());
 
             if (connector != null) {
