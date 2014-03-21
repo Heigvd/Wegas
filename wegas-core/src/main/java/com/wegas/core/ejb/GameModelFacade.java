@@ -27,6 +27,7 @@ import javax.inject.Inject;
 import javax.jcr.RepositoryException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -140,6 +141,8 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             } catch (NoResultException ex) {
                 newGameModel.setName(newName);
                 added = true;
+            } catch (NonUniqueResultException ex) {   
+                suffix++;
             }
         }
 
@@ -211,7 +214,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @return
      * @throws NoResultException
      */
-    public GameModel findByName(final String name) throws NoResultException {
+    public GameModel findByName(final String name) throws NoResultException, NonUniqueResultException {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameModel> gameModel = cq.from(GameModel.class);
