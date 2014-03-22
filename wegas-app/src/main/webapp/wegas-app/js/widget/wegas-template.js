@@ -135,8 +135,9 @@ YUI.add("wegas-template", function(Y) {
                 "</div></div>")
     });
     Wegas.BoxTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-box'><label><%= this.label || '{label}'%></label><br/><span><% for(var i=0; i < this.value; i+=1){%>" +
-                "<div class='wegas-template-box-unit'></div><% } %></span><br/>" +
+        TEMPLATE: Micro.compile("<div class='wegas-template-box'><label><%= this.label || '{label}'%></label><br/>"
+                + "<div class='wegas-template-box-units'><% for(var i=0; i < this.value; i+=1){%>" +
+                "<div class='wegas-template-box-unit'></div><% } %></div>" +
                 "<span class='wegas-template-box-value'>(<%= this.value || '{value}' %><% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>)</span></div>")
     });
     Wegas.NumberTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
@@ -146,7 +147,10 @@ YUI.add("wegas-template", function(Y) {
         TEMPLATE: Micro.compile("<div class='wegas-template-title'><%= this.label || '{label}'%></div>")
     });
     Wegas.FractionTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-fraction'><%= (this.minValue || '{minValue}') + '/' + (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>")
+        TEMPLATE: Micro.compile("<div class='wegas-template-fraction'>"
+                + "<label><%= this.label || '{label}'%></label>"
+                //+ "<%= (this.minValue || '{minValue}')%> /"
+                + "<%= (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>")
     });
     Wegas.TextTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
         TEMPLATE: Micro.compile("<div><%== this.value || 'Unable to find text' %></div>")
