@@ -57,7 +57,7 @@
     margin:24px 20px 0 0;
 }
 
-.leaderway-indicators .indicators-gauge .wegas-template-box{
+.leaderway-indicators .indicators-gauge .wegas-template-box-units {
     display:block;
     background-color:#93C34F;
     background-image:url(../../wegas-leaderway/images/gauge_background_large.png);
@@ -78,6 +78,8 @@
     float:left;
     width:2px;
     height:20px;
+    margin: 0;
+    border: none;
 }
 
 .leaderway-indicators .indicators-gauge .wegas-template-box-value{

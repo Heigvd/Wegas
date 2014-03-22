@@ -254,7 +254,8 @@ YUI().use(function(Y) {
                 'wegas-template': {
                     path: "js/widget/wegas-template-min.js",
                     requires: ["template-micro", "wegas-templatecss"],
-                    ws_provides: "Template"
+                    ws_provides: ["Template", "ValueboxTemplate", "BoxTemplate", 
+                        "NumberTemplate", "TitleTemplate", "FractionTemplate", "TextTemplate"]    
                 },
                 'wegas-treeview': {
                     path: 'js/widget/wegas-treeview-min.js',
