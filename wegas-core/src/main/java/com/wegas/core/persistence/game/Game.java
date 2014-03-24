@@ -83,7 +83,6 @@ public class Game extends NamedEntity {
     @XmlTransient
     @JsonIgnore
     private User createdBy;
-    
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @XmlTransient
     @JsonIgnore
@@ -293,6 +292,19 @@ public class Game extends NamedEntity {
     @Override
     public String getName() {
         return name;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @JsonIgnore
+    public String getShortName() {
+        if (this.name.length() > 11) {
+            return this.name.substring(0, 11);
+        } else {
+            return this.name;
+        }
     }
 
     /**

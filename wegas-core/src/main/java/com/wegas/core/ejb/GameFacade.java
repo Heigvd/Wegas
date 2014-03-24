@@ -144,15 +144,10 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public String createUniqueEnrolmentkey(Game game) {
-        String prefixKey = game.getName();
+        String prefixKey = game.getShortName().toLowerCase().replace(" ", "-");
         boolean foundUniqueKey = false;
         int counter = 0;
         String key = null;
-
-        if (prefixKey.length() > 11) {
-            prefixKey = prefixKey.substring(0, 11);
-        }
-        prefixKey = prefixKey.toLowerCase().replace(" ", "-");
 
         int length = 2;
         int maxRequest = 400;
@@ -201,16 +196,16 @@ public class GameFacade extends BaseFacade<Game> {
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
         String s = token.substring(token.length() - 1);
-        String [] splitedToken = entity.getToken().split("-");
-        if (!s.equals("-")){
+        String[] splitedToken = entity.getToken().split("-");
+        if (!s.equals("-")) {
             try {
-                Long.parseLong(splitedToken[splitedToken.length -1]);
+                Long.parseLong(splitedToken[splitedToken.length - 1]);
                 throw new WegasException("You can't have a trait followed by a number (example: xx-12)");
-            }catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 //Gotcha
             }
         }
-               
+
         if ((this.findByToken(entity.getToken()) != null
                 && !this.findByToken(entity.getToken()).getId().equals(entity.getId()))) {
             //|| teamFacade.findByToken(entity.getToken()) != null) {
@@ -357,9 +352,9 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     * 
+     *
      * @param q
-     * @return 
+     * @return
      */
     private List<Game> findRegisterdGames(final Query q) {
         final List<Game> games = new ArrayList<>();
@@ -443,7 +438,7 @@ public class GameFacade extends BaseFacade<Game> {
         Player p = new Player();
         p.setUser(user);
         this.joinTeam(team, p);
-        this.addRights(p.getGame());
+        this.addRights(user, p.getGame());
         return p;
     }
 
@@ -462,8 +457,8 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param game
      */
-    public void addRights(Game game) {
-        userFacade.getCurrentUser().getMainAccount().addPermission(
+    public void addRights(User user, Game game) {
+        user.getMainAccount().addPermission(
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
     }
