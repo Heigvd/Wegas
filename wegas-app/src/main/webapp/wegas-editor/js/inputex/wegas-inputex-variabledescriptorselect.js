@@ -461,7 +461,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 label: "Event has been fired",
                 arguments: [{
                         type: "string",
-                        typeInvite: "Event name",
+                        typeInvite: "event name",
                         scriptType: "string"
                     }]
             }

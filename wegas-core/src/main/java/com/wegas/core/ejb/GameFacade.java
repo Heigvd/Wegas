@@ -134,7 +134,7 @@ public class GameFacade extends BaseFacade<Game> {
         try {                                                                   // By default games can be join w/ token
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
         } catch (PersistenceException ex) {
-            logger.error("Unable to find Role: Public", ex);
+            logger.error("Unable to find Role: Public");
         }
     }
 

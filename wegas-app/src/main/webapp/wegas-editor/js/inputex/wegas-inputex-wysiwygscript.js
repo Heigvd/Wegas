@@ -236,16 +236,22 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     };
                                 case "RequestManager":
                                 case "Event":
-                                    var args = [];
+                                    var ret, args = [];
 
                                     Y.Array.each(expression.arguments, function(i) {
                                         args.push(this.generateExpression(i));
                                     }, this);
-                                    return {
+                                    ret =  {
                                         type: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline",
                                         value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
                                         arguments: args
                                     };
+                                    
+                                    if ( expression.callee.property.name === "fired") {
+                                        return [ret];
+                                    } else {
+                                        return ret;
+                                    }
                             }
                             break;
                         default:
