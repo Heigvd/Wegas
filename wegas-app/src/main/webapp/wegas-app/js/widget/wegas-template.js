@@ -138,7 +138,10 @@ YUI.add("wegas-template", function(Y) {
         TEMPLATE: Micro.compile("<div class='wegas-template-box'><label><%= this.label || '{label}'%></label><br/>"
                 + "<div class='wegas-template-box-units'><% for(var i=0; i < this.value; i+=1){%>" +
                 "<div class='wegas-template-box-unit'></div><% } %></div>" +
-                "<span class='wegas-template-box-value'>(<%= this.value || '{value}' %><% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>)</span></div>")
+                "<span class='wegas-template-box-value'>"
+                + "(<%= this.value || '{value}' %>"
+                //+ "<% if(this.defaultValue != ''){ %><%= '/' + (this.defaultValue || '{defaultValue}') %><% } %>"
+                + ")</span></div>")
     });
     Wegas.NumberTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
         TEMPLATE: Micro.compile("<div class='wegas-template-text'><span><%= this.label || '{label}' %></  span><br/><span><%= this.value || '{value}' %></span></div>")
