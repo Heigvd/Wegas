@@ -134,6 +134,7 @@ public class StateMachineFacade implements Serializable {
                             if (this.eventTransition(player, transition, smi)) {
                                 passedTransitions.add(transition);
                                 transitionPassed = true;
+                                smi.transitionHistoryAdd(transition.getId());
                             }
                         } catch (ScriptException ex) {
                             //maybe throw a WegasException
@@ -200,7 +201,7 @@ public class StateMachineFacade implements Serializable {
         Pattern pattern = Pattern.compile("Event\\.fired\\((['\"])(\\w+)\\1\\)");
         Matcher matcher = pattern.matcher(script);
         String event;
-        if (matcher.matches()) {
+        if (matcher.find()) {
             event = matcher.group(2);
         } else {
             return false;
