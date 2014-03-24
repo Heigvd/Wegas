@@ -119,7 +119,7 @@ YUI.add('wegas-join', function(Y) {
                     emptyChoices = true;
                 }
 
-                teamSelectionNode.append("<div style=\"margin:10px 0\"><span style=\"color: #505050;font-style: italic;padding-left: 20px;\">Team name:</span>&nbsp;&nbsp;&nbsp;" + teamName + "</div>");
+                //teamSelectionNode.append("<div style=\"margin:10px 0\"><span style=\"color: #505050;font-style: italic;padding-left: 20px;\">Team name:</span>&nbsp;&nbsp;&nbsp;" + teamName + "</div>");
 
                 this.teamField = new Y.inputEx.MultipleOptions({//                Create team edition field
                     parentEl: teamSelectionNode,
@@ -179,7 +179,8 @@ YUI.add('wegas-join', function(Y) {
                     this.sendMultiJoinTeamRequest(this.teamId);
                 } else {
                     Y.Wegas.Facade.Game.sendRequest({//                             // create the team
-                        request: "/" + entity.get("id") + "/CreateTeam/" + name,
+                        //request: "/" + entity.get("id") + "/CreateTeam/" + name,
+                        request: "/" + entity.get("id") + "/CreateTeam",
                         cfg: {
                             method: "POST",
                             updateCache: false
@@ -396,7 +397,7 @@ YUI.add('wegas-join', function(Y) {
                 + "<div class=\"uneditable-players\"></div></div>",
         renderUI: function() {
             var cb = this.get("contentBox"), gameId = Y.Widget.getByNode(this._parentNode).getTargetGame().get("id"),
-                autoCompleteCfg = {
+                    autoCompleteCfg = {
                 type: "autocomplete",
                 autoComp: {
                     minQueryLength: 2,

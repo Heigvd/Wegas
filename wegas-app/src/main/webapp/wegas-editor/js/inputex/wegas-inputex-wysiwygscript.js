@@ -242,7 +242,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                         args.push(this.generateExpression(i));
                                     }, this);
                                     return {
-                                        type: "wysiwygline",
+                                        type: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline",
                                         value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
                                         arguments: args
                                     };
@@ -273,6 +273,5 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             throw new Error("Unable to parse expression.");
         }
     });
-
     inputEx.registerType('script', inputEx.WysiwygScript);                      // Register this class as "script" type
 });

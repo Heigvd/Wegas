@@ -14,7 +14,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx, VariableDescriptorSelect, VariableDescriptorMethod,
-            VariableDescriptorSetter, VariableDescriptorGetter, VariableDescriptorCondition,
+            VariableDescriptorSetter, VariableDescriptorCondition,
             EntityArrayFieldSelect, WysiwygLine;
 
     /**
@@ -177,45 +177,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             return [];
         }
     });
+    Y.inputEx.VariableDescriptorSelect = VariableDescriptorSelect;
     inputEx.registerType("variabledescriptorselect", VariableDescriptorSelect, {});
-
-    /**
-     * @name Y.inputEx.Wegas.VariableDescriptorGetter
-     * @class
-     * @constructor
-     * @extends Y.inputEx.Wegas.VariableDescriptorSelect
-     * @param {Object} options InputEx definition object
-     */
-    VariableDescriptorGetter = function(options) {
-        VariableDescriptorMethod.superclass.constructor.call(this, options);
-    };
-
-    Y.extend(VariableDescriptorGetter, VariableDescriptorSelect, {
-        /** @lends Y.inputEx.Wegas.VariableDescriptorGetter# */
-
-        syncUI: function() {
-            VariableDescriptorGetter.superclass.syncUI.call(this);
-
-            if (this.currentEntity && this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
-                this.addField(this.generateSelectConfig(null,
-                        this.currentEntity, this.currentEntity.get("items")));  // Pushes the current entity methods and children to the stack
-            } else {
-                (new Y.Node(this.fieldset)).append("<em>no variable created </em>");
-            }
-        },
-        genChoices: function(entity, items) {
-            var choices = [];
-
-            if (items && items.length > 0) {                                    // If required, push separator
-                choices.push({
-                    value: "----------"
-                });
-            }
-
-            return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
-        }
-    });
-    inputEx.registerType("variabledescriptorgetter", VariableDescriptorGetter, {});
 
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorMethod
@@ -230,58 +193,86 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
     Y.extend(VariableDescriptorMethod, VariableDescriptorSelect, {
         /** @lends Y.inputEx.Wegas.VariableDescriptorMethod# */
-
+        GLOBALMETHODS: {},
+        generateSelectConfig: function(entity, selectedEntity, items) {
+            if (Y.Lang.isString(this.options.value)
+                    && Y.Object.hasKey(this.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
+                return {
+                    type: 'select',
+                    choices: this.genChoices(entity, items),
+                    value: this.options.value,
+                    parentEntity: entity
+                };
+            } else {
+                return VariableDescriptorMethod.superclass.generateSelectConfig.apply(this, arguments);
+            }
+        },
         syncUI: function() {
             var args, methods, cMethod,
                     rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
                     currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) || rootEntities[0];
 
-            while (this.getMethods(currentEntity).length === 0                  // If the current entity has no methods,
-                    && currentEntity.get("items") && currentEntity.get("items").length > 0) { // but it has a child
-                currentEntity = currentEntity.get("items")[0];                  // select its first child
-                this.options.value = currentEntity.get("name");
+            if (Y.Lang.isString(this.options.value)
+                    && Y.Object.hasKey(this.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
+                VariableDescriptorSelect.prototype.syncUI.apply(this, arguments);
+
+                var cMethod = this.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
+                this.addField(Y.mix({
+                    type: "combine",
+                    fields: cMethod.arguments,
+                    value: this.options.arguments,
+                    label: null
+                }, cMethod));
+
+            } else {
+
+                while (this.getMethods(currentEntity).length === 0              // If the current entity has no methods,
+                        && currentEntity.get("items") && currentEntity.get("items").length > 0) { // but it has a child
+                    currentEntity = currentEntity.get("items")[0];              // select its first child
+                    this.options.value = currentEntity.get("name");
+                }
+
+                cMethod = this.options.methodCfg;                               //assign cMethod after set this.options.methodCfg by this.getMethods()
+
+                VariableDescriptorMethod.superclass.syncUI.call(this);
+
+                this.addField(this.generateSelectConfig(this.currentEntity,
+                        null, this.currentEntity.get("items")));                // Pushes the current entity methods and children to the stack
+
+                methods = this.getMethods(this.currentEntity);
+
+                if (!cMethod && Y.Object.values(methods).length > 0) {
+                    cMethod = this.options.methodCfg = Y.Object.values(methods)[0];// By default select the first method available
+                }
+
+                args = (cMethod && cMethod.arguments) ? cMethod.arguments : [];
+
+                Y.Array.each(args, function(a) {
+                    a.entity = this.currentEntity;
+                }, this);                                                       // Adds a reference to the target entity to the argument Fields;
+
+                this.currentMethod = cMethod;
+
+                this.addField(Y.mix({
+                    type: "combine",
+                    fields: args,
+                    value: this.options.arguments,
+                    label: null
+                }, cMethod));
+
+                // Same as above, but using json object format for method definitions
+                //var schemaMap = {
+                //    Entity: {
+                //        type: "array",
+                //        items: cMethod.arguments
+                //    }
+                //}, builder = new Y.inputEx.JsonSchema.Builder({
+                //    'schemaIdentifierMap': schemaMap,
+                //    'defaultOptions':{
+                //        'showMsg':true
+                //    }
+                //}), field  = builder.schemaToInputEx(schemaMap.Entity);
             }
-
-            cMethod = this.options.methodCfg;                                   //assign cMethod after set this.options.methodCfg by this.getMethods()
-
-            VariableDescriptorMethod.superclass.syncUI.call(this);
-
-            this.addField(this.generateSelectConfig(this.currentEntity,
-                    null, this.currentEntity.get("items")));                    // Pushes the current entity methods and children to the stack
-
-            methods = this.getMethods(this.currentEntity);
-
-            if (!cMethod && Y.Object.values(methods).length > 0) {
-                cMethod = Y.Object.values(methods)[0];                          // By default select the first method available
-            }
-
-            args = (cMethod && cMethod.arguments) ? cMethod.arguments : [];
-
-            Y.Array.each(args, function(a) {
-                a.entity = this.currentEntity;
-            }, this);                                                           // Adds a reference to the target entity to the argument Fields;
-
-            this.currentMethod = cMethod;
-
-            this.addField(Y.mix({
-                type: "combine",
-                fields: args,
-                value: this.options.arguments,
-                label: null
-            }, cMethod));
-
-            // Same as above, but using json object format for method definitions
-            //var schemaMap = {
-            //    Entity: {
-            //        type: "array",
-            //        items: cMethod.arguments
-            //    }
-            //}, builder = new Y.inputEx.JsonSchema.Builder({
-            //    'schemaIdentifierMap': schemaMap,
-            //    'defaultOptions':{
-            //        'showMsg':true
-            //    }
-            //}), field  = builder.schemaToInputEx(schemaMap.Entity);
         },
         setOptions: function(options) {
             VariableDescriptorMethod.superclass.setOptions.call(this, options);
@@ -290,16 +281,22 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.argsOffset = 1;
         },
         getValue: function() {
-            var i, j, l = this.inputs.length,
+            var l = this.inputs.length,
                     args = this.inputs[l - this.argsOffset].getValue(),
                     method = this.inputs[l - this.argsOffset - 1].getValue();
 
-            if (!method) {
-                return "true";
+            if (Y.Lang.isString(this.options.value)
+                    && Y.Object.hasKey(this.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
+                var k = this.options.value.replace("GLOBAL", ""),
+                        cMethod = this.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
+                return k + "(" + this.encodeArgs(this.inputs[1].getValue(), cMethod.arguments) + ")";
+            } else {
+                if (!method) {
+                    return "true";
+                }
+                return "VariableDescriptorFacade.find(gameModel, \"" + this.inputs[l - this.argsOffset - 2].getValue() + "\")"
+                        + "." + method + "(" + this.encodeArgs(args, this.currentMethod.arguments) + ")";
             }
-
-            return "VariableDescriptorFacade.find(gameModel, \"" + this.inputs[l - this.argsOffset - 2].getValue() + "\")"
-                    + "." + method + "(" + this.encodeArgs(args, this.currentMethod.arguments) + ")";
         },
         encodeArgs: function(args, argsCfg) {
             var i, j;
@@ -322,12 +319,23 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             }
             return args.join(", ");
         },
+        onChange: function(fieldValue) {
+            if (Y.Lang.isString(fieldValue)
+                    && Y.Object.hasKey(this.GLOBALMETHODS, fieldValue.replace("GLOBAL", ""))) {
+                this.options.value = fieldValue;
+                this.options.arguments = null;
+                this.options.methodCfg = null;
+                this.syncUI();
+                return;
+            }
+            VariableDescriptorMethod.superclass.onChange.apply(this, arguments);
+        },
         /**
          * Generate choices for a given entity: add it's methods and then pass up to parent class
          * to add children variable descriptors.
          */
         genChoices: function(entity, items) {
-            var choices = [];
+            var i, choices = [];
             if (entity) {
                 choices = choices.concat(this.getMethods(entity));              // Push the methods to the select choices
             }
@@ -337,7 +345,17 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     value: "----------"
                 });
             }
-            return choices.concat(VariableDescriptorMethod.superclass.genChoices.apply(this, arguments));
+            choices = choices.concat(VariableDescriptorMethod.superclass.genChoices.apply(this, arguments));
+
+            if (!entity) {                                                      // If the entity is at root level of its hierarchy (game model level)
+                for (i in this.GLOBALMETHODS) {                                 // Adds all global methods
+                    choices.push({
+                        label: this.GLOBALMETHODS[i].label,
+                        value: "GLOBAL" + i
+                    });
+                }
+            }
+            return choices;
         },
         getMethods: function(entity) {
             var i, methods = entity.getMethodCfgs(), ret = [];
@@ -395,103 +413,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
     Y.extend(WysiwygLine, VariableDescriptorSetter, {
         /** @lends Y.Wegas.WysiwygLine# */
-
-        genChoices: function(entity) {
-            var i, choices = WysiwygLine.superclass.genChoices.apply(this, arguments);
-            if (!entity) {                                                      // If the entity is at root level of its hierarchy (game model level)
-
-                for (i in WysiwygLine.GLOBALMETHODS) {                          // Adds all global methods
-                    choices.push({
-                        label: WysiwygLine.GLOBALMETHODS[i].label,
-                        value: "GLOBAL" + i
-                    });
-                }
-            }
-            return choices;
-        },
-        onChange: function(fieldValue) {
-            if (Y.Lang.isString(fieldValue)
-                    && Y.Object.hasKey(WysiwygLine.GLOBALMETHODS, fieldValue.replace("GLOBAL", ""))) {
-                this.options.value = fieldValue;
-                this.options.arguments = null;
-                this.syncUI();
-                return;
-            }
-            WysiwygLine.superclass.onChange.apply(this, arguments);
-        },
-        getValue: function() {
-
-            if (Y.Lang.isString(this.options.value)
-                    && Y.Object.hasKey(WysiwygLine.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
-                var k = this.options.value.replace("GLOBAL", ""),
-                        cMethod = WysiwygLine.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
-                return k + "(" + this.encodeArgs(this.inputs[1].getValue(), cMethod.arguments) + ")";
-            } else {
-                return WysiwygLine.superclass.getValue.apply(this, arguments);
-            }
-            var l = this.inputs.length,
-                    args = this.inputs[l - this.argsOffset].getValue(),
-                    method = this.inputs[l - this.argsOffset - 1].getValue();
-
-            if (!method) {
-                return "true";
-            }
-
-            return "VariableDescriptorFacade.find(gameModel, \"" + this.inputs[l - this.argsOffset - 2].getValue() + "\")"
-                    + "." + method + "(" + this.encodeArgs(args, this.currentMethod.arguments) + ")";
-        },
-        generateSelectConfig: function(entity, selectedEntity, items) {
-            if (Y.Lang.isString(this.options.value)
-                    && Y.Object.hasKey(WysiwygLine.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
-                return {
-                    type: 'select',
-                    choices: this.genChoices(entity, items),
-                    value: this.options.value,
-                    parentEntity: entity
-                };
-            } else {
-                return WysiwygLine.superclass.generateSelectConfig.apply(this, arguments);
-            }
-        },
-        syncUI: function() {
-            if (Y.Lang.isString(this.options.value)
-                    && Y.Object.hasKey(WysiwygLine.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
-                VariableDescriptorSelect.prototype.syncUI.apply(this, arguments);
-
-                var cMethod = WysiwygLine.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
-                this.addField(Y.mix({
-                    type: "combine",
-                    fields: cMethod.arguments,
-                    value: this.options.arguments,
-                    label: null
-                }, cMethod));
-            } else {
-                WysiwygLine.superclass.syncUI.apply(this, arguments);
-            }
-//            return;
-//            this.empty();
-
-//            var ret = [],
-//                    rootEntities = Y.Wegas.Facade.VariableDescriptor.cache.findAll(),
-//                    currentEntity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) || rootEntities[0];
-//
-//            this.currentEntity = currentEntity;                                 // Keeps a reference to the current entity
-//
-//            while (currentEntity.parentDescriptor) {                            // Add the current entity hierarchy
-//                ret.push(this.generateSelectConfig(currentEntity.parentDescriptor,
-//                        currentEntity, currentEntity.parentDescriptor.get("items")));
-//                currentEntity = currentEntity.parentDescriptor;
-//            }
-//            ret.push(this.generateSelectConfig(null, currentEntity, rootEntities));// Add the root context (entities that are at the root of the gameModel
-//
-//            Y.Array.each(ret.reverse(), this.addField, this);
-//            this.currentEntityField = this.inputs[this.inputs.length - 1];
-        }
-    }, {
         GLOBALMETHODS: {
             "RequestManager.sendCustomEvent": {
                 label: "Send popup",
-                arguments: [{
+                "arguments": [{
                         type: "hidden",
                         value: "popupEvent",
                         scriptType: "string"
@@ -502,6 +427,14 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 type: "html",
                                 scriptType: "string"
                             }],
+                        scriptType: "string"
+                    }]
+            },
+            "Event.fire": {
+                label: "Fire event",
+                "arguments": [{
+                        type: "string",
+                        typeInvite: "event name",
                         scriptType: "string"
                     }]
             }
@@ -522,7 +455,17 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
     Y.extend(VariableDescriptorCondition, VariableDescriptorMethod, {
         /** @lends Y.inputEx.Wegas.VariableDescriptorCondition# */
-
+        GLOBALMETHODS: {
+            "Event.fired": {
+                returns: "boolean",
+                label: "Event has been fired",
+                arguments: [{
+                        type: "string",
+                        typeInvite: "Event name",
+                        scriptType: "string"
+                    }]
+            }
+        },
         setOptions: function(options) {
             VariableDescriptorCondition.superclass.setOptions.call(this, options);
             this.argsOffset = 1;
@@ -548,18 +491,13 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         /**
          * Override to prevent
          */
-        onChange: function(fieldValue, fieldInstance) {
-            VariableDescriptorCondition.superclass.onChange.apply(this, arguments);
-        },
+//        onChange: function(fieldValue, fieldInstance) {
+//            VariableDescriptorCondition.superclass.onChange.apply(this, arguments);
+//        },
         syncUI: function() {
             VariableDescriptorCondition.superclass.syncUI.call(this);
 
-            var methods = this.getMethods(this.currentEntity),
-                    cMethod = this.options.methodCfg;
-
-            if (!cMethod && methods.length > 0) {
-                cMethod = methods[0];                                           // By default select the first method available
-            }
+            var cMethod = this.options.methodCfg;
 
             if (cMethod && cMethod.returns === "number") {
                 this.argsOffset = 2;

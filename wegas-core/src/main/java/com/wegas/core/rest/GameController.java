@@ -188,8 +188,8 @@ public class GameController {
                     accountKey.setUsed(Boolean.TRUE);
                 }
             } else {
-                if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {             // Check game token are authorized on this game
-                    return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
+                if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {         // Check game token are authorized on this game
+                    return "Team token required";                               // Return a string indicating the client it should provide an enrolment key (not an error)
                 }
             }
         } else {                                                                // 2nd case: single usage enrolement key
@@ -254,7 +254,7 @@ public class GameController {
             try {
                 p = playerFacade.findByGameIdAndUserId(teamFacade.find(teamId).getGame().getId(), user.getId());
                 r.append(" - ").append(user.getName()).append(";");
-            } catch (PersistenceException e) {   
+            } catch (PersistenceException e) {
                 // Gotcha
             }
         }
