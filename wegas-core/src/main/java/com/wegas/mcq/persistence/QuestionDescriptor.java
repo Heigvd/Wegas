@@ -177,6 +177,15 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     }
 
     /**
+     *
+     * @param p
+     * @return
+     */
+    public boolean isNotReplied(Player p) {
+        return !this.isReplied(p);
+    }
+
+    /**
      * @return the variableDescriptors
      */
     @Override
@@ -191,7 +200,7 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     public void setItems(List<ChoiceDescriptor> items) {
         for (ChoiceDescriptor cd : items) {                                     //@todo: due to duplication, fix this
             cd.setQuestion(this);
-           // cd.setGameModel(this.getGameModel());
+            // cd.setGameModel(this.getGameModel());
         }
         this.items = items;
     }

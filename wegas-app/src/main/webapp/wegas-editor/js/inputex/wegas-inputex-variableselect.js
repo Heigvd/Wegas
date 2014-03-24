@@ -12,6 +12,45 @@
 YUI.add("wegas-inputex-variableselect", function(Y) {
     "use strict";
     var inputEx = Y.inputEx;
+
+    /**
+     * @name Y.inputEx.Wegas.VariableDescriptorGetter
+     * @class
+     * @constructor
+     * @extends Y.inputEx.Wegas.VariableDescriptorSelect
+     * @param {Object} options InputEx definition object
+     */
+    var VariableDescriptorGetter = function(options) {
+        Y.inputEx.VariableDescriptorSelect.superclass.constructor.call(this, options);
+    };
+
+    Y.extend(VariableDescriptorGetter, Y.inputEx.VariableDescriptorSelect, {
+        /** @lends Y.inputEx.Wegas.VariableDescriptorGetter# */
+
+        syncUI: function() {
+            VariableDescriptorGetter.superclass.syncUI.call(this);
+
+            if (this.currentEntity && this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
+                this.addField(this.generateSelectConfig(null,
+                        this.currentEntity, this.currentEntity.get("items")));  // Pushes the current entity methods and children to the stack
+            } else {
+                (new Y.Node(this.fieldset)).append("<em>no variable created </em>");
+            }
+        },
+        genChoices: function(entity, items) {
+            var choices = [];
+
+            if (items && items.length > 0) {                                    // If required, push separator
+                choices.push({
+                    value: "----------"
+                });
+            }
+
+            return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
+        }
+    });
+    inputEx.registerType("variabledescriptorgetter", VariableDescriptorGetter);
+
     /**
      * Edit an object referencing a variable with format:
      *    {
