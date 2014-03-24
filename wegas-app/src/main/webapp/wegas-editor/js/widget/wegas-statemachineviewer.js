@@ -10,7 +10,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
     "use strict";
 
     var CONTENT_BOX = 'contentBox', BOUNDING_BOX = 'boundingBox', PARENT = "parent",
-            SID = "sid", ENTITY = "entity", STATES = "states", 
+            SID = "sid", ENTITY = "entity", STATES = "states",
             Wegas = Y.Wegas,
             StateMachineViewer, State, Transition, jp;
 
@@ -172,10 +172,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 }
             });
             jp.bind("connectionDetached", function(e) {
+                if (!e.connection.getParameter("transition")) { // drawing connection.
+                    return;
+                }
                 var i, entity = e.connection.getParameter("transition").source.get(ENTITY),
                         transitions = entity.get("transitions");
                 for (i in transitions) {
-                    if (transitions[i] === entity.get(ENTITY)) {
+                    if (transitions[i] === e.connection.getParameter("transition").get(ENTITY)) {
                         transitions.splice(i, 1);
                     }
                 }
@@ -249,26 +252,33 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             return state;
         },
         save: function() {
-            var entity = this.get(ENTITY),
-                    DEFAULTCB = {
-                success: Y.bind(function(e) {
-                    this.hideOverlay();
-                }, this),
-                failure: Y.bind(function(e) {
-                    this.showMessage("error", e.response.data.message);
-                    this.hideOverlay();
-                }, this)
-            };
-            if (entity) {
-                this.showOverlay();
-                entity = Y.JSON.parse(Y.JSON.stringify(entity));
-                if (entity.id) {
-                    Wegas.Facade.VariableDescriptor.cache.put(entity, {on: DEFAULTCB});
-                } else {
-                    Wegas.Facade.VariableDescriptor.cache.post(entity, {on: DEFAULTCB});
+            this._saveTimer && this._saveTimer.cancel();
+            /**
+             * avoid multiple calls. Save last.
+             */
+            this._saveTimer = Y.later(100, this,function() {
+                var entity = this.get(ENTITY),
+                        DEFAULTCB = {
+                            success: Y.bind(function(e) {
+                                this.hideOverlay();
+                            }, this),
+                            failure: Y.bind(function(e) {
+                                this.showMessage("error", e.response.data.message);
+                                this.hideOverlay();
+                            }, this)
+                        };
+                if (entity) {
+                    this.showOverlay();
+                    entity = Y.JSON.parse(Y.JSON.stringify(entity));
+                    if (entity.id) {
+                        Wegas.Facade.VariableDescriptor.cache.put(entity, {on: DEFAULTCB});
+                    } else {
+                        Wegas.Facade.VariableDescriptor.cache.post(entity, {on: DEFAULTCB});
+                    }
                 }
-            }
-            this.highlightUnusedStates();
+                this.highlightUnusedStates();
+            });
+
         },
         zoom: function(event) {
             if (event.wheelDelta < 0) {
@@ -453,7 +463,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     s = Y.Widget.getByNode("#" + e.sourceId);
                     t = Y.Widget.getByNode("#" + e.targetId);
                     s.addTransition(t);
-                    return false;
                 }
             });
             jp.makeSource(this.get(BOUNDING_BOX).one('.transition-start'), {
@@ -494,7 +503,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             });
         },
         addTransitionType: function(type) {
-            if (this.source != null) {
+            if (this.source !== null) {
                 var tr = type === "Transition" ? new Wegas.persistence.Transition() : new Wegas.persistence.DialogueTransition();
                 tr.set("nextStateId", this.get(SID));
                 this.source.add(new Wegas.Transition({
@@ -558,7 +567,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.destroy();
             if (this.get(SID) === this.get(PARENT).get(ENTITY).getInitialStateId()) {
                 var id = this.getNextStateId();
-                if (id != null) {
+                if (id !== null) {
                     this.get(PARENT).get(ENTITY).setInitialStateId(id);
                     this.get(PARENT).get(BOUNDING_BOX).all(".initial-state").each(function() {
                         this.removeClass("initial-state");
@@ -744,9 +753,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                             transitions.splice(i, 1);
                         }
                     }
-                    this.get(PARENT).get(PARENT).save();
                     this.disconnect();
-                    this.destroy();
                 }, ".transition-delete", this);
                 this.labelNode.canvas.onmouseover = function() {
                     this.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:inline-block;");
