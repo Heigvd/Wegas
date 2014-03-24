@@ -161,6 +161,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         value: SELF
                     }]
             },
+            isNotReplied: {
+                label: "has not been replied",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
             isActive: {
                 label: "is active",
                 returns: BOOLEAN,
