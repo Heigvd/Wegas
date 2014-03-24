@@ -179,6 +179,15 @@ YUI.add("wegas-parent", function(Y) {
                                                                     event: "mouseenter",
                                                                     children: [{
                                                                             type: BUTTON,
+                                                                            label: "Text",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "NumberTemplate"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
                                                                             label: "Boxes",
                                                                             plugins: [{
                                                                                     fn: "AddChildWidgetAction",
