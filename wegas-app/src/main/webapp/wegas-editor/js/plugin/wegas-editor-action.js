@@ -169,8 +169,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            var params,
-                    entity = this.get("entity");
+            var params, entity = this.get("entity");
             //        testPlayer = function(game) {
             //    var teams = game.get("teams"), i, ret = false;
             //    for (i = 0; i < teams.length; i += 1) {
@@ -208,7 +207,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.OpenGameAction */
-
         NS: "wegas",
         NAME: "OpenGameAction",
         /**

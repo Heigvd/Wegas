@@ -368,7 +368,7 @@ YUI.add('wegas-join', function(Y) {
 
             cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
 
-            Y.Wegas.Facade.GameModel.cache.getWithView(game, "Extended", {/// Get the game model full description
+            Y.Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
                         var gameModel = e.response.entity;

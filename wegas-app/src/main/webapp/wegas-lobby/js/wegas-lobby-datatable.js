@@ -50,7 +50,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable = new Y.DataTable(cfg);                              // Render datatable
             this.dataTable.render(this.get(CONTENTBOX));
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
-            this.plug(Plugin.EditorDTMenu);
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
         },
@@ -192,8 +191,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             sortable: false,
                             width: "22px"
                         }, {
-                            key: "name",
-                            label: "Name"
+                            key: NAME,
+                            label: "Name",
+                            formatter: "link"
                         }, {
                             key: "gameModelName",
                             label: "Scenario",
@@ -264,6 +264,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         col.sortable = false;
         return function(o) {
             return '<span class="wegas-icon ' + o.value + '"></span>';
+        };
+    };
+    Y.DataTable.BodyView.Formatters.link = function(col) {
+//        col.className = 'wegas-datatable-menu';
+//        col.label = " ";
+//        col.sortable = false;
+        return function(o) {
+            return '<a href="#">' + o.value + '</span>';
         };
     };
     Y.DataTable.BodyView.Formatters.menu = function(col) {
@@ -384,6 +392,39 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         NAME: "EditorDTMenu",
         ATTRS: {
             children: {}
+        }
+    });
+
+    Plugin.EditorDTLink = Y.Base.create("admin-menu", Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
+                var host = this.get(HOST);
+                host.dataTable.delegate('click', function(e) {
+                    var rec = host.dataTable.getRecord(e.currentTarget),
+                            entity = rec.get("entity"),
+                            url = this.get("url");
+
+                    if (entity instanceof Wegas.persistence.GameModel) {
+                        url += "gameModelId=" + entity.get("id");
+                    } else if (entity instanceof Wegas.persistence.Player) {
+                        url += "id=" + entity.get("id");
+                    } else if (entity instanceof Wegas.persistence.Team) {
+                        url += "teamId=" + entity.get("id");
+                    } else {
+                        url += "gameId=" + entity.get("id");
+                    }
+                    window.open(url);
+                    e.halt(true);
+                }, '.yui3-datatable-data tr[data-yui3-record] a', this);
+            });
+        }
+    }, {
+        NS: "EditorDTLink",
+        NAME: "EditorDTLink",
+        ATTRS: {
+            url: {
+                value: "play.html?"
+            }
         }
     });
 
