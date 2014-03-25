@@ -150,15 +150,15 @@
                         Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
 
-                            this.set('currentTeamId', player.get("teamId"));        // Update current teamid
+                            this.set('currentTeamId', player.get("teamId"));    // Update current teamid
 
                             Y.Wegas.Facade.VariableDescriptor.set("source",
                                     //this.get("base") + "rest/EditorPrivate/" + player.get("id")
                                     Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
                                     + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
-                                    + "/VariableDescriptor");                       // Retrieve variable instances for the new player
+                                    + "/VariableDescriptor");                   // Retrieve variable instances for the new player
 
-                            var preview = Y.Widget.getByNode(".editor-preview");    // Show a loading overlay in the Preview tab during the request
+                            var preview = Y.Widget.getByNode(".editor-preview");// Show a loading overlay in the Preview tab during the request
                             preview.showOverlay();
                             Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
                         });

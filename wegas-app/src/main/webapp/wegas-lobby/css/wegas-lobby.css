@@ -99,28 +99,37 @@
     padding: 0 0 0 6px;
     width: 18px;
 }
+.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-table {
+    table-layout: fixed;
+    color: gray;    
+}
+.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-col-name {
+    color: black;
+}
+.wegas-joinedgamesdatatable,
+.wegas-hostedgamesdatatable,
+.wegas-gamemodeldatatable {
+    min-width: 750px;
+}
 .wegas-lobby-datatable tr td.yui3-datatable-cell {
     cursor: pointer;
 }
-
-/*.wegas-lobby-datatable .wegas-lobby-datatable-icon .wegas-icon {*/
-/*width: 10px;*/
-/*}*/
-/*.wegas-lobby-datatable .wegas-datatable-menu {
-    width:20px;
-    padding: 1px 5px;
-}*/
-.wegas-datatable-center { 
+.yui3-skin-sam .wegas-lobby-datatable .wegas-datatable-center { 
     text-align: center;
-}
-
-.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-table {
-    table-layout: fixed;
 }
 .yui3-skin-sam .wegas-lobby-datatable  .yui3-datatable-cell {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr td a,
+.yui3-skin-sam .wegas-lobby-datatable tr td a:visited {
+    color: black;
+    text-decoration: none;
+}
+.yui3-skin-sam .wegas-lobby-datatable tr td a:hover {
+    text-decoration: underline;
+    color: #072644;
 }
 .yui3-skin-sam .wegas-lobby-datatable tr[data-yui3-record]:hover {
     box-shadow: 0 0 1px #6d6d6d;
@@ -143,10 +152,6 @@
     /*margin: 2px 5px;*/
     display: inline-block;
 }
-.wegas-joinedgamesdatatable tr:hover td.yui3-datatable-col-name { 
-    text-decoration: underline;
-}
-
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper{
     float: left;

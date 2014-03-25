@@ -132,7 +132,7 @@ YUI.add('wegas-app', function(Y) {
             }
             try {
                 response = Y.JSON.parse(req.responseText);
-                msg += "\n Server reply " + Y.JSON.stringify(r, null, "\t");
+                msg += "\n Server reply " + Y.JSON.stringify(response, null, "\t");
 
                 if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") {// If the user session has timed out,
                     new Wegas.Panel({                                           // show a message that invites to reconnect
