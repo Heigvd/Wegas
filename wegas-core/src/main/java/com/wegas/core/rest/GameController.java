@@ -184,7 +184,7 @@ public class GameController {
             AbstractAccount account = userFacade.getCurrentUser().getMainAccount();
             if (account instanceof GameAccount) {                               //Logged in with a GameAccount
                 GameAccountKey accountKey = gameFacade.findGameAccountKey(((GameAccount) account).getEmail());
-                if (accountKey.getGame() == game && !accountKey.getUsed()) {        //Account matches currentGame and key is not used
+                if (accountKey.getGame() == game && !accountKey.getUsed()) {     //Account matches currentGame and key is not used
                     accountKey.setUsed(Boolean.TRUE);
                 }
             } else {
@@ -193,7 +193,12 @@ public class GameController {
                 }
             }
         } else {                                                                // 2nd case: single usage enrolement key
-            GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);// Look the key up
+            GameEnrolmentKey gameEnrolmentKey;
+            try {
+                gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);      // Look the key up
+            } catch (NoResultException e) {
+                throw new WegasException("No game found for this key");
+            }
             game = gameEnrolmentKey.getGame();
             if (gameEnrolmentKey.getUsed()) {                                   // Check the token has not already been used
                 throw new WegasException("This key has already been used");
