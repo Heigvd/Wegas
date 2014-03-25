@@ -239,10 +239,10 @@ YUI.add('wegas-entity', function(Y) {
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
                                         }, {
-                                            rightLabel: "Copy",
+                                            rightLabel: "Create scenario",
                                             value: "GameModel:Duplicate"
                                         }, {
-                                            rightLabel: "Start game",
+                                            rightLabel: "Create game",
                                             value: "GameModel:Instantiate"
                                         }],
                                     roleList: ["Administrator", "Scenarist"]
