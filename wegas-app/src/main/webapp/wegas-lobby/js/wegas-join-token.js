@@ -52,6 +52,7 @@ YUI.add('wegas-join-token', function(Y) {
             });
 
             if (tokenParameter) {
+                this.isInitialTokenTry = true;
                 this.sendTokenJoin(tokenParameter);
             }
         },
@@ -112,6 +113,9 @@ YUI.add('wegas-join-token', function(Y) {
                             //    gm = entity.get("gameModel");
                             //            &&
                             //        !(gm.get("properties.allowCreateTeam") || gm.get("properties.allowJoinTeam"))) {
+                            if (!this.isInitialTokenTry) {
+                                this.showMessageBis("error", "No game found for this key");
+                            }
                         } else if (e.response.entities[0] instanceof Wegas.persistence.Team
                                 && !(e.response.entities[1].get("gameModel").get("properties.freeForAll")
                                 || e.response.entities[0].get("players").length === 0)) {// If the token is already in use
