@@ -156,18 +156,19 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             cReplyLabel = cQuestionInstance.get("replies").length + "x";
                         } else {
                             choiceDescriptor = cQuestionInstance.get("replies")[cQuestionInstance.get("replies").length - 1 ].getChoiceDescriptor();
-                            cReplyLabel = choiceDescriptor.get("title") || "undefined";
+                            cReplyLabel = choiceDescriptor.get("title") || "";
                             cReplyLabel = (cReplyLabel.length >= 15) ? cReplyLabel.substr(0, 15) + "..." : cReplyLabel;
                         }
+                    }
+                    if (Y.Lang.isNull(cReplyLabel)) {
+                        cReplyLabel = (!cQuestion.get("allowMultipleReplies")) ? this.jsTranslator.getRB().Unanswered : this.jsTranslator.getRB().NotDone;
                     }
 
                     tab = new Y.Tab({
                         label: '<div class="'
                                 + ((this.get("showUnanswered") && cQuestionInstance.get("replies").length === 0) ? "unread" : "")
                                 + '"><div class="label">' + (cQuestion.get("title") || cQuestion.get("label") || "undefined") + '</div>'
-                                + '<div class="status">'
-                                + (cReplyLabel
-                                || ((!cQuestion.get("allowMultipleReplies")) ? this.jsTranslator.getRB().Unanswered : this.jsTranslator.getRB().NotDone))
+                                + '<div class="status">' + cReplyLabel
                                 + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
@@ -354,7 +355,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 type: "boolean",
                 value: true,
                 _inputex: {
-                    className: "inputEx-fieldWrapper wegas-advanced-feature"
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         }
