@@ -158,9 +158,9 @@ YUI.add("wegas-gallery", function(Y) {
             this.scrollView.set("width", selW + 30);
             styleSheet.set(galleryId + ".wegas-gallery li", {width: (selW + 30) + "px", height: (selH + 30) + "px"});
             styleSheet.set(galleryId + ".gallery-mask", {width: (smaW + 30) + "px"});
-            styleSheet.set(galleryId + ".gallery-text", {width: (selW + 24) + "px", "max-height": selH + "px"});
-            styleSheet.set(galleryId + ".wegas-gallery img", {"max-width": smaW + "px", "max-height": (selH + 30) + "px"});
-            styleSheet.set(galleryId + ".wegas-gallery .gallery-selected img", {"max-width": selW + "px", "max-height": selH + "px"});
+            styleSheet.set(galleryId + ".gallery-text", {width: (selW + 24) + "px", "maxHeight": selH + "px"});
+            styleSheet.set(galleryId + ".wegas-gallery img", {"maxWidth": smaW + "px", "maxHeight": (selH + 30) + "px"});
+            styleSheet.set(galleryId + ".wegas-gallery .gallery-selected img", {"maxWidth": selW + "px", "maxHeight": selH + "px"});
 
             styleSheet.enable();
             bb.setStyles({
