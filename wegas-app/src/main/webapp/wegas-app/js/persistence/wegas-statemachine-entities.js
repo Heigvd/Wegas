@@ -232,7 +232,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null,
                 _inputex: {
                     _type: "script",
-                    label: "Impact"
+                    label: "On enter impact"
                 }
             },
             transitions: {
@@ -270,7 +270,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null,
                 _inputex: {
                     _type: SCRIPT,
-                    label: 'Impact'
+                    label: 'Impact',
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             nextStateId: {

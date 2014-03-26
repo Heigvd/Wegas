@@ -256,7 +256,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             /**
              * avoid multiple calls. Save last.
              */
-            this._saveTimer = Y.later(100, this,function() {
+            this._saveTimer = Y.later(100, this, function() {
                 var entity = this.get(ENTITY),
                         DEFAULTCB = {
                             success: Y.bind(function(e) {
@@ -360,6 +360,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             availableTransitions: {
                 value: ["Transition"]
             }
+        },
+        FORMATSCRIPT: function(script) {
+            if (script) {
+                return script.get("content") || "";
+            } else {
+                return "";
+            }
         }
     });
 
@@ -401,7 +408,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(CONTENT_BOX).append(this.menuNode);
 
             if (this.get(SID)) {
-                this.sidNode = new Y.Node.create("<div style=\"overflow:hidden;height:100%;\">" + (this.get(ENTITY).get("text") || "") + "</div>");
+                this.sidNode = new Y.Node.create("<div style=\"overflow:hidden;height:100%;\">"
+                        + ((this.get(ENTITY) instanceof Wegas.persistence.DialogueState ? this.get(ENTITY).get("text") : StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("onEnterEvent")).substring(0, 50)) || "")
+                        + "</div>");
                 this.get(CONTENT_BOX).append(this.sidNode);
             }
             if (this.get("x")) {
@@ -735,7 +744,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 });
             } else {
                 this.connection.setLabel({
-                    label: (this.get(ENTITY).get("triggerCondition") ? this.get(ENTITY).get("triggerCondition").get("content") + "<br />" + Transition.TOOLBOX : "&nbsp;" + Transition.TOOLBOX + "&nbsp;"),
+                    label: (this.get(ENTITY).get("triggerCondition") ? StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("triggerCondition")).substring(0, 50) : "<em>empty</em>") + Transition.TOOLBOX,
                     cssClass: "transition-label"
                 });
             }
