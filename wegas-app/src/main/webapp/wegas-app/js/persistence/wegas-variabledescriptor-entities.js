@@ -609,8 +609,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                 }, {
                                     type: "NewEntityButton",
                                     label: "State machine",
-                                    targetClass: "FSMDescriptor",
-                                    cssClass: "experimental"
+                                    targetClass: "FSMDescriptor"
                                 }, {
                                     type: "NewEntityButton",
                                     label: "Dialogue",

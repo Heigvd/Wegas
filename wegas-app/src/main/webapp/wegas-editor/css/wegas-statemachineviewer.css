@@ -85,8 +85,9 @@
 
 .transition-toolbox {
     display:none;
-    width: 40px;
-    height: 18px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
 }
 
 .yui3-wegas-state:hover .state-toolbox{
@@ -111,8 +112,8 @@
 }
 .state-delete{
     display:inline-block;
-    width: 49%;
-    height: 100%;
+    width: 18px;
+    height: 18px;
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -772px;
     background-repeat: no-repeat;
@@ -133,18 +134,18 @@
     height: 16px;
 }
 .transition-edit{
-/*    display:inline-block;
-    width: 49%;
-    height: 100%;
-    background:url(../../wegas-app/images/wegas-app-sprite.png);
-    background-position: 0px -943px;
-    background-repeat: no-repeat;
-    cursor: pointer;*/
+    /*    display:inline-block;
+        width: 49%;
+        height: 100%;
+        background:url(../../wegas-app/images/wegas-app-sprite.png);
+        background-position: 0px -943px;
+        background-repeat: no-repeat;
+        cursor: pointer;*/
 }
 .transition-delete {
     display:inline-block;
-    width: 49%;
-    height: 100%;
+    width: 18px;
+    height: 18px;
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -772px;
     background-repeat: no-repeat;
@@ -220,7 +221,6 @@
     opacity: 0.9;
     cursor:pointer;
     max-width: 120px;
-    /*max-height: 30px;*/
 }
 .transition-label:hover{
     z-index:8;
