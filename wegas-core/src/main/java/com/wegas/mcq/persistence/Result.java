@@ -17,8 +17,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.map.annotate.JsonView;
-import org.eclipse.persistence.annotations.BatchFetch;
-import org.eclipse.persistence.annotations.BatchFetchType;
 
 /**
  *
@@ -82,7 +80,7 @@ public class Result extends AbstractEntity {
     /**
      * This field is here so deletion will be propagated to replies.
      */
-    @OneToMany(mappedBy = "result")
+    @OneToMany(mappedBy = "result", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @XmlTransient
     private List<Reply> replies;
 
