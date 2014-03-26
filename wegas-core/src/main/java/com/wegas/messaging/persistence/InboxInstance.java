@@ -38,7 +38,7 @@ public class InboxInstance extends VariableInstance {
      */
     @JsonView(Views.ExtendedI.class)
     @OneToMany(mappedBy = "inboxInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @OrderBy("sentTime, id")
+    @OrderBy("sentTime DESC, id")
     @JsonManagedReference("inbox-message")
     private List<Message> messages = new ArrayList<>();
 
