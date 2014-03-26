@@ -270,8 +270,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: null,
                 _inputex: {
                     _type: SCRIPT,
-                    label: 'Impact',
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    label: 'Impact'
                 }
             },
             nextStateId: {
