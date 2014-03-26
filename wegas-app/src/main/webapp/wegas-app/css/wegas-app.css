@@ -135,8 +135,10 @@ body h6{
 }
 
 /** Page loader styles */
-.wegas-playerview .wegas-pageloader  .wegas-pageloader {
+.wegas-playerview .wegas-pageloader {
     overflow: auto;
+    min-height: 50px;
+    min-width: 50px;
 }
 .wegas-playerview > .wegas-pageloader-content > div {
     margin-left: auto;
