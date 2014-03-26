@@ -221,6 +221,7 @@
     opacity: 0.9;
     cursor:pointer;
     max-width: 120px;
+    word-wrap: break-word;
 }
 .transition-label:hover{
     z-index:8;

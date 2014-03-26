@@ -382,8 +382,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }
         },
         FORMATSCRIPT: function(script) {
-            if (script) {
+            if (script.get) {
                 return script.get("content") || "";
+            } else if (Y.Lang.isObject(script)) {
+                return script.content || "";
             } else {
                 return "";
             }
@@ -551,8 +553,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(ENTITY).setAttrs({
                 onEnterEvent: e.get("onEnterEvent"), // Only change onEnterEvent,
                 text: e.get("text")
+                        //   text:  (e instanceof Wegas.persistence.DialogueState ? e.get("text") : StateMachineViewer.FORMATSCRIPT(e.get("onEnterEvent")).substring(0, 50)) || "")
             });
+
             this.sidNode.setHTML("<div>" + (this.get(ENTITY).get("text") || "") + "</div>");
+            this.sidNode.setHTML((e instanceof Wegas.persistence.DialogueState ? e.get("text") : StateMachineViewer.FORMATSCRIPT(e.get("onEnterEvent")).substring(0, 50)) || "");
             Y.Plugin.EditEntityAction.hideEditFormOverlay();
             this.get(PARENT).save();
         },
