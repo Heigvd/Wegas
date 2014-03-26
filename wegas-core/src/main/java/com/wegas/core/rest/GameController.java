@@ -293,6 +293,24 @@ public class GameController {
 
     /**
      *
+     * @param gameId
+     * @return
+     */
+    @POST
+    @Path("{gameId : .*}/CreateTeam")
+    public Team createTeam(@PathParam("gameId") Long gameId) {
+
+        SecurityHelper.checkAnyPermission(gameFacade.find(gameId), Arrays.asList("View", "Token"));
+
+        Team t = new Team();
+        this.teamFacade.create(gameId, t);
+        //Game g = this.teamFacade.joinTeam(t.getId(), userFacade.getCurrentUser().getId()).getGame();
+
+        return t;
+    }
+
+    /**
+     *
      * @param entityId
      * @return
      */
