@@ -102,6 +102,7 @@
 }
 .editor-preview .wegas-pageloader-content .highlighted{
     position: relative;
+    overflow:hidden;
     -moz-box-shadow: 0px 0px 3px blue !important;
     -webkit-box-shadow: 0px 0px 3px blue !important;
     box-shadow: 0px 0px 3px blue, 0px 0px 3px blue inset!important;
