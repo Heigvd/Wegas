@@ -158,12 +158,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 Container: this.get(CONTENT_BOX).one(".sm-zoom"),
                 Anchor: "Continuous",
                 Endpoint: ["Dot", {
-                        radius: 2
+                        radius: 1
                     }],
                 Connector: ["Flowchart", {
+                        cornerRadius: 5,
                         stub: [40, 40],
                         gap: 10
                     }],
+                    
                 //                Connector: ["StateMachine", {
                 //                        curviness: 60,
                 //                        proximityLimit: 100
@@ -175,7 +177,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                             foldback: 1
                         }]],
                 PaintStyle: {
-                    lineWidth: 3,
+                    lineWidth: 2,
                     strokeStyle: "#777",
                     outlineColor: "white",
                     outlineWidth: 3
@@ -286,7 +288,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
                             }, this)
-                };
+                        };
                 if (entity) {
                     //                    this.showOverlay();
                     //                    if (this._saveOngoing) {
@@ -778,8 +780,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     cssClass: "transition-label"
                 });
             } else {
+                var cond = StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("triggerCondition")).substring(0, 50);
                 this.connection.setLabel({
-                    label: (this.get(ENTITY).get("triggerCondition") ? StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("triggerCondition")).substring(0, 50) : "<em>empty</em>"),
+                    label: cond || "<em>empty</empty>",
                     cssClass: "transition-label"
                 });
             }

@@ -92,9 +92,9 @@
     border-radius: 10px;
     border: 2px solid grey;
 }
-.transition-start:hover{
+/*.transition-start:hover{
     background-color: #B8B8B8;
-}
+}*/
 .yui3-wegas-state-text:focus + .transition-start{
     display:none;
 }
@@ -195,15 +195,17 @@
     border-radius: 4px;
 }
 .transition-toolbox {
-    /*display: none;*/
     z-index:8;
     height: 18px;
 }
 .transition-toolbox * {
     display: none;
 }
-.transition-label:hover{
+.transition-label:hover,
+.transition-label._jsPlumb_hover{
     z-index:8;
+    background: #f4f4f4;
+    opacity: 1;
 }
 .transition-toolbox._jsPlumb_hover * {
     display:block;    
