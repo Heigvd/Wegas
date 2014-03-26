@@ -13,46 +13,41 @@
     -webkit-transform-origin: 0% 0%;
     -ms-transform-origin: 0% 0%;
 }
-
 .wegas-statemachineviewer{
     height: 100%;
     width: 100%;
 }
-
 .scrollable{
     cursor: url(../../wegas-editor/images/openhand.png), hand;
     height: 100%;
     width: 100%;
 }
-
 .scrollable.mousedown:hover {
     cursor: url(../../wegas-editor/images/closedhand.png), hand;
 }
-
-.yui3-wegas-state{
+.yui3-wegas-state {
     position:absolute;
     display:inline-block;
     width:70px;
     height:50px;
-    border:4px solid;
+    border:2px solid;
     border-radius: 20px;
     padding: 10px;
     /*box-shadow: 2px 3px 5px #6D6D6D;*/
     z-index: 5;
-    background-color:rgba(255,255,255,0.9);
+    background-color:rgba(240,240,240,0.9);
     cursor: move;
+    font-size: 0.8em;
 }
-
 .sm-state{
     border-color: #072644;
 }
-
 .sm-dialoguestate{
     border-color: #4372C4;
 }
-
 .yui3-wegas-state:hover, .jsPlumb_dragged{
     z-index:7;
+    box-shadow: 2px 3px 2px #6D6D6D;
 }
 .yui3-wegas-state-text,
 .yui3-wegas-script-script{
@@ -83,15 +78,8 @@
     border-radius: 10px;
 }
 
-.transition-toolbox {
-    display:none;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-
 .yui3-wegas-state:hover .state-toolbox{
-    display:inline-block;
+    display:block;
 }
 .transition-start{
     cursor: default;
@@ -104,9 +92,9 @@
     border-radius: 10px;
     border: 2px solid grey;
 }
-.transition-start:hover{
+/*.transition-start:hover{
     background-color: #B8B8B8;
-}
+}*/
 .yui3-wegas-state-text:focus + .transition-start{
     display:none;
 }
@@ -133,24 +121,7 @@
     width: 16px;
     height: 16px;
 }
-.transition-edit{
-    /*    display:inline-block;
-        width: 49%;
-        height: 100%;
-        background:url(../../wegas-app/images/wegas-app-sprite.png);
-        background-position: 0px -943px;
-        background-repeat: no-repeat;
-        cursor: pointer;*/
-}
-.transition-delete {
-    display:inline-block;
-    width: 18px;
-    height: 18px;
-    background:url(../../wegas-app/images/wegas-app-sprite.png);
-    background-position: 0px -772px;
-    background-repeat: no-repeat;
-    cursor: pointer;
-}
+
 .droppable-state{
     box-shadow: 0px 0px 8px #072644;
 }
@@ -162,11 +133,10 @@
     display:none;
     border:1px solid orangered;
 }
-
-.initial-state{
+.initial-state {
     /*border-color:black;*/
     border-style:double;
-    border-width:8px;
+    border-width:5px;
 }
 .wegas-statemachineviewer-content .currentState{
     background-color:rgba(255, 170, 0, 0.7);
@@ -217,18 +187,48 @@
     padding:3px;
     z-index:2;
     border: 1px solid lightgray;
-    box-shadow: 2px 3px 5px #6D6D6D;
     opacity: 0.9;
     cursor:pointer;
     max-width: 120px;
     word-wrap: break-word;
+    font-size: 0.8em;
+    border-radius: 4px;
 }
-.transition-label:hover{
+.transition-toolbox {
     z-index:8;
+    height: 18px;
 }
-/*.transition-label:hover .transition-toolbox{
-    display:inline-block;
-}*/
+.transition-toolbox * {
+    display: none;
+}
+.transition-label:hover,
+.transition-label._jsPlumb_hover{
+    z-index:8;
+    background: #f4f4f4;
+    opacity: 1;
+}
+.transition-toolbox._jsPlumb_hover * {
+    display:block;    
+}
+.transition-edit{
+    /*    display:inline-block;
+        width: 49%;
+        height: 100%;
+        background:url(../../wegas-app/images/wegas-app-sprite.png);
+        background-position: 0px -943px;
+        background-repeat: no-repeat;
+        cursor: pointer;*/
+}
+.transition-delete {
+    border-radius: 10px; 
+    width: 18px;
+    height: 19px;
+    background: white url(../../wegas-app/images/wegas-app-sprite.png);
+    background-position: 0px -772px;
+    background-repeat: no-repeat;
+    cursor: pointer;
+}
+
 .yui3-wegas-statemachineviewer-content .yui3-dd-dragging > *{
     display:none;
 }
