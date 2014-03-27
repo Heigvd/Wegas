@@ -61,7 +61,7 @@ public class LibraryFacade implements Serializable {
     public String getLibraryContent(Long gameModelId, String name) {
         StringBuilder ret = new StringBuilder();
         for (GameModelContent c : this.findLibrary(gameModelId, name).values()) {
-            ret.append(c.getContent().replaceAll("\\.\\./", null));
+            ret.append(c.getContent().replaceAll("\\.\\./", ""));
             //ret.append(c.getContent());
         }
         return ret.toString();
