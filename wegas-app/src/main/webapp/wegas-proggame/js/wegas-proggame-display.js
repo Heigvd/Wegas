@@ -13,7 +13,13 @@
 /*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
-    var ProgGameDisplay, GRIDSIZE = 32;
+    var ProgGameDisplay, GRIDSIZE = 32,
+        speedToFrame = function(speed, x, y, toX, toY) {
+            var dist;
+            speed = (speed > 0) ? speed : 1;
+            dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
+            return Math.round(((dist / GRIDSIZE) * (1000 / speed))) || 1;
+        };
 
     /**
      * Level display, should handle canvas, for now renders the level as a
@@ -115,7 +121,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
             switch (command.type) {
                 case "resetLevel":
-                    for (i = 0; i < command.objects.length; i++) {
+                    for (i = 0; i < command.objects.length; i += 1) {
                         object = command.objects[i];
                         pos = this.getRealXYPos([object.x, object.y]);
                         entity = this.getEntity(object.id);
@@ -250,12 +256,6 @@ YUI.add('wegas-proggame-display', function(Y) {
     /*
      * Crafty Components
      */
-    var speedToFrame = function(speed, x, y, toX, toY) {
-        var dist;
-        speed = (speed > 0) ? speed : 1;
-        dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
-        return Math.round(((dist / GRIDSIZE) * (1000 / speed))) || 1;
-    };
     Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim2.png', {
         HumanSprite: [0, 0],
         TrapSprite: [0, 9],
@@ -279,7 +279,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c('move4Direction', { //requires Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
         init: function() {
             this.requires("Tween");
-            this.bind('TweenEnd', function(e) {
+            this.bind('TweenEnd', function() {
                 this.pauseAnimation().resetAnimation();
                 Crafty.trigger('moveEnded');
                 Crafty.trigger('commandExecuted');
@@ -366,7 +366,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 .onHit("Collide", function() {
                     this.h -= 1;
                     this.y += 1;
-                }).bind("TweenEnd", function(e) {
+                }).bind("TweenEnd", function() {
                     var col = this.hit("Character");
                     if (col) {
                         if (this._currentReelId === "moveRight") {
@@ -402,7 +402,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 .text(text.toUpperCase())
                 .attr({
                     z: 401,
-                    visible: false,
+                    visible: false
                 })
                 .css({
                     "background-color": "rgb(50, 50, 40)",
@@ -421,7 +421,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }),
                 POS = [this._x, this._y],
                 connector = Crafty.e("2D, DOM").css({
-                    background: "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
+                    background: "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (-32 + "px")),
                     width: "32px",
                     height: "32px",
                     visibility: "hidden"
@@ -430,7 +430,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     visible: false
                 });
 
-            textE.bind("Draw", function(e) {
+            textE.bind("Draw", function() {
                 this.unbind("Draw");
                 this.css({
                     "width": "initial",
@@ -524,7 +524,9 @@ YUI.add('wegas-proggame-display', function(Y) {
             }, frameTime);
         },
         initialize: function() {
-            this._roche && this._roche.destroy();
+            if (this._roche) {
+                this._roche.destroy();
+            }
             this.visible = false;
             this.removeComponent("Collide");
         },
@@ -539,7 +541,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             //            this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
             //            this.animate("closeDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 4);
             this.setter("open", function(v) {
-                var animEndFn = function(e) {
+                var animEndFn = function() {
                     if (this._currentReelId === "openDoor" || this._currentReelId === "closeDoor") {
                         Crafty.trigger('commandExecuted');
                     }
@@ -584,7 +586,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.reel("disableController", controllerSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
             this.reel("enableController", controllerSpeed, this.__coord[0] / this.__coord[2] + 3, this.__coord[1] / this.__coord[3], -4);
             this.setter("enabled", function(v) {
-                var animEndFn = function(e) {
+                var animEndFn = function() {
                     Crafty.trigger('commandExecuted');
                 };
                 if (v) {
@@ -632,19 +634,21 @@ YUI.add('wegas-proggame-display', function(Y) {
         init: function() {
             this.requires("2D");
             var attr = this.attr;
-            this.attr = function(args) {
-                if (arguments.length === 2 && Y.Object.hasKey(this._offset, arguments[0])) {
-                    return attr.apply(this, [arguments[0], arguments[1] += this._offset[arguments[0]]]);
-                } else {
-                    for (var i in this._offset) {
-                        if (arguments[0][i]) {
-                            arguments[0][i] += this._offset[i];
+            this.attr = function(key, val) {
+                var i;
+                if (arguments.length === 2 && Y.Object.hasKey(this._offset, key)) {
+                    return attr.apply(this, [key, val + this._offset[key]]);
+                }
+                for (i in this._offset) {
+                    if (this._offset.hasOwnProperty(i)) {
+                        if (key[i]) {
+                            key[i] += this._offset[i];
                         }
                     }
-                    return attr.apply(this, arguments);
                 }
+                return attr.apply(this, arguments);
 
-            }
+            };
             this._offset = {
                 x: 0,
                 y: 0
@@ -652,54 +656,58 @@ YUI.add('wegas-proggame-display', function(Y) {
         },
         _offset: null
 
-    })
-
-    // TintSprite Component
-    var tmp_canvas = document.createElement("canvas"),
-        COMPONENT = "TintSprite",
-        ctx = tmp_canvas.getContext("2d"),
-        draw;
-    draw = function() {
-        if (!this.__oldImg) {
-            this.__oldImg = this.img;
-        } else if (!this.__newColor) {
-            return;
-        }
-        this.__newColor = false;
-        tmp_canvas.width = this.__oldImg.width;
-        tmp_canvas.height = this.__oldImg.height;
-        ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
-        ctx.drawImage(this.__oldImg, 0, 0);
-        ctx.save();
-        ctx.globalCompositeOperation = "source-in";
-        ctx.fillStyle = this._color;
-        ctx.beginPath();
-        ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
-        ctx.closePath();
-        ctx.restore();
-        var img = document.createElement("img");
-        img.src = tmp_canvas.toDataURL();
-        this.img = img;
-    };
-    /**
-     * Component TintSprite
-     * Should be included before the actual sprite.
-     * Browser should support Canvas.
-     */
-    Crafty.c(COMPONENT, {
-        _color: Crafty.toRGB("FFFFFF"),
-        init: function() {
-            this.bind("Draw", draw).bind("RemoveComponent", function(e) {
-                if (e === COMPONENT) {
-                    this.unbind("Draw", draw);
-                }
-            });
-        },
-        tintSprite: function(color, opacity) {
-            this.__newColor = true;
-            this._color = Crafty.toRGB(color, opacity);
-            this.trigger("Change");
-            return this;
-        }
     });
+    /**
+     * TintSprite component.
+     * Should extract that function in an external file.
+     */
+    (function() {
+        var tmp_canvas = document.createElement("canvas"),
+            COMPONENT = "TintSprite",
+            ctx = tmp_canvas.getContext("2d"),
+            draw;
+        draw = function() {
+            if (!this.__oldImg) {
+                this.__oldImg = this.img;
+            } else if (!this.__newColor) {
+                return;
+            }
+            this.__newColor = false;
+            tmp_canvas.width = this.__oldImg.width;
+            tmp_canvas.height = this.__oldImg.height;
+            ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+            ctx.drawImage(this.__oldImg, 0, 0);
+            ctx.save();
+            ctx.globalCompositeOperation = "source-in";
+            ctx.fillStyle = this._color;
+            ctx.beginPath();
+            ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
+            ctx.closePath();
+            ctx.restore();
+            var img = document.createElement("img");
+            img.src = tmp_canvas.toDataURL();
+            this.img = img;
+        };
+        /**
+         * Component TintSprite
+         * Should be included before the actual sprite.
+         * Browser should support Canvas.
+         */
+        Crafty.c(COMPONENT, {
+            _color: Crafty.toRGB("FFFFFF"),
+            init: function() {
+                this.bind("Draw", draw).bind("RemoveComponent", function(e) {
+                    if (e === COMPONENT) {
+                        this.unbind("Draw", draw);
+                    }
+                });
+            },
+            tintSprite: function(color, opacity) {
+                this.__newColor = true;
+                this._color = Crafty.toRGB(color, opacity);
+                this.trigger("Change");
+                return this;
+            }
+        });
+    }());
 });
