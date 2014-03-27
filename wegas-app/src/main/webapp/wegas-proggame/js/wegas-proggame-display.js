@@ -29,6 +29,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.gridH = this.get('map').length;
                 this.gridW = this.get('map')[0].length;
             }
+            Crafty("*").destroy(); // @HACK: Destructor sometimes not called !
         },
         renderUI: function() {
             var i, j, cfg, pos, entity,
@@ -260,7 +261,8 @@ YUI.add('wegas-proggame-display', function(Y) {
         TrapSprite: [0, 9],
         DoorSprite: [0, 10],
         DoorSprite2: [0, 14],
-        DoorSprite3: [0, 16],
+        VerticalDoor: [0, 16],
+        HorizontalDoor: [0, 18],
         ControllerSprite: [0, 12]
     });
     Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
@@ -531,7 +533,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("Door", {
         init: function() {
             var doorSpeed = 500;
-            this.requires("Tile, DoorSprite3, SpriteAnimation");
+            this.requires("Tile, VerticalDoor, SpriteAnimation");
             this.reel("openDoor", doorSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 5);
             this.reel("closeDoor", doorSpeed, this.__coord[0] / this.__coord[2] + 4, this.__coord[1] / this.__coord[3], -5);
             //            this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
@@ -619,9 +621,39 @@ YUI.add('wegas-proggame-display', function(Y) {
     });
     Crafty.c("Panel", {
         init: function() {
-            this.requires("Tile, PanelSprite, Speaker");
+            this.requires("Tile, PanelSprite, Speaker, GridOffset");
+            this._offset = {
+                x: 6,
+                y: -22
+            };
+
         }
     });
+    Crafty.c("GridOffset", {
+        init: function() {
+            this.requires("2D");
+            var attr = this.attr;
+            this.attr = function(args) {
+                if (arguments.length === 2 && Y.Object.hasKey(this._offset, arguments[0])) {
+                    return attr.apply(this, [arguments[0], arguments[1] += this._offset[arguments[0]]]);
+                } else {
+                    for (var i in this._offset) {
+                        if (arguments[0][i]) {
+                            arguments[0][i] += this._offset[i];
+                        }
+                    }
+                    return attr.apply(this, arguments);
+                }
+
+            }
+            this._offset = {
+                x: 0,
+                y: 0
+            };
+        },
+        _offset: null
+
+    })
 
     // TintSprite Component
     var tmp_canvas = document.createElement("canvas"),
