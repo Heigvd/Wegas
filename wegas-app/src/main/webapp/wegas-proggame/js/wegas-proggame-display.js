@@ -579,25 +579,24 @@ YUI.add('wegas-proggame-display', function(Y) {
     });
     Crafty.c("Controller", {
         init: function() {
+            var controllerSpeed = 500;
             this.requires("Tile, ControllerSprite, SpriteAnimation");
-            this.animate("disableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 3);
-            this.animate("enableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 3);
+            this.reel("disableController", controllerSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
+            this.reel("enableController", controllerSpeed, this.__coord[0] / this.__coord[2] + 3, this.__coord[1] / this.__coord[3], -4);
             this.setter("enabled", function(v) {
                 var animEndFn = function(e) {
                     Crafty.trigger('commandExecuted');
                 };
                 if (v) {
                     if (!this._enabled) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("disableController", 10, 0);
+                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("disableController");
                     } else {
-                        //  this.reset();
                         Crafty.trigger('commandExecuted');
                     }
                 } else {
                     if (this._enabled) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("enableController", 10, 0);
+                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("enableController");
                     } else {
-                        //  this.reset();
                         Crafty.trigger('commandExecuted');
                     }
                 }
