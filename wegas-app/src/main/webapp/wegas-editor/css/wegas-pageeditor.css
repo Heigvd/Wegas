@@ -20,7 +20,10 @@
     -webkit-transition: padding-top 0.7s;
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content > .wegas-widget{
-    box-shadow: 0 0 5px black;
+    box-shadow: 1px 1px 0 darkgray, -1px -1px 0 darkgray;
+    /*    border: 1px gray dashed;
+        border-top:none;
+        border-bottom: none;*/
 }
 .wegas-pageeditor-designmode .wegas-pageloader-content{
     position: relative;
@@ -53,14 +56,21 @@
     position: relative;
     background-color: darkgray !important;
 }
+
+.wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader {
+    min-height: 80px;
+    box-shadow: 1px 1px 0px lightgray inset, -1px -1px 0px lightgray inset;
+}
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader:after{
-    content:"" url(../../wegas-editor/images/webpage.png) "Page sub zone, edit page by choosing it in the left tab"  no-repeat center darkgray !important ;
-    color: white;
+    content:"" url(../../wegas-editor/images/webpage.png) "Sub page zone, edit page by choosing it in the left tab"  no-repeat center darkgray !important ;
+    /*color: white;*/
     position: absolute;
-    background-color: darkgray;
+    background-color: rgba(240, 240, 240, 0.3);
     width:100%;
-    top:40%;
+    height:100%;
+    padding-top: 20px;
     text-align: center;
+    vertical-align: middle;
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader-content *{
     visibility: hidden !important;
@@ -93,20 +103,27 @@
 }
 .pageditor-shownoverlay{
     /*    background-color: rgba(0,0,0,0.1);*/
-    -moz-box-shadow: 0px 0px 1px #1C73FF, 0px 0px 1px #1C73FF inset!important;
-    -webkit-box-shadow: 0px 0px 1px #1C73FF, 0px 0px 1px #1C73FF inset!important;
-    box-shadow: 0px 0px 1px #1C73FF, 0px 0px 1px #1C73FF inset!important;
+    /*    -moz-box-shadow: 0px 0px 1px blue, 0px 0px 1px blue inset!important;
+        -webkit-box-shadow: 0px 0px 1px blue, 0px 0px 1px blue inset!important;
+        box-shadow: 0px 0px 1px blue, 0px 0px 1px blue inset!important;*/
+
+        box-shadow: 1px 1px 0px #1562AD inset, -1px -1px 0px #1562AD inset !important;
 }
 .wegas-page-editor .content-header{
     cursor: pointer;
 }
 .editor-preview .wegas-pageloader-content .highlighted{
     position: relative;
-    -moz-box-shadow: 0px 0px 3px blue !important;
-    -webkit-box-shadow: 0px 0px 3px blue !important;
-    box-shadow: 0px 0px 3px blue, 0px 0px 3px blue inset!important;
+    /*    -moz-box-shadow: 0px 0px 3px blue !important;
+        -webkit-box-shadow: 0px 0px 3px blue !important;
+        box-shadow: 0px 0px 1px blue, 0px 0px 1px blue inset!important;*/
+
+    box-shadow: 1px 1px 0px #1562AD inset, -1px -1px 0px #1562AD inset !important;
+    /*    box-shadow: 1px 1px 1px #072644, -1px -1px 1px #072644 !important;
+        box-shadow: 1px 1px 0px #072644, -1px -1px 0px #072644 !important;
+        box-shadow: 1px 1px 0px #072644, -1px -1px 0px #072644 !important;*/
 }
-.editor-preview .wegas-pageloader-content .highlighted:after{
+/*.editor-preview .wegas-pageloader-content .highlighted:after{
     position: absolute;
     top:0;
     left:0;
@@ -128,7 +145,7 @@
     overflow: hidden;
     padding: 4px 0px;
     display:none;
-}
+}*/
 .wegas-pageeditor-overlay-content > .wegas-editmenubutton,
 .wegas-pageeditor-overlay-content > .wegas-editmenubutton-icon{
     width: 20px;
@@ -158,17 +175,18 @@
 /*RESIZE*/
 .pageeditor-resizenode{
     position:absolute;
-    width:12px;
-    height:12px;
+    width:16px;
+    height:16px;
     cursor: nwse-resize;
 }
 .pageeditor-resizenode-icon{
-    background: url(../../wegas-editor/images/resize_node.png) no-repeat right bottom;
     position:absolute;
-    width: 12px;
-    height: 12px;
-    right: 0px;
-    bottom: 0px;
+    background: #1562AD;
+    right: -4px;
+    bottom: -4px;
+    width: 9px;
+    height: 9px;
+    border: 1px solid white;
 }
 
 /*special rules*/

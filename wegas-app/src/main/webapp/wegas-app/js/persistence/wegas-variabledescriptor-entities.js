@@ -578,7 +578,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "New",
+                label: "Add",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
