@@ -538,27 +538,36 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.requires("Tile, VerticalDoor, SpriteAnimation");
             this.reel("openDoor", doorSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 5);
             this.reel("closeDoor", doorSpeed, this.__coord[0] / this.__coord[2] + 4, this.__coord[1] / this.__coord[3], -5);
-            //            this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
-            //            this.animate("closeDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 4);
-            this.setter("open", function(v) {
-                var animEndFn = function() {
+
+            this.bind("AnimationEnd", function() {
+                if (this._initialized) {
                     if (this._currentReelId === "openDoor" || this._currentReelId === "closeDoor") {
                         Crafty.trigger('commandExecuted');
                     }
-                };
+                } else { // animation finished, assume initialization ended
+                    this._initialized = true;
+                }
+            });
+            this.setter("open", function(v) {
                 if (v) {
                     if (!this._open) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("openDoor", 1);
+                        this.animate("openDoor", 1);
                     } else {
-                        //  this.reset();
-                        Crafty.trigger('commandExecuted');
+                        if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 } else {
                     if (this._open) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("closeDoor", 1);
+                        this.animate("closeDoor", 1);
                     } else {
-                        //  this.reset();
-                        Crafty.trigger('commandExecuted');
+                        if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 }
                 this._open = v;
@@ -569,7 +578,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.open = state;
         },
         initialize: function(attrs) {
-            //   this.reset();
+            this._initialized = false;
             if (attrs) {
                 this.attr(attrs);
             } else {
@@ -585,21 +594,33 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.requires("Tile, ControllerSprite, SpriteAnimation");
             this.reel("disableController", controllerSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
             this.reel("enableController", controllerSpeed, this.__coord[0] / this.__coord[2] + 3, this.__coord[1] / this.__coord[3], -4);
-            this.setter("enabled", function(v) {
-                var animEndFn = function() {
+            this.bind("AnimationEnd", function() {
+                if (this._initialized) {
                     Crafty.trigger('commandExecuted');
-                };
+                } else { // animation finished, assume initialization ended
+                    this._initialized = true;
+                }
+            });
+            this.setter("enabled", function(v) {
                 if (v) {
                     if (!this._enabled) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("disableController");
+                        this.animate("disableController");
                     } else {
-                        Crafty.trigger('commandExecuted');
+                       if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 } else {
                     if (this._enabled) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("enableController");
+                        this.animate("enableController");
                     } else {
-                        Crafty.trigger('commandExecuted');
+                       if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 }
                 this._enabled = v;
@@ -610,7 +631,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.enabled = state;
         },
         initialize: function(attrs) {
-            // this.reset();
+            this._initialized = false;
             if (attrs) {
                 this.attr(attrs);
             } else {
