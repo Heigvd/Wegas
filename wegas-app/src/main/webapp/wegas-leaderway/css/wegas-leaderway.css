@@ -169,7 +169,7 @@
     background-image:url(../../wegas-leaderway/images/email.png);
 }
 
-.leaderway-menu .menu-email .unread-count{
+.leaderway-menu .menu-email .wegas-unreadcount{
     color:black;
     background-color: rgba(255, 255, 255, 0.5);
 }

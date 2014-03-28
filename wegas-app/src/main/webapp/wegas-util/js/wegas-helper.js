@@ -215,7 +215,7 @@ YUI.add('wegas-helper', function(Y) {
     }, {
         ATTRS: {
             duration: {
-                value: 0
+                value: 400
             }
         }
     });

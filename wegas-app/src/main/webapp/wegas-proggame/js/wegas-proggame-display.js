@@ -13,7 +13,13 @@
 /*global Crafty*/
 YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
-    var ProgGameDisplay, GRIDSIZE = 32;
+    var ProgGameDisplay, GRIDSIZE = 32,
+        speedToFrame = function(speed, x, y, toX, toY) {
+            var dist;
+            speed = (speed > 0) ? speed : 1;
+            dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
+            return Math.round(((dist / GRIDSIZE) * (1000 / speed))) || 1;
+        };
 
     /**
      * Level display, should handle canvas, for now renders the level as a
@@ -29,11 +35,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                 this.gridH = this.get('map').length;
                 this.gridW = this.get('map')[0].length;
             }
+            Crafty("*").destroy(); // @HACK: Destructor sometimes not called !
         },
         renderUI: function() {
             var i, j, cfg, pos, entity,
-                    objects = this.get('objects'),
-                    map = this.get('map');
+                objects = this.get('objects'),
+                map = this.get('map');
 
             Crafty.init(GRIDSIZE * this.gridW, GRIDSIZE * this.gridH);
             /* allow overflow, for text (say). Works only for DOM elements*/
@@ -47,7 +54,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
             //Crafty.background('rgb(0,0,0)');
 
-            for (i = 0; i < this.gridH; i += 1) {                               // Add map tiles
+            for (i = 0; i < this.gridH; i += 1) { // Add map tiles
                 for (j = 0; j < this.gridW; j += 1) {
                     cfg = map[i][j];
                     if (cfg) {
@@ -55,27 +62,33 @@ YUI.add('wegas-proggame-display', function(Y) {
                         //        .sprite(cfg.x, cfg.y)
                         //        .attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
                         if (cfg.y) {
-                            Crafty.e("PathTile").attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
+                            Crafty.e("PathTile").attr({
+                                x: GRIDSIZE * j,
+                                y: GRIDSIZE * i
+                            });
                         } else {
-                            Crafty.e("EmptyTile").attr({x: GRIDSIZE * j, y: GRIDSIZE * i});
+                            Crafty.e("EmptyTile").attr({
+                                x: GRIDSIZE * j,
+                                y: GRIDSIZE * i
+                            });
                         }
                     }
                 }
             }
             /*Apply filter*/
             //Crafty.e("2D," + this.renderMethod + ", Image").image(Y.Wegas.app.get("base") + '/wegas-proggame/images/filtre.png', "repeat").attr({w: Crafty.viewport.width, h: Crafty.viewport.height});
-            Y.Object.each(objects, function(cfg) {                              // Add map objects
-                pos = this.getRealXYPos([cfg.x, cfg.y]);                        // Place it on the map
-                entity = Crafty.e(cfg.components)                               // Instantiate an entity
-                        .attr(Y.mix({
+            Y.Object.each(objects, function(cfg) { // Add map objects
+                pos = this.getRealXYPos([cfg.x, cfg.y]); // Place it on the map
+                entity = Crafty.e(cfg.components) // Instantiate an entity
+                .attr(Y.mix({
                     x: pos[0],
                     y: pos[1]
                 }, cfg.attrs));
 
-                if (entity.execMove) {                                          // Allows to turn the player to the right direction
+                if (entity.execMove) { // Allows to turn the player to the right direction
                     entity.execMove(cfg.direction, pos[0], pos[1]);
                 }
-                this.entities[cfg.id] = entity;                                 // Save a reference so we can look up for instances
+                this.entities[cfg.id] = entity; // Save a reference so we can look up for instances
 
             }, this);
         },
@@ -83,13 +96,14 @@ YUI.add('wegas-proggame-display', function(Y) {
             Crafty.bind('commandExecuted', this.execFn);
         },
         destructor: function() {
-            var k, components = Crafty("*");
+            //   var k, components = Crafty("*");
             //Should work with Crafty("*").destroy() ....
-            for (k in components) {
-                if (components[k].destroy) {
-                    components[k].destroy();
-                }
-            }
+            //            for (k in components) {
+            //                if (components[k].destroy) {
+            //                    components[k].destroy();
+            //                }
+            //            }
+            Crafty("*").destroy();
             Crafty.unbind('commandExecuted', this.execFn);
         },
         execFn: function() {
@@ -107,7 +121,7 @@ YUI.add('wegas-proggame-display', function(Y) {
 
             switch (command.type) {
                 case "resetLevel":
-                    for (i = 0; i < command.objects.length; i++) {
+                    for (i = 0; i < command.objects.length; i += 1) {
                         object = command.objects[i];
                         pos = this.getRealXYPos([object.x, object.y]);
                         entity = this.getEntity(object.id);
@@ -223,17 +237,17 @@ YUI.add('wegas-proggame-display', function(Y) {
                 value: []
             }
         },
-        SPEED: {
-            MOVE: 3,
-            FIRE: 7,
-            TRAP: 6
+        SPEED: { // Tile per second unit
+            MOVE: 1,
+            FIRE: 5,
+            TRAP: 2
         },
         SPRITESHEETS: {
             TileSprite: {
                 width: 1,
                 height: 4
-                        //tileWidth: 32,
-                        //tileHeigth: 32
+                //tileWidth: 32,
+                //tileHeigth: 32
             }
         }
     });
@@ -242,47 +256,46 @@ YUI.add('wegas-proggame-display', function(Y) {
     /*
      * Crafty Components
      */
-    var speedToFrame = function(speed, x, y, toX, toY) {
-        var dist;
-        speed = (speed > 0) ? speed : 1;
-        dist = Math.sqrt(Crafty.math.squaredDistance(x, y, toX, toY));
-        return Math.round(((dist / GRIDSIZE) * (100 / speed))) || 1;
-    };
-    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
+    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim2.png', {
         HumanSprite: [0, 0],
-        TrapSprite: [0, 15],
+        TrapSprite: [0, 9],
         DoorSprite: [0, 10],
-        ControllerSprite: [0, 12],
-        PanelSprite: [0, 16]
+        DoorSprite2: [0, 14],
+        VerticalDoor: [0, 16],
+        HorizontalDoor: [0, 18],
+        ControllerSprite: [0, 12]
     });
     Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
         TileSprite: [0, 0]
     });
+    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panneau.png', {
+        PanelSprite: [0, 0]
+    });
+    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/roche111.png', {
+        Roche: [0, 0]
+    });
 
     //move function
-    Crafty.c('move4Direction', {//requires Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
-        tweenEnd: null,
+    Crafty.c('move4Direction', { //requires Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
         init: function() {
             this.requires("Tween");
-            this.tweenEnd = []; //Tween x and y. Thus, the tween end when this variable contain x and y.
-            this.bind('TweenEnd', function(e) {
-                this.tweenEnd.push(e);
-                if (this.tweenEnd.length === 2) {
-                    this.stop();
-                    this.tweenEnd.length = 0;
-                    Crafty.trigger('moveEnded');
-                    Crafty.trigger('commandExecuted');
-                }
+            this.bind('TweenEnd', function() {
+                this.pauseAnimation().resetAnimation();
+                Crafty.trigger('moveEnded');
+                Crafty.trigger('commandExecuted');
             }, this);
         },
         execMove: function(direction, toX, toY, speed) {
             var animDir = this.dir2anim[direction];
 
             if (!this.isPlaying(animDir)) {
-                this.stop();
-                this.animate(animDir, 4, -1);
+                this.pauseAnimation();
+                this.animate(animDir, -1);
             }
-            this.tween({x: toX, y: toY}, speedToFrame(speed, this._x, this._y, toX, toY));
+            this.tween({
+                x: toX,
+                y: toY
+            }, speedToFrame(speed, this._x, this._y, toX, toY));
         },
         dir2anim: {
             1: "moveUp",
@@ -334,25 +347,49 @@ YUI.add('wegas-proggame-display', function(Y) {
         },
         execDie: function() {
             this.isDying = true;
-            this.tween({alpha: 0}, 50);
+            this.tween({
+                alpha: 0
+            }, 50);
         }
     });
     Crafty.c("Character", {
         init: function() {
+            var moveSpeed = 500;
             this.requires("2D," + Crafty.refWidget.renderMethod + ", HumanSprite, SpriteAnimation, move4Direction, Speaker, Collision")
-                    .animate("moveUp", 0, 2, 7)
-                    .animate("moveRight", 0, 0, 7)
-                    .animate("moveDown", 0, 2, 7)
-                    .animate("moveLeft", 0, 1, 7)
-                    .animate("handsUp", 0, 6, 6)
-                    .onHit("Collide", function() {
-                this.h -= 1;
-                this.y += 1;
-            });
+                .reel("moveUp", moveSpeed, 0, 2, 7)
+                .reel("moveRight", moveSpeed, 0, 0, 7)
+                .reel("moveDown", moveSpeed, 0, 2, 7)
+                .reel("moveLeft", moveSpeed, 0, 1, 7)
+                .reel("handsUp", moveSpeed, 0, 6, 7)
+                .reel("gzRight", 3000, 0, 20, 7)
+                .reel("gzLeft", 3000, 0, 21, 7)
+                .onHit("Collide", function() {
+                    this.h -= 1;
+                    this.y += 1;
+                }).bind("TweenEnd", function() {
+                    var col = this.hit("Character");
+                    if (col) {
+                        if (this._currentReelId === "moveRight") {
+                            this.attr({
+                                x: this._x - 6
+                            }).animate("gzRight");
+                            col[0].obj.attr({
+                                x: col[0].obj._x + 6
+                            }).animate("gzLeft");
+                        } else { // All other moves. up/down/left
+                            this.attr({
+                                x: this._x + 6
+                            }).animate("gzLeft");
+                            col[0].obj.attr({
+                                x: col[0].obj._x - 6
+                            }).animate("gzRight");
+                        }
+                    }
+                });
         },
         shakeHands: function(times) {
             var POS = Y.clone(this.__coord);
-            this.stop().bind("AnimationEnd", function() {
+            this.pauseAnimation().bind("AnimationEnd", function() {
                 if (this._currentReelId === 'handsUp') {
                     this.sprite(POS[0] / POS[2], POS[1] / POS[3]);
                 }
@@ -362,38 +399,56 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("Speaker", {
         say: function(text, delay, think) {
             var textE = Crafty.e("2D, DOM, Text")
-                    .text(text.toUpperCase())
-                    .attr({z: 401, visible: false})
-                    .css({
-                "background-color": "rgb(50, 50, 40)",
-                border: "7px solid #FFFFFF",
-                "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                "font-family": "KG Ways to Say Goodbye, Verdana, Arial",
-                "line-height": "1.1em",
-                "font-size": "1.6em",
-                "max-width": "400px",
-                color: "white",
-                padding: "4px 4px 2px",
-                visibility: "hidden"
-            }), POS = [this._x, this._y],
-                    connector = Crafty.e("2D, DOM").css({
-                background: "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (+-32 + "px")),
-                width: "32px",
-                height: "32px",
-                visibility: "hidden"
-            }).attr({z: 402, visible: false});
+                .text(text.toUpperCase())
+                .attr({
+                    z: 401,
+                    visible: false
+                })
+                .css({
+                    "background-color": "rgb(50, 50, 40)",
+                    border: "7px solid #FFFFFF",
+                    "-moz-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-webkit-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-o-border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "border-image": "url(" + Y.Wegas.app.get('base') + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "font-family": "KG Ways to Say Goodbye, Verdana, Arial",
+                    "line-height": "1.1em",
+                    "font-size": "1.6em",
+                    "max-width": "400px",
+                    color: "white",
+                    padding: "4px 4px 2px",
+                    visibility: "hidden"
+                }),
+                POS = [this._x, this._y],
+                connector = Crafty.e("2D, DOM").css({
+                    background: "url(" + Y.Wegas.app.get('base') + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (-32 + "px")),
+                    width: "32px",
+                    height: "32px",
+                    visibility: "hidden"
+                }).attr({
+                    z: 402,
+                    visible: false
+                });
 
-            textE.bind("Draw", function(e) {
+            textE.bind("Draw", function() {
                 this.unbind("Draw");
+                this.css({
+                    "width": "initial",
+                    "height": "initial"
+                });
                 //Y.later(20, this, function() {
-                Y.later(400, this, function() {                             // Attach a little later so the font file has enough time to be loaded
+                Y.later(400, this, function() { // Attach a little later so the font file has enough time to be loaded
                     textE.attach(connector);
-                    this.attr({x: POS[0] - (this._element.offsetWidth / 2) + 14, y: POS[1] - this._element.offsetHeight - 32});
+                    this.attr({
+                        x: POS[0] - (this._element.offsetWidth / 2) + 14,
+                        y: POS[1] - this._element.offsetHeight - 32
+                    });
                     this._children[0].shift(this._element.offsetWidth / 2 - 16, this._element.offsetHeight - 7);
                     this.visible = true;
+                    this._children[0].css({
+                        "width": "32px",
+                        "height": "32px"
+                    });
                     this._children[0].visible = true;
                 });
 
@@ -417,7 +472,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("NPC", {
         init: function() {
             this.requires("TintSprite, Character")
-                    .tintSprite("D6D600", 1);
+                .tintSprite("D6D600", 1);
             //.animate("moveUp", 9, 0, 11)
             //.animate("moveRight", 9, 1, 11)
             //.animate("moveDown", 9, 2, 11)
@@ -442,14 +497,18 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("Trap", {
         init: function() {
             var x, y;
-            this.requires("2D," + Crafty.refWidget.renderMethod + ",Tile, TrapSprite, SpriteAnimation, Tween, Collision")
-                    .collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
+            this.requires("Tile, TrapSprite, SpriteAnimation, Tween, Collision")
+                .collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
             x = this.__coord[0] / this.__coord[2];
             y = this.__coord[1] / this.__coord[3];
             this.initialize();
-            this.animate("trap", 0, 9, 3);
+            this.reel("trap", 100, x, y, 5);
             this.bind("TweenEnd", function() {
-                this.stop().sprite(0, 15);
+                this.pauseAnimation().visible = false;
+                this._roche = Crafty.e("Tile, Roche, Collision").attr({
+                    x: this._x,
+                    y: this._y
+                });
                 Crafty.trigger('commandExecuted');
             });
         },
@@ -458,39 +517,57 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.move("n", 64);
             this.addComponent("Collide");
             this.visible = true;
-            this.animate("trap", 4, -1);
-            this.tween({x: this._x, y: this._y + 64}, frameTime);
+            this.animate("trap", -1);
+            this.tween({
+                x: this._x,
+                y: this._y + 64
+            }, frameTime);
         },
         initialize: function() {
-            this.reset();
+            if (this._roche) {
+                this._roche.destroy();
+            }
             this.visible = false;
             this.removeComponent("Collide");
-        }
+        },
+        _roche: null
     });
     Crafty.c("Door", {
         init: function() {
-            this.requires("Tile, DoorSprite, SpriteAnimation");
-            this.animate("openDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
-            this.animate("closeDoor", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 4);
-            this.setter("open", function(v) {
-                var animEndFn = function(e) {
+            var doorSpeed = 500;
+            this.requires("Tile, VerticalDoor, SpriteAnimation");
+            this.reel("openDoor", doorSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 5);
+            this.reel("closeDoor", doorSpeed, this.__coord[0] / this.__coord[2] + 4, this.__coord[1] / this.__coord[3], -5);
+
+            this.bind("AnimationEnd", function() {
+                if (this._initialized) {
                     if (this._currentReelId === "openDoor" || this._currentReelId === "closeDoor") {
                         Crafty.trigger('commandExecuted');
                     }
-                };
+                } else { // animation finished, assume initialization ended
+                    this._initialized = true;
+                }
+            });
+            this.setter("open", function(v) {
                 if (v) {
                     if (!this._open) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("openDoor", 10, 0);
+                        this.animate("openDoor", 1);
                     } else {
-                        this.reset();
-                        Crafty.trigger('commandExecuted');
+                        if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 } else {
                     if (this._open) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("closeDoor", 10, 0);
+                        this.animate("closeDoor", 1);
                     } else {
-                        this.reset();
-                        Crafty.trigger('commandExecuted');
+                        if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 }
                 this._open = v;
@@ -501,36 +578,49 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.open = state;
         },
         initialize: function(attrs) {
-            this.reset();
+            this._initialized = false;
             if (attrs) {
                 this.attr(attrs);
             } else {
-                this.attr({open: false});
+                this.attr({
+                    open: false
+                });
             }
         }
     });
     Crafty.c("Controller", {
         init: function() {
+            var controllerSpeed = 500;
             this.requires("Tile, ControllerSprite, SpriteAnimation");
-            this.animate("disableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 3);
-            this.animate("enableController", this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3] + 1, 3);
-            this.setter("enabled", function(v) {
-                var animEndFn = function(e) {
+            this.reel("disableController", controllerSpeed, this.__coord[0] / this.__coord[2], this.__coord[1] / this.__coord[3], 4);
+            this.reel("enableController", controllerSpeed, this.__coord[0] / this.__coord[2] + 3, this.__coord[1] / this.__coord[3], -4);
+            this.bind("AnimationEnd", function() {
+                if (this._initialized) {
                     Crafty.trigger('commandExecuted');
-                };
+                } else { // animation finished, assume initialization ended
+                    this._initialized = true;
+                }
+            });
+            this.setter("enabled", function(v) {
                 if (v) {
                     if (!this._enabled) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("disableController", 10, 0);
+                        this.animate("disableController");
                     } else {
-                        this.reset();
-                        Crafty.trigger('commandExecuted');
+                       if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 } else {
                     if (this._enabled) {
-                        this.unbind("AnimationEnd", animEndFn).bind("AnimationEnd", animEndFn).animate("enableController", 10, 0);
+                        this.animate("enableController");
                     } else {
-                        this.reset();
-                        Crafty.trigger('commandExecuted');
+                       if (this._initialized) {
+                            Crafty.trigger('commandExecuted');
+                        } else {
+                            this._initialized = true;
+                        }
                     }
                 }
                 this._enabled = v;
@@ -541,64 +631,104 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.enabled = state;
         },
         initialize: function(attrs) {
-            this.reset();
+            this._initialized = false;
             if (attrs) {
                 this.attr(attrs);
             } else {
-                this.attr({enabled: false});
+                this.attr({
+                    enabled: false
+                });
             }
         }
     });
     Crafty.c("Panel", {
         init: function() {
-            this.requires("Tile, PanelSprite, Speaker");
-        }
-    });
+            this.requires("Tile, PanelSprite, Speaker, GridOffset");
+            this._offset = {
+                x: 6,
+                y: -22
+            };
 
-    // TintSprite Component
-    var tmp_canvas = document.createElement("canvas"), COMPONENT = "TintSprite",
-            ctx = tmp_canvas.getContext("2d"), draw;
-    draw = function() {
-        if (!this.__oldImg) {
-            this.__oldImg = this.img;
-        } else if (!this.__newColor) {
-            return;
-        }
-        this.__newColor = false;
-        tmp_canvas.width = this.__oldImg.width;
-        tmp_canvas.height = this.__oldImg.height;
-        ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
-        ctx.drawImage(this.__oldImg, 0, 0);
-        ctx.save();
-        ctx.globalCompositeOperation = "source-in";
-        ctx.fillStyle = this._color;
-        ctx.beginPath();
-        ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
-        ctx.closePath();
-        ctx.restore();
-        var img = document.createElement("img");
-        img.src = tmp_canvas.toDataURL();
-        this.img = img;
-    };
-    /**
-     * Component TintSprite
-     * Should be included before the actual sprite.
-     * Browser should support Canvas.
-     */
-    Crafty.c(COMPONENT, {
-        _color: Crafty.toRGB("FFFFFF"),
-        init: function() {
-            this.bind("Draw", draw).bind("RemoveComponent", function(e) {
-                if (e === COMPONENT) {
-                    this.unbind("Draw", draw);
-                }
-            });
-        },
-        tintSprite: function(color, opacity) {
-            this.__newColor = true;
-            this._color = Crafty.toRGB(color, opacity);
-            this.trigger("Change");
-            return this;
         }
     });
+    Crafty.c("GridOffset", {
+        init: function() {
+            this.requires("2D");
+            var attr = this.attr;
+            this.attr = function(key, val) {
+                var i;
+                if (arguments.length === 2 && Y.Object.hasKey(this._offset, key)) {
+                    return attr.apply(this, [key, val + this._offset[key]]);
+                }
+                for (i in this._offset) {
+                    if (this._offset.hasOwnProperty(i)) {
+                        if (key[i]) {
+                            key[i] += this._offset[i];
+                        }
+                    }
+                }
+                return attr.apply(this, arguments);
+
+            };
+            this._offset = {
+                x: 0,
+                y: 0
+            };
+        },
+        _offset: null
+
+    });
+    /**
+     * TintSprite component.
+     * Should extract that function in an external file.
+     */
+    (function() {
+        var tmp_canvas = document.createElement("canvas"),
+            COMPONENT = "TintSprite",
+            ctx = tmp_canvas.getContext("2d"),
+            draw;
+        draw = function() {
+            if (!this.__oldImg) {
+                this.__oldImg = this.img;
+            } else if (!this.__newColor) {
+                return;
+            }
+            this.__newColor = false;
+            tmp_canvas.width = this.__oldImg.width;
+            tmp_canvas.height = this.__oldImg.height;
+            ctx.clearRect(0, 0, tmp_canvas.width, tmp_canvas.height);
+            ctx.drawImage(this.__oldImg, 0, 0);
+            ctx.save();
+            ctx.globalCompositeOperation = "source-in";
+            ctx.fillStyle = this._color;
+            ctx.beginPath();
+            ctx.fillRect(0, 0, this.__oldImg.width, this.__oldImg.height);
+            ctx.closePath();
+            ctx.restore();
+            var img = document.createElement("img");
+            img.src = tmp_canvas.toDataURL();
+            this.img = img;
+        };
+        /**
+         * Component TintSprite
+         * Should be included before the actual sprite.
+         * Browser should support Canvas.
+         */
+        Crafty.c(COMPONENT, {
+            _color: Crafty.toRGB("FFFFFF"),
+            init: function() {
+                this.bind("Draw", draw).bind("RemoveComponent", function(e) {
+                    if (e === COMPONENT) {
+                        this.unbind("Draw", draw);
+                    }
+                });
+            },
+            tintSprite: function(color, opacity) {
+                this.__newColor = true;
+                this._color = Crafty.toRGB(color, opacity);
+                this.trigger("Change");
+                return this;
+            }
+        });
+    }());
 });

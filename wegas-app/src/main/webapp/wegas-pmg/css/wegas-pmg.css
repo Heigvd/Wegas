@@ -229,11 +229,11 @@ h2{
     display:none;
 }
 
-.unread-count {
+.wegas-unreadcount {
     /*line-height:1em;*/
     position:relative;
 }
-.unread-count .value{
+.wegas-unreadcount .value{
     position:absolute;
     top:-29px;
     left:-3px;
@@ -241,6 +241,8 @@ h2{
     box-shadow: 1px 0px 1px white;
     font-size: 9pt;
     padding: 4px 9px 6px 6px;
+    color:white;
+    border-radius: 0;
     border-bottom-right-radius: 16px;
     background-image: none;
     /*    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
@@ -248,7 +250,6 @@ h2{
         background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
         background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
     */
-    color:white;
 }
 
 /*---------------------------questions and actions----------------------------*/
