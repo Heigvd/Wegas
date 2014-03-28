@@ -39,14 +39,14 @@ YUI.add('wegas-pusher-connector', function(Y) {
         },
         pusherInit: function(cfg) {
             if (!window.Pusher) {
-//                Y.later(100, this.pusherInit, this, cfg);
+                //Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
             Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
             document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
             this.pusher = new Pusher(cfg["applicationKey"]);
             this.pusher.connection.bind('error', function(err) {
-                if (err.data.code === 4004) {
+                if (err.data && err.data.code === 4004) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });

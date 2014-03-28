@@ -12,7 +12,7 @@
             <!-- In player mode, CSS library for current game model is included directly in the file header -->
             <style type="text/css">#{gameController.styleSheets}</style>
 
-            <!-- Dev tool: style sheet reference injected directly in the game model -->
+            <!-- Dev tool: stylesheets reference injected directly in the game model -->
             <ui:repeat rendered="#{gameController.currentGameModel.getProperty('cssUri') != null}"
                        var="o" value="#{gameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />

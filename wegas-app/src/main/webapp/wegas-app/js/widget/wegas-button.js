@@ -170,12 +170,12 @@ YUI.add("wegas-button", function(Y) {
          */
         syncUI: function() {
             var cb = this.get('host').get(CONTENTBOX),
-                    target = cb.one(".unread-count"),
+                    target = cb.one(".wegas-unreadcount"),
                     unreadCount = this.getUnreadCount();
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
-                cb.append('<span class="unread-count"></span>');
-                target = cb.one(".unread-count");
+                cb.append('<span class="wegas-unreadcount"></span>');
+                target = cb.one(".wegas-unreadcount");
             }
 
             if (unreadCount > 0) {                                              // Update the content

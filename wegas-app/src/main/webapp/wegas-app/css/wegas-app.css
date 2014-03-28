@@ -135,8 +135,10 @@ body h6{
 }
 
 /** Page loader styles */
-.wegas-playerview .wegas-pageloader  .wegas-pageloader {
+.wegas-playerview .wegas-pageloader {
     overflow: auto;
+    min-height: 50px;
+    min-width: 50px;
 }
 .wegas-playerview > .wegas-pageloader-content > div {
     margin-left: auto;
@@ -260,13 +262,19 @@ font {
     padding-bottom:2px;
 }
 /* Unread count plugin */
-.unread-count .value{
-    background-image: url(../../wegas-app/images/unread-count.png);
-    background-position: center;
-    background-repeat: no-repeat;
+.wegas-unreadcount .value {
     color:white;
-    padding:7px;
     margin-left:2px;
+    background-color: #0981A9;
+    box-shadow: 1px 0px 1px white;
+    font-family: Arial;    
+    font-size: 0.9em;
+    padding: 3px 7px 3px 6px;
+    border-radius: 16px;
+    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
+    background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
 }
 
 /* Tinymce styles*/

@@ -103,7 +103,9 @@ YUI.add("wegas-loginbutton", function(Y) {
                     name = cPlayer.get("name");
                 }
             }
-            this.set("label", name);
+            if (!this.get("label")) {
+                this.set("label", name);
+            }
         },
         destructor: function() {
             for (var k in this.handlers) {

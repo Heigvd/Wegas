@@ -234,9 +234,7 @@ YUI().use(function(Y) {
                     lang: ["fr"]
                 },
                 /** Plugins **/
-                'wegas-plugin': {
-                    path: 'js/plugin/wegas-plugin-min.js'
-                },
+                'wegas-plugin': {},
                 'wegas-userpreferences': {
                     path: 'js/plugin/wegas-userpreferences-min.js',
                     requires: ["wegas-form", "wegas-plugin"],
@@ -254,8 +252,8 @@ YUI().use(function(Y) {
                 'wegas-template': {
                     path: "js/widget/wegas-template-min.js",
                     requires: ["template-micro", "wegas-templatecss"],
-                    ws_provides: ["Template", "ValueboxTemplate", "BoxTemplate", 
-                        "NumberTemplate", "TitleTemplate", "FractionTemplate", "TextTemplate"]    
+                    ws_provides: ["Template", "ValueboxTemplate", "BoxTemplate",
+                        "NumberTemplate", "TitleTemplate", "FractionTemplate", "TextTemplate"]
                 },
                 'wegas-treeview': {
                     path: 'js/widget/wegas-treeview-min.js',
@@ -787,9 +785,10 @@ YUI().use(function(Y) {
             modules: {
                 /** Prog game **/
                 'wegas-proggame-level': {
-                    requires: ['tabview', "treeview",
+                    requires: ['tabview', "treeview", 'event-key',
                         'wegas-tabview', 'wegas-widget', 'wegas-inputex-ace',
-                        'wegas-proggame-display', 'wegas-proggame-jsinstrument', 'event-key'],
+                        "wegas-proggame-scriptfiles", "wegas-treeview",
+                        'wegas-proggame-display', 'wegas-proggame-jsinstrument'],
                     ws_provides: 'ProgGameLevel'
                 },
                 'wegas-proggame-display': {
@@ -800,14 +799,8 @@ YUI().use(function(Y) {
                     requires: ['wegas-inputex', "inputex-list"],
                     ix_provides: ['proggametile', "proggamemap"]
                 },
-                'wegas-proggame-objective': {
-                    ws_provides: "Objective"
-                },
                 'wegas-proggame-jsinstrument': {
                     requires: ["esprima", "escodegen"]
-                },
-                'wegas-popup': {
-                    ws_provides: "Popup"
                 },
                 'wegas-proggame-scriptfiles': {
                     requires: "wegas-panel",
@@ -1008,7 +1001,7 @@ YUI().use(function(Y) {
                     path: 'excanvas/excanvas.compiled.js'
                 },
                 crafty: {
-                    path: 'crafty/0.5.3/crafty-min.js'
+                    path: 'crafty/0.6.2/crafty-min.js'
                 },
                 ace: {
                     async: false,

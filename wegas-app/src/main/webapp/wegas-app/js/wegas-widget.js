@@ -422,6 +422,10 @@ YUI.add("wegas-widget", function(Y) {
                                                 data: "OpenPageAction"
                                             }, {
                                                 type: BUTTON,
+                                                label: "Open url",
+                                                data: "OpenUrlAction"
+                                            }, {
+                                                type: BUTTON,
                                                 label: "Impact variables",
                                                 data: "ExecuteScriptAction"
                                             }]
