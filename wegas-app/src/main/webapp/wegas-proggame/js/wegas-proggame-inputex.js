@@ -68,7 +68,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             }, ".inputex-proggametile", this);
             node.delegate("mouseup", function() {
                 this._paint = {start: false};
-            }, ".inputex-proggametile", this)
+            }, ".inputex-proggametile", this);
         },
         onAddButton: function(e) {
             e.halt();

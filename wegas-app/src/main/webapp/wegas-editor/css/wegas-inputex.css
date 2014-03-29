@@ -186,11 +186,21 @@ div.inputEx-description {
     left: -22px;
 }
 /* Original inputex listfield styles */
+.inputEx-ListField-childContainer > div {
+    position: relative;
+}
+.inputEx-ListField-Arrow,
 img.inputEx-ListField-delButton {
-    margin-left: -20px;
-    margin-top: 2px;
-    position: absolute; /* to allow click events */
+    position: absolute;
     z-index: 5;
+    top: 4px;
+    left: -20px;
+}
+.inputEx-ListField-ArrowUp {
+    left: -50px;
+}
+.inputEx-ListField-ArrowDown {
+    left: -37px;
 }
 
 /* List field style */
