@@ -405,8 +405,8 @@ html, .editor-preview {
     outline-color: transparent;
 }
 /* Ace styles */
-.inputEx-Field .ace_editor {
-    height: 170px;
+.wegas-proggame-level-content .inputEx-Field .ace_editor {
+    height: 170px !important;
 }
 .ace_gutter-cell.ace_breakpoint {
     /*border-radius: 20px 0px 0px 20px;*/
@@ -423,25 +423,6 @@ html, .editor-preview {
     background: green;
     position: absolute;
     z-index: 2;
-}
-
-/* Editor: Inputex map field */
-.wegas-inputex-proggamemap .inputEx-List-link {
-    display:none;
-}
-.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer {
-    height: 32px;
-}
-.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer >div {
-    display: inline-block;
-}
-.add-col ,.add-row{
-    cursor:pointer;
-}
-.add-col img {
-    background: transparent url(../../lib/inputex/src/inputex-list/assets/skins/sam/add.png) no-repeat scroll 0%;
-    width: 16px;
-    height: 16px;
 }
 
 /* Level: Popup overlay stayles */
@@ -462,10 +443,31 @@ html, .editor-preview {
 }
 .proggame-panel button {
     margin-top: 30px;
-    font-weight: 1.2em:
 }
 .yui3-skin-sam .yui3-widget-mask {
     background: transparent;
+}
+
+/* Editor: Inputex map field */
+.wegas-inputex-proggamemap .inputEx-List-link {
+    display:none;
+}
+.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer {
+    height: 32px;
+}
+.wegas-inputex-proggamemap .inputEx-ListField-childContainer .inputEx-ListField-childContainer >div {
+    display: inline-block;
+}
+.wegas-inputex-proggamemap .inputEx-ListField {
+    padding: 0;
+}
+.add-col ,.add-row{
+    cursor:pointer;
+}
+.add-col img {
+    background: transparent url(../../lib/inputex/src/inputex-list/assets/skins/sam/add.png) no-repeat scroll 0%;
+    width: 16px;
+    height: 16px;
 }
 
 /* Editor: Inputex tile field */

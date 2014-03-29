@@ -32,7 +32,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
 
             this.options.language = options.language || "javascript";
             this.options.theme = options.theme || "textmate";
-            this.options.height = options.height || "150px";
+            this.options.height = options.height || "75px";
         },
         disable: function() {
             this.editor.setReadOnly(true);
@@ -48,6 +48,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
                 this.el = Y.Node.create('<div>' + (this.options.value || "") + '</div>');//@fixme
                 this.fieldContainer.appendChild(this.el.getDOMNode());
 
+                this.el.setStyle("height", this.options.height);
                 this.editor = ace.edit(this.el.getDOMNode());
                 this.editor.setTheme("ace/theme/" + this.options.theme);
                 this.editor.setShowPrintMargin(false);

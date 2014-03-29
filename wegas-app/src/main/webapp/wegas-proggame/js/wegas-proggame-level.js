@@ -467,16 +467,16 @@ YUI.add('wegas-proggame-level', function(Y) {
                         label: "Log"
                     }, {
                         label: "Watches",
-//                        plugins: [{
-//                                fn: "ConditionalDisable",
-//                                cfg: {
-//                                    condition: {
-//                                        "@class": "Script",
-//                                        content: "VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"watches\") != \"true\"",
-//                                        language: "JavaScript"
-//                                    }
-//                                }
-//                            }]
+                        plugins: [{
+                                fn: "ConditionalDisable",
+                                cfg: {
+                                    condition: {
+                                        "@class": "Script",
+                                        content: "VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"watches\") != \"true\"",
+                                        language: "JavaScript"
+                                    }
+                                }
+                            }]
                     }],
                 render: cb.one(".proggame-debugger")
             });
@@ -523,16 +523,16 @@ YUI.add('wegas-proggame-level', function(Y) {
                                     name: "files"
                                 }
                             }],
-//                        plugins: [{
-//                                fn: "ConditionalDisable",
-//                                cfg: {
-//                                    condition: {
-//                                        "@class": "Script",
-//                                        content: "VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"filelibrary\") != \"true\"",
-//                                        language: "JavaScript"
-//                                    }
-//                                }
-//                            }]
+                        plugins: [{
+                                fn: "ConditionalDisable",
+                                cfg: {
+                                    condition: {
+                                        "@class": "Script",
+                                        content: "VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"filelibrary\") != \"true\"",
+                                        language: "JavaScript"
+                                    }
+                                }
+                            }]
                     }],
                 render: cb.one(".proggame-lefttab")
             });
@@ -560,10 +560,11 @@ YUI.add('wegas-proggame-level', function(Y) {
             apiTreeView.treeView.add(Y.Object.values(packages));
 
             apiTreeView.on("treeleaf:click", function(e) { // When api is clicked
-                this.editorTabView.get("selection").aceField.editor.insert(e.target.get("label") + ";\n");
+                var toInsert = e.target.get("label").replace(/([^\(]*).*/gi, "$1");
+                this.editorTabView.get("selection").aceField.editor.insert(toInsert + "();\n");
                 e.halt(true);
-//                panel.exit();
-//                this.show();
+                //panel.exit();
+                //this.show();
             }, this);
             //this.updateDebugTreeview({});
 
@@ -694,6 +695,14 @@ YUI.add('wegas-proggame-level', function(Y) {
         }
     }, {
         ATTRS: {
+            intro: {
+                type: "string",
+                format: "html",
+                optional: true,
+                _inputex: {
+                    label: "Intro text"
+                }
+            },
             visible: {
                 value: false
             },
@@ -734,7 +743,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         label: "Active by default",
                                         type: BOOLEAN,
                                         value: true
-                                    }, {
                                     }, {
                                         name: "components",
                                         type: HIDDEN,
@@ -898,8 +906,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    useButtons: true,
-                    sortable: true
+                    useButtons: true
                 }
             },
             winningCondition: {
@@ -994,15 +1001,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 //},
                 _inputex: {
                     label: "Max turns",
-                    type: HIDDEN
-                }
-            },
-            intro: {
-                type: "string",
-                format: "html",
-                optional: true,
-                _inputex: {
-                    label: "Intro text"
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
             //arguments: {
