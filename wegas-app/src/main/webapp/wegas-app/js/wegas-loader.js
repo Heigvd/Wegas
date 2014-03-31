@@ -8,7 +8,7 @@
 /**
  * Wegas loader, contains module definitions.
  *
- * @fifleoverview
+ * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI().use(function(Y) {

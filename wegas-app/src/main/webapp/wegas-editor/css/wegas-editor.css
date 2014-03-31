@@ -268,12 +268,12 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 /* Join game/team styles */
 .wegas-gamedescription,
 .wegas-jointeam {
-    padding: 10px 10px 20px;
+    padding: 10px;
 }
 .wegas-jointeam .title,
 .wegas-gamedescription .title {
     font-weight: bolder;
-    border-bottom: 1px solid lightgray;
+    /*border-bottom: 1px solid lightgray;*/
     margin-bottom: 5px;
 }
 .wegas-join-token button,

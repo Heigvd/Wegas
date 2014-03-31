@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add('wegas-variabledescriptor-entities', function(Y) {
     "use strict";
 
@@ -523,6 +525,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
+        },
+        /**
+         *
+         * @param {type} i
+         * @returns {Y.Wegas.persistence.VariableDescriptor}
+         */
+        item: function(i) {
+            return this.get("items")[i];
         }
     }, {
         ATTRS: {
@@ -653,7 +663,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     });
-
 
     persistence.InboxDescriptor = Base.create("InboxDescriptor", persistence.VariableDescriptor, [], {
         isEmpty: function(player) {
