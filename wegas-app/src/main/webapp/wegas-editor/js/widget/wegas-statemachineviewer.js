@@ -165,7 +165,6 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                         stub: [40, 40],
                         gap: 10
                     }],
-                    
                 //                Connector: ["StateMachine", {
                 //                        curviness: 60,
                 //                        proximityLimit: 100
@@ -433,8 +432,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.menuNode = new Y.Node.create("<div></div>");
             bb.append(this.menuNode);
             if (this.get(SID)) {
-                this.sidNode = new Y.Node.create("<div style=\"word-wrap: break-word;height:100%;\">"
-                        + ((this.get(ENTITY) instanceof Wegas.persistence.DialogueState ? this.get(ENTITY).get("text") : StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("onEnterEvent")).substring(0, 50)) || "")
+                this.sidNode = new Y.Node.create("<div style=\"word-wrap:break-word;height:100%;\">"
+                        + ((this.get(ENTITY) instanceof Wegas.persistence.DialogueState ? this.get(ENTITY).get("text") : this.get(ENTITY).get("label")) || "<em>empty</em>")
+                        //+ ((this.get(ENTITY) instanceof Wegas.persistence.DialogueState ? this.get(ENTITY).get("text") : StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("onEnterEvent")).substring(0, 50)) || "")
                         + "</div>");
                 bb.append(this.sidNode);
             }
@@ -554,12 +554,13 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         setEntity: function(entity) {
             var e = Wegas.Editable.reviver(entity);
             this.get(ENTITY).setAttrs({
+                label: e.get("label"),
                 onEnterEvent: e.get("onEnterEvent"), // Only change onEnterEvent,
                 text: e.get("text")
-                        //   text:  (e instanceof Wegas.persistence.DialogueState ? e.get("text") : StateMachineViewer.FORMATSCRIPT(e.get("onEnterEvent")).substring(0, 50)) || "")
             });
 
-            this.sidNode.setHTML((e instanceof Wegas.persistence.DialogueState ? e.get("text") : StateMachineViewer.FORMATSCRIPT(e.get("onEnterEvent")).substring(0, 30)) || "");
+            this.sidNode.setHTML((e instanceof Wegas.persistence.DialogueState ? e.get("text") : e.get("label")) || "<em>empty</em>");
+            //this.sidNode.setHTML((e instanceof Wegas.persistence.DialogueState ? e.get("text") : StateMachineViewer.FORMATSCRIPT(e.get("onEnterEvent")).substring(0, 30)) || "");
             Y.Plugin.EditEntityAction.hideEditFormOverlay();
             this.get(PARENT).save();
         },

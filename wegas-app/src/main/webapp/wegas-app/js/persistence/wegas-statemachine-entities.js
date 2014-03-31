@@ -226,13 +226,18 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 value: "State"
             },
             label: {
-                value: null
+                type: STRING,
+                transient: false,
+                optional: true,
+                _inputex: {
+                    label: "Name"
+                }
             },
             onEnterEvent: {
-                value: null,
                 _inputex: {
                     _type: "script",
-                    label: "On enter impact"
+                    label: "On enter impact",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             transitions: {
