@@ -61,7 +61,7 @@ public class ScriptFacade implements Serializable {
      *
      */
     @Inject
-    private ScriptEvent event;
+    private ScriptEventFacade event;
     /**
      *
      */
@@ -75,17 +75,10 @@ public class ScriptFacade implements Serializable {
 
     /**
      *
-     */
-    //@PostConstruct
-    //public void onConstruct() {
-    //}
-    /**
-     *
      * Fires an engineInvocationEvent, which should be intercepted to customize
      * engine scope.
      *
-     * @param scripts A list of ScriptEntities to evaluate, all programming
-     * language should be the same
+     * @param script
      * @param arguments
      * @return
      * @throws ScriptException
@@ -95,18 +88,15 @@ public class ScriptFacade implements Serializable {
 
         ScriptEngine engine = requestManager.getCurrentEngine();
         if (engine == null) {
-            ScriptEngineManager mgr = new ScriptEngineManager();                    // Instantiate the corresponding script engine
+            ScriptEngineManager mgr = new ScriptEngineManager();                // Instantiate the corresponding script engine
 
             try {
                 engine = mgr.getEngineByName(script.getLanguage());
+                // Invocable invocableEngine = (Invocable) engine;
             } catch (NullPointerException ex) {
                 logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
                 throw new WegasException("Could not instantiate script engine for script" + script);
             }
-
-            // Invocable invocableEngine = (Invocable) engine;
-            engine.put("self", requestManager.getPlayer());                         // Inject current player
-            engine.put("gameModel", requestManager.getPlayer().getGameModel());     // Inject current gameModel
             try {
                 engineInvocationEvent.fire(
                         new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
@@ -116,9 +106,8 @@ public class ScriptFacade implements Serializable {
             }
             requestManager.setCurrentEngine(engine);
         }
-        // Invocable invocableEngine = (Invocable) engine;
 
-        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {    // Inject the arguments
+        for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
         }
 
@@ -132,6 +121,53 @@ public class ScriptFacade implements Serializable {
         }
     }
 
+    /**
+     * Default customization of our engine: inject the script library, the root
+     * variable instances and some libraries.
+     *
+     * @param evt
+     * @throws ScriptException
+     * @throws WegasException
+     */
+    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException {
+        evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
+        evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
+        evt.getEngine().put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
+        evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
+        evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
+        evt.getEngine().put("Event", event);                                    // Inject the Event manager
+        event.detachAll();
+
+        for (Entry<String, GameModelContent> arg
+                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+            try {
+                evt.getEngine().eval(arg.getValue().getContent());
+            } catch (ScriptException ex) {
+                logger.warn("Error injecting script library: {} in\n{}", ex.getMessage(), arg.getValue());
+                throw new ScriptException(ex.getMessage(), arg.getValue().getContent(), ex.getLineNumber());
+            }
+        }
+
+        for (VariableDescriptor vd
+                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
+            VariableInstance vi = vd.getInstance(evt.getPlayer());
+            try {
+                evt.getEngine().put(vd.getName(), vi);
+            } catch (IllegalArgumentException ex) {
+                //logger.error("Missing name for Variable label [" + vd.getLabel() + "]");
+            }
+        }
+    }
+
+    // *** Sugar *** //
+    /**
+     *
+     * @param scripts
+     * @param arguments
+     * @return
+     * @throws ScriptException
+     * @throws WegasException
+     */
     public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
         if (scripts.isEmpty()) {
             return null;
@@ -152,60 +188,6 @@ public class ScriptFacade implements Serializable {
         return this.eval(new Script(buf.toString()));
     }
 
-    /**
-     * Default customization of our engine: inject the script library, the root
-     * variable instances and some libraries.
-     *
-     * @param evt
-     * @throws ScriptException
-     * @throws WegasException
-     */
-    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException {
-        evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
-        evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
-        evt.getEngine().put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
-        evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
-        evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
-        evt.getEngine().put("Event", event);                                    // Inject the Event manager
-        event.detachAll();
-
-        List<String> errorVariable = new ArrayList<>();
-
-        for (Entry<String, GameModelContent> arg
-                : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
-            try {
-                evt.getEngine().eval(arg.getValue().getContent());
-            } catch (ScriptException ex) {
-                logger.warn("Error injecting script library: {} in\n{}", ex.getMessage(), arg.getValue());
-                throw new ScriptException(ex.getMessage(), arg.getValue().getContent(), ex.getLineNumber());
-            }
-        }
-
-        for (VariableDescriptor vd
-                : evt.getPlayer().getGameModel().getChildVariableDescriptors()) { // Inject the variable instances in the script
-            VariableInstance vi = vd.getInstance(evt.getPlayer());
-            try {
-                evt.getEngine().put(vd.getName(), vi);
-            } catch (IllegalArgumentException ex) {
-                errorVariable.add(vd.getLabel());
-
-            }
-        }
-        if (errorVariable.size() > 0) {
-            StringBuilder allVars = new StringBuilder();
-            Iterator<String> si = errorVariable.iterator();
-            while (si.hasNext()) {
-                allVars.append(si.next());
-                if (si.hasNext()) {
-                    allVars.append(",");
-                }
-            }
-            logger.error("Missing name for Variable label [" + allVars.toString() + "]");
-            //throw new WegasException("Missing name for Variable label [" + allVars.toString() + "]");
-        }
-    }
-
-    // *** Sugar *** //
     /**
      *
      * @param scripts

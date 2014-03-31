@@ -8,7 +8,7 @@
 package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.ScriptEvent;
+import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -60,7 +60,7 @@ public class StateMachineFacade implements Serializable {
     @Inject
     private RequestManager requestManager;
     @Inject
-    private ScriptEvent scriptEvent;
+    private ScriptEventFacade scriptEvent;
     /**
      * Manage internal event transition.
      */
@@ -246,7 +246,7 @@ public class StateMachineFacade implements Serializable {
             } else {
                 return; // define other language here
             }
-            if (param instanceof ScriptEvent.EmptyObject) {
+            if (param instanceof ScriptEventFacade.EmptyObject) {
                 ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
             } else {
                 ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
