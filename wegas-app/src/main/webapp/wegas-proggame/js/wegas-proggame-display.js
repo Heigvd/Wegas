@@ -256,23 +256,19 @@ YUI.add('wegas-proggame-display', function(Y) {
     /*
      * Crafty Components
      */
-    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim2.png', {
+    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-anim.png', {
         HumanSprite: [0, 0],
         TrapSprite: [0, 9],
         DoorSprite: [0, 10],
         DoorSprite2: [0, 14],
         VerticalDoor: [0, 16],
         HorizontalDoor: [0, 18],
-        ControllerSprite: [0, 12]
+        ControllerSprite: [0, 12],
+        PanelSprite: [5, 10],
+        StoneSprite: [6, 10]
     });
-    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-dalles.png', {
+    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/proggame-sprite-tiles.png', {
         TileSprite: [0, 0]
-    });
-    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/panneau.png', {
-        PanelSprite: [0, 0]
-    });
-    Crafty.sprite(32, 32, Y.Wegas.app.get("base") + '/wegas-proggame/images/roche111.png', {
-        Roche: [0, 0]
     });
 
     //move function
@@ -505,7 +501,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             this.reel("trap", 100, x, y, 5);
             this.bind("TweenEnd", function() {
                 this.pauseAnimation().visible = false;
-                this._roche = Crafty.e("Tile, Roche, Collision").attr({
+                this._roche = Crafty.e("Tile, StoneSprite, Collision").attr({
                     x: this._x,
                     y: this._y
                 });

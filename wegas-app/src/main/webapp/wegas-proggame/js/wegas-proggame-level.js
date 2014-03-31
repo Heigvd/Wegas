@@ -15,7 +15,6 @@ YUI.add('wegas-proggame-level', function(Y) {
             LABEL = "label",
             RUN_BUTTON_LABEL = "<span class='proggame-play'></span>",
             STOP_BUTTON_LABEL = "<span class='proggame-stop'></span>",
-            NEXT_BUTTON_LABEL = "<span class='proggame-next'></span>",
             DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
             SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
             Wegas = Y.Wegas,
@@ -122,10 +121,13 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
             this.set("state", "idle");                                          // Game is in idle state by default
 
-            this.showMessage("info", this.get("intro"));
-            this.get("contentBox").one(".proggame-help").on('click', function(e) {// When help button is clicked,
-                this.showMessage("info", this.get("intro"));                    // redisplay the popup
-            }, this);
+            if (this.get("intro") && !Y.one(".editor-preview")) {
+                this.hide();
+                this.showMessage("info", this.get("intro"));                    // Display introduction text
+                this.get(CONTENTBOX).one(".proggame-help").on('click', function() {// When help button is clicked,
+                    this.showMessage("info", this.get("intro"));                // redisplay the popup
+                }, this);
+            }
 
             this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
                 subpageId: 2,
@@ -149,7 +151,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.display.syncUI();                                              // Sync the canvas
             this.syncFrontUI();                                                 // Sync the on screen display
 
-            Wegas.Facade.VariableDescriptor.script.eval("VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"",
+            Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"",
                     Y.bind(function(result) {                                   //Check if breakpoint has been bought from the shop
                 this.disableBreakpoint = result;
             }, this));
@@ -375,7 +377,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: this.get("onWin") + ";VariableDescriptorFacade.find(gameModel, \"money\").add(self, 100);"
+                    data: this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);"
                 },
                 on: {
                     success: Y.bind(function() {
@@ -395,7 +397,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         addEditorTab: function(label, code, file) {
             var _file = file,
-                    saveTimer = new Y.Wegas.Timer(),
+                    saveTimer = new Wegas.Timer(),
                     tab = this.editorTabView.add({
                 label: label
             }).item(0),
@@ -421,7 +423,7 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             saveTimer.on("timeOut", function() {
                 _file.set("body", aceField.getValue());
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                Wegas.Facade.VariableDescriptor.sendRequest({
                     request: "/Inbox/Message/" + _file.get("id"),
                     cfg: {
                         updateCache: false,
@@ -472,7 +474,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 cfg: {
                                     condition: {
                                         "@class": "Script",
-                                        content: "VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"watches\") != \"true\"",
+                                        content: "Variable.find(gameModel, \"inventory\").getProperty(self, \"watches\") != \"true\"",
                                         language: "JavaScript"
                                     }
                                 }
@@ -528,7 +530,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                                 cfg: {
                                     condition: {
                                         "@class": "Script",
-                                        content: "VariableDescriptorFacade.find(gameModel, \"inventory\").getProperty(self, \"filelibrary\") != \"true\"",
+                                        content: "Variable.find(gameModel, \"inventory\").getProperty(self, \"filelibrary\") != \"true\"",
                                         language: "JavaScript"
                                     }
                                 }
@@ -702,9 +704,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 _inputex: {
                     label: "Intro text"
                 }
-            },
-            visible: {
-                value: false
             },
             state: {
                 "transient": true
