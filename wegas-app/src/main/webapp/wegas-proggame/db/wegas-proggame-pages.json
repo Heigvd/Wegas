@@ -714,7 +714,7 @@
                     }, {
                         "fn": "CSSPosition",
                         "cfg": {
-                            "styles": {"position": "absolute", "top": "322px", "left": "174px"}
+                            "styles": {"position": "absolute", "top": "337px", "left": "174px"}
                         }
                     }, {
                         "fn": "CSSSize",
@@ -785,7 +785,7 @@
                 }
             }],
         "children": [
-            {"type": "Button", "label": "STAGE<br /> 2.1", "cssClass": "proggame-button-stage", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<21", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "21", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "50px", "left": "85px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "60px", "height": "60px"}}}]},
+            {"type": "Button", "label": "STAGE<br /> 2.1", "cssClass": "proggame-button-stage", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<21", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "21", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "67px", "left": "76px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "60px", "height": "60px"}}}]},
             {"type": "Button", "label": "STAGE<br /> 2.2", "cssClass": "proggame-button-stage", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<22", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "22", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "210px", "left": "420px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "60px", "height": "60px"}}}]},
             {"type": "Button", "label": "STAGE<br /> 2.3", "cssClass": "proggame-button-stage", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<23", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "23", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "410px", "left": "131px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "60px", "height": "60px"}}}]},
             {"type": "Button", "label": "STAGE<br /> 2.4", "cssClass": "proggame-button-stage", "plugins": [{"fn": "ConditionalDisable", "cfg": {"condition": {"@class": "Script", "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<24", "language": "JavaScript"}}}, {"fn": "OpenPageAction", "cfg": {"subpageId": "24", "targetEvent": "click", "targetPageLoaderId": "maindisplayarea"}}, {"fn": "CSSPosition", "cfg": {"styles": {"position": "absolute", "top": "442px", "left": "450px"}}}, {"fn": "CSSSize", "cfg": {"styles": {"position": "absolute", "width": "60px", "height": "60px"}}}]}

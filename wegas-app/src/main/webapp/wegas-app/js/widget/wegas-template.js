@@ -16,7 +16,7 @@ YUI.add("wegas-template", function(Y) {
 
     var Micro = Y.Template.Micro, Wegas = Y.Wegas, AbstractTemplate;
     /**
-     * @name Y.Wegas.Template
+     * @name Y.Wegas.AbstractTemplate
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class
@@ -26,16 +26,16 @@ YUI.add("wegas-template", function(Y) {
      * It is also possible to create a custom template.
      */
     AbstractTemplate = Y.Base.create("wegas-template", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        /*@lends Y.Wegas.Template#*/
+        /*@lends Y.Wegas.AbstractTemplate#*/
         syncUI: function() {
-            Y.log("syncUI()", "log", "Wegas.Template");
+            Y.log("syncUI()", "log", "Wegas.AbstractTemplate");
             var template = this.getTemplate(),
                     data = this.computeData();
 
             try {
                 this.get("contentBox").setHTML(template(data));
             } catch (e) {
-                Y.log("Error rendering template: " + template, "error", "Wegas.Template");
+                Y.log("Error rendering template: " + template, "error", "Wegas.AbstractTemplate");
             }
         },
         bindUI: function() {
@@ -76,7 +76,7 @@ YUI.add("wegas-template", function(Y) {
             return Y.Lang.isUndefined(value) ? "" : "" + value;
         }
     }, {
-        /*@lends Y.Wegas.Template*/
+        /*@lends Y.Wegas.AbstractTemplate*/
         EDITORNAME: "Variable template",
         ATTRS: {
             /**
@@ -119,12 +119,10 @@ YUI.add("wegas-template", function(Y) {
         EDITORNAME: "Custom template",
         ATTRS: {
             custom: {
-                type: "string",
-                optional: true,
-                value: "",
+                type: "text",
+                value: "<%= this.variable.getValue() || 'Undefined' %>",
                 _inputex: {
-                    label: "Template",
-                    _type: "text"
+                    label: "Template"
                 }
             }
         }
