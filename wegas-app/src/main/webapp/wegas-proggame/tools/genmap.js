@@ -55,7 +55,7 @@ function genMap(levels) {
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "VariableDescriptorFacade.find(gameModel, \"currentLevel\").getValue(self)<" + level + stage,
+                                "content": "Variable.find(gameModel, \"currentLevel\").getValue(self)<" + level + stage,
                                 "language": "JavaScript"
                             }
                         }

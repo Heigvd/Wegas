@@ -434,7 +434,7 @@ YUI.add('wegas-leaderway-dialogue', function(Y) {
                         data: {
                             "@class": "Script",
                             language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
+                            content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
                         }
                     }
                 });

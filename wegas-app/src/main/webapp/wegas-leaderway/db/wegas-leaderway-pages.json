@@ -299,7 +299,7 @@
                                             "cfg": {
                                                 "condition": {
                                                     "@class": "Script",
-                                                    "content": "VariableDescriptorFacade.find(gameModel, 'actions').getValue(self)<=0",
+                                                    "content": "Variable.find(gameModel, 'actions').getValue(self)<=0",
                                                     "language": "JavaScript"
                                                 }
                                             }

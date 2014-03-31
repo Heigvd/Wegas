@@ -89,7 +89,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                     data: Y.JSON.stringify({
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nVariableDescriptorFacade.findByName(self.getGameModel(), '" + taskDescriptor.get("name") +"').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
+                        content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") +"').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
                     })
                 }
             });

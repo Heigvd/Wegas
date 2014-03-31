@@ -14,8 +14,8 @@ var gm = self.getGameModel();
  * - Check the 'LeadershipLevel' of all active resources (checkLeadershipLevel)
  */
 function finishCurrentWeek() {
-    var weekDescriptor = VariableDescriptorFacade.findByName(gm, 'week'),
-            actionsDescriptor = VariableDescriptorFacade.findByName(gm, 'actions'),
+    var weekDescriptor = Variable.findByName(gm, 'week'),
+            actionsDescriptor = Variable.findByName(gm, 'actions'),
             weekInstance = weekDescriptor.getInstance(self);
     if (weekInstance.getValue() <= weekDescriptor.getMaxValue()) {
         weekInstance.setValue(weekInstance.getValue() + 1);
@@ -37,8 +37,8 @@ function finishCurrentWeek() {
  */
 function getValideResources() {
     var i, j, k, valideResources = new Array(), isValid = false,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceDescriptor, resourceInstance,
-            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absencesInstance, assignment;
+            listResources = Variable.findByName(gm, 'resources'), resourceDescriptor, resourceInstance,
+            listAbsences = Variable.findByName(gm, 'absences'), absencesInstance, assignment;
     for (i = 0; i < listResources.items.size(); i++) {
         resourceDescriptor = listResources.items.get(i);
         resourceInstance = resourceDescriptor.getInstance(self);
@@ -67,7 +67,7 @@ function getValideResources() {
  */
 function getWorkedTasks(listResources) {
     var i, j, k, workedTasks = new Array(), isWorked = false, assignment,
-            resourceInstance, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance;
+            resourceInstance, listTasks = Variable.findByName(gm, 'tasks'), taskDescriptor, taskInstance;
     for (i = 0; i < listTasks.items.size(); i++) {
         taskDescriptor = listTasks.items.get(i);
         taskInstance = taskDescriptor.getInstance(self);
@@ -132,8 +132,8 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
         return;
     }
     var i, j, remuneration, taskInstance = taskDescriptor.getInstance(self),
-            budgetInstance = VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
-            clientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
+            budgetInstance = Variable.findByName(gm, 'budget').getInstance(self), from = new Array(), content = new Array(),
+            clientsSatisfaction = Variable.findByName(gm, 'clientsSatisfaction').getInstance(self), taskRequirementKey, wish, hate,
             taskRequirementValue, listTaskRequirement = taskInstance.getRequirements(),
             taskDuration = parseInt(taskInstance.getDescriptor().getInstance(self).getDuration()), //don't work
             workerInstance,
@@ -302,8 +302,8 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
  */
 function checkAbsencesEnd() {
     var i, j, k, l, assignment, duration,
-            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'), absenceInstance,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance,
+            listAbsences = Variable.findByName(gm, 'absences'), absenceInstance,
+            listResources = Variable.findByName(gm, 'resources'), resourceInstance,
             assignmentToRemove = new Array(), assignmentToAdd = new Array();
     for (i = 0; i < listResources.items.size(); i++) {
         assignmentToRemove.length = 0;
@@ -346,10 +346,10 @@ function checkAbsencesEnd() {
  * Activate and deactivate tasks according with its variables and if a resource work on.
  */
 function checkTasksState() {
-    var i, j, k, listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'), taskDescriptor, taskInstance,
-            newWeek = VariableDescriptorFacade.findByName(gm, 'week').getInstance(self), inProgress = false,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), resourceInstance, assignment,
-            newclientsSatisfaction = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self);
+    var i, j, k, listTasks = Variable.findByName(gm, 'tasks'), taskDescriptor, taskInstance,
+            newWeek = Variable.findByName(gm, 'week').getInstance(self), inProgress = false,
+            listResources = Variable.findByName(gm, 'resources'), resourceInstance, assignment,
+            newclientsSatisfaction = Variable.findByName(gm, 'clientsSatisfaction').getInstance(self);
     for (i = 0; i < listTasks.items.size(); i++) {
         inProgress = false;
         taskDescriptor = listTasks.items.get(i);
@@ -385,8 +385,8 @@ function checkTasksState() {
  * Decreases current budget value by the sum of all salary of actives resources
  */
 function payResources() {
-    var i, listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
-            budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
+    var i, listResources = Variable.findByName(gm, 'resources'),
+            budgetDescriptor = Variable.findByName(gm, 'budget'),
             budgetInstance = budgetDescriptor.getInstance(self),
             resourceDescriptor, resourceInstance,
             sumSalary = 0;
@@ -405,7 +405,7 @@ function payResources() {
  */
 function removeDeactivatedAssignements() {
     var i, j, k, assignments = new Array(), assignment, resourceInstance,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
+            listResources = Variable.findByName(gm, 'resources'),
             listTasksObjects = this.getTasksAndAbsences(), taskObjectInstance;
     for (i = 0; i < listResources.items.size(); i++) {
         assignments.length = 0;
@@ -429,8 +429,8 @@ function removeDeactivatedAssignements() {
  * @return a Array of all tasks comming from list of task and list of absences)
  */
 function getTasksAndAbsences() {
-    var i, taskObjects = new Array(), listTasks = VariableDescriptorFacade.findByName(gm, 'tasks'),
-            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
+    var i, taskObjects = new Array(), listTasks = Variable.findByName(gm, 'tasks'),
+            listAbsences = Variable.findByName(gm, 'absences');
     for (i = 0; i < listTasks.items.size(); i++) {
         taskObjects.push(listTasks.items.get(i));
     }
@@ -447,8 +447,8 @@ function getTasksAndAbsences() {
  */
 function checkMoral() {
     var i, j, k, moral, randomNumber, absent = false, resourceDescriptor, resourceInstance,
-            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences'),
-            absenceInstance, listResources = VariableDescriptorFacade.findByName(gm, 'resources');
+            listAbsences = Variable.findByName(gm, 'absences'),
+            absenceInstance, listResources = Variable.findByName(gm, 'resources');
     for (i = 0; i < listResources.items.size(); i++) {
         resourceDescriptor = listResources.items.get(i);
         resourceInstance = resourceDescriptor.getInstance(self);
@@ -501,8 +501,8 @@ function checkMoral() {
  */
 function calculateTeamMotivation() {
     var i, sumMotivation = 0, activeResources = 0, moral,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'), worstMoralValue = 100,
-            teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self);
+            listResources = Variable.findByName(gm, 'resources'), worstMoralValue = 100,
+            teamMotivation = Variable.findByName(gm, 'teamMotivation').getInstance(self);
     for (i = 0; i < listResources.items.size(); i++) {
         if (listResources.items.get(i).getInstance(self).getActive() == true) {
             moral = parseInt(listResources.items.get(i).getInstance(self).getMoral());
@@ -521,8 +521,8 @@ function calculateTeamMotivation() {
  */
 function checkLeadershipLevel() {
     var i, resourceInstance, newLeadershipLevel, leadershipPoints,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
-            weekMaxValue = parseInt(VariableDescriptorFacade.findByName(gm, 'week').getMaxValue()),
+            listResources = Variable.findByName(gm, 'resources'),
+            weekMaxValue = parseInt(Variable.findByName(gm, 'week').getMaxValue()),
             pointsMinToLlvl2 = 10 * (weekMaxValue - 1) + 75,
             pointsMinToLlvl3 = 15 * (weekMaxValue - 1) + 85;
     for (i = 0; i < listResources.items.size(); i++) {
@@ -549,7 +549,7 @@ function checkLeadershipLevel() {
  */
 function sendScore() {
     var content = new Array(), oldScore, newScore;
-    oldScore = VariableDescriptorFacade.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),
+    oldScore = Variable.findByName(self.getGameModel(), 'score').getInstance(self).getValue(),
             newScore = this.calculateScore();
     content.push('Bonjour, <br />');
     content.push('Comme chaque semaine, voici le score de votre entreprise.');
@@ -583,11 +583,11 @@ function calculateScore() {
             punderationBudget = 0.2,
             punderationMotivation = 0.45,
             punderationSatisfaction = 0.35;
-    teamMotivation = parseInt(VariableDescriptorFacade.findByName(gm, 'teamMotivation').getInstance(self).getValue());
-    budget = parseInt(VariableDescriptorFacade.findByName(gm, 'budget').getInstance(self).getValue());
-    clientSatisfaction = parseInt(VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction').getInstance(self).getValue());
+    teamMotivation = parseInt(Variable.findByName(gm, 'teamMotivation').getInstance(self).getValue());
+    budget = parseInt(Variable.findByName(gm, 'budget').getInstance(self).getValue());
+    clientSatisfaction = parseInt(Variable.findByName(gm, 'clientsSatisfaction').getInstance(self).getValue());
     score = Math.round(budget / 50 * punderationBudget + teamMotivation * 20 * punderationMotivation + clientSatisfaction * 20 * punderationSatisfaction);
-    VariableDescriptorFacade.findByName(gm, 'score').getInstance(self).setValue(score);
+    Variable.findByName(gm, 'score').getInstance(self).setValue(score);
     return score;
 }
 
@@ -598,7 +598,7 @@ function calculateScore() {
  */
 function sickenResource(resourceDescriptor, duration) {
     var i, resInstance, taskDescriptor,
-            listAbsences = VariableDescriptorFacade.findByName(gm, 'absences');
+            listAbsences = Variable.findByName(gm, 'absences');
     resInstance = resourceDescriptor.getInstance(self);
     for (i = 0; i < listAbsences.items.size(); i++) {
         if (listAbsences.items.get(i).getInstance(self).getDuration() == duration) {
@@ -622,8 +622,8 @@ function sickenResource(resourceDescriptor, duration) {
  */
 function assignTask(resourceDescriptorId, taskDescriptorId) {
     var i, j, resInstance, taskDescriptor,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources'),
-            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');
+            listResources = Variable.findByName(gm, 'resources'),
+            listTasks = Variable.findByName(gm, 'tasks');
     //Search resource
     for (i = 0; i < listResources.items.size(); i++) {
         if (resourceDescriptorId == listResources.items.get(i).getId()) {
@@ -679,9 +679,9 @@ function sendMessage(subject, content, from) {
 }
 
 function currentRessourceCantReceiveTask() {
-    var actions = VariableDescriptorFacade.findByName(gm, 'actions').getInstance(self),
-            currentResourceName = VariableDescriptorFacade.findByName(gm, 'nameOfCurrentEmployee'),
-            currentResource = VariableDescriptorFacade.findByName(gm, currentResourceName.getInstance(self).getValue()),
+    var actions = Variable.findByName(gm, 'actions').getInstance(self),
+            currentResourceName = Variable.findByName(gm, 'nameOfCurrentEmployee'),
+            currentResource = Variable.findByName(gm, currentResourceName.getInstance(self).getValue()),
             cantReceiveTask = false;
     println(actions.getValue());
     println(currentResource);
@@ -699,7 +699,7 @@ function currentRessourceCantReceiveTask() {
  */
 function resetDialogueValues() {
     var i, resourceInstance,
-            listResources = VariableDescriptorFacade.findByName(gm, 'resources');
+            listResources = Variable.findByName(gm, 'resources');
     for (i = 0; i < listResources.items.size(); i++) {
         resourceInstance = listResources.items.get(i).getInstance(self);
         resourceInstance.setProperty('isAdvised', false);
@@ -712,7 +712,7 @@ function resetDialogueValues() {
  * initiate the game'scenario
  */
 function doIntroduction() {
-    var budgetDescriptor = VariableDescriptorFacade.findByName(gm, 'budget'),
+    var budgetDescriptor = Variable.findByName(gm, 'budget'),
             budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();
     mail.push('Bonjour');
     mail.push('<br /><br />');
@@ -745,23 +745,23 @@ function doIntroduction() {
  */
 function limitValues() {
     var i, j, value, valueInst, valueDescr, skillsets,
-            skillKey, skillValue, listResources = VariableDescriptorFacade.findByName(gm, 'resources');
+            skillKey, skillValue, listResources = Variable.findByName(gm, 'resources');
     //actions
-    valueDescr = VariableDescriptorFacade.findByName(gm, 'actions')
+    valueDescr = Variable.findByName(gm, 'actions')
     valueInst = valueDescr.getInstance(self);
     if (valueInst.getValue() > valueDescr.getMaxValue())
         valueInst.setValue(valueDescr.getMaxValue());
     if (valueInst.getValue() < valueDescr.getMinValue())
         valueInst.setValue(valueDescr.getMinValue());
     //teamMotivation
-    valueDescr = VariableDescriptorFacade.findByName(gm, 'teamMotivation')
+    valueDescr = Variable.findByName(gm, 'teamMotivation')
     valueInst = valueDescr.getInstance(self);
     if (valueInst.getValue() > valueDescr.getMaxValue())
         valueInst.setValue(valueDescr.getMaxValue());
     if (valueInst.getValue() < valueDescr.getMinValue())
         valueInst.setValue(valueDescr.getMinValue());
     //clientsSatisfaction
-    valueDescr = VariableDescriptorFacade.findByName(gm, 'clientsSatisfaction')
+    valueDescr = Variable.findByName(gm, 'clientsSatisfaction')
     valueInst = valueDescr.getInstance(self);
     if (valueInst.getValue() > valueDescr.getMaxValue())
         valueInst.setValue(valueDescr.getMaxValue());

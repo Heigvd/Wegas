@@ -29,9 +29,9 @@ function checkMoral() {
 
 function setTeamMotivation() {
     var i, gm = self.getGameModel(),
-            listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),
+            listEmployees = Variable.findByName(gm, 'employees'),
             employeeInstance,
-            teamMotivation = VariableDescriptorFacade.findByName(gm, 'teamMotivation'),
+            teamMotivation = Variable.findByName(gm, 'teamMotivation'),
             morals = [],
             mSum = 0,
             mAverage,
@@ -89,7 +89,7 @@ function boundConstrain(val, lowerBound, upperBound) {
  */
 function changePicture() {
     var i, j, valueInst, valueDescr, gm = self.getGameModel(), oldImg, newImg, moral,
-            listEmployees = VariableDescriptorFacade.findByName(gm, 'employees'),
+            listEmployees = Variable.findByName(gm, 'employees'),
             imgSuffixe = ['Triste', 'Neutre', 'Joie'];
     if (!listEmployees) {
         return;
@@ -137,15 +137,15 @@ function changePicture() {
 function sendHistory(type, title, msg) {
     var phase = phases.getDescriptor().item(currentPhase.value - 1),
             phaseText = type + " - " + phase.label + " (" + phase.getInstance().value + ")";
-    VariableDescriptorFacade.find(gameModel, "history").sendMessage(self, phaseText, title, msg, []);
+    Variable.find(gameModel, "history").sendMessage(self, phaseText, title, msg, []);
 }
 
 Event.on("replyValidate", function(e) {
     var msg = "", root;
     /* Assume third level*/
-    root = VariableDescriptorFacade.findParentList(e.question.getDescriptor());
-    root = VariableDescriptorFacade.findParentList(root);
-    root = VariableDescriptorFacade.findParentList(root);
+    root = Variable.findParentList(e.question.getDescriptor());
+    root = Variable.findParentList(root);
+    root = Variable.findParentList(root);
     msg += "<b>" + e.choice.getDescriptor().getTitle() + "</b><br>"; // Choice selected
     msg += e.choice.getDescriptor().getDescription() + "<br><hr><br>"; // choice description
     msg += e.reply.getResult().getAnswer(); //Reply

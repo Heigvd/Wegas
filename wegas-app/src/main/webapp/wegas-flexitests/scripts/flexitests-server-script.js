@@ -7,11 +7,11 @@ function getInstances(descriptors){
     var a=[], i;
     if(com.wegas.core.security.util.SecurityHelper.isPermitted(self.getGame(), "Edit")){
         for(i in descriptors){
-            a.push(VariableDescriptorFacade.find(self.getGameModel(), descriptors[i]).getScope().getVariableInstances());
+            a.push(Variable.find(self.getGameModel(), descriptors[i]).getScope().getVariableInstances());
         }
     }else{
         for(i in descriptors){
-            a.push(VariableDescriptorFacade.find(self.getGameModel(), descriptors[i]).getScope().getPrivateInstances());
+            a.push(Variable.find(self.getGameModel(), descriptors[i]).getScope().getPrivateInstances());
         }
     }
     

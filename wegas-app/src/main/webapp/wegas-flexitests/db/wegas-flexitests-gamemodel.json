@@ -100,7 +100,7 @@
             "endImpact": {
                 "@class": "Script",
                 "language": "JavaScript",
-                "content": "VariableDescriptorFacade.find(gameModel, \"currentPage\").setValue(self, 4);"
+                "content": "Variable.find(gameModel, \"currentPage\").setValue(self, 4);"
             },
             "children": [
                 {
@@ -456,7 +456,7 @@
         "default": {
             "@class": "GameModelContent",
             "contentType": null,
-            "content": "\nfunction store(object, key, value){\n    object.properties.put(key, value);   \n}\n\nfunction getInstances(descriptors){\n    var a=[], i;\n    if(com.wegas.core.security.util.SecurityHelper.isPermitted(self.getGame(), \"Edit\")){\n        for(i in descriptors){\n            a.push(VariableDescriptorFacade.find(self.getGameModel(), descriptors[i]).getScope().getVariableInstances());\n        }\n    }else{\n        for(i in descriptors){\n            a.push(VariableDescriptorFacade.find(self.getGameModel(), descriptors[i]).getScope().getPrivateInstances());\n        }\n    }\n    \n    return a;\n}"
+            "content": "\nfunction store(object, key, value){\n    object.properties.put(key, value);   \n}\n\nfunction getInstances(descriptors){\n    var a=[], i;\n    if(com.wegas.core.security.util.SecurityHelper.isPermitted(self.getGame(), \"Edit\")){\n        for(i in descriptors){\n            a.push(Variable.find(self.getGameModel(), descriptors[i]).getScope().getVariableInstances());\n        }\n    }else{\n        for(i in descriptors){\n            a.push(Variable.find(self.getGameModel(), descriptors[i]).getScope().getPrivateInstances());\n        }\n    }\n    \n    return a;\n}"
         }
     },
     "cssLibrary": {},

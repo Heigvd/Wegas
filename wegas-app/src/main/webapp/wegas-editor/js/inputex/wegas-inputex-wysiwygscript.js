@@ -229,6 +229,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     switch (expression.callee.object.type) {
                         case "Identifier":
                             switch (expression.callee.object.name) {
+                                case "Variable":                                // @backwardcompatibility
                                 case "VariableDescriptorFacade":
                                     return {
                                         type: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline",

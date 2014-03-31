@@ -182,7 +182,7 @@
                             "cfg": {
                                 "condition": {
                                     "@class": "Script",
-                                    "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                    "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
                                     "language": "JavaScript"
                                 }
                             }
@@ -225,7 +225,7 @@
                             "cfg": {
                                 "condition": {
                                     "@class": "Script",
-                                    "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                    "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
                                     "language": "JavaScript"
                                 }
                             }
@@ -258,7 +258,7 @@
                             "cfg": {
                                 "condition": {
                                     "@class": "Script",
-                                    "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<2",
+                                    "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
                                     "language": "JavaScript"
                                 }
                             }
@@ -339,7 +339,7 @@
                                     "cfg": {
                                         "condition": {
                                             "@class": "Script",
-                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<1",
                                             "language": "JavaScript"
                                         }
                                     }
@@ -364,7 +364,7 @@
                                     "cfg": {
                                         "condition": {
                                             "@class": "Script",
-                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<1",
                                             "language": "JavaScript"
                                         }
                                     }
@@ -389,7 +389,7 @@
                                     "cfg": {
                                         "condition": {
                                             "@class": "Script",
-                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<1",
                                             "language": "JavaScript"
                                         }
                                     }
@@ -414,7 +414,7 @@
                                     "cfg": {
                                         "condition": {
                                             "@class": "Script",
-                                            "content": "VariableDescriptorFacade.find(gameModel, 'currentPhase').getValue(self)<1",
+                                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<1",
                                             "language": "JavaScript"
                                         }
                                     }
