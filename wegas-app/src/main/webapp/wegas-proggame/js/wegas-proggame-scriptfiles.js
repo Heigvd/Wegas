@@ -115,7 +115,7 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
                     data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "VariableDescriptorFacade.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);"
+                        content: "Variable.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);"
                     }
                 },
                 on: {

@@ -7,7 +7,7 @@
  */
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
-    var ScriptEval, VariableDescriptorFacade;
+    var ScriptEval, Variable;
 
     function buildItems(entity, acc) {                                  // Recursively build items lists
         var j, items;
@@ -136,7 +136,8 @@ YUI.add('wegas-scripteval', function(Y) {
             });
             /*Extend functionalities (mirror server)*/
             Y.mix(this.context, {
-                VariableDescriptorFacade: VariableDescriptorFacade,
+                VariableDescriptorFacade: Variable,
+                Variable: Variable,
                 self: Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
                 gameModel: Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
             });
@@ -146,7 +147,7 @@ YUI.add('wegas-scripteval', function(Y) {
         NS: "script",
         NAME: "scriptEval"
     });
-    VariableDescriptorFacade = {
+    Variable = {
         find: function(gameModel, name) {
             return Y.Wegas.Facade.VariableDescriptor.cache.find("name", name);
         }

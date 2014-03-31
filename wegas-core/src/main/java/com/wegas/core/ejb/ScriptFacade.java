@@ -163,7 +163,8 @@ public class ScriptFacade implements Serializable {
     public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws ScriptException {
         evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
         evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
-        evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade); // Inject the variabledescriptor facade
+        evt.getEngine().put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
+        evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
         evt.getEngine().put("Event", event);                                    // Inject the Event manager
         event.detachAll();
