@@ -136,6 +136,7 @@ html, .editor-preview {
 
 /* Level selection styles */
 .yui3-skin-sam .proggame-levelselection-button,
+.yui3-skin-sam .proggame-button-stage,
 .yui3-skin-sam .proggame-button {
     font-family: "KG Ways to Say Goodbye";
     background: transparent;
@@ -155,18 +156,19 @@ html, .editor-preview {
     opacity: 0.8;
 }
 .yui3-skin-sam .proggame-levelselection-button:hover,
-.yui3-skin-sam .proggame-button:hover {
+.yui3-skin-sam .proggame-button:hover,
+.yui3-skin-sam .proggame-button-stage:hover {
     opacity: 1;
 }
 .proggame-levelselection-button.yui3-button-selected {
     opacity: 1;    
     font-weight: bold;
 }
+.yui3-skin-sam .proggame-button.yui3-button-disabled,
 .yui3-skin-sam .proggame-levelselection-button.yui3-button-disabled, 
-.yui3-skin-sam .proggame-button.yui3-button-disabled {
+.yui3-skin-sam .proggame-button-stage.yui3-button-disabled {
     opacity: 0.3;
 }
-
 .yui3-skin-sam .proggame-levelselection-button {
     text-align: left;
     font-family: "Verdana", "Arial", Sans-Serif;
@@ -174,7 +176,12 @@ html, .editor-preview {
     text-transform: none;
     padding: 0;
 }
-
+.yui3-skin-sam .proggame-button-stage {
+    background: url(../../wegas-proggame/images/proggame-button-stage.png) no-repeat;
+    border: none;
+    padding: 0;
+    line-height: 0.7em;
+}
 /* Levels style */
 .wegas-proggame-level {
     background: url(../../wegas-proggame/images/blackboard2-withline.png) no-repeat;
