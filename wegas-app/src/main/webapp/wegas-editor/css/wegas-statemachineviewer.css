@@ -34,7 +34,7 @@
     border-radius: 20px;
     padding: 5px;
     z-index: 5;
-    background-color:rgba(240,240,240,0.9);
+    background-color:rgba(244, 244, 244, 0.8);
     cursor: move;
     font-size: 0.8em;
 }
@@ -45,8 +45,8 @@
     border-color: #4372C4;
 }
 .yui3-wegas-state:hover, .jsPlumb_dragged{
-    z-index:7;
-    box-shadow: 2px 3px 2px #6D6D6D;
+    z-index:7;    
+    background: #f4f4f4;
 }
 .yui3-wegas-state-text,
 .yui3-wegas-script-script{
