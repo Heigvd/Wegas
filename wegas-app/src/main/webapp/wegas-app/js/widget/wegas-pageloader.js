@@ -59,6 +59,10 @@ YUI.add('wegas-pageloader', function(Y) {
                         && "" + this.get("variable.evaluated") !== "" + this.get('pageId')) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
+                if (this.get("page")
+                        && "" + this.get("page.evaluated") !== "" + this.get('pageId')) {// and if the current page has change,
+                    this.syncUI();                                              // sync the view
+                }
             }, this));
 
             //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
@@ -76,8 +80,11 @@ YUI.add('wegas-pageloader', function(Y) {
          *  different that the current page id
          */
         syncUI: function() {
-            var val = this.get("variable.evaluated");
-            if (val && val.getInstance().get('value')) {                        // If there is a variable to refresh
+            var val = this.get("variable.evaluated"),
+                    page = this.get("page.evaluated");
+            if (page) {                                                         // If there is a page script
+                this.set("pageId", +page);                                      // display it
+            } else if (val && val.getInstance().get('value')) {                 // @backwardcompatibility
                 this.set("pageId", val.getInstance().get('value'));
             } else if (this.get("defaultPageId") && !this.get("pageId")) {      //in case a defaultPageId is defined and no pageId is
                 this.set("pageId", this.get("defaultPageId"));
@@ -226,8 +233,16 @@ YUI.add('wegas-pageloader', function(Y) {
              * A variable (or expression) which contain the id of the page to load
              * The target variable, returned either based on the name attribute,
              * and if absent by evaluating the expr attribute.
+             * 
+             * @deprecated
              */
             variable: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER
+            },
+            /**
+             * 
+             */
+            page: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER
             },
             /**

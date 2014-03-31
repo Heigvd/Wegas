@@ -542,19 +542,27 @@ YUI.add("wegas-widget", function(Y) {
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Wegas.Facade.VariableDescriptor;
+
+
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
-                if (val.name) {                                                 // Eval based on the name field
+                if (val.content) {                                              // Eval based on the field (new pattern)
+                    try {
+                        val.evaluated = Wegas.Facade.VariableDescriptor.script.localEval(val.content);
+                    } catch (e) {
+                        Y.log("Unable to read expression: " + val.expr, "error", "Wegas.Widget");
+                        val.evaluated = null;
+                    }
+                } else if (val.name) {                                          // @backwardcompatibility
                     val.evaluated = ds.cache.find('name', val.name);
 
-                } else if (val.expr) {                                          // if absent evaluate the expr field
+                } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field
                     try {
                         val.evaluated = ds.cache.findById(Wegas.Facade.VariableDescriptor.script.localEval(val.expr));
                     } catch (e) {
                         Y.log("Unable to read expression: " + val.expr, "error", "Wegas.Widget");
                         val.evaluated = null;
                     }
-
                 } else if (val.id) {
                     val.evaluated = ds.cache.findById(val.id);
                 }
