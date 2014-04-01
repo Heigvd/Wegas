@@ -12,8 +12,7 @@
 YUI.add('wegas-conditionaldisable', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas,
-            ConditionalDisable = Y.Base.create("wegas-conditionaldisable", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var ConditionalDisable = Y.Base.create("wegas-conditionaldisable", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         handlers: null,
         initializer: function() {
             this.handlers = [];
@@ -31,7 +30,12 @@ YUI.add('wegas-conditionaldisable', function(Y) {
         conditionEval: function() {
             if (Y.Wegas.Facade.VariableDescriptor.script) {
                 Y.Wegas.Facade.VariableDescriptor.script.eval(this.get("condition").content, Y.bind(function(result) {
-                    this.get('host').set('disabled', result);
+                    var attr = this.get("attribute");
+                    if (attr === "class") {
+                        this.get('host').get("boundingBox").toggleClass(this.get("value"), result);
+                    } else {
+                        this.get('host').set(this.get("attribute"), result);
+                    }
                 }, this));
             }
         }
@@ -43,11 +47,38 @@ YUI.add('wegas-conditionaldisable', function(Y) {
                     label: 'Disable condition',
                     expects: "condition"
                 }
+            },
+            attribute: {
+                type: "string",
+                value: "disabled",
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
+            },
+            value: {
+                type: "string",
+                value: "",
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             }
         },
         NS: "ConditionalDisable",
         NAME: "ConditionalDisable"
     });
-    Y.namespace("Plugin").ConditionalDisable = ConditionalDisable;
+    Y.Plugin.ConditionalDisable = ConditionalDisable;
+
+    Y.Plugin.ConditionalDisable2 = Y.Base.create("wegas-conditionaldisable", ConditionalDisable, [], {}, {
+        NS: "ConditionalDisable2",
+        NAME: "ConditionalDisable2"
+    });
+    Y.Plugin.ConditionalDisable3 = Y.Base.create("wegas-conditionaldisable", ConditionalDisable, [], {}, {
+        NS: "ConditionalDisable3",
+        NAME: "ConditionalDisable3"
+    });
+    Y.Plugin.ConditionalDisable4 = Y.Base.create("wegas-conditionaldisable", ConditionalDisable, [], {}, {
+        NS: "ConditionalDisable4",
+        NAME: "ConditionalDisable4"
+    });
 
 });
