@@ -536,6 +536,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 _inputex: {
                     index: -1
                 }
+            },
+            label: {
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         }
     });

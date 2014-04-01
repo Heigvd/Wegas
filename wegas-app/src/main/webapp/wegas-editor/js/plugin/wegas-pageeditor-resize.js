@@ -10,6 +10,7 @@
  * @fileOverview PageEditor resize Extension
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+
 YUI.add("wegas-pageeditor-resize", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
@@ -34,11 +35,9 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          * @returns {undefined}
          */
         _initResize: function() {
-            var bindedFixedOverlay;
             if (!this.highlightOverlay) {
                 Y.error("PageEditorResize is an extension for PageEditor.");
             }
-            bindedFixedOverlay = Y.bind(this.fixedOverlay, this);
             this._resizeNode = Y.Node.create("<div class='pageeditor-resizenode'></div>");
             this._iconResizeNode = Y.Node.create("<div class='pageeditor-resizenode-icon'></div>");
             this._resizeNode.setStyles({
@@ -58,12 +57,13 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             this._resize = new Y.DD.Drag({
                 node: this._resizeNode
             });
-            this._resize.plug(Y.Plugin.DDConstrained, {
-                constrain: this.get("host").get(CONTENTBOX),
-                cacheRegion: false                                              //scroll changes region
-            }).plug(Y.Plugin.DDNodeScroll, {
-                node: this.get("host").get(CONTENTBOX)
-            });
+            this._resize.plug(Y.Plugin.DDNodeScroll, {
+                    node: this.get("host").get(CONTENTBOX)
+                });
+                //    .plug(Y.Plugin.DDConstrained, {
+                //    constrain: this.get("host").get(CONTENTBOX),
+                //    cacheRegion: false                                              //scroll changes region
+                //});
             this._resizeNode.before("mousedown", function(e) {
                 this.detach();
                 this._resizeNode.show();
@@ -81,6 +81,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 });
                 this.fixedOverlay(this.shownOverlay._widget);
             }, this);
+            //var bindedFixedOverlay = Y.bind(this.fixedOverlay, this);
 //            this._resize.before("drag:start", function(e) {
 //                var bb = this._widget;
 //                bb.setStyles({
@@ -120,7 +121,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
         _setupIcon: function() {
             if (this.shownOverlay._widget.CSSSize) {
                 this._iconResizeNode.show();
-            }else{
+            } else {
                 this._iconResizeNode.hide();
             }
         },
@@ -131,7 +132,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
          */
         _resizeDestruct: function() {
             Y.detach(this._alignResize, this, "showOverlay");
-             Y.detach(this._setupIcon, this, "fixedOverlay");
+            Y.detach(this._setupIcon, this, "fixedOverlay");
             this._resize.detachAll();
             this._resizeNode.detachAll();
             this._resize.destroy();
