@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add('wegas-plugin', function(Y) {
     "use strict";
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
@@ -120,6 +122,7 @@ YUI.add('wegas-plugin', function(Y) {
                 type: "string",
                 _inputex: {
                     //_type: "wegasurl"
+                    label: "Open url"
                 }
             },
             /**
@@ -186,7 +189,7 @@ YUI.add('wegas-plugin', function(Y) {
             subpageId: {
                 type: "string",
                 _inputex: {
-                    label: "Page to display",
+                    label: "Open page",
                     _type: "pageselect",
                     required: false
                 }
@@ -205,8 +208,7 @@ YUI.add('wegas-plugin', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "variable",
-                    className: "inputEx-fieldWrapper wegas-advanced-feature"
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         }

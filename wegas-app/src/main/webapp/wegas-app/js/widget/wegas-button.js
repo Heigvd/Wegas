@@ -16,7 +16,7 @@ YUI.add("wegas-button", function(Y) {
 
     var CONTENTBOX = 'contentBox',
             BOUNDINGBOX = 'boundingBox',
-            Button;
+            Wegas = Y.Wegas, Button;
 
     /**
      * @name Y.Wegas.Button
@@ -27,7 +27,7 @@ YUI.add("wegas-button", function(Y) {
      * @description Custom Button implementation. Adds Y.WidgetChild and
      * Y.Wegas.Widget extensions to the original Y.Button
      */
-    Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    Button = Y.Base.create("button", Y.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.Button# */
         // *** Private fields *** //
 
@@ -61,7 +61,7 @@ YUI.add("wegas-button", function(Y) {
             }
         },
         getEditorLabel: function() {
-            return Y.Wegas.Helper.stripHtml(this.get("label"));
+            return Wegas.Helper.stripHtml(this.get("label"));
         },
         /**
          * @function
@@ -120,7 +120,7 @@ YUI.add("wegas-button", function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').Button = Button;
+    Wegas.Button = Button;
 
     /* @fixme @hack So we can display html tag inside a button */
     Y.Button.prototype._setLabel = function(label, name, opts) {
@@ -137,7 +137,7 @@ YUI.add("wegas-button", function(Y) {
      * @extends Y.Plugin.Base
      * @borrows Y.Wegas.Plugin, Y.Wegas.Editable
      */
-    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    var UnreadCount = Y.Base.create("wegas-unreadCount", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.UnreadCount# */
 
         // *** Private fields *** //
@@ -159,7 +159,7 @@ YUI.add("wegas-button", function(Y) {
          * When plugin's host is render, do sync.
          */
         bindUI: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.update = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
             this.afterHostEvent("render", this.syncUI, this);
         },
         /**
@@ -209,11 +209,11 @@ YUI.add("wegas-button", function(Y) {
                 return 0;
             }
 
-            if (descriptor instanceof Y.Wegas.persistence.ListDescriptor) {     // For ListDescriptors, we count the children instance's
+            if (descriptor instanceof Wegas.persistence.ListDescriptor) {     // For ListDescriptors, we count the children instance's
                 items = descriptor.flatten();
                 for (i = 0; i < items.length; i = i + 1) {
-                    if (Y.Wegas.persistence.QuestionDescriptor
-                            && items[i] instanceof Y.Wegas.persistence.QuestionDescriptor) {
+                    if (Wegas.persistence.QuestionDescriptor
+                            && items[i] instanceof Wegas.persistence.QuestionDescriptor) {
                         instance = items[i].getInstance();
                         //count += instance.get("unread") ? 1 : 0;
                         if (instance.get("replies")) {
@@ -223,7 +223,7 @@ YUI.add("wegas-button", function(Y) {
                 }
             }
 
-            if (descriptor instanceof Y.Wegas.persistence.InboxDescriptor) {
+            if (descriptor instanceof Wegas.persistence.InboxDescriptor) {
                 messages = descriptor.getInstance().get("messages");            // For InboxVariableDescriptors, we count the replies
                 count = descriptor.getInstance().get("unreadCount");
             }
@@ -252,16 +252,16 @@ YUI.add("wegas-button", function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "List to count unread",
-                    classFilter: ["ListDescriptor"]
+                    label: "Unread count",
+                    classFilter: ["ListDescriptor", "InboxDescriptor"]
                 }
             }
         }
     });
-    Y.namespace('Plugin').UnreadCount = UnreadCount;
+    Y.Plugin.UnreadCount = UnreadCount;
 
     /**
      * @name Y.Wegas.OpenPageButton
@@ -270,7 +270,7 @@ YUI.add("wegas-button", function(Y) {
      * @constructor
      * @description Shortcut to create a Button with an OpenPageAction plugin
      */
-    Y.Wegas.OpenPageButton = Y.Base.create("button", Y.Wegas.Button, [], {
+    Wegas.OpenPageButton = Y.Base.create("button", Wegas.Button, [], {
         /** @lends Y.Wegas.OpenPageButton# */
         /**
          * @function
@@ -284,7 +284,7 @@ YUI.add("wegas-button", function(Y) {
         }
     });
 
-    Y.Wegas.NewDescriptorButton = Y.Base.create("button", Y.Wegas.Button, [], {
+    Wegas.NewDescriptorButton = Y.Base.create("button", Wegas.Button, [], {
         /** @lends Y.Wegas.NewDescriptorButton# */
         /**
          * @function
@@ -293,7 +293,7 @@ YUI.add("wegas-button", function(Y) {
          */
         initializer: function() {
             this.plug(Y.Plugin.WidgetMenu, {
-                children: Y.Array.map(Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function(o) {
+                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function(o) {
                     return Y.mix({
                         type: "NewEntityButton"
                     }, o);

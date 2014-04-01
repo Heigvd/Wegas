@@ -781,7 +781,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     cssClass: "transition-label"
                 });
             } else {
-                var cond = StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("triggerCondition")).substring(0, 50);
+                var cond = StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("triggerCondition")).substring(0, 50)
+                        || StateMachineViewer.FORMATSCRIPT(this.get(ENTITY).get("preStateImpact")).substring(0, 50);
                 this.connection.setLabel({
                     label: cond || "<em>empty</empty>",
                     cssClass: "transition-label"

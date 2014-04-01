@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang, Wegas = Y.Wegas,
@@ -486,6 +488,27 @@ YUI.add("wegas-widget", function(Y) {
                                                 type: BUTTON,
                                                 label: "Hide after",
                                                 data: "HideAfter"
+                                            }]
+                                    }
+                                }]
+                        },{
+                            type: BUTTON,
+                            label: "Variables",
+                            plugins: [{
+                                    fn: "WidgetMenu",
+                                    cfg: {
+                                        menuCfg: {
+                                            points: ["tl", "tr"]
+                                        },
+                                        event: "mouseenter",
+                                        children: [{
+                                                type: BUTTON,
+                                                label: "Conditional disable",
+                                                data: "ConditionalDisable"
+                                            }, {
+                                                type: BUTTON,
+                                                label: "Unread count",
+                                                data: "UnreadCount"
                                             }]
                                     }
                                 }]
