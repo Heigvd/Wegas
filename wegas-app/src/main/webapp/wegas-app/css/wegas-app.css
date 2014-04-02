@@ -144,7 +144,7 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
 
 /** Page loader styles */
 .wegas-playerview .wegas-pageloader {
-    overflow: auto;
+    /*overflow: auto;*/
     min-height: 50px;
     min-width: 50px;
 }

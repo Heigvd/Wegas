@@ -533,6 +533,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
          */
         item: function(i) {
             return this.get("items")[i];
+        },
+        size: function() {
+            return this.get("items").length;
         }
     }, {
         ATTRS: {

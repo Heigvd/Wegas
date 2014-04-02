@@ -103,7 +103,10 @@ YUI.add('wegas-scripteval', function(Y) {
             if (!this.upToDate) {                                               //Only compute if new value
                 this._buildContext();
             }
-            return (new Function("with(this) { return " + script + ";}")).call(this.context);
+            if (script.indexOf("return ") === -1) {
+                script = "return " + script;
+            }
+            return (new Function("with(this) { " + script + ";}")).call(this.context);
         },
         /**
          * @function
