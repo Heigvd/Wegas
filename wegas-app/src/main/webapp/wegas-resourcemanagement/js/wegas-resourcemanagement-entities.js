@@ -25,7 +25,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * ResourceDescriptor mapper
      */
-    Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+        getConfidence: function() {
+            return this.getInstance().get("confidence");
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "ResourceDescriptor"

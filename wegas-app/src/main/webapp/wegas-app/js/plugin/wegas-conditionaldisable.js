@@ -58,6 +58,7 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             value: {
                 type: "string",
                 value: "",
+                optional: true,
                 _inputex: {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
