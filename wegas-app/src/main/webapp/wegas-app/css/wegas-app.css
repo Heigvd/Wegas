@@ -51,10 +51,14 @@ input[type="submit"], input[type="reset"] {
     outline: none; /* Remove chrome focus outline */
 }
 
-/* Widget */
-.wegas-playerview .wegas-widget {
-    overflow: hidden
+html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
+    height: 100%;
 }
+
+/* Widget */
+/*.wegas-playerview .wegas-widget {
+    overflow: hidden
+}*/
 
 /* Wegas styles */
 /* Wegas loading (overlay on content) */
