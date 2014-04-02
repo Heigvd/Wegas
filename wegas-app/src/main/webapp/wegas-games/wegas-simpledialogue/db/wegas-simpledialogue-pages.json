@@ -8,7 +8,7 @@
             "type": "NumberTemplate",
             "cssClass": "icecream",
             "variable": {
-                "name": "icecream"
+                "content": "Variable.find('icecream')"
             },
             "data": {
                 "label": "Glaces mangées"

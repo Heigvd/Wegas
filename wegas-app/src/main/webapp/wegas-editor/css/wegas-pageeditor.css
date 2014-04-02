@@ -54,7 +54,7 @@
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader{
     position: relative;
-    background-color: darkgray !important;
+    /*background-color: darkgray !important;*/
 }
 
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader {

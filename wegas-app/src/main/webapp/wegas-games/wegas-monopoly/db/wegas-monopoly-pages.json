@@ -34,7 +34,7 @@
                 "type": "NumberTemplate",
                 "label": "Money",
                 "variable": {
-                    "name": "money"
+                    "content": "Variable.find('money')"
                 }
             },{
                 "type" : "Monopolydisplay",

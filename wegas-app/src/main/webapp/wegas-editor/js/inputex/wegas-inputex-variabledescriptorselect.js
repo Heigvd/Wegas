@@ -10,6 +10,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     "use strict";
 
@@ -440,7 +441,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             }
         }
     });
-    inputEx.registerType("wysiwygline", WysiwygLine, {});
+    inputEx.registerType("expression", WysiwygLine, {});
 
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorCondition
@@ -552,7 +553,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
         }
     });
-    inputEx.registerType("variabledescriptorcondition", VariableDescriptorCondition, {});
+    inputEx.registerType("condition", VariableDescriptorCondition, {});
 
     /**
      * @name Y.inputEx.Wegas.EntityArrayFieldSelect
@@ -604,4 +605,41 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     });
     inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);     // Register this class as "list" type
 
+    /**
+     * @name Y.inputEx.Wegas.VariableDescriptorGetter
+     * @class
+     * @constructor
+     * @extends Y.inputEx.Wegas.VariableDescriptorSelect
+     * @param {Object} options InputEx definition object
+     */
+    var VariableDescriptorGetter = function(options) {
+        Y.inputEx.VariableDescriptorSelect.superclass.constructor.call(this, options);
+    };
+
+    Y.extend(VariableDescriptorGetter, Y.inputEx.VariableDescriptorSelect, {
+        /** @lends Y.inputEx.Wegas.VariableDescriptorGetter# */
+
+        syncUI: function() {
+            VariableDescriptorGetter.superclass.syncUI.call(this);
+
+            if (this.currentEntity && this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
+                this.addField(this.generateSelectConfig(null,
+                        this.currentEntity, this.currentEntity.get("items")));  // Pushes the current entity methods and children to the stack
+            } else {
+                //(new Y.Node(this.fieldset)).append("<em>no variable created</em>");
+            }
+        },
+        genChoices: function(entity, items) {
+            var choices = [];
+
+            if (items && items.length > 0) {                                    // If required, push separator
+                choices.push({
+                    value: "----------"
+                });
+            }
+
+            return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
+        }
+    });
+    inputEx.registerType("getter", VariableDescriptorGetter);
 });
