@@ -5,12 +5,14 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * Wegas loader, contains module definitions.
  *
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI().use(function(Y) {
     //"use strict";
 
@@ -442,7 +444,7 @@ YUI().use(function(Y) {
                         'wegas-inputex-url',
                         "wegas-inputex-rte", // for mail attachements in script
                         'esprima'],
-                    ix_provides: 'script'
+                    ix_provides: ['script', 'variableselect']
                 },
                 'wegas-inputex-url': {
                     path: 'js/inputex/wegas-inputex-url-min.js',
@@ -462,13 +464,6 @@ YUI().use(function(Y) {
                     path: 'js/inputex/wegas-inputex-pageselect-min.js',
                     requires: 'inputex-select',
                     ix_provides: 'pageselect'
-                },
-                'wegas-inputex-variableselect': {
-                    path: 'js/inputex/wegas-inputex-variableselect-min.js',
-                    requires: ['wegas-inputex', 'inputex-group', 'inputex-textarea',
-                        'wegas-inputex-variabledescriptorselect', 'wegas-button',
-                        'esprima'],
-                    ix_provides: 'variableselect'
                 },
                 'wegas-inputex-now': {
                     path: 'js/inputex/wegas-inputex-now-min.js',

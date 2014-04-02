@@ -324,7 +324,7 @@
                 "cssClass": "proggame-money",
                 "custom": "<%= this.value || 0 %>",
                 "variable": {
-                    "name": "money"
+                    "content": "Variable.find('money')"
                 },
                 "plugins": [{
                         "fn": "CSSPosition",
@@ -403,7 +403,7 @@
                         "fn": "UnreadCount",
                         "cfg": {
                             "variable": {
-                                "name": "inbox"
+                                "content": "Variable.find('inbox')"
                             }
                         }
                     }, {
@@ -495,7 +495,7 @@
         "type": "PageLoader",
         "pageLoaderId": "leveldisplay",
         "variable": {
-            "name": "currentLevel"
+            "content": "Variable.find('currentLevel')"
         }
     },
     "4": {
@@ -1086,7 +1086,7 @@
                 "@name": "Mails",
                 "type": "InboxDisplay",
                 "variable": {
-                    "name": "inbox"
+                            "content": "Variable.find('inbox')"
                 },
                 "plugins": [{
                         "fn": "CSSPosition",

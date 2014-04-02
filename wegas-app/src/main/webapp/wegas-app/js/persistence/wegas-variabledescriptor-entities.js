@@ -622,6 +622,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     targetClass: "FSMDescriptor"
                                 }, {
                                     type: "NewEntityButton",
+                                    label: "Inbox",
+                                    targetClass: "InboxDescriptor"
+                                }, {
+                                    type: "NewEntityButton",
                                     label: "Dialogue",
                                     targetClass: "DialogueDescriptor",
                                     cssClass: "experimental wegas-advaned-feature"
@@ -636,9 +640,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     targetClass: "ObjectDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
-                                    type: "NewEntityButton",
-                                    label: "Inbox",
-                                    targetClass: "InboxDescriptor",
+                                    type: "AddEntityChildButton",
+                                    label: "Resource",
+                                    targetClass: "ResourceDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }]
                         }
