@@ -227,7 +227,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             label: {
                 type: STRING,
-                transient: false,
+                "transient": false,
                 optional: true,
                 _inputex: {
                     label: "Name"
