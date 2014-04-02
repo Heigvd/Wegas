@@ -210,9 +210,10 @@
                                     <include>lib/**/*.gif</include>
                                     <include>lib/**/*.png</include>-->
                             </includes>
-                                <!--<excludes>
-                                    <exclude>lib/yui3/**</exclude>
-                                </excludes>-->
+                            <excludes>
+                                <exclude>wegas-leaderway/images/employees sources/**</exclude>
+                                <exclude>wegas-leaderway/images/employees/**</exclude>
+                            </excludes>
                         </overlay>
                     </overlays>
                 </configuration>
