@@ -835,17 +835,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 value: "Script",
                 type: STRING
             },
-            language: {
-                value: "JavaScript",
-                type: STRING,
-                choices: [{
-                        value: "JavaScript"
-                    }],
-                _inputex: {
-                    //type:"select",
-                    _type: HIDDEN
-                }
-            },
+            //language: {
+            //    value: "JavaScript",
+            //    type: STRING,
+            //    choices: [{
+            //            value: "JavaScript"
+            //        }],
+            //    _inputex: {
+            //        //type:"select",
+            //        _type: HIDDEN
+            //    }
+            //},
             content: {
                 type: STRING,
                 format: TEXT,
