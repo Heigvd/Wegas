@@ -1,0 +1,1736 @@
+{"@class": "GameModel",
+    "childVariableDescriptors": [{"@class": "NumberDescriptor",
+            "defaultInstance": {"@class": "NumberInstance",
+                "history": [],
+                "value": 100.0
+            },
+            "defaultValue": 100.0,
+            "label": "Management",
+            "maxValue": 200,
+            "minValue": 0,
+            "name": "management",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "NumberDescriptor",
+            "defaultInstance": {"@class": "NumberInstance",
+                "history": [],
+                "value": 100.0
+            },
+            "defaultValue": 100.0,
+            "label": "Users",
+            "maxValue": 200,
+            "minValue": 0,
+            "name": "users",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "NumberDescriptor",
+            "defaultInstance": {"@class": "NumberInstance",
+                "history": [],
+                "value": 10.0
+            },
+            "defaultValue": 10.0,
+            "label": "Time cards",
+            "maxValue": null,
+            "minValue": null,
+            "name": "timeCards",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "NumberDescriptor",
+            "defaultInstance": {"@class": "NumberInstance",
+                "history": [],
+                "value": 1.0
+            },
+            "defaultValue": 1.0,
+            "label": "Current phase",
+            "maxValue": 10,
+            "minValue": 0,
+            "name": "currentPhase",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "ListDescriptor",
+            "defaultInstance": {"@class": "ListInstance"},
+            "items": [{"@class": "NumberDescriptor",
+                    "defaultInstance": {"@class": "NumberInstance",
+                        "history": [],
+                        "value": 1.0
+                    },
+                    "defaultValue": 1.0,
+                    "label": "Phase 1",
+                    "maxValue": 2,
+                    "minValue": 1,
+                    "name": "period_1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null
+                },
+                {"@class": "NumberDescriptor",
+                    "defaultInstance": {"@class": "NumberInstance",
+                        "history": [],
+                        "value": 1.0
+                    },
+                    "defaultValue": 1.0,
+                    "label": "Phase 2",
+                    "maxValue": 10,
+                    "minValue": 1,
+                    "name": "currentPeriod_1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null
+                }
+            ],
+            "label": "Periods",
+            "name": "periods",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "ListDescriptor",
+            "defaultInstance": {"@class": "ListInstance"},
+            "items": [{"@class": "ListDescriptor",
+                    "defaultInstance": {"@class": "ListInstance"},
+                    "items": [{"@class": "ListDescriptor",
+                            "defaultInstance": {"@class": "ListInstance"},
+                            "items": [{"@class": "QuestionDescriptor",
+                                    "allowMultipleReplies": false,
+                                    "defaultInstance": {"@class": "QuestionInstance",
+                                        "active": true,
+                                        "replies": [],
+                                        "unread": true
+                                    },
+                                    "description": "",
+                                    "items": [{"@class": "SingleResultChoiceDescriptor",
+                                            "cost": 0,
+                                            "defaultInstance": {"@class": "ChoiceInstance",
+                                                "active": true,
+                                                "currentResultIndex": 0,
+                                                "unread": true
+                                            },
+                                            "description": "",
+                                            "duration": 1,
+                                            "label": "Positif",
+                                            "name": "oui",
+                                            "results": [{"@class": "Result",
+                                                    "answer": "<p>Vous devriez aller voire Hector</p>",
+                                                    "files": [],
+                                                    "impact": {"@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"management\").add(self, 1);\nVariable.find(gameModel, \"jessica_1_1\").enable(self);",
+                                                        "language": "JavaScript"
+                                                    },
+                                                    "name": ""
+                                                }],
+                                            "scope": {"@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "title": "Je d√©cide de l'√©couter"
+                                        },
+                                        {"@class": "SingleResultChoiceDescriptor",
+                                            "cost": 0,
+                                            "defaultInstance": {"@class": "ChoiceInstance",
+                                                "active": true,
+                                                "currentResultIndex": 0,
+                                                "unread": true
+                                            },
+                                            "description": "",
+                                            "duration": 1,
+                                            "label": "Non",
+                                            "name": "non",
+                                            "results": [{"@class": "Result",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {"@class": "Script",
+                                                        "content": "",
+                                                        "language": "JavaScript"
+                                                    },
+                                                    "name": ""
+                                                }],
+                                            "scope": {"@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "title": "Non"
+                                        }
+                                    ],
+                                    "label": "Hector vous fait part d'une id√©e",
+                                    "name": "question",
+                                    "pictures": [],
+                                    "scope": {"@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "title": ""
+                                }],
+                            "label": "Period 1",
+                            "name": "period1",
+                            "scope": {"@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null
+                        },
+                        {"@class": "ListDescriptor",
+                            "defaultInstance": {"@class": "ListInstance"},
+                            "items": [],
+                            "label": "Period 2",
+                            "name": "period2_1",
+                            "scope": {"@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null
+                        }
+                    ],
+                    "label": "Phase 1",
+                    "name": "phase1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null
+                },
+                {"@class": "ListDescriptor",
+                    "defaultInstance": {"@class": "ListInstance"},
+                    "items": [{"@class": "ListDescriptor",
+                            "defaultInstance": {"@class": "ListInstance"},
+                            "items": [{"@class": "QuestionDescriptor",
+                                    "allowMultipleReplies": false,
+                                    "defaultInstance": {"@class": "QuestionInstance",
+                                        "active": true,
+                                        "replies": [],
+                                        "unread": true
+                                    },
+                                    "description": "",
+                                    "items": [],
+                                    "label": "Question",
+                                    "name": "question_1",
+                                    "pictures": [],
+                                    "scope": {"@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "title": ""
+                                }],
+                            "label": "Period 1",
+                            "name": "period1_1",
+                            "scope": {"@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null
+                        }],
+                    "label": "Phase 2",
+                    "name": "phase2",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null
+                }
+            ],
+            "label": "Questions",
+            "name": "questions",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "ListDescriptor",
+            "defaultInstance": {"@class": "ListInstance"},
+            "items": [{"@class": "ListDescriptor",
+                    "defaultInstance": {"@class": "ListInstance"},
+                    "items": [{"@class": "ListDescriptor",
+                            "defaultInstance": {"@class": "ListInstance"},
+                            "items": [{"@class": "QuestionDescriptor",
+                                    "allowMultipleReplies": true,
+                                    "defaultInstance": {"@class": "QuestionInstance",
+                                        "active": true,
+                                        "replies": [],
+                                        "unread": true
+                                    },
+                                    "description": "<p>Vous aurez plus de cartes temps si vous faites cela.</p>",
+                                    "items": [{"@class": "ChoiceDescriptor",
+                                            "cost": 0,
+                                            "defaultInstance": {"@class": "ChoiceInstance",
+                                                "active": true,
+                                                "currentResultIndex": -1,
+                                                "unread": true
+                                            },
+                                            "description": "",
+                                            "duration": 1,
+                                            "label": "Choix",
+                                            "name": "laPremi_reFois",
+                                            "results": [{"@class": "Result",
+                                                    "answer": "<p>Ok voici 4†cartes temps</p>",
+                                                    "files": [],
+                                                    "impact": {"@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"timeCards\").add(self, 4);\nVariable.find(gameModel, \"laPremi_reFois\").setCurrentResult(self, \"les fois suivantes\");\nVariable.find(gameModel, \"management\").sub(self, 5);",
+                                                        "language": "JavaScript"
+                                                    },
+                                                    "name": "1ere fois"
+                                                },
+                                                {"@class": "Result",
+                                                    "answer": "<p>Faut pas ÈxagÈrer, une fois c'est assez</p>",
+                                                    "files": [],
+                                                    "impact": {"@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"management\").sub(self, 5);",
+                                                        "language": "JavaScript"
+                                                    },
+                                                    "name": "les fois suivantes"
+                                                }
+                                            ],
+                                            "scope": {"@class": "TeamScope",
+                                                "broadcastScope": "PlayerScope"
+                                            },
+                                            "title": ""
+                                        }],
+                                    "label": "Demander du temps √  la direction",
+                                    "name": "question_2",
+                                    "pictures": [],
+                                    "scope": {"@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "title": "Demander du temps √  la direction"
+                                }],
+                            "label": "Period 1",
+                            "name": "period1_2",
+                            "scope": {"@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null
+                        },
+                        {"@class": "ListDescriptor",
+                            "defaultInstance": {"@class": "ListInstance"},
+                            "items": [],
+                            "label": "Period 2",
+                            "name": "period2",
+                            "scope": {"@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null
+                        }
+                    ],
+                    "label": "Phase 1",
+                    "name": "phase1_1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null
+                },
+                {"@class": "ListDescriptor",
+                    "defaultInstance": {"@class": "ListInstance"},
+                    "items": [{"@class": "ListDescriptor",
+                            "defaultInstance": {"@class": "ListInstance"},
+                            "items": [{"@class": "QuestionDescriptor",
+                                    "allowMultipleReplies": false,
+                                    "defaultInstance": {"@class": "QuestionInstance",
+                                        "active": true,
+                                        "replies": [],
+                                        "unread": true
+                                    },
+                                    "description": "",
+                                    "items": [],
+                                    "label": "Question",
+                                    "name": "question_1_1",
+                                    "pictures": [],
+                                    "scope": {"@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "title": ""
+                                }],
+                            "label": "Period 1",
+                            "name": "period1_1_1",
+                            "scope": {"@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "title": null
+                        }],
+                    "label": "Phase 2",
+                    "name": "phase2_1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null
+                }
+            ],
+            "label": "Actions",
+            "name": "actions",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "ListDescriptor",
+            "defaultInstance": {"@class": "ListInstance"},
+            "items": [{"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "1",
+                            "male": "true",
+                            "picture": "/jessicaNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Jessica",
+                    "name": "jessica",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Jessica"
+                },
+                {"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "1",
+                            "male": "true",
+                            "picture": "/marieNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Marie",
+                    "name": "marie",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Marie"
+                },
+                {"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1,
+                            1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "1",
+                            "male": "false",
+                            "picture": "/danielaNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Daniela",
+                    "name": "daniela",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Daniela"
+                },
+                {"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "1",
+                            "male": "true",
+                            "picture": "/hectorNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Hector",
+                    "name": "hector",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Hector"
+                },
+                {"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1,
+                            1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "1",
+                            "male": "true",
+                            "picture": "/fernandNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Fernand",
+                    "name": "fernand",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Fernand"
+                },
+                {"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1,
+                            1,
+                            1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "1",
+                            "male": "true",
+                            "picture": "/lucienNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Lucien",
+                    "name": "lucien",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Lucien"
+                },
+                {"@class": "ResourceDescriptor",
+                    "defaultInstance": {"@class": "ResourceInstance",
+                        "active": true,
+                        "activities": [],
+                        "assignments": [],
+                        "confidence": 1,
+                        "confidenceHistory": [1,
+                            1,
+                            1,
+                            1,
+                            1
+                        ],
+                        "moral": 50,
+                        "moralHistory": [50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50,
+                            50
+                        ],
+                        "occupations": [],
+                        "properties": {"experience": "70",
+                            "leadershipLevel": "3",
+                            "male": "true",
+                            "picture": "/sylvieNeutre.png",
+                            "salary": "6000"
+                        },
+                        "skillsets": {}
+                    },
+                    "description": "",
+                    "label": "Sylvie",
+                    "name": "sylvie",
+                    "properties": {},
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": "Sylvie"
+                }
+            ],
+            "label": "Team",
+            "name": "team",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "ListDescriptor",
+            "defaultInstance": {"@class": "ListInstance"},
+            "items": [{"@class": "DialogueDescriptor",
+                    "content": null,
+                    "defaultInstance": {"@class": "FSMInstance",
+                        "currentState": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 291,
+                                "y": 10
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>Bonjour</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>Bonjour Jess! Tu as fait du bon boulot la semaine derniËre.</p>",
+                                    "nextStateId": 2,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                },
+                                {"@class": "DialogueTransition",
+                                    "actionText": "<p>Bonjour Jessica. Ton travail de cet semaine Ètait nul!</p>",
+                                    "nextStateId": 3,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }
+                            ]
+                        },
+                        "currentStateId": 1,
+                        "enabled": true
+                    },
+                    "label": "Jessica - Retour sur le travail",
+                    "name": "jessica_1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "states": {"1": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 291,
+                                "y": 10
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>Bonjour</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>Bonjour Jess! Tu as fait du bon boulot la semaine derniËre.</p>",
+                                    "nextStateId": 2,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                },
+                                {"@class": "DialogueTransition",
+                                    "actionText": "<p>Bonjour Jessica. Ton travail de cet semaine Ètait nul!</p>",
+                                    "nextStateId": 3,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }
+                            ]
+                        },
+                        "2": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 447,
+                                "y": 241
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>Ah je suis contente de l'apprendre</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>Partir</p>",
+                                    "nextStateId": 2,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"jessica_1\").disable(self);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        },
+                        "3": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 133,
+                                "y": 241
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>J'ai fait de mon mieux pourtant</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>Partir</p>",
+                                    "nextStateId": 3,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"jessica_1\").disable(self);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "title": null
+                },
+                {"@class": "DialogueDescriptor",
+                    "content": null,
+                    "defaultInstance": {"@class": "FSMInstance",
+                        "currentState": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 135,
+                                "y": 86
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>Bonjour</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>Bonjour†Hector, j'ai bien reÁu ta proposition.</p>",
+                                    "nextStateId": 3,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        },
+                        "currentStateId": 1,
+                        "enabled": false
+                    },
+                    "label": "Hector Questions",
+                    "name": "jessica_1_1",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "states": {"1": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 135,
+                                "y": 86
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>Bonjour</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>Bonjour†Hector, j'ai bien reÁu ta proposition.</p>",
+                                    "nextStateId": 3,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        },
+                        "3": {"@class": "DialogueState",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 399,
+                                "y": 91
+                            },
+                            "label": null,
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "text": "<p>Merci. Je vais y rÈflÈchir alors</p>",
+                            "transitions": [{"@class": "DialogueTransition",
+                                    "actionText": "<p>retour</p>",
+                                    "nextStateId": 3,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"jessica_1_1\").disable(self);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "title": null
+                }
+            ],
+            "label": "Dialogues",
+            "name": "dialogues",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "ListDescriptor",
+            "defaultInstance": {"@class": "ListInstance"},
+            "items": [{"@class": "FSMDescriptor",
+                    "defaultInstance": {"@class": "FSMInstance",
+                        "currentState": {"@class": "State",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 9,
+                                "y": 140
+                            },
+                            "label": "Etat initial",
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{"@class": "Transition",
+                                    "nextStateId": 2,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"mailBox\").sendMessage(self, \"Professeur\", \"Bienvenue\", \"<p>Bienvenue sur leaderway</p>\", []);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        },
+                        "currentStateId": 3,
+                        "enabled": true
+                    },
+                    "label": "Passage semaine",
+                    "name": "stateMachine",
+                    "scope": {"@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "states": {"2": {"@class": "State",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 261,
+                                "y": 142
+                            },
+                            "label": "Phase 1 - P√©riode 1",
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{"@class": "Transition",
+                                    "nextStateId": 2,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "RequestManager.sendCustomEvent(\"popupEvent\", {\"content\":\"<p>You must reply all questions</p>\"});",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"question\").isNotReplied(self) && Event.fired(\"nextPeriod\")",
+                                        "language": "JavaScript"
+                                    }
+                                },
+                                {"@class": "Transition",
+                                    "nextStateId": 4,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"period_1\").add(self, 1);\nVariable.find(gameModel, \"timeCards\").setValue(self, 15);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "Event.fired(\"nextPeriod\") && Variable.find(gameModel, \"question\").isReplied(self)",
+                                        "language": "JavaScript"
+                                    }
+                                }
+                            ]
+                        },
+                        "3": {"@class": "State",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 9,
+                                "y": 140
+                            },
+                            "label": "Etat initial",
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{"@class": "Transition",
+                                    "nextStateId": 2,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"mailBox\").sendMessage(self, \"Professeur\", \"Bienvenue\", \"<p>Bienvenue sur leaderway</p>\", []);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        },
+                        "4": {"@class": "State",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 521,
+                                "y": 144
+                            },
+                            "label": "Phase 1 - P√©riode 2",
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{"@class": "Transition",
+                                    "nextStateId": 5,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"currentPhase\").add(self, 1);\nVariable.find(gameModel, \"timeCards\").setValue(self, 15);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "Event.fired(\"nextPeriod\")",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        },
+                        "5": {"@class": "State",
+                            "editorPosition": {"@class": "Coordinate",
+                                "x": 773,
+                                "y": 142
+                            },
+                            "label": "Phase 2 - P√©riode 1",
+                            "onEnterEvent": {"@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{"@class": "Transition",
+                                    "nextStateId": 5,
+                                    "preStateImpact": {"@class": "Script",
+                                        "content": "Variable.find(gameModel, \"currentPeriod_1\").add(self, 1);\nVariable.find(gameModel, \"timeCards\").setValue(self, 15);",
+                                        "language": "JavaScript"
+                                    },
+                                    "triggerCondition": {"@class": "Script",
+                                        "content": "Event.fired(\"nextPeriod\")",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "title": null
+                }],
+            "label": "Triggers",
+            "name": "triggers",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "TextDescriptor",
+            "defaultInstance": {"@class": "TextInstance",
+                "value": "<p>Welcome to†Leaderway</p>"
+            },
+            "label": "Home page",
+            "name": "homePage",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "InboxDescriptor",
+            "defaultInstance": {"@class": "InboxInstance",
+                "messages": [],
+                "unreadCount": 0
+            },
+            "description": null,
+            "label": "Mail box",
+            "name": "mailBox",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        },
+        {"@class": "InboxDescriptor",
+            "defaultInstance": {"@class": "InboxInstance",
+                "messages": [],
+                "unreadCount": 0
+            },
+            "description": null,
+            "label": "History",
+            "name": "history",
+            "scope": {"@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "title": null
+        }
+    ],
+    "clientScriptLibrary": {"default": {"@class": "GameModelContent",
+            "content": "",
+            "contentType": null
+        }},
+    "createdByName": "Adminr  rrrrrr",
+    "createdTime": 1395843992212,
+    "cssLibrary": {"Default": {"@class": "GameModelContent",
+            "content": "/* Layout */\r\n.wegas-playerview {\r\n    font-family: Arial, Helvetica, sans-serif;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content {\r\n    background: url(wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) repeat-x 0 0,\r\n    url(wegas-cep/images/templatemo_banner_bg_wrapper.jpg) repeat-x 0 100px;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content:after {\r\n    content: \" ¬© 2014 Albasim\";\r\n    position: absolute;\r\n    bottom: 0px;\r\n    height: 50px;\r\n    width: 100%;\r\n    background: url(wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;\r\n    font-size: 11px;\r\n    text-align: center;\r\n    padding-top: 15px;\r\n}\r\n\r\n/* Period/phases */\r\n.wegas-template-valuebox-unit {\r\n    float:left;\r\n    padding: 0px 4px;\r\n    color: white;\r\n    margin: 1px 0;\r\n    border:none;\r\n    border-right: 1px solid lightgray;\r\n    background: none;\r\n}\r\n.wegas-template-valuebox-unit:last-child {\r\n    border-right:none;\r\n}\r\n.wegas-template-valuebox-selected {\r\n    background-color:white;\r\n    color: black;\r\n}\r\n\r\n.wegas-template-valuebox label {\r\n    display: inline-block;\r\n    vertical-align: top;\r\n    margin-top: 5px;\r\n    margin-right: 5px;\r\n}\r\n.wegas-template-valuebox-units,\r\n.wegas-template-title div {\r\n    display: inline-block;\r\n    padding:0px 2px;\r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    background-color: #0981A9;\r\n    margin-top: 3px;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n.wegas-template-title div {\r\n    padding:2px 6px 1px;\r\n}\r\n\r\n/* Time cards */\r\n.wegas-template-box label, .wegas-template-box-value {\r\n    font-size: 11px;\r\n}\r\n.wegas-template-box-unit {\r\n    width: 7px;\r\n    height:10px;\r\n    float:left;\r\n    border: none;\r\n    border-radius: 2px;\r\n    background-color: #0981A9;\r\n    margin: 1px 1px 0 0;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Gauges */ \r\n.wegas-gauge-content {\r\n    font-size: 10px;\r\n}\r\n\r\n/* Icons */\r\n.cep-icon {\r\n    display: inline-block;\r\n    width: 20px;\r\n    height: 19px;\r\n    margin: -2px 4px 0 0;\r\n    background-image: url(wegas-cep/images/cep-icons.png);\r\n}\r\n.cep-icon-questions {\r\n    background-position:0 -86px;\r\n}\r\n.cep-icon-home {\r\n    background-position:0 -157px;\r\n}\r\n.cep-icon-history {\r\n    background-position:0 -121px;\r\n}\r\n.cep-icon-mail {\r\n    background-position:0 -47px;\r\n}\r\n.cep-icon-employees {\r\n    background-position:0 -245px;\r\n}\r\n.cep-icon-actions {\r\n    background-position:0 -190px;\r\n}\r\n\r\n\r\n/* Team */\r\n.wegas-cep-folder  {\r\n    width: 99%;\r\n    margin: 0 0.5%;\r\n    margin-bottom: 20px;\r\n}\r\n/*selectors*/\r\n.selectors {\r\n    text-align:center;\r\n    white-space:nowrap;\r\n}\r\n.selector {\r\n    display:inline-block;\r\n    width:100px;\r\n    text-align: center;\r\n    margin:10px;\r\n    padding:5px;\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    position: relative;\r\n}\r\n.wegas-cep-itemselector-content .yui3-scrollview{\r\n    background:none;\r\n}\r\n.selector .cep-folder-talk {\r\n    width:35px;\r\n    height:29px;\r\n    background: url(../../wegas-leaderway/images/talk-30.png) no-repeat;\r\n    position: absolute;\r\n    top: -6px;\r\n    left: 15px;\r\n}\r\n.selectors .current{\r\n    background: rgba(60, 100, 200, 0.3);\r\n}\r\n.selector:hover{\r\n    box-shadow: 0px 0px 4px #000000;\r\n    cursor:pointer;\r\n}\r\n.selector .nodeformatter-properties .label{\r\n    display: none;\r\n}\r\n/*informations*/\r\n.informations{\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    padding:10px;\r\n}\r\n.informations .titre{\r\n    font-weight: bold;\r\n    margin: 10px 0;\r\n}\r\n.informations .picture{\r\n    position:absolute;\r\n    margin-left:785px;\r\n    background-color: lightgray;\r\n    border:1px solid darkgray;\r\n}\r\n.informations .nodeformatter-properties{\r\n    margin:10px 0;\r\n    max-width: 760px;\r\n}\r\n.informations .nodeformatter-properties span{\r\n    display:inline-block;\r\n    vertical-align: top;\r\n}\r\n.informations .nodeformatter-valuebox {\r\n    clear:both;\r\n    height:15px;\r\n    margin:10px 0;\r\n}\r\n.informations .nodeformatter-valuebox .label,\r\n.informations .nodeformatter-valuebox .box-units,\r\n.informations .nodeformatter-valuebox .box-value{\r\n    float:left;\r\n}\r\n.informations .label{\r\n    width:80px;\r\n}\r\n.informations .nodeformatter-valuebox .box-units{\r\n    display:block;\r\n    background: rgba(60, 100, 200, 0.3);\r\n    width:200px;\r\n    height:15px;\r\n    font-size: 1em;\r\n    border: darkgray solid 1px;\r\n    overflow: hidden;\r\n}\r\n.informations .nodeformatter-valuebox .box-unit{\r\n    display:block;\r\n    background-color:#6F89A2;\r\n    background-image:url(../../wegas-cep/images/gaugeFiller.png);\r\n    background-repeat: repeat-x;\r\n    float:left;\r\n    width:2px;\r\n    height:15px;\r\n}\r\n.informations .nodeformatter-valuebox .box-value{\r\n    margin-left: 5px;\r\n    font-size: 0.8em;\r\n}\r\n.informations .nodeformatter-position{\r\n    margin:10px 0;\r\n}\r\n.informations li{\r\n    color:#6F89A2;\r\n    max-width: 759px;\r\n    margin-left:15px;\r\n}\r\n.informations .nodeformatter-position .previous{\r\n    color:black;\r\n}\r\n.informations .nodeformatter-position .current{\r\n    list-style-type:circle;\r\n    color:black;\r\n}\r\n\r\n.wegas-cep-folder .yui3-button {\r\n    color: rgb(255, 255, 255);\r\n    background-color: rgb(175, 3, 3);\r\n    padding: 7px 12px;\r\n    font-weight: bold;\r\n    text-shadow: rgb(211, 72, 72) 1px 2px 1px;\r\n    position: absolute;\r\n    top: 285px;\r\n    right: 24px;\r\n    width: 152px;\r\n}\r\n\r\n.wegas-panel-content {\r\n    padding: 20px;\r\n}\r\n.cep-folder-panel .cep-folder-picture {\r\n    float: left;\r\n    border: 1px solid darkgray;\r\n    background: white;\r\n    height: 250px;\r\n    width: 285px;\r\n}\r\n.cep-folder-panel .wegas-simpledialogue {\r\n    width: 562px;\r\n    float: right;\r\n}\r\n.cep-folder-panel .talk {\r\n    text-align: left;\r\n    margin-top: 20px;\r\n    margin-bottom: 40px;\r\n}\r\n.cep-folder-panel .response {\r\n    text-align: right;\r\n}\r\n.cep-folder-panel .response li {\r\n    margin-bottom: 8px;\r\n    cursor: pointer;\r\n}\r\n.cep-folder-panel .response li:hover {\r\n    text-decoration: underline;\r\n}",
+            "contentType": null
+        }},
+    "description": "",
+    "name": "Leaderway v2",
+    "pages": {"1": {"@name": "Main",
+            "children": [{"custom": "<div class='wegas-template-title'>\n    <label>Phase</label>\n    <div><%= this.variable.getLabel() || 'Undefined' %></div>\n</div>",
+                    "data": {},
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "70px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "14px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "Template",
+                    "variable": {"content": "Variable.find(gameModel, \"periods\").item(currentPhase.value-1)"}
+                },
+                {"data": {"label": "Period"},
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "70px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "39px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "26px",
+                                    "width": "223px"
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "ValueboxTemplate",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"periods\").item(currentPhase.value-1)",
+                        "language": "JavaScript"
+                    }
+                },
+                {"data": {},
+                    "label": "<span class=\"cep-icon cep-icon-home\"></span>Home",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "70px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "72px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 12px 0px 10px"
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"styles": {"height": "27px",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"subpageId": "2",
+                                "subpageVariable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                },
+                                "targetEvent": "click",
+                                "targetPageLoaderId": "maindisplayarea"
+                            },
+                            "fn": "OpenPageAction"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"data": {},
+                    "label": "<span class=\"cep-icon cep-icon-history\"></span>History",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "554px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "72px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 12px 0px 10px"
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"styles": {"height": "27px",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"subpageId": "7",
+                                "subpageVariable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                },
+                                "targetEvent": "click",
+                                "targetPageLoaderId": "maindisplayarea"
+                            },
+                            "fn": "OpenPageAction"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"data": {},
+                    "label": "<span class=\"cep-icon cep-icon-mail\"></span>Mails",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "458px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "72px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 0 0"
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"styles": {"height": "27px",
+                                    "width": "93px"
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"subpageId": "6",
+                                "subpageVariable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                },
+                                "targetEvent": "click",
+                                "targetPageLoaderId": "maindisplayarea"
+                            },
+                            "fn": "OpenPageAction"
+                        },
+                        {"cfg": {"variable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"mailBox\");"
+                                }},
+                            "fn": "UnreadCount"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"data": {},
+                    "label": "<span class=\"cep-icon cep-icon-employees\"></span>Team",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "366px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "72px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 0 0"
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"styles": {"height": "27px",
+                                    "width": "89px"
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"subpageId": "5",
+                                "subpageVariable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                },
+                                "targetEvent": "click",
+                                "targetPageLoaderId": "maindisplayarea"
+                            },
+                            "fn": "OpenPageAction"
+                        },
+                        {"cfg": {"variable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"dialogues\");"
+                                }},
+                            "fn": "UnreadCount"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"data": {},
+                    "label": "<span class=\"cep-icon cep-icon-actions\"></span>Actions",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "267px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "72px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 0 0"
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"styles": {"height": "27px",
+                                    "width": "97px"
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"subpageId": "4",
+                                "subpageVariable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                },
+                                "targetEvent": "click",
+                                "targetPageLoaderId": "maindisplayarea"
+                            },
+                            "fn": "OpenPageAction"
+                        },
+                        {"cfg": {"variable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"actions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)",
+                                    "language": "JavaScript"
+                                }},
+                            "fn": "UnreadCount"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"data": {},
+                    "label": "<span class=\"cep-icon cep-icon-questions\"></span>Questions",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "153px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "72px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 0 0px "
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"styles": {"height": "27px",
+                                    "width": "111px"
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"subpageId": "3",
+                                "subpageVariable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                },
+                                "targetEvent": "click",
+                                "targetPageLoaderId": "maindisplayarea"
+                            },
+                            "fn": "OpenPageAction"
+                        },
+                        {"cfg": {"variable": {"@class": "Script",
+                                    "content": "Variable.find(gameModel, \"questions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)",
+                                    "language": "JavaScript"
+                                }},
+                            "fn": "UnreadCount"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"cssClass": "menu-loginbutton",
+                    "data": {},
+                    "labelIsUser": false,
+                    "plugins": [{"cfg": {"styles": {"position": "absolute",
+                                    "right": "0px",
+                                    "top": "72px"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"styles": {"border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "fontSize": "10px",
+                                    "fontWeight": "bolder",
+                                    "padding": "5px 20px 0px 12px"
+                                }},
+                            "fn": "CSSStyles"
+                        }
+                    ],
+                    "preferencePageId": {},
+                    "targetPageLoader": {},
+                    "type": "LoginButton"
+                },
+                {"defaultPageId": "2",
+                    "page": {},
+                    "pageLoaderId": "maindisplayarea",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "0px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "102px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "",
+                                    "width": "980px"
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"styles": {"background": "url(wegas-cep/images/templatemo_banner_bg.jpg)  no-repeat 0 -1px",
+                                    "minHeight": "278px"
+                                }},
+                            "fn": "CSSStyles"
+                        }
+                    ],
+                    "type": "PageLoader",
+                    "variable": {}
+                },
+                {"data": {},
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "",
+                                    "position": "absolute",
+                                    "right": "0px",
+                                    "top": "6px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "66px",
+                                    "width": "64px"
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "BoxTemplate",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"timeCards\");"
+                    }
+                },
+                {"cfg": {},
+                    "label": "",
+                    "percentMaxValue": 200,
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "789.5px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "0px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "74px",
+                                    "width": "104px"
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "GaugeDisplay",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"management\");"
+                    }
+                },
+                {"cfg": {},
+                    "label": "",
+                    "percentMaxValue": 200,
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "651.5px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "0px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "77px",
+                                    "width": "98px"
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "GaugeDisplay",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"users\");"
+                    }
+                },
+                {"cfg": {},
+                    "label": "Team",
+                    "percentMaxValue": 200,
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "721.5px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "0px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "86px",
+                                    "width": "96px"
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "GaugeDisplay",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"users\");"
+                    }
+                },
+                {"data": {},
+                    "label": "Next week",
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "288.5px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "16px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "46px",
+                                    "width": "100px"
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"styles": {"color": "#ffffff",
+                                    "fontSize": "",
+                                    "fontStyle": "",
+                                    "textAlign": ""
+                                }},
+                            "fn": "CSSText"
+                        },
+                        {"cfg": {"styles": {"backgroundColor": "#AF0303"}},
+                            "fn": "CSSBackground"
+                        },
+                        {"cfg": {"styles": {"fontWeight": "bold",
+                                    "padding": "13px 12px",
+                                    "textShadow": "1px 2px 1px #D34848"
+                                }},
+                            "fn": "CSSStyles"
+                        },
+                        {"cfg": {"onClick": {"@class": "Script",
+                                    "content": "Event.fire(\"nextPeriod\");"
+                                },
+                                "targetEvent": "click"
+                            },
+                            "fn": "ExecuteScriptAction"
+                        }
+                    ],
+                    "type": "Button"
+                },
+                {"plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "1px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "17px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "65px",
+                                    "width": "63px"
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "type": "Image",
+                    "url": "wegas-pmg/images/pmg-logo-1.png"
+                }
+            ],
+            "cssClass": "layout",
+            "plugins": [{"cfg": {"styles": {"height": "",
+                            "width": "980px"
+                        }},
+                    "fn": "CSSSize"
+                }],
+            "type": "AbsoluteLayout"
+        },
+        "2": {"@name": "Accueil",
+            "children": [{"data": {},
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "0px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "0px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        },
+                        {"cfg": {"styles": {"padding": "20px"}},
+                            "fn": "CSSStyles"
+                        }
+                    ],
+                    "type": "TextTemplate",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"homePage\");"
+                    }
+                }],
+            "type": "AbsoluteLayout"
+        },
+        "3": {"@name": "Questions",
+            "showUnanswered": true,
+            "type": "MCQTabView",
+            "variable": {"@class": "Script",
+                "content": "Variable.find(gameModel, \"questions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)",
+                "language": "JavaScript"
+            }
+        },
+        "4": {"@name": "Actions",
+            "showUnanswered": true,
+            "type": "MCQTabView",
+            "variable": {"@class": "Script",
+                "content": "Variable.find(gameModel, \"actions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)",
+                "language": "JavaScript"
+            }
+        },
+        "5": {"@name": "Team",
+            "children": [{"informations": [{"className": "titre",
+                            "name": "Informations personnelles : "
+                        },
+                        {"className": "picture",
+                            "height": "150",
+                            "name": "picture",
+                            "type": "image",
+                            "width": "150"
+                        },
+                        {"label": "Nom : ",
+                            "name": "label"
+                        },
+                        {"label": "Salaire : ",
+                            "name": "salary"
+                        },
+                        {"label": "Moral : ",
+                            "maxValue": 100,
+                            "name": "moral",
+                            "type": "valueBox"
+                        },
+                        {"label": "Exp√©rience : ",
+                            "maxValue": 100,
+                            "name": "experience",
+                            "type": "valueBox"
+                        },
+                        {"label": "Description : ",
+                            "name": "description"
+                        },
+                        {"html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un mod√®le √  atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'√©nergie que vous avez d√©pens√© pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sait ce que vous avez fait pour l'entreprise et travaillera √  son tour pour la d√©velopper.</li><li>Niveau 1 : Elle suis vos directives car elle vous consid√®re et pense que vos choix sont justifi√©s.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos m√©thodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
+                            "invert": "true",
+                            "minVal": -1,
+                            "name": "leadershipLevel",
+                            "selector": "li",
+                            "type": "position"
+                        }
+                    ],
+                    "listVariables": "team",
+                    "plugins": [{"cfg": {"styles": {"left": "0px",
+                                    "position": "absolute",
+                                    "top": "0px"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {}},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "searchInProperties": ["properties"],
+                    "selectors": [{"height": 35,
+                            "name": "picture",
+                            "type": "image",
+                            "width": 35
+                        },
+                        {"label": "Pr√©nom : ",
+                            "name": "label"
+                        }
+                    ],
+                    "type": "CEPFolder"
+                }],
+            "plugins": [{"cfg": {"styles": {}},
+                    "fn": "CSSSize"
+                }],
+            "type": "AbsoluteLayout"
+        },
+        "6": {"@name": "Mails",
+            "children": [{"plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "0px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "0px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "setToReadAfter": 0.050000000000000003,
+                    "template": "inbox",
+                    "type": "InboxDisplay",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"mailBox\");",
+                        "language": "JavaScript"
+                    }
+                }],
+            "type": "AbsoluteLayout"
+        },
+        "7": {"@name": "History",
+            "children": [{"id": 7,
+                    "plugins": [{"cfg": {"styles": {"bottom": "",
+                                    "left": "0px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "0px",
+                                    "zIndex": "10"
+                                }},
+                            "fn": "CSSPosition"
+                        },
+                        {"cfg": {"styles": {"height": "",
+                                    "width": ""
+                                }},
+                            "fn": "CSSSize"
+                        }
+                    ],
+                    "setToReadAfter": 0.050000000000000003,
+                    "template": "clean",
+                    "type": "InboxDisplay",
+                    "variable": {"@class": "Script",
+                        "content": "Variable.find(gameModel, \"history\");"
+                    }
+                }],
+            "type": "AbsoluteLayout"
+        },
+        "@class": "GameModel"
+    },
+    "properties": {},
+    "scriptLibrary": {"default": {"@class": "GameModelContent",
+            "content": "/**\r\n * History\r\n **/\r\nfunction sendHistory(type, title, msg) {\r\n    var phase = periods.getDescriptor().item(currentPhase.value - 1),\r\n            phaseText = type + \" - \" + phase.label + \" (\" + phase.getInstance().value + \")\";\r\n    Variable.find(gameModel, \"history\").sendMessage(self, phaseText, title, msg, []);\r\n}\r\n\r\nEvent.on(\"replyValidate\", function(e) {\r\n    var msg = \"\", root;\r\n    /* Assume third level*/\r\n    root = Variable.findParentList(e.question.getDescriptor());\r\n    root = Variable.findParentList(root);\r\n    root = Variable.findParentList(root);\r\n    msg += \"<b>\" + e.choice.getDescriptor().getTitle() + \"</b><br>\"; // Choice selected\r\n    msg += e.choice.getDescriptor().getDescription() + \"<br><hr><br>\"; // choice description\r\n    msg += e.reply.getResult().getAnswer(); //Reply\r\n\r\n    sendHistory(root.label, e.question.getDescriptor().getTitle(), msg, []);\r\n});",
+            "contentType": null
+        }},
+    "template": true
+}

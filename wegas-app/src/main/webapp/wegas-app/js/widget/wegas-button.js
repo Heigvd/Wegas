@@ -219,6 +219,13 @@ YUI.add("wegas-button", function(Y) {
                         if (instance.get("replies")) {
                             count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
                         }
+                    } else if (Wegas.persistence.FSMDescriptor
+                            && items[i] instanceof Wegas.persistence.FSMDescriptor) {
+                        instance = items[i].getInstance();
+                        //count += instance.get("unread") ? 1 : 0;
+                        if (instance.get("enabled")) {
+                            count += 1;
+                        }
                     }
                 }
             }

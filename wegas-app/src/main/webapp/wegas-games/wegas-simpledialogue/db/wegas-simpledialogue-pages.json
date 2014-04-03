@@ -14,7 +14,10 @@
                 "label": "Glaces mangées"
             }
         },{
-            "type": "SimpleDialogueMain"
+            "type": "SimpleDialogue",
+            "dialogueVariable": {                
+                "content": "Variable.find('simpleDialogue')"
+            }
         }]
     }
 }
