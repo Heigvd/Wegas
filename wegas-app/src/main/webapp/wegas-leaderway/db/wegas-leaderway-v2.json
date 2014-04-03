@@ -2,9 +2,9 @@
     "childVariableDescriptors": [{"@class": "NumberDescriptor",
             "defaultInstance": {"@class": "NumberInstance",
                 "history": [],
-                "value": 100.0
+                "value": 100
             },
-            "defaultValue": 100.0,
+            "defaultValue": 100,
             "label": "Management",
             "maxValue": 200,
             "minValue": 0,
@@ -17,9 +17,9 @@
         {"@class": "NumberDescriptor",
             "defaultInstance": {"@class": "NumberInstance",
                 "history": [],
-                "value": 100.0
+                "value": 100
             },
-            "defaultValue": 100.0,
+            "defaultValue": 100,
             "label": "Users",
             "maxValue": 200,
             "minValue": 0,
@@ -32,9 +32,9 @@
         {"@class": "NumberDescriptor",
             "defaultInstance": {"@class": "NumberInstance",
                 "history": [],
-                "value": 10.0
+                "value": 10
             },
-            "defaultValue": 10.0,
+            "defaultValue": 10,
             "label": "Time cards",
             "maxValue": null,
             "minValue": null,
@@ -47,9 +47,9 @@
         {"@class": "NumberDescriptor",
             "defaultInstance": {"@class": "NumberInstance",
                 "history": [],
-                "value": 1.0
+                "value": 1
             },
-            "defaultValue": 1.0,
+            "defaultValue": 1,
             "label": "Current phase",
             "maxValue": 10,
             "minValue": 0,
@@ -64,9 +64,9 @@
             "items": [{"@class": "NumberDescriptor",
                     "defaultInstance": {"@class": "NumberInstance",
                         "history": [],
-                        "value": 1.0
+                        "value": 1
                     },
-                    "defaultValue": 1.0,
+                    "defaultValue": 1,
                     "label": "Phase 1",
                     "maxValue": 2,
                     "minValue": 1,
@@ -79,9 +79,9 @@
                 {"@class": "NumberDescriptor",
                     "defaultInstance": {"@class": "NumberInstance",
                         "history": [],
-                        "value": 1.0
+                        "value": 1
                     },
-                    "defaultValue": 1.0,
+                    "defaultValue": 1,
                     "label": "Phase 2",
                     "maxValue": 10,
                     "minValue": 1,
@@ -136,7 +136,7 @@
                                             "scope": {"@class": "TeamScope",
                                                 "broadcastScope": "TeamScope"
                                             },
-                                            "title": "Je dÃ©cide de l'Ã©couter"
+                                            "title": "Je décide de l'écouter"
                                         },
                                         {"@class": "SingleResultChoiceDescriptor",
                                             "cost": 0,
@@ -164,7 +164,7 @@
                                             "title": "Non"
                                         }
                                     ],
-                                    "label": "Hector vous fait part d'une idÃ©e",
+                                    "label": "Hector vous fait part d'une idée",
                                     "name": "question",
                                     "pictures": [],
                                     "scope": {"@class": "TeamScope",
@@ -289,13 +289,13 @@
                                             },
                                             "title": ""
                                         }],
-                                    "label": "Demander du temps Ã  la direction",
+                                    "label": "Demander du temps à la direction",
                                     "name": "question_2",
                                     "pictures": [],
                                     "scope": {"@class": "TeamScope",
                                         "broadcastScope": "TeamScope"
                                     },
-                                    "title": "Demander du temps Ã  la direction"
+                                    "title": "Demander du temps à la direction"
                                 }],
                             "label": "Period 1",
                             "name": "period1_2",
@@ -910,7 +910,7 @@
                                 "x": 261,
                                 "y": 142
                             },
-                            "label": "Phase 1 - PÃ©riode 1",
+                            "label": "Phase 1 - Période 1",
                             "onEnterEvent": {"@class": "Script",
                                 "content": "",
                                 "language": "JavaScript"
@@ -966,7 +966,7 @@
                                 "x": 521,
                                 "y": 144
                             },
-                            "label": "Phase 1 - PÃ©riode 2",
+                            "label": "Phase 1 - Période 2",
                             "onEnterEvent": {"@class": "Script",
                                 "content": "",
                                 "language": "JavaScript"
@@ -988,7 +988,7 @@
                                 "x": 773,
                                 "y": 142
                             },
-                            "label": "Phase 2 - PÃ©riode 1",
+                            "label": "Phase 2 - Période 1",
                             "onEnterEvent": {"@class": "Script",
                                 "content": "",
                                 "language": "JavaScript"
@@ -1060,7 +1060,7 @@
     "createdByName": "Adminr  rrrrrr",
     "createdTime": 1395843992212,
     "cssLibrary": {"Default": {"@class": "GameModelContent",
-            "content": "/* Layout */\r\n.wegas-playerview {\r\n    font-family: Arial, Helvetica, sans-serif;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content {\r\n    background: url(wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) repeat-x 0 0,\r\n    url(wegas-cep/images/templatemo_banner_bg_wrapper.jpg) repeat-x 0 100px;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content:after {\r\n    content: \" Â© 2014 Albasim\";\r\n    position: absolute;\r\n    bottom: 0px;\r\n    height: 50px;\r\n    width: 100%;\r\n    background: url(wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;\r\n    font-size: 11px;\r\n    text-align: center;\r\n    padding-top: 15px;\r\n}\r\n\r\n/* Period/phases */\r\n.wegas-template-valuebox-unit {\r\n    float:left;\r\n    padding: 0px 4px;\r\n    color: white;\r\n    margin: 1px 0;\r\n    border:none;\r\n    border-right: 1px solid lightgray;\r\n    background: none;\r\n}\r\n.wegas-template-valuebox-unit:last-child {\r\n    border-right:none;\r\n}\r\n.wegas-template-valuebox-selected {\r\n    background-color:white;\r\n    color: black;\r\n}\r\n\r\n.wegas-template-valuebox label {\r\n    display: inline-block;\r\n    vertical-align: top;\r\n    margin-top: 5px;\r\n    margin-right: 5px;\r\n}\r\n.wegas-template-valuebox-units,\r\n.wegas-template-title div {\r\n    display: inline-block;\r\n    padding:0px 2px;\r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    background-color: #0981A9;\r\n    margin-top: 3px;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n.wegas-template-title div {\r\n    padding:2px 6px 1px;\r\n}\r\n\r\n/* Time cards */\r\n.wegas-template-box label, .wegas-template-box-value {\r\n    font-size: 11px;\r\n}\r\n.wegas-template-box-unit {\r\n    width: 7px;\r\n    height:10px;\r\n    float:left;\r\n    border: none;\r\n    border-radius: 2px;\r\n    background-color: #0981A9;\r\n    margin: 1px 1px 0 0;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Gauges */ \r\n.wegas-gauge-content {\r\n    font-size: 10px;\r\n}\r\n\r\n/* Icons */\r\n.cep-icon {\r\n    display: inline-block;\r\n    width: 20px;\r\n    height: 19px;\r\n    margin: -2px 4px 0 0;\r\n    background-image: url(wegas-cep/images/cep-icons.png);\r\n}\r\n.cep-icon-questions {\r\n    background-position:0 -86px;\r\n}\r\n.cep-icon-home {\r\n    background-position:0 -157px;\r\n}\r\n.cep-icon-history {\r\n    background-position:0 -121px;\r\n}\r\n.cep-icon-mail {\r\n    background-position:0 -47px;\r\n}\r\n.cep-icon-employees {\r\n    background-position:0 -245px;\r\n}\r\n.cep-icon-actions {\r\n    background-position:0 -190px;\r\n}\r\n\r\n\r\n/* Team */\r\n.wegas-cep-folder  {\r\n    width: 99%;\r\n    margin: 0 0.5%;\r\n    margin-bottom: 20px;\r\n}\r\n/*selectors*/\r\n.selectors {\r\n    text-align:center;\r\n    white-space:nowrap;\r\n}\r\n.selector {\r\n    display:inline-block;\r\n    width:100px;\r\n    text-align: center;\r\n    margin:10px;\r\n    padding:5px;\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    position: relative;\r\n}\r\n.wegas-cep-itemselector-content .yui3-scrollview{\r\n    background:none;\r\n}\r\n.selector .cep-folder-talk {\r\n    width:35px;\r\n    height:29px;\r\n    background: url(../../wegas-leaderway/images/talk-30.png) no-repeat;\r\n    position: absolute;\r\n    top: -6px;\r\n    left: 15px;\r\n}\r\n.selectors .current{\r\n    background: rgba(60, 100, 200, 0.3);\r\n}\r\n.selector:hover{\r\n    box-shadow: 0px 0px 4px #000000;\r\n    cursor:pointer;\r\n}\r\n.selector .nodeformatter-properties .label{\r\n    display: none;\r\n}\r\n/*informations*/\r\n.informations{\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    padding:10px;\r\n}\r\n.informations .titre{\r\n    font-weight: bold;\r\n    margin: 10px 0;\r\n}\r\n.informations .picture{\r\n    position:absolute;\r\n    margin-left:785px;\r\n    background-color: lightgray;\r\n    border:1px solid darkgray;\r\n}\r\n.informations .nodeformatter-properties{\r\n    margin:10px 0;\r\n    max-width: 760px;\r\n}\r\n.informations .nodeformatter-properties span{\r\n    display:inline-block;\r\n    vertical-align: top;\r\n}\r\n.informations .nodeformatter-valuebox {\r\n    clear:both;\r\n    height:15px;\r\n    margin:10px 0;\r\n}\r\n.informations .nodeformatter-valuebox .label,\r\n.informations .nodeformatter-valuebox .box-units,\r\n.informations .nodeformatter-valuebox .box-value{\r\n    float:left;\r\n}\r\n.informations .label{\r\n    width:80px;\r\n}\r\n.informations .nodeformatter-valuebox .box-units{\r\n    display:block;\r\n    background: rgba(60, 100, 200, 0.3);\r\n    width:200px;\r\n    height:15px;\r\n    font-size: 1em;\r\n    border: darkgray solid 1px;\r\n    overflow: hidden;\r\n}\r\n.informations .nodeformatter-valuebox .box-unit{\r\n    display:block;\r\n    background-color:#6F89A2;\r\n    background-image:url(../../wegas-cep/images/gaugeFiller.png);\r\n    background-repeat: repeat-x;\r\n    float:left;\r\n    width:2px;\r\n    height:15px;\r\n}\r\n.informations .nodeformatter-valuebox .box-value{\r\n    margin-left: 5px;\r\n    font-size: 0.8em;\r\n}\r\n.informations .nodeformatter-position{\r\n    margin:10px 0;\r\n}\r\n.informations li{\r\n    color:#6F89A2;\r\n    max-width: 759px;\r\n    margin-left:15px;\r\n}\r\n.informations .nodeformatter-position .previous{\r\n    color:black;\r\n}\r\n.informations .nodeformatter-position .current{\r\n    list-style-type:circle;\r\n    color:black;\r\n}\r\n\r\n.wegas-cep-folder .yui3-button {\r\n    color: rgb(255, 255, 255);\r\n    background-color: rgb(175, 3, 3);\r\n    padding: 7px 12px;\r\n    font-weight: bold;\r\n    text-shadow: rgb(211, 72, 72) 1px 2px 1px;\r\n    position: absolute;\r\n    top: 285px;\r\n    right: 24px;\r\n    width: 152px;\r\n}\r\n\r\n.wegas-panel-content {\r\n    padding: 20px;\r\n}\r\n.cep-folder-panel .cep-folder-picture {\r\n    float: left;\r\n    border: 1px solid darkgray;\r\n    background: white;\r\n    height: 250px;\r\n    width: 285px;\r\n}\r\n.cep-folder-panel .wegas-simpledialogue {\r\n    width: 562px;\r\n    float: right;\r\n}\r\n.cep-folder-panel .talk {\r\n    text-align: left;\r\n    margin-top: 20px;\r\n    margin-bottom: 40px;\r\n}\r\n.cep-folder-panel .response {\r\n    text-align: right;\r\n}\r\n.cep-folder-panel .response li {\r\n    margin-bottom: 8px;\r\n    cursor: pointer;\r\n}\r\n.cep-folder-panel .response li:hover {\r\n    text-decoration: underline;\r\n}",
+            "content": "/* Layout */\r\n.wegas-playerview {\r\n    font-family: Arial, Helvetica, sans-serif;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content {\r\n    background: url(wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) repeat-x 0 0,\r\n    url(wegas-cep/images/templatemo_banner_bg_wrapper.jpg) repeat-x 0 100px;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content:after {\r\n    content: \" © 2014 Albasim\";\r\n    position: absolute;\r\n    bottom: 0px;\r\n    height: 50px;\r\n    width: 100%;\r\n    background: url(wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;\r\n    font-size: 11px;\r\n    text-align: center;\r\n    padding-top: 15px;\r\n}\r\n\r\n/* Period/phases */\r\n.wegas-template-valuebox-unit {\r\n    float:left;\r\n    padding: 0px 4px;\r\n    color: white;\r\n    margin: 1px 0;\r\n    border:none;\r\n    border-right: 1px solid lightgray;\r\n    background: none;\r\n}\r\n.wegas-template-valuebox-unit:last-child {\r\n    border-right:none;\r\n}\r\n.wegas-template-valuebox-selected {\r\n    background-color:white;\r\n    color: black;\r\n}\r\n\r\n.wegas-template-valuebox label {\r\n    display: inline-block;\r\n    vertical-align: top;\r\n    margin-top: 5px;\r\n    margin-right: 5px;\r\n}\r\n.wegas-template-valuebox-units,\r\n.wegas-template-title div {\r\n    display: inline-block;\r\n    padding:0px 2px;\r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    background-color: #0981A9;\r\n    margin-top: 3px;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n.wegas-template-title div {\r\n    padding:2px 6px 1px;\r\n}\r\n\r\n/* Time cards */\r\n.wegas-template-box label, .wegas-template-box-value {\r\n    font-size: 11px;\r\n}\r\n.wegas-template-box-unit {\r\n    width: 7px;\r\n    height:10px;\r\n    float:left;\r\n    border: none;\r\n    border-radius: 2px;\r\n    background-color: #0981A9;\r\n    margin: 1px 1px 0 0;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Gauges */ \r\n.wegas-gauge-content {\r\n    font-size: 10px;\r\n}\r\n\r\n/* Icons */\r\n.cep-icon {\r\n    display: inline-block;\r\n    width: 20px;\r\n    height: 19px;\r\n    margin: -2px 4px 0 0;\r\n    background-image: url(wegas-cep/images/cep-icons.png);\r\n}\r\n.cep-icon-questions {\r\n    background-position:0 -86px;\r\n}\r\n.cep-icon-home {\r\n    background-position:0 -157px;\r\n}\r\n.cep-icon-history {\r\n    background-position:0 -121px;\r\n}\r\n.cep-icon-mail {\r\n    background-position:0 -47px;\r\n}\r\n.cep-icon-employees {\r\n    background-position:0 -245px;\r\n}\r\n.cep-icon-actions {\r\n    background-position:0 -190px;\r\n}\r\n\r\n\r\n/* Team */\r\n.wegas-cep-folder  {\r\n    width: 99%;\r\n    margin: 0 0.5%;\r\n    margin-bottom: 20px;\r\n}\r\n/*selectors*/\r\n.selectors {\r\n    text-align:center;\r\n    white-space:nowrap;\r\n}\r\n.selector {\r\n    display:inline-block;\r\n    width:100px;\r\n    text-align: center;\r\n    margin:10px;\r\n    padding:5px;\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    position: relative;\r\n}\r\n.wegas-cep-itemselector-content .yui3-scrollview{\r\n    background:none;\r\n}\r\n.selector .cep-folder-talk {\r\n    width:35px;\r\n    height:29px;\r\n    background: url(../../wegas-leaderway/images/talk-30.png) no-repeat;\r\n    position: absolute;\r\n    top: -6px;\r\n    left: 15px;\r\n}\r\n.selectors .current{\r\n    background: rgba(60, 100, 200, 0.3);\r\n}\r\n.selector:hover{\r\n    box-shadow: 0px 0px 4px #000000;\r\n    cursor:pointer;\r\n}\r\n.selector .nodeformatter-properties .label{\r\n    display: none;\r\n}\r\n/*informations*/\r\n.informations{\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    padding:10px;\r\n}\r\n.informations .titre{\r\n    font-weight: bold;\r\n    margin: 10px 0;\r\n}\r\n.informations .picture{\r\n    position:absolute;\r\n    margin-left:785px;\r\n    background-color: lightgray;\r\n    border:1px solid darkgray;\r\n}\r\n.informations .nodeformatter-properties{\r\n    margin:10px 0;\r\n    max-width: 760px;\r\n}\r\n.informations .nodeformatter-properties span{\r\n    display:inline-block;\r\n    vertical-align: top;\r\n}\r\n.informations .nodeformatter-valuebox {\r\n    clear:both;\r\n    height:15px;\r\n    margin:10px 0;\r\n}\r\n.informations .nodeformatter-valuebox .label,\r\n.informations .nodeformatter-valuebox .box-units,\r\n.informations .nodeformatter-valuebox .box-value{\r\n    float:left;\r\n}\r\n.informations .label{\r\n    width:80px;\r\n}\r\n.informations .nodeformatter-valuebox .box-units{\r\n    display:block;\r\n    background: rgba(60, 100, 200, 0.3);\r\n    width:200px;\r\n    height:15px;\r\n    font-size: 1em;\r\n    border: darkgray solid 1px;\r\n    overflow: hidden;\r\n}\r\n.informations .nodeformatter-valuebox .box-unit{\r\n    display:block;\r\n    background-color:#6F89A2;\r\n    background-image:url(../../wegas-cep/images/gaugeFiller.png);\r\n    background-repeat: repeat-x;\r\n    float:left;\r\n    width:2px;\r\n    height:15px;\r\n}\r\n.informations .nodeformatter-valuebox .box-value{\r\n    margin-left: 5px;\r\n    font-size: 0.8em;\r\n}\r\n.informations .nodeformatter-position{\r\n    margin:10px 0;\r\n}\r\n.informations li{\r\n    color:#6F89A2;\r\n    max-width: 759px;\r\n    margin-left:15px;\r\n}\r\n.informations .nodeformatter-position .previous{\r\n    color:black;\r\n}\r\n.informations .nodeformatter-position .current{\r\n    list-style-type:circle;\r\n    color:black;\r\n}\r\n\r\n.wegas-cep-folder .yui3-button {\r\n    color: rgb(255, 255, 255);\r\n    background-color: rgb(175, 3, 3);\r\n    padding: 7px 12px;\r\n    font-weight: bold;\r\n    text-shadow: rgb(211, 72, 72) 1px 2px 1px;\r\n    position: absolute;\r\n    top: 285px;\r\n    right: 24px;\r\n    width: 152px;\r\n}\r\n\r\n.wegas-panel-content {\r\n    padding: 20px;\r\n}\r\n.cep-folder-panel .cep-folder-picture {\r\n    float: left;\r\n    border: 1px solid darkgray;\r\n    background: white;\r\n    height: 250px;\r\n    width: 285px;\r\n}\r\n.cep-folder-panel .wegas-simpledialogue {\r\n    width: 562px;\r\n    float: right;\r\n}\r\n.cep-folder-panel .talk {\r\n    text-align: left;\r\n    margin-top: 20px;\r\n    margin-bottom: 40px;\r\n}\r\n.cep-folder-panel .response {\r\n    text-align: right;\r\n}\r\n.cep-folder-panel .response li {\r\n    margin-bottom: 8px;\r\n    cursor: pointer;\r\n}\r\n.cep-folder-panel .response li:hover {\r\n    text-decoration: underline;\r\n}",
             "contentType": null
         }},
     "description": "",
@@ -1629,7 +1629,7 @@
                             "name": "moral",
                             "type": "valueBox"
                         },
-                        {"label": "ExpÃ©rience : ",
+                        {"label": "Expérience : ",
                             "maxValue": 100,
                             "name": "experience",
                             "type": "valueBox"
@@ -1637,7 +1637,7 @@
                         {"label": "Description : ",
                             "name": "description"
                         },
-                        {"html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modÃ¨le Ã  atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'Ã©nergie que vous avez dÃ©pensÃ© pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sait ce que vous avez fait pour l'entreprise et travaillera Ã  son tour pour la dÃ©velopper.</li><li>Niveau 1 : Elle suis vos directives car elle vous considÃ¨re et pense que vos choix sont justifiÃ©s.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos mÃ©thodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
+                        {"html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sait ce que vous avez fait pour l'entreprise et travaillera à son tour pour la développer.</li><li>Niveau 1 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos méthodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
                             "invert": "true",
                             "minVal": -1,
                             "name": "leadershipLevel",
@@ -1662,7 +1662,7 @@
                             "type": "image",
                             "width": 35
                         },
-                        {"label": "PrÃ©nom : ",
+                        {"label": "Prénom : ",
                             "name": "label"
                         }
                     ],
