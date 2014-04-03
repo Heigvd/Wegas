@@ -72,7 +72,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @function
          */
         getValue: function() {
-            return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
+            if (this.currentEntityField) {
+                return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
+            } else {
+                return null;
+            }
         },
         /**
          * @function
@@ -225,7 +229,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     label: null
                 }, cMethod));
 
-            } else {
+            } else if (currentEntity) {
 
                 while (this.getMethods(currentEntity).length === 0              // If the current entity has no methods,
                         && currentEntity.get("items") && currentEntity.get("items").length > 0) { // but it has a child
@@ -282,16 +286,18 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.argsOffset = 1;
         },
         getValue: function() {
-            var l = this.inputs.length,
-                    args = this.inputs[l - this.argsOffset].getValue(),
-                    method = this.inputs[l - this.argsOffset - 1].getValue();
 
             if (Y.Lang.isString(this.options.value)
                     && Y.Object.hasKey(this.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
                 var k = this.options.value.replace("GLOBAL", ""),
                         cMethod = this.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
                 return k + "(" + this.encodeArgs(this.inputs[1].getValue(), cMethod.arguments) + ")";
-            } else {
+
+            } else if (this.inputs[l - this.argsOffset]) {                      // Not true only if there are no entites
+                var l = this.inputs.length,
+                        args = this.inputs[l - this.argsOffset].getValue(),
+                        method = this.inputs[l - this.argsOffset - 1].getValue();
+
                 if (!method) {
                     return "true";
                 }
@@ -625,8 +631,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (this.currentEntity && this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
                 this.addField(this.generateSelectConfig(null,
                         this.currentEntity, this.currentEntity.get("items")));  // Pushes the current entity methods and children to the stack
-            } else {
-                //(new Y.Node(this.fieldset)).append("<em>no variable created</em>");
+            }
+            if (!this.currentEntity) {
+                (new Y.Node(this.fieldset)).append("<div><em>No variable created</em></div>");
             }
         },
         genChoices: function(entity, items) {
