@@ -11,8 +11,11 @@
 
 /* Editor treeview styles */
 .wegas-editor-treeview .yui3-treenode-content-header,
-.wegas-editor-treeview .yui3-treeleaf-content-header {
+.wegas-editor-treeview .yui3-treeleaf-content-header,
+.wegas-page-editor .yui3-treenode-content-header,
+.wegas-page-editor .yui3-treeleaf-content-header {
     cursor: pointer;
+    height: 19px;
 }
 
 /** Styles for table treeviews (Games) */

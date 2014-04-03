@@ -194,6 +194,10 @@
                 <version>${war.plugin.version}</version>
                 <configuration>
                         <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
+                    <packagingExcludes>
+                        wegas-leaderway/images/employees sources/**,
+                        wegas-leaderway/images/employees/**
+                    </packagingExcludes>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>Wegas</warName>
                     <overlays>
@@ -210,10 +214,6 @@
                                     <include>lib/**/*.gif</include>
                                     <include>lib/**/*.png</include>-->
                             </includes>
-                            <excludes>
-                                <exclude>wegas-leaderway/images/employees sources/**</exclude>
-                                <exclude>wegas-leaderway/images/employees/**</exclude>
-                            </excludes>
                         </overlay>
                     </overlays>
                 </configuration>
