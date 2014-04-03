@@ -56,7 +56,9 @@ YUI.add('wegas-helper', function(Y) {
             return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
         },
         escapeJSString: function(str) {
-            return str.replace(/"/g, '\\"').replace(/(\r\n|\n\r|\r|\n)/g, "\\n");
+            return str.replace(/"/g, '\\"').replace(/(\r\n|\n\r|\r)/g, "\n");
+            //.replace(/(\r\n|\n\r|\r|\n)/g, "\\n");
+
             //return Helper.nl2br(str.replace(/"/g, '\\"'), "\\n");
         },
         unesacapeJSString: function(str) {
