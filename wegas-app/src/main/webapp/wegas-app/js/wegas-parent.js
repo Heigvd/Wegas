@@ -181,7 +181,7 @@ YUI.add("wegas-parent", function(Y) {
                                                                     event: "mouseenter",
                                                                     children: [{
                                                                             type: BUTTON,
-                                                                            label: "Text",
+                                                                            label: "Value",
                                                                             plugins: [{
                                                                                     fn: "AddChildWidgetAction",
                                                                                     cfg: {
