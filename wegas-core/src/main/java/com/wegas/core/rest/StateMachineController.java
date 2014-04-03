@@ -9,12 +9,14 @@ package com.wegas.core.rest;
 
 import com.wegas.core.ejb.*;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.resourceManagement.persistence.DialogueTransition;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -74,22 +76,30 @@ public class StateMachineController {
 
         checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
 
-        StateMachineDescriptor stateMachineDescriptor =
-                (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
+        StateMachineDescriptor stateMachineDescriptor
+                = (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
         StateMachineInstance stateMachineInstance = stateMachineDescriptor.getInstance(playerFacade.find(playerId));
         State currentState = stateMachineInstance.getCurrentState();
         List<Transition> transitions = currentState.getTransitions();
-
+        Boolean valid = true;
+        List<Script> impacts = new ArrayList<>();
         for (Transition transition : transitions) {
             if (transition instanceof DialogueTransition && transition.getId().equals(transitionId)) {
-                //TODO : eval attached script (AND)
-                stateMachineInstance.setCurrentStateId(transition.getNextStateId());
-                stateMachineInstance.transitionHistoryAdd(transitionId);
-                requestManager.addUpdatedInstance(stateMachineInstance);  /*
-                 * Force in case next state == current state
-                 */
-                if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
-                    scriptManager.eval(playerId, stateMachineInstance.getCurrentState().getOnEnterEvent());
+                if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
+                    valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition());
+                }
+                if (valid) {
+                    if (transition.getPreStateImpact() != null) {
+                        impacts.add(transition.getPreStateImpact());
+                    }
+                    stateMachineInstance.setCurrentStateId(transition.getNextStateId());
+                    stateMachineInstance.transitionHistoryAdd(transitionId);
+                    requestManager.addUpdatedInstance(stateMachineInstance); /* Force in case next state == current state */
+
+                    if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
+                        impacts.add(stateMachineInstance.getCurrentState().getOnEnterEvent());
+                    }
+                    scriptManager.eval(playerFacade.find(playerId), impacts);
                 }
                 break;
             }
