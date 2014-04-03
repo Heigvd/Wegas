@@ -178,7 +178,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     this.treeView.add(node);
                     if (+i === +page) {                                         //current page
                         pageFound = true;
-                        node.set("collapsed", false);
+                        node.set("collapsed", true);
                         node.get(BOUNDING_BOX).addClass("current-page");
                         Y.soon(Y.bind(buildSub, this, node, this.get("pageLoader").get("widget")));
                     }
