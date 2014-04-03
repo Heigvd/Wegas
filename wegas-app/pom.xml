@@ -195,7 +195,11 @@
                 <configuration>
                         <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <warName>Wegas</warName>
+                    <warName>Wegas</warName>                    
+                    <excludes>
+                        <exclude>wegas-leaderway/images/employees sources/**</exclude>
+                        <exclude>wegas-leaderway/images/employees/**</exclude>
+                    </excludes>
                     <overlays>
                         <overlay>
                             <id>wegaslibs</id>
@@ -210,10 +214,6 @@
                                     <include>lib/**/*.gif</include>
                                     <include>lib/**/*.png</include>-->
                             </includes>
-                            <excludes>
-                                <exclude>wegas-leaderway/images/employees sources/**</exclude>
-                                <exclude>wegas-leaderway/images/employees/**</exclude>
-                            </excludes>
                         </overlay>
                     </overlays>
                 </configuration>
