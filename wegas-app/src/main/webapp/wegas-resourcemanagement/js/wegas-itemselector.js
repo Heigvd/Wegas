@@ -28,20 +28,12 @@ YUI.add('wegas-itemselector', function(Y) {
      */
     ItemSelector = Y.Base.create("wegas-itemselector", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.Wegas.NodeFormatter], {
         /** @lends Y.Wegas.ItemSelector# */
-
+        CONTENT_TEMPLATE: '<div><div class="selectors"></div><div class="informations"></div></div>',
         // *** Private fields *** //
-        /**
-         * Reference to each used functions
-         */
-        handlers: null,
         /**
          * The selected variable descriptor
          */
         currentItem: null,
-        /**
-         * The reference to the ScrollView widget
-         */
-        scrollView: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -49,6 +41,9 @@ YUI.add('wegas-itemselector', function(Y) {
          * @description Set variables with initials values.
          */
         initializer: function() {
+            /**
+             * Reference to each used functions
+             */
             this.handlers = {};
         },
         /**
@@ -59,8 +54,6 @@ YUI.add('wegas-itemselector', function(Y) {
          */
         renderUI: function() {
             var i, variables, cb = this.get(CONTENTBOX);
-            cb.append('<div class="selectors"></div>');
-            cb.append('<div class="informations"></div>');
             if (!this.get('listVariables')) {
                 return;
             }
@@ -74,6 +67,10 @@ YUI.add('wegas-itemselector', function(Y) {
                     break;
                 }
             }
+
+            /**
+             * The reference to the ScrollView widget
+             */
             this.scrollView = new Y.ScrollView({
                 id: 'itemselector-scrollview',
                 srcNode: cb.one('.selectors'),
@@ -97,8 +94,8 @@ YUI.add('wegas-itemselector', function(Y) {
             var cb = this.get(CONTENTBOX);
             this.handlers.itemSelectorUpdate = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
-            this.handlers.itemSelectorSelect = cb.one('.selectors').delegate('click', function(e) {
-                var i, variables, name;
+            cb.one('.selectors').delegate('click', function(e) {
+                var variables, name;
                 e.preventDefault();
                 if (e.target.ancestors('.selector').item(0)) {
                     name = e.target.ancestors('.selector').item(0).getAttribute("data-name");
@@ -114,7 +111,6 @@ YUI.add('wegas-itemselector', function(Y) {
                 });
                 this.syncUI();
             }, '.selector', this);
-
         },
         /**
          * @function
@@ -180,6 +176,7 @@ YUI.add('wegas-itemselector', function(Y) {
                     success: Y.bind(function(e) {
                         this.currentItem.set("description", e.response.entity.get("description"));// @hack how to mix two entities, one with the instance data and the other with descriptions, etc ?
                         this.createDOMProperties(node, this.currentItem, this.get('informations'));
+                        this.fire("informationsRender");
                     }, this)
                 }
             });

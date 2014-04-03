@@ -150,6 +150,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     },
                     enabled: {
                         type: BOOLEAN,
+                        value: true,
                         _inputex: {
                             label: 'Active by default'
                         }

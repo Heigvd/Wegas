@@ -5,16 +5,18 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Anthony Geiser <antho.geiser@gmail.com>
  */
+
 YUI.add("wegas-simpledialogue", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", SimpleDialogueMain;
+    var CONTENTBOX = "contentBox", SimpleDialogue;
 
-    SimpleDialogueMain = Y.Base.create("wegas-teaching-main", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    SimpleDialogue = Y.Base.create("wegas-simpledialogue", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: '<div><div class="dialogue"><div class="talk"></div><div class="response"><ul class="responseElements"></ul></div></div></div>',
         initializer: function() {
             this.handlers = {};
@@ -71,17 +73,14 @@ YUI.add("wegas-simpledialogue", function(Y) {
     }, {
         ATTRS: {
             dialogueVariable: {
-                value: {
-                    name: "simpleDialogue"
-                },
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    legend: "Dialogue",
+                    label: "Dialogue",
                     classFilter: ["DialogueDescriptor"]
                 }
             }
         }
     });
-    Y.namespace("Wegas").SimpleDialogueMain = SimpleDialogueMain;
+    Y.namespace("Wegas").SimpleDialogue = SimpleDialogue;
 });

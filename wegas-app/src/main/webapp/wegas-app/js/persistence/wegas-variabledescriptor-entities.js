@@ -421,7 +421,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }]
             },
             sub: {
-                label: "substract",
+                label: "remove",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -797,6 +797,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function() {
+            if (this.get("content") === "") {                                   // empty scripts resolve to true
+                this.fire("evaluated", true);
+            }
             if (Wegas.Facade.VariableDescriptor.script.eval) {
                 if (this._result) {
                     this.fire("evaluated", this._result);

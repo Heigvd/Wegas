@@ -65,7 +65,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          * 
          */
         setValue: function(val, sendUpdated) {
-            if (val && val.name) {                                                      // @backwardcompatibility Convert old format to new one (for flexitests)
+            if (val && val.name) {                                              // @backwardcompatibility Convert old format to new one (for flexitests)
                 val = {
                     content: "Variable.find('" + val.name + "');"
                 };

@@ -262,11 +262,11 @@ body > .wegas-pageloader > .wegas-pageloader-content{
     margin-left:0px;
 }
 .wegas-page-editor .page-node > .content-header{
-    color: #696969;
+    /*color: #696969;*/
 }
 .wegas-page-editor .current-page > .content-header{
     color: inherit;
-    /*font-weight: bold;*/
+    font-weight: bold;
 }
 .wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header,
 .wegas-page-editor .page-node> ul.yui3-treeleaf-content>div.content-header{

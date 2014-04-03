@@ -5,6 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
@@ -60,8 +61,7 @@ YUI.add('wegas-nodeformatter', function(Y) {
          * Returned node have the given class name.
          */
         makeNodeImage: function(attrs, className) {
-            var k, node = new Y.Node.create('<div class="nodeformatter-img"></div>');
-            node.append('<img></img>');
+            var k, node = new Y.Node.create('<div class="nodeformatter-img"><img></img></div>');
             if (className) {
                 node.one('img').addClass(className);
             }
@@ -155,18 +155,7 @@ YUI.add('wegas-nodeformatter', function(Y) {
             });
         }
 
-    }, {
-        /*
-         * @lends Y.Wegas.NodeFormatter#
-         */
-        /**
-         * @field
-         * @static
-         * @description
-         * <p><strong>Method (none)</strong></p>
-         */
-        ATTRS: {}
     });
-
     Y.namespace('Wegas').NodeFormatter = NodeFormatter;
+    
 });

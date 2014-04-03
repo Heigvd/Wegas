@@ -944,13 +944,14 @@ YUI().use(function(Y) {
                 /**CEP**/
                 'wegas-cep-folder': {
                     path: 'wegas-cep/js/wegas-cep-folder-min.js',
-                    requires: ['wegas-nodeformatter', 'wegas-itemselector', "wegas-injector"],
+                    requires: ['wegas-nodeformatter', 'wegas-itemselector', "wegas-injector",
+                        "wegas-panel", "wegas-simpledialogue"],
                     ws_provides: 'CEPFolder'
                 },
                 /* SimpleDialogue */
                 'wegas-simpledialogue': {
                     path: "wegas-games/wegas-simpledialogue/js/wegas-simpledialogue-main.js",
-                    ws_provides: "SimpleDialogueMain"
+                    ws_provides: "SimpleDialogue"
                 }
                 /* Chess */
                 //'wegas-chess': {

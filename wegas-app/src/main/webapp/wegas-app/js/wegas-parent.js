@@ -265,7 +265,18 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
+                                                        label: "Dialogue",
+                                                        cssClass: "experimental",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "SimpleDialogue"
+                                                                }
+                                                            }]
+                                                    }, {
+                                                        type: BUTTON,
                                                         label: "Chart",
+                                                        cssClass: "experimental",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {
