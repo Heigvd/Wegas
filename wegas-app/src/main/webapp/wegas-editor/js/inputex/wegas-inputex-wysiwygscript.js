@@ -49,7 +49,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     if (this.options.expects === "condition") {
                         ct = this.exprList.getArray().join(" && ");
                     } else {
-                        ct = this.exprList.getArray().join(";\n") + ";";
+                        ct = this.exprList.getArray().join(";\n");
                     }
                 }
                 return {
