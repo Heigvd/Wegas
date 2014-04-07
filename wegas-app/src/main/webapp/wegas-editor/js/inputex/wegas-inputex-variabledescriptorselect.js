@@ -293,7 +293,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                         cMethod = this.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
                 return k + "(" + this.encodeArgs(this.inputs[1].getValue(), cMethod.arguments) + ")";
 
-            } else if (this.inputs[l - this.argsOffset]) {                      // Not true only if there are no entites
+            } else if (this.inputs[this.inputs.length - this.argsOffset]) {                      // Not true only if there are no entites
                 var l = this.inputs.length,
                         args = this.inputs[l - this.argsOffset].getValue(),
                         method = this.inputs[l - this.argsOffset - 1].getValue();
