@@ -306,10 +306,28 @@ YUI.add('wegas-shareuser', function(Y) {
                             }, this);
 
                         }, this);
+                        this.hideUsersWithoutVisiblePermission();
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
+        },
+        hideUsersWithoutVisiblePermission: function() {
+            var i, ii, checkboxes, checked,
+                    users = this.get(CONTENTBOX).one(".inputEx-ListField-childContainer").get("children");
+            for (i = 0; i < users.size(); i += 1) {
+                checked = false;
+                checkboxes = users.item(i).all(".inputEx-CheckBox");
+                for (ii = 0; ii < checkboxes.size(); ii += 1) {
+                    if (checkboxes.item(ii).get("children").item(0).get("checked")){
+                        checked = true;
+                        break;
+                    }
+                }
+                if (!checked) {
+                    users.item(i).addClass("wegas-advanced-feature");
+                }
+            }
         }
     }, {
         ATTRS: {
