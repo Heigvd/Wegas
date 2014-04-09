@@ -26,7 +26,7 @@ tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
     }
 
     editor.addButton('addToolbarButton', {
-        image: '/Wegas/wegas-editor/images/more.png',
+        image: 'wegas-editor/images/more.png',
         title: 'More options',
         onclick: showHideToolbar,
         onPostRender: showHideToolbar

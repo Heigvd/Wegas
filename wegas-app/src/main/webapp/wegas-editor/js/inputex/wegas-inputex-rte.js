@@ -60,7 +60,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                     external_plugins: {
                         "dynamic_toolbar": "/Wegas/wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                     },
-                    toolbar1: "bold italic bullist | link image media | code addToolbarButton",
+                    toolbar1: "bold italic bullist | link image media code addToolbarButton",
                     toolbar2: "forecolor backcolor | fontselect |  fontsizeselect | styleselect",
                     // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
                     // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
