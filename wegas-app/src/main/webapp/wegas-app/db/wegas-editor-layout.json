@@ -61,7 +61,7 @@
                                         }]
                                 }, {
                                     "type": "Button",
-                                    "label": "Model properties",
+                                    "label": "Scenario properties",
                                     "cssClass": "wegas-advanced-feature",
                                     "plugins": [{
                                             "fn": "EditEntityAction",
@@ -69,17 +69,6 @@
                                                 "entity": "currentGameModel",
                                                 "dataSource": "GameModel"
                                             }
-                                        }]
-                                }, {
-                                    "type": "OpenTabButton",
-                                    "label": "Console",
-                                    "cssClass": "wegas-advanced-feature",
-                                    "wchildren": [{
-                                            "type": "Console",
-                                            "cssClass": "wegas-console",
-                                            "plugins": [{
-                                                    "fn": "WidgetToolbar"
-                                                }]
                                         }]
                                 }, {
                                     "type": "OpenTabButton",

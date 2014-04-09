@@ -305,7 +305,7 @@ YUI.add('wegas-inbox', function(Y) {
                 type: "number",
                 _inputex: {
                     label: "Mark as read after (s.)",
-                    className: "inputEx-fieldWrapper wegas-advanced-feature"
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         }

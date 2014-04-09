@@ -175,7 +175,7 @@
         "id": 4,
         "type": "MCQTabView",
         "variable": {
-            "expr": "questions.descriptorId"
+            "content": "Variable.find('questions')"
         }
     },
     "6": {

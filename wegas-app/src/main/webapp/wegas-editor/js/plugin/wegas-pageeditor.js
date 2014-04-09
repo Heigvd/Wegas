@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>,
  * Cyril Junod <cyril.junod at gmail.com>
  */
+
 YUI.add('wegas-pageeditor', function(Y) {
     "use strict";
 
@@ -50,21 +52,21 @@ YUI.add('wegas-pageeditor', function(Y) {
 
                 el.append('<div style="width:10px;display:inline-block;"></div>');// Add a separator
 
-                /* Edit page  */
+                /** Edit page  **/
                 this.designButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-designmode\"></span>Edit page"
                 }).render(el);
-                this.designButton.get("contentBox").addClass("wegas-pageeditor-editbutton")
+                this.designButton.get("contentBox").addClass("wegas-pageeditor-editbutton");
                 this.designButton.after("pressedChange", function(e) {
                     host.get(BOUNDINGBOX).toggleClass("wegas-pageeditor-designmode",
                             e.newVal);
                     if (e.newVal) {
-//                        Y.Wegas.Facade.Page.cache.getIndex(function(index) {
-//                            var pageName = index[host.get("pageId")] !== ""
-//                                    ? index[host.get("pageId")]
-//                                    : "<i>unamed(" + host.get("pageId") + ")</i>";
-//                            host.toolbar.setStatusMessage("Editing page: " + pageName);
-//                        });
+                        //Y.Wegas.Facade.Page.cache.getIndex(function(index) {
+                        //    var pageName = index[host.get("pageId")] !== ""
+                        //            ? index[host.get("pageId")]
+                        //            : "<i>unamed(" + host.get("pageId") + ")</i>";
+                        //    host.toolbar.setStatusMessage("Editing page: " + pageName);
+                        //});
                         this.bind();
                         this.layoutButton.show();
                         this.sourceButton.show();
@@ -84,7 +86,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                     }
                 }, this);
 
-                /* New button */
+                /** New button **/
                 this.addButton = new Y.Button({/*@HACK */
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     visible: false,
@@ -105,7 +107,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 });
                 this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
 
-                /*Refresh*/
+                /** Refresh **/
                 this.refreshButton = new Y.Button({
                     label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
                     visible: false
@@ -123,7 +125,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                             e.newVal);
                 }, this);
 
-                /** Source view**/
+                /** Source view **/
                 this.sourceButton = new Y.ToggleButton({
                     label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>Source",
                     visible: false,
@@ -154,9 +156,9 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.shownOverlay.get(BOUNDINGBOX).addClass("pageditor-shownoverlay");
             this.highlightOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton'></span>");
             this.shownOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton-icon'></span>");
+            
             /** MASK **/
             this.overlayMask = new Y.Node.create("<div class='pageeditor-overlay-mask'></div>");
-
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
                 event: ["click", "contextmenu"]
             });

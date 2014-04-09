@@ -149,7 +149,7 @@ div.inputEx-description {
 
 /* Wysiwyg code editor */
 .inputEx-WysiwigScript {
-    min-height: 56px;
+    /*min-height: 56px;*/
 }
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc {
     background: transparent;
@@ -160,7 +160,6 @@ div.inputEx-description {
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc.yui3-button-selected {
     background: #0c3f71;
 }
-
 .inputEx-WysiwigScript .inputEx-fieldWrapper,
 .inputEx-WysiwigScript .inputEx-CombineField,
 .inputEx-WysiwigScript .inputEx-Group .inputEx-Group,
@@ -177,7 +176,6 @@ div.inputEx-description {
 .inputEx-WysiwigScript .wegas-method-sendmessage .inputEx-fieldWrapper {
     float:none !important;
 }
-
 .yui3-skin-sam .inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
     /*left: -50px;*/
     top: -29px;
@@ -185,6 +183,27 @@ div.inputEx-description {
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
     left: -22px;
 }
+/* single line wysywyg script */
+.inputEx-singleLineWysiwygScript {
+    padding-right: 26px;
+}
+.inputEx-singleLineWysiwygScript .inputEx-WysiwigScript-viewsrc {
+    position: absolute;
+    margin: 0;
+    top: -2px;
+    right: -2px;
+}
+.inputEx-singleLineWysiwygScript textarea {
+    height: 50px !important;
+}
+.inputEx-singleLineWysiwygScript .wegas-addbutton,
+.inputEx-singleLineWysiwygScript .wegas-removebutton {
+    display: none;
+}
+.inputEx-singleLineWysiwygScript .inputEx-fieldWrapper {
+    margin-bottom: 0px;
+}
+
 /* Original inputex listfield styles */
 .inputEx-ListField-childContainer > div {
     position: relative;
@@ -273,7 +292,7 @@ img.inputEx-ListField-delButton {
 }
 .wegas-form /*.inputEx-label + */  .inputEx-ListField {
     /*padding-top:1.5em;*/
-    padding-top: 0.3em;
+    /*padding-top: 0.3em;*/
 }
 /*.wegas-form legend.inputEx-Group-legend span {
     text-align: right;

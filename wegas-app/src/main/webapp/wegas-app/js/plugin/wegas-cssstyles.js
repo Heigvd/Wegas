@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+
 YUI.add('wegas-cssstyles', function(Y) {
     "use strict";
 
@@ -128,13 +130,7 @@ YUI.add('wegas-cssstyles', function(Y) {
                     _type: "wegasobject",
                     elementType: {
                         type: "wegaskeyvalue",
-                        availableFields: [
-                            //{
-                            //    name: "backgroundColor",
-                            //    type: "colorpicker",
-                            //    palette: 3
-                            //},
-                            {
+                        availableFields: [{
                                 name: "background"
                             }, {
                                 name: "border"
@@ -178,7 +174,21 @@ YUI.add('wegas-cssstyles', function(Y) {
                                 choices: ["", "left", "right", "center", "justify", "inherit"]
                             }, {
                                 name: "textShadow"
-                            }]
+                            }, {
+                                name: "top"
+                            }, {
+                                name: "left"
+                            }, {
+                                name: "right"
+                            }, {
+                                name: "bottom"
+                            }
+                            //{
+                            //    name: "backgroundColor",
+                            //    type: "colorpicker",
+                            //    palette: 3
+                            //},
+                        ]
                     }
                 }
             },

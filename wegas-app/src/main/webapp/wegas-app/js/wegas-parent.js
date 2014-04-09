@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+
 YUI.add("wegas-parent", function(Y) {
     "use strict";
 
@@ -179,7 +181,7 @@ YUI.add("wegas-parent", function(Y) {
                                                                     event: "mouseenter",
                                                                     children: [{
                                                                             type: BUTTON,
-                                                                            label: "Text",
+                                                                            label: "Value",
                                                                             plugins: [{
                                                                                     fn: "AddChildWidgetAction",
                                                                                     cfg: {
@@ -263,7 +265,18 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
+                                                        label: "Dialogue",
+                                                        cssClass: "experimental",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "SimpleDialogue"
+                                                                }
+                                                            }]
+                                                    }, {
+                                                        type: BUTTON,
                                                         label: "Chart",
+                                                        cssClass: "experimental",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {

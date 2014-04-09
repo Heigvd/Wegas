@@ -303,7 +303,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: "EditEntityButton"
             }, {
                 type: BUTTON,
-                label: "New",
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add result",
                 plugins: [{
                         fn: "EditEntityArrayFieldAction",
                         cfg: {
@@ -314,7 +314,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Duplicate",
+                label: "Copy",
                 plugins: [{
                         fn: "DuplicateEntityAction"
                     }]

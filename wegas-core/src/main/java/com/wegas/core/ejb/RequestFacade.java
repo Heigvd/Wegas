@@ -44,7 +44,7 @@ public class RequestFacade {
      *
      */
     @Inject
-    private ScriptEvent scriptEvent;
+    private ScriptEventFacade scriptEvent;
     /**
      *
      */

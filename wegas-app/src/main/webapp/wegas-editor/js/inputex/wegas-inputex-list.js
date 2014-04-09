@@ -10,6 +10,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add("wegas-inputex-list", function(Y) {
     "use strict";
 
@@ -98,9 +99,10 @@ YUI.add("wegas-inputex-list", function(Y) {
             this.fireUpdatedEvt();
         },
         onAdd: function(e) {
-            this.addField({
-                type: this.options.addType
-            });
+            this.addField(Y.Lang.isString(
+                    this.options.addType) ? {
+                        type: this.options.addType
+                    } : this.options.addType);
             this.fireUpdatedEvt();
         },
         /**
