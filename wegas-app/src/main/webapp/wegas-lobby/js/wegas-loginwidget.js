@@ -47,6 +47,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                         <div class='signup'></div>\n\
                         <h1 class='title'>Try Wegas</h1>\n\
                         <div class='guestlogin'></div>\n\
+                        <h1 class='title'>Want to use Wegas?</h1>\n\
+                        <div class='contact'><a href=\"http://www.albasim.ch/en/contact/contact\">Contact us</a></div>\n\
                     </div>\n\
                     <div class='main right ask-pass'>\n\
                         <h1 class='title'>Get a new password</h1>\n\
@@ -77,13 +79,17 @@ YUI.add('wegas-loginwidget', function(Y) {
                 cb.one(".main.left").setContent("<h1>&nbsp;</h1>You need to log in, create an account or log in as guest to play this game.");
             } else {
                 cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
-                        <p>Wegas (Web Game Authoring System) is an engine for rapid development of simulation games.\n\
-                         No programming skills are required, you can create your own scenario or adapt an existing one by \n\
-                        adding elements from other simulations. Advanced users can even create their own serious game from scratch!</p><br />"
+                        <p>A <b>Web Game Authoring System</b> for rapid development of serious games without programming skills.</p>"
+                        + "<ul class='description'><li>Create and edit your games</li>"
+                        + "<li>Share your games with other trainers</li>"
+                        + "<li>Use your games during training sessions or in distant e-learning programs</li></ul>"
+
+                        //+" No programming skills are required, you can create your own scenario or adapt an existing one by \n\
+                        //adding elements from other simulations. Advanced users can even create their own serious game from scratch!</p><br />"
 
                         //+ "<div class='preview'><img src='wegas-app/images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>"
 
-                        + "<h2>Games created with Wegas</h1>"
+                        + "<h2>Sample games</h1>"
                         + '<div class="wegas-login-thumb"><ul>'
 
                         + '<li><div class="article-link"><span class="text">'
@@ -99,7 +105,7 @@ YUI.add('wegas-loginwidget', function(Y) {
 
                         + '<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">Leaderway</span>'
-                        + '<span class="description">Lead a team and manage their expectations.</span>'
+                        + '<span class="description">Lead a team and manage its members expectations.</span>'
                         + '<span class="links"><a href="game.html?token=leaderway">Start playing</a> '
                         + '| <a href="#" class="wegas-light-gallery" >Screenshots'
                         + '<img src="wegas-lobby/images/wegas-leaderway-1.png" style="display:none">'
@@ -111,6 +117,17 @@ YUI.add('wegas-loginwidget', function(Y) {
                         + '<img src="wegas-lobby/images/wegas-leaderway-8.png" style="display:none">'
                         + '</a></span></span></span>'
                         + '<span class="image"> <span class="image-offset"><img src="wegas-lobby/images/wegas-preview-leaderway-1.png" /></span></span></div></li>'
+
+                        + '<li><div class="article-link"><span class="text">'
+                        + '<span class="article-title">Virtual Patient</span>'
+                        + '<span class="description">This game demonstrates how wegas can be used out of the box.</span>'
+                        + '<span class="links"><a href="game.html?token=virtualpatient">Start playing</a> '
+                        + '| <a href="#" class="wegas-light-gallery" >Screenshots'
+                        + '<img src="wegas-lobby/images/wegas-virtualpatient-1.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-virtualpatient-2.png" style="display:none">'
+                        + '<img src="wegas-lobby/images/wegas-virtualpatient-3.png" style="display:none">'
+                        + '</a></span></span></span>'
+                        + '<span class="image"> <span class="image-offset"><img src="wegas-lobby/images/wegas-preview-virtualpatient.png" /></span></span></div></li>'
 
                         + '</ul></div>');
             }

@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+
 YUI.add('wegas-cssstyles-extra', function(Y) {
     "use strict";
 
@@ -85,11 +87,13 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                         }, {
                             type: "string",
                             name: "bottom",
-                            label: "bottom"
+                            label: "bottom",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                         }, {
                             type: "string",
                             name: "right",
-                            label: "right"
+                            label: "right",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                         }]
                 }
             }

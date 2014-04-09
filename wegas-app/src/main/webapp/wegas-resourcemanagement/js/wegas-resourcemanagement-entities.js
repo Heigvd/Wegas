@@ -12,7 +12,7 @@
 YUI.add('wegas-resourcemanagement-entities', function(Y) {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-            SELF = "self", BOOLEAN = "boolean", NUMBER = "number", SELECT = "select",
+            SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
             OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
             COMBINE = "combine", GROUP = "group", LIST = "list",
             IDATTRDEF = {
@@ -25,7 +25,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * ResourceDescriptor mapper
      */
-    Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {}, {
+    Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+        getConfidence: function() {
+            return this.getInstance().get("confidence");
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "ResourceDescriptor"
@@ -49,6 +53,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             properties: {
                 _inputex: {
                     label: "Properties",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     _type: HASHLIST,
                     useButtons: true,
                     elementType: {
@@ -56,7 +61,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         required: true,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE
@@ -85,7 +91,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: NUMBER,
                         optional: true,
                         _inputex: {
-                            label: "Default moral"
+                            label: "Initial moral"
                         }
                     },
                     moralHistory: {
@@ -101,13 +107,15 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         optional: true,
                         type: STRING,
                         _inputex: {
-                            label: "Default confiance"
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                            label: "Initial confidence"
                         }
                     },
                     occupations: {
                         type: ARRAY,
                         _inputex: {
-                            label: "Absences",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                            label: "Vacancies",
                             _type: LIST,
                             useButtons: true,
                             elementType: {
@@ -144,7 +152,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                 required: true,
                                 fields: [{
                                         name: NAME,
-                                        typeInvite: NAME
+                                        typeInvite: NAME,
+                                        size: 10
                                     }, {
                                         name: VALUE,
                                         typeInvite: VALUE
@@ -156,6 +165,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         _inputex: {
                             label: "Default skills",
                             _type: HASHLIST,
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                             elementType: {
                                 type: COMBINE,
                                 required: true,
@@ -502,7 +512,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         required: true,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE
@@ -637,7 +648,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: COMBINE,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE
@@ -723,7 +735,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                 type: COMBINE,
                                 fields: [{
                                         name: NAME,
-                                        typeInvite: NAME
+                                        typeInvite: NAME,
+                                        size: 10
                                     }, {
                                         name: VALUE,
                                         typeInvite: VALUE

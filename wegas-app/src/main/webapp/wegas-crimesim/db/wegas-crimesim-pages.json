@@ -26,7 +26,7 @@
                         "type": "ValueboxTemplate",
                         "data": {},
                         "variable": {
-                            "name": "period"
+                            "content": "Variable.find('period')"
                         }
                     }, {
                         "disabled": false,
@@ -53,7 +53,7 @@
                         "type": "NumberTemplate",
                         "data": {},
                         "variable": {
-                            "name": "cost"
+                            "content": "Variable.find('cost')"
                         }
                     }, {
                         "type": "BoxTemplate",
@@ -61,7 +61,7 @@
                             "maxValue": 15
                         },
                         "variable": {
-                            "name": "humanResources"
+                            "content": "Variable.find('humanResources')"
                         }
                     }
                 ]
@@ -103,7 +103,7 @@
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": {
-                                        "name": "questions"
+                                        "content": "Variable.find('questions')"
                                     }
                                 }
                             }
@@ -159,7 +159,7 @@
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": {
-                                        "name": "inbox"
+                                        "content": "Variable.find('inbox')"
                                     }
                                 }
                             }
@@ -186,14 +186,14 @@
         "custom": "<%== this.value || 'Unable to find welcome text' %>",
         "data": {},
         "variable": {
-            "name": "welcomeText"
+            "content": "Variable.find(''welcomeText)"
         }
     },
     "3": {
         "id": 3,
         "type": "MCQTabView",
         "variable": {
-            "name": "questions"
+            "content": "Variable.find('questions')"
         }
     },
     "4": {
@@ -204,7 +204,7 @@
         "id": 5,
         "type": "InboxDisplay",
         "variable": {
-            "name": "inbox"
+            "content": "Variable.find('inbox')"
         }
     },
     "6": {

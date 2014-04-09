@@ -13,7 +13,7 @@
                     {
                         "type": "NumberTemplate",
                         "variable": {
-                            "name": "combatSkill"
+                            "content": "Variable.find('combatSkill')"
                         },
                         "data": {
                             "label": "Combat skills"
@@ -21,7 +21,7 @@
                     }, {
                         "type": "NumberTemplate",
                         "variable": {
-                            "name": "stamina"
+                            "content": "Variable.find('stamina')"
                         },
                         "data": {
                             "label": "Stamina"
@@ -34,7 +34,7 @@
                 "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
                 "variable": {
-                    "name": "currentPage"
+                    "content": "Variable.find('currentPage')"
                 }
             }
         ]

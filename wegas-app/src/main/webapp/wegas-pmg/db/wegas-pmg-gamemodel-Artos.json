@@ -31,7 +31,7 @@
                                     "cssClass": "pmg-period",
                                     "data": {},
                                     "variable": {
-                                        "expr": "currentPeriod.items[currentPhase.value].descriptorId"
+                                        "content": "Variable.find('currentPeriod').item(currentPhase.value)"
                                     }
                                 },
                                 {
@@ -229,7 +229,7 @@
                             "type": "BoxTemplate",
                             "data": {},
                             "variable": {
-                                "expr": "timeCards.items[currentPhase.value].descriptorId"
+                                "content": "Variable.find('timeCards').item(currentPhase.value)"
                             }
                         }
                     ]
@@ -400,7 +400,7 @@
                                             "fn": "UnreadCount",
                                             "cfg": {
                                                 "variable": {
-                                                    "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
+                                                    "content": "Variable.find('questions').item(currentPhase.value).item(currentPeriod.items[currentPhase.value].value - 1)"
                                                 }
                                             }
                                         },
@@ -1259,7 +1259,7 @@
                     "type": "MCQTabView",
                     "showUnanswered": false,
                     "variable": {
-                        "expr": "actions.items[currentPhase.value].descriptorId"
+                        "content": "Variable.find('actions').item(currentPhase.value)"
                     }
                 }
             ]
@@ -1276,7 +1276,7 @@
                 {
                     "type": "MCQTabView",
                     "variable": {
-                        "expr": "questions.items[currentPhase.value].items[currentPeriod.items[currentPhase.value].value - 1].descriptorId"
+                        "content": "Variable.find('questions').item(currentPhase.value).item(currentPeriod.items[currentPhase.value].value - 1)"
                     }
                 }
             ]

@@ -13,16 +13,6 @@
 select {
     margin: 0;
 }
-input, input[type="text"], input[type="password"] {
-    padding: 2px;
-}
-input[type="submit"], input[type="reset"] {
-    padding:2px 4px;
-    cursor: pointer;
-}
-*:focus {
-    outline: none; /* Remove chrome focus outline */
-}
 strong{
     font-weight: 700;
 }
@@ -44,12 +34,31 @@ h3{
 h4{
     font-size: 1.3em;
 }
-body h5{
+h5{
     font-size: 1.2em;
 }
-body h6{
+h6{
     font-size: 1.1em;
 }
+input, input[type="text"], input[type="password"] {
+    padding: 2px;
+}
+input[type="submit"], input[type="reset"] {
+    padding:2px 4px;
+    cursor: pointer;
+}
+*:focus {
+    outline: none; /* Remove chrome focus outline */
+}
+
+html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
+    height: 100%;
+}
+
+/* Widget */
+/*.wegas-playerview .wegas-widget {
+    overflow: hidden
+}*/
 
 /* Wegas styles */
 /* Wegas loading (overlay on content) */
@@ -95,7 +104,6 @@ body h6{
 .yui3-wegas-progressbar-hidden{
     display:none !important;
 }
-
 /* Tooltip */
 .wegas-tooltip {
     position:absolute;
@@ -136,7 +144,7 @@ body h6{
 
 /** Page loader styles */
 .wegas-playerview .wegas-pageloader {
-    overflow: auto;
+    /*overflow: auto;*/
     min-height: 50px;
     min-width: 50px;
 }

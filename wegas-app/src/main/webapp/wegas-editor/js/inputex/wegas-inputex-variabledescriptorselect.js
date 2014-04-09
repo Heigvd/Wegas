@@ -10,6 +10,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     "use strict";
 
@@ -71,7 +72,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @function
          */
         getValue: function() {
-            return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
+            if (this.currentEntityField) {
+                return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
+            } else {
+                return null;
+            }
         },
         /**
          * @function
@@ -224,7 +229,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     label: null
                 }, cMethod));
 
-            } else {
+            } else if (currentEntity) {
 
                 while (this.getMethods(currentEntity).length === 0              // If the current entity has no methods,
                         && currentEntity.get("items") && currentEntity.get("items").length > 0) { // but it has a child
@@ -281,16 +286,18 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.argsOffset = 1;
         },
         getValue: function() {
-            var l = this.inputs.length,
-                    args = this.inputs[l - this.argsOffset].getValue(),
-                    method = this.inputs[l - this.argsOffset - 1].getValue();
 
             if (Y.Lang.isString(this.options.value)
                     && Y.Object.hasKey(this.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
                 var k = this.options.value.replace("GLOBAL", ""),
                         cMethod = this.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
                 return k + "(" + this.encodeArgs(this.inputs[1].getValue(), cMethod.arguments) + ")";
-            } else {
+
+            } else if (this.inputs[this.inputs.length - this.argsOffset]) {                      // Not true only if there are no entites
+                var l = this.inputs.length,
+                        args = this.inputs[l - this.argsOffset].getValue(),
+                        method = this.inputs[l - this.argsOffset - 1].getValue();
+
                 if (!method) {
                     return "true";
                 }
@@ -440,7 +447,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             }
         }
     });
-    inputEx.registerType("wysiwygline", WysiwygLine, {});
+    inputEx.registerType("expression", WysiwygLine, {});
 
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorCondition
@@ -552,7 +559,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
 
         }
     });
-    inputEx.registerType("variabledescriptorcondition", VariableDescriptorCondition, {});
+    inputEx.registerType("condition", VariableDescriptorCondition, {});
 
     /**
      * @name Y.inputEx.Wegas.EntityArrayFieldSelect
@@ -604,4 +611,42 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     });
     inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);     // Register this class as "list" type
 
+    /**
+     * @name Y.inputEx.Wegas.VariableDescriptorGetter
+     * @class
+     * @constructor
+     * @extends Y.inputEx.Wegas.VariableDescriptorSelect
+     * @param {Object} options InputEx definition object
+     */
+    var VariableDescriptorGetter = function(options) {
+        Y.inputEx.VariableDescriptorSelect.superclass.constructor.call(this, options);
+    };
+
+    Y.extend(VariableDescriptorGetter, Y.inputEx.VariableDescriptorSelect, {
+        /** @lends Y.inputEx.Wegas.VariableDescriptorGetter# */
+
+        syncUI: function() {
+            VariableDescriptorGetter.superclass.syncUI.call(this);
+
+            if (this.currentEntity && this.currentEntity.get("items") && this.currentEntity.get("items").length > 0) {
+                this.addField(this.generateSelectConfig(null,
+                        this.currentEntity, this.currentEntity.get("items")));  // Pushes the current entity methods and children to the stack
+            }
+            if (!this.currentEntity) {
+                (new Y.Node(this.fieldset)).append("<div><em>No variable created</em></div>");
+            }
+        },
+        genChoices: function(entity, items) {
+            var choices = [];
+
+            if (items && items.length > 0) {                                    // If required, push separator
+                choices.push({
+                    value: "----------"
+                });
+            }
+
+            return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
+        }
+    });
+    inputEx.registerType("getter", VariableDescriptorGetter);
 });

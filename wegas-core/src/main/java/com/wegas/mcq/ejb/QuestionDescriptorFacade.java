@@ -9,7 +9,7 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.ScriptEvent;
+import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.persistence.AbstractEntity;
@@ -54,7 +54,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     @EJB
     QuestionSingleton questionSingleton;
     @Inject
-    private ScriptEvent scriptEvent;
+    private ScriptEventFacade scriptEvent;
 
     /**
      *

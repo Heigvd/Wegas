@@ -23,47 +23,100 @@ import org.apache.commons.collections.map.MultiValueMap;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @RequestScoped
-public class ScriptEvent {
+public class ScriptEventFacade {
 
+    /**
+     *
+     */
     private final MultiValueMap eventsFired;
+    /**
+     *
+     */
     private final MultiValueMap registeredEvents;
+    /**
+     *
+     */
     private Boolean eventFired;
+    /**
+     *
+     */
     @EJB
     private ScriptFacade scriptFacace;
+    /**
+     *
+     */
     @Inject
     private RequestManager requestManager;
 
-    public ScriptEvent() {
+    /**
+     *
+     */
+    public ScriptEventFacade() {
         this.eventFired = false;
         this.eventsFired = new MultiValueMap();
         this.registeredEvents = new MultiValueMap();
     }
 
+    /**
+     *
+     */
     public void detachAll() {
         this.eventFired = false;
         this.eventsFired.clear();
         this.registeredEvents.clear();
     }
 
+    /**
+     *
+     * @return
+     */
     public Boolean isEventFired() {
         return eventFired;
     }
 
+    /**
+     *
+     * @param player
+     * @param eventName
+     * @param param
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     public void fire(Player player, String eventName, Object param) throws ScriptException, NoSuchMethodException {
         this.eventsFired.put(eventName, param);
         this.doFire(player, eventName, param);
     }
 
+    /**
+     *
+     * @param player
+     * @param eventName
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     public void fire(Player player, String eventName) throws ScriptException, NoSuchMethodException {
         this.eventsFired.put(eventName, new EmptyObject());
         this.doFire(player, eventName, null);
     }
 
+    /**
+     *
+     * @param eventName
+     * @param param
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     public void fire(String eventName, Object param) throws ScriptException, NoSuchMethodException {
         this.eventsFired.put(eventName, param);
         this.doFire(requestManager.getPlayer(), eventName, param);
     }
 
+    /**
+     *
+     * @param eventName
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     public void fire(String eventName) throws ScriptException, NoSuchMethodException {
         this.eventsFired.put(eventName, new EmptyObject());
         this.doFire(requestManager.getPlayer(), eventName, null);
@@ -101,24 +154,55 @@ public class ScriptEvent {
         }
     }
 
+    /**
+     *
+     * @param eventName
+     * @return
+     */
     public int firedCount(String eventName) {
         return this.getFiredParameters(eventName).length;
     }
 
+    /**
+     *
+     * @param eventName
+     * @return
+     */
     public boolean fired(String eventName) {
         return this.firedCount(eventName) > 0;
     }
 
+    /**
+     *
+     * @param eventName
+     * @param func
+     * @param scope
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     public void on(String eventName, Object func, Object scope) throws ScriptException, NoSuchMethodException {
         this.registeredEvents.put(eventName, new Object[]{func, scope});
     }
 
+    /**
+     *
+     * @param eventName
+     * @param func
+     * @throws ScriptException
+     * @throws NoSuchMethodException
+     */
     public void on(String eventName, Object func) throws ScriptException, NoSuchMethodException {
         this.registeredEvents.put(eventName, new Object[]{func, func});
     }
 
+    /**
+     *
+     */
     public static class EmptyObject {
 
+        /**
+         *
+         */
         public EmptyObject() {
         }
     }

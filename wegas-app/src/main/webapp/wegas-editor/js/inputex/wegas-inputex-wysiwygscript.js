@@ -10,6 +10,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add("wegas-inputex-wysiwygscript", function(Y) {
     "use strict";
 
@@ -36,6 +37,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.options.className = options.className || 'inputEx-Field inputEx-WysiwigScript';
             this.options.mode = options.mode || "wysiwyg";
             this.options.expects = options.expects || "expression";             // condition or expression
+            this.options.classFilter = options.classFilter;
         },
         /**
          *
@@ -47,14 +49,14 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     if (this.options.expects === "condition") {
                         ct = this.exprList.getArray().join(" && ");
                     } else {
-                        ct = this.exprList.getArray().join(";\n") + ";";
+                        ct = this.exprList.getArray().join(";\n");
                     }
                 }
                 return {
                     '@class': "Script",
-                    language: "JavaScript",
+                    //language: "JavaScript",
                     content: ct
-                }
+                };
             } else {
                 return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments);
             }
@@ -62,8 +64,13 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         /**
          * 
          */
-        setValue: function() {
-            inputEx.WysiwygScript.superclass.setValue.apply(this, arguments);
+        setValue: function(val, sendUpdated) {
+            if (val && val.name) {                                              // @backwardcompatibility Convert old format to new one (for flexitests)
+                val = {
+                    content: "Variable.find('" + val.name + "');"
+                };
+            }
+            inputEx.WysiwygScript.superclass.setValue.call(this, val, sendUpdated);
             this.updateExpressionList();
         },
         // *** Private Methods *** //
@@ -119,7 +126,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             } else {
                 this.exprList.hide();
             }
-
         },
         /**
          *
@@ -136,8 +142,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 
             container.one(".msg").setContent("");                               // Reset layout
 
-            try {
-                tree = window.esprima.parse(this.el.value, {// Generate the syntaxic tree using esprima
+            try {                                                               // Generate the syntaxic tree using esprima    
+                tree = window.esprima.parse(this.el.value, {
                     raw: true
                 });
 
@@ -162,13 +168,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 fields: fields,
                 useButtons: true,
                 parentEl: this.fieldContainer,
-                addType: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline" //variabledescriptorsetter"
-            });
-            this.exprList.on("updated", function() {
-                if (this.options.mode === "wysiwyg") {
-                    this.fireUpdatedEvt();
+                addType: {
+                    type: this.options.expects, // conditon/expression/getter,
+                    classFilter: this.options.classFilter
                 }
-            }, this);                                                           // Whenever the list is update, fire updated event
+            });
+            this.exprList.on("updated", function() {                            // Whenever the list is update,
+                if (this.options.mode === "wysiwyg") {
+                    this.fireUpdatedEvt();                                      // fire updated event
+                }
+            }, this);
 
             if (this.options.mode !== "wysiwyg") {
                 this.exprList.hide();
@@ -207,7 +216,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 
                 case "BinaryExpression":
                     var vdSelect = this.generateExpression(expression.left)[0], args = [];
-                    vdSelect.type = "variabledescriptorcondition";
+                    vdSelect.type = "condition";
                     vdSelect.operator = expression.operator;
                     vdSelect.rightValue = this.generateExpression(expression.right);
                     return [vdSelect];
@@ -218,12 +227,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 concat(this.generateExpression(expression.right));
                     }
                     break;
-                    //return [{
-                    //    type: "inputlist",
-                    //    fields: this.generateExpression(expression.left).concat(this.generateExpression(expression.right),
-                    //    useButtons: true,
-                    //    addType: "variabledescriptorcondition"
-                    //}]
 
                 case "CallExpression":
                     switch (expression.callee.object.type) {
@@ -232,8 +235,10 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 case "Variable":                                // @backwardcompatibility
                                 case "VariableDescriptorFacade":
                                     return {
-                                        type: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline",
-                                        value: expression.arguments[1].value
+                                        type: this.options.expects,
+                                        classFilter: this.options.classFilter,
+                                        value: (expression.arguments[1]) ? expression.arguments[1].value :
+                                                expression.arguments[0].value   // First argument (gameModel) is optional
                                     };
                                 case "RequestManager":
                                 case "Event":
@@ -242,13 +247,14 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     Y.Array.each(expression.arguments, function(i) {
                                         args.push(this.generateExpression(i));
                                     }, this);
-                                    ret =  {
-                                        type: (this.options.expects === "condition") ? "variabledescriptorcondition" : "wysiwygline",
+                                    ret = {
+                                        type: this.options.expects,
+                                        classFilter: this.options.classFilter,
                                         value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
                                         arguments: args
                                     };
-                                    
-                                    if ( expression.callee.property.name === "fired") {
+
+                                    if (expression.callee.property.name === "fired") {
                                         return [ret];
                                     } else {
                                         return ret;
@@ -281,4 +287,28 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         }
     });
     inputEx.registerType('script', inputEx.WysiwygScript);                      // Register this class as "script" type
+
+    /**
+     * 
+     */
+    inputEx.SingleLineWysiwygScript = function(options) {
+        inputEx.SingleLineWysiwygScript.superclass.constructor.call(this, options);
+    };
+    Y.extend(inputEx.SingleLineWysiwygScript, inputEx.WysiwygScript, {
+        setOptions: function(options) {
+            options.defaultValue = [{}];
+            options.expects = options.expects || "getter";
+            options.className = options.className || 'inputEx-Field inputEx-WysiwigScript inputEx-singleLineWysiwygScript';
+            inputEx.SingleLineWysiwygScript.superclass.setOptions.apply(this, arguments);
+        },
+        updateExpressionList: function() {
+            inputEx.SingleLineWysiwygScript.superclass.updateExpressionList.apply(this, arguments);
+            Y.later(10, this, function() {
+                if (this.exprList.inputs.length === 0) {
+                    this.exprList.onAdd();
+                }
+            });
+        }
+    });
+    inputEx.registerType("variableselect", inputEx.SingleLineWysiwygScript);    // Register this class as "variableselect"
 });

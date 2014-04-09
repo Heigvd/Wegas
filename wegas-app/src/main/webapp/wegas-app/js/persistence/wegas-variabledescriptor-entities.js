@@ -5,10 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add('wegas-variabledescriptor-entities', function(Y) {
     "use strict";
 
@@ -419,7 +421,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }]
             },
             sub: {
-                label: "substract",
+                label: "remove",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -523,6 +525,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
+        },
+        /**
+         *
+         * @param {type} i
+         * @returns {Y.Wegas.persistence.VariableDescriptor}
+         */
+        item: function(i) {
+            return this.get("items")[i];
+        },
+        size: function() {
+            return this.get("items").length;
         }
     }, {
         ATTRS: {
@@ -612,6 +625,10 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     targetClass: "FSMDescriptor"
                                 }, {
                                     type: "NewEntityButton",
+                                    label: "Inbox",
+                                    targetClass: "InboxDescriptor"
+                                }, {
+                                    type: "NewEntityButton",
                                     label: "Dialogue",
                                     targetClass: "DialogueDescriptor",
                                     cssClass: "experimental wegas-advaned-feature"
@@ -626,9 +643,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     targetClass: "ObjectDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
-                                    type: "NewEntityButton",
-                                    label: "Inbox",
-                                    targetClass: "InboxDescriptor",
+                                    type: "AddEntityChildButton",
+                                    label: "Resource",
+                                    targetClass: "ResourceDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }]
                         }
@@ -653,7 +670,6 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             }
         }
     });
-
 
     persistence.InboxDescriptor = Base.create("InboxDescriptor", persistence.VariableDescriptor, [], {
         isEmpty: function(player) {
@@ -781,6 +797,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
          * evaluated event contains response. true or false. False if script error.
          */
         localEval: function() {
+            if (this.get("content") === "") {                                   // empty scripts resolve to true
+                this.fire("evaluated", true);
+            }
             if (Wegas.Facade.VariableDescriptor.script.eval) {
                 if (this._result) {
                     this.fire("evaluated", this._result);
@@ -822,17 +841,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 value: "Script",
                 type: STRING
             },
-            language: {
-                value: "JavaScript",
-                type: STRING,
-                choices: [{
-                        value: "JavaScript"
-                    }],
-                _inputex: {
-                    //type:"select",
-                    _type: HIDDEN
-                }
-            },
+            //language: {
+            //    value: "JavaScript",
+            //    type: STRING,
+            //    choices: [{
+            //            value: "JavaScript"
+            //        }],
+            //    _inputex: {
+            //        //type:"select",
+            //        _type: HIDDEN
+            //    }
+            //},
             content: {
                 type: STRING,
                 format: TEXT,

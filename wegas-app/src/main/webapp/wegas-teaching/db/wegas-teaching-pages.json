@@ -23,7 +23,7 @@
                 "pageLoaderId": "maindisplayarea",
                 "cssClass": "body",
                 "variable": {
-                    "name": "currentPage"
+                    "content": "Variable.find('currentPage')"
                 }
             }
         ]

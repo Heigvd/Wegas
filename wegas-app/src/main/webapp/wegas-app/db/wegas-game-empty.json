@@ -1,0 +1,27 @@
+{
+    "@class": "GameModel",
+    "pages": {
+        "1": {
+            "type": "AbsoluteLayout",
+            "plugins": [
+                {
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {
+                            "width": "1200px",
+                            "height": ""
+                        }
+                    }
+                }
+            ],
+            "children": [],
+            "@name": "Main page"
+        }
+    },
+    "name": "Empty game",
+    "description": "",
+    "childVariableDescriptors": [],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {}
+}

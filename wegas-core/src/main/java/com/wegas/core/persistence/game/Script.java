@@ -11,6 +11,7 @@ import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
 import javax.xml.bind.annotation.XmlType;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
@@ -25,6 +26,7 @@ public class Script implements Serializable {
     /**
      *
      */
+    @JsonIgnore
     private String lang = "JavaScript";
     /**
      *

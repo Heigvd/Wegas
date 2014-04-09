@@ -54,21 +54,22 @@
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader{
     position: relative;
-    background-color: darkgray !important;
+    /*background-color: darkgray !important;*/
 }
 
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader {
-    min-height: 80px;
+    min-height: 50px;
     box-shadow: 1px 1px 0px lightgray inset, -1px -1px 0px lightgray inset;
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader:after{
-    content:"" url(../../wegas-editor/images/webpage.png) "Sub page zone, edit page by choosing it in the left tab"  no-repeat center darkgray !important ;
+    content:"" url(../../wegas-editor/images/webpage.png) " Sub page zone, edit page by choosing it in the left tab"  no-repeat center darkgray !important ;
     /*color: white;*/
     position: absolute;
-    background-color: rgba(240, 240, 240, 0.3);
+    top: 0;
+    /*background-color: rgba(240, 240, 240, 0.3);*/
     width:100%;
     height:100%;
-    padding-top: 20px;
+    padding-top: 10px;
     text-align: center;
     vertical-align: middle;
 }
@@ -261,11 +262,11 @@ body > .wegas-pageloader > .wegas-pageloader-content{
     margin-left:0px;
 }
 .wegas-page-editor .page-node > .content-header{
-    color: #696969;
+    /*color: #696969;*/
 }
 .wegas-page-editor .current-page > .content-header{
     color: inherit;
-    /*font-weight: bold;*/
+    font-weight: bold;
 }
 .wegas-page-editor .page-node> ul.yui3-treenode-content>li>div.content-header,
 .wegas-page-editor .page-node> ul.yui3-treeleaf-content>div.content-header{

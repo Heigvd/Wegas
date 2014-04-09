@@ -371,9 +371,9 @@ YUI.add('wegas-join', function(Y) {
             Y.Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
-                        var gameModel = e.response.entity;
-                        cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name")); // Add title
-                        cb.one(".description").setHTML(gameModel.get("description"))
+                        var game = e.response.entity;
+                        cb.one(".title").setHTML("" + game.get("gameModelName") + " <br />" + game.get("name")); // Add title
+                        cb.one(".description").setHTML(game.get("description"))
                                 //|| "<em><center>No description available</em></center>")
                                 .removeClass("wegas-loading-div");
                     }, this)

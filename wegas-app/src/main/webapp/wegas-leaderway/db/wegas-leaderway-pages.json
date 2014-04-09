@@ -12,7 +12,7 @@
                         "type": "FractionTemplate",
                         "cssClass": "indicators-fraction",
                         "variable": {
-                            "name": "week"
+                            "content": "Variable.find('week')"
                         },
                         "data": {
                             "label": "Semaine N° : "
@@ -35,7 +35,7 @@
                         "type": "NumberTemplate",
                         "cssClass": "indicators-text",
                         "variable": {
-                            "name": "budget"
+                            "content": "Variable.find('budget')"
                         },
                         "data": {
                             "label": "Budget : "
@@ -44,7 +44,7 @@
                         "type": "BoxTemplate",
                         "cssClass": "indicators-gauge",
                         "variable": {
-                            "name": "teamMotivation"
+                            "content": "Variable.find('teamMotivation')"
                         },
                         "data": {
                             "label": "Motivation générale"
@@ -54,7 +54,7 @@
                         "type": "BoxTemplate",
                         "cssClass": "indicators-gauge",
                         "variable": {
-                            "name": "clientsSatisfaction"
+                            "content": "Variable.find('clientsSatisfaction')"
                         },
                         "data": {
                              "label": "Satisfaction client"
@@ -64,7 +64,7 @@
                         "type": "BoxTemplate",
                         "cssClass": "indicators-block",
                         "variable": {
-                            "name": "actions"
+                            "content": "Variable.find('actions')"
                         },
                         "data": {
                             "label": "Actions restantes"
@@ -108,7 +108,7 @@
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": {
-                                        "name": "inbox"
+                                        "content": "Variable.find('inbox')"
                                     }
                                 }
                             }, {
@@ -343,7 +343,7 @@
         "label": "Inbox",
         "type": "InboxDisplay",
         "variable": {
-            "name": "inbox"
+            "content": "Variable.find('inbox')"
         },
         "cssClass": "leaderway-inbox",
         "dialoguePageId": "7"

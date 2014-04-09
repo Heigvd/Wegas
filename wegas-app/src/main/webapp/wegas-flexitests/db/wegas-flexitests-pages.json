@@ -257,7 +257,7 @@
                 "feedback": 1000,
                 "responseType": "radio",
                 "variable": {
-                    "name": "results"
+                    "content": "Variable.find('results')"
                 }
             }
         ],
@@ -285,7 +285,7 @@
                         "cfg": {
                             "targetEvent": "submit",
                             "variable": {
-                                "name": "demographics"
+                                "content": "Variable.find('demographics')"
                             }
                         }
                     },
@@ -340,7 +340,7 @@
         "cssClass": "flexitests",
         "pageLoaderId": "mainarea",
         "variable": {
-            "name": "currentPage"
+            "content": "Variable.find('currentPage')"
         },
         "@name": "Main"
     },
@@ -351,10 +351,10 @@
             {
                 "type": "FlexitestsResults",
                 "variable": {
-                    "name": "results"
+                    "content": "Variable.find('results')"
                 },
                 "demographics": {
-                    "name": "demographics"
+                    "content": "Variable.find('demographics')"
                 },
                 "simpleMode": false,
                 "testPage": "3"
@@ -368,10 +368,10 @@
             {
                 "type": "FlexitestsResults",
                 "variable": {
-                    "name": "results"
+                    "content": "Variable.find('results')"
                 },
                 "demographics": {
-                    "name": "demographics"
+                    "content": "Variable.find('demographics')"
                 },
                 "simpleMode": true,
                 "testPage": "3"

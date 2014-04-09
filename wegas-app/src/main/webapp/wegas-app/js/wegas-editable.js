@@ -10,6 +10,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+
 YUI.add('wegas-editable', function(Y) {
     "use strict";
 

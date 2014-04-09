@@ -16,5 +16,5 @@ import javax.inject.Singleton;
  */
 @Specializes
 @Singleton
-public class MockScriptEvent extends ScriptEvent{  
+public class MockScriptEvent extends ScriptEventFacade{  
 }
