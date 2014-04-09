@@ -58,7 +58,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                                 //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                     ],
                     external_plugins: {
-                        "dynamic_toolbar": "/Wegas/wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                        "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                     },
                     toolbar1: "bold italic bullist | link image media code addToolbarButton",
                     toolbar2: "forecolor backcolor | fontselect |  fontsizeselect | styleselect",
