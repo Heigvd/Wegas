@@ -72,17 +72,29 @@
                                 "variable": {
                                     "name": "customerApproval"
                                 },
+                                "cfg": {
+                                    "percentColors": [[0.0, "#0981A9"]],
+                                    "backgroundPercentColors": [[0.0, "#FFFFFF"]]
+                                },
                                 "cssClass": "fr"
                             }, {
                                 "type": "GaugeDisplay",
                                 "variable": {
                                     "name": "managementApproval"
                                 },
+                                "cfg": {
+                                    "percentColors": [[0.0, "#0981A9"]],
+                                    "backgroundPercentColors": [[0.0, "#FFFFFF"]]
+                                },
                                 "cssClass": "fr"
                             }, {
                                 "type": "GaugeDisplay",
                                 "variable": {
                                     "name": "teamMotivation"
+                                },
+                                "cfg": {
+                                    "percentColors": [[0.0, "#0981A9"]],
+                                    "backgroundPercentColors": [[0.0, "#FFFFFF"]]
                                 },
                                 "cssClass": "fr"
                             }

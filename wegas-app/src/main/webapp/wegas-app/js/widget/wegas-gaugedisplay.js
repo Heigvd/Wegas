@@ -31,7 +31,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         /**
          * Content box of this widget, static
          */
-        CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas height="50px" width="100px"></canvas><center class="label"></center><center class="percent"></center></div>',
+        CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas class="background-percent" height="50px" width="100px"></canvas><canvas class="gauge" style="margin-left: -100px;" height="50px" width="100px"></canvas><center class="label"></center><center class="percent wegas-gauge-value"></center></div>',
         /**
          * Maximum value displayed by the gauge, static
          */
@@ -65,25 +65,40 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         setValue: function(cfg) {
             var opts = {
-                angle: cfg.angle || 0.15, // The length of each line
+                angle: this.angleTransform(cfg.angle) || 0.15, // The length of each line
                 lineWidth: cfg.lineWidth || 0.44, // The line thickness
                 pointer: cfg.pointer || {
-                    length: 0.5, // The radius of the inner circle
+                    pointerlength: 0.5, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
-                strokeColor: cfg.strokeColor || '#FFFFFF',
-                percentColors: cfg.percentColors || [[0.0, "#0981A9"]]
+                strokeColor: 'RGBA(0, 0, 0, 0)',
+                percentColors: cfg.percentColors || [[0.0, "RGBA(0, 0, 0, 0)"]]
                         //colorStart: cfg.colorStart || '#0981A9',              // Colors, don't work with this new version of gauge library
                         //colorStop: cfg.colorStop || '#000000',
                         // lines: cfg.lines || 1,                               // The number of lines to draw //don't work with this new version of gauge library
                         //generateGradient: cfg.generateGradient || false       // don't work with this new version of gauge library
             };
-            this.gauge = new Gauge(this.get("contentBox").one("canvas").
+            opts.pointer.length = opts.pointer.pointerlength;
+            this.gauge = new Gauge(this.get("contentBox").one(".gauge").
                     getDOMNode());                                              // create the  gauge!conso
             this.gauge.setOptions(opts);
-            this.gauge.maxValue = this.MAXVAL;                                  // set max gauge value
-            this.gauge.animationSpeed = 32;                                     // set animation speed (32 is default value)
+            this.gauge.maxValue = this.defineMaxGaugeValue();
+            this.gauge.animationSpeed = 1;                                     // set animation speed (32 is default value)
+            this.backgroundPercent();
+        },
+        defineMaxGaugeValue: function() {
+            var variableDescriptor = this.get("variable.evaluated"),
+                maxVal = this.get("maxValue") || variableDescriptor.get("maxValue") || this.MAXVAL,
+                minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
+            return maxVal - minVal;
+        },
+        angleTransform: function(angle) {
+            var angleValue = (180 - angle)/180 * 0.5;
+            if (angleValue === 0){
+                angleValue = 0.0000000000001;
+            }
+            return angleValue;
         },
         /**
          * @function
@@ -93,6 +108,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on("sourceChange", function(){
+               this.gauge.animationSpeed = 1;
+            }, this));
             this.after('disabledChange', this.syncUI, this);
 
             this.after("cfgChange", function(e) {
@@ -113,20 +131,39 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 Y.log("error", "Unable to find variable descriptot", "Y.Wegas.GaugeDisplay");
                 return;
             }
-
+            
             label = this.get("label") || variableDescriptor.getLabel();
-            minVal = variableDescriptor.get("minValue");
-            maxVal = variableDescriptor.get("maxValue") - minVal;
-            value = (variableDescriptor.getInstance().
-                    get("value") - minVal) / maxVal * this.MAXVAL;
+            maxVal = this.defineMaxGaugeValue();
+            minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
+            value = variableDescriptor.getInstance().get("value");
+            if (this.gauge.prevDisabled && !this.get("disabled")){
+                this.gauge.animationSpeed = 1;
+            }
+            this.gauge.prevDisabled = this.get("disabled");
             if (!value || this.get("disabled")) {
-                value = 0.1;                                                    // @hack @fixme unkown bug, value seams to be treated by gauge as false...
+                value = 0;
+                this.gauge.animationSpeed = 1;
             }
 
-            this.gauge.set(value);                                              // set actual value
+            this.backgroundPercent();
+            this.gauge.maxValue = maxVal;                                      // @hack for change max value clear gauge background and pointer and reder it
+            this.gauge.gp[0].maxValue = maxVal;
+            this.gauge.gp[0].ctx.clearRect(0, 0, this.gauge.canvas.width, this.gauge.canvas.height);
+            this.gauge.gp[0].render();
+            this.gauge.render();
+
+            if (value - minVal > maxVal) {
+                this.gauge.set(maxVal);
+            } else if (value < minVal){
+                this.gauge.set(0);
+            } else {
+                this.gauge.set(value - minVal);
+            }
+
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
-                    setContent(Math.round(value / this.MAXVAL * this.get("percentMaxValue")) + "%");
+                    setContent(value);
+            this.gauge.animationSpeed = 32;
         },
         getEditorLabel: function() {
             var variable = this.get("variable.evaluated");
@@ -135,13 +172,52 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             }
             return null;
         },
+        backgroundPercent: function() {
+            var canvas = this.get("contentBox").one(".background-percent").getDOMNode(),
+                    cfg = this.get("cfg"), i, size,
+                    startAngle = (1 + this.gauge.options.angle) * Math.PI,
+                    endAngle = (2 - this.gauge.options.angle) * Math.PI,
+                    r = endAngle - startAngle,
+                    p = cfg.backgroundPercentColors;
+
+            if (canvas.getContext) {
+                this.ctx = canvas.getContext('2d');
+                this.ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (!cfg.backgroundPercentColors) {
+                    p = [[0, "rgba(255, 0, 0, 0.9)"], [0.3333, "rgba(255, 204, 0, 0.9)"], [0.6666, "rgba(97, 186, 9, 0.9)"]];
+                }
+
+                if (this.get("disabled")) {
+                    p = [[0, "rgba(100, 100, 100, 0.6)"], [0.3333, "rgba(180, 180, 180, 0.6)"], [0.6666, "rgba(140, 140, 140, 0.6)"]];
+                }
+
+                for (i = 0; i < p.length; i += 1) {
+                    size = ((i !== p.length - 1) ? parseFloat(p[i + 1][0]) : 1) - parseFloat(p[i][0]);
+                    this.color(p[i][1], startAngle + r * parseFloat(p[i][0]), startAngle + r * (parseFloat(p[i][0]) + size));
+                }
+            }
+        },
+        color: function(color, startAngle, endAngle) {
+            var x = this.gauge.canvas.width / 2,
+                    y = this.gauge.canvas.height * (1 - this.gauge.paddingBottom),
+                    radius = this.gauge.radius;
+
+            this.ctx.beginPath();
+            this.ctx.strokeStyle = color;
+            this.ctx.lineWidth = this.gauge.lineWidth;
+            this.ctx.arc(x, y, radius, startAngle, endAngle, false);
+            this.ctx.stroke();
+
+            this.ctx.closePath();
+        },
         /**
          * @function
          * @private
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
-            for (var i = 0; i < this.handlers.length; i += 1) {
+            var i;
+            for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         }
@@ -188,13 +264,18 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                     label: "Label"
                 }
             },
-            percentMaxValue: {
+            minValue: {
                 type: "number",
                 optional: true,
-                validator: Y.Lang.isNumber,
-                value: 100,
                 _inputex: {
-                    label: "Percent max value"
+                    label: "Display from"
+                }
+            },
+            maxValue: {
+                type: "number",
+                optional: true,
+                _inputex: {
+                    label: "to"
                 }
             },
             /**
@@ -204,38 +285,55 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 value: {},
                 _inputex: {
                     _type: "wegasobject",
+                    label: "Configuration",
                     useButtons: true,
+//                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     elementType: {
                         type: "wegaskeyvalue",
                         availableFields: [{
-                                name: "angle",
-                                type: "number"
-                            }, {
-                                name: "lineWidth",
-                                type: "number"
-                            }, {
-                                name: "strokeColor",
-                                type: "colorpicker"
-                            }, {
                                 name: "pointer",
                                 type: "group",
                                 fields: [
-                                    {type: "number", name: 'length', typeInvite: "length"},
-                                    {type: "number", name: 'strokeWidth', typeInvite: "stroke width"},
+                                    {type: "number", name: 'pointerlength', typeInvite: "length [0.1 - ...]"},
+                                    {type: "number", name: 'strokeWidth', typeInvite: "width [0.02 - 0.5]"},
                                     {type: "colorpicker", name: 'color'}
                                 ]
                             }, {
-                                name: "percentColors",
+                                label: "background colors",
+                                name: "backgroundPercentColors",
                                 type: "list",
                                 useButtons: true,
                                 elementType: {
                                     type: "combine",
                                     fields: [
-                                        {type: "string", name: "value", typeInvite: "value"},
+                                        {type: "string", name: "value", typeInvite: "[0 - 1]"},
                                         {type: "colorpicker", name: "color"}
                                     ]
                                 },
                                 palette: 3
+                            }, {
+                                name: "percentColors",
+                                label: "percent colors",
+                                type: "list",
+                                useButtons: true,
+                                elementType: {
+                                    type: "combine",
+                                    fields: [
+                                        {type: "string", name: "value", typeInvite: "[0 - 1]"},
+                                        {type: "colorpicker", name: "color"}
+                                    ]
+                                },
+                                palette: 3
+                            }, {
+                                name: "lineWidth",
+                                label: "arc width",
+                                type: "number",
+                                typeInvite: "[0 - 0.7]"
+                            }, {
+                                name: "angle",
+                                label: "arc angle",
+                                type: "number",
+                                typeInvite: "[0° - 180°]"
                             }]
                     }
                 }
