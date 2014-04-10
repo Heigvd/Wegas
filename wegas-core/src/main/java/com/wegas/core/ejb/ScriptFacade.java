@@ -85,7 +85,9 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(Script script, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
-
+        if(script == null){
+            return null;
+        }
         ScriptEngine engine = requestManager.getCurrentEngine();
         if (engine == null) {
             ScriptEngineManager mgr = new ScriptEngineManager();                // Instantiate the corresponding script engine
