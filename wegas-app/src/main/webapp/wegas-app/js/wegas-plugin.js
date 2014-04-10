@@ -70,7 +70,8 @@ YUI.add('wegas-plugin', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").get("boundingBox").addClass("wegas-"+this.get("targetEvent"));
+            this.handlers = [];
+            this.handlers.push(this.get("host").get("boundingBox").addClass("wegas-"+this.get("targetEvent")));
             this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
@@ -79,6 +80,17 @@ YUI.add('wegas-plugin', function(Y) {
          */
         execute: function() {
             Y.error("Y.Plugin.Action.execute() is abstract, should be overriddent");
+        },
+        /**
+         * @function
+         * @private
+         * @description Detach all functions created by this widget.
+         */
+        destructor: function() {
+            var i;
+            for (i = 0; i < this.handlers.length; i += 1) {
+                this.handlers[i].detach();
+            }
         }
     }, {
         NS: "wegas",
