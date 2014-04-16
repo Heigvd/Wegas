@@ -156,6 +156,13 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         }
                         this.treeView.applyState(twState);
                         this.hideOverlay();
+                        /*
+                         * after a widget.rebuild(), update references.
+                         */
+                        if (node.item(0)) {
+                            node.item(0).get("data.widget").detach("*:addChild", this.getIndex, this);
+                            node.item(0).get("data.widget").onceAfter("*:addChild", this.getIndex, this);
+                        }
                     };
 
             this.showOverlay();
