@@ -127,6 +127,18 @@ public class RequestController implements Serializable {
      *
      * @return current logged user mail
      */
+    public String getCurrentUserId() {
+        try {
+            return "" + this.getCurrentUser().getId();
+        } catch (NoResultException e) {
+            return "0";
+        }
+    }
+
+    /**
+     *
+     * @return current logged user mail
+     */
     public String getCurrentUserMail() {
         try {
             return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
