@@ -367,6 +367,12 @@ YUI.add("wegas-parent", function(Y) {
                     }]
             }, {
                 type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateWidgetAction"
+                    }]
+            }, {
+                type: BUTTON,
                 label: "Delete",
                 plugins: [{
                         fn: "DeleteLayoutWidgetAction"

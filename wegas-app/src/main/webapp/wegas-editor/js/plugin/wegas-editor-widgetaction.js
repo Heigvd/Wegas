@@ -114,7 +114,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (!widget.get("destroyed")) {
                 if (val || Y.Lang.isUndefined(val)) {
                     widget.get("boundingBox").addClass("highlighted");
-                }else{
+                } else {
                     widget.get("boundingBox").removeClass("highlighted");
                 }
             }
@@ -208,15 +208,40 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
         execute: function() {
             var targetWidget = this.get("widget"),
                     root = targetWidget.get("root");
-            if (targetWidget.size() > 0) {
-                alert("Please delete content first");
+            /*if (targetWidget.size() > 0) {
+             alert("Please delete content first");
+             } else */
+            if (root === targetWidget) {
+                Y.Widget.getByNode(".wegas-page-editor").deletePage(root.get("@pageId"));
             } else if (confirm("Are your sure your want to delete this widget and all of its content ?")) {
-                if (root !== targetWidget) {
-                    targetWidget.destroy();
-                } else if (targetWidget.item && targetWidget.item(0)) { // @TODO: Panic mode, to change
-                    targetWidget.destroyAll();
-                }
-
+                targetWidget.destroy();
+                this.get("dataSource").cache.patch(root.toObject());
+            }
+        }
+    }, {
+        NS: "DeleteLayoutWidgetAction",
+        NAME: "DeleteLayoutWidgetAction"
+    });
+    /**
+     * @class
+     * @name Y.Plugin.DuplicateWidgetAction
+     * @extends Y.Plugin.WidgetAction
+     * @constructor
+     */
+    Plugin.DuplicateWidgetAction = function() {
+        Plugin.DuplicateWidgetAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Plugin.DuplicateWidgetAction, WidgetAction, {
+        execute: function() {
+            var targetWidget = this.get("widget"),
+                    root = targetWidget.get("root");
+            /*if (targetWidget.size() > 0) {
+             alert("Please delete content first");
+             } else */
+            if (root === targetWidget) {
+                Y.Widget.getByNode(".wegas-page-editor").duplicatePage(root.get("@pageId"));
+            } else {
+                targetWidget.get("parent").add(targetWidget.toObject());
                 this.get("dataSource").cache.patch(root.toObject());
             }
         }
