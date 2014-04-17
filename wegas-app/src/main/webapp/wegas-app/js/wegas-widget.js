@@ -145,6 +145,12 @@ YUI.add("wegas-widget", function(Y) {
                 plugins: [{
                         fn: "EditWidgetAction"
                     }]
+            },{
+                type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "DuplicateWidgetAction"
+                    }]
             }, {
                 type: BUTTON,
                 label: "Delete",

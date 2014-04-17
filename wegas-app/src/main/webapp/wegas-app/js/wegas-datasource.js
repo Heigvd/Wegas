@@ -96,13 +96,13 @@ YUI.add('wegas-datasource', function(Y) {
                     defIOConfig = this.get("ioConfig"),
                     request = e.request,
                     cfg = Y.merge(defIOConfig, e.cfg, {
-                on: Y.merge(defIOConfig, {
-                    success: this.successHandler,
-                    failure: this.failureHandler
-                }),
-                context: this,
-                "arguments": e
-            });
+                        on: Y.merge(defIOConfig, {
+                            success: this.successHandler,
+                            failure: this.failureHandler
+                        }),
+                        context: this,
+                        "arguments": e
+                    });
 
             // Support for POST transactions
             if (Lang.isString(cfg.fullUri)) {
@@ -1093,7 +1093,10 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         /**
-         * @function
+         * 
+         * @param {Object} entity
+         * @param {Function} (optional) callback, parameters (page created, page's id, index); 
+         * @returns {undefined}
          */
         createPage: function(entity, callback) {
             var pe = Y.clone(entity);
@@ -1107,8 +1110,11 @@ YUI.add('wegas-datasource', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
+
                         if (callback instanceof Function) {
-                            callback(e.response.results, e.data.getResponseHeader("Page"));
+                            this.getIndex(Y.bind(callback, callback, e.response.results, e.data.getResponseHeader("Page")));
+                        } else {
+                            this.getIndex();
                         }
                     }, this)
                 }
@@ -1171,16 +1177,21 @@ YUI.add('wegas-datasource', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         if (callback instanceof Function) {
-                            callback(e.response.results, e.data.getResponseHeader("Page"));
+                            this.getIndex(Y.bind(callback, callback, e.response.results, e.data.getResponseHeader("Page")));
+                        } else {
+                            this.getIndex();
                         }
                     }, this)
                 }
             });
         },
         /**
-         * @function
+         * 
+         * @param {String|Number} pageId
+         * @param {Function} callback,  param (page's index)
+         * @returns {undefined}
          */
-        deletePage: function(pageId) {
+        deletePage: function(pageId, callback) {
             this.index = null;
             this.sendRequest({
                 request: "" + pageId,
@@ -1190,6 +1201,9 @@ YUI.add('wegas-datasource', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         delete this.get(HOST).data[pageId];
+                        if (callback instanceof Function) {
+                            callback(e.response.results);
+                        }
                     }, this)
                 }
             });
