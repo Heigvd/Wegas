@@ -30,7 +30,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
             if (this.editor) {
                 this.editor.destroy();
             } else {
-                Y.once("domready", function () {
+                Y.once("domready", function() {
                     this.editor.destroy();
                 }, this);
             }
@@ -54,16 +54,21 @@ YUI.add("wegas-inputex-rte", function(Y) {
             Y.once("domready", function() {
                 this.editor = new tinymce.Editor(this.el.id, {
                     plugins: [
-                        "autolink autoresize link image lists code media table contextmenu paste"
+                        "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
                                 //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                     ],
-                    toolbar1: "bold italic bullist | link image media | code",
+                    external_plugins: {
+                        "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                    },
+                    toolbar1: "bold italic bullist | link image media code addToolbarButton",
+                    toolbar2: "forecolor backcolor | fontselect |  fontsizeselect | styleselect",
                     // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
                     // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
                     menubar: false,
                     statusbar: false,
                     relative_urls: false,
                     toolbar_items_size: 'small',
+                    hidden_tootlbar: [2],
                     file_browser_callback: this.onFileBrowserClick,
                     setup: Y.bind(function(editor) {
                         editor.on('change', Y.bind(this.fireUpdatedEvt, this));

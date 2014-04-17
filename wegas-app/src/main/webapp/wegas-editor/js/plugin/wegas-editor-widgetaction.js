@@ -60,7 +60,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             var widget = this.get("widget"),
                     form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
                         Plugin.EditEntityAction.showEditFormOverlay();
-                        var i, plugins = {}, plugin, cfg, oldCfg = entity.get("root").toObject();
+                        var i, plugins = {}, pls, plugin, cfg, oldCfg = entity.get("root").toObject();
                         entity.setAttrs(val);
                         for (i = 0; i < val.plugins.length; i += 1) {
                             plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
@@ -72,9 +72,11 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                                 plugins[plugin.NS] = true;                              //store namespace as treated
                             }
                         }
-                        for (i in entity.get("plugins")) {                                    // remove
-                            if (Y.Lang.isUndefined(plugins[entity.get("plugins")[i].fn])) {                       //An inexistant namespace
-                                entity.unplug(entity.get("plugins")[i].fn);
+                        pls = Y.merge(entity.get("plugins"));
+                        for (i in pls) {                                    // remove
+                            plugin = Y.Plugin[pls[i].fn];
+                            if (Y.Lang.isUndefined(plugins[plugin.NS])) {                       //An inexistant namespace
+                                entity.unplug(plugin);
                             }
                         }
                         cfg = entity.get("root").toObject();

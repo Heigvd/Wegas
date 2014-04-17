@@ -58,12 +58,12 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
                 node: this._resizeNode
             });
             this._resize.plug(Y.Plugin.DDNodeScroll, {
-                    node: this.get("host").get(CONTENTBOX)
-                });
-                //    .plug(Y.Plugin.DDConstrained, {
-                //    constrain: this.get("host").get(CONTENTBOX),
-                //    cacheRegion: false                                              //scroll changes region
-                //});
+                node: this.get("host").get(CONTENTBOX)
+            });
+            //    .plug(Y.Plugin.DDConstrained, {
+            //    constrain: this.get("host").get(CONTENTBOX),
+            //    cacheRegion: false                                              //scroll changes region
+            //});
             this._resizeNode.before("mousedown", function(e) {
                 this.detach();
                 this._resizeNode.show();
@@ -119,7 +119,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             }
         },
         _setupIcon: function() {
-            if (this.shownOverlay._widget.CSSSize) {
+            if (this.shownOverlay._widget && this.shownOverlay._widget.CSSSize) {
                 this._iconResizeNode.show();
             } else {
                 this._iconResizeNode.hide();

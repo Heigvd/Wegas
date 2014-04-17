@@ -239,6 +239,11 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
 
             }, this));
+            this.handlers.push(Y.Wegas.app.after("layout:resize", function(e){
+                if(this.targetWidget){
+                    this.fixedOverlay(this.targetWidget);
+                }
+            }, this));
         },
         processSave: function() {
             var host = this.get("host"),

@@ -1120,7 +1120,7 @@ YUI.add('wegas-datasource', function(Y) {
         patch: function(o, callback) {
             var dmp = new diff_match_patch(),
                     oldPage = this.getCache(o["@pageId"]),
-                    newPage = Y.clone(o),
+                    newPage = Y.merge(o),
                     pageId = o["@pageId"],
                     patch;
             delete newPage["@pageId"];
