@@ -5,7 +5,7 @@
         captureUncaught: true,
         payload: {                                                              // Send  about current user' data
             person: {
-              id: #{requestController.currentUser.id},
+              id: #{requestController.currentUserId},
               username: "#{requestController.currentUserName}",
               email: "#{requestController.currentUserMail}"
             }
