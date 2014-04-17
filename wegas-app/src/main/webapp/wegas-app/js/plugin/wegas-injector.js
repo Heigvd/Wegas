@@ -59,7 +59,7 @@ YUI.add("wegas-injector", function(Y) {
                 var link, gallery = [];
                 e.halt(true);
                 e.target.get("children").each(function() {
-                    link = this.getAttribute("href") || this.getAttribute("src");
+                    link = this.get("href") || this.get("src") || this.getAttribute("data-src");
                     if (link) {
                         gallery.push({
                             srcUrl: link,
@@ -73,7 +73,7 @@ YUI.add("wegas-injector", function(Y) {
             // Load gallery on .light-picture click
             this.handlers.push(Y.one("body").delegate("click", function(e) {
                 var gallery = [], index,
-                        link = e.target.getAttribute("href") || e.target.getAttribute("src");
+                        link = e.target.get("href") || e.target.get("src");
                 e.halt(true);
                 if (e.target.hasAttribute("data-gallery")) {                    // Group same data-gallery together 
                     Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
@@ -81,7 +81,7 @@ YUI.add("wegas-injector", function(Y) {
                             index = i;
                         }
                         gallery.push({
-                            srcUrl: item.getAttribute("href") || item.getAttribute("src"),
+                            srcUrl: item.get("href") || item.get("src"),
                             description: item.get("title")
                         });
                     });
