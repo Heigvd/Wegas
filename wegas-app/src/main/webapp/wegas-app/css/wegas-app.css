@@ -345,3 +345,8 @@ font {
     float: left;    /* Player edition is displayed inline */
     padding-right: 3px;
 }
+
+/* Onclick pointer style */
+.wegas-click {
+    cursor: pointer;
+}

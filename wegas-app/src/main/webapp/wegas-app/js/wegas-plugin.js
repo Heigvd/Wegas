@@ -70,6 +70,7 @@ YUI.add('wegas-plugin', function(Y) {
          * @private
          */
         initializer: function() {
+            this.get("host").get("boundingBox").addClass("wegas-"+this.get("targetEvent"));
             this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
