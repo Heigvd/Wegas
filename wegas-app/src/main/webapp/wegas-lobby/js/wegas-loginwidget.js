@@ -97,9 +97,9 @@ YUI.add('wegas-loginwidget', function(Y) {
                         + '<span class="description">Learn Javascript by coding your way through the game.</span>'
                         + '<span class="links"><a href="game.html?token=proggame">Start playing</a> '
                         + '| <a href="#" class="wegas-light-gallery" >Screenshots'
-                        + '<img src="wegas-lobby/images/wegas-proggame-1.png" style="display:none">'
-                        + '<img src="wegas-lobby/images/wegas-proggame-2.png" style="display:none">'
-                        + '<img src="wegas-lobby/images/wegas-proggame-3.png" style="display:none">'
+                        + '<img data-src="wegas-lobby/images/wegas-proggame-1.png" style="display:none">'
+                        + '<img data-src="wegas-lobby/images/wegas-proggame-2.png" style="display:none">'
+                        + '<img data-src="wegas-lobby/images/wegas-proggame-3.png" style="display:none">'
                         + '</a></span></span></span>'
                         + '<span class="image"><span class="image-offset"><img src="wegas-lobby/images/wegas-preview-proggame-1.png" /></span></span></div></li>'
 
