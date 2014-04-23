@@ -404,7 +404,12 @@
         "children": [{
                 "type": "TabView",
                 "id": "rightTabView",
-                "cssClass": "editor-tab"
+                "cssClass": "editor-tab",
+                "plugins": [{
+                        "fn": "EmptyTab"
+                    }, {
+                        "fn": "RemoveTab"
+                    }]
             }]
     }
 }

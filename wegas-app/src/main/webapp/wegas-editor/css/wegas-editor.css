@@ -318,7 +318,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-jointeam .subtitle {
     font-style: italic;
     color: grey;
-    
+
 }
 .wegas-jointeam .addTeamMember span{
     margin-bottom: -3px;
@@ -395,4 +395,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     font-weight: bold;
     text-align: center;
     margin-top: 4em;
+}
+
+/** Close tab */
+#rightTabView .wegas-removeTabview{
+    min-width: 0;
+    width: 5px;
+    padding: 1px 8px 2px 5px;
+    margin-bottom: 8px;
+    margin-top: 9px;
+    border-radius: 5px;
+    font: bold 101% Verdana;
 }

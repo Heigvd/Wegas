@@ -59,51 +59,51 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             Plugin.EditEntityAction.hideRightTabs();
             var widget = this.get("widget"),
                     form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
-                        Plugin.EditEntityAction.showEditFormOverlay();
-                        var i, plugins = {}, plugin, cfg, oldCfg = entity.get("root").toObject();
-                        entity.setAttrs(val);
-                        for (i = 0; i < val.plugins.length; i += 1) {
-                            plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
-                            if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) {      //that plugin exists on target
-                                entity[plugin.NS].setAttrs(val.plugins[i].cfg);
-                                plugins[plugin.NS] = true;                              //store namespace as treated
-                            } else {
-                                entity.plug(plugin, val.plugins[i].cfg);
-                                plugins[plugin.NS] = true;                              //store namespace as treated
-                            }
-                        }
-                        for (i in entity.get("plugins")) {                                    // remove
-                            if (Y.Lang.isUndefined(plugins[entity.get("plugins")[i].fn])) {                       //An inexistant namespace
-                                entity.unplug(entity.get("plugins")[i].fn);
-                            }
-                        }
-                        cfg = entity.get("root").toObject();
-                        if (Y.JSON.stringify(cfg) !== Y.JSON.stringify(oldCfg)) {
-                            this.get("dataSource").cache.patch(cfg, Y.bind(function() {
-                                entity.fire("AttributesChange", {attrs: val});
-                                Plugin.EditEntityAction.hideEditFormOverlay();
-                                Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.");
-                                this.highlight(Plugin.EditEntityAction.currentEntity, true);
-                            }, this));
-                        } else {
-                            Plugin.EditEntityAction.hideEditFormOverlay();
-                        }
-                    }, this), Y.bind(function(entity) {
-                        if (entity) {
-                            this.highlight(entity, false);
-                        }
-                    }, this)),
+                Plugin.EditEntityAction.showEditFormOverlay();
+                var i, plugins = {}, plugin, cfg, oldCfg = entity.get("root").toObject();
+                entity.setAttrs(val);
+                for (i = 0; i < val.plugins.length; i += 1) {
+                    plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
+                    if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) {      //that plugin exists on target
+                        entity[plugin.NS].setAttrs(val.plugins[i].cfg);
+                        plugins[plugin.NS] = true;                              //store namespace as treated
+                    } else {
+                        entity.plug(plugin, val.plugins[i].cfg);
+                        plugins[plugin.NS] = true;                              //store namespace as treated
+                    }
+                }
+                for (i in entity.get("plugins")) {                                    // remove
+                    if (Y.Lang.isUndefined(plugins[entity.get("plugins")[i].fn])) {                       //An inexistant namespace
+                        entity.unplug(entity.get("plugins")[i].fn);
+                    }
+                }
+                cfg = entity.get("root").toObject();
+                if (Y.JSON.stringify(cfg) !== Y.JSON.stringify(oldCfg)) {
+                    this.get("dataSource").cache.patch(cfg, Y.bind(function() {
+                        entity.fire("AttributesChange", {attrs: val});
+                        Plugin.EditEntityAction.hideEditFormOverlay();
+                        Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.");
+                        this.highlight(Plugin.EditEntityAction.currentEntity, true);
+                    }, this));
+                } else {
+                    Plugin.EditEntityAction.hideEditFormOverlay();
+                }
+            }, this), Y.bind(function(entity) {
+                if (entity) {
+                    this.highlight(entity, false);
+                }
+            }, this)),
                     menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
-                        switch (i.label) {                                              // @hack add icons to some buttons
-                            case "Delete":
-                            case "Edit":
-                                i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                        }
+                switch (i.label) {                                              // @hack add icons to some buttons
+                    case "Delete":
+                    case "Edit":
+                        i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                }
 
-                        // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-                        return (!i.label || (i.label !== "New" && i.label.indexOf("Edit") < 0));
-                    });                                                                 // Retrieve menu and remove the first item
+                // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                return (!i.label || (i.label !== "New" && i.label.indexOf("Edit") < 0));
+            });                                                                 // Retrieve menu and remove the first item
 
             this.highlight(widget, true);
             form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
@@ -112,7 +112,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (!widget.get("destroyed")) {
                 if (val || Y.Lang.isUndefined(val)) {
                     widget.get("boundingBox").addClass("highlighted");
-                }else{
+                } else {
                     widget.get("boundingBox").removeClass("highlighted");
                 }
             }
@@ -184,6 +184,9 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (confirm("Are your sure you want to delete this element ?")) {
                 var targetWidget = this.get("widget"),
                         root = targetWidget.get("root");
+                if (Plugin.EditEntityAction.currentEntity === targetWidget) {
+                    Plugin.EditEntityAction.hideRightTabs();
+                }
                 targetWidget.destroy();
                 this.get("dataSource").cache.patch(root.toObject());
             }
