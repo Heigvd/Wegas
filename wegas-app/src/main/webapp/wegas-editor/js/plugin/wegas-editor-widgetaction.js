@@ -59,40 +59,42 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             Plugin.EditEntityAction.hideRightTabs();
             var widget = this.get("widget"),
                     form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
-                Plugin.EditEntityAction.showEditFormOverlay();
-                var i, plugins = {}, plugin, cfg, oldCfg = entity.get("root").toObject();
-                entity.setAttrs(val);
-                for (i = 0; i < val.plugins.length; i += 1) {
-                    plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
-                    if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) {      //that plugin exists on target
-                        entity[plugin.NS].setAttrs(val.plugins[i].cfg);
-                        plugins[plugin.NS] = true;                              //store namespace as treated
-                    } else {
-                        entity.plug(plugin, val.plugins[i].cfg);
-                        plugins[plugin.NS] = true;                              //store namespace as treated
-                    }
-                }
-                for (i in entity.get("plugins")) {                                    // remove
-                    if (Y.Lang.isUndefined(plugins[entity.get("plugins")[i].fn])) {                       //An inexistant namespace
-                        entity.unplug(entity.get("plugins")[i].fn);
-                    }
-                }
-                cfg = entity.get("root").toObject();
-                if (Y.JSON.stringify(cfg) !== Y.JSON.stringify(oldCfg)) {
-                    this.get("dataSource").cache.patch(cfg, Y.bind(function() {
-                        entity.fire("AttributesChange", {attrs: val});
-                        Plugin.EditEntityAction.hideEditFormOverlay();
-                        Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.");
-                        this.highlight(Plugin.EditEntityAction.currentEntity, true);
-                    }, this));
-                } else {
-                    Plugin.EditEntityAction.hideEditFormOverlay();
-                }
-            }, this), Y.bind(function(entity) {
-                if (entity) {
-                    this.highlight(entity, false);
-                }
-            }, this)),
+                        Plugin.EditEntityAction.showEditFormOverlay();
+                        var i, plugins = {}, pls, plugin, cfg, oldCfg = entity.get("root").toObject();
+                        entity.setAttrs(val);
+                        for (i = 0; i < val.plugins.length; i += 1) {
+                            plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
+                            if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) {      //that plugin exists on target
+                                entity[plugin.NS].setAttrs(val.plugins[i].cfg);
+                                plugins[plugin.NS] = true;                              //store namespace as treated
+                            } else {
+                                entity.plug(plugin, val.plugins[i].cfg);
+                                plugins[plugin.NS] = true;                              //store namespace as treated
+                            }
+                        }
+                        pls = Y.merge(entity.get("plugins"));
+                        for (i in pls) {                                    // remove
+                            plugin = Y.Plugin[pls[i].fn];
+                            if (Y.Lang.isUndefined(plugins[plugin.NS])) {                       //An inexistant namespace
+                                entity.unplug(plugin);
+                            }
+                        }
+                        cfg = entity.get("root").toObject();
+                        if (Y.JSON.stringify(cfg) !== Y.JSON.stringify(oldCfg)) {
+                            this.get("dataSource").cache.patch(cfg, Y.bind(function() {
+                                entity.fire("AttributesChange", {attrs: val});
+                                Plugin.EditEntityAction.hideEditFormOverlay();
+                                Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.");
+                                this.highlight(Plugin.EditEntityAction.currentEntity, true);
+                            }, this));
+                        } else {
+                            Plugin.EditEntityAction.hideEditFormOverlay();
+                        }
+                    }, this), Y.bind(function(entity) {
+                        if (entity) {
+                            this.highlight(entity, false);
+                        }
+                    }, this)),
                     menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
                 switch (i.label) {                                              // @hack add icons to some buttons
@@ -209,15 +211,40 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
         execute: function() {
             var targetWidget = this.get("widget"),
                     root = targetWidget.get("root");
-            if (targetWidget.size() > 0) {
-                alert("Please delete content first");
+            /*if (targetWidget.size() > 0) {
+             alert("Please delete content first");
+             } else */
+            if (root === targetWidget) {
+                Y.Widget.getByNode(".wegas-page-editor").deletePage(root.get("@pageId"));
             } else if (confirm("Are your sure your want to delete this widget and all of its content ?")) {
-                if (root !== targetWidget) {
-                    targetWidget.destroy();
-                } else if (targetWidget.item && targetWidget.item(0)) { // @TODO: Panic mode, to change
-                    targetWidget.destroyAll();
-                }
-
+                targetWidget.destroy();
+                this.get("dataSource").cache.patch(root.toObject());
+            }
+        }
+    }, {
+        NS: "DeleteLayoutWidgetAction",
+        NAME: "DeleteLayoutWidgetAction"
+    });
+    /**
+     * @class
+     * @name Y.Plugin.DuplicateWidgetAction
+     * @extends Y.Plugin.WidgetAction
+     * @constructor
+     */
+    Plugin.DuplicateWidgetAction = function() {
+        Plugin.DuplicateWidgetAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Plugin.DuplicateWidgetAction, WidgetAction, {
+        execute: function() {
+            var targetWidget = this.get("widget"),
+                    root = targetWidget.get("root");
+            /*if (targetWidget.size() > 0) {
+             alert("Please delete content first");
+             } else */
+            if (root === targetWidget) {
+                Y.Widget.getByNode(".wegas-page-editor").duplicatePage(root.get("@pageId"));
+            } else {
+                targetWidget.get("parent").add(targetWidget.toObject());
                 this.get("dataSource").cache.patch(root.toObject());
             }
         }

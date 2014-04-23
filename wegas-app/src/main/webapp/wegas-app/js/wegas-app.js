@@ -144,11 +144,13 @@ YUI.add('wegas-app', function(Y) {
                         buttons: {
                             footer: [{
                                     label: 'Click here to reconnect',
-                                    action: Y.config.win.location.reload
+                                    action: function () {
+                                        Y.config.win.location.reload();
+                                    }
                                 }]
                         }
                     }).render();
-                    e.preventDefault();
+                    e.halt(true);
                 } //else if (r.exception === "org.apache.shiro.authz.UnauthorizedException") {
                 // @todo Do something?
                 //}
