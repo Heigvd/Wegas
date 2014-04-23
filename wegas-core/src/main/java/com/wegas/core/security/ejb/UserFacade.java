@@ -192,7 +192,7 @@ public class UserFacade extends BaseFacade<User> {
         List<User> ret = new ArrayList<>();
         for (AbstractAccount account : accounts) {
             User u = this.findOrCreate(new User(account));
-            if (!ret.contains(u)){
+            if (!ret.contains(u)) {
                 ret.add(u);
             }
         }
@@ -496,5 +496,20 @@ public class UserFacade extends BaseFacade<User> {
             }
         }
         return false;
+    }
+
+    public void duplicatePermissionByInstance(String gmId, String newGmId) {
+        List<AbstractAccount> accounts = this.findAccountPermissionByInstance(gmId);
+        String splitedPermission[];
+        for (AbstractAccount account : accounts){
+            List<Permission> perm = account.getPermissions();
+            for (int ii = 0; ii < perm.size(); ii++) {
+                if (perm.get(ii).getValue().contains(gmId)) {
+                    splitedPermission = perm.get(ii).getValue().split(":");
+                    String newPerm = splitedPermission[0] + ":" + splitedPermission[1] + ":" + newGmId;
+                    this.addAccountPermission(account.getId(), newPerm);
+                }
+            }
+        }
     }
 }
