@@ -98,7 +98,7 @@ YUI.add('wegas-join', function(Y) {
                 showTeamCreation = true;
             }
             if (showTeamCreation || showTeamEdition) {
-                teamSelectionNode.append("<br /><div class=\"title\">Team</div>");
+                teamSelectionNode.append("<br /><div class=\"title\">Create your team</div>");
             }
             this.showTeamEdition = showTeamEdition;
             this.showTeamCreation = showTeamCreation;
@@ -153,7 +153,7 @@ YUI.add('wegas-join', function(Y) {
                 this.teamEdition.addExistingAccount(
                         Y.Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
-
+            
             this.joinButton.set("visible", true);
         },
         onJoinClick: function() {
@@ -471,7 +471,11 @@ YUI.add('wegas-join', function(Y) {
                 }
             });
             cb.all("input[type=\"password\"]").setAttribute("placeholder", "required");// Put placeholder attribute on all password fields
-            cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Move add button at the end of the list
+//            cb.one(".inputEx-ListField").append(cb.one("img.inputEx-ListField-addButton"));// Move add button at the end of the list
+            cb.one(".inputEx-ListField").append('<div class="addTeamMember" style="cursor: pointer;"><span class=\"wegas-icon wegas-icon-add\"></span>Add member</div>');
+            cb.one(".inputEx-ListField .addTeamMember").on("click", function() {
+                this.playersField.addElement();
+            }, this);
 
             Y.on("domready", this.updateAutoCompletes, this);
             cb.one("img.inputEx-ListField-addButton").on("click", function() {
