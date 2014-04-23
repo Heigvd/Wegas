@@ -59,7 +59,7 @@ YUI.add("wegas-injector", function(Y) {
                 var link, gallery = [];
                 e.halt(true);
                 e.target.get("children").each(function() {
-                    link = this.get("href") || this.get("src");
+                    link = this.get("href") || this.get("src") || this.getAttribute("data-src");
                     if (link) {
                         gallery.push({
                             srcUrl: link,

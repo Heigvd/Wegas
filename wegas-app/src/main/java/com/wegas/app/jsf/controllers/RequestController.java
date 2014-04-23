@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
+import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
@@ -59,7 +60,7 @@ public class RequestController implements Serializable {
         }
         try {
             /*
-             GameAccount, be a good boy, please go to your game page. 
+             GameAccount, be a good boy, please go to your game page.
              */
             if (this.getCurrentUser().getMainAccount() instanceof GameAccount) {
                 try {
@@ -71,7 +72,7 @@ public class RequestController implements Serializable {
                         context.getExternalContext().redirect(request.getContextPath() + goTo);
                     }
                 } catch (IOException ex) {
-                    //page not found. 
+                    //page not found.
                 }
 
             }
@@ -120,6 +121,38 @@ public class RequestController implements Serializable {
      */
     public User getCurrentUser() {
         return userFacade.getCurrentUser();
+    }
+
+    /**
+     *
+     * @return current logged user mail
+     */
+    public String getCurrentUserId() {
+        try {
+            return "" + this.getCurrentUser().getId();
+        } catch (NoResultException e) {
+            return "0";
+        }
+    }
+
+    /**
+     *
+     * @return current logged user mail
+     */
+    public String getCurrentUserMail() {
+        try {
+            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
+        } catch (NoResultException e) {
+            return "";
+        }
+    }
+
+    public String getCurrentUserName() {
+        try {
+            return this.getCurrentUser().getName();
+        } catch (NoResultException e) {
+            return "";
+        }
     }
 
     public String getCurrentRoles() {

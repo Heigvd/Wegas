@@ -205,6 +205,7 @@ YUI.add('wegas-pageloader', function(Y) {
                             this.get("widget").destroy();
                             this.set("widget", null);
                         }
+                        this._set("pageId", val);
                         this.get(CONTENTBOX).empty();                           // Let the overlay appear during rendering
 
                         Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {       // Load the subwidget dependencies

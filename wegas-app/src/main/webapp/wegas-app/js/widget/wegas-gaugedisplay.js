@@ -67,7 +67,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             var opts = {
                 angle: this.angleTransform(cfg.angle) || 0.15, // The length of each line
                 lineWidth: cfg.lineWidth || 0.44, // The line thickness
-                pointer: cfg.pointer || {
+                pointer: cfg.pointer ? Y.merge(cfg.pointer) : {
                     pointerlength: 0.5, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
@@ -89,13 +89,13 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         },
         defineMaxGaugeValue: function() {
             var variableDescriptor = this.get("variable.evaluated"),
-                maxVal = this.get("maxValue") || variableDescriptor.get("maxValue") || this.MAXVAL,
-                minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
+                    maxVal = this.get("maxValue") || variableDescriptor.get("maxValue") || this.MAXVAL,
+                    minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
             return maxVal - minVal;
         },
         angleTransform: function(angle) {
-            var angleValue = (180 - angle)/180 * 0.5;
-            if (angleValue === 0){
+            var angleValue = (180 - angle) / 180 * 0.5;
+            if (angleValue === 0) {
                 angleValue = 0.0000000000001;
             }
             return angleValue;
@@ -108,8 +108,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on("sourceChange", function(){
-               this.gauge.animationSpeed = 1;
+            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on("sourceChange", function() {
+                this.gauge.animationSpeed = 1;
             }, this));
             this.after('disabledChange', this.syncUI, this);
 
@@ -131,12 +131,12 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 Y.log("error", "Unable to find variable descriptot", "Y.Wegas.GaugeDisplay");
                 return;
             }
-            
+
             label = this.get("label") || variableDescriptor.getLabel();
             maxVal = this.defineMaxGaugeValue();
             minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
             value = variableDescriptor.getInstance().get("value");
-            if (this.gauge.prevDisabled && !this.get("disabled")){
+            if (this.gauge.prevDisabled && !this.get("disabled")) {
                 this.gauge.animationSpeed = 1;
             }
             this.gauge.prevDisabled = this.get("disabled");
@@ -154,7 +154,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
             if (value - minVal > maxVal) {
                 this.gauge.set(maxVal);
-            } else if (value < minVal){
+            } else if (value < minVal) {
                 this.gauge.set(0);
             } else {
                 this.gauge.set(value - minVal);
