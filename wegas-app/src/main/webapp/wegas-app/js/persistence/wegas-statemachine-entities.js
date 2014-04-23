@@ -177,7 +177,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         fn: "DuplicateEntityAction"
                     }]
             }, {
-                type: "DeleteEntityButton"
+                type: "DeleteFSMButton"
             }],
         METHODS: {
             enable: {
@@ -443,7 +443,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         fn: "DuplicateEntityAction"
                     }]
             }, {
-                type: "DeleteEntityButton"
+                type: "DeleteFSMButton"
             }]
     });
     /**
