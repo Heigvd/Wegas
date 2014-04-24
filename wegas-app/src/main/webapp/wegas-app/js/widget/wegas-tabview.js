@@ -492,4 +492,93 @@ YUI.add('wegas-tabview', function(Y) {
             e.target.set('selected', 1);
         }
     };
+
+    /**
+     * Plugin for an empty tabview
+     *
+     * @name Y.Plugin.EmptyTab
+     * @extends Y.Plugin.Base
+     * @class plugin with an empty tab
+     * @constructor
+     */
+    var EmptyTab = function() {
+        EmptyTab.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(EmptyTab, Plugin.Base, {
+        /** @lends Y.Wegas.EmptyTab# */
+
+        // *** Private fields *** //
+        /**
+         * @function
+         * @private
+         */
+        initializer: function() {
+            var noItem;
+            this.onceAfterHostEvent("render", function() {
+                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'>No item selected</p>");
+            });
+            this.afterHostEvent("removeChild", function() {
+                if (this.get("host").isEmpty()) {
+                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'>No item selected</p>");
+                }
+            });
+            this.onHostEvent("addChild", function() {
+                noItem = Y.one("#rightTabView .wegas-noItem");
+                if (noItem) {
+                    noItem.remove();
+                }
+                if (this.get("host").isEmpty()) {
+                    Wegas.app.widget.showPosition("right");
+                }
+            });
+        }
+    }, {
+        NS: "EmptyTab",
+        NAME: "EmptyTab"
+    });
+    Y.namespace("Plugin").EmptyTab = EmptyTab;
+
+    /**
+     * Plugin add a tab for remove tabview
+     *
+     * @name Y.Plugin.Removetab
+     * @extends Y.Plugin.Base
+     * @class plugin to add a tab for remove tabview
+     * @constructor
+     */
+    var RemoveTab = function() {
+        RemoveTab.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend(RemoveTab, Plugin.Base, {
+        /** @lends Y.Wegas.Removetab# */
+        // *** Private fields *** //
+        ADD_TEMPLATE: '<li class="yui3-tab" title="add a tab">' +
+                '<a class="yui3-tab-label wegas-removeTabview">x</a></li>',
+        /**
+         * @function
+         * @private
+         * @description Create a tab for remove tabview.
+         * If this tab is clicked, remove host tabview.
+         */
+        initializer: function() {
+            var tabview = this.get('host');
+            tabview.after('render', this.afterRender, this);
+
+            tabview.get('contentBox').delegate('click', this.onAddClick, '.wegas-removeTabview', this);
+        },
+        afterRender: function(e) {
+            var tabview = this.get('host');
+            tabview.get('contentBox').one('> ul').append(this.ADD_TEMPLATE);
+        },
+        onAddClick: function(e) {
+            e.stopPropagation();
+            Wegas.app.widget.hidePosition("right");
+            this.get('host').destroyAll();
+        }
+    }, {
+        NS: "removetab",
+        NAME: "removetab"
+    });
+    Y.namespace("Plugin").RemoveTab = RemoveTab;
 });

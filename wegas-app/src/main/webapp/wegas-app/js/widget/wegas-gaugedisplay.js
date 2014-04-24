@@ -294,9 +294,9 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                                 name: "pointer",
                                 type: "group",
                                 fields: [
-                                    {type: "number", name: 'pointerlength', typeInvite: "length [0.1 - ...]"},
-                                    {type: "number", name: 'strokeWidth', typeInvite: "width [0.02 - 0.5]"},
-                                    {type: "colorpicker", name: 'color'}
+                                    {type: "number", name: 'pointerlength', typeInvite: "length 0.5 [0.1 - ...]", required: true},
+                                    {type: "number", name: 'strokeWidth', typeInvite: "width 0.035 [0.02 - 0.5]", required: true},
+                                    {type: "colorpicker", name: 'color', required: true}
                                 ]
                             }, {
                                 label: "background colors",
@@ -328,12 +328,14 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                                 name: "lineWidth",
                                 label: "arc width",
                                 type: "number",
-                                typeInvite: "[0 - 0.7]"
+                                typeInvite: "0.44 [0 - 0.7]",
+                                required: true
                             }, {
                                 name: "angle",
                                 label: "arc angle",
                                 type: "number",
-                                typeInvite: "[0° - 180°]"
+                                typeInvite: "126° [0° - 180°]",
+                                required: true
                             }]
                     }
                 }

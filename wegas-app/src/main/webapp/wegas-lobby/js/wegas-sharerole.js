@@ -61,6 +61,9 @@ YUI.add('wegas-sharerole', function(Y) {
             }, ".wegas-game-access select", this);
         },
         bindUI: function() {
+            this.updateHandler = Y.Wegas.Facade.Game.after("update", function(){
+               this.link.setValue(Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token"));
+            }, this);
             this.visibility.on("updated", function(value) {
                 this.syncLinkVisibility(value);
                 Y.Wegas.Facade.User.cache.deleteAllRolePermissions(this.get('role'), this.targetEntityId);
@@ -88,6 +91,7 @@ YUI.add('wegas-sharerole', function(Y) {
         destructor: function() {
             this.link.destroy();
             this.visibility.destroy();
+            this.updateHandler.detach();
         },
         requestPermissions: function() {
             this.showOverlay();
