@@ -1,5 +1,5 @@
 ### Wegas
-A Web Game Authoring System for rapid development of serious games without programming skills. Wegas uses runs on a JEE server (Glassfish) and uses YUI for the client.
+A Web Game Authoring System for rapid development of serious games without programming skills. Wegas runs on a JEE server (Glassfish 3.1) and uses YUI 3 for the html client.
 
 ### Links
 * [Demonstration](http://wegas.albasim.ch/)
