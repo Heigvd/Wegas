@@ -1,0 +1,1517 @@
+{
+    "@class": "GameModel",
+    "pages": {},
+    "name": "simple PMG",
+    "description": "",
+    "createdTime": 1398342550289,
+    "template": true,
+    "childVariableDescriptors": [
+        {
+            "@class": "InboxDescriptor",
+            "name": "inbox",
+            "label": null,
+            "title": null,
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": [],
+                "unreadCount": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "description": null
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "currentPhase",
+            "label": "Current phase",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "minValue": 0,
+            "maxValue": 4,
+            "defaultValue": 0
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "managementApproval",
+            "label": "managementApproval",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 100
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "minValue": 0,
+            "maxValue": 200,
+            "defaultValue": 100
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "userApproval",
+            "label": "userApproval",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 100
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "minValue": 0,
+            "maxValue": 200,
+            "defaultValue": 100
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "projectFixedCosts",
+            "label": "Project FixedCosts",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "minValue": null,
+            "maxValue": null,
+            "defaultValue": 0
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "qualityImpacts",
+            "label": "Quality impacts",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "minValue": 0,
+            "maxValue": 200,
+            "defaultValue": 0
+        },
+        {
+            "@class": "NumberDescriptor",
+            "name": "bonusRatio",
+            "label": "bonusRatio",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 1
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "minValue": 0,
+            "maxValue": 2,
+            "defaultValue": 1
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "actions",
+            "label": "actions",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "ListDescriptor",
+                    "name": "Actions phase 1",
+                    "label": "Actions phase 1",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "QuestionDescriptor",
+                            "name": "Effectuer action 1 phase 1",
+                            "label": "Effectuer action 1 phase 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "QuestionInstance",
+                                "replies": [],
+                                "active": true,
+                                "unread": true
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "description": null,
+                            "allowMultipleReplies": true,
+                            "items": [
+                                {
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "Action1Reponse1",
+                                    "label": "reponse",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance",
+                                        "active": true,
+                                        "unread": true,
+                                        "currentResultIndex": 0
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "PlayerScope"
+                                    },
+                                    "results": [
+                                        {
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "<p>Tout c'est bien pass&eacute;.</p>",
+                                            "files": [],
+                                            "impact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"managementApproval\").add(self, 5)",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    ],
+                                    "description": "",
+                                    "duration": 1,
+                                    "cost": 0
+                                }
+                            ],
+                            "pictures": []
+                        }
+                    ]
+                },
+                {
+                    "@class": "ListDescriptor",
+                    "name": "Actions phase 2",
+                    "label": "Actions phase 2",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "QuestionDescriptor",
+                            "name": "effectuerAction1Phase1",
+                            "label": "Effectuer action 1 phase 2",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "QuestionInstance",
+                                "replies": [],
+                                "active": true,
+                                "unread": true
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "allowMultipleReplies": true,
+                            "items": [
+                                {
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "action1Reponse1",
+                                    "label": "reponse",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance",
+                                        "active": true,
+                                        "unread": true,
+                                        "currentResultIndex": 0
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "PlayerScope"
+                                    },
+                                    "results": [
+                                        {
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "<p>Tout c'est bien pass&eacute;.</p>",
+                                            "files": [],
+                                            "impact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"managementApproval\").add(self, 5)",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    ],
+                                    "description": "",
+                                    "duration": 1,
+                                    "cost": 0
+                                }
+                            ],
+                            "pictures": []
+                        }
+                    ]
+                },
+                {
+                    "@class": "ListDescriptor",
+                    "name": "actionsPhase3",
+                    "label": "Actions phase 3",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "QuestionDescriptor",
+                            "name": "effectuerAction1Phase1_1",
+                            "label": "Effectuer action 1 phase 3",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "QuestionInstance",
+                                "replies": [],
+                                "active": true,
+                                "unread": true
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "allowMultipleReplies": true,
+                            "items": [
+                                {
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "action1Reponse1_1",
+                                    "label": "reponse",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance",
+                                        "active": true,
+                                        "unread": true,
+                                        "currentResultIndex": 0
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "PlayerScope"
+                                    },
+                                    "results": [
+                                        {
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "<p>Tout c'est bien pass&eacute;.</p>",
+                                            "files": [],
+                                            "impact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"managementApproval\").add(self, 5)",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    ],
+                                    "description": "",
+                                    "duration": 1,
+                                    "cost": 0
+                                }
+                            ],
+                            "pictures": []
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "questions",
+            "label": "questions",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0
+            },
+            "scope": {
+                "@class": "GameScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "ListDescriptor",
+                    "name": "questionPhase1",
+                    "label": "Initiation",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "ListDescriptor",
+                            "name": "questionPeriod1",
+                            "label": "Question period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "NumberInstance",
+                                "history": [],
+                                "value": 0
+                            },
+                            "scope": {
+                                "@class": "GameScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "Comment faire cela?",
+                                    "label": "Ajouter ou diminuer la direction",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@class": "ListDescriptor",
+                    "name": "questionPhase2",
+                    "label": "Planning",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "ListDescriptor",
+                            "name": "questionPeriod1_1",
+                            "label": "Question period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "NumberInstance",
+                                "history": [],
+                                "value": 0
+                            },
+                            "scope": {
+                                "@class": "GameScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "commentFaireCela__2",
+                                    "label": "Ajouter ou diminuer les utilisateurs",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_2",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1_1",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "@class": "ListDescriptor",
+                    "name": "questionPhase3",
+                    "label": "Execution",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "ListDescriptor",
+                            "name": "questionPeriod1_1_1",
+                            "label": "Question period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "NumberInstance",
+                                "history": [],
+                                "value": 0
+                            },
+                            "scope": {
+                                "@class": "GameScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "commentFaireCela_",
+                                    "label": "Ajouter ou diminuer la direction",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_3",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1_2",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
+                        },
+                        {
+                            "@class": "ListDescriptor",
+                            "name": "questionsPeriod2_1",
+                            "label": "Questions period 2",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "NumberInstance",
+                                "history": [],
+                                "value": 0
+                            },
+                            "scope": {
+                                "@class": "GameScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "commentFaireCela__2_1",
+                                    "label": "Ajouter ou diminuer les utilisateurs",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_2_1",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1_1_1",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "tasks",
+            "label": "tasks",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task 1",
+                    "label": "task 1",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 1,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "500",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "bac": "0",
+                            "randomDurationInf": "0",
+                            "completeness": "0",
+                            "randomDurationSup": "0",
+                            "bonusRatio": "1",
+                            "quality": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Informaticien",
+                                "level": 8,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 1,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
+                    "predecessorNames": []
+                },
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task2",
+                    "label": "task 2",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 2,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "500",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "randomDurationInf": "0",
+                            "bac": "0",
+                            "completeness": "0",
+                            "randomDurationSup": "0",
+                            "bonusRatio": "1",
+                            "quality": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Informaticien",
+                                "level": 8,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            },
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Commercial",
+                                "level": 8,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 2,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
+                    "predecessorNames": [
+                        "task 1"
+                    ]
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "employees",
+            "label": "employees",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "ListDescriptor",
+                    "name": "commercial",
+                    "label": "Commercial",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "Jean",
+                            "label": "Jean",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Commercial": 8
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [
+                                    8,
+                                    8,
+                                    8,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7
+                                ],
+                                "confidence": 0,
+                                "confidenceHistory": [
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "@class": "ListDescriptor",
+                    "name": "informaticien",
+                    "label": "Informaticien",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "Yves",
+                            "label": "Yves",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Informaticien": 8
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [
+                                    8,
+                                    8,
+                                    8,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7
+                                ],
+                                "confidence": 0,
+                                "confidenceHistory": [
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "timeCards",
+            "label": "time cards",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase1",
+                    "label": "Cards phase 1",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 5
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 15,
+                    "defaultValue": 5
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase2",
+                    "label": "Cards phase 2",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 5
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 15,
+                    "defaultValue": 5
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase3",
+                    "label": "Cards phase 3",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 5
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 15,
+                    "defaultValue": 5
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cardsPhase4",
+                    "label": "Cards phase 4",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 5,
+                    "defaultValue": 0
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "currentPeriod",
+            "label": "Current period",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "periodPhase1",
+                    "label": "periodPhase1",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 1,
+                    "defaultValue": 1
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "periodPhase2",
+                    "label": "periodPhase2",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 1,
+                    "defaultValue": 1
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "periodPhase3",
+                    "label": "periodPhase3",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 5,
+                    "defaultValue": 1
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "periodPhase1_4",
+                    "label": "periodPhase1_4",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 1,
+                    "defaultValue": 1
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "pageUtilities",
+            "label": "page utilities",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "items": [
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "costs",
+                    "label": "costs",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultValue": 100
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "actualCost",
+                    "label": "actualCost",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null,
+                    "defaultValue": 0
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "planedValue",
+                    "label": "planedValue",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null,
+                    "defaultValue": 0
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "earnedValue",
+                    "label": "earnedValue",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null,
+                    "defaultValue": 0
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "quality",
+                    "label": "quality",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultValue": 100
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "delay",
+                    "label": "delay",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 100
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultValue": 100
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "ganttPage",
+                    "label": "ganttPage",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 4
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 4
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "taskPage",
+                    "label": "taskPage",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 3
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 3
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "projectCompleteness",
+                    "label": "projectCompleteness",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": null,
+                    "defaultValue": 0
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "cpi",
+                    "label": "cpi",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "spi",
+                    "label": "spi",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0
+                }
+            ]
+        }
+    ],
+    "scriptLibrary": {
+        "default": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "//Global variable for easy use\r\nimportPackage(javax.naming);\r\nvar gm = self.getGameModel(), testMode = true;\r\nsteps = 10, minTaskDuration = 0.1, taskTable = {};\r\n\r\n/**\r\n * Call all necessary method to pass a period and calculate all variable.\r\n * set phase (if period egal max period) and set period.\r\n * if enter in phase 2, change pageGantt and pageTask then call function setWeekliesVariables\r\n * to calculate values like gauges and EV, AC, ...\r\n * if period is passed in phase realisation, calculate task progress (call\r\n *  function completeRealizationPeriod) and check the end of the project (if true, pass to phase 4).\r\n */\r\nfunction nextPeriod() {\r\n    var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase'),\r\n            ganttPage, taskPage, phases;\r\n    phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');\r\n\r\n    // First Check if all questions are answered\r\n    allPhaseQuestionAnswered(time);\r\n\r\n    if (time.period === parseInt(phases.items.get(time.phase).getMaxValue())) { // if end of phase\r\n        phases.items.get(time.phase).getInstance(self).setValue(1);\r\n        phase.getInstance(self).setValue(time.phase + 1);\r\n        if (parseInt(phase.getInstance(self).getValue()) === 2) {\r\n            ganttPage = VariableDescriptorFacade.findByName(gm, 'ganttPage');\r\n            ganttPage.getInstance(self).setValue(11);\r\n            taskPage = VariableDescriptorFacade.findByName(gm, 'taskPage');\r\n            taskPage.getInstance(self).setValue(12);\r\n        }\r\n        setWeekliesVariables();\r\n    } else if (time.phase === 2) { //if current phase is the 'realisation' phase\r\n        completeRealizationPeriod();\r\n        if (checkEndOfProject()) { //if the project ended\r\n            phases.items.get(time.phase).getInstance(self).setValue(1);\r\n            phase.getInstance(self).setValue(time.phase + 1);\r\n        } else {\r\n            phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);\r\n        }\r\n        setWeekliesVariables();\r\n    } else {\r\n        phases.items.get(time.phase).getInstance(self).setValue(time.period + 1);\r\n        setWeekliesVariables();\r\n    }\r\n}\r\n\r\n/**\r\n * Check if all active task is complete (Completeness > 100).\r\n * @returns {Boolean} true if the project is ended\r\n */\r\nfunction checkEndOfProject() {\r\n    var i, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'), isTheEnd = true;\r\n    for (i = 0; i < tasks.items.size(); i++) {\r\n        taskInst = tasks.items.get(i).getInstance(self);\r\n        if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty('completeness')) < 100) {\r\n            isTheEnd = false;\r\n            break;\r\n        }\r\n    }\r\n    return isTheEnd;\r\n}\r\n\r\n/**\r\n * Divide period in steps (see global variable).\r\n * Call function calculTasksProgress at each step.\r\n */\r\nfunction completeRealizationPeriod() {\r\n    var i;\r\n    if (testMode) {\r\n        println('==============================');\r\n        println('==============================');\r\n    }\r\n    taskTable = {};\r\n    for (i = 0; i < steps; i++) {\r\n        calculTasksProgress(i);\r\n        if (testMode) {\r\n            println('---');\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * This function calculate the planned value at a given time\r\n * @param {Integer} periods\r\n * @returns {Long} Planned value\r\n */\r\nfunction calculatePlanedValue(periods) {\r\n    var i, ii, iii, taskInst, pv = 0, plannification, period,\r\n            tasks = VariableDescriptorFacade.findByName(gm, 'tasks');\r\n\r\n    for (i = 0; i < periods; i++) {\r\n        for (ii = 0; ii < tasks.items.size(); ii++) {\r\n            taskInst = tasks.items.get(ii).getInstance(self);\r\n            if (isTrue(taskInst.getActive())) {\r\n                if (taskInst.getPlannification().size() === 0 && i === 0) {\r\n                    pv += parseInt(taskInst.getProperty('bac'));\r\n                }\r\n                for (iii = 0; iii < taskInst.getPlannification().size(); iii++) {\r\n                    plannification = parseInt(taskInst.getPlannification().get(iii));\r\n                    period = i + 1;\r\n                    if (plannification === period) {\r\n                        pv += parseInt(taskInst.getProperty('bac')) / taskInst.getPlannification().size();\r\n                    }\r\n                }\r\n            }\r\n        }\r\n    }\r\n    return pv;\r\n}\r\n\r\n/**\r\n * Calculate planedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save\r\n *  history for variable the same variable and for costs, delay and quality.\r\n *  call function updateGauges();\r\n */\r\nfunction setWeekliesVariables() {\r\n    var i, taskInst, ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, active = 0, nbCompleteTasks,\r\n            managementApproval, userApproval,\r\n            tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),\r\n            costs = VariableDescriptorFacade.findByName(gm, 'costs'),\r\n            delay = VariableDescriptorFacade.findByName(gm, 'delay'),\r\n            quality = VariableDescriptorFacade.findByName(gm, 'quality'),\r\n            planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),\r\n            earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),\r\n            actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),\r\n            cpi = VariableDescriptorFacade.findByName(gm, 'cpi'),\r\n            spi = VariableDescriptorFacade.findByName(gm, 'spi'),\r\n            //            projectFixCosts = VariableDescriptorFacade.findByName(gm, 'projectFixedCosts'),\r\n            projectCompleteness = VariableDescriptorFacade.findByName(gm, 'projectCompleteness');\r\n    managementApproval = VariableDescriptorFacade.findByName(gm, 'managementApproval');\r\n    userApproval = VariableDescriptorFacade.findByName(gm, 'userApproval');\r\n    for (i = 0; i < tasks.items.size(); i++) {\r\n        taskInst = tasks.items.get(i).getInstance(self);\r\n        sumProjectCompleteness += parseFloat(taskInst.getProperty('completeness'));\r\n        if (isTrue(taskInst.getActive())) {\r\n            ev += parseInt(taskInst.getProperty('bac')) * (parseInt(taskInst.getProperty('completeness')) / 100);\r\n            //            pv += parseInt(taskInst.getProperty('bac')) * (getPlannifiedCompleteness(taskInst) / 100);\r\n            //            ac += parseInt(taskInst.getProperty('wages')) + (parseInt(taskInst.getProperty('completeness')) / 100) * parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));\r\n            if (parseInt(taskInst.getProperty('completeness')) > 0) {\r\n                ac += parseInt(taskInst.getProperty('wages')) + parseInt(taskInst.getProperty('fixedCosts')) + parseInt(taskInst.getProperty('unworkedHoursCosts'));\r\n            }\r\n            active += 1;\r\n        }\r\n    }\r\n\r\n    //sum of all task's completeness in %\r\n    nbCompleteTasks = sumProjectCompleteness * active / (active * 100);\r\n    projectCompleteness.getInstance(self).setValue(nbCompleteTasks * 100 / active);\r\n    //    projectCompleteness.getInstance(self).setValue(sumProjectCompleteness);\r\n\r\n    //pv = for each task, sum -> bac * task completeness / 100\r\n    planedValue.getInstance(self).setValue(calculatePlanedValue(getCurrentInGameTime().period - 1));\r\n    //ev = for each task, sum -> bac * planified task completeness / 100\r\n    earnedValue.getInstance(self).setValue(ev);\r\n    //ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts\r\n    //    actualCost.getInstance(self).setValue(ac + parseInt(projectFixCosts.getInstance(self).getValue()));\r\n    actualCost.getInstance(self).setValue(ac);\r\n\r\n    //cpi = ev / ac * 100\r\n    cpi.getInstance(self).setValue((ev / ac * 100));\r\n    //spi = ev / pv * 100\r\n    spi.getInstance(self).setValue((ev / pv * 100));\r\n\r\n    updateGauges();\r\n\r\n    costs.getInstance(self).saveHistory();\r\n    delay.getInstance(self).saveHistory();\r\n    quality.getInstance(self).saveHistory();\r\n    planedValue.getInstance(self).saveHistory();\r\n    earnedValue.getInstance(self).saveHistory();\r\n    actualCost.getInstance(self).saveHistory();\r\n    managementApproval.getInstance(self).saveHistory();\r\n    userApproval.getInstance(self).saveHistory();\r\n}\r\n\r\n/**\r\n * Set gauge value (and restrict them between their bounds (max and min values))\r\n */\r\nfunction updateGauges() {\r\n    var i, j, taskInst, tasks = VariableDescriptorFacade.findByName(gm, 'tasks'),\r\n            costs = VariableDescriptorFacade.findByName(gm, 'costs'),\r\n            delay = VariableDescriptorFacade.findByName(gm, 'delay'),\r\n            quality = VariableDescriptorFacade.findByName(gm, 'quality'),\r\n            planedValue = VariableDescriptorFacade.findByName(gm, 'planedValue'),\r\n            earnedValue = VariableDescriptorFacade.findByName(gm, 'earnedValue'),\r\n            actualCost = VariableDescriptorFacade.findByName(gm, 'actualCost'),\r\n            qualityImpacts = VariableDescriptorFacade.findByName(gm, 'qualityImpacts'),\r\n            tasksQuality = 0, nomberOfBeganTasks = 0, tasksScale = 0, nomberOfEmployeeRequired,\r\n            costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0;\r\n\r\n    //Calculate task quality and task scale                                     @to check change quality calcul\r\n    for (i = 0; i < tasks.items.size(); i++) {\r\n        taskInst = tasks.items.get(i).getInstance(self);\r\n        if (isTrue(taskInst.getActive())) {//if task is active\r\n            nomberOfBeganTasks += 1;\r\n            nomberOfEmployeeRequired = 0;\r\n            for (j = 0; j < taskInst.getRequirements().size(); j++) {\r\n                nomberOfEmployeeRequired += parseInt(taskInst.getRequirements().get(j).getQuantity());\r\n            }\r\n            tasksScale += parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;\r\n            if (parseInt(taskInst.getProperty('completeness')) > 0) { //...and started\r\n                //TO check\r\n                tasksQuality += parseInt(taskInst.getProperty('quality')) * parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;\r\n            } else {\r\n                tasksQuality += (100 + parseInt(taskInst.getProperty('quality'))) * parseInt(taskInst.getDuration()) * nomberOfEmployeeRequired;\r\n            }\r\n        }\r\n    }\r\n\r\n    //costs = EV / AC * 100\r\n    if (parseInt(planedValue.getInstance(self).getValue()) > 0) {\r\n        costsJaugeValue = Math.round((parseInt(earnedValue.getInstance(self).getValue()) / parseInt(actualCost.getInstance(self).getValue())) * 100);\r\n    }\r\n    costsJaugeValue = (costsJaugeValue > parseInt(costs.getMinValue())) ? costsJaugeValue : parseInt(costs.getMinValue());\r\n    costsJaugeValue = (costsJaugeValue < parseInt(costs.getMaxValue())) ? costsJaugeValue : parseInt(costs.getMaxValue());\r\n    costs.getInstance(self).setValue(costsJaugeValue);\r\n\r\n    //delay = EV / PV * 100\r\n    delayJaugeValue = Math.round((parseInt(earnedValue.getInstance(self).getValue()) / parseInt(planedValue.getInstance(self).getValue())) * 100);\r\n    delayJaugeValue = (delayJaugeValue > parseInt(delay.getMinValue())) ? delayJaugeValue : parseInt(delay.getMinValue());\r\n    delayJaugeValue = (delayJaugeValue < parseInt(delay.getMaxValue())) ? delayJaugeValue : parseInt(delay.getMaxValue());\r\n    delay.getInstance(self).setValue(delayJaugeValue);\r\n\r\n    //quality\r\n    //with weighting of task's scale = sum each task -> task quality / task scale\r\n    if (tasksScale > 0) {\r\n        qualityJaugeValue = (tasksQuality / tasksScale);\r\n    }\r\n    //whitout weighting of task's scale\r\n    //    if (nomberOfBeganTasks > 0) {\r\n    //        qualityJaugeValue = tasksQuality / nomberOfBeganTasks;\r\n    //    }\r\n    qualityJaugeValue += parseInt(qualityImpacts.getInstance(self).getValue()) / 2;\r\n    qualityJaugeValue = (qualityJaugeValue > parseInt(quality.getMinValue())) ? qualityJaugeValue : parseInt(quality.getMinValue());\r\n    qualityJaugeValue = (qualityJaugeValue < parseInt(quality.getMaxValue())) ? qualityJaugeValue : parseInt(quality.getMaxValue());\r\n    quality.getInstance(self).setValue(qualityJaugeValue);\r\n}\r\n\r\n/**\r\n * calculate how many percent is completed based on current period and planified\r\n *  length of the task.\r\n * @param {TaskInstance} taskInst\r\n * @returns {Number} number between 0 and 100 (both including)\r\n */\r\nfunction getPlannifiedCompleteness(taskInst) {\r\n    var i, planif = taskInst.getPlannification(), planifArray = [],\r\n            time = getCurrentInGameTime(), pastPeriods = 0;\r\n    for (i = 0; i < planif.size(); i++) { //transform list to array to use function ''indexOf''\r\n        planifArray.push(parseInt(planif.get(i)));\r\n    }\r\n    for (i = 0; i <= time.period; i++) {\r\n        if (planifArray.indexOf(i) > -1) {\r\n            pastPeriods += 1;\r\n        }\r\n    }\r\n    return (planifArray.length > 0) ? (pastPeriods / planifArray.length) * 100 : 0;\r\n}\r\n\r\n/**\r\n * return the delay based on the difference (in percent) between\r\n *  plannifiedcompleteness and real completeness (completeness / planifiedCompleteness * 100)\r\n * if given task isn't started then delay = completeness + 100\r\n * planified completeness is based on function ''getPlannifiedCompleteness''\r\n * @param {taskDescriptor} taskDesc\r\n * @returns {Number} delay between 0 and 100\r\n */\r\nfunction getCurrentTaskDelay(taskDesc) {\r\n    var planif, delay = 0, planif = taskDesc.getInstance(self).getPlannification(),\r\n            completeness = parseInt(taskDesc.getInstance(self).getProperty('completeness')),\r\n            planifiedCompleteness = getPlannifiedCompleteness(taskDesc.getInstance(self));\r\n    if (completeness > 0 && planif.length > 0) {\r\n        if (planifiedCompleteness <= 0) {\r\n            delay = completeness + 100;\r\n        }\r\n        else {\r\n            delay = completeness / planifiedCompleteness * 100;\r\n        }\r\n    }\r\n    return delay;\r\n}\r\n\r\n/**\r\n * Call fonction to creat activities (createActivities) then get each\r\n *  activities (but only one per task's requirement). for each activities,\r\n *   Call the function to calculate the progression of each requirement\r\n *   (calculateProgressOfNeed).\r\n *   Then, calculate and set the quality and the completeness for each tasks\r\n *   Then, check the end of a requirement inactivities (function ''checkEnd'');\r\n * @param {Number} currentStep\r\n */\r\nfunction calculTasksProgress(currentStep) {\r\n    var i, work, activitiesAsNeeds, oneTaskPerActivity, allCurrentActivities,\r\n            taskProgress, allCurrentActivities,\r\n            requirementsByWork, taskInst;\r\n    //create activities\r\n    allCurrentActivities = createActivities(currentStep);\r\n    //get one unique requirement by activities and calculate its progression\r\n    activitiesAsNeeds = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);\r\n    for (i = 0; i < activitiesAsNeeds.length; i++) { //for each need\r\n        calculateProgressOfNeed(activitiesAsNeeds[i], allCurrentActivities, currentStep);\r\n    }\r\n    //get each modified task and calculate is new quality and completeness\r\n    oneTaskPerActivity = getUniqueTasksInActivities(activitiesAsNeeds);\r\n    for (i = 0; i < oneTaskPerActivity.length; i++) {\r\n        taskProgress = 0;\r\n        taskInst = oneTaskPerActivity[i].getTaskDescriptor().getInstance(self);\r\n        requirementsByWork = getRequirementsByWork(taskInst.getRequirements());\r\n        for (work in requirementsByWork) {\r\n            taskProgress += requirementsByWork[work].completeness;\r\n        }\r\n        taskProgress = (taskProgress > 97) ? 100 : taskProgress; //>97 yes, don t frustrate the players please.\r\n        taskInst.setProperty('completeness', Math.round(taskProgress));\r\n        taskInst.setProperty('quality', calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));\r\n    }\r\n    checkEnd(allCurrentActivities, currentStep);\r\n}\r\n\r\n/**\r\n * Sort an Array of activities to keep only one occurence of task Descriptor\r\n * in each activities. So in the returned list, two activities can't have the same task.\r\n * @param {Array} activities  an Array of Activity\r\n * @returns {Array of activities}\r\n */\r\nfunction getUniqueTasksInActivities(activities) {\r\n    var i, j, oneTaskPerActivity = [], wasAdded;\r\n    if (activities.length > 0) {\r\n        oneTaskPerActivity.push(activities[0]);\r\n    }\r\n    for (i = 0; i < activities.length; i++) {\r\n        wasAdded = false;\r\n        for (j = 0; j < oneTaskPerActivity.length; j++) {\r\n            if (oneTaskPerActivity[j].getTaskDescriptor() === activities[i].getTaskDescriptor()) {\r\n                wasAdded = true;\r\n                break;\r\n            }\r\n        }\r\n        if (!wasAdded) {\r\n            oneTaskPerActivity.push(activities[i]);\r\n        }\r\n    }\r\n    return oneTaskPerActivity;\r\n}\r\n\r\n/**\r\n * Sort an Array of activities to keep only one occurence of requirement\r\n * in each activities. So in the returned list, two activities can't have the same requirement.\r\n * @param {Array} activities  an Array of Activity\r\n * @returns {Array} an Array of Activity\r\n */\r\nfunction getActivitiesWithEmployeeOnDifferentNeeds(activities) {\r\n    var i, j, activitiesAsNeeds = [], wasAdded;\r\n    if (activities.length > 0) {\r\n        activitiesAsNeeds.push(activities[0]);\r\n    }\r\n    for (i = 1; i < activities.length; i++) { //for each need\r\n        wasAdded = false;\r\n        if (getActivitiesWithEmployeeOnSameNeed(activities, activities[i]).length > 1) {\r\n            for (j = 1; j < activitiesAsNeeds.length; j++) {\r\n                if (activities[i] === activitiesAsNeeds[j]) {\r\n                    wasAdded = true;\r\n                    break;\r\n                }\r\n            }\r\n        }\r\n        if (!wasAdded) {\r\n            activitiesAsNeeds.push(activities[i]);\r\n        }\r\n    }\r\n    return activitiesAsNeeds;\r\n}\r\n\r\n/**\r\n * Sort the given array to keep only activities with employee on the same requirement\r\n * @param {Array} activities an Array of Activity\r\n * @param {Activity} activity\r\n * @returns {Array} an Array of Activity\r\n */\r\nfunction getActivitiesWithEmployeeOnSameNeed(activities, activity) {\r\n    var i, employeeInst, selectedReq, sortedActivities = [], selectedReqI;\r\n    employeeInst = activity.getResourceInstance();\r\n    selectedReq = activity.getRequirement();\r\n    for (i = 0; i < activities.length; i++) {\r\n        if (parseFloat(activity.getTime()) === parseFloat(activities[i].getTime()) && activity.getTaskDescriptor() === activities[i].getTaskDescriptor()) {\r\n            selectedReqI = activities[i].getRequirement();\r\n            if (selectedReq === selectedReqI) {\r\n                sortedActivities.push(activities[i]);\r\n            }\r\n        }\r\n    }\r\n    return sortedActivities;\r\n}\r\n\r\n/**\r\n * Create activities for each reserved (having an occupation at this time) employees having a valid assignement.\r\n * if a corresponding activity exist in the past, get it, else create activity\r\n *  and adjust its value.\r\n * @param {Number} currentStep\r\n * @returns {Array} an Array of Activity\r\n */\r\nfunction createActivities(currentStep) {\r\n    var i, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),\r\n            employeeDesc, employeeInst, activity, activities = [], assignables,\r\n            existanteActivity, time = getCurrentInGameTime().period + currentStep / 10;\r\n    if (!listEmployees) {\r\n        return activities;\r\n    }\r\n    for (i = 0; i < listEmployees.length; i++) {\r\n        employeeDesc = listEmployees[i];\r\n        employeeInst = employeeDesc.getInstance(self);\r\n        if (isReservedToWork(employeeInst)) { //have a 'player created' occupation\r\n            assignables = checkAssignments(employeeInst.getAssignments(), currentStep);\r\n            if (assignables.length > 0) { //have assignable tasks\r\n                existanteActivity = findLastStepCorrespondingActivity(employeeInst, assignables[0].getTaskDescriptor(), time);\r\n                if (existanteActivity) { //set corresponding past activity if it existe. Else create it.\r\n                    activity = existanteActivity;\r\n                } else {\r\n                    activity = employeeInst.createActivity(assignables[0].getTaskDescriptor());\r\n                }\r\n                if (selectRequirementFromActivity(activity) === null) {          // Possible d'améliorer la performance en ne créant pas d'activity. Mais nécessite de créer une nouvelle fonction comme \"selectRequirementFromActivity\" en ne passant pas par une activity.\r\n                    employeeInst.removeActivity(activity);\r\n                    continue;\r\n                }\r\n                activity.setRequirement(selectRequirementFromActivity(activity));\r\n                activity.setTime(time);\r\n                activities.push(activity);\r\n            }\r\n        }\r\n        removeAssignmentsFromCompleteTasks(employeeInst);\r\n    }\r\n    return activities;\r\n}\r\n\r\n/**\r\n * When the task is complete remove all assignment from this task.\r\n * @param {ResourceInstance} employeeInst\r\n */\r\nfunction removeAssignmentsFromCompleteTasks(employeeInst) {\r\n    var assignment, i, taskInst;\r\n\r\n    for (i = 0; i < employeeInst.getAssignments().size(); i++) {\r\n        assignment = employeeInst.getAssignments().get(i);\r\n        taskInst = assignment.getTaskDescriptor().getInstance(self);\r\n        if (taskInst.getProperty('completeness') >= 100) {\r\n            employeeInst.getAssignments().remove(i);\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Check and return the most adapted requirement in the task of the activity,\r\n *  for the employee in the activity. Use function (''selectRequirement'') to\r\n *   choose the requirement.\r\n * @param {Activity} activity\r\n * @returns {WRequirement} the selected (most adapted) requierement\r\n */\r\nfunction selectRequirementFromActivity(activity) {\r\n    var selectedReq, workAs, taskInst, reqByWorks, metier;\r\n    taskInst = activity.getTaskDescriptor().getInstance(self);\r\n    metier = activity.getResourceInstance().getSkillsets().keySet().toArray()[0].toString();\r\n    reqByWorks = getRequirementsByWork(taskInst.getRequirements());\r\n    workAs = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, metier);\r\n    selectedReq = selectRequirement(taskInst, activity.getResourceInstance(), workAs, reqByWorks);\r\n    return selectedReq;\r\n}\r\n\r\n/**\r\n * Research and return an activity having the same task, the same employee and\r\n *  worked on at the last step.\r\n * @param {ResourceInstance} employeeInst\r\n * @param {TaskDescriptor} taskDesc\r\n * @param {Number} currentPeriod\r\n * @returns {Activity} activity\r\n */\r\nfunction findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod) {\r\n    var i, activity, occurence = null;\r\n    for (i = 0; i < employeeInst.getActivities().size(); i++) {\r\n        activity = employeeInst.getActivities().get(i);\r\n        if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)\r\n                && currentPeriod - Math.floor(currentPeriod) !== 0 //if it s not a new period (current step !== 0)\r\n                && parseFloat(activity.getTime()) === getFloat(currentPeriod - 0.1)) { //if activity was used the last step\r\n            occurence = activity;\r\n            break;\r\n        }\r\n    }\r\n    return occurence;\r\n}\r\n\r\n/**\r\n * Research and return an activity having the same task, the same employee and\r\n *  worked on in previous period or step.\r\n * @param {ResourceInstance} employeeInst\r\n * @param {TaskDescriptor} taskDesc\r\n * @param {Number} currentPeriod\r\n * @returns {Activity} activity\r\n */\r\nfunction haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) {\r\n    var i, activity, occurence = false;\r\n    for (i = 0; i < employeeInst.getActivities().size(); i++) {\r\n        activity = employeeInst.getActivities().get(i);\r\n        if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)\r\n                && currentPeriod > parseFloat(activity.getTime())) {\r\n            occurence = true;\r\n            break;\r\n        }\r\n    }\r\n    return occurence;\r\n}\r\n\r\n/**\r\n * Check if the given resource have an occupation where time correspond to the current time.\r\n * If its true, the employee is reserved (and the function return true)\r\n * @param {RessourceInstance} employeeInst\r\n * @returns {Boolean} is reserved\r\n */\r\nfunction isReservedToWork(employeeInst) {\r\n    var i, occupations = employeeInst.getOccupations(),\r\n            time = getCurrentInGameTime(), reservedToWork = false;\r\n    for (i = 0; i < occupations.size(); i++) {\r\n        if (parseInt(occupations.get(i).getTime()) === time.period && !isTrue(occupations.get(i).getEditable())) {\r\n            return false;\r\n        }\r\n        if (parseInt(occupations.get(i).getTime()) === time.period && isTrue(occupations.get(i).getEditable())) {\r\n            reservedToWork = true;\r\n        }\r\n    }\r\n    return reservedToWork;\r\n}\r\n\r\n/**\r\n *  Return the given list but without the invalide Assignments.\r\n *  An valid assignment is one where its bound task completion is < 100 and\r\n *  where a employee can progress decently without problem of predecessor\r\n *   ( see function ''getPredecessorFactor'');\r\n * @param {Array} assignments an Array of Assignment\r\n * @returns {Array} an Array of Assignment\r\n */\r\nfunction getAssignables(assignments, currentStep) {\r\n    var i, ii, taskDesc, assignables = [], work, exist;\r\n    for (i = 0; i < assignments.size(); i++) {\r\n        work = null;\r\n        exist = false;\r\n        taskDesc = assignments.get(i).getTaskDescriptor();\r\n        if (parseInt(taskDesc.getInstance(self).getProperty('completeness')) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20%\r\n            for (ii = 0; ii < taskDesc.getInstance(self).getRequirements().size(); ii++) {\r\n                if (assignments.get(i).getResourceInstance().getSkillsets().keySet().toArray()[0].toString() == taskDesc.getInstance(self).getRequirements().get(ii).getWork().toString()) {\r\n                    exist = true;\r\n                    assignables.push(assignments.get(i));\r\n                    break;\r\n                }\r\n            }\r\n            if (!exist) {\r\n                sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),\r\n                        'Je suis censé travailler sur la tâche \"' + taskDesc.getLabel() + '\" mais je ne suis pas qualifié pour ce travail. <br/> Salutations <br/>' + assignments.get(i).getResourceInstance().getDescriptor().getLabel() + '<br/> ' + assignments.get(i).getResourceInstance().getSkillsets().keySet().toArray()[0],\r\n                        assignments.get(i).getResourceInstance().getDescriptor().getLabel());\r\n                assignments.remove(i);\r\n                //TODO add unworked hours\r\n            }\r\n\r\n        }\r\n    }\r\n    return assignables;\r\n}\r\n\r\n/**\r\n * For each activity, send different message if a task is completed or if the\r\n *  employee can't work on a task because a predecessor is not enough advanced.\r\n *  Return the next avalaible assignements.\r\n * @param {Array} assignments An Array of Assignment\r\n * @param {Number} currentStep\r\n * @returns {Array} An Array of Assignment\r\n */\r\nfunction checkAssignments(assignments, currentStep) {\r\n    var i, taskDesc, employeeInst, employeeName,\r\n            employeeJob, taskInst, nextTasks, exist;\r\n    if (assignments.size() <= 0) {\r\n        return [];\r\n    }\r\n    employeeInst = assignments.get(0).getResourceInstance();\r\n    employeeName = employeeInst.getDescriptor().getLabel();\r\n    employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];\r\n    nextTasks = getAssignables(employeeInst.getAssignments(), currentStep);\r\n    for (i = 0; i < assignments.size(); i++) {\r\n        exist = false;\r\n        taskDesc = assignments.get(i).getTaskDescriptor();\r\n        taskInst = taskDesc.getInstance();\r\n        if (parseFloat(taskInst.getProperty('completeness')) >= 100) {\r\n            if (nextTasks[0]) {\r\n                sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),\r\n                        'La tâche \"' + taskDesc.getLabel() + '\" est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,\r\n                        employeeName);\r\n            } else {\r\n                sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),\r\n                        'La tâche \"' + taskDesc.getLabel() + '\" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,\r\n                        employeeName);\r\n            }\r\n            assignments.remove(i);\r\n            break;\r\n        } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {\r\n            sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),\r\n                    'Je suis sensé travailler sur la tâche \"' + taskDesc.getLabel() + '\" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,\r\n                    employeeName);\r\n            assignments.remove(i);\r\n            //TODO add unworked hours\r\n            break;\r\n        }\r\n    }\r\n    return nextTasks;\r\n}\r\n\r\n/**\r\n * Get a number which determinate if a task can be already worked or if\r\n * its predecessors is not enough advanced.\r\n * @param {TaskDescriptor} taskDesc\r\n * @returns {Number} number between 0 and 1.\r\n */\r\nfunction getPredecessorFactor(taskDesc) {\r\n    var i, predecessorsAdvancements, predecessors, average, numberOfPredecessors;\r\n    predecessorsAdvancements = 0;\r\n    numberOfPredecessors = 0;\r\n    predecessors = taskDesc.getPredecessors();\r\n    for (i = 0; i < predecessors.size(); i++) {\r\n        if (isTrue(predecessors.get(i).getInstance(self).getActive())) {\r\n            predecessorsAdvancements += parseInt(predecessors.get(i).getInstance(self).getProperty('completeness'));\r\n            numberOfPredecessors += 1;\r\n        }\r\n    }\r\n    if (numberOfPredecessors > 0) {\r\n        average = predecessorsAdvancements / numberOfPredecessors;\r\n    } else {\r\n        average = 100;\r\n    }\r\n    return Math.pow(average / 100, parseInt(taskDesc.getInstance(self).getProperty('predecessorsDependances')));\r\n}\r\n\r\n/**\r\n * Return th first uncomplete kind of work in the given list requirements.\r\n * An uncomplete requirement is one where its completeness is smaller than its maxLimit.\r\n * @param {List} requirements List of WRequirements\r\n * @param {Object} reqByWorks object returned by function ''getRequirementsByWork'', can be null\r\n * @returns {String} work\r\n */\r\nfunction selectFirstUncompletedWork(requirements, reqByWorks, metier) {\r\n    var work, firstUncompletedWork;\r\n    if (!reqByWorks) {\r\n        reqByWorks = getRequirementsByWork(requirements); // get requirements merged by kind of work.\r\n    }\r\n    for (work in reqByWorks) {\r\n        if (reqByWorks[work].completeness < reqByWorks[work].maxLimit && metier == work) { //check if the maximum limite from all requirements of the current kind of work is smaller than the completeness of the current kind of work\r\n            firstUncompletedWork = work;\r\n            break;\r\n        }\r\n    }\r\n    return firstUncompletedWork;\r\n}\r\n\r\n/**\r\n * Select the most appropriate requirement for a employee.\r\n * the requirement must be the same type of work than the given parameter\r\n *  'work as' and must be match with this condition : req.completeness < max limit of req in this kind of job * employee on this task / total of employee of req in this kind of job\r\n * If several requirement match, select the one which have least difference between its level and the level of the given employee\r\n * * @param {TaskInstance} taskInst\r\n * @param {EmployeeInstance} employeeInst\r\n * @param {String} workAs string which define current work type of the given employee (can be different than his job)\r\n * @param {Object} reqByWorks object returned by function ''getRequirementsByWork''\r\n * @returns {WRequirement} the selected requirement\r\n */\r\nfunction selectRequirement(taskInst, employeeInst, workAs, reqByWorks) {\r\n    var i, requirements = taskInst.getRequirements(), req, selectedReq = null,\r\n            totalOfPersonneInTask = 0, deltaLevel = 1000,\r\n            level = parseInt(employeeInst.getSkillsets().get(employeeInst.getSkillsets().keySet().toArray()[0]));\r\n    for (i = 0; i < requirements.size(); i++) {\r\n        totalOfPersonneInTask += parseInt(requirements.get(i).getQuantity());\r\n    }\r\n    for (i = 0; i < requirements.size(); i++) {\r\n        req = requirements.get(i);\r\n        if (req.getWork() == workAs && parseFloat(req.getCompleteness()) < (reqByWorks[workAs].maxLimit * totalOfPersonneInTask / reqByWorks[workAs].totalOfEmployees)) {\r\n            if (Math.abs(deltaLevel) > level - parseInt(req.getLevel())) {\r\n                deltaLevel = level - parseInt(req.getLevel());\r\n                selectedReq = req;\r\n            }\r\n        }\r\n    }\r\n    return selectedReq;\r\n}\r\n\r\n/**\r\n * Return an object which requirements are gathered by work.\r\n * this object contains (by work) :\r\n * - maxLimit, the bigger limit found on this requirement job\r\n * - typesOfLevels, an Array of all found levels on this requirement job\r\n * - totalOfEmployees, the sum of all employees required on this requirement job.\r\n * - completeness the sum of each (completeness * quantity of required employees) divided by the total of employee on this requirement job.\r\n * @param {WRequirement} requirements\r\n * @returns {Object} works\r\n */\r\nfunction getRequirementsByWork(requirements) {\r\n    var i, req, works = {}, work, needsCompletion = 0, totalOfEmployees = 0;\r\n    for (i = 0; i < requirements.size(); i++) {\r\n        req = requirements.get(i);\r\n        //keep an occurance of each kind of work needed\r\n        if (works[req.getWork()]) {\r\n            work = works[req.getWork()];\r\n            work.totalByWork += req.getQuantity();\r\n        } else {\r\n            work = works[req.getWork()] = {\r\n                maxLimit: 0,\r\n                typesOfLevels: [],\r\n                totalOfEmployees: 0,\r\n                completeness: 0,\r\n                totalByWork: req.getQuantity(),\r\n                dimFactorAdvancement: false\r\n            };\r\n        }\r\n        //keep the highest limit of all limits from each kind of work needed\r\n        if (work.maxLimit < parseInt(req.getLimit())) {\r\n            work.maxLimit = parseInt(req.getLimit());\r\n        }\r\n        //keep all kind of levels for each kind of work needed\r\n        if (work.typesOfLevels.indexOf(req.getLevel()) <= -1) {\r\n            work.typesOfLevels.push(req.getLevel());\r\n        }\r\n        //keep the summe of personns needed for each kind of work needed\r\n        totalOfEmployees += parseInt(req.getQuantity());\r\n        //is needed for next calcul\r\n        needsCompletion += (parseFloat(req.getCompleteness()) * parseInt(req.getQuantity()));\r\n        work.completeness += parseFloat(req.getCompleteness());\r\n    }\r\n    for (work in works) {\r\n        //keep the summe of personns needed for each kind of work needed\r\n        works[work].totalOfEmployees = totalOfEmployees;\r\n\r\n        if (works[work].completeness > (works[work].totalByWork / totalOfEmployees) * 100) {\r\n            works[work].dimFactorAdvancement = true;\r\n        }\r\n    }\r\n    return works;\r\n}\r\n\r\n/**\r\n * Calculate the progression and the quality of each worked requirement at this step.\r\n * Return the progression of the requirement.\r\n * @param {Activity} activityAsNeeds an Activity\r\n * @param {Array} allCurrentActivities an Array of Activity\r\n * @returns {Number} a number between 0 and 100\r\n */\r\nfunction calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentStep) {\r\n    var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,\r\n            affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,\r\n            employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,\r\n            employeesMotivationFactor, employeesSkillsetXActivityRate = 0,\r\n            employeeSkillsetFactor, activityCoefficientXActivityRate = 0, otherWorkFactor = 1,\r\n            correctedRessources, reqByWorks, numberOfEmployeeOnNeedOnNewTask = 0,\r\n            needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,\r\n            averageSkillsetQuality, stepQuality = 0;\r\n\r\n    taskDesc = activityAsNeeds.getTaskDescriptor();\r\n    if (currentStep === 0) {\r\n        taskTable[taskDesc.getName()] = parseInt(taskDesc.getInstance(self).getProperty('completeness'));\r\n    }\r\n    taskInst = taskDesc.getInstance(self);\r\n    requirements = taskInst.getRequirements();\r\n    reqByWorks = getRequirementsByWork(requirements);\r\n    selectedReq = activityAsNeeds.getRequirement();\r\n    workAs = selectedReq.getWork();\r\n    sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allCurrentActivities, activityAsNeeds);\r\n    level = parseInt(activityAsNeeds.getResourceInstance().getSkillsets().get(activityAsNeeds.getResourceInstance().getSkillsets().keySet().toArray()[0]));\r\n    deltaLevel = level - parseInt(selectedReq.getLevel());\r\n\r\n    //For each need\r\n    for (i = 0; i < sameNeedActivity.length; i++) {\r\n        employeeInst = sameNeedActivity[i].getResourceInstance();\r\n        employeeDesc = employeeInst.getDescriptor();\r\n        affectedEmployeesDesc.push(employeeDesc);\r\n        activityRate = parseFloat(employeeDesc.getInstance(self).getProperty('activityRate'));\r\n        sumActivityRate += activityRate;\r\n        //Calculate ressource motivation factor\r\n        employeesMotivationFactor = 1 + 0.05 * parseFloat(employeeDesc.getProperty('coef_moral')) * (parseInt(employeeDesc.getInstance(self).getMoral()) - 7);\r\n        //Calcul variables for needMotivationFactor (numérateur de la moyenne pondérée de facteur motivation besoin)\r\n        employeesMotivationXActivityRate += employeesMotivationFactor * activityRate;\r\n        //Calcul variables for needSkillsetFactor\r\n        if (deltaLevel > 0) {\r\n            employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty('competenceRatioSup')) * deltaLevel;\r\n            if (employeeSkillsetFactor < 0) {\r\n                employeeSkillsetFactor = 0;\r\n            }\r\n        } else {\r\n            employeeSkillsetFactor = 1 + 0.05 * parseFloat(taskDesc.getProperty('competenceRatioInf')) * deltaLevel;\r\n        }\r\n        //Calcul variables for needSkillFactor (numérateur de la moyenne pondérée facteur compétence besoin)\r\n        employeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate;\r\n\r\n        //Calcul variable for needActivityFactor (numérateur de la moyenne pondérée facteur taux activité besoin)\r\n        activityCoefficientXActivityRate += parseFloat(employeeDesc.getProperty('coef_activity')) * activityRate;\r\n\r\n        //Calcul variable for learnFactor\r\n        if (!haveCorrespondingActivityInPast(employeeInst, taskDesc, getCurrentInGameTime().period)) {\r\n            numberOfEmployeeOnNeedOnNewTask++;\r\n        }\r\n        //Calculate variable for quality\r\n        motivationXActivityRate += parseInt(employeeInst.getMoral()) * activityRate;\r\n        skillsetXActivityRate += parseInt(employeeInst.getSkillsets().get(employeeInst.getSkillsets().keySet().toArray()[0])) * activityRate; //level * activityRate\r\n    }\r\n\r\n    //calculate needMotivationFactor, needSkillsetFactor and activityNeedRateFactor\r\n    if (sumActivityRate !== 0) {\r\n        stepAdvance *= employeesMotivationXActivityRate / sumActivityRate; //needMotivationFactor (facteur motivation besoin)\r\n        stepAdvance *= employeesSkillsetXActivityRate / sumActivityRate; //needSkillsetFactor (facteur compétence besoin)\r\n        stepAdvance *= activityCoefficientXActivityRate / (affectedEmployeesDesc.length * 100); //activityNeedRateFactor (facteur taux activité besoin)\r\n    }\r\n\r\n    // calculate baseAdvance\r\n    stepAdvance *= 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))); //baseAdvance\r\n\r\n    // calculate numberOfRessourcesFactor\r\n    if (reqByWorks[workAs].totalOfEmployees !== 0) {\r\n        if (affectedEmployeesDesc.length <= reqByWorks[workAs].totalOfEmployees) {\r\n            correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioInf')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);\r\n            if (correctedRessources / affectedEmployeesDesc.length < 0.2) {\r\n                correctedRessources = affectedEmployeesDesc.length / 5;\r\n            }\r\n        } else {\r\n            correctedRessources = reqByWorks[workAs].totalOfEmployees + parseFloat(taskDesc.getProperty('coordinationRatioSup')) * (affectedEmployeesDesc.length - reqByWorks[workAs].totalOfEmployees);\r\n        }\r\n        stepAdvance *= correctedRessources / reqByWorks[workAs].totalOfEmployees; //numberOfRessourcesFactor\r\n    }\r\n\r\n    if (reqByWorks[workAs].dimFactorAdvancement) {\r\n        otherWorkFactor = 0.8;\r\n    }\r\n    stepAdvance *= otherWorkFactor;\r\n\r\n    //calculate randomFactor                                                    \r\n    stepAdvance *= getRandomFactorFromTask(taskInst);\r\n\r\n    //calculate learnFactor\r\n    if (taskTable[taskDesc.getName()] > 15 && !workOnTask(employeeDesc.getLabel(), taskDesc.getName())) {\r\n        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskDesc.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor\r\n    }\r\n\r\n    //calculate tasks bonusRatio\r\n    stepAdvance *= (parseFloat(taskInst.getProperty('bonusRatio')));\r\n\r\n    //calculate project bonusRatio\r\n    stepAdvance *= parseFloat(VariableDescriptorFacade.findByName(gm, 'bonusRatio').getInstance(self).getValue());\r\n\r\n    //calculate predecessorFactor\r\n    stepAdvance *= getPredecessorFactor(taskDesc); //predecessor factor\r\n\r\n    stepAdvance *= 100;\r\n\r\n    stepAdvance /= affectedEmployeesDesc.length;\r\n\r\n    //calculate new needCompleteness\r\n    needProgress = parseFloat(selectedReq.getCompleteness()) + stepAdvance;\r\n\r\n    //calculate stepQuality\r\n    if (sumActivityRate !== 0) {\r\n        stepQuality = 1 + 0.03 * ((motivationXActivityRate / sumActivityRate) - 7); //Motivation quality\r\n        averageSkillsetQuality = (skillsetXActivityRate / sumActivityRate);\r\n        if (averageSkillsetQuality >= parseInt(selectedReq.getLevel())) {\r\n            stepQuality += 1 + 0.02 * (averageSkillsetQuality - parseInt(selectedReq.getLevel())); //skillset (level) quality\r\n        } else {\r\n            stepQuality += 1 + 0.03 * (averageSkillsetQuality - parseInt(selectedReq.getLevel())); //skillset (level) quality\r\n        }\r\n    }\r\n    stepQuality = (stepQuality / 2) * 100; //step Quality\r\n    if (needProgress > 0) {\r\n        selectedReq.setQuality((parseFloat(selectedReq.getQuality()) * parseFloat(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);\r\n    }\r\n\r\n    //set Wage (add 1/steps of the need's wage at task);\r\n    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / 4) / steps)));\r\n\r\n    if (testMode) {\r\n        println('sameNeedActivity.length : ' + sameNeedActivity.length);\r\n        println('employeesMotivationFactor : ' + employeesMotivationFactor);\r\n        println('employeesMotivationXActivityRate : ' + employeesMotivationXActivityRate);\r\n        println('sumActivityRate : ' + sumActivityRate);\r\n        println('deltaLevel : ' + deltaLevel);\r\n        println('employeeSkillsetFactor : ' + employeeSkillsetFactor);\r\n        println('employeesSkillsetXActivityRate : ' + employeesSkillsetXActivityRate);\r\n        println('activityCoefficientXActivityRate : ' + activityCoefficientXActivityRate);\r\n        println('numberOfEmployeeOnNeedOnNewTask : ' + numberOfEmployeeOnNeedOnNewTask);\r\n        println('motivationXActivityRate: ' + motivationXActivityRate);\r\n        println('skillsetXActivityRate: ' + skillsetXActivityRate);\r\n        println('NeedMotivationFactor : ' + employeesMotivationXActivityRate / sumActivityRate);\r\n        println('NeedSkillsetFactor : ' + employeesMotivationXActivityRate / sumActivityRate);\r\n        println('ActivityNeedRateFactor : ' + activityCoefficientXActivityRate / sumActivityRate);\r\n        println('baseAdvance : ' + 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))));\r\n        println('numberOfRessourcesFactor : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);\r\n        println('otherWorkFactor : ' + otherWorkFactor);\r\n        println('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskInst));\r\n        println('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskInst.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length)));\r\n        println('taskbonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));\r\n        println('projectBonusRatio : ' + parseFloat(VariableDescriptorFacade.findByName(gm, 'bonusRatio').getInstance(self).getValue()));\r\n        println('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);\r\n        println('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / steps))); //predecessor factor);\r\n        println('stepAdvance : ' + stepAdvance);\r\n        println('need completeness : ' + parseFloat(selectedReq.getCompleteness()));\r\n        println('needProgress : ' + needProgress);\r\n        println('StepQuality : ' + (parseFloat(selectedReq.getQuality()) * parseFloat(selectedReq.getCompleteness()) + stepQuality * stepAdvance) / needProgress);\r\n        println('facteur motivation besoin : ' + employeesMotivationXActivityRate / sumActivityRate);\r\n        println('facteur competence besoin : ' + employeesSkillsetXActivityRate / sumActivityRate);\r\n        println('nb employé affecté : ' + affectedEmployeesDesc.length);\r\n        println('facteur taux activité besoin : ' + activityCoefficientXActivityRate / (affectedEmployeesDesc.length * 100));\r\n        println('Ressource corrigée : ' + correctedRessources);\r\n        println('emp total : ' + reqByWorks[workAs].totalOfEmployees);\r\n        println('Facteur nb ressource besoin : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);\r\n        println('task completness : ' + taskInst.getProperty('completeness'));\r\n    }\r\n\r\n    //set need progress (after calcuateQuality) and return it\r\n    selectedReq.setCompleteness(needProgress);\r\n    return  needProgress;\r\n}\r\n\r\n/**\r\n * Return a random factor based on properties 'randomDurationSup' and 'randomDurationInf'\r\n * of the given task.\r\n * @param {TaskInstance} taskInst\r\n * @returns {Number} a factor between 0 and 2\r\n */\r\nfunction getRandomFactorFromTask(taskInst) {\r\n    var rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);\r\n            randomDurationSup = parseFloat(taskInst.getProperty('randomDurationSup')),\r\n            randomDurationInf = parseFloat(taskInst.getProperty('randomDurationInf')),\r\n            duration = parseInt(taskInst.getDuration()), delta,\r\n            randomFactor, x = Math.random();\r\n\r\n    if (rn < 3) {\r\n        delta = -(0.25 * x + 0.75) * randomDurationInf;\r\n    } else if (rn < 10) {\r\n        delta = -(0.25 * x + 0.50) * randomDurationInf;\r\n    } else if (rn < 25) {\r\n        delta = -(0.25 * x + 0.25) * randomDurationInf;\r\n    } else if (rn < 50) {\r\n        delta = -0.25 * x * randomDurationInf;\r\n    } else if (rn < 75) {\r\n        delta = 0.25 * x * randomDurationSup;\r\n    } else if (rn < 90) {\r\n        delta = (0.25 * x + 0.25) * randomDurationSup;\r\n    } else if (rn < 97) {\r\n        delta = (0.25 * x + 0.50) * randomDurationSup;\r\n    } else {\r\n        delta = (0.25 * x + 0.75) * randomDurationSup;\r\n    }\r\n\r\n    randomFactor = duration + delta;\r\n\r\n    if (randomFactor < minTaskDuration) {\r\n        randomFactor = minTaskDuration;\r\n    }\r\n\r\n    return getFloat((duration / randomFactor), 2);\r\n}\r\n\r\n/**\r\n * Calculate the current quality of the task based on the average of the quality\r\n *  in each bound requirement and weighted by the progression of its cmpleteness.\r\n * @param {TaskDescriptor} taskDesc\r\n * @returns {Number} a number btween 0 and 200\r\n */\r\nfunction calculateTaskQuality(taskDesc) {\r\n    var i, req, needQualityXNeedProgress = 0, needProgress = 0;\r\n    for (i = 0; i < taskDesc.getInstance(self).getRequirements().size(); i++) {\r\n        req = taskDesc.getInstance(self).getRequirements().get(i);\r\n        needQualityXNeedProgress += (parseFloat(req.getQuality()) * parseFloat(req.getCompleteness()));\r\n        needProgress += parseFloat(req.getCompleteness());\r\n    }\r\n    return Math.round((needQualityXNeedProgress / needProgress));\r\n}\r\n\r\n/**\r\n * Debbug function to create automatically some occupations and assignements in\r\n *  some employees.\r\n * @returns {String}\r\n */\r\nfunction tempInit() {\r\n    var occupation, listEmployees = flattenList(VariableDescriptorFacade.findByName(gm, 'employees')),\r\n            listTasks = VariableDescriptorFacade.findByName(gm, 'tasks');\r\n\r\n    occupation = listEmployees[0].getInstance(self).addOccupation();\r\n    occupation.setTime(1.0);\r\n    occupation = listEmployees[0].getInstance(self).addOccupation();\r\n    occupation.setTime(2.0);\r\n    occupation = listEmployees[1].getInstance(self).addOccupation();\r\n    occupation.setTime(1.0);\r\n    occupation = listEmployees[2].getInstance(self).addOccupation();\r\n    occupation.setTime(2.0);\r\n    occupation = listEmployees[2].getInstance(self).addOccupation();\r\n    occupation.setTime(3.0);\r\n    occupation.setEditable(false);\r\n\r\n    //listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));\r\n\r\n    listEmployees[1].getInstance(self).assign(listTasks.items.get(0));\r\n    listEmployees[0].getInstance(self).assign(listTasks.items.get(1));\r\n\r\n    return 'is initialized';\r\n}\r\n\r\n/**\r\n * Return an object containing values of current period and current phase.\r\n * @returns {Object} object current time -> {period: x, phase: y}\r\n */\r\nfunction getCurrentInGameTime() {\r\n    var inGameTime = {phase: null, period: null},\r\n    phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');\r\n    inGameTime.phase = parseInt(currentPhase.value);\r\n    if (phases !== null && inGameTime.phase !== null) {\r\n        inGameTime.period = parseInt(phases.items.get(inGameTime.phase).getInstance(self).value);\r\n    }\r\n    return inGameTime;\r\n}\r\n\r\n/**\r\n * return true if arg == boolean true or string 'true'\r\n * @param {String or Boolean} arg\r\n * @returns {Boolean} state\r\n */\r\nfunction isTrue(arg) {\r\n    return (arg == true || arg == 'true') ? true : false;\r\n}\r\n\r\n/**\r\n * return a float with a length = to the given \"numberOfDigit\"\r\n * @param {Number} number\r\n * @param {Number} numberOfDigit\r\n * @returns {Number}\r\n */\r\nfunction getFloat(number, numberOfDigit) {\r\n    numberOfDigit = Math.pow(10, (numberOfDigit > 1) ? numberOfDigit : 1);\r\n    return Math.round(number * numberOfDigit) / numberOfDigit;\r\n}\r\n\r\n/**\r\n * Transform a wegas List in an array.\r\n * If the wegas list contain other wegas list (and contain other wegas list, etc),\r\n *  put each other list at the same level in the returned one level (flat) Array.\r\n * @param {List} list\r\n * @param {List} finalList\r\n * @returns {Array} the given finalList, in an Array object\r\n */\r\nfunction flattenList(list, finalList) {\r\n    var i, el;\r\n    finalList = (finalList) ? finalList : [];\r\n    for (i = 0; i < list.items.size(); i++) {\r\n        el = list.items.get(i);\r\n        if (el.getClass() && el.getClass().toString() == 'class com.wegas.core.persistence.variable.ListDescriptor') {\r\n            finalList = this.flattenList(el, finalList);\r\n        } else {\r\n            finalList.push(el);\r\n        }\r\n    }\r\n    return finalList;\r\n}\r\n\r\n/**\r\n * Check the end of a task or of a requirement and send corresponding messages.\r\n * if it's the last step, call function ''checkAssignments'' to send other kind of messages.\r\n * @param {Array} allCurrentActivities, an Array of Activity\r\n * @param {Number} currentStep\r\n */\r\nfunction checkEnd(allCurrentActivities, currentStep) {\r\n    var i, employeeInst, taskInst, taskDesc, employeeName, employeeJob,\r\n            nextWork, reqByWorks;\r\n    for (i = 0; i < allCurrentActivities.length; i++) {\r\n        taskDesc = allCurrentActivities[i].getTaskDescriptor();\r\n        taskInst = taskDesc.getInstance(self);\r\n        employeeInst = allCurrentActivities[i].getResourceInstance();\r\n        employeeName = employeeInst.getDescriptor().getLabel();\r\n        employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];\r\n        if (currentStep === steps - 1) {\r\n            checkAssignments(employeeInst.getAssignments(), currentStep);\r\n        } else if (parseFloat(taskInst.getProperty('completeness')) < 100) {\r\n            reqByWorks = getRequirementsByWork(taskInst.getRequirements());\r\n            nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.getSkillsets().keySet().toArray()[0].toString());\r\n            if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {\r\n                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',\r\n                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,\r\n                        employeeName);\r\n//                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',\r\n//                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,\r\n//                        employeeName);\r\n            }\r\n        }\r\n    }\r\n}\r\n\r\n/**\r\n * Return a name for each step.\r\n * @param {Number} step\r\n * @returns {String} the name of the step\r\n */\r\nfunction getStepName(step) {\r\n    var name;\r\n    switch (step) {\r\n        case 0 :\r\n            name = 'Lundi matin';\r\n            break;\r\n        case 1 :\r\n            name = 'Lundi après-midi';\r\n            break;\r\n        case 2 :\r\n            name = 'Mardi matin';\r\n            break;\r\n        case 3 :\r\n            name = 'Mardi après-midi';\r\n            break;\r\n        case 4 :\r\n            name = 'Mercredi matin';\r\n            break;\r\n        case 5 :\r\n            name = 'Mercredi après-midi';\r\n            break;\r\n        case 6 :\r\n            name = 'Jeudi matin';\r\n            break;\r\n        case 7 :\r\n            name = 'Jeudi après-midi';\r\n            break;\r\n        case 8 :\r\n            name = 'Vendredi matin';\r\n            break;\r\n        case 9 :\r\n            name = 'Vendredi après-midi';\r\n            break;\r\n        default :\r\n            name = 'samedi matin';\r\n    }\r\n    return name;\r\n}\r\n\r\n/**\r\n * get the specified wegas bean.\r\n * @param String name, the name of the bean\r\n * @return the wanted bean or null\r\n */\r\nfunction lookupBean(name) {\r\n    var ctx = new InitialContext();\r\n    return ctx.lookup('java:module/' + name);\r\n}\r\n\r\n/**\r\n * Send a message to the current player.\r\n * @param String subject, the subject of the message.\r\n * @param String message, the content of the message.\r\n * @param String from, the sender of the message.\r\n */\r\nfunction sendMessage(subject, content, from) {\r\n    var EF = lookupBean('MessageFacade');\r\n    if (EF) {\r\n        EF.send(self, subject, content, from);\r\n    }\r\n    else {\r\n        println('Bean InGameMailFacade does not exist, unable to send in-game message: ' + subject);\r\n    }\r\n}\r\n\r\n/**\r\n * Check if all questions from a phase are answered\r\n * @param inGameTime time\r\n */\r\nfunction allPhaseQuestionAnswered(time) {\r\n    var questions = VariableDescriptorFacade.findByName(gm, \"questions\");\r\n//            currentPhaseQuestions = questions.items.get(time.phase).items.get(time.period - 1).items;\r\n//    for (var i = 0; i < currentPhaseQuestions.size(); i++) {\r\n//        var question = currentPhaseQuestions.get(i);\r\n//        if (question.isReplied(self) == false && question.getInstance(self).getActive() == true) {\r\n//            throw new Error(\"StringMessage: You have not answered all questions from this week.\");\r\n//        }\r\n//    }\r\n}\r\n\r\n/**\r\n * function to know if an employee is working on the task.\r\n * A employee working on task mean that he works the period before (currentPeriode -1)\r\n * @param String empName\r\n * @param String taskName\r\n * @returns Boolean true if works on project\r\n */\r\nfunction workOnTask(empName, taskName) {\r\n    var employee = VariableDescriptorFacade.findByName(gm, empName), empInstance, i, activity,\r\n            task = VariableDescriptorFacade.findByName(gm, taskName),\r\n            currentPeriode = VariableDescriptorFacade.findByName(gm, \"periodPhase3\").getInstance().value,\r\n            precedentPeriode = currentPeriode - 1;\r\n\r\n    empInstance = employee.getInstance();\r\n    for (i = 0; i < empInstance.getActivities().size(); i++) {\r\n        activity = empInstance.getActivities().get(i);\r\n        if (parseInt(activity.getTime()) === precedentPeriode && task.getId() === activity.getTaskDescriptorId()) {\r\n            return true;\r\n        }\r\n    }\r\n    return false;\r\n}\r\n\r\n/**\r\n * Check if a ressource work on the project\r\n * @param String name, the name from ressource to check\r\n * @return true if work on project\r\n */\r\nfunction workOnProject(name) {\r\n    var employee = VariableDescriptorFacade.findByName(gm, name), instance, i, activity,\r\n            activityNotFinish = false, taskInstance, hasOccupation = false, occupation,\r\n            currentPeriode = VariableDescriptorFacade.findByName(gm, \"periodPhase3\").getInstance().value;\r\n\r\n    //Check if has a not finished activity\r\n    instance = employee.getInstance();\r\n    for (i = 0; i < instance.getActivities().size(); i++) {\r\n        activity = instance.getActivities().get(i);\r\n        taskInstance = activity.getTaskDescriptor().getInstance(self);\r\n        if (parseInt(taskInstance.getProperties().get(\"completeness\")) < 100) {\r\n            activityNotFinish = true;\r\n            break;\r\n        }\r\n    }\r\n\r\n    // Check if has an occupation for the futur\r\n    for (i = 0; i < instance.getOccupations().size(); i++) {\r\n        occupation = instance.getOccupations().get(i);\r\n        if (occupation.getTime() >= currentPeriode) {\r\n            hasOccupation = true;\r\n            break;\r\n        }\r\n    }\r\n\r\n    if (activityNotFinish && hasOccupation) {\r\n        return true;\r\n    } else {\r\n        return false;\r\n    }\r\n}\r\n\r\n// Functions for addArtosPredecessor\r\nfunction addArtosPredecessor() {\r\n    var listPredName = [];\r\n    // ChoixEnvironnementDéveloppement predecessor\r\n    listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'DossierSpécifications').getName(), listPredName);\r\n\r\n    // ModélisationDonnées predecessor\r\n    listPredName = [];\r\n    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ModélisationDonnées').getName(), listPredName);\r\n\r\n    // ModélisationTraitements predecessor\r\n    listPredName = [];\r\n    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ModélisationTraitements').getName(), listPredName);\r\n\r\n    // ModélisationIHM predecessor\r\n    listPredName = [];\r\n    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ModélisationIHM').getName(), listPredName);\r\n\r\n    // ProgrammationBD predecessor\r\n    listPredName = [];\r\n    listPredName.push('ModélisationDonnées');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ProgrammationBD').getName(), listPredName);\r\n\r\n    // ProgrammationTraitements predecessor\r\n    listPredName = [];\r\n    listPredName.push('ModélisationDonnées', 'ModélisationTraitements');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ProgrammationTraitements').getName(), listPredName);\r\n\r\n    // ProgrammationIHM predecessor\r\n    listPredName = [];\r\n    listPredName.push('ModélisationIHM');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ProgrammationIHM').getName(), listPredName);\r\n\r\n    // PromotionSystème predecessor\r\n    listPredName = [];\r\n    listPredName.push('DossierSpécifications');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'PromotionSystème').getName(), listPredName);\r\n\r\n    // Tests predecessor\r\n    listPredName = [];\r\n    listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModélisationTraitements', 'CorrectionProgrammationTraitements');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'Tests').getName(), listPredName);\r\n\r\n    // ImplantationMachine predecessor\r\n    listPredName = [];\r\n    listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'ImplantationMachine').getName(), listPredName);\r\n\r\n    // PrototypeUtilisateur predecessor\r\n    listPredName = [];\r\n    listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');\r\n    addPredecessor(VariableDescriptorFacade.findByName(gm, 'PrototypeUtilisateur').getName(), listPredName);\r\n}\r\n\r\n/**\r\n * Function to add taskPredecessor\r\n * @param {type} descName\r\n * @param {type} listPredName\r\n */\r\nfunction addPredecessor(descName, listPredName) {\r\n    var i, ii, iii, taskDescList = VariableDescriptorFacade.findByName(gm, 'tasks'),\r\n            taskDesc;\r\n\r\n    for (i = 0; i < taskDescList.items.size(); i++) {\r\n        taskDesc = taskDescList.items.get(i);\r\n        if (taskDesc.getName() == descName) {\r\n            for (ii = 0; ii < listPredName.length; ii++) {\r\n                for (iii = 0; iii < taskDescList.items.size(); iii++) {\r\n                    if (listPredName[ii] == taskDescList.items.get(iii).getName()) {\r\n                        taskDesc.getPredecessors().add(taskDescList.items.get(iii));\r\n                        break;\r\n                    }\r\n                }\r\n            }\r\n            break;\r\n        }\r\n    }\r\n}\r\n\r\n// Functions for addArtosOccupation\r\nfunction addArtosOccupation() {\r\n    addOccupation(\"Gaelle\", 6);\r\n    addOccupation(\"Gaelle\", 7);\r\n\r\n    addOccupation(\"Murielle\", 4);\r\n    addOccupation(\"Murielle\", 5);\r\n\r\n    addOccupation(\"Kurt\", 4);\r\n\r\n    addOccupation(\"Diane\", 2);\r\n\r\n    addOccupation(\"Luc\", 11);\r\n    addOccupation(\"Luc\", 12);\r\n\r\n    addOccupation(\"André\", 10);\r\n    addOccupation(\"André\", 11);\r\n\r\n    addOccupation(\"Pierre\", 6);\r\n\r\n    addOccupation(\"Yvonne\", 6);\r\n\r\n    addOccupation(\"Quentin\", 9);\r\n\r\n    addOccupation(\"Karim\", 3);\r\n}\r\n\r\nfunction addOccupation(name, periode) {\r\n    employee = VariableDescriptorFacade.findByName(gm, name),\r\n            employee.addOccupation(self, periode, false, \"\");\r\n}"
+        }
+    },
+    "cssLibrary": {},
+    "clientScriptLibrary": {
+        "default": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "var STRING = \"string\", HIDDEN = \"hidden\", ARRAY = \"array\",\r\n            SELF = \"self\", BOOLEAN = \"boolean\", NUMBER = \"number\",\r\n            SELECT = \"select\", VALUE = \"value\", KEY = \"key\"\r\nY.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({type: \"AddEntityChildButton\", label: \"Resource\", targetClass: \"ResourceDescriptor\"}, {type: \"AddEntityChildButton\", label: \"Task\", targetClass: \"TaskDescriptor\"});\r\nY.Wegas.persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {\r\n    label: \"Get number instance's property\",\r\n    returns: NUMBER,\r\n    arguments: [{\r\n            type: HIDDEN,\r\n            value: SELF\r\n        }, {\r\n            label: KEY,\r\n            scriptType: STRING,\r\n            type: SELECT,\r\n            choices: [{\r\n                    value: \"fixedCosts\"\r\n                }, {\r\n                    value: \"quality\"\r\n                }, {\r\n                    value: \"completeness\"\r\n                }]\r\n        }]\r\n};\r\nY.Wegas.persistence.TaskDescriptor.METHODS.addAtInstanceProperty = {\r\n    label: \"Add at instance's property\",\r\n    arguments: [{\r\n            type: HIDDEN,\r\n            value: SELF\r\n        }, {\r\n            label: KEY,\r\n            type: SELECT,\r\n            scriptType: STRING,\r\n            choices: [{\r\n                    value: \"fixedCosts\"\r\n                }, {\r\n                    value: \"quality\"\r\n                }, {\r\n                    value: \"predecessorsDependances\"\r\n                }, {\r\n                    value: \"randomDurationSup\"\r\n                }, {\r\n                    value: \"randomDurationInf\"\r\n                }, {\r\n                    value: \"bonusRatio\"\r\n                }]\r\n        }, {\r\n            type: STRING,\r\n            label: VALUE,\r\n            scriptType: STRING\r\n\r\n        }]\r\n};\r\nY.Wegas.persistence.TaskDescriptor.METHODS.setInstanceProperty = {\r\n    label: \"Set instance's property\",\r\n    arguments: [{\r\n            type: HIDDEN,\r\n            value: SELF\r\n        }, {\r\n            label: KEY,\r\n            scriptType: STRING,\r\n            type: SELECT,\r\n            choices: [{\r\n                    value: \"fixedCosts\"\r\n                }, {\r\n                    value: \"quality\"\r\n                }, {\r\n                    value: \"predecessorsDependances\"\r\n                }, {\r\n                    value: \"randomDurationSup\"\r\n                }, {\r\n                    value: \"randomDurationInf\"\r\n                }, {\r\n                    value: \"bonusRatio\"\r\n                }]\r\n        }, {\r\n            type: STRING,\r\n            label: VALUE,\r\n            scriptType: STRING\r\n\r\n        }]\r\n};\r\n\r\nY.Wegas.persistence.TaskDescriptor.METHODS.addAtRequirementVariable = {\r\n    label: \"Add at requirements\",\r\n    arguments: [{\r\n            type: HIDDEN,\r\n            value: SELF\r\n        }, {\r\n            type: \"entityarrayfieldselect\",\r\n            returnAttr: \"id\",\r\n            scope: \"instance\",\r\n            field: \"requirements\",\r\n            name: {\r\n                values: [\"quantity\", \"work\", \"level\"],\r\n                separator: \" - \"\r\n            }\r\n        }, {\r\n            label: KEY,\r\n            scriptType: STRING,\r\n            type: SELECT,\r\n            choices: [{\r\n                    value: \"quantity\"\r\n                }, {\r\n                    value: \"level\"\r\n                }]\r\n        }, {\r\n            type: STRING,\r\n            label: VALUE,\r\n            scriptType: STRING\r\n        }]\r\n};\r\n\r\nY.Wegas.persistence.TaskDescriptor.METHODS.setRequirementVariable = {\r\n    label: \"set requirements\",\r\n    arguments: [{\r\n            type: HIDDEN,\r\n            value: SELF\r\n        }, {\r\n            type: \"entityarrayfieldselect\",\r\n            returnAttr: \"id\",\r\n            scope: \"instance\",\r\n            field: \"requirements\"\r\n        }, {\r\n            label: KEY,\r\n            scriptType: STRING,\r\n            type: SELECT,\r\n            choices: [{\r\n                    value: \"quantity\"\r\n                }, {\r\n                    value: \"level\"\r\n                }]\r\n        }, {\r\n            type: STRING,\r\n            label: VALUE,\r\n            scriptType: STRING\r\n        }]\r\n};\r\n\r\nY.Wegas.persistence.ResourceDescriptor.METHODS = {\r\n    getMoral: {\r\n        label: \"Get moral\",\r\n        returns: NUMBER,\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }]\r\n    },\r\n    addAtMoral: {\r\n        label: \"Add at moral\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                type: STRING,\r\n                value: 1\r\n            }]\r\n    },\r\n    setMoral: {\r\n        label: \"Set moral\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                type: STRING,\r\n                value: 1\r\n            }]\r\n    },\r\n    addOccupation: {\r\n        label: \"add occupation\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                type: NUMBER,\r\n                label: \"Time\",\r\n                scriptType: NUMBER,\r\n                value: 1\r\n            }, {\r\n                type: BOOLEAN,\r\n                label: \"Editable\",\r\n                scriptType: BOOLEAN\r\n            }, {\r\n                type: \"html\",\r\n                label: \"Description\",\r\n                scriptType: STRING\r\n            }\r\n        ]\r\n    },\r\n    removeOccupationsAtTime: {\r\n        label: \"Remove occupation\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                type: NUMBER,\r\n                value: 1\r\n            }]\r\n    },\r\n    getNumberInstanceProperty: {\r\n        label: \"Get number instance's property\",\r\n        returns: NUMBER,\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                label: KEY,\r\n                scriptType: STRING,\r\n                type: SELECT,\r\n                choices: [{\r\n                        value: \"activityRate\"\r\n                    }, {\r\n                        value: \"wage\"\r\n                    }]\r\n            }]\r\n    },\r\n    setInstanceProperty: {\r\n        label: \"Set instance's property\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                label: KEY,\r\n                scriptType: STRING,\r\n                type: SELECT,\r\n                choices: [{\r\n                        value: \"activityRate\"\r\n                    }, {\r\n                        value: \"wage\"\r\n                    }]\r\n            }, {\r\n                type: STRING,\r\n                label: VALUE,\r\n                scriptType: STRING\r\n            }]\r\n    },\r\n    addAtInstanceProperty: {\r\n        label: \"Add at instance's property\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }, {\r\n                label: KEY,\r\n                scriptType: STRING,\r\n                type: SELECT,\r\n                choices: [{\r\n                        value: \"activityRate\"\r\n                    }, {\r\n                        value: \"wage\"\r\n                    }]\r\n            }, {\r\n                type: STRING,\r\n                label: VALUE,\r\n                scriptType: STRING\r\n            }]\r\n    },\r\n    getActive: {\r\n        label: \"Is active\",\r\n        returns: BOOLEAN,\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }]\r\n    },\r\n    activate: {\r\n        label: \"Activate\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }]\r\n    },\r\n    desactivate: {\r\n        label: \"Desactivate\",\r\n        arguments: [{\r\n                type: HIDDEN,\r\n                value: SELF\r\n            }]\r\n    }\r\n};\r\n\r\nY.Wegas.persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {\r\n    name: NUMBER,\r\n    optional: true,\r\n    type: STRING,\r\n    _inputex: {\r\n        label: \"Default confiance\",\r\n        _type: HIDDEN\r\n    }\r\n};\r\nY.Wegas.persistence.ResourceInstance.ATTRS.confidence = {\r\n    type: NUMBER,\r\n    optional: true,\r\n    _inputex: {\r\n        _type: HIDDEN\r\n    }\r\n};\r\nY.Wegas.persistence.ResourceInstance.ATTRS.moralHistory = {\r\n    type: ARRAY,\r\n    _inputex: {\r\n        label: \"Moral history\",\r\n        _type: HIDDEN,\r\n        useButtons: true\r\n    }\r\n};\r\nY.Wegas.persistence.ResourceInstance.ATTRS.confidenceHistory = {\r\n    type: ARRAY,\r\n    _inputex: {\r\n        label: \"Confidence history\",\r\n        _type: HIDDEN,\r\n        useButtons: true\r\n    }\r\n};\r\n"
+        }
+    },
+    "properties": {
+        "pagesUri": "wegas-pmg/db/wegas-pmg-pages-simplePmg.json?",
+        "cssUri": "wegas-pmg/css/wegas-pmg.css"
+    },
+    "createdByName": "yannick Lagger"
+}
