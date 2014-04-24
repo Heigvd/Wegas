@@ -168,6 +168,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
         GameModel gm = this.duplicate(gameModelId);
         this.addGame(gm, new DebugGame());
+        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
         return gm;
     }
 

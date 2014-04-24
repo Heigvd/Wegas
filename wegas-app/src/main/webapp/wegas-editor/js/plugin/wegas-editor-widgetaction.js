@@ -97,15 +97,15 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     }, this)),
                     menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
-                        switch (i.label) {                                              // @hack add icons to some buttons
-                            case "Delete":
-                            case "Edit":
-                                i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                        }
+                switch (i.label) {                                              // @hack add icons to some buttons
+                    case "Delete":
+                    case "Edit":
+                        i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                }
 
-                        // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-                        return (!i.label || (i.label !== "New" && i.label.indexOf("Edit") < 0));
-                    });                                                                 // Retrieve menu and remove the first item
+                // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                return (!i.label || (i.label !== "New" && i.label.indexOf("Edit") < 0));
+            });                                                                 // Retrieve menu and remove the first item
 
             this.highlight(widget, true);
             form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
@@ -186,6 +186,9 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (confirm("Are your sure you want to delete this element ?")) {
                 var targetWidget = this.get("widget"),
                         root = targetWidget.get("root");
+                if (Plugin.EditEntityAction.currentEntity === targetWidget) {
+                    Plugin.EditEntityAction.hideRightTabs();
+                }
                 targetWidget.destroy();
                 this.get("dataSource").cache.patch(root.toObject());
             }
