@@ -324,6 +324,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     margin-bottom: -3px;
     height: 19px;
 }
+#rightTabView > ul > li {
+    background: #072644;
+}
 #rightTabView .wegas-jointeam>.wegas-jointeam-content>.title {
     font-size: 1.5em;
 }
@@ -401,7 +404,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 #rightTabView .wegas-removeTabview{
     min-width: 0;
     width: 5px;
-    padding: 1px 8px 2px 5px;
+    padding: 0px 10px 2px 7px;
     margin-bottom: 8px;
     margin-top: 9px;
     border-radius: 5px;
