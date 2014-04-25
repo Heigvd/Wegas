@@ -70,8 +70,8 @@ public class NumberInstance extends VariableInstance {
 
                 NumberDescriptor desc = (NumberDescriptor) this.getDescriptor();
                 Double.valueOf(0.0D);
-                if ((desc.getMaxValueLong() != null && value > desc.getMaxValue())
-                        || (desc.getMinValueLong() != null && value < desc.getMinValue())) {
+                if ((desc.getMaxValue() != null && value > desc.getMaxValueD())
+                        || (desc.getMinValue() != null && value < desc.getMinValueD())) {
                     throw new ConstraintViolationException(desc.getLabel() + " is out of bound.");
                 }
             }

@@ -18,6 +18,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -133,6 +135,17 @@ public class TaskInstance extends VariableInstance {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    @XmlTransient
+    @Transient
+    public double getPropertyD(String key) {
+        return Double.valueOf(this.properties.get(key));
     }
 
     /**
