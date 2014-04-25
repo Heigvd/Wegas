@@ -24,27 +24,27 @@ public class Occupation extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
     /**
-     * 
-     */
-    @Column(name = "wtime")
-    private double time;
-    /**
-     * 
-     */
-    private Boolean editable = true;
-    /**
-     * 
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
-    /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+    /**
+     *
+     */
+    @Column(name = "wtime")
+    private double time = 0.0D;
+    /**
+     *
+     */
+    private Boolean editable = true;
+    /**
+     *
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description = "";
     /**
      *
      */
@@ -60,15 +60,6 @@ public class Occupation extends AbstractAssignement {
     @JsonBackReference
     @JsonIgnore
     private ResourceInstance resourceInstance;
-
-    /**
-     *
-     */
-    public Occupation() {
-        this.editable = true;
-        this.description = "";
-        this.time = 0.0D;
-    }
 
     /**
      *
@@ -147,7 +138,7 @@ public class Occupation extends AbstractAssignement {
     }
 
     /**
-     * @param taskInstance the taskInstance to set
+     * @param taskDescriptor
      */
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
@@ -156,14 +147,14 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the editable
      */
-    public Boolean getEditable() {
+    public boolean getEditable() {
         return editable;
     }
 
     /**
      * @param editable the editable to set
      */
-    public void setEditable(Boolean editable) {
+    public void setEditable(boolean editable) {
         this.editable = editable;
     }
 

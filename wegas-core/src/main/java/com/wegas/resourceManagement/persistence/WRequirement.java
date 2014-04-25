@@ -33,46 +33,42 @@ public class WRequirement extends AbstractEntity implements Serializable {
      *
      */
     @Column(name = "wlimit")
-    private Integer limit;
+    private Integer limit = 0;
     /**
      *
      */
     @Column(name = "wwork")
-    private String work;
+    private String work = "";
     /*
      *
      */
     @Column(name = "wlevel")
-    private Integer level;
+    private Integer level = 0;
     /*
      *
      */
-    private Long quantity;
+    private Long quantity = 0L;
     /*
      *
      */
-    private Double completeness;
+    private Double completeness = 0.0D;
     /*
      *
      */
-    private Double quality;
+    private Double quality = 0.0D;
 
+    /**
+     *
+     */
     public WRequirement() {
-        this.limit = 0;
-        this.work = "";
-        this.level = 0;
-        this.quantity = 0L;
-        this.completeness = 0.0D;
-        this.quality = 0.0D;
     }
 
+    /**
+     *
+     * @param work
+     */
     public WRequirement(String work) {
-        this.limit = 0;
         this.work = work;
-        this.level = 0;
-        this.quantity = 0L;
-        this.completeness = 0.0D;
-        this.quality = 0.0D;
     }
 
     @Override
@@ -146,43 +142,43 @@ public class WRequirement extends AbstractEntity implements Serializable {
     /**
      * @return the quantity
      */
-    public Long getQuantity() {
+    public long getQuantity() {
         return quantity;
     }
 
     /**
      * @param quantity the quantity to set
      */
-    public void setQuantity(Long quantity) {
+    public void setQuantity(long quantity) {
         this.quantity = quantity;
     }
 
     /**
      * @return the completeness
      */
-    public Double getCompleteness() {
+    public double getCompleteness() {
         return completeness;
     }
 
     /**
      * @param completeness the completeness to set
      */
-    public void setCompleteness(Double completeness) {
-        this.completeness = completeness == null ? 0 : completeness;
+    public void setCompleteness(double completeness) {
+        this.completeness = completeness == Double.NaN ? 0 : completeness;
     }
 
     /**
      * @return the quality
      */
-    public Double getQuality() {
+    public double getQuality() {
         return quality;
     }
 
     /**
      * @param quality the quality to set
      */
-    public void setQuality(Double quality) {
-        this.quality = quality == null ? 0 : quality;
+    public void setQuality(double quality) {
+        this.quality = quality;
     }
 
     /**
@@ -191,16 +187,13 @@ public class WRequirement extends AbstractEntity implements Serializable {
      * @return
      */
     public double getVariableValue(String variable) {
-        Double value = Double.NaN;
         switch (variable) {
             case "quality":
-                value = this.getQuality();
-                break;
+                return this.getQuality();
             case "quantity":
-                value = this.getQuantity().doubleValue();
-                break;
+                return this.getQuantity();
         }
-        return value;
+        return Double.NaN;
     }
 
     /**

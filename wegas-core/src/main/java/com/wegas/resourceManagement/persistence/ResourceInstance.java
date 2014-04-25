@@ -27,6 +27,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
 public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
     public static final int HISTORYSIZE = 20;
     /**
      *
@@ -34,19 +37,19 @@ public class ResourceInstance extends VariableInstance {
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Assignment.class)
     @JsonManagedReference
     @OrderColumn
-    private List<Assignment> assignments;
+    private List<Assignment> assignments = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Occupation.class)
     @JsonManagedReference
-    private List<Occupation> occupations;
+    private List<Occupation> occupations = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Activity.class)
     @JsonManagedReference
-    private List<Activity> activities;
+    private List<Activity> activities = new ArrayList<>();
     /**
      *
      */
@@ -84,12 +87,6 @@ public class ResourceInstance extends VariableInstance {
     @JsonView(Views.ExtendedI.class)
     private List<Integer> confidenceHistory = new ArrayList<>();
 
-    public ResourceInstance() {
-        this.assignments = new ArrayList<>();
-        this.activities = new ArrayList<>();
-        this.occupations = new ArrayList<>();
-    }
-
     /**
      *
      * @param a
@@ -121,16 +118,27 @@ public class ResourceInstance extends VariableInstance {
         this.setConfidence(other.getConfidence());
     }
 
+    /**
+     *
+     */
     @PreUpdate
     public void preUpdate() {
         this.stepHistory();
     }
 
+    /**
+     *
+     */
     public void stepHistory() {
         capAdd(moral, moralHistory);
         capAdd(confidence, confidenceHistory);
     }
 
+    /**
+     *
+     * @param el
+     * @param target
+     */
     public static void capAdd(Object el, List target) {
         target.add(el);
         if (target.size() > HISTORYSIZE) {
@@ -161,6 +169,11 @@ public class ResourceInstance extends VariableInstance {
         assignment.setResourceInstance(this);
     }
 
+    /**
+     *
+     * @param task
+     * @return
+     */
     public Assignment assign(TaskDescriptor task) {
         final Assignment assignment = new Assignment(task);
         this.addAssignement(assignment);
@@ -183,7 +196,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      *
-     * @param activities
+     * @param activity
      */
     public void addActivity(Activity activity) {
         activities.add(activity);
@@ -192,7 +205,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      *
-     * @param activities
+     * @param activity
      */
     public void removeActivity(Activity activity) {
         if (activity.getId() == null) {
@@ -242,7 +255,7 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      *
-     * @param occupation
+     * @return
      */
     public Occupation addOccupation() {
         Occupation occupation = new Occupation();
@@ -272,7 +285,7 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
-     * @param skillset the skillset to set
+     * @param skillsets
      */
     public void setSkillsets(Map<String, Long> skillsets) {
         this.skillsets = skillsets;
@@ -424,6 +437,12 @@ public class ResourceInstance extends VariableInstance {
         this.confidenceHistory.set(ref, value);
     }
 
+    /**
+     *
+     * @param currentPosition
+     * @param nextPosition
+     * @return
+     */
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
         Assignment assignment = this.assignments.remove(currentPosition.intValue());
         this.assignments.add(nextPosition.intValue(), assignment);

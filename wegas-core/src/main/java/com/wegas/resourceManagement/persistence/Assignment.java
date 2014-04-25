@@ -111,7 +111,7 @@ public class Assignment extends AbstractAssignement {
     }
 
     /**
-     * @param taskInstance the taskInstance to set
+     * @param taskDescriptor
      */
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;

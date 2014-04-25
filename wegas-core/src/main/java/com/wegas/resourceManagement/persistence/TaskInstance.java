@@ -143,7 +143,7 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @param requierement the requierement to set
+     * @param requirements the requierement to set
      */
     public void setRequirements(List<WRequirement> requirements) {
         this.requirements = requirements;
@@ -151,7 +151,7 @@ public class TaskInstance extends VariableInstance {
 
     /**
      *
-     * @param key
+     * @param index
      * @return WRequirement
      */
     public WRequirement getRequirement(Integer index) {
@@ -160,8 +160,8 @@ public class TaskInstance extends VariableInstance {
 
     /**
      *
-     * @param key
-     * @param WRequirement
+     * @param index
+     * @param val
      */
     public void setRequirement(Integer index, WRequirement val) {
         this.requirements.set(index, val);
@@ -182,9 +182,9 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      */
     public WRequirement getRequirementById(Long id) {
         WRequirement requirement = null;
