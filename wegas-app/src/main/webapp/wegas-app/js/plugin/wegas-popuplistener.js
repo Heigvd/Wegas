@@ -65,13 +65,11 @@ YUI.add('wegas-popuplistener', function(Y) {
             }
         },
         _show: function(event) {
-            var instance;
-            event = stringToObject(event);
-            event = Y.mix(this.DEFAULT_CONFIG(), event, true, null, 0, false);
-            instance = new Y.Wegas.Panel(event).render(this.get("host").get(this.get("targetAttr")));
+            event = Y.mix(this.DEFAULT_CONFIG(), stringToObject(event), true, null, 0, false);
+            var panel = new Y.Wegas.Panel(event).render(this.get("host").get(this.get("targetAttr")));
             if (event.timeout) {
                 setTimeout(function() {
-                    instance && instance.exit();
+                    !panel.get("destroyed") && panel.exit();
                 }, event.timeout);
                 // Y.later(event.timeout, instance, instance.hide);
             }
