@@ -71,10 +71,7 @@ YUI.add('wegas-popuplistener', function(Y) {
                 setTimeout(function() {
                     !panel.get("destroyed") && panel.exit();
                 }, event.timeout);
-                // Y.later(event.timeout, instance, instance.hide);
             }
-            // this.instance.setAttrs(event);
-            // this.instance.show();
         },
         _system: function(event, lvl) {
             event = stringToObject(event);

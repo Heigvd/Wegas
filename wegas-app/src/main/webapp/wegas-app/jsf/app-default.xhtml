@@ -44,7 +44,9 @@
                     YUI_config.debug = #{requestController.debugMode()};
                     YUI_config.throwFail = false;                               // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function(msg, e, src) {
-                        Rollbar.error(msg, e);                                  // Send Rollbar event
+                        if (window.Rollbar) {
+                            window.Rollbar.error(msg, e);                       // Send Rollbar event
+                        }
                         try {
                             console.error("Wegas.App", msg, e, src);            // Log in console
                         } catch (e) {

@@ -68,40 +68,48 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      * @return the minValue
      */
-    public long getMinValue() {
+    public Long getMinValue() {
         return minValue;
     }
 
     /**
      * @param minValue the minValue to set
      */
-    public void setMinValue(long minValue) {
+    public void setMinValue(Long minValue) {
         this.minValue = minValue;
     }
 
     /**
      * @return the maxValue
      */
-    public long getMaxValue() {
+    public Long getMaxValue() {
         return maxValue;
     }
 
     /**
      * @param maxValue the maxValue to set
      */
-    public void setMaxValue(long maxValue) {
+    public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @Transient
-    public Long getMaxValueLong() {
+    public double getMaxValueD() {
         return this.maxValue;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @Transient
-    public Long getMinValueLong() {
+    public double getMinValueD() {
         return this.minValue;
     }
 
