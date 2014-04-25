@@ -27,7 +27,7 @@ public class Occupation extends AbstractAssignement {
      * 
      */
     @Column(name = "wtime")
-    private Double time;
+    private double time;
     /**
      * 
      */
@@ -98,14 +98,14 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the time
      */
-    public Double getTime() {
+    public double getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(Double time) {
+    public void setTime(double time) {
         this.time = time;
     }
 

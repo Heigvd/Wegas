@@ -235,7 +235,7 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param editable
      * @param description
      */
-    public void addOccupation(Player p, Double time, Boolean editable, String description) {
+    public void addOccupation(Player p, double time, Boolean editable, String description) {
         ResourceInstance instance = this.getInstance(p);
         Occupation occupation = new Occupation();
         occupation.setDescription(description);
@@ -249,12 +249,12 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      * @param p
      * @param time
      */
-    public void removeOccupationsAtTime(Player p, Double time) {
+    public void removeOccupationsAtTime(Player p, double time) {
         ResourceInstance instance = this.getInstance(p);
         List<Occupation> toRemove = new ArrayList<>();
         Integer i = 0;
         for (Occupation occupation : instance.getOccupations()) {
-            if (occupation.getTime().doubleValue() == time) {
+            if (occupation.getTime() == time) {
                 toRemove.add(occupation);
             }
         }
