@@ -12,6 +12,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,29 +68,41 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
     /**
      * @return the minValue
      */
-    public Long getMinValue() {
+    public long getMinValue() {
         return minValue;
     }
 
     /**
      * @param minValue the minValue to set
      */
-    public void setMinValue(Long minValue) {
+    public void setMinValue(long minValue) {
         this.minValue = minValue;
     }
 
     /**
      * @return the maxValue
      */
-    public Long getMaxValue() {
+    public long getMaxValue() {
         return maxValue;
     }
 
     /**
      * @param maxValue the maxValue to set
      */
-    public void setMaxValue(Long maxValue) {
+    public void setMaxValue(long maxValue) {
         this.maxValue = maxValue;
+    }
+
+    @XmlTransient
+    @Transient
+    public Long getMaxValueLong() {
+        return this.maxValue;
+    }
+
+    @XmlTransient
+    @Transient
+    public Long getMinValueLong() {
+        return this.minValue;
     }
 
     // **** Sugar for scripts *** //

@@ -93,6 +93,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         this.properties.putAll(other.getProperties());
     }
 
+    /**
+     *
+     */
     @PreDestroy
     public void preDestroy() {
         for (TaskDescriptor t : this.dependencies) {
@@ -143,6 +146,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
+     * @param index
      * @return the predecessors
      */
     public TaskDescriptor getPredecessor(Integer index) {
@@ -150,14 +154,15 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     }
 
     /**
-     * @param predecessors the predecessors to set
+     * @param index
+     * @param taskDescriptor
      */
     public void setPredecessor(Integer index, TaskDescriptor taskDescriptor) {
         this.predecessors.set(index, taskDescriptor);
     }
 
     /**
-     * @param predecessors the predecessors to set
+     * @param taskDescriptor
      */
     public void addPredecessor(final TaskDescriptor taskDescriptor) {
         this.predecessors.add(taskDescriptor);
@@ -260,7 +265,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param p
-     * @param value
+     * @return
      */
     public double getDuration(Player p) {
         return this.getInstance(p).getDuration();
@@ -327,6 +332,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
 
     /**
      *
+     * @param p
+     * @param id
+     * @param variable
+     * @param value
      */
     public void addAtRequirementVariable(Player p, Long id, String variable, double value) {
         WRequirement requirement = this.getRequirementById(p, id);
@@ -381,6 +390,10 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         return names;
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public List<String> getImportedPredecessorNames() {
         return this.predecessorNames;
