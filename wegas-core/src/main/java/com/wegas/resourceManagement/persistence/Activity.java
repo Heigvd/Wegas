@@ -33,7 +33,7 @@ public class Activity extends AbstractAssignement {
      *
      */
     @Column(name = "wtime")
-    private Double time;
+    private double time;
     /**
      *
      */
@@ -42,7 +42,7 @@ public class Activity extends AbstractAssignement {
      *
      */
     @Column(name = "wcompletion")
-    private Double completion;
+    private double completion;
     /**
      *
      */
@@ -141,14 +141,14 @@ public class Activity extends AbstractAssignement {
     /**
      * @return the time
      */
-    public Double getTime() {
+    public double getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(Double time) {
+    public void setTime(double time) {
         this.time = time;
     }
 
@@ -194,14 +194,14 @@ public class Activity extends AbstractAssignement {
     /**
      * @return the completion
      */
-    public Double getCompletion() {
+    public double getCompletion() {
         return completion;
     }
 
     /**
      * @param completion the completion to set
      */
-    public void setCompletion(Double completion) {
+    public void setCompletion(double completion) {
         this.completion = completion;
     }
 

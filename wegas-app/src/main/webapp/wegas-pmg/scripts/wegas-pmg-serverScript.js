@@ -41,15 +41,14 @@ function nextPeriod() {
  * @returns {Boolean} true if the project is ended
  */
 function checkEndOfProject() {
-    var i, taskInst, tasks = Variable.findByName(gm, 'tasks'), isTheEnd = true;
+    var i, task, tasks = Variable.findByName(gm, 'tasks');
     for (i = 0; i < tasks.items.size(); i++) {
-        taskInst = tasks.items.get(i).getInstance(self);
-        if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty('completeness')) < 100) {
-            isTheEnd = false;
-            break;
+        task = tasks.items.get(i).getInstance(self);
+        if (task.active && parseInt(task.getProperty('completeness')) < 100) {
+            return false;
         }
     }
-    return isTheEnd;
+    return true;
 }
 
 
@@ -61,7 +60,7 @@ function allPhaseQuestionAnswered() {
             currentPhaseQuestions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self)).items.get(getCurrentPeriod().getValue(self) - 1).items;
     for (i = 0; i < currentPhaseQuestions.size(); i++) {
         question = currentPhaseQuestions.get(i);
-        if (question.isReplied(self) == false && question.getInstance(self).getActive() == true) {
+        if (!question.isReplied(self) && question.isActive(self)) {
             throw new Error("StringMessage: You have not answered all questions from this week.");
         }
     }
@@ -69,21 +68,21 @@ function allPhaseQuestionAnswered() {
 
 /**
  * function to know if an employee is working on the task.
- * A employee working on task mean that he works the period before (currentPeriode -1)
+ * A employee working on task mean that he works the period before (currentPeriod -1)
  * @param String empName
  * @param String taskName
  * @returns Boolean true if works on project
  */
 function workOnTask(empName, taskName) {
-    var employee = Variable.findByName(gm, empName), empInstance, i, activity,
+    var i, activity,
+            employee = Variable.findByName(gm, empName).getInstance(),
             task = Variable.findByName(gm, taskName),
-            currentPeriode = Variable.findByName(gm, "periodPhase3").getInstance().value,
-            precedentPeriode = currentPeriode - 1;
+            currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self),
+            previousPeriod = currentPeriod - 1;
 
-    empInstance = employee.getInstance();
-    for (i = 0; i < empInstance.getActivities().size(); i++) {
-        activity = empInstance.getActivities().get(i);
-        if (parseInt(activity.getTime()) === precedentPeriode && task.getId() === activity.getTaskDescriptorId()) {
+    for (i = 0; i < employee.activities.size(); i++) {
+        activity = employee.activities.get(i);
+        if (activity.time === previousPeriod && task.id === activity.taskDescriptorId) {
             return true;
         }
     }
@@ -96,25 +95,24 @@ function workOnTask(empName, taskName) {
  * @return true if work on project
  */
 function workOnProject(name) {
-    var employee = Variable.findByName(gm, name), instance, i, activity,
-            activityNotFinish = false, taskInstance, hasOccupation = false, occupation,
-            currentPeriode = Variable.findByName(gm, "periodPhase3").getInstance().value;
+    var i, task,
+            activityNotFinish = false, hasOccupation = false, occupation,
+            employee = Variable.findByName(gm, name).getInstance(),
+            currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self);
 
     //Check if has a not finished activity
-    instance = employee.getInstance();
-    for (i = 0; i < instance.getActivities().size(); i++) {
-        activity = instance.getActivities().get(i);
-        taskInstance = activity.getTaskDescriptor().getInstance(self);
-        if (parseInt(taskInstance.getProperties().get("completeness")) < 100) {
+    for (i = 0; i < employee.activities.size(); i++) {
+        task = employee.activities.get(i).taskDescriptor;
+        if (parseInt(task.getInstanceProperty(self, "completeness")) < 100) {
             activityNotFinish = true;
             break;
         }
     }
 
     // Check if has an occupation for the futur
-    for (i = 0; i < instance.getOccupations().size(); i++) {
-        occupation = instance.getOccupations().get(i);
-        if (occupation.getTime() >= currentPeriode) {
+    for (i = 0; i < employee.occupations.size(); i++) {
+        occupation = employee.occupations.get(i);
+        if (occupation.time >= currentPeriod) {
             hasOccupation = true;
             break;
         }

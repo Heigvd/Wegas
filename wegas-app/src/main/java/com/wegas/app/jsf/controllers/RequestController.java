@@ -142,6 +142,8 @@ public class RequestController implements Serializable {
     public String getCurrentUserMail() {
         try {
             return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
+        } catch (ClassCastException e) {
+            return "";
         } catch (NoResultException e) {
             return "";
         }

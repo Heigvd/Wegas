@@ -220,6 +220,16 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      * @return
      */
     public String getStringInstanceProperty(Player p, String key) {
+        return this.getInstanceProperty(p, key);
+    }
+
+    /**
+     *
+     * @param p
+     * @param key
+     * @return
+     */
+    public String getInstanceProperty(Player p, String key) {
         return this.getInstance(p).getProperty(key);
     }
 
