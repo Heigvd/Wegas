@@ -33,6 +33,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
             this.options.language = options.language || "javascript";
             this.options.theme = options.theme || "textmate";
             this.options.height = options.height || "75px";
+            this.options.visible = true;
         },
         disable: function() {
             this.editor.setReadOnly(true);
@@ -80,9 +81,8 @@ YUI.add('wegas-inputex-ace', function(Y) {
         setValue: function(value, sendUpdatedEvt) {
             if (this.session) {
                 this.session.setValue(value);
-                if (sendUpdatedEvt !== false) {
-                    // fire update event
-                    this.fireUpdatedEvt();
+                if (sendUpdatedEvt) {
+                    this.fireUpdatedEvt();                                      // fire update event
                 }
             } else {    // fallback
                 return inputEx.AceField.superclass.setValue.apply(this, arguments);

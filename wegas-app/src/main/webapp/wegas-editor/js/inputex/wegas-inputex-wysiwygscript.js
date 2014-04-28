@@ -119,7 +119,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 
             this.options.mode = mode;
             this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
-            this.wrapEl.style.display = (wysiwygmode) ? "none" : "block";
+            this.el.toggleView(!wysiwygmode);
+            //this.wrapEl.style.display = (wysiwygmode) ? "none" : "block";
 
             if (wysiwygmode) {
                 this.exprList.show();
@@ -132,7 +133,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          */
         updateTextarea: function() {
             if (this.options.mode === "wysiwyg") {                              // If current mode is wysiwyg
-                this.el.value = this.getValue().content;                        // update textatea content
+                inputEx.AceField.prototype.setValue.call(this, this.getValue().content);// update textatea content
+                //this.el.value = ;                        
             }
         },
         updateExpressionList: function() {
@@ -143,7 +145,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             container.one(".msg").setContent("");                               // Reset layout
 
             try {                                                               // Generate the syntaxic tree using esprima    
-                tree = window.esprima.parse(this.el.value, {
+                tree = window.esprima.parse(inputEx.WysiwygScript.superclass.getValue.call(this).content, {
                     raw: true
                 });
 

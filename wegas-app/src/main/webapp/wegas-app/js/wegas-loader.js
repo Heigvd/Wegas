@@ -423,7 +423,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-script': {
                     path: 'js/inputex/wegas-inputex-script-min.js',
-                    requires: 'inputex-textarea'
+                    requires: 'wegas-inputex-ace'
                 },
                 'wegas-inputex-variabledescriptorselect': {
                     path: 'js/inputex/wegas-inputex-variabledescriptorselect-min.js',
