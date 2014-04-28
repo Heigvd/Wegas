@@ -18,7 +18,7 @@ YUI.add("wegas-inputex-script", function(Y) {
         inputEx.Script.superclass.constructor.call(this, options);
     };
 
-    Y.extend(inputEx.Script, inputEx.Textarea, {
+    Y.extend(inputEx.Script, inputEx.AceField, {
         getValue: function() {
             return {
                 '@class': "Script",
