@@ -63,6 +63,19 @@ public class Occupation extends AbstractAssignement {
 
     /**
      *
+     */
+    public Occupation() {
+    }
+
+    /**
+     *
+     */
+    public Occupation(double time) {
+        this.time = time;
+    }
+
+    /**
+     *
      * @param a
      */
     @Override
