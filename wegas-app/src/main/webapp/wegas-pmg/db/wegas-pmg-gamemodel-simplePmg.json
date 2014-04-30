@@ -1105,8 +1105,29 @@
                     ]
                 }
             ]
-        },
-        {
+        }, {
+            "@class": "TextDescriptor",
+            "name": "homeText",
+            "label": "Texte d'accueil",
+            "defaultInstance": {
+                "@class": "TextInstance",
+                "value": "Welcom to the PMG."
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
+            "@class": "InboxDescriptor",
+            "name": "news",
+            "label": "News",
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": []
+            },
+            "scope": {
+                "@class": "TeamScope"
+            }
+        }, {
             "@class": "ListDescriptor",
             "name": "timeCards",
             "label": "time cards",
