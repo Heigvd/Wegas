@@ -17,7 +17,7 @@
             var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
             Y.one(".wegas-title").setContent(g.get("name"));
         
-            Y.use("button-toggle", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
+            Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
                 var tab = Y.Widget.getByNode("#leftTabView").add({              // Add player selection tab
                     label: "Players",
                     cssClass: "editor-players",

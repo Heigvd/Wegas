@@ -53,7 +53,7 @@
                             // Gotcha: console is not available
                         }
                         // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", '');// YUI log
-                        return true;                                            // Returning true from this function will stop the Error from being thrown.
+                        return !#{requestController.debugMode()};               // Returning true from this function will stop the Error from being thrown.
                     };
                     //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
                     //YUI_config.loadOptional = true;
