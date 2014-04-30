@@ -14,9 +14,6 @@ YUI.add('wegas-console', function(Y) {
             Console;
 
     Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-        form: null,
-        destructor: function() {
-        },
         renderUI: function() {
             this.plug(Y.Plugin.WidgetToolbar);
 
@@ -29,7 +26,11 @@ YUI.add('wegas-console', function(Y) {
             });
             cb.append('<div class="results"></div>');
 
-            this.runButton();
+            this.renderRunButton();
+        },
+        destructor: function() {
+            this.runButton.destroy();
+            this.srcField.destroy();
         },
         executeScript: function(scriptEntity) {
             this.showOverlay();
@@ -37,7 +38,7 @@ YUI.add('wegas-console', function(Y) {
                 request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify(scriptEntity)
+                    data: scriptEntity
                 },
                 on: {
                     success: Y.bind(function(e) {
@@ -60,7 +61,7 @@ YUI.add('wegas-console', function(Y) {
                 request: "/Script/Multirun",
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify(multiPlayerScript)
+                    data: multiPlayerScript
                 },
                 on: {
                     success: Y.bind(function(e) {
@@ -77,25 +78,44 @@ YUI.add('wegas-console', function(Y) {
                     }, this)
                 }
             });
-        },
-        runButton: function() {
-            var el = this.toolbar.get('header');
-
+        }, /**
+         * @function
+         * @private
+         * @description Create and render the button for run the script.
+         */
+        renderRunButton: function() {
             this.runButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run script",
+                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
                 on: {
                     click: Y.bind(function() {
-                        this.executeScript({
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: this.srcField.getValue()
-                        });
+
+                        var playerList = this.getPlayerList(),
+                                multiPlayerScript = {
+                            playerIdList: playerList,
+                            script: {
+                                "@class": "Script",
+                                language: "JavaScript",
+                                content: this.srcField.getValue().content
+                            }
+                        };
+                        if (playerList.length === 0) {
+                            return;
+                        }
+
+                        this.multiExecuteScript(multiPlayerScript);
+
+                        // Single user version
+                        //this.executeScript({
+                        //    "@class": "Script",
+                        //    language: "JavaScript",
+                        //    content: this.srcField.getValue()
+                        //});
                     }, this)
                 }
-            }).render(el);
+            }).render(this.toolbar.get('header'));
+
         }
     });
-
 
     Y.namespace('Wegas').Console = Console;
 });
