@@ -16,7 +16,9 @@
             //var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
             var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
             Y.one(".wegas-title").setContent(g.get("name"));
-        
+            
+            Y.all("#leftTabView .yui3-tab-panel").hide();           
+            
             Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
                 var tab = Y.Widget.getByNode("#leftTabView").add({              // Add player selection tab
                     label: "Players",
@@ -25,14 +27,13 @@
                             type: "TeamTreeView",
                             dataSource: "Game",
                             plugins: [{
-                                    fn: "WidgetToolbar",
-                                    cfg: {
-                                        "children": []
-                                    }
+                                    fn: "WidgetToolbar"
                                 }]
                         }]
                 }, 0).item(0);
                 tab.set("selected", 2);
+                Y.all("#leftTabView .yui3-tab-panel").show();
+                
                 if (!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
                     tab.witem(0).treeView.plug(Y.Plugin.TeamSelection);
                 }
