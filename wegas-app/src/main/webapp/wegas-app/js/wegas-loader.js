@@ -1005,7 +1005,7 @@ YUI().use(function(Y) {
                             //fullpath: "//rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
                 },
                 pusher: {
-                    fullpath: "//js.pusher.com/1.12/pusher.min.js"
+                    fullpath: "//js.pusher.com/2.2/pusher.min.js"
                 },
                 googletranslate: {
                     async: false,

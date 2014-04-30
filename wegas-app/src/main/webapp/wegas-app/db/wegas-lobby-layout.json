@@ -207,56 +207,7 @@
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{
-                                                                                            "type": "GameDataTable",
-                                                                                            "dataSource": "PublicGames",
-                                                                                            "dataTableCfg": {
-                                                                                                "columns": [{
-                                                                                                        "key": "iconCSS",
-                                                                                                        "formatter": "icon",
-                                                                                                        "label": " ",
-                                                                                                        "sortable": false,
-                                                                                                        "width": "22px"
-                                                                                                    }, {
-                                                                                                        "key": "name",
-                                                                                                        "label": "Name"
-                                                                                                    }, {
-                                                                                                        "key": "gameModelName",
-                                                                                                        "label": "Scenario",
-                                                                                                        "width": "150px"
-                                                                                                    }, {
-                                                                                                        "key": "createdBy",
-                                                                                                        "label": "Created by",
-                                                                                                        "width": "150px"
-                                                                                                    }]
-                                                                                            },
-                                                                                            "emptyMessage": "No game is available to play.",
-                                                                                            "plugins": [{
-                                                                                                    "fn": "WidgetToolbar",
-                                                                                                    "cfg": {
-                                                                                                        "children": []
-                                                                                                    }
-                                                                                                }, {
-                                                                                                    "fn": "RequestDT"
-                                                                                                }, {
-                                                                                                    "fn": "EditorDTMenu",
-                                                                                                    "cfg": {
-                                                                                                        "children": [{
-                                                                                                                "type": "Button",
-                                                                                                                "label": "Join game",
-                                                                                                                "plugins": [{
-                                                                                                                        "fn": "OpenTabAction",
-                                                                                                                        "cfg": {
-                                                                                                                            "tabSelector": "#rightTabView",
-                                                                                                                            "emptyTab": true,
-                                                                                                                            "wchildren": [{
-                                                                                                                                    "type": "JoinTeam",
-                                                                                                                                    "customEvent": true
-                                                                                                                                }]
-                                                                                                                        }
-                                                                                                                    }]
-                                                                                                            }]
-                                                                                                    }
-                                                                                                }]
+                                                                                            "type": "PublicGameDataTable"
                                                                                         }]
                                                                                 }
                                                                             }]
@@ -283,7 +234,7 @@
                                         }
                                     }, {
                                         "fn": "EditorDTMenu"
-                                    },{
+                                    }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
@@ -356,7 +307,7 @@
                                         }
                                     }, {
                                         "fn": "EditorDTMenu"
-                                    },{
+                                    }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
