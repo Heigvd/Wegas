@@ -24,8 +24,7 @@ YUI.add('wegas-join', function(Y) {
     var CONTENTBOX = "contentBox",
             JoinTeam = Y.Base.create("wegas-jointeam", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
-        CONTENT_TEMPLATE: "<div><div class=\"title\"></div><div class=\"subtitle\"></div>"
-                + "<div class=\"description wegas-loading-div\"></div>"
+        CONTENT_TEMPLATE: "<div><div class=\"wegas-gameinformation\"></div>"
                 + "<div class=\"teamselection\"></div>"
                 + "</div>",
         // *** Private fields *** //
@@ -72,13 +71,8 @@ YUI.add('wegas-join', function(Y) {
                     gameModel = e.response.entity.get("gameModel"),
                     teamName = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("name")
                     : game.get("name") + "-" + (game.get("teams").length);
-
-            cb.one(".title").setHTML("" + gameModel.get("name") + " <br />" + game.get("name"));// Set game name
-            cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
-            cb.one(".description")
-                    //.setHTML(e.response.entity.get("description") || "<em><center>No description available</em></center>")
-                    .setHTML(e.response.entity.get("description"))
-                    .removeClass("wegas-loading-div");
+                    
+              cb.one(".wegas-gameinformation").append(Y.Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
 
             var showTeamSelection = false,
                     showTeamCreation = false,

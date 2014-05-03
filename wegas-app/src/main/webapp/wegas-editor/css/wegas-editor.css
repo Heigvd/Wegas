@@ -267,15 +267,24 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /* Join game/team styles */
+.wegas-gameinformation {
+    border: 1px solid lightgray;
+}
 .wegas-gamedescription,
+.wegas-gameinformation,
 .wegas-jointeam {
     padding: 10px;
 }
 .wegas-jointeam .title,
+.wegas-gameinformation .title,
 .wegas-gamedescription .title {
     font-weight: bolder;
-    /*border-bottom: 1px solid lightgray;*/
     margin-bottom: 5px;
+}
+.wegas-join-token .wegas-gameinformation .title {
+    font-weight: bold;
+    color: #777;
+    font-size: 1.2em;
 }
 .wegas-join-token button,
 .wegas-jointeam button,
@@ -284,12 +293,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     margin-top: 10px;
     padding: 7px 18px;
 }
+.wegas-join-token .teamselection button {
+    margin-left: 0px;
+}
 .wegas-join-token .description {
     padding: 10px 0 20px;
     margin: 10px 10px 20px;
 }
-.wegas-jointeam .description,
-.wegas-gamedescription .description {
+/*.wegas-jointeam .description,*/
+.wegas-gameinformation .description {
     padding: 5px 0 10px;
 }
 .yui3-tabview .wegas-join-token-content > .inputEx-fieldWrapper{
@@ -315,7 +327,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
         background: #ededed;
         opacity: 1;*/
 }
-.wegas-jointeam .subtitle {
+.wegas-gameinformation .subtitle {
     font-style: italic;
     color: grey;
 
@@ -324,16 +336,35 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     margin-bottom: -3px;
     height: 19px;
 }
-#rightTabView .wegas-jointeam>.wegas-jointeam-content>.title {
-    font-size: 1.5em;
+
+.wegas-gameinformation img{
+    width: 20%;
+    float: left;
+    margin-right: 1.5em;
+    margin-top: 0.3em;
+}
+.wegas-jointeam .title, 
+.wegas-gameinformation .title {
+    font-size: 1.3em;
+    margin-top: 0.3em;
 }
 #rightTabView .wegas-jointeam .teamselection {
     background: #f6f6f6;
     padding-bottom: 10px;
     padding-left: 5px;
 }
+#rightTabView .wegas-jointeam .teamselection:empty {
+    background: white;
+}
+#rightTabView .wegas-jointeam .wegas-gameinformation {
+    margin-bottom: 1em;
+}
 .wegas-jointeam img.inputEx-ListField-addButton{
     display: none;
+}
+.open-game-tab {
+    margin-top: 10px;
+    margin-left: 10px;
 }
 
 /* Wegas editor icons */
@@ -392,7 +423,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /** Empty rightTabView*/
 #rightTabView .wegas-noItem {
-    font-weight: bold;
+    font-style: italic;
     text-align: center;
     margin-top: 4em;
 }

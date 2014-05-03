@@ -321,4 +321,10 @@ public class GameController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:g" + gameId);
         return gameFacade.createGameAccount(g, accountNumber);
     }
+
+    @GET
+    @Path("/FindByToken/{token : .*}/")
+    public Game findByToken(@PathParam("token") String token) {
+        return gameFacade.findByToken(token);
+    }
 }

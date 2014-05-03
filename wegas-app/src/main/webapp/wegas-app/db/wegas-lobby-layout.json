@@ -159,7 +159,8 @@
                                                                 "emptyTab": true,
                                                                 "label": "Open game",
                                                                 "wchildren": [{
-                                                                        "type": "GameDescription"
+                                                                        "type": "GameInformation",
+                                                                        "cssClass": "open-game-tab"
                                                                     }, {
                                                                         "type": "Button",
                                                                         "cssClass": "editor-button-resume",
