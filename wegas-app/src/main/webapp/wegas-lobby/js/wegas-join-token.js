@@ -38,6 +38,8 @@ YUI.add('wegas-join-token', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     tokenParameter = Wegas.Helper.getURLParameter("token");
+            
+            cb.append("<h1>Team</h1>");
 
             this.tokenField = new Y.inputEx.StringField({//                     // Render
                 required: true,
