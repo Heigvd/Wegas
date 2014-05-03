@@ -24,27 +24,27 @@ public class Occupation extends AbstractAssignement {
 
     private static final long serialVersionUID = 1L;
     /**
-     * 
-     */
-    @Column(name = "wtime")
-    private Double time;
-    /**
-     * 
-     */
-    private Boolean editable = true;
-    /**
-     * 
-     */
-    @Lob
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private String description;
-    /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+    /**
+     *
+     */
+    @Column(name = "wtime")
+    private double time = 0.0D;
+    /**
+     *
+     */
+    private Boolean editable = true;
+    /**
+     *
+     */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String description = "";
     /**
      *
      */
@@ -65,9 +65,13 @@ public class Occupation extends AbstractAssignement {
      *
      */
     public Occupation() {
-        this.editable = true;
-        this.description = "";
-        this.time = 0.0D;
+    }
+
+    /**
+     *
+     */
+    public Occupation(double time) {
+        this.time = time;
     }
 
     /**
@@ -98,14 +102,14 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the time
      */
-    public Double getTime() {
+    public double getTime() {
         return time;
     }
 
     /**
      * @param time the time to set
      */
-    public void setTime(Double time) {
+    public void setTime(double time) {
         this.time = time;
     }
 
@@ -147,7 +151,7 @@ public class Occupation extends AbstractAssignement {
     }
 
     /**
-     * @param taskInstance the taskInstance to set
+     * @param taskDescriptor
      */
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
@@ -156,14 +160,14 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the editable
      */
-    public Boolean getEditable() {
+    public boolean getEditable() {
         return editable;
     }
 
     /**
      * @param editable the editable to set
      */
-    public void setEditable(Boolean editable) {
+    public void setEditable(boolean editable) {
         this.editable = editable;
     }
 

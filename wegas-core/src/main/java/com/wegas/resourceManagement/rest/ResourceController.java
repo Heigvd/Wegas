@@ -9,7 +9,10 @@ package com.wegas.resourceManagement.rest;
 
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.AbstractAssignement;
+import com.wegas.resourceManagement.persistence.Assignment;
+import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -48,6 +51,18 @@ public class ResourceController {
     }
 
     @POST
+    @Path("Assign/{resourceId : [1-9][0-9]*}")
+    public void addAssignment(@PathParam("resourceId") Long resourceInstanceId, TaskDescriptor task) {
+        resourceFacade.addAbstractAssignement(resourceInstanceId, new Assignment(task));
+    }
+
+    @POST
+    @Path("Reserve/{resourceId : [1-9][0-9]*}/{time : [1-9][0-9]*}")
+    public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") double time) {
+        resourceFacade.addAbstractAssignement(resourceInstanceId, new Occupation(time));
+    }
+
+    @POST
     @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
     public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
         return resourceFacade.moveAssignment(assignmentId, index);
@@ -64,7 +79,7 @@ public class ResourceController {
     public TaskInstance addTaskPlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
         return resourceFacade.addTaskPlannification(taskInstanceId, periode);
     }
-    
+
     @DELETE
     @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
     public TaskInstance removePlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
