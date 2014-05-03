@@ -18,6 +18,8 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -136,6 +138,17 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
+     *
+     * @param key
+     * @return
+     */
+    @XmlTransient
+    @Transient
+    public double getPropertyD(String key) {
+        return Double.valueOf(this.properties.get(key));
+    }
+
+    /**
      * @return the requirements
      */
     public List<WRequirement> getRequirements() {
@@ -143,7 +156,7 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @param requierement the requierement to set
+     * @param requirements the requierement to set
      */
     public void setRequirements(List<WRequirement> requirements) {
         this.requirements = requirements;
@@ -151,7 +164,7 @@ public class TaskInstance extends VariableInstance {
 
     /**
      *
-     * @param key
+     * @param index
      * @return WRequirement
      */
     public WRequirement getRequirement(Integer index) {
@@ -160,8 +173,8 @@ public class TaskInstance extends VariableInstance {
 
     /**
      *
-     * @param key
-     * @param WRequirement
+     * @param index
+     * @param val
      */
     public void setRequirement(Integer index, WRequirement val) {
         this.requirements.set(index, val);
@@ -182,9 +195,9 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * 
+     *
      * @param id
-     * @return 
+     * @return
      */
     public WRequirement getRequirementById(Long id) {
         WRequirement requirement = null;

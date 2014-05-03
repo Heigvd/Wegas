@@ -87,14 +87,16 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /* Console widget styles */
 .wegas-console .results {
-    padding: 10px;
-    overflow: auto;
     position: absolute;
-    max-height: 200px;
+    height: 180px;
     bottom: 0;
     left: 0;
     right: 0;
+    padding: 10px;
     border-top: 1px solid #f1f1f1;
+    background: white;
+    z-index: 100;
+    overflow: auto;
 }
 .wegas-console .results .result {
     padding: 2px 4px;
@@ -113,11 +115,35 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .wegas-console .inputEx-ListField .wegas-addbutton::after{ 
     content: "Add"; 
-}
 
+}
 /* Styles for Animator -> impact game */
-.wegas-console-wysiwyg-content {
-    padding: 10px 10px 20px 140px;
+.wegas-stdmode .wegas-console-wysiwyg .results {
+    display: none;    
+}
+.wegas-console-wysiwyg .ace_editor {
+    width: 100%;
+    height: 100% !important;
+}
+.wegas-console-wysiwyg > div > .inputEx-fieldWrapper {
+    height: 100%;
+    margin-bottom: 0;
+}
+.wegas-advancedmode .wegas-console-wysiwyg > div > .inputEx-fieldWrapper {
+    position: absolute;
+    top: 0;
+    bottom: 200px;
+    right: 0;
+    left: 0;
+    height: auto;
+    overflow: auto;
+}
+.wegas-console-wysiwyg .inputEx-WysiwigScript {
+    position: relative;
+    height: 100%;
+}
+.wegas-console-wysiwyg .inputEx-WysiwigScript > .inputEx-Field {    
+    padding: 10px 10px 10px 140px;
 }
 
 /* YUI3 Console style override */
@@ -348,6 +374,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     font-size: 1.3em;
     margin-top: 0.3em;
 }
+#rightTabView > ul > li {
+    background: #072644;
+}
 #rightTabView .wegas-jointeam .teamselection {
     background: #f6f6f6;
     padding-bottom: 10px;
@@ -432,9 +461,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 #rightTabView .wegas-removeTabview{
     min-width: 0;
     width: 5px;
-    padding: 1px 8px 2px 5px;
+    padding: 1px 10px 3px 7px;
     margin-bottom: 8px;
     margin-top: 9px;
     border-radius: 5px;
-    font: bold 101% Verdana;
+    font: bold 85% Verdana;
+}
 }

@@ -71,11 +71,12 @@
     padding: 1px 3px 3px 3px;
     border:1px solid transparent;
     line-height: 1em;
-    color: #cccccc;
+    color: black;
 }
 .yui3-tab-remove:hover {
     text-decoration: none;
-    border-color: #cccccc;
+    border-color: black;
+    border-radius: 3px;
 }
 
 /* Icons are not displayed in tab labels */

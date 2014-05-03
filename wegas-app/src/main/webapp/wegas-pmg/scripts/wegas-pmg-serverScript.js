@@ -15,7 +15,7 @@ function nextPeriod() {
 
     allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
-    if (currentPeriod.getValue(self) === parseInt(currentPeriod.getMaxValue())) {// If end of phase
+    if (currentPeriod.getValue(self) === currentPeriod.maxValue) {              // If end of phase
         currentPhase.add(self, 1);
         //currentPeriod.setValue(self, 1);// Why?
         if (currentPhase.getValue(self) === 2) {
@@ -23,7 +23,7 @@ function nextPeriod() {
             Variable.findByName(gm, 'taskPage').setValue(self, 12);
         }
     } else if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
-        completeRealizationPeriod();
+        runSimulation();
         if (checkEndOfProject()) {                                              //if the project ended
             //currentPeriod.setValue(self, 1);// Why?
             currentPhase.add(self, 1);
@@ -33,7 +33,7 @@ function nextPeriod() {
     } else {                                                                    // Otherwise pass to next period
         currentPeriod.add(self, 1);
     }
-    setWeekliesVariables();
+    updateVariables();
 }
 
 /**
@@ -41,49 +41,148 @@ function nextPeriod() {
  * @returns {Boolean} true if the project is ended
  */
 function checkEndOfProject() {
-    var i, taskInst, tasks = Variable.findByName(gm, 'tasks'), isTheEnd = true;
+    var i, task, tasks = Variable.findByName(gm, 'tasks');
     for (i = 0; i < tasks.items.size(); i++) {
-        taskInst = tasks.items.get(i).getInstance(self);
-        if (isTrue(taskInst.getActive()) && parseInt(taskInst.getProperty('completeness')) < 100) {
-            isTheEnd = false;
-            break;
+        task = tasks.items.get(i).getInstance(self);
+        if (task.active && task.getPropertyD('completeness') < 100) {
+            return false;
         }
     }
-    return isTheEnd;
+    return true;
 }
-
 
 /**
  * Check if all questions from a phase are answered
  */
 function allPhaseQuestionAnswered() {
-    var i, question,
-            currentPhaseQuestions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self)).items.get(getCurrentPeriod().getValue(self) - 1).items;
-    for (i = 0; i < currentPhaseQuestions.size(); i++) {
-        question = currentPhaseQuestions.get(i);
-        if (question.isReplied(self) == false && question.getInstance(self).getActive() == true) {
-            throw new Error("StringMessage: You have not answered all questions from this week.");
+    var i, question, questions;
+
+    try {
+        questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self)).items.get(getCurrentPeriod().getValue(self) - 1).items;
+    } catch (e) {
+        // Unable to find question list for current phase
+    }
+    if (questions) {
+        for (i = 0; i < questions.size(); i++) {
+            question = questions.get(i);
+            if (!question.isReplied(self) && question.isActive(self)) {
+                throw new Error("StringMessage: You have not answered all questions from this week.");
+            }
         }
     }
 }
 
 /**
+ * Calculate planedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
+ * history for variable the same variable and for costs, delay and quality.
+ */
+function updateVariables() {
+    var i, j, task, employeesRequired,
+            ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, activeTasks = 0,
+            tasksQuality = 0, tasksScale = 0,
+            costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0,
+            tasks = Variable.findByName(gm, 'tasks'),
+            costs = Variable.findByName(gm, 'costs'),
+            delay = Variable.findByName(gm, 'delay'),
+            quality = Variable.findByName(gm, 'quality'),
+            planedValue = Variable.findByName(gm, 'planedValue'),
+            earnedValue = Variable.findByName(gm, 'earnedValue'),
+            actualCost = Variable.findByName(gm, 'actualCost');
+
+    for (i = 0; i < tasks.items.size(); i++) {
+        task = tasks.items.get(i).getInstance(self);
+        sumProjectCompleteness += parseFloat(task.getProperty('completeness'));
+        if (task.active) {                                                      //if task is active
+            activeTasks += 1;
+            ev += task.getPropertyD('bac') * task.getPropertyD('completeness') / 100;
+            //pv += parseInt(task.getProperty('bac')) * (getPlannifiedCompleteness(v) / 100);
+            //ac += parseInt(task.getProperty('wages')) + (parseInt(task.getProperty('completeness')) / 100) * parseInt(task.getProperty('fixedCosts')) + parseInt(task.getProperty('unworkedHoursCosts'));
+
+            employeesRequired = 0;
+            for (j = 0; j < task.requirements.size(); j++) {
+                employeesRequired += task.requirements.get(j).quantity;
+            }
+            tasksScale += task.duration * employeesRequired;
+            if (task.getPropertyD('completeness') > 0) {                        //...and started
+                ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
+                //TO check
+                tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired;
+            } else {
+                tasksQuality += (100 + task.getPropertyD('quality')) * task.duration * employeesRequired;
+            }
+        }
+    }
+
+    // completness = sum of all task's completeness in %
+    Variable.findByName(gm, 'projectCompleteness').setValue(self, sumProjectCompleteness / activeTasks);
+    //nbCompleteTasks = sumProjectCompleteness * activeTasks / (activeTasks * 100);
+    //Variable.findByName(gm, 'projectCompleteness').setValue(self, nbCompleteTasks * 100 / activeTasks);
+    //projectCompleteness.setValue(self, sumProjectCompleteness);
+
+    // pv = for each task, sum -> bac * task completeness / 100
+    planedValue.setValue(self, calculatePlanedValue(getCurrentPeriod().getValue(self) - 1));
+    // ev = for each task, sum -> bac * planified task completeness / 100
+    earnedValue.setValue(self, ev);
+    // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
+    //Variable.findByName(gm, 'actualCost').setValue(self, ac + parseInt(projectFixCosts.getValue(self)));
+    actualCost.setValue(self, ac);
+    //cpi = ev / ac * 100
+    Variable.findByName(gm, 'cpi').setValue(self, (ev / ac * 100));
+    //spi = ev / pv * 100
+    Variable.findByName(gm, 'spi').setValue(self, (ev / pv * 100));
+
+    // costs = EV / AC * 100
+    if (planedValue.getValue(self) > 0) {
+        costsJaugeValue = Math.round((earnedValue.getValue(self) / actualCost.getValue(self)) * 100);
+    }
+    costsJaugeValue = Math.min(Math.max(costsJaugeValue, costs.minValue), costs.maxValue);
+    costs.setValue(self, costsJaugeValue);
+
+    // delay = EV / PV * 100
+    delayJaugeValue = Math.round(earnedValue.getValue(self) * 100 / planedValue.getValue(self));
+    delayJaugeValue = Math.min(Math.max(delayJaugeValue, delay.minValue), delay.maxValue);
+    delay.setValue(self, delayJaugeValue);
+
+    //quality
+    //with weighting of task's scale = sum each task -> task quality / task scale
+    if (tasksScale > 0) {
+        qualityJaugeValue = (tasksQuality / tasksScale);
+    }
+    //whitout weighting of task's scale
+    //if (activeTasks > 0) {
+    //    qualityJaugeValue = tasksQuality / activeTasks;
+    //}
+    qualityJaugeValue += Variable.findByName(gm, 'qualityImpacts').getValue(self) / 2;
+    qualityJaugeValue = Math.min(Math.max(qualityJaugeValue, quality.minValue), quality.maxValue);
+    quality.setValue(self, qualityJaugeValue);
+
+    costs.getInstance(self).saveHistory();
+    delay.getInstance(self).saveHistory();
+    quality.getInstance(self).saveHistory();
+    planedValue.getInstance(self).saveHistory();
+    earnedValue.getInstance(self).saveHistory();
+    actualCost.getInstance(self).saveHistory();
+    Variable.findByName(gm, 'managementApproval').getInstance(self).saveHistory();
+    Variable.findByName(gm, 'userApproval').getInstance(self).saveHistory();
+}
+
+/**
  * function to know if an employee is working on the task.
- * A employee working on task mean that he works the period before (currentPeriode -1)
+ * A employee working on task mean that he works the period before (currentPeriod -1)
  * @param String empName
  * @param String taskName
  * @returns Boolean true if works on project
  */
 function workOnTask(empName, taskName) {
-    var employee = Variable.findByName(gm, empName), empInstance, i, activity,
+    var i, activity,
+            employee = Variable.findByName(gm, empName).getInstance(),
             task = Variable.findByName(gm, taskName),
-            currentPeriode = Variable.findByName(gm, "periodPhase3").getInstance().value,
-            precedentPeriode = currentPeriode - 1;
+            currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self),
+            previousPeriod = currentPeriod - 1;
 
-    empInstance = employee.getInstance();
-    for (i = 0; i < empInstance.getActivities().size(); i++) {
-        activity = empInstance.getActivities().get(i);
-        if (parseInt(activity.getTime()) === precedentPeriode && task.getId() === activity.getTaskDescriptorId()) {
+    for (i = 0; i < employee.activities.size(); i++) {
+        activity = employee.activities.get(i);
+        if (activity.time === previousPeriod && task.id === activity.taskDescriptorId) {
             return true;
         }
     }
@@ -96,25 +195,24 @@ function workOnTask(empName, taskName) {
  * @return true if work on project
  */
 function workOnProject(name) {
-    var employee = Variable.findByName(gm, name), instance, i, activity,
-            activityNotFinish = false, taskInstance, hasOccupation = false, occupation,
-            currentPeriode = Variable.findByName(gm, "periodPhase3").getInstance().value;
+    var i, task,
+            activityNotFinish = false, hasOccupation = false, occupation,
+            employee = Variable.findByName(gm, name).getInstance(),
+            currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self);
 
     //Check if has a not finished activity
-    instance = employee.getInstance();
-    for (i = 0; i < instance.getActivities().size(); i++) {
-        activity = instance.getActivities().get(i);
-        taskInstance = activity.getTaskDescriptor().getInstance(self);
-        if (parseInt(taskInstance.getProperties().get("completeness")) < 100) {
+    for (i = 0; i < employee.activities.size(); i++) {
+        task = employee.activities.get(i).taskDescriptor.getInstance(self);
+        if (task.getPropertyD("completeness") < 100) {
             activityNotFinish = true;
             break;
         }
     }
 
     // Check if has an occupation for the futur
-    for (i = 0; i < instance.getOccupations().size(); i++) {
-        occupation = instance.getOccupations().get(i);
-        if (occupation.getTime() >= currentPeriode) {
+    for (i = 0; i < employee.occupations.size(); i++) {
+        occupation = employee.occupations.get(i);
+        if (occupation.time >= currentPeriod) {
             hasOccupation = true;
             break;
         }
