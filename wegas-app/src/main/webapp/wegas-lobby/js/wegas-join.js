@@ -29,7 +29,6 @@ YUI.add('wegas-join', function(Y) {
                 + "<div class=\"teamselection\"></div>"
                 + "</div>",
         // *** Private fields *** //
-
         /**
          * @function
          * @private
@@ -143,7 +142,6 @@ YUI.add('wegas-join', function(Y) {
                     this.teamField.inputs[1].hide();                            // Disable team selection everywhere (temporary)
                     //this.teamField.inputs[0].el.focus();
                 }
-
             }
             if (showTeamEdition || showTeamCreation) {
                 this.teamEdition = new Y.Wegas.TeamEdition({
@@ -521,6 +519,7 @@ YUI.add('wegas-join', function(Y) {
         }
     });
     Y.namespace('Wegas').TeamEdition = TeamEdition;
+    
     Y.inputEx.AutoComplete.prototype.buildAutocomplete = function() {
         // Call this function only when this.el AND this.listEl are available
         if (!this._nElementsReady) {
