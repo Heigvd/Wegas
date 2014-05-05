@@ -262,3 +262,25 @@ h1, h2, .title{
 .wegas-login-thumb .article-link:hover .image-offset,.wegas-login-thumb li:hover .image-offset{height:74px;transition:height .2s linear;-moz-transition:height .2s height;-webkit-transition:height .2s linear;}
 .wegas-login-thumb .article-link:hover .text,.wegas-login-thumb li:hover .text{height:66px;transition:height .2s linear;-moz-transition:all .2s height;-webkit-transition:height .2s linear;}
 .wegas-login-thumb li .article-title{font-style: italic;color:black;display:block;font-size:12px;font-weight: bold;/*max-height:42px;min-height:24px;*/_height:42px;overflow:hidden;padding:1px 1px 2px;}
+
+.wegas-testgame {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #777;
+}
+
+.wegas-loginwidget .login-gameInformation {
+    border: solid 1px lightgrey;
+    width: 570px;
+}
+
+.wegas-loginwidget .login-gameInformation img {
+    width: 33%;
+    float: left;
+    margin: 1em 1em 1em 1em;
+}
+
+.wegas-loginwidget .login-gameInformation .title {
+    margin-top: 1em;
+    font-size: 1.2em;
+}
