@@ -33,7 +33,7 @@
     background: #f6f6f6;
 }
 .wegas-game-subtitle .inputEx-label {
-    padding: 10px 0 10px 5px !important;
+    padding: 0.5em 0 10px 5px !important;
     text-align: left;
     width: 300px;
 }
@@ -95,9 +95,12 @@
 }
 
 /* Lobby datatables */
+.yui3-skin-wegas .yui3-datatable-header  {
+    padding-top: 0;
+}
 .wegas-lobby-datatable .wegas-lobby-datatable-icon {
-    padding: 0 0 0 6px;
-    width: 18px;
+    padding: 0 0 0 0.5em;
+    width: 22px;
 }
 .yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-table {
     table-layout: fixed;

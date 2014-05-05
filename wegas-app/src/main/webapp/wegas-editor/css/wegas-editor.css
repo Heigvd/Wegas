@@ -69,7 +69,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .yui3-skin-sam .editor-tab > div > div > div > .panel-inner > .wegas-hastoolbar > .wegas-toolbar-sibling {
     position: absolute;
-    top: 36px;
+    top: 3.3em;
     bottom: 0px;
     left: 0px;
     right: 0px;
@@ -92,7 +92,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     bottom: 0;
     left: 0;
     right: 0;
-    padding: 10px;
+    padding: 0.5em;
     border-top: 1px solid #f1f1f1;
     background: white;
     z-index: 1;
@@ -143,7 +143,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 100%;
 }
 .wegas-console-wysiwyg .inputEx-WysiwigScript > .inputEx-Field {    
-    padding: 10px 10px 10px 140px;
+    padding: 0.5em 0.5em 0.5em 140px;
 }
 
 /* YUI3 Console style override */
@@ -388,7 +388,8 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .yui3-skin-sam .wegas-icon-game,
 .yui3-skin-sam .wegas-icon-gamemodel {
-    margin: -6px -2px -8px;
+    margin: -6px 0 -8px;
+    width: 20px;
 }
 .yui3-skin-sam .wegas-icon-gamemodel {
     background-position: 0 -514px;
@@ -430,10 +431,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 #rightTabView .wegas-removeTabview{
     min-width: 0;
     width: 5px;
-    padding: 1px 10px 3px 7px;
+    padding: 1px 9px 3px 6px;
     margin-bottom: 8px;
     margin-top: 9px;
     border-radius: 5px;
     font: bold 85% Verdana;
-}
 }

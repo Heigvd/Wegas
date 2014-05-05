@@ -189,7 +189,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             formatter: "icon",
                             label: " ",
                             sortable: false,
-                            width: "22px"
+                            width: "24px"
                         }, {
                             key: NAME,
                             label: "Name",
@@ -498,7 +498,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             formatter: "icon",
                             label: " ",
                             sortable: false,
-                            width: "22px"
+                            width: "24px"
                         }, {
                             key: "name",
                             label: "Name"
