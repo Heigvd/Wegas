@@ -193,7 +193,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         wrapperClassName: 'inputEx-fieldWrapper email'
                     }, {
                         name: "password",
-                        strengthIndicator: true,
+                        //strengthIndicator: true,
                         capsLockWarning: true,
                         id: "password",
                         required: true,
@@ -201,13 +201,13 @@ YUI.add('wegas-loginwidget', function(Y) {
                         showMsg: true,
                         typeInvite: "Password", //                              // Does not work in inputex, c.f. hack below
                         wrapperClassName: "inputEx-fieldWrapper password"
-                    }, {
-                        name: "passwordConfirm",
-                        showMsg: true,
-                        required: true,
-                        confirm: "password",
-                        type: "password",
-                        typeInvite: "Password confirmation" //                  // Does not work in inputex, c.f. hack below
+                        //}, {
+                        //    name: "passwordConfirm",
+                        //    showMsg: true,
+                        //    required: true,
+                        //    confirm: "password",
+                        //    type: "password",
+                        //    typeInvite: "Password confirmation" //            // Does not work in inputex, c.f. hack below
                     }],
                 parentEl: cb.one(".signup")
             });

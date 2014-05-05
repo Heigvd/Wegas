@@ -17,12 +17,12 @@ YUI.add('wegas-entity', function(Y) {
             Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
             Base = Y.Base, Entity,
             IDATTRDEF = {
-                type: STRING,
-                optional: true, // The id is optional for entites that have not been persisted
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     /**
      * @class Entity is used to represent db objects
@@ -225,7 +225,7 @@ YUI.add('wegas-entity', function(Y) {
                     }, {
                         fn: "OpenTabActionSec",
                         cfg: {
-                            label: "Share",
+                            label: "Collaborators",
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
@@ -359,7 +359,7 @@ YUI.add('wegas-entity', function(Y) {
                 optional: true,
                 _inputex: {
                     _type: "uneditable",
-                    label: "Invite players",
+                    label: "Game access",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-subtitle"
                 }
             },
@@ -367,15 +367,15 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 value: "ENROLMENTKEY",
                 choices: [{
-                        value: "ENROLMENTKEY",
-                        label: "Open"
-                    }, {
                         value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Restricted"
-                    }
-                ],
+                        label: "Restricted number of players may join"
+                    }, {
+                        value: "ENROLMENTKEY",
+                        label: "Unlimited number of players may join"
+                    }],
                 _inputex: {
-                    label: "Access",
+                    _type: "radio",
+                    label: "",
                     value: "ENROLMENTKEY",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-access",
                     interactions: [{
@@ -397,9 +397,11 @@ YUI.add('wegas-entity', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    label: "Option 1: Share enrolment key",
+                    label: "Option 1: Player accesses through his account",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-token",
-                    description: "Players need to log in or create an account and then use the enrolment key to join the game."
+                    description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
+                            + "The enrolment key can be used by an unlimited number of players."
+//                    description: "Players need to log in or create an account and then use the enrolment key to join the game."
                             //        + "The key can be used to join multiple times."
                             //description: "Leave blank for automatic generation",
                             //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
@@ -409,11 +411,13 @@ YUI.add('wegas-entity', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    label: "Option 1: Enrolment keys",
+                    label: "Option 1: Player accesses through his account",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-keys",
                     _type: "enrolmentkeylist",
-                    description: "Players need to log in or create an account and then use the enrolment key to join the game.<br />"
-                            + "Each key can be used by only once."
+                    description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
+                            + "Each enrolment key can be used only once."
+//                    description: "Players need to log in or create an account and then use the enrolment key to join the game.<br />"
+//                            + "Each key can be used by only once."
                             //"Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                 }
             },
@@ -421,10 +425,11 @@ YUI.add('wegas-entity', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    label: "Option 2: Create user in advance",
+                    label: "Option 2: Player accesses with username/password",
                     wrapperClassName: 'inputEx-fieldWrapper wegas-game-users',
                     _type: "accountkeylist",
-                    description: "Players can join this game the user name and password on the login page."
+                    description: "Player directly joins the game with username/password.<br />"
+                            + " Each username/password can be used only once."
                 }
             },
             playersCount: {
