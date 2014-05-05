@@ -94,11 +94,11 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
                     node = new Y.Node(subfield.divEl);
 
-            node.all(".inputEx-Field").each(function(n) {
-                n.setContent("<span class='wegas-enrolmentkey'>" + n.getContent() + "</span>,&nbsp;");
-            });
+//            node.all(".inputEx-Field").each(function(n) {
+//                n.setContent("<span class='wegas-enrolmentkey'>" + n.getContent() + "</span>,&nbsp;");
+//            });
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
+            //(new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
 
             if (value.used) {
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
@@ -181,7 +181,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                                 <span class='wegas-accountkeyPass'>Pwd: </span><span>" + n.getContent() + "</span></p>");
             });
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({"float": "left", "marginRight": "10px", "paddingRight": "10px"});
+//            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({"float": "left", "marginRight": "10px", "paddingRight": "10px"});
 
             if (value.used) {
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens

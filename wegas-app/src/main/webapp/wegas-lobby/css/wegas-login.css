@@ -137,9 +137,11 @@ h1, h2, .title{
     border-bottom: 1px solid lightgray;
     padding-bottom: 15px;
 }
-.signup .email,
-.signup .password {
+.signup .email {
     width: 330px;
+}
+.signup .password {
+    width: 160px;
 }
 .main .guestlogin {
     margin-bottom: 20px;
@@ -150,9 +152,10 @@ h1, h2, .title{
 .main .signup .yui3-button,
 .main .guestlogin .yui3-button{
     float: right;
-    margin: -37px 10px 0px 0;
-    width:155px;
+    margin: -38px 10px 0px 0;
+    width: 155px;
     min-height: 22px;
+    padding: .3em .6em;
 }
 .main .guestlogin .yui3-button {
     float: left;
@@ -160,6 +163,7 @@ h1, h2, .title{
 }
 .main .guestlogin  .yui3-button + .yui3-button {
     margin-top: 0;
+    padding: .3em .6em;
 }
 .main .guestlogin:after {
     content: "";

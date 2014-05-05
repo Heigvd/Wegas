@@ -428,7 +428,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /** Close tab */
-#rightTabView .wegas-removeTabview{
+#rightTabView .wegas-removeTabview {
+    float:right;
+    margin-right: .5em;
+}
+#rightTabView .wegas-removeTabview  a {
     min-width: 0;
     width: 5px;
     padding: 1px 9px 3px 6px;

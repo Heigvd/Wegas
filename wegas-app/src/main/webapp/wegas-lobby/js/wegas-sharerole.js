@@ -15,7 +15,7 @@ YUI.add('wegas-sharerole', function(Y) {
         /**
          *
          */
-        CONTENT_TEMPLATE: "<div><div class=\"title\" >Option 2: Share link</div></div>",
+        CONTENT_TEMPLATE: "<div><div class=\"title\" >Option 2: Player accesses with link</div></div>",
         /**
          *
          */
@@ -42,7 +42,9 @@ YUI.add('wegas-sharerole', function(Y) {
             this.link = new Y.inputEx.StringField({
                 wrapperClassName: "inputEx-fieldWrapper wegas-link",
                 parentEl: cb,
-                description: 'Using this link, players need to log in or create an account, and will then be redirected to the game.',
+                description: '' +
+                        "Players directly join the game by using the <b>link</b>.<br />"
+                        + "The url can be used by an unlimited number of players.",
                 value: Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token")
             });
 
@@ -51,18 +53,17 @@ YUI.add('wegas-sharerole', function(Y) {
 
 
             this.set("visible", false);                                         // @HACK Visibility depends on a node in the parent's tree 
-            Y.on("available", function() {
-                var node = Y.one(".wegas-game-access select"),
-                        updatVisibility = function() {
-                    this.set("visible", node.get("value") === "ENROLMENTKEY");
+            Y.on("available", function(e, n) {
+                var updatVisibility = function() {
+                    this.set("visible", !Y.one(".wegas-game-access input").get("checked"));
                 };
                 updatVisibility.call(this);
-                node.on("valuechange", updatVisibility, this);
-            }, ".wegas-game-access select", this);
+                Y.all(".wegas-game-access input").on("change", updatVisibility, this);
+            }, ".wegas-game-access input", this);
         },
         bindUI: function() {
-            this.updateHandler = Y.Wegas.Facade.Game.after("update", function(){
-               this.link.setValue(Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token"));
+            this.updateHandler = Y.Wegas.Facade.Game.after("update", function() {
+                this.link.setValue(Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token"));
             }, this);
             this.visibility.on("updated", function(value) {
                 this.syncLinkVisibility(value);
