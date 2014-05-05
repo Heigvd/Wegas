@@ -159,17 +159,23 @@
                                                                 "emptyTab": true,
                                                                 "label": "Open game",
                                                                 "wchildren": [{
-                                                                        "type": "GameInformation",
-                                                                        "cssClass": "open-game-tab"
-                                                                    }, {
-                                                                        "type": "Button",
-                                                                        "cssClass": "editor-button-resume",
-                                                                        "label": "Open game",
+                                                                        "type": "List",
+                                                                        "children": [{
+                                                                                "type": "GameInformation",
+                                                                                "cssClass": "open-game-tab"
+                                                                            }, {
+                                                                                "type": "Button",
+                                                                                "cssClass": "editor-button-resume",
+                                                                                "label": "Open game",
+                                                                                "plugins": [{
+                                                                                        "fn": "OpenGameAction",
+                                                                                        "cfg": {
+                                                                                            "editorUrl": "play.html?"
+                                                                                        }
+                                                                                    }]
+                                                                            }],
                                                                         "plugins": [{
-                                                                                "fn": "OpenGameAction",
-                                                                                "cfg": {
-                                                                                    "editorUrl": "play.html?"
-                                                                                }
+                                                                                "fn": "WidgetToolbar"
                                                                             }]
                                                                     }]
                                                             }
@@ -194,7 +200,10 @@
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{
-                                                                                            "type": "TokenJoin"
+                                                                                            "type": "TokenJoin",
+                                                                                            "plugins": [{
+                                                                                                    "fn": "WidgetToolbar"
+                                                                                                }]
                                                                                         }]
                                                                                 }
                                                                             }]
