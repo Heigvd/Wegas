@@ -72,11 +72,21 @@ YUI.add('wegas-loginwidget', function(Y) {
          * Call 'redirect' function if user is alread logged.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX),
+            var cb = this.get(CONTENTBOX), token,
                     askPassNode = cb.one(".ask-pass");
 
             if (Wegas.Helper.getURLParameter("redirect").indexOf("token") > -1) {// If the user is trying to acces
-                cb.one(".main.left").setContent("<h1>&nbsp;</h1>You need to log in, create an account or log in as guest to play this game.");
+                cb.one(".main.left").setContent("<h1>Want to test this game ?</h1><p class='wegas-testgame'>Please login as Guest or with your personal account.</p>");
+                token = Wegas.Helper.getURLParameter("redirect").substr(Wegas.Helper.getURLParameter("redirect").indexOf('token=') + 6);
+                Y.Wegas.Facade.Game.sendRequest({
+                    request: "/FindByToken/" + token,
+                    on: {
+                        success: Y.bind(function(e) {
+                            cb.one(".main.left").append("<div class=login-gameInformation>" + Wegas.GameInformation.renderGameInformation(e.response.entities[0]) + "</div>");
+                        }, this),
+                        failure: Y.bind(this.defaultFailureHandler, this)
+                    }
+                });
             } else {
                 cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
                         <p>A <b>Web Game Authoring System</b> for rapid development of serious games without programming skills.</p>"

@@ -25,6 +25,13 @@
                                 plugins: [{
                                         fn: "UserCache"
                                     }]
+                            },
+                            Game: {
+                                source: "rest/GameModel//Game",
+                                initialRequest: "",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }]
                             }
                         }
                     });
