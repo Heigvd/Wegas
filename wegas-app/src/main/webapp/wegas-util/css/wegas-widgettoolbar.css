@@ -27,7 +27,7 @@
 .wegas-toolbar-header{
     vertical-align: top;
     border: none;
-    min-height: 30px;
+    min-height: 26px;
     position:relative;
     overflow: hidden;
     padding: 0.5em;
@@ -70,7 +70,7 @@
     margin-right: 0;
 }
 .wegas-toolbar .yui3-button .wegas-icon {
-    margin: -4px 2px 0 0;
+    margin: -1px 2px 0 0;
 }
 .wegas-toolbar .wegas-selectbutton {
     display:inline-block;

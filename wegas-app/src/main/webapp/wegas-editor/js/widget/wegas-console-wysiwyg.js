@@ -176,14 +176,14 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             this.selectAll = new Y.Node.create("<span class='emptyCheckbox selectAll'>Select all</span>");
             editorTreeview.toolbar.get("header").append(this.selectAll);
 
-            this.selectAll.on("click", function(e, teeView) {            // When "Select all" button is clicked
+            this.selectAll.on("click", function(e, treeView) {                   // When "Select all" button is clicked
                 if (this.selectAll.hasClass("yui3-treenode-selected")) {        // select treeview nodes
-                    teeView.deselectAll();
+                    treeView.deselectAll();
                 } else {
-                    teeView.selectAll();
-                    for (i = 0; i < teeView.size(); i += 1) {
-                        if (this.isEmptyTeam(teeView.item(i))) {
-                            teeView.item(i).set("selected", 0);
+                    treeView.selectAll();
+                    for (i = 0; i < treeView.size(); i += 1) {
+                        if (this.isEmptyTeam(treeView.item(i))) {
+                            treeView.item(i).set("selected", 0);
                         }
                     }
                 }

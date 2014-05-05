@@ -553,7 +553,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<li class="yui3-tab wegas-removeTabview" title="add a tab">' +
+        ADD_TEMPLATE: '<li class="yui3-tab wegas-removeTabview" title="Close tabs">' +
                 '<a class="yui3-tab-label ">x</a></li>',
         /**
          * @function

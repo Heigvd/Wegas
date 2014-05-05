@@ -225,7 +225,7 @@ YUI.add('wegas-entity', function(Y) {
                     }, {
                         fn: "OpenTabActionSec",
                         cfg: {
-                            label: "Collaborators",
+                            label: "Share",
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
@@ -518,7 +518,7 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "View",
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
