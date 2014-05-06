@@ -432,7 +432,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                         EditEntityAction.hideEditFormOverlay();
 
                         var entity = e.response.entity;
-                        if (entity instanceof Wegas.persistence.VariableDescriptor
+                        if (Wegas.persistence.VariableDescriptor                // If entity is loaded
+                                && entity instanceof Wegas.persistence.VariableDescriptor
                                 && entity.get("items")) {                       // If the parent list of the edited item was returned,
                             entity = Y.Array.find(entity.get("items"), function(e) {// need to look up for the edited entity
                                 return Y.Array.indexOf(idBack, e.get(ID)) === -1;

@@ -189,7 +189,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             formatter: "icon",
                             label: " ",
                             sortable: false,
-                            width: "22px"
+                            width: "24px"
                         }, {
                             key: NAME,
                             label: "Name",
@@ -343,10 +343,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
                 //Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
                 //    switch (i.label) {
-                //        case "Delete":
-                //        case "Open in editor":
-                //        case "Open":
-                //        case "View":
+                //        case Delete:
+                //        case Open in editor:
+                //        case Open:
+                //        case View:
                 //            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                 //    }
                 //});
@@ -484,6 +484,75 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         NS: "contextmenu",
         ATTRS: {
             children: {}
+        }
+    });
+
+    /** Shortcut to create public game treeview */
+    Wegas.PublicGameDataTable = Y.Base.create("wegas-lobby-datatable", GameDataTable, [], {
+        renderUI: function(cfg) {
+            this.setAttrs({
+                dataSource: "PublicGames",
+                dataTableCfg: {
+                    columns: [{
+                            key: "iconCSS",
+                            formatter: "icon",
+                            label: " ",
+                            sortable: false,
+                            width: "24px"
+                        }, {
+                            key: "name",
+                            label: "Name"
+                        }, {
+                            key: "gameModelName",
+                            label: "Scenario",
+                            width: "150px"
+                        }, {
+                            key: "createdBy",
+                            label: "Created by",
+                            width: "150px"
+                        }]
+                },
+                emptyMessage: "No game available to play"
+            });
+            Wegas.PublicGameDataTable.superclass.renderUI.call(this);
+            this.plug(Plugin.WidgetToolbar);
+            this.plug(Plugin.RequestDT);
+            this.plug(Plugin.EditorDTMenu, {
+                children: [{
+                        type: "Button",
+                        label: "Join game",
+                        plugins: [{
+                                fn: "OpenTabAction",
+                                cfg: {
+                                    tabSelector: "#rightTabView",
+                                    emptyTab: true,
+                                    wchildren: [{
+                                            type: "JoinTeam",
+                                            customEvent: true,
+                                            plugins: [{
+                                                    fn: "WidgetToolbar",
+                                                    cfg: {
+                                                        children: [{
+                                                                type: "Button",
+                                                                label: "<span class=\"wegas-icon wegas-icon-back\"></span>Back",
+                                                                plugins: [{
+                                                                        fn: "OpenTabAction",
+                                                                        cfg: {
+                                                                            label: "Public games",
+                                                                            tabSelector: "#rightTabView",
+                                                                            emptyTab: true,
+                                                                            wchildren: [{
+                                                                                    type: "PublicGameDataTable"
+                                                                                }]
+                                                                        }
+                                                                    }]
+                                                            }]
+                                                    }
+                                                }]
+                                        }]
+                                }}]
+                    }]
+            });
         }
     });
 });

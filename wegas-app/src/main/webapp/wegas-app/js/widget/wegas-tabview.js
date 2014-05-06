@@ -553,8 +553,8 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<li class="yui3-tab" title="add a tab">' +
-                '<a class="yui3-tab-label wegas-removeTabview">x</a></li>',
+        ADD_TEMPLATE: '<li class="yui3-tab wegas-removeTabview" title="Close tabs">' +
+                '<a class="yui3-tab-label ">x</a></li>',
         /**
          * @function
          * @private
@@ -565,7 +565,7 @@ YUI.add('wegas-tabview', function(Y) {
             var tabview = this.get('host');
             tabview.after('render', this.afterRender, this);
 
-            tabview.get('contentBox').delegate('click', this.onAddClick, '.wegas-removeTabview', this);
+            tabview.get('contentBox').delegate('click', this.onAddClick, '.wegas-removeTabview a', this);
         },
         afterRender: function(e) {
             var tabview = this.get('host');

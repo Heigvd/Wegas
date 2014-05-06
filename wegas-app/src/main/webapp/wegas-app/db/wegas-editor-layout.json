@@ -54,7 +54,6 @@
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Impact",
-                                    "cssClass": "wegas-advanced-feature",
                                     "wchildren": [{
                                             "type": "WysiwygConsole",
                                             "cssClass": "wegas-console"

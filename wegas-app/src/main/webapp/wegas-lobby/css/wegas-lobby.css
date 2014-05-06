@@ -33,12 +33,13 @@
     background: #f6f6f6;
 }
 .wegas-game-subtitle .inputEx-label {
-    padding: 10px 0 10px 5px !important;
+    padding: 0.5em 0 10px 5px !important;
     text-align: left;
     width: 300px;
 }
 .yui3-skin-sam .wegas-game-subtitle label {
     font-weight: bolder !important;
+    font-size: 1.1em !important;
 }
 .wegas-game-access, 
 .wegas-game-token,
@@ -46,6 +47,9 @@
 .wegas-game-users {
     background: #f6f6f6;           
     margin: 0 !important;
+}
+.wegas-game-token {
+    padding-top: 10px;
 }
 .wegas-game-name .inputEx-label,
 .wegas-game-access .inputEx-label {
@@ -56,48 +60,120 @@
     margin-left: -68px;
     margin-right: 1px;
 }
-.wegas-game-access  {
-    padding-bottom: 15px;
+.wegas-game-token .inputEx-StringField-wrapper:before {
+    content:"Enrolment key ";
+    color: #505050;
 }
-.wegas-game-access .inputEx-Field {
-    margin-right: 10px;
+.wegas-game-token .inputEx-StringField-wrapper input {
+    width: 200px;
+}
+.wegas-game-access  {
+    padding-bottom: 5px;
+    padding-left: 77px !important;
+}
+.wegas-game-access div.inputEx-RadioField-choice {
+    margin-bottom: 5px;
+    float: none;
 }
 .wegas-game-keys,
 .wegas-game-users {
+    padding-top: 10px;
     padding-bottom: 15px;
 }
-.wegas-game-token .inputEx-label,
+.wegas-link > .inputEx-Field,
+.wegas-game-token > .inputEx-Field {
+    position: relative;
+}
+.wegas-link .inputEx-StringField-wrapper,
+.wegas-game-token .inputEx-StringField-wrapper,
+.wegas-game-keys .inputEx-ListField-childContainer,
+.wegas-game-users .inputEx-ListField-childContainer {
+    padding-top: 38px;
+}
+.wegas-link .inputEx-description,
+.wegas-game-token .inputEx-description,
+.wegas-game-keys .inputEx-description,
+.wegas-game-users .inputEx-description {
+    position:absolute;
+    top: 0;
+}
+.wegas-game-token >.inputEx-Field,
+.wegas-game-keys >.inputEx-Field,
+.wegas-game-users > .inputEx-Field {
+    margin-left: -110px !important;
+}
+.wegas-game-token > .inputEx-label,
 .wegas-game-users > .inputEx-label ,
 .wegas-game-keys > .inputEx-label {
     text-align: left;
     font-style: italic;
     padding: 0 0px 3px 5px;
-    width: 300px !important;
+    width: 380px !important;
+    padding: 0 !important;
+    margin-left: -110px !important;
+    padding: 0;
+}
+.wegas-game-token >.inputEx-label label,
+.wegas-game-keys >.inputEx-label label,
+.wegas-game-users > .inputEx-label label {
+    font-weight: bold !important;
 }
 .wegas-game-token .inputEx-Field,
 .wegas-game-users > .inputEx-Field,
-.wegas-game-keys > .inputEx-Field {                
+.wegas-game-keys > .inputEx-Field {
     margin-left: -125px;
     margin-right: 10px;
     display: block;
     clear: both;
 }
-.wegas-game-keys img.inputEx-ListField-addButton {
-    position: absolute;
-    top: -19px;
-    left: 175px;
+.wegas-game-keys .inputEx-ListField-childContainer:after,
+.wegas-game-users .inputEx-ListField-childContainer:after{
+    content: "";
+    display: block;
+    clear: both;
+    line-height: 0;
+    font-size: 0;
+    visibility: hidden;
 }
-
-.wegas-game-users img.inputEx-ListField-addButton {
-    position: absolute;
-    top: -19px;
-    left: 227px;
+.wegas-game-users .inputEx-ListField-childContainer > div {
+    float: left;
+    width: 300px;
+}
+.wegas-game-keys .inputEx-ListField-childContainer > div:before {
+    content: "Key: ";
+    display: inline-block;
+    color: #505050;
+}
+.wegas-game-keys .inputEx-ListField-childContainer > div {
+    float: left;
+    width: 150px;
+}
+.wegas-game-keys .inputEx-ListField-childContainer > div > .inputEx-ListField-subFieldEl {
+    display: inline-block;
+}
+.wegas-game-users .addkey,
+.wegas-game-keys .addkey{
+    margin-top:0.5em;
+}
+.wegas-game-users .addkey input, 
+.wegas-game-keys .addkey input {
+    width: 1.9em;
+}
+.wegas-game-users .addkey button span, 
+.wegas-game-keys .addkey button span {
+    display: inline-block;
+    background: transparent url(../../lib/inputex/src/inputex-list/assets/skins/sam/add.png) no-repeat 0 0;
+    width: 16px;
+    height: 16px;
 }
 
 /* Lobby datatables */
+.yui3-skin-wegas .yui3-datatable-header  {
+    padding-top: 3px;
+}
 .wegas-lobby-datatable .wegas-lobby-datatable-icon {
-    padding: 0 0 0 6px;
-    width: 18px;
+    padding: 0 0 0 0.5em;
+    width: 22px;
 }
 .yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-table {
     table-layout: fixed;
@@ -149,14 +225,12 @@
     height: 20px;
     cursor: pointer;
     background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
-    /*margin: 2px 5px;*/
     display: inline-block;
 }
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper{
     float: left;
     width: 91px;
-    /*margin-left: 25px;*/
 }
 .role-permissions .inputEx-fieldWrapper:first-child{
     margin-left: 0px
@@ -185,21 +259,29 @@
 }
 .wegas-sharerole-content {
     padding: 10px;
+    padding-top: 20px;
     background: #f6f6f6;
     margin: 0px 10px 10px;
 }
 .wegas-sharerole .title {
-    font-weight: normal;
+    font-weight: bold;
     font-style: italic;
-    margin-bottom: 3px;
+    margin-left: 15px;
     color: #505050;
 }
-.wegas-link div {
+.wegas-link >div {
     width: 100%;
+    margin-left: 15px;
 }
 .wegas-link input {    
-    width: 99%;
+    width: 353px;
     padding: 2px 0.5%;
+}
+.wegas-link .inputEx-StringField-wrapper:before {
+    content: "Url";
+    width: 99px;
+    display: inline-block;
+    color: #505050;
 }
 /* Share user */
 .wegas-shareuser-content {
@@ -254,9 +336,6 @@
     float: left;
     margin-left: 5px;
 }
-/*.wegas-shareuser .permission-group fieldset div:first-child {
-    margin-left: 3px;
-}*/
 .wegas-shareuser .wegas-userlist > div {
     margin: 0;
 }
@@ -280,15 +359,14 @@
 }
 
 /******************** AccountKey and EnrolementKey*****************************/
-
 .wegas-accountkey, .wegas-enrolmentkey {
     font-size: 90%
 }
-
-.wegas-accountkeyUser, .wegas-accountkeyPass{
-    color: #505050;
+.wegas-accountkey > span {
+    display: inline-block;
+    width: 108px;
 }
-
-.wegas-game-users .inputEx-ListField-childContainer>div {
-    border-right: 1px solid gray;
+.wegas-accountkey .wegas-accountkeyUser, .wegas-accountkey .wegas-accountkeyPass{
+    color: #505050;
+    width: 40px;
 }

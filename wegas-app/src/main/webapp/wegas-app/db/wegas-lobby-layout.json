@@ -116,7 +116,7 @@
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
-                                            "width": "22px"
+                                            "width": "24px"
                                         }, {
                                             "key": "name",
                                             "label": "Name",
@@ -159,17 +159,23 @@
                                                                 "emptyTab": true,
                                                                 "label": "Open game",
                                                                 "wchildren": [{
-                                                                        "type": "GameInformation",
-                                                                        "cssClass": "open-game-tab"
-                                                                    }, {
-                                                                        "type": "Button",
-                                                                        "cssClass": "editor-button-resume",
-                                                                        "label": "Open game",
+                                                                        "type": "List",
+                                                                        "children": [{
+                                                                                "type": "GameInformation",
+                                                                                "cssClass": "open-game-tab"
+                                                                            }, {
+                                                                                "type": "Button",
+                                                                                "cssClass": "editor-button-resume",
+                                                                                "label": "Open game",
+                                                                                "plugins": [{
+                                                                                        "fn": "OpenGameAction",
+                                                                                        "cfg": {
+                                                                                            "editorUrl": "play.html?"
+                                                                                        }
+                                                                                    }]
+                                                                            }],
                                                                         "plugins": [{
-                                                                                "fn": "OpenGameAction",
-                                                                                "cfg": {
-                                                                                    "editorUrl": "play.html?"
-                                                                                }
+                                                                                "fn": "WidgetToolbar"
                                                                             }]
                                                                     }]
                                                             }
@@ -194,7 +200,10 @@
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{
-                                                                                            "type": "TokenJoin"
+                                                                                            "type": "TokenJoin",
+                                                                                            "plugins": [{
+                                                                                                    "fn": "WidgetToolbar"
+                                                                                                }]
                                                                                         }]
                                                                                 }
                                                                             }]
@@ -208,56 +217,7 @@
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{
-                                                                                            "type": "GameDataTable",
-                                                                                            "dataSource": "PublicGames",
-                                                                                            "dataTableCfg": {
-                                                                                                "columns": [{
-                                                                                                        "key": "iconCSS",
-                                                                                                        "formatter": "icon",
-                                                                                                        "label": " ",
-                                                                                                        "sortable": false,
-                                                                                                        "width": "22px"
-                                                                                                    }, {
-                                                                                                        "key": "name",
-                                                                                                        "label": "Name"
-                                                                                                    }, {
-                                                                                                        "key": "gameModelName",
-                                                                                                        "label": "Scenario",
-                                                                                                        "width": "150px"
-                                                                                                    }, {
-                                                                                                        "key": "createdBy",
-                                                                                                        "label": "Created by",
-                                                                                                        "width": "150px"
-                                                                                                    }]
-                                                                                            },
-                                                                                            "emptyMessage": "No game is available to play.",
-                                                                                            "plugins": [{
-                                                                                                    "fn": "WidgetToolbar",
-                                                                                                    "cfg": {
-                                                                                                        "children": []
-                                                                                                    }
-                                                                                                }, {
-                                                                                                    "fn": "RequestDT"
-                                                                                                }, {
-                                                                                                    "fn": "EditorDTMenu",
-                                                                                                    "cfg": {
-                                                                                                        "children": [{
-                                                                                                                "type": "Button",
-                                                                                                                "label": "Join game",
-                                                                                                                "plugins": [{
-                                                                                                                        "fn": "OpenTabAction",
-                                                                                                                        "cfg": {
-                                                                                                                            "tabSelector": "#rightTabView",
-                                                                                                                            "emptyTab": true,
-                                                                                                                            "wchildren": [{
-                                                                                                                                    "type": "JoinTeam",
-                                                                                                                                    "customEvent": true
-                                                                                                                                }]
-                                                                                                                        }
-                                                                                                                    }]
-                                                                                                            }]
-                                                                                                    }
-                                                                                                }]
+                                                                                            "type": "PublicGameDataTable"
                                                                                         }]
                                                                                 }
                                                                             }]
@@ -284,7 +244,7 @@
                                         }
                                     }, {
                                         "fn": "EditorDTMenu"
-                                    },{
+                                    }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
@@ -333,7 +293,7 @@
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
-                                            "width": "22px"
+                                            "width": "24px"
                                         }, {
                                             "key": "name",
                                             "label": "Name",
@@ -357,7 +317,7 @@
                                         }
                                     }, {
                                         "fn": "EditorDTMenu"
-                                    },{
+                                    }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
                                             "children": [{
