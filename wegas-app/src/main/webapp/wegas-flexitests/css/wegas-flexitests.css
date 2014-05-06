@@ -138,6 +138,9 @@ body > .wegas-pageloader, html{
     transform: rotate(-60deg) translate(20px,-100%);
     font-size: 75%;
 }
+.wegas-flexitests-results-content{
+    display: inline-block;
+}
 .wegas-flexitests-results-content .config,
 .wegas-flexitests-results-content .results{
     padding:10px;

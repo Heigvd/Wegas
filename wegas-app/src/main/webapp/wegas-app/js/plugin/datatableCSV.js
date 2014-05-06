@@ -106,11 +106,12 @@ YUI.add('datatable-csv', function(Y) {
         /* @lends Y.Wegas.DatatableCSV */
         NS: "datatablecsv",
         /**
-         * Field delimiter. As of RFC 4180 : "," by default
+         * Field delimiter. As of RFC 4180 : "," by default. 
+         * MS Excel highly prefers ";"
          * @field
          * @static
          */
-        FIELD_DELIMITER: ",",
+        FIELD_DELIMITER: ";",
         /**
          * Record (lines) delimiter. As of RFC 4180 : "\r\n" (CRLF) by default
          * @static
@@ -129,7 +130,7 @@ YUI.add('datatable-csv', function(Y) {
             var win = winHandle || window.open(), range, selection;
             win.document.write("<pre>");
             win.document.write("</pre>");
-            Y.one(win.document).one("pre").set("text", data);
+            Y.one(win.document).one("pre").setHTML(data);
             //Select data
             if (document.createRange && window.getSelection) {
                 range = win.document.createRange();
@@ -161,7 +162,7 @@ YUI.add('datatable-csv', function(Y) {
          */
         download: function(contentType, name, data) {
             var url = Y.Wegas.app.get("base") + "rest/Download/" + name,
-                    form = Y.Node.create('<form enctype="multipart/form-data" method="post" action="' + url + '" ><input type="hidden" name="data"><input type="hidden" name="ctype"></form>');
+                    form = Y.Node.create('<form enctype="multipart/form-data" accept-charset="UTF-8" method="post" action="' + url + '" ><input type="hidden" name="data"><input type="hidden" name="ctype"></form>');
             form.one("input[name=data]").getDOMNode().value = data;
             form.one("input[name=ctype]").getDOMNode().value = contentType;
             form.submit();

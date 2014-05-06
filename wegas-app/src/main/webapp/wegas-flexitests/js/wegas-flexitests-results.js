@@ -101,15 +101,22 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     tests = results[1],
                     table = this.get("contentBox").one(".results"),
                     o, i, j, k, elements = {
-                left: getChildById(page, "leftElement"),
-                right: getChildById(page, "rightElement"),
-                center: getChildById(page, "centerElement")
-            }, extractValue = function(element, qId) {
+                        left: getChildById(page, "leftElement"),
+                        right: getChildById(page, "rightElement"),
+                        center: getChildById(page, "centerElement")
+                    }, extractValue = function(element, qId) {
                 var el = elements[element],
-                        selectElement = el.item(qId % el.size());
+                        selectElement;
+                if (el === null) {
+                    this.get("boundingBox").emitDOMMessage("error", {
+                        data: "Missing " + element + " element in configured Test page."
+                    });
+                    return "";
+                }
+                selectElement = el.item(qId % el.size());
                 if (selectElement) {
-                    return selectElement.get("content")
-                            || selectElement.get("url");
+                    return selectElement.get("content") ? Y.Node.create(selectElement.get("content")).get("text").replace(/\xa0/g, ' ') : //remove html tags (\xa0 is &nbsp;)
+                            selectElement.get("url");
                 } else {
                     return "";
                 }
@@ -182,32 +189,32 @@ YUI.add("wegas-flexitests-results", function(Y) {
         _extractConfig: function(widget) {
             var cfg = {},
                     getPos = function(element, config) {
-                var style = element.CSSPosition ? element.CSSPosition.get("styles") : null;
-                if (style === null) {
-                    return;
-                } else {
-                    if (Y.Lang.isNumber(parseInt(style.top, 10))) {
-                        config.top = parseInt(style.top, 10);
-                    }
-                    if (Y.Lang.isNumber(parseInt(style.bottom, 10))) {
-                        config.bottom = parseInt(style.bottom, 10);
-                    }
-                    if (Y.Lang.isNumber(parseInt(style.left, 10))) {
-                        config.left = parseInt(style.left, 10);
-                    }
-                    if (Y.Lang.isNumber(parseInt(style.right, 10))) {
-                        config.right = parseInt(style.right, 10);
-                    }
-                }
-            },
+                        var style = element.CSSPosition ? element.CSSPosition.get("styles") : null;
+                        if (style === null) {
+                            return;
+                        } else {
+                            if (Y.Lang.isNumber(parseInt(style.top, 10))) {
+                                config.top = parseInt(style.top, 10);
+                            }
+                            if (Y.Lang.isNumber(parseInt(style.bottom, 10))) {
+                                config.bottom = parseInt(style.bottom, 10);
+                            }
+                            if (Y.Lang.isNumber(parseInt(style.left, 10))) {
+                                config.left = parseInt(style.left, 10);
+                            }
+                            if (Y.Lang.isNumber(parseInt(style.right, 10))) {
+                                config.right = parseInt(style.right, 10);
+                            }
+                        }
+                    },
                     getTimers = function(element, config) {
-                if (element.hideafter) {
-                    config.hide = element.hideafter.get("time");
-                }
-                if (element.showafter) {
-                    config.show = element.showafter.get("time");
-                }
-            },
+                        if (element.hideafter) {
+                            config.hide = element.hideafter.get("time");
+                        }
+                        if (element.showafter) {
+                            config.show = element.showafter.get("time");
+                        }
+                    },
                     left = getChildById(widget, "leftElement"),
                     center = getChildById(widget, "centerElement"),
                     right = getChildById(widget, "rightElement");
