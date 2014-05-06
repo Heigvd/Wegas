@@ -365,7 +365,6 @@ YUI.add('wegas-entity', function(Y) {
             },
             access: {
                 type: STRING,
-                value: "ENROLMENTKEY",
                 choices: [{
                         value: "SINGLEUSAGEENROLMENTKEY",
                         label: "Restricted number of players may join"
@@ -376,7 +375,6 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: "radio",
                     label: "",
-                    value: "ENROLMENTKEY",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-access",
                     interactions: [{
                             valueTrigger: "ENROLMENTKEY",

@@ -284,3 +284,6 @@ h1, h2, .title{
     margin-top: 1em;
     font-size: 1.2em;
 }
+.wegas-panel {
+    max-width: 400px;
+}
