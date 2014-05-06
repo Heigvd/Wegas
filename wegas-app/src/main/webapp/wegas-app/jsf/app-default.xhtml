@@ -42,7 +42,7 @@
                     YUI_config.lang = "#{requestController.locale.toLanguageTag()}";
                     YUI_config.charset = "#{wegasConfig.encoding}";
                     YUI_config.debug = #{requestController.debugMode()};
-                    YUI_config.throwFail = false;                               // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
+                    YUI_config.throwFail = #{requestController.debugMode()};    // If throwFail is set, Y.error will generate or re-throw a JS Error. Otherwise the failure is logged.
                     YUI_config.errorFn = function(msg, e, src) {
                         if (window.Rollbar) {
                             window.Rollbar.error(msg, e);                       // Send Rollbar event
@@ -53,7 +53,7 @@
                             // Gotcha: console is not available
                         }
                         // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", '');// YUI log
-                        return true;                                            // Returning true from this function will stop the Error from being thrown.
+                        return !#{requestController.debugMode()};               // Returning true from this function will stop the Error from being thrown.
                     };
                     //YUI_config.filters = { event: 'debug' };                  // Like filter, but can be set for each module
                     //YUI_config.loadOptional = true;

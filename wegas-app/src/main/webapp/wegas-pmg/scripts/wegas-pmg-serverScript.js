@@ -13,9 +13,9 @@ function nextPeriod() {
     var currentPhase = getCurrentPhase(),
             currentPeriod = getCurrentPeriod();
 
-    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
+    //allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
-    if (currentPeriod.getValue(self) === currentPeriod.maxValue) {              // If end of phase
+    if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {              // If end of phase
         currentPhase.add(self, 1);
         //currentPeriod.setValue(self, 1);// Why?
         if (currentPhase.getValue(self) === 2) {
@@ -24,11 +24,9 @@ function nextPeriod() {
         }
     } else if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
         runSimulation();
+        currentPeriod.add(self, 1);
         if (checkEndOfProject()) {                                              //if the project ended
-            //currentPeriod.setValue(self, 1);// Why?
             currentPhase.add(self, 1);
-        } else {
-            currentPeriod.add(self, 1);
         }
     } else {                                                                    // Otherwise pass to next period
         currentPeriod.add(self, 1);
@@ -87,7 +85,8 @@ function updateVariables() {
             quality = Variable.findByName(gm, 'quality'),
             planedValue = Variable.findByName(gm, 'planedValue'),
             earnedValue = Variable.findByName(gm, 'earnedValue'),
-            actualCost = Variable.findByName(gm, 'actualCost');
+            actualCost = Variable.findByName(gm, 'actualCost'),
+            exectutionPeriods = Variable.findByName(gm, 'periodPhase3');
 
     for (i = 0; i < tasks.items.size(); i++) {
         task = tasks.items.get(i).getInstance(self);
@@ -120,7 +119,7 @@ function updateVariables() {
     //projectCompleteness.setValue(self, sumProjectCompleteness);
 
     // pv = for each task, sum -> bac * task completeness / 100
-    planedValue.setValue(self, calculatePlanedValue(getCurrentPeriod().getValue(self) - 1));
+    planedValue.setValue(self, calculatePlanedValue(exectutionPeriods.getValue(self) - 1));
     // ev = for each task, sum -> bac * planified task completeness / 100
     earnedValue.setValue(self, ev);
     // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
@@ -135,12 +134,12 @@ function updateVariables() {
     if (planedValue.getValue(self) > 0) {
         costsJaugeValue = Math.round((earnedValue.getValue(self) / actualCost.getValue(self)) * 100);
     }
-    costsJaugeValue = Math.min(Math.max(costsJaugeValue, costs.minValue), costs.maxValue);
+    costsJaugeValue = Math.min(Math.max(costsJaugeValue, costs.minValueD), costs.maxValueD);
     costs.setValue(self, costsJaugeValue);
 
     // delay = EV / PV * 100
     delayJaugeValue = Math.round(earnedValue.getValue(self) * 100 / planedValue.getValue(self));
-    delayJaugeValue = Math.min(Math.max(delayJaugeValue, delay.minValue), delay.maxValue);
+    delayJaugeValue = Math.min(Math.max(delayJaugeValue, delay.minValueD), delay.maxValueD);
     delay.setValue(self, delayJaugeValue);
 
     //quality
@@ -153,7 +152,7 @@ function updateVariables() {
     //    qualityJaugeValue = tasksQuality / activeTasks;
     //}
     qualityJaugeValue += Variable.findByName(gm, 'qualityImpacts').getValue(self) / 2;
-    qualityJaugeValue = Math.min(Math.max(qualityJaugeValue, quality.minValue), quality.maxValue);
+    qualityJaugeValue = Math.min(Math.max(qualityJaugeValue, quality.minValueD), quality.maxValueD);
     quality.setValue(self, qualityJaugeValue);
 
     costs.getInstance(self).saveHistory();
@@ -169,8 +168,8 @@ function updateVariables() {
 /**
  * function to know if an employee is working on the task.
  * A employee working on task mean that he works the period before (currentPeriod -1)
- * @param String empName
- * @param String taskName
+ * @param {String} empName
+ * @param {String} taskName
  * @returns Boolean true if works on project
  */
 function workOnTask(empName, taskName) {
@@ -191,7 +190,7 @@ function workOnTask(empName, taskName) {
 
 /**
  * Check if a ressource work on the project
- * @param String name, the name from ressource to check
+ * @param {string} name the name from ressource to check
  * @return true if work on project
  */
 function workOnProject(name) {
@@ -332,6 +331,5 @@ function addArtosOccupation() {
 }
 
 function addOccupation(name, periode) {
-    employee = Variable.findByName(gm, name),
-            employee.addOccupation(self, periode, false, "");
+    Variable.findByName(gm, name).addOccupation(self, periode, false, "");
 }

@@ -89,9 +89,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     moral: {
                         type: NUMBER,
-                        optional: true,
+                        optional: false,
                         _inputex: {
-                            label: "Initial moral"
+                            label: "Initial moral",
+                            value: 100
                         }
                     },
                     moralHistory: {
@@ -104,11 +105,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     },
                     confidence: {
                         name: NUMBER,
-                        optional: true,
+                        optional: false,
                         type: STRING,
                         _inputex: {
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            label: "Initial confidence"
+                            label: "Initial confidence",
+                            value: 100
                         }
                     },
                     occupations: {

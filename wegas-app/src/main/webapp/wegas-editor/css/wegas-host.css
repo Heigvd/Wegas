@@ -62,8 +62,8 @@
 
 #leftTabView .wegas-toolbar .selectAll{
     position: absolute;
+    right: 3px;
     margin-top: 8px;
-    margin-left: 190px;
     width: 90px;
     height: 25px;
     cursor: pointer;
@@ -76,12 +76,12 @@
 
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode .yui3-treenode-content-header,
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content{
-    background: url(../images/checkbox.png) 247px -38px no-repeat;
+    background: url(../images/checkbox.png) right -38px no-repeat;
 }
 
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
-    background: url(../images/checkbox.png) 247px -4px no-repeat;
+    background: url(../images/checkbox.png) right -4px no-repeat;
     background-color: #EDEDED;
 }
 

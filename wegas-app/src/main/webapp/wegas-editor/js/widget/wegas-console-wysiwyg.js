@@ -19,12 +19,13 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
      *  @constructor
      */
     var CONTENTBOX = 'contentBox',
-            WysiwygConsole, Plugin = Y.Plugin;
+            WysiwygConsole, Wegas = Y.Wegas, Plugin = Y.Plugin;
 
-    WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Y.Wegas.Console, [Y.WidgetChild, Y.Wegas.Widget], {
+    WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Wegas.Console, [Y.WidgetChild, Wegas.Widget], {
         /**
          * @lends Y.Wegas.WysiwygConsole#
          */
+        BOUNDING_TEMPLATE: '<div class="wegas-form"></div>',
         // ** Lifecycle Methods ** //
         /**
          * @function
@@ -42,22 +43,17 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
 
-            this.get("boundingBox").addClass("wegas-form");
-
             this.plug(Plugin.WidgetToolbar);
 
             this.srcField = new Y.inputEx.WysiwygScript({
                 parentEl: cb
             });
             cb.append('<div class="results"></div>');
-            this.srcField.el.rows = 8;
-            this.srcField.el.cols = 100;
 
             this.renderRunButton();
 
-            this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc");
-
-            this.srcField.viewSrc.get("contentBox").append("Source");
+            this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc")
+                    .append("Source");
             this.toolbar.add(this.srcField.viewSrc);
         },
         /**
@@ -67,18 +63,15 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * When parent tab change plug or unplug multiple selection plugin.
          */
         bindUI: function() {
-            var treeView, editorTreeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"),
-                    cGameModel = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
-                    playerId, selected = 0;
-
-            if (!editorTreeView) {
+            if (!Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team")) {
                 return;
             }
 
-            treeView = editorTreeView.treeView;
-
             this.handlers.push(this.get("parent").on("selectedChange", function(e) {
-                selected = 0;
+                var treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView,
+                        cGameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
+                        playerId, selected = 0;
+
                 if (e.newVal !== 1) {
                     treeView.unplug(Plugin.CheckBoxTV);
                     this.removeCheckbox();
@@ -108,43 +101,13 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
                         }
                         treeView.item(selected).selectAll();
                     }
-                    Y.Wegas.Facade.Game.cache.set('currentPlayerId', playerId);
+                    Wegas.Facade.Game.cache.set('currentPlayerId', playerId);
                     playerId = null;
                 } else {
                     treeView.plug(Plugin.CheckBoxTV);
                     this.addCheckbox();
                 }
             }, this));
-
-        },
-        /**
-         * @function
-         * @private
-         * @description Create and render the button for run the script.
-         */
-        renderRunButton: function() {
-            var el = this.toolbar.get('header'), multiPlayerScript, playerList;
-
-            this.runButton = new Y.Button({
-                label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
-                on: {
-                    click: Y.bind(function() {
-                        playerList = this.playerList();
-                        if (playerList.length === 0) {
-                            return;
-                        }
-                        multiPlayerScript = {
-                            playerIdList: playerList,
-                            script: {
-                                "@class": "Script",
-                                language: "JavaScript",
-                                content: this.srcField.getValue().content
-                            }
-                        };
-                        this.multiExecuteScript(multiPlayerScript);
-                    }, this)
-                }
-            }).render(el);
         },
         /**
          * @function
@@ -152,36 +115,54 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description Gives the list of teams or player selected in the
          * treeview. If no treeview, only the current player is added in the list.
          */
-        playerList: function() {
-            var treeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content"),
-                    playerList = [], selection;
+        getPlayerList: function() {
+            var players, selection,
+                    freeForAll = Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll"),
+                    treeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content"),
+                    playerList = [];
 
             if (!treeview) {
-                playerList.push(Y.Wegas.Facade.Game.get('currentPlayerId'));
-                return playerList;
+                return [Wegas.Facade.Game.get('currentPlayerId')];
             }
 
             selection = treeview.get("selection") || new Y.ArrayList();
 
-            if (Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
-                if (!selection.size()) {
-                    this.showMessageBis("info", "No player is selected.");
-                }
-                selection.each(function(item) {
-                    playerList.push(item.get("data.entity").get("id"));
-                });
-            } else {
-                if (!selection.size()) {
-                    this.showMessageBis("info", "No team is selected! This impact has not been applied");
-                }
-                selection.each(function(item) {
-                    var entity = item.get("data.entity");
-                    if (entity.get("players").length > 0) {
-                        playerList.push(entity.get("players")[0].get("id"));
-                    }
-                });
+            if (!selection.size()) {
+                this.showMessageBis("info", (freeForAll)
+                        ? "No player is selected. This impact has not been run"
+                        : "No team is selected. This impact has not been run");
             }
+
+            selection.each(function(item) {
+                if (freeForAll) {
+                    playerList.push(item.get("data.entity").get("id"));
+                } else {
+                    players = item.get("data.entity").get("players");
+                    if (players.length > 0) {
+                        playerList.push(players[0].get("id"));
+                    }
+                }
+            });
             return playerList;
+        },
+        /**
+         * @function
+         * @private
+         * @description checks if all teams has a player otherwise add a "noPlayer" class.
+         */
+        getTeams: function() {
+            var i, treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView,
+                    teams = [];
+            for (i = 0; i < treeView.size(); i += 1) {
+                if (!this.isEmptyTeam(treeView.item(i))) {
+                    teams.push(i);
+                }
+            }
+            return teams;
+        },
+        isEmptyTeam: function(treeNode) {
+            var team = treeNode.get("data").entity;
+            return team.get("players") && team.get("players").length === 0;
         },
         /**
          * @function
@@ -190,30 +171,31 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * and a button for select or deselct all teams/player with the corresponding events.
          */
         addCheckbox: function() {
-            var editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"), i;
-            this.emptyTeamList();
+            var i, editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team");
+
             this.selectAll = new Y.Node.create("<span class='emptyCheckbox selectAll'>Select all</span>");
             editorTreeview.toolbar.get("header").append(this.selectAll);
-            this.selectAll.on("click", function(e, editorTreeview) {
-                if (this.selectAll.hasClass("yui3-treenode-selected")) {
-                    this.selectAll.removeClass("yui3-treenode-selected");
-                    editorTreeview.treeView.deselectAll();
+
+            this.selectAll.on("click", function(e, treeView) {                   // When "Select all" button is clicked
+                if (this.selectAll.hasClass("yui3-treenode-selected")) {        // select treeview nodes
+                    treeView.deselectAll();
                 } else {
-                    this.selectAll.addClass("yui3-treenode-selected");
-                    editorTreeview.treeView.selectAll();
-                    for (i = 0; i < this.emptyTeam.length; i += 1) {
-                        editorTreeview.treeView.item(this.emptyTeam[i]).set("selected", 0);
+                    treeView.selectAll();
+                    for (i = 0; i < treeView.size(); i += 1) {
+                        if (this.isEmptyTeam(treeView.item(i))) {
+                            treeView.item(i).set("selected", 0);
+                        }
                     }
                 }
-            }, this, editorTreeview);
+                this.selectAll.toggleClass("yui3-treenode-selected");           // and toggle class
+            }, this, editorTreeview.treeView);
 
             this.nodeClick = editorTreeview.treeView.on("nodeClick", function(e) {
-                if (e.currentTarget.get("selection") && e.currentTarget.get("selection").size() >= (e.currentTarget.size() - this.emptyTeam.length)) {
-                    this.selectAll.addClass("yui3-treenode-selected");
-                } else {
-                    this.selectAll.removeClass("yui3-treenode-selected");
-                }
-                if (e.node.get("data").entity.get("players") && !e.node.get("data").entity.get("players").length) {
+                this.selectAll.toggleClass("yui3-treenode-selected",
+                        e.currentTarget.get("selection")
+                        && e.currentTarget.get("selection").size() >= this.getTeams().length);// Update selectAll visibility when all teams are selected
+
+                if (this.isEmptyTeam(e.node)) {                                 // Not allowed to select empty teams
                     e.node.deselectAll();
                 }
             }, this);
@@ -230,21 +212,6 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
         /**
          * @function
          * @private
-         * @description checks if all teams has a player otherwise add a "noPlayer" class.
-         */
-        emptyTeamList: function() {
-            var editorTreeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team"),
-                    i;
-            this.emptyTeam = [];
-            for (i = 0; i < editorTreeview.treeView.size(); i += 1) {
-                if (editorTreeview.treeView.item(i).get("data").entity.get("players") && !editorTreeview.treeView.item(i).get("data").entity.get("players").length) {
-                    this.emptyTeam.push(i);
-                }
-            }
-        },
-        /**
-         * @function
-         * @private
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
@@ -254,6 +221,6 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             }
         }
     });
-
     Y.namespace('Wegas').WysiwygConsole = WysiwygConsole;
+
 });

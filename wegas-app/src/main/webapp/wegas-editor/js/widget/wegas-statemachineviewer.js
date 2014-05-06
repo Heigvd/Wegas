@@ -23,7 +23,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
         CONTENT_TEMPLATE: "<div><div class='scrollable'><div class='sm-zoom'></div></div></div>",
-        cacheDialogue: null,
+        /**
+         * 
+         */
         initializer: function() {
             this.currentZoom = 1;
             this.stateId = 1;
@@ -97,7 +99,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 this.onceAfter("jsPlumbLoaded", this.rebuild);
             });
             cb.on("mousewheel", Y.bind(function(e) {
-                if (this.get(CONTENT_BOX).one("#" + e.target.get("id"))) {
+                if ((e.ctrlKey || e.shiftKey)
+                        && this.get(CONTENT_BOX).one("#" + e.target.get("id"))) {
                     e.halt(true);
                     this.zoom(e);
                 }
@@ -267,27 +270,27 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this._saveTimer = Y.later(100, this, function() {
                 var entity = this.get(ENTITY),
                         DEFAULTCB = {
-                            success: Y.bind(function(e) {
-                                this._saveOngoing = false;
-                                if (this._saveWaiting) {
-                                    this.save();
-                                }
+                    success: Y.bind(function(e) {
+                        this._saveOngoing = false;
+                        if (this._saveWaiting) {
+                            this.save();
+                        }
 
-                                this.highlightUnusedStates();
-                                this.hideOverlay();
+                        this.highlightUnusedStates();
+                        this.hideOverlay();
 
-                            }, this),
-                            failure: Y.bind(function(e) {
-                                this._saveOngoing = false;
-                                if (this._saveWaiting) {
-                                    this.save();
-                                }
-                                this.showMessage("error", e.response.data.message);
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this._saveOngoing = false;
+                        if (this._saveWaiting) {
+                            this.save();
+                        }
+                        this.showMessage("error", e.response.data.message);
 
-                                this.highlightUnusedStates();
-                                this.hideOverlay();
-                            }, this)
-                        };
+                        this.highlightUnusedStates();
+                        this.hideOverlay();
+                    }, this)
+                };
                 if (entity) {
                     //                    this.showOverlay();
                     //                    if (this._saveOngoing) {
