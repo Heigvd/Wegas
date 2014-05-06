@@ -137,7 +137,7 @@ public class Game extends NamedEntity {
      *
      */
     @Enumerated
-    private GameAccess access = GameAccess.ENROLMENTKEY;
+    private GameAccess access = GameAccess.SINGLEUSAGEENROLMENTKEY;
     /**
      *
      */

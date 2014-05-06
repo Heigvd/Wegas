@@ -351,7 +351,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.showMessage("success", "Login successful");
+                        //this.showMessage("success", "Login successful");
                         window.location = Wegas.Helper.getURLParameter("redirect") || Wegas.app.get("base");
                     }, this),
                     failure: Y.bind(function(e) {
