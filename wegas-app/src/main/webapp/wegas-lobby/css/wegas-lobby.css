@@ -120,17 +120,11 @@
 }
 .wegas-game-token .inputEx-Field,
 .wegas-game-users > .inputEx-Field,
-.wegas-game-keys > .inputEx-Field {                
+.wegas-game-keys > .inputEx-Field {
     margin-left: -125px;
     margin-right: 10px;
     display: block;
     clear: both;
-}
-.wegas-game-keys img.inputEx-ListField-addButton,
-.wegas-game-users img.inputEx-ListField-addButton {
-    position: absolute;
-    bottom: 0;
-    left: 20px;
 }
 .wegas-game-keys .inputEx-ListField-childContainer:after,
 .wegas-game-users .inputEx-ListField-childContainer:after{
@@ -146,8 +140,7 @@
     width: 300px;
 }
 .wegas-game-keys .inputEx-ListField-childContainer > div:before {
-    content: "Key: ";    
-    /*width: 99px;*/
+    content: "Key: ";
     display: inline-block;
     color: #505050;
 }
@@ -158,18 +151,25 @@
 .wegas-game-keys .inputEx-ListField-childContainer > div > .inputEx-ListField-subFieldEl {
     display: inline-block;
 }
-.wegas-game-keys .inputEx-ListField:after {
-    content: "Create enrolment keys";
-    padding-left: 40px;
+.wegas-game-users .addkey,
+.wegas-game-keys .addkey{
+    margin-top:0.5em;
 }
-.wegas-game-users .inputEx-ListField:after {
-    content: "Create usernames/passwords";
-    padding-left: 40px;
+.wegas-game-users .addkey input, 
+.wegas-game-keys .addkey input {
+    width: 1.9em;
+}
+.wegas-game-users .addkey button span, 
+.wegas-game-keys .addkey button span {
+    display: inline-block;
+    background: transparent url(../../lib/inputex/src/inputex-list/assets/skins/sam/add.png) no-repeat 0 0;
+    width: 16px;
+    height: 16px;
 }
 
 /* Lobby datatables */
 .yui3-skin-wegas .yui3-datatable-header  {
-    padding-top: 0;
+    padding-top: 3px;
 }
 .wegas-lobby-datatable .wegas-lobby-datatable-icon {
     padding: 0 0 0 0.5em;
@@ -225,14 +225,12 @@
     height: 20px;
     cursor: pointer;
     background: transparent url("../../wegas-app/images/wegas-app-sprite.png") 2px -334px no-repeat;
-    /*margin: 2px 5px;*/
     display: inline-block;
 }
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper{
     float: left;
     width: 91px;
-    /*margin-left: 25px;*/
 }
 .role-permissions .inputEx-fieldWrapper:first-child{
     margin-left: 0px
@@ -268,7 +266,6 @@
 .wegas-sharerole .title {
     font-weight: bold;
     font-style: italic;
-    /*margin-bottom: 3px;*/
     margin-left: 15px;
     color: #505050;
 }
@@ -339,9 +336,6 @@
     float: left;
     margin-left: 5px;
 }
-/*.wegas-shareuser .permission-group fieldset div:first-child {
-    margin-left: 3px;
-}*/
 .wegas-shareuser .wegas-userlist > div {
     margin: 0;
 }
@@ -365,11 +359,9 @@
 }
 
 /******************** AccountKey and EnrolementKey*****************************/
-
 .wegas-accountkey, .wegas-enrolmentkey {
     font-size: 90%
 }
-
 .wegas-accountkey > span {
     display: inline-block;
     width: 108px;
@@ -378,7 +370,3 @@
     color: #505050;
     width: 40px;
 }
-
-/*.wegas-game-users .inputEx-ListField-childContainer>div {
-    border-right: 1px solid gray;
-}*/

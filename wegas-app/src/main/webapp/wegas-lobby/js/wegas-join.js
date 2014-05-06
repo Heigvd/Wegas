@@ -70,8 +70,8 @@ YUI.add('wegas-join', function(Y) {
                     gameModel = e.response.entity.get("gameModel"),
                     teamName = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("name")
                     : game.get("name") + "-" + (game.get("teams").length);
-                    
-              cb.one(".wegas-gameinformation").append(Y.Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
+
+            cb.one(".wegas-gameinformation").append(Y.Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
 
             var showTeamSelection = false,
                     showTeamCreation = false,
@@ -145,7 +145,7 @@ YUI.add('wegas-join', function(Y) {
                 this.teamEdition.addExistingAccount(
                         Y.Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
-            
+
             this.joinButton.set("visible", true);
         },
         onJoinClick: function() {
@@ -513,7 +513,7 @@ YUI.add('wegas-join', function(Y) {
         }
     });
     Y.namespace('Wegas').TeamEdition = TeamEdition;
-    
+
     Y.inputEx.AutoComplete.prototype.buildAutocomplete = function() {
         // Call this function only when this.el AND this.listEl are available
         if (!this._nElementsReady) {

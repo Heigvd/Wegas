@@ -94,18 +94,23 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
                     node = new Y.Node(subfield.divEl);
 
-//            node.all(".inputEx-Field").each(function(n) {
-//                n.setContent("<span class='wegas-enrolmentkey'>" + n.getContent() + "</span>,&nbsp;");
-//            });
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
             //(new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
 
             if (value.used) {
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
-                //f.disable();
-                //(new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
             }
             return subfield;
+        },
+        /**
+         * 
+         */
+        renderComponent: function() {
+            EnrolmentKeyList.superclass.renderComponent.call(this);
+            (new Y.Node(this.addButton)).hide();
+            var container = (new Y.Node(this.fieldContainer));
+            container.append("<div class='addkey' >Add <input value='1'/> <span class='label'>enrolment keys</span> <button class='yui3-button'><span></span>Add</button>");
+            container.one("button").on("click", this.onAddButton, this);
         },
         /**
          * Add a new element to the list and fire updated event
@@ -114,22 +119,22 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
          */
         onAddButton: function(e) {
             e.halt();
-            var i, total = this.promptMessage(),
+            var i, total = parseInt((new Y.Node(this.fieldContainer)).one('.addkey input ').get("value")),
                     game = this.parentField.parentWidget.get("entity"),
-                    //teamCount = game.get("teams").length+1,
                     teamCount = this.subFields.length + 1,
                     prefix = game.get("token");
 
+            if (!Y.Lang.isNumber(total)) {
+                this.showMessageBis("error", "Invalid number");
+                return;
+            }
+
             for (i = 0; i < total; i += 1) {                                    // Add key fields
                 this.addElement({
-                    key: prefix + "-" + teamCount
+                    key: prefix + "-" + (teamCount + i)
                 });
-                teamCount += 1;
             }
             this.fireUpdatedEvt();                                              // Fire updated !
-        },
-        promptMessage: function() {
-            return prompt("How many keys do you want to generate?");
         }
     });
     Y.inputEx.registerType("enrolmentkeylist", EnrolmentKeyList);               // Register this class
@@ -169,8 +174,11 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                         type: "hidden"
                     }]
             };
-
             AccountKeyList.superclass.setOptions.call(this, options);
+        },
+        renderComponent: function() {
+            AccountKeyList.superclass.renderComponent.call(this);
+            (new Y.Node(this.fieldContainer)).one(".label").setContent("usernames/passwords");
         },
         addElement: function(value) {
             var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
@@ -181,17 +189,11 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                                 <span class='wegas-accountkeyPass'>Pwd: </span><span>" + n.getContent() + "</span></p>");
             });
             (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
-//            (new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyles({"float": "left", "marginRight": "10px", "paddingRight": "10px"});
 
             if (value.used) {
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
-                //f.disable();
-                //(new Y.Node(this.subFields[i].divEl)).all("input").setStyle("textDecoration", "line-through");
             }
             return subfield;
-        },
-        promptMessage: function() {
-            return prompt("How many username/passwords do you want to generate?");
         }
     });
     Y.inputEx.registerType("accountkeylist", AccountKeyList);               // Register this class
