@@ -15,6 +15,7 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +28,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.UnauthorizedException;
 
 /**
@@ -43,6 +43,8 @@ public class StateMachineController {
 
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+    @EJB
+    private GameFacade gameFacade;
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
     @EJB
@@ -108,7 +110,7 @@ public class StateMachineController {
     }
 
     private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {
-        if (!SecurityUtils.getSubject().isPermitted("Game:Edit:g" + gameId) && !userFacade.matchCurrentUser(playerId)) {
+        if (!SecurityHelper.isPermitted(gameFacade.find(gameId), "Edit") && !userFacade.matchCurrentUser(playerId)) {
             throw new UnauthorizedException();
         }
     }
