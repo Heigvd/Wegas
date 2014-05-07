@@ -33,15 +33,15 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             //if (confirm("This will restart for every player. Are you sure?")) {
-                var host = this.get("host");
-                host.showOverlay();
-                Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: '/Reset/',
-                    on: {
-                        success: Y.bind(host.hideOverlay, host),
-                        failure: Y.bind(host.defaultFailureHandler, host)
-                    }
-                });
+            var host = this.get("host");
+            host.showOverlay();
+            Wegas.Facade.VariableDescriptor.sendRequest({
+                request: '/Reset/',
+                on: {
+                    success: Y.bind(host.hideOverlay, host),
+                    failure: Y.bind(host.defaultFailureHandler, host)
+                }
+            });
             //}
         }
     }, {
@@ -67,16 +67,15 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            var label = this.get("label") || this.get("host").get("label");
             if (this.get("emptyTab")) {
                 //if (this.get("tabSelector") === "#rightTabView") {
                 //        && !Wegas.TabView.findTab(label)) {
                 Y.Widget.getByNode("#rightTabView").destroyAll();
             }
 
-            var tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
+            var label = this.get("label") || this.get("host").get("label"),
+                    tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
                     {}, this.get("wchildren"));                                 // Forward plugin data to the target widget
-
 
             tab.set("selected", this.get("selected"));
 
@@ -283,11 +282,11 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         syncUI: function() {
-            var gm = this.get("entity");
-            if (!gm) {
-                gm = Y.Wegas.Facade.Game.cache.getCurrentGame();
+            var game = this.get("entity");
+            if (!game) {
+                game = Y.Wegas.Facade.Game.cache.getCurrentGame();
             }
-            var url = Wegas.app.get("base") + "game.html?token=" + gm.get("token");
+            var url = Wegas.app.get("base") + "game.html?token=" + game.get("token");
             this.textField.setValue(url);
         }
     }, {

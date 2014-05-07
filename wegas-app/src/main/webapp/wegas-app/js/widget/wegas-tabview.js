@@ -13,6 +13,7 @@ YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
     var Plugin = Y.Plugin, Wegas = Y.Wegas,
+            CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
             TabView, Tab;
     /**
      * @name Y.Wegas.TabView
@@ -37,6 +38,7 @@ YUI.add('wegas-tabview', function(Y) {
         initializer: function() {
             TabView.superclass.initializer.apply(this, arguments);
             //this.plug(Removeable);
+            this.plug(ResizeTabViewLinks);
         },
         /**
          * @function
@@ -401,8 +403,8 @@ YUI.add('wegas-tabview', function(Y) {
          */
         initializer: function() {
             var tab = this.get('host'),
-                    //cb = tab.get("parent").get("contentBox"),
-                    bb = tab.get("boundingBox");
+                    //cb = tab.get("parent").get(CONTENTBOX),
+                    bb = tab.get(BOUNDINGBOX);
 
             bb.addClass('yui3-tabview-removeable');
             bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
@@ -411,7 +413,7 @@ YUI.add('wegas-tabview', function(Y) {
             // Tab events bubble to TabView
             // Here to plug on tabview
             //var tabview = this.get('host'),
-            //cb = tabview.get('contentBox');
+            //cb = tabview.get(CONTENTBOX);
             //
             //cb.addClass('yui3-tabview-removeable');
             //cb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
@@ -420,7 +422,7 @@ YUI.add('wegas-tabview', function(Y) {
             //tabview.after('tab:render', this.afterTabRender, this);
         },
         //afterTabRender: function(e) {
-        //    e.target.get('boundingBox').append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
+        //    e.target.get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
         //},
 
         /**
@@ -553,8 +555,8 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<li class="yui3-tab wegas-removeTabview" title="Close tabs">' +
-                '<a class="yui3-tab-label ">x</a></li>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tabs">' +
+                '<a class="yui3-tab-label ">x</a></div>',
         /**
          * @function
          * @private
@@ -565,11 +567,11 @@ YUI.add('wegas-tabview', function(Y) {
             var tabview = this.get('host');
             tabview.after('render', this.afterRender, this);
 
-            tabview.get('contentBox').delegate('click', this.onAddClick, '.wegas-removeTabview a', this);
+            tabview.get(CONTENTBOX).delegate('click', this.onAddClick, '.wegas-removeTabview a', this);
         },
         afterRender: function(e) {
             var tabview = this.get('host');
-            tabview.get('contentBox').one('> ul').append(this.ADD_TEMPLATE);
+            tabview.get(CONTENTBOX).one('> ul').append(this.ADD_TEMPLATE);
         },
         onAddClick: function(e) {
             e.stopPropagation();
@@ -581,4 +583,39 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "removetab"
     });
     Y.namespace("Plugin").RemoveTab = RemoveTab;
+
+
+    /**
+     * Plugin that resizes the tabview's button if required
+     *
+     * @name Y.Plugin.ResizeTabViewLinks
+     * @extends Y.Plugin.Base
+     * @class plugin to add a tab for remove tabview
+     * @constructor
+     */
+    var ResizeTabViewLinks = function() {
+        RemoveTab.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(ResizeTabViewLinks, Plugin.Base, {
+        /** @lends Y.Wegas.Removetab# */
+        // *** Private fields *** //
+        /**
+         * @function
+         * @private
+         * @description 
+         */
+        initializer: function() {
+            this.afterHostEvent(['addChild', 'removeChild', 'render'], this.resizeTabs);
+        },
+        resizeTabs: function() {
+            var tabView = this.get('host');
+            Y.once("domready", function() {
+                tabView.get(CONTENTBOX).all("> ul > li").setStyle("width", (100 / tabView.size()) + "%");
+            });
+        }
+    }, {
+        NS: "ResizeTabViewLinks",
+        NAME: "ResizeTabViewLinks"
+    });
+    Y.namespace("Plugin").ResizeTabViewLinks = ResizeTabViewLinks;
 });
