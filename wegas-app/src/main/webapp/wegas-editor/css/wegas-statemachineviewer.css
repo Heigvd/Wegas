@@ -25,11 +25,14 @@
 .scrollable.mousedown:hover {
     cursor: url(../../wegas-editor/images/closedhand.png), hand;
 }
+.yui3-scrollview-scrollbar {
+    opacity: 1 !important;
+}
 .yui3-wegas-state {
     position:absolute;
-    display:inline-block;
-    width:70px;
-    height:50px;
+    /*display:inline-block;*/
+    width:120px;
+    height:48px;
     border:2px solid;
     border-radius: 20px;
     padding: 5px;
@@ -37,6 +40,19 @@
     background-color:rgba(244, 244, 244, 0.8);
     cursor: move;
     font-size: 0.8em;
+
+}
+.wegas-state-text {
+    word-break: break-all;
+    word-wrap:break-word;
+    height:100%;
+    display: block;
+    display: -webkit-box;
+    width: 100%;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 .sm-state{
     border-color: #072644;
@@ -187,11 +203,23 @@
     z-index:2;
     border: 1px solid lightgray;
     opacity: 0.9;
-    cursor:pointer;
-    max-width: 120px;
-    word-wrap: break-word;
+    cursor: pointer;
+    max-width: 120px;    
+    max-height: 4.5em;
     font-size: 0.8em;
-    border-radius: 4px;
+    border-radius: 4px;    
+    display: block;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-all;
+    word-wrap:break-word;
+}
+.transition-label:empty {
+    padding: 0;
+    border: 0;
 }
 .transition-toolbox {
     z-index:8;
