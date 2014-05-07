@@ -26,7 +26,7 @@
     position: relative;
     margin: 0;
     padding: 0;
-    max-width: 100px;
+    max-width: 120px;
 }
 .yui3-skin-sam  .yui3-tab-label {
     border-top-right-radius: 5px;
@@ -115,6 +115,7 @@
     cursor:pointer;
     width:100%;
     padding:0;
+    max-width: none;
 }
 .yui3-skin-sam .horizontal-tabview .yui3-tab a.yui3-tab-label  {
     background: none;
