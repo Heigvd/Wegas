@@ -247,12 +247,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 if (Y.Lang.isFunction(callback)) {
                     callback(pageLoader.get("widget"));
                 }
-                this.treeView.some(function() {
-                    if (this.item && this.item(0) && this.item(0).get("data.widget") === pageLoader.get("widget")) {
-                        this.fire("click");
-                        return true;
-                    }
-                });
             }, this);
             this.get("pageLoader").set("pageId", pageId);
         },
@@ -298,8 +292,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     data.widget = widget;
                     PageTreeviewToolbarMenu.superclass.onTreeViewSelection.call(this, e);
                 }, this));
-                //return;
-
             } else if (widget && !widget.get("destroyed")) {
                 widget.get(BOUNDING_BOX).scrollIntoView();
                 PageTreeviewToolbarMenu.superclass.onTreeViewSelection.call(this, e);

@@ -36,7 +36,8 @@ public class DownloadController {
         return Response.ok(new StreamingOutput() {
             @Override
             public void write(OutputStream out) throws IOException, WebApplicationException {
-                out.write(data.getBytes(Charset.forName("ISO-8859-1")));
+                out.write(new byte[]{(byte) 0xEF, (byte) 0xBB, (byte) 0xBF}); //UTF8 BOM
+                out.write(data.getBytes(Charset.forName("UTF-8")));
             }
         }, contentType).header("Content-Disposition", "attachment; filename=" + filename).build();
     }

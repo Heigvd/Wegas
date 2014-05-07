@@ -37,6 +37,10 @@ YUI.add('wegas-pageeditor', function(Y) {
         initializer: function() {
             this.handlers = [];
             this.fixedHandlers = [];
+            /**
+             * Store user enabled active edition
+             */
+            this.isActive = false;
             if (!Y.Wegas.Facade.Page.cache.editable) {
                 Y.later(100, this, function(o, plug) {
                     o.unplug(plug);
@@ -170,8 +174,13 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.overlayMask.append(this.highlightOverlay.get(BOUNDINGBOX));
             this.fixedHandlers.push(this.doBefore("pageIdChange", function(e) {
                 if (this.get("host") === e.target) {
+                    this.isActive = this.isActive || this.designButton.get("pressed");
                     this.designButton.set("pressed", false);
                 }
+            }));
+            this.fixedHandlers.push(this.doAfter("contentUpdated", function(e) {
+                    this.designButton.set("pressed", this.isActive);
+                    this.isActive = false;
             }));
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).after("mouseout", function(e) {
                 if (!PageEditor.inRegion(e.currentTarget, [e.clientX, e.clientY])) {
