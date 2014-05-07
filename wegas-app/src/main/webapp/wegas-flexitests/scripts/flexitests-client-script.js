@@ -69,7 +69,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                     }
                 }
             ]
-        }
+        },{},{} //last two are removed
     ];
     Y.Wegas.ChoiceList.EDITMENU = [{
             type: "Button",
@@ -123,7 +123,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                     fn: "DeleteLayoutWidgetAction"
                 }
             ]
-        }
+        }, {}
     ];
     Y.Wegas.List.EDITMENU = [{
             type: "Button",
@@ -181,7 +181,7 @@ Y.use(["wegas-flexitests-controller", "wegas-text", "wegas-image", "wegas-layout
                     fn: "DeleteLayoutWidgetAction"
                 }
             ]
-        }
+        },{}
     ];
     Y.Wegas.Image.ATTRS.plugins = Y.clone(Y.Wegas.Text.ATTRS.plugins);
     Y.Wegas.Image.ATTRS.plugins._inputex.items.push({
