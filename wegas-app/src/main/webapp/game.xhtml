@@ -64,7 +64,8 @@
                     app.render();                                               // Render app
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
-                        Y.config.win.location.reload();                         // reload the page (user will be redirected since hes registered)
+                        Y.config.win.location = app.get("base")
+                                + "game.html?token=" + e.get("game").get("token"); // redirect user since he's registered
                     });
                 });
             </script>
