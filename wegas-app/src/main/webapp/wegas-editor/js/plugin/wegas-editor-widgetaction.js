@@ -77,13 +77,16 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
                 Plugin.EditEntityAction.showEditFormOverlay();
                 var i, plugins = {}, pls, plugin, cfg, oldCfg = entity.get("root").toObject();
-                entity.setAttrs(val);
                 /* Retrieve page's name if it has one */
                 if (val.hasOwnProperty("@pageName")) {
                     PAGEDATASOURCE.editMeta(entity.get("@pageId"), {
                         name: val["@pageName"]
+                    }, function() {
+                        PAGEDATASOURCE.fire("pageUpdated");
                     });
+                    delete val["@pageName"];
                 }
+                entity.setAttrs(val);
                 for (i = 0; i < val.plugins.length; i += 1) {
                     plugin = Y.Plugin[Y.Wegas.Plugin.getPluginFromName(val.plugins[i].fn)];
                     if (!Y.Lang.isUndefined(entity._plugins[plugin.NS])) { //that plugin exists on target
