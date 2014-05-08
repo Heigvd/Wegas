@@ -17,13 +17,17 @@ import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
+import javax.ejb.EJBException;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.shiro.SecurityUtils;
 
 /**
  *
@@ -120,7 +124,19 @@ public class RequestController implements Serializable {
      * @return the currentUser
      */
     public User getCurrentUser() {
-        return userFacade.getCurrentUser();
+        try {
+            return userFacade.getCurrentUser();
+        } catch (EJBException ex) {
+            //Failed to retrieve current user.
+            FacesContext context = FacesContext.getCurrentInstance();
+            SecurityUtils.getSubject().logout(); // invalidate cookie
+            try {
+                context.getExternalContext().redirect(((HttpServletRequest) context.getExternalContext().getRequest()).getContextPath()); // redirect to login
+            } catch (IOException ex1) {
+                //check if this happens.
+            }
+            return null;
+        }
     }
 
     /**
