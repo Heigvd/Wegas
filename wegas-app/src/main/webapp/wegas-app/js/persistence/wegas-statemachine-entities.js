@@ -273,14 +273,12 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             preStateImpact: {
-                value: null,
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Impact'
                 }
             },
             nextStateId: {
-                value: null,
                 _inputex: {
                     _type: HIDDEN
                 }
