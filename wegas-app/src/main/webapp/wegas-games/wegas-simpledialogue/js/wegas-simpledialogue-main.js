@@ -57,6 +57,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             this.displayResponse(availableActions);
         },
         displayText: function(textParts) {
+            textParts = (textParts === null || Y.Lang.isUndefined(textParts)) ? "" : textParts;
             this.get(CONTENTBOX).one('.dialogue .talk').setHTML("<p>" + textParts + "</p>");
         },
         displayResponse: function(availableActions) {
