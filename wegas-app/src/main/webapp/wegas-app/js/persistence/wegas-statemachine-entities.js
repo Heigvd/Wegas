@@ -457,6 +457,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: STRING,
                 format: HTML,
                 value: null,
+                optional: true,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 },
@@ -477,9 +478,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         getAvailableActions: function(callback) {
             var i, transitions = this.get("transitions"),
                     ctrlObj = {
-                availableActions: [],
-                toEval: 0
-            };
+                        availableActions: [],
+                        toEval: 0
+                    };
             for (i in transitions) {
                 if (transitions[i] instanceof Wegas.persistence.DialogueTransition) {
                     if (!transitions[i].get("triggerCondition")) {
@@ -529,6 +530,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: STRING,
                 format: HTML,
                 value: null,
+                optional: true,
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 },
