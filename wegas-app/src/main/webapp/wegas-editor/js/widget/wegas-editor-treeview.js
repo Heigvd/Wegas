@@ -61,6 +61,16 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     ds.sendRequest(request);
                 }
             }
+           /* this.treeView.after("addChild", function(e){
+                if(e.child.get("selected")){
+                    e.child.get("boundingBox").scrollIntoView();
+                }
+            });*/
+            this.treeView.after("*:selectedChange", function(e){
+                if(e.newVal){
+                    e.target.get("boundingBox").scrollIntoView();
+                }
+            });
         },
         /**
          * @function

@@ -509,7 +509,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     on: {
                         success: Y.bind(function() {
                             //host.hideOverlay();
-                            if (EditEntityAction.currentEntity.get("id") === entity.get("id")) {
+                            if (EditEntityAction.currentEntity && EditEntityAction.currentEntity.get("id") === entity.get("id")) {
                                 EditEntityAction.hideRightTabs();
                             } else if (entity.get("@class") === "ListDescriptor") {
                                 for (i = 0; i < entity.get("items").length; i += 1) {
