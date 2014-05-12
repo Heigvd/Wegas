@@ -13,7 +13,6 @@
 
 YUI.add("wegas-template", function(Y) {
     "use strict";
-
     var Micro = Y.Template.Micro, Wegas = Y.Wegas, AbstractTemplate;
     /**
      * @name Y.Wegas.AbstractTemplate
@@ -31,7 +30,6 @@ YUI.add("wegas-template", function(Y) {
             Y.log("syncUI()", "log", "Wegas.AbstractTemplate");
             var template = this.getTemplate(),
                     data = this.computeData();
-
             try {
                 this.get("contentBox").setHTML(template(data));
             } catch (e) {
@@ -47,13 +45,12 @@ YUI.add("wegas-template", function(Y) {
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
-
             if (desc) {
                 if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
-                    desc = desc.get("currentItem");                             // display it with the current list and the current element
+                    desc = desc.get("currentItem"); // display it with the current list and the current element
                 }
 
-                data.label = this.undefinedToEmpty(desc.getLabel());
+                //  data.label = this.undefinedToEmpty(desc.getLabel());
                 data.value = this.undefinedToEmpty(desc.getInstance().get("value"));
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
                 data.minValue = this.undefinedToEmpty(desc.get("minValue"));
@@ -63,7 +60,11 @@ YUI.add("wegas-template", function(Y) {
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
         getEditorLabel: function() {
-            var variable = this.get("variable.evaluated");
+            var variable;
+            if (this.get("data.label")) {
+                return this.get("data.label");
+            }
+            variable = this.get("variable.evaluated");
             if (variable) {
                 return variable.getEditorLabel();
             }
@@ -93,22 +94,25 @@ YUI.add("wegas-template", function(Y) {
             data: {
                 value: {},
                 _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                    _type: "object",
+                    label: "Options",
+                    wrapperClassName: 'inputEx-fieldWrapper',
+                    _type: "group",
+                    fields: [{
+                            name: "label",
+                            label: "label"
+                        }],
                     useButtons: true,
                     required: false
                 }
             }
         }
     });
-
     Wegas.Template = Y.Base.create("wegas-template", AbstractTemplate, [], {
         /*@lends Y.Wegas.Template#*/
         TEMPLATES: {},
         getTemplate: function() {
             var template = this.get("custom"),
                     hashCode = "" + Wegas.Helper.hashCode(template);
-
             if (Y.Lang.isUndefined(this.TEMPLATES[hashCode])) {
                 this.TEMPLATES[hashCode] = Micro.compile(template);
             }
@@ -128,12 +132,12 @@ YUI.add("wegas-template", function(Y) {
         }
     });
     Wegas.ValueboxTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-valuebox'><label><%= this.label || '{label}'%></label</div><br/></label><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
+        TEMPLATE: Micro.compile("<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><br/><% } %><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
                 "<div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
                 "</div></div>")
     });
     Wegas.BoxTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-box'><label><%= this.label || '{label}'%></label><br/>"
+        TEMPLATE: Micro.compile("<div class='wegas-template-box'><% if(this.label){ %><label><%= this.label %></label><br/><% } %>"
                 + "<div class='wegas-template-box-units'><% for(var i=0; i < this.value; i+=1){%>" +
                 "<div class='wegas-template-box-unit'></div><% } %></div>" +
                 "<span class='wegas-template-box-value'>"
@@ -142,19 +146,18 @@ YUI.add("wegas-template", function(Y) {
                 + ")</span></div>")
     });
     Wegas.NumberTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-text'><span><%= this.label || '{label}' %></  span><br/><span><%= this.value || '{value}' %></span></div>")
+        TEMPLATE: Micro.compile("<div class='wegas-template-text'><% if(this.label){ %><span><%= this.label %></  span><br/><% } %><span><%= this.value || '{value}' %></span></div>")
     });
     Wegas.TitleTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
         TEMPLATE: Micro.compile("<div class='wegas-template-title'><%= this.label || '{label}'%></div>")
     });
     Wegas.FractionTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
         TEMPLATE: Micro.compile("<div class='wegas-template-fraction'>"
-                + "<label><%= this.label || '{label}'%></label>"
+                + "<% if(this.label){ %><label><%= this.label %> </label><% } %>"
                 //+ "<%= (this.minValue || '{minValue}')%> /"
                 + "<%= (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>")
     });
     Wegas.TextTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div><%== this.value || 'Unable to find text' %></div>")
+        TEMPLATE: Micro.compile("<div><%== this.value || 'Unable to find value' %></div>")
     });
-
 });
