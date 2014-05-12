@@ -252,6 +252,10 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     if (this.get("library") === "CSS") {
                                         this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
                                     }
+
+                                    if (this.get("library") === "ClientScript") {
+                                        eval(this.aceField.getValue());
+                                    }
                                     this.syncUI();
                                 },
                                 failure: function() {
