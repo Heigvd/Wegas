@@ -31,7 +31,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         /**
          * Content box of this widget, static
          */
-        CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px"><canvas class="background-percent" height="50px" width="100px"></canvas><canvas class="gauge" style="margin-left: -100px;" height="50px" width="100px"></canvas><center class="label"></center><center class="percent wegas-gauge-value"></center></div>',
+        CONTENT_TEMPLATE: '<div style="text-align: center;line-height:3px;min-width:100px"><canvas class="background-percent" height="50px" width="100px"></canvas><canvas class="gauge" style="margin-left: -100px;" height="50px" width="100px"></canvas><center class="label"></center><center class="percent wegas-gauge-value"></center></div>',
         /**
          * Maximum value displayed by the gauge, static
          */
