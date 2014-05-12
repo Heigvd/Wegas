@@ -208,7 +208,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.highlightOverlay.hide();
                 this.shownOverlay.hide();
                 widget = Y.Widget.getByNode(//Find a parent Wegas widget or self
-                        Y.Node(window.document.elementFromPoint(e.clientX, e.clientY)).ancestor(".wegas-widget", true)
+                        Y.Node(window.document.elementFromPoint(e.clientX, e.clientY)).ancestor(".wegas-widget-editable", true)
                         );
                 this.overlayMask.show();
                 if (vis) {

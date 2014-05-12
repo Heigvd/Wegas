@@ -27,6 +27,9 @@ YUI.add("wegas-widget", function(Y) {
             if (this.get("cssClass")) {
                 bb.addClass(this.get("cssClass"));
             }
+            if (this.isEditable()) {
+                bb.addClass("wegas-widget-editable");
+            }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
                 || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
@@ -133,6 +136,9 @@ YUI.add("wegas-widget", function(Y) {
             cfg = this.toObject();
             this.destroy();
             return parent.add(cfg, index).item(0);
+        },
+        isEditable: function() {
+            return this.get("editable") || (this.get("parent") && this.get("parent").isEditable && this.get("parent").isEditable());
         }
     });
     Y.mix(Widget, {
@@ -145,7 +151,7 @@ YUI.add("wegas-widget", function(Y) {
                 plugins: [{
                         fn: "EditWidgetAction"
                     }]
-            },{
+            }, {
                 type: BUTTON,
                 label: "Copy",
                 plugins: [{
@@ -197,6 +203,10 @@ YUI.add("wegas-widget", function(Y) {
          * </ul>
          */
         ATTRS: {
+            editable: {
+                "transient": true,
+                value: false
+            },
             /**
              * Number of the page
              */
@@ -497,7 +507,7 @@ YUI.add("wegas-widget", function(Y) {
                                             }]
                                     }
                                 }]
-                        },{
+                        }, {
                             type: BUTTON,
                             label: "Variables",
                             plugins: [{

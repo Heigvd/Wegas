@@ -89,7 +89,6 @@ YUI.add('wegas-pageloader', function(Y) {
             } else {
                 this.set("pageId", this.get("pageId")); // Otherwise use pageId (in case the setter has not been called yet)
             }
-
         },
         /**
          * @function
@@ -211,6 +210,7 @@ YUI.add('wegas-pageloader', function(Y) {
                         Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {       // Load the subwidget dependencies
                             try {
                                 Y.log("Rendering new widget", "log", "Wegas.PageLoader");
+                                widgetCfg.editable = true;
                                 var widget = Y.Wegas.Widget.create(widgetCfg);  // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
                                 widget['@pageId'] = widgetCfg['@pageId'];       // @HACK set up a reference to the page
