@@ -213,9 +213,11 @@ YUI.add('wegas-entity', function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [{
+                        fn: "EntityEditMenu"
+                    }, {
                         fn: "OpenTabAction",
                         cfg: {
-                            label: "Scenario",
+                            label: "Details",
                             emptyTab: true,
                             tabSelector: '#rightTabView',
                             wchildren: [{
@@ -229,12 +231,6 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
-                                    plugins: [{
-                                            fn: "WidgetToolbar",
-                                            cfg: {
-                                                children: [{type: "Text"}]
-                                            }
-                                        }],
                                     permsList: [{
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
@@ -251,7 +247,7 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: "Open in editor",
+                label: 'Open',
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -447,9 +443,11 @@ YUI.add('wegas-entity', function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [{
+                        fn: "EntityEditMenu"
+                    }, {
                         fn: "OpenTabAction",
                         cfg: {
-                            label: "Game",
+                            label: "Details",
                             emptyTab: true,
                             tabSelector: '#rightTabView',
                             wchildren: [{
@@ -476,12 +474,6 @@ YUI.add('wegas-entity', function(Y) {
                             tabSelector: '#rightTabView',
                             wchildren: [{
                                     type: "ShareUser",
-                                    plugins: [{
-                                            fn: "WidgetToolbar",
-                                            cfg: {
-                                                children: [{type: "Text"}]
-                                            }
-                                        }],
                                     permsList: [
                                         //{
                                         //    rightLabel: "Play",

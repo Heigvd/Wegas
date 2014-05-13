@@ -276,7 +276,7 @@ body > .wegas-pageloader > .wegas-pageloader-content{
 /* Pageloader view src plugin styles */
 .wegas-pageloader > .inputEx-fieldWrapper  {
     position: absolute;
-    top: 31px;
+    top: 3em;
     bottom: 0px;
     left: 0px;
     right: 0px;

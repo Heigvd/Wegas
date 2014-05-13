@@ -13,7 +13,7 @@
 .yui3-skin-sam .yui3-tabview-panel {
     border: none;
     background: white;
-    padding:0px;
+    padding: 0px;
 }
 .yui3-skin-sam  .yui3-tab-disabled {
     opacity: 0.5;
@@ -28,10 +28,7 @@
     padding: 0;
     max-width: 120px;
 }
-.yui3-skin-sam  .yui3-tab-label {
-    border-top-right-radius: 5px;
-    border-top-left-radius: 5px;
-    background: #BBB;
+.yui3-skin-sam .yui3-tab-label {
     padding: 10px 0;
     border: none;
     font-size: 13px;
@@ -41,6 +38,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background: lightgray;
+    color: black;
 }
 .yui3-skin-sam .yui3-tab:last-child .yui3-tab-label {
     margin-right: 0;
@@ -50,10 +49,11 @@
 .yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover {
     background: white;
     color:black;
-    padding: 10px 0;
+    /*border-bottom: 2px solid black;*/
+    padding: 10px 0 12px;
 }
 .yui3-skin-sam .yui3-tabview-list{
-    border-width: 0;
+    border-bottom: none;
 }
 
 /* Tab's Removeable plugin */
@@ -63,11 +63,6 @@
 .yui3-skin-sam .yui3-tabview-removeable.yui3-tab-selected .yui3-tab-label {
     padding-right: 2em;  make room for close link 
 }*/
-.yui3-skin-sam .yui3-tab-add {
-    color: #999;
-    font: bold 120%/1 verdana;
-    margin-left: 0.25em;
-}
 .yui3-tab-remove {
     font:bold 85% Verdana;
     position: absolute;
@@ -77,11 +72,12 @@
     border:1px solid transparent;
     line-height: 1em;
     color: black;
+    right: 1.2em;
+    top: 11px;
 }
 .yui3-tab-remove:hover {
     text-decoration: none;
     border-color: black;
-    border-radius: 3px;
 }
 
 /* Icons are not displayed in tab labels */
@@ -96,6 +92,7 @@
     border: none;
     display: inline-block;
     width: 40%;
+    margin: 0;
 }
 .yui3-skin-sam .horizontal-tabview > .yui3-tabview-content > .yui3-tabview-panel {
     display:inline-block;
@@ -114,8 +111,8 @@
     margin: 0;
     cursor:pointer;
     width:100%;
-    padding:0;
-    max-width: none;
+    padding: 0;
+    max-width: none !important;
 }
 .yui3-skin-sam .horizontal-tabview .yui3-tab a.yui3-tab-label  {
     background: none;
@@ -139,14 +136,15 @@
 /** Close  all tabs */
 .yui3-skin-sam .wegas-removeTabview {
     float:right;
-    margin-right: .5em;
+    margin-top: 0.9em;
 }
 .yui3-skin-sam .wegas-removeTabview  a {
-    min-width: 0;
-    width: 5px;
-    padding: 1px 9px 3px 6px;
-    margin-bottom: 8px;
-    margin-top: 9px;
-    border-radius: 5px;
     font: bold 85% Verdana;
+    padding: 1px 4px 3px 5px;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.yui3-skin-sam .wegas-removeTabview  a:hover {
+    border: 1px solid black;
+    text-decoration: none;
 }

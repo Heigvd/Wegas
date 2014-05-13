@@ -152,13 +152,13 @@ div.inputEx-description {
     /*min-height: 56px;*/
 }
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc {
-    background: transparent;
+    background: #ededed;;
     box-shadow: none;
     margin-left: 16px;
     padding: 2px;
 }
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc.yui3-button-selected {
-    background: #0c3f71;
+    background: rgba(12, 63, 113, 0.44);;
 }
 .inputEx-WysiwigScript .inputEx-fieldWrapper,
 .inputEx-WysiwigScript .inputEx-CombineField,

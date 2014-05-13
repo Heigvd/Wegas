@@ -129,7 +129,7 @@
         "children": [{
                 "type": "TabView",
                 "id": "leftTabView",
-                "cssClass": "editor-tab",
+                "cssClass": "wegas-tabview-fullheight",
                 "children": [{
                         "type": "Tab",
                         "label": "Variables",
@@ -165,7 +165,7 @@
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",
-                "cssClass": "editor-tab",
+                "cssClass": "wegas-tabview-fullheight",
                 "children": [{
                         "type": "Tab",
                         "label": "Preview",
@@ -211,10 +211,8 @@
         "children": [{
                 "type": "TabView",
                 "id": "rightTabView",
-                "cssClass": "editor-tab",
+                "cssClass": "wegas-tabview-fullheight",
                 "plugins": [{
-                        "fn": "EmptyTab"
-                    }, {
                         "fn": "RemoveTab"
                     }]
             }]

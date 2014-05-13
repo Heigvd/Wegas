@@ -259,10 +259,13 @@ YUI.add('wegas-tabview', function(Y) {
             });
 
             //this.plug(Closable);
-            this.plug(Plugin.PopupListener, {
-                targetAttr: "panelNode",
-                alignAttr: "panelNode"
-            });
+            if (this.get("popupListener")) {
+                this.plug(Plugin.PopupListener, {
+                    targetAttr: "panelNode",
+                    alignAttr: "panelNode",
+                    filter: ["success"]
+                });
+            }
         },
         /**
          * @function
@@ -371,6 +374,9 @@ YUI.add('wegas-tabview', function(Y) {
             },
             panelNode: {
                 "transient": true
+            },
+            popupListener: {
+                value: true
             }
         }
     });
@@ -503,42 +509,42 @@ YUI.add('wegas-tabview', function(Y) {
      * @class plugin with an empty tab
      * @constructor
      */
-    var EmptyTab = function() {
-        EmptyTab.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(EmptyTab, Plugin.Base, {
-        /** @lends Y.Wegas.EmptyTab# */
-
-        // *** Private fields *** //
-        /**
-         * @function
-         * @private
-         */
-        initializer: function() {
-            var noItem;
-            this.onceAfterHostEvent("render", function() {
-                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'>No item selected</p>");
-            });
-            this.afterHostEvent("removeChild", function() {
-                if (this.get("host").isEmpty()) {
-                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'>No item selected</p>");
-                }
-            });
-            this.onHostEvent("addChild", function() {
-                noItem = Y.one("#rightTabView .wegas-noItem");
-                if (noItem) {
-                    noItem.remove();
-                }
-                if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.showPosition("right");
-                }
-            });
-        }
-    }, {
-        NS: "EmptyTab",
-        NAME: "EmptyTab"
-    });
-    Y.namespace("Plugin").EmptyTab = EmptyTab;
+//    var EmptyTab = function() {
+//        EmptyTab.superclass.constructor.apply(this, arguments);
+//    };
+//    Y.extend(EmptyTab, Plugin.Base, {
+//        /** @lends Y.Wegas.EmptyTab# */
+//
+//        // *** Private fields *** //
+//        /**
+//         * @function
+//         * @private
+//         */
+//        initializer: function() {
+//            var noItem;
+//            this.onceAfterHostEvent("render", function() {
+//                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
+//            });
+//            this.afterHostEvent("removeChild", function() {
+//                if (this.get("host").isEmpty()) {
+//                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
+//                }
+//            });
+//            this.onHostEvent("addChild", function() {
+//                noItem = Y.one("#rightTabView .wegas-noItem");
+//                if (noItem) {
+//                    noItem.remove();
+//                }
+//                if (this.get("host").isEmpty()) {
+//                    Wegas.app.widget.showPosition("right");
+//                }
+//            });
+//        }
+//    }, {
+//        NS: "EmptyTab",
+//        NAME: "EmptyTab"
+//    });
+//    Y.namespace("Plugin").EmptyTab = EmptyTab;
 
     /**
      * Plugin add a tab for remove tabview
@@ -555,8 +561,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tabs">' +
-                '<a class="yui3-tab-label ">x</a></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tabs"><a>x</a></div>',
         /**
          * @function
          * @private

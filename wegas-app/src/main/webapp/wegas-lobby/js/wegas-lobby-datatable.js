@@ -51,7 +51,34 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable.render(this.get(CONTENTBOX));
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
 
-            this.get(CONTENTBOX).addClass("yui3-skin-wegas");
+            this.get(CONTENTBOX).addClass("yui3-skin-wegas")
+                    .addClass("wegas-datatable-list");
+
+            if (this.toolbar) {
+                var toolbarNode = this.toolbar.get('header');
+                toolbarNode.append("<div class='wegas-datatable-viewbuttons'>"
+                        + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
+                        + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
+                        + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
+                        + "</div>");
+                this.buttonGroupCB = new Y.ButtonGroup({
+                    srcNode: toolbarNode.one(".wegas-datatable-viewbuttons"),
+                    type: 'radio',
+                    on: {
+                        selectionChange: Y.bind(function(e) {
+                            var button = e.target.getSelectedButtons()[0];
+                            Y.all(".wegas-datatable-viewbuttons > button").removeClass("yui3-button-selected");
+                            Y.all(".wegas-datatable-viewbuttons > ." + button.getAttribute("class").split(" ").join(".")).addClass("yui3-button-selected");
+                            Y.fire("viewChange", {button: button});
+                        }, this)
+                    }
+                }).render();
+                this.viewHandler = Y.on("viewChange", function(e) {
+                    this.get(CONTENTBOX).toggleClass("wegas-datatable-grid", e.button.hasClass("button-gridview"))
+                            .toggleClass("wegas-datatable-list", e.button.hasClass("button-listview"))
+                            .toggleClass("wegas-datatable-table", e.button.hasClass("button-tableview"));
+                }, this);
+            }
         },
         /**
          * @function
@@ -61,13 +88,15 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             var ds = this.get(DATASOURCE),
                     request = this.get("request");
             if (ds) {
-                this.updateHandler = ds.after("update", this.syncUI, this);                          // Listen updates on the target datasource
-                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);          // GLOBAL error message
+                this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
+                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
 
                 if (request) {
                     ds.sendRequest(request);
                 }
             }
+
+
         },
         /**
          * @function
@@ -89,6 +118,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         destructor: function() {
             this.dataTable.destroy();
+            this.viewHandler.detach();
             this.updateHandler.detach();
             this.failureHandler.detach();
         },
@@ -210,31 +240,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }, {
                             key: "createdTime",
                             label: "Created",
-                            width: "140px",
+                            width: "125px",
                             formatter: "date"
-                        }
-//                        {
-//                            key: "teamsCount",
-//                            label: "Teams",
-//                            width: "80px",
-//                            formatter: "count"
-//                        }, {
-//                            key: "menu",
-//                            label: " ",
-//                            sortable: false,
-//                            formatter: "menu",
-//                            allowHTML: true,
-//                            emptyCellValue: "<em>(not set)</em>"
-//                  formatter: function(o){
-//                    // just retrieve the selected Master record and return the
-//                    // "aname" column
-//                    var parent_rec = dt_master.getRecord(
-//                        dt_master.get('selectedRow') );
-//
-//                    return parent_rec.get('aname');
-//                }
-//                        }
-                    ]
+                        }]
                 }
             }
         }
@@ -251,7 +259,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 var host = this.get("host");
                 host.showOverlay();
                 host.get(DATASOURCE).sendRequest({
-                    request: "/" + Y.Wegas.Facade.User.get("currentUserId")
+                    request: "/" + Wegas.Facade.User.get("currentUserId")
                 });
             });
         }
@@ -261,25 +269,13 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
     Y.DataTable.BodyView.Formatters.icon = function(col) {
         col.className = 'wegas-lobby-datatable-icon';
-        col.sortable = false;
         return function(o) {
             return '<span class="wegas-icon ' + o.value + '"></span>';
         };
     };
-    Y.DataTable.BodyView.Formatters.link = function(col) {
-//        col.className = 'wegas-datatable-menu';
-//        col.label = " ";
-//        col.sortable = false;
+    Y.DataTable.BodyView.Formatters.link = function() {
         return function(o) {
-            return '<a href="#">' + o.value + '</span>';
-        };
-    };
-    Y.DataTable.BodyView.Formatters.menu = function(col) {
-        col.className = 'wegas-datatable-menu';
-        col.label = " ";
-        col.sortable = false;
-        return function(o) {
-            return '<span class="wegas-icon-menu"></span>';
+            return '<a href="#">' + o.value + '</a>';
         };
     };
     Y.DataTable.BodyView.Formatters.date = function() {
@@ -293,7 +289,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             return (o.value === 0) ? o.value : (o.value === -1) ? "" : o.value;
         };
     };
-
 
     /**
      * @class Open a menu on click, containing the admin edition field
@@ -390,6 +385,67 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     }, {
         NS: "EditorDTMenu",
         NAME: "EditorDTMenu",
+        ATTRS: {
+            children: {}
+        }
+    });
+
+
+    /**
+     * @class Open a menu on click, containing the admin edition field
+     * @constructor
+     */
+    Plugin.EditorDTMouseOverMenu = Y.Base.create("admin-mouseovermenu", Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent(RENDER, function() {
+                this.get(HOST).dataTable.addColumn({
+                    key: "menu",
+                    label: " ",
+                    sortable: false,
+                    className: 'wegas-datatable-menu'
+                }).delegate('mouseover', this.onMouseOver, '.yui3-datatable-data tr[data-yui3-record]', this);
+            });
+        },
+        onMouseOver: function(e) {
+            if (e.currentTarget.menu) {
+                return;
+            }
+            var host = this.get(HOST),
+                    rec = host.dataTable.getRecord(e.currentTarget), // the current Record for the clicked TR
+                    menuItems = this.get("children"),
+                    entity = rec.get("entity"),
+                    data = {
+                entity: entity,
+                dataSource: host.get(DATASOURCE)
+            };
+
+            if (entity) {
+                if (menuItems) {                                                // If there are menu items in the cfg
+                    Wegas.Editable.mixMenuCfg(menuItems, data);                 // use them
+                } else {                                                        // Otherwise
+                    menuItems = entity.getMenuCfg(data).slice(0);               // use entity default menu
+                }
+                Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                    switch (i.label) {
+                        case "Delete":
+                        case "Copy":
+                        case "Open":
+                        case "Edit":
+                        case "View":
+                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                    }
+                });
+                e.currentTarget.menu = new Wegas.List({
+                    children: menuItems
+                });
+                e.currentTarget.menu.render(e.currentTarget.one("td.yui3-datatable-col-menu"));
+            } else {
+                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
+                host.currentSelection = null;
+            }
+        }
+    }, {
+        NS: "EditorDTMouseOverMenu",
         ATTRS: {
             children: {}
         }
@@ -515,7 +571,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 emptyMessage: "No game available to play"
             });
             Wegas.PublicGameDataTable.superclass.renderUI.call(this);
-            this.plug(Plugin.WidgetToolbar);
+            //this.plug(Plugin.WidgetToolbar);
             this.plug(Plugin.RequestDT);
             this.plug(Plugin.EditorDTMenu, {
                 children: [{
@@ -524,6 +580,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         plugins: [{
                                 fn: "OpenTabAction",
                                 cfg: {
+                                    label: "Public games",
                                     tabSelector: "#rightTabView",
                                     emptyTab: true,
                                     wchildren: [{

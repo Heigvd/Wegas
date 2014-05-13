@@ -898,7 +898,7 @@ YUI().use(function(Y) {
                     ws_provides: "ShareUser"
                 },
                 'wegas-lobby-datatable': {
-                    requires: 'datatable',
+                    requires: ['datatable', 'button-group'],
                     ws_provides: "GameDataTable"
                 }
             }

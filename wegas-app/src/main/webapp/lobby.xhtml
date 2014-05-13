@@ -6,10 +6,9 @@
     <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
         <ui:define name="head">
-            <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby-min.css" />-->
+             <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby.css" />-->
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-editor/css/wegas-editor-min.css&amp;/wegas-lobby/css/wegas-lobby-min.css" />
-
         </ui:define>
 
         <ui:define name="body">
@@ -73,6 +72,7 @@
 
                     app.after("render", function() {
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {// On center tab change,
+                            Y.Widget.getByNode(".wegas-layout-right > .wegas-widget").unplug(Y.Plugin.WidgetToolbar);
                             Y.Widget.getByNode("#rightTabView").destroyAll();   // empty right panel
                         });
 

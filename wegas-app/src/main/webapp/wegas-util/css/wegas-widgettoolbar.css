@@ -27,8 +27,8 @@
 .wegas-toolbar-header{
     vertical-align: top;
     border: none;
-    min-height: 26px;
-    position:relative;
+    min-height: 17.1px;
+    position: relative;
     overflow: hidden;
     padding: 0.5em;
 }
@@ -63,14 +63,11 @@
 }
 .wegas-toolbar .yui3-button {
     margin-right: 0.2em;
-    padding: .4em 0.8em .3em 0.6em;
+    padding: .3em 0.8em .3em 0.6em;
     /*font-size: 12px;*/
 }
 .wegas-toolbar .yui3-button:last-child {
     margin-right: 0;
-}
-.wegas-toolbar .yui3-button .wegas-icon {
-    margin: -1px 2px 0 0;
 }
 .wegas-toolbar .wegas-selectbutton {
     display:inline-block;
@@ -84,9 +81,6 @@
     margin: 1px 0;
     height: 22px;
 }
-/*.yui-skin-sam .yui-toolbar-container .yui-toolbar-selectplayer .first-child a:before {
-    content: 'Current user: ';
-}*/
 .wegas-toolbar div.inputEx-label {
     padding: 4px 1px 0 0;
 }
@@ -96,10 +90,11 @@
 }
 
 /** Status message */
-.wegas-status-message{
+.wegas-status-message {
     color: gray;
     float: right;
     margin-top: 6px;
     text-shadow: 1px 1px 0px #DDD;
     font-size: 11px;
+    margin-right: 5px;
 }

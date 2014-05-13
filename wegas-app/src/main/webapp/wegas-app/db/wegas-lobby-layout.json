@@ -100,7 +100,7 @@
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",
-                "cssClass": "editor-tab",
+                "cssClass": "wegas-tabview-fullheight",
                 "children": [{
                         "type": "Tab",
                         "id": "joinedGamesTab",
@@ -137,8 +137,6 @@
                                         }]
                                 },
                                 "plugins": [{
-                                        "fn": "EditorDTLink"
-                                    }, {
                                         "fn": "EditorDTMenu",
                                         "cfg": {
                                             "childrenf": [{
@@ -173,9 +171,6 @@
                                                                                             "editorUrl": "play.html?"
                                                                                         }
                                                                                     }]
-                                                                            }],
-                                                                        "plugins": [{
-                                                                                "fn": "WidgetToolbar"
                                                                             }]
                                                                     }]
                                                             }
@@ -200,10 +195,7 @@
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{
-                                                                                            "type": "TokenJoin",
-                                                                                            "plugins": [{
-                                                                                                    "fn": "WidgetToolbar"
-                                                                                                }]
+                                                                                            "type": "TokenJoin"
                                                                                         }]
                                                                                 }
                                                                             }]
@@ -231,19 +223,18 @@
                     }, {
                         "id": "gamesTreeViewTab",
                         "type": "Tab",
-                        "label": "Teacher",
+                        "label": "Trainer",
                         "children": [{
                                 "type": "GameDataTable",
                                 "dataSource": "Game",
                                 "cssClass": "wegas-hostedgamesdatatable",
                                 "emptyMessage": "You have not created any game yet",
                                 "plugins": [{
-                                        "fn": "EditorDTLink",
-                                        "cfg": {
-                                            "url": "host.html?"
-                                        }
+                                        "fn": "EditorDTMouseOverMenu"
                                     }, {
                                         "fn": "EditorDTMenu"
+                                    }, {
+                                        "fn": "EditorDTContextMenu"
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
@@ -274,8 +265,6 @@
                                                     }
                                                 }]
                                         }
-                                    }, {
-                                        "fn": "EditorDTContextMenu"
                                     }]
                             }]
                     }, {
@@ -305,18 +294,17 @@
                                         }, {
                                             "key": "createdTime",
                                             "label": "Created",
-                                            "width": "140px",
+                                            "width": "125px",
                                             "formatter": "date"
                                         }
                                     ]
                                 },
                                 "plugins": [{
-                                        "fn": "EditorDTLink",
-                                        "cfg": {
-                                            "url": "edit.html?"
-                                        }
-                                    }, {
                                         "fn": "EditorDTMenu"
+                                    }, {
+                                        "fn": "EditorDTContextMenu"
+                                    }, {
+                                        "fn": "EditorDTMouseOverMenu"
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
@@ -353,8 +341,6 @@
                                                     }
                                                 }]
                                         }
-                                    }, {
-                                        "fn": "EditorDTContextMenu"
                                     }]
                             }]
                     }]
@@ -363,13 +349,11 @@
     "right": {
         "width": 530,
         "children": [{
-                "type": "TabView",
-                "id": "rightTabView",
-                "cssClass": "editor-tab",
-                "plugins": [{
-                        "fn": "EmptyTab"
-                    }, {
-                        "fn": "RemoveTab"
+                "type": "List",
+                "children": [{
+                        "type": "TabView",
+                        "id": "rightTabView",
+                        "cssClass": "wegas-tabview-fullheight"
                     }]
             }]
     }
