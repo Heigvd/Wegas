@@ -309,7 +309,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             var i, j;
             for (i = 0; i < args.length; i = i + 1) {
                 if (argsCfg[i].scriptType === "string") {
-                    if (Y.Lang.isArray(args[i])) {
+                   /* if (Y.Lang.isArray(args[i])) {
                         for (j = 0; j < args[i].length; j++) {
                             args[i][j] = Y.Wegas.Helper.escapeJSString(args[i][j]);
                         }
@@ -321,7 +321,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                         args[i] = Y.JSON.stringify(args[i]);
                     } else {
                         args[i] = '"' + Y.Wegas.Helper.escapeJSString(args[i]) + '"';
-                    }
+                    }*/
+                    args[i] = Y.JSON.stringify(args[i]);
                 }
             }
             return args.join(", ");
