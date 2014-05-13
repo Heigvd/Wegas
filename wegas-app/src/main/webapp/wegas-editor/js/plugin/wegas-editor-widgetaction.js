@@ -16,7 +16,8 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             Action = Y.Plugin.Action,
             Wegas = Y.Wegas,
             WidgetAction,
-            PAGEDATASOURCE = Wegas.Facade.Page.cache;
+            PAGEDATASOURCE = Wegas.Facade.Page.cache,
+            UPDATED_MSG = "Item updated";
 
     /**
      * @class
@@ -111,11 +112,12 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                             attrs: val
                         });
                         Plugin.EditEntityAction.hideEditFormOverlay();
-                        Plugin.EditEntityAction.showFormMessage("success", "Item has been saved.");
+                        Plugin.EditEntityAction.showFormMessage("success", UPDATED_MSG);
                         this.highlight(Plugin.EditEntityAction.currentEntity, true);
                     }, this));
                 } else {
                     Plugin.EditEntityAction.hideEditFormOverlay();
+                    Plugin.EditEntityAction.showFormMessage("success", UPDATED_MSG);
                 }
             }, this), Y.bind(function(entity) {
                 if (entity) {
@@ -137,7 +139,6 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                     form.set("cfg", formCfg);
                 });
             }
-
             this.highlight(widget, true);
             form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
         },
