@@ -228,6 +228,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         hideRightTabs: function() {
             Y.Widget.getByNode("#rightTabView").destroyAll();
+            Y.Widget.getByNode(".wegas-layout-right > .wegas-widget").unplug(Y.Plugin.WidgetToolbar);
         },
         /**
          *
@@ -523,7 +524,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                                     EditEntityAction.hideRightTabs();
                                 }
                             }
-                        },this),
+                        }, this),
                         failure: Y.bind(host.defaultFailureHandler, host)
                     }
                 });
@@ -727,4 +728,45 @@ YUI.add('wegas-editor-entityaction', function(Y) {
 //            }
 //        }
 //    });
+
+
+    var EntityEditMenu = Y.Base.create("wegas-editentitytoolbar", Plugin.EntityAction, [], {
+        execute: function() {
+            var target = Y.Widget.getByNode(".wegas-layout-right > .wegas-widget"),
+                    menuItems = this.get("entity").getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
+
+            Y.Array.each(menuItems, function(i) {                               // @hack Add icons to some buttons
+                switch (i.label) {
+                    case "Delete":
+                    case "New":
+                    case "Copy":
+                    case "Open":
+                    case "Edit":
+                        i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                }
+            });
+            target.unplug(Y.Plugin.WidgetToolbar);                              // Plug & and unplug to empty menu
+            target.plug(Y.Plugin.WidgetToolbar);
+            target.toolbar.add(menuItems);                                      // Add menu items to the form
+            target.toolbar.add({
+                type: "button",
+                label: "x",
+                cssClass: "wegas-editor-closeposition",
+                on: {
+                    click: function() {
+                        target.unplug(Y.Plugin.Toolbar);
+                        Y.Widget.getByNode("#rightTabView").destroyAll();
+                    }
+                }
+            });                                                                 // Add close button
+            target.toolbar.get("header").append(target.toolbar.get("header").one(".wegas-status-message"));// @hack move status node to the very end of th enode
+        }
+    }, {
+        NS: "toolbar",
+        ATTRS: {
+            entity: {},
+            dataSource: {}
+        }
+    });
+    Y.Plugin.EntityEditMenu = EntityEditMenu;
 });

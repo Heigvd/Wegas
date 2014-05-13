@@ -13,10 +13,14 @@
     min-height: 26px;
     margin: 0;
     box-shadow: none;
-    background-color: #D7D7D7;;
+    background-color: #ededed;
+    border-radius: 0;
 }
 .yui3-skin-sam .yui3-button-primary, .yui3-skin-sam .yui3-button-selected {
-    background-color: #0c3f71;
+    /*background: #0c3f71;*/
+    background: rgba(12, 63, 113, 0.44);
+    border: none;
+    box-shadow: none;
 }
 .yui3-button[disabled], .yui3-button-disabled, .yui3-button-disabled:hover, .yui3-button-disabled:active {
     box-shadow: none;
@@ -128,4 +132,12 @@
 .wegas-icon-back {
     background-position: 0 -1552px;
 }
-
+.wegas-icon-listview {
+    background-position: 0 -1673px;
+}
+.wegas-icon-gridview {
+    background-position: 0 -1636px;
+}
+.wegas-icon-tableview {
+    background-position: 0 -1599px;
+}

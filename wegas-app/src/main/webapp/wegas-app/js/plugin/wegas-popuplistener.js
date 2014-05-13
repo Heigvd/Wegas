@@ -36,7 +36,6 @@ YUI.add('wegas-popuplistener', function(Y) {
                 width: "80%"
             };
         },
-        handlers: [],
         initializer: function() {
             var bb = this.get("host").get(this.get("targetAttr"));
 
@@ -63,6 +62,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
+            this.hideOverlay();
         },
         _show: function(event) {
             event = Y.mix(this.DEFAULT_CONFIG(), stringToObject(event), true, null, 0, false);
@@ -81,6 +81,10 @@ YUI.add('wegas-popuplistener', function(Y) {
             });
         },
         onShowMessage: function(e) {
+            if (this.get("filter") && this.get("filter").indexOf(e.level) > -1) {
+                return;
+            }
+
             if (e.level) {
                 e.content = "<div class='icon icon-" + e.level + "'>" + (e.content) + "</div>";
             }
@@ -94,14 +98,18 @@ YUI.add('wegas-popuplistener', function(Y) {
             e.halt(true);
         },
         onHideOverlay: function(e) {
+            this.hideOverlay();
+            e.halt(true);
+        },
+        hideOverlay: function() {
             this.get("host").get(this.get("targetAttr"))
                     .removeClass("wegas-loading")
                     .all("> .wegas-loading-overlay").remove(true);
-            e.halt(true);
         }
     }, {
         NS: "popuplistener",
         ATTRS: {
+            filter: {},
             targetAttr: {
                 value: "boundingBox"
             },

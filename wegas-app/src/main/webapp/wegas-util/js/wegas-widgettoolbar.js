@@ -47,6 +47,8 @@ YUI.add('wegas-widgettoolbar', function(Y) {
                     this.setStatusMessage(e.content);                           // to display in the toolbar
                     //this.messageTimer.reset();
                     e.halt(true);
+                } else {
+                    this.emptyMessage();
                 }
             });
         },
@@ -57,6 +59,8 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         destructor: function() {
             //this.messageTimer.destroy();
             this.menuBar.destroy();
+            this.get(HOST).get("contentBox").removeClass("wegas-toolbar-sibling");
+            this.get(HOST).get(BOUNDINGBOX).removeClass("wegas-hastoolbar").all(".wegas-toolbar").remove(true);
         },
         // *** Private methods *** //
         /**

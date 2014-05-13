@@ -31,7 +31,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         }]
                 });
                 this.toolbar.add({
-                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New page",
+                    label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     on: {
                         click: Y.bind(function() {
                             DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
