@@ -165,7 +165,7 @@
 .wegas-panel-fileselect .yui3-treeview-content .filter-no-match > div > .content-header{
     max-height: 0px;
 }
-.wegas-panel-fileselect .yui3-treeview-content .wegas-menu{
+.wegas-panel-fileselect .yui3-treeview-content .wegas-menu [title="Edit"] {
     display: none;
 }
 /** Skin toolbar buttons such they look like buttons **/
