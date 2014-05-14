@@ -27,14 +27,14 @@ YUI.add('wegas-inbox', function(Y) {
             TEMPLATES = {
                 inbox: {
                     tab: "<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'><div class='left'><%= this.get('from') || '<i>No sender</i>' %> </div><div class='right'><%=this.get('subject')%></div></div>",
-                    content: "<div class='msg-header'><div class='msg-subject'>Subject: <%=this.get('subject')%></div><div class='msg-from'>From: <%= this.get('from') || '<i>No sender</i>' %></div><div class='msg-attachement'><%= (this.get('attachements') && this.get('attachements').length) ? 'Attachements: ':'' %> <% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'><%= a %></a>;<% }); %></div></div><div class='msg-body'><%== this.get('body') %></div>"
+                    content: "<div class='msg-header'><div class='msg-subject'>Subject: <%=this.get('subject')%></div><div class='msg-from'>From: <%= this.get('from') || '<i>No sender</i>' %></div><div class='msg-attachement'><%= (this.get('attachements') && this.get('attachements').length) ? 'Attachements: ':'' %> <% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a %></a>;<% }); %></div></div><div class='msg-body'><%== this.get('body') %></div>"
                 },
                 /**
                  * inbox without labels.
                  */
                 clean: {
                     tab: "<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'><div class='left'><%= this.get('from') || '<i>No sender</i>' %> </div><div class='right'><%=this.get('subject')%></div></div>",
-                    content: "<div class='msg-header'><div class='msg-subject'><%=this.get('subject')%></div><div class='msg-from'><%= this.get('from') || '<i>No sender</i>' %></div><div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'><%= a %></a>;<% }); %></div></div><div class='msg-body'><%== this.get('body') %></div>"
+                    content: "<div class='msg-header'><div class='msg-subject'><%=this.get('subject')%></div><div class='msg-from'><%= this.get('from') || '<i>No sender</i>' %></div><div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'  target='_blank'><%= a %></a>;<% }); %></div></div><div class='msg-body'><%== this.get('body') %></div>"
                 }
             };
     /**
