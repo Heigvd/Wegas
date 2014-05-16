@@ -1,5 +1,15 @@
-
-Y.use("wegas-mcq-tabview", "wegas-layout-list", function() {
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+Y.use("wegas-button", "wegas-mcq-tabview", "wegas-layout-list", function() {
     Y.Wegas.TeamWidget = Y.Base.create("urba-team", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class='urba-buttons'></div><div class='urba-panel'></div></div>",
         renderUI: function() {
@@ -16,14 +26,16 @@ Y.use("wegas-mcq-tabview", "wegas-layout-list", function() {
                 paddingRight: "10px"
             });
             this.get("contentBox").one(".urba-panel").setStyles({
-                display: "inline-block"
+                display: "inline-block",
+                width: "99%"
             });
             this.handlers = {
                 update: Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this)
             };
         },
         syncUI: function() {
-            var i, resource, hasQuestions, team = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "personnes").get("items");
+            var i, resource, hasQuestions,
+                    team = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "personnes").get("items");
 
             this.buttons.destroyAll();
 
@@ -39,9 +51,10 @@ Y.use("wegas-mcq-tabview", "wegas-layout-list", function() {
                         type: "Button",
                         label: resource.get("label"),
                         on: {
-                            click: Y.bind(function(folder, e) {
+                            click: Y.bind(function(team, e) {
                                 e.target.set("selected", 2);
-                                this.renderPanel(folder);
+                                this.selectedId = team.get("id");
+                                this.renderPanel(team);
                             }, this, team[i])
                         },
                         plugins: [{
@@ -58,9 +71,15 @@ Y.use("wegas-mcq-tabview", "wegas-layout-list", function() {
                         width: "100%",
                         marginBottom: ".5em"
                     });
+                    if (this.selectedId === team[i].get("id")) {
+                        b.get("contentBox").addClass("yui3-button-selected");
+                        this.syncPanel(team[i]);
+                    }
                 }
             }
-            this.buttons.item(0).fire("click");
+            if (!this.panel) {
+                this.buttons.item(0).fire("click");
+            }
         },
         destructor: function() {
             this.buttons.destroy();
@@ -70,10 +89,7 @@ Y.use("wegas-mcq-tabview", "wegas-layout-list", function() {
             }
         },
         renderPanel: function(folder) {
-            var panelNode = this.get("contentBox").one(".urba-panel"),
-                    resource = Y.Array.find(folder.get("items"), function(d) {
-                return d instanceof Y.Wegas.persistence.ResourceDescriptor;
-            });
+            var panelNode = this.get("contentBox").one(".urba-panel");
             if (this.panel) {
                 this.panel.destroy();
                 panelNode.empty();
@@ -83,15 +99,25 @@ Y.use("wegas-mcq-tabview", "wegas-layout-list", function() {
                     content: "Variable.find('" + folder.get("name") + "')"
                 }
             });
+            this.panel.addTarget(this);
+            this.panel.render(panelNode);
+            this.syncPanel(folder);
+        },
+        syncPanel: function(folder) {
+            var panelNode = this.get("contentBox").one(".urba-panel"),
+                    resource = Y.Array.find(folder.get("items"), function(d) {
+                        return d instanceof Y.Wegas.persistence.ResourceDescriptor;
+                    });
+
+            panelNode.all(".urba-descr").remove(true);
             Y.Wegas.Facade.VariableDescriptor.cache.getWithView(resource, "Extended", {// Retrieve the reply description from the server
                 on: {
                     success: Y.bind(function(e) {
-                        panelNode.prepend("<h3>" + e.response.entity.get("label") + "</h3>"
-                                + "<div>" + e.response.entity.get("description") + "</div><br />");
+                        panelNode.prepend("<div class='urba-descr'><h3>" + e.response.entity.get("label") + "</h3>"
+                                + "<div>" + e.response.entity.get("description") + "</div><br /></div>");
                     }, this)
                 }
             });
-            this.panel.render(panelNode);
         }
     });
 });

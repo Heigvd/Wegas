@@ -199,10 +199,6 @@
     color: black;
     text-decoration: none;
 }
-.yui3-skin-sam .wegas-lobby-datatable tr td a:hover {
-    text-decoration: underline;
-    color: #072644;
-}
 .yui3-skin-sam .wegas-lobby-datatable tr[data-yui3-record]:hover {
     box-shadow: 0 0 1px #6d6d6d;
 }
@@ -217,9 +213,12 @@
 
 /* Lobby datatable: inline menu */ 
 .yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-col-menu {
-    width: 50px;
+    width: 83px;
     padding-bottom: 0;
     padding-top: 0;
+}
+.yui3-skin-sam .wegas-gamemodeldatatable .yui3-datatable-col-menu {
+    width: 107px;
 }
 .yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-col-menu .yui3-button {
     background-color: transparent;

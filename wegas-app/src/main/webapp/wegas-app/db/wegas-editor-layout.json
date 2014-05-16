@@ -213,6 +213,8 @@
                 "id": "rightTabView",
                 "cssClass": "wegas-tabview-fullheight",
                 "plugins": [{
+                        "fn": "LayoutToggleTab"
+                    }, {
                         "fn": "RemoveTab"
                     }]
             }]

@@ -434,7 +434,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 });
                 //Y.later(20, this, function() {
                 Y.later(400, this, function() { // Attach a little later so the font file has enough time to be loaded
-                    textE.attach(connector);
+                    this.attach(connector);
                     this.attr({
                         x: POS[0] - (this._element.offsetWidth / 2) + 14,
                         y: POS[1] - this._element.offsetHeight - 32

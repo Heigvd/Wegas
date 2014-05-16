@@ -85,7 +85,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                         this.layoutButton.set("pressed", false);
                         this.layoutButton.hide();
                         this.sourceButton.hide();
-                        this.refreshButton.hide();
+                        //this.refreshButton.hide();
                         this.addButton.hide();
                     }
                 }, this);
@@ -112,9 +112,9 @@ YUI.add('wegas-pageeditor', function(Y) {
                 this.addButton.render(el).plug(Y.Plugin.WidgetMenu);            /* End @HACK */
 
                 /** Refresh **/
-                this.refreshButton = new Y.Button({
+                this.refreshButton = new Y.Wegas.Button({
                     label: "<span class='wegas-icon wegas-icon-pagerefresh'></span>Refresh",
-                    visible: false
+                    cssClass: "wegas-advanced-feature"
                 }).render(el);
                 this.refreshButton.after("click", function(e) {
                     this.get("host").reload();
@@ -160,7 +160,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             this.shownOverlay.get(BOUNDINGBOX).addClass("pageditor-shownoverlay");
             this.highlightOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton'></span>");
             this.shownOverlay.get(CONTENTBOX).append("<span class='wegas-editmenubutton-icon'></span>");
-            
+
             /** MASK **/
             this.overlayMask = new Y.Node.create("<div class='pageeditor-overlay-mask'></div>");
             this.overlayMask.plug(Y.Plugin.WidgetMenu, {
@@ -179,8 +179,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
             }));
             this.fixedHandlers.push(this.doAfter("contentUpdated", function(e) {
-                    this.designButton.set("pressed", this.isActive);
-                    this.isActive = false;
+                this.designButton.set("pressed", this.isActive);
+                this.isActive = false;
             }));
             this.fixedHandlers.push(this.get("host").get(CONTENTBOX).after("mouseout", function(e) {
                 if (!PageEditor.inRegion(e.currentTarget, [e.clientX, e.clientY])) {
@@ -248,8 +248,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
 
             }, this));
-            this.handlers.push(Y.Wegas.app.after("layout:resize", function(e){
-                if(this.targetWidget){
+            this.handlers.push(Y.Wegas.app.after("layout:resize", function(e) {
+                if (this.targetWidget) {
                     this.fixedOverlay(this.targetWidget);
                 }
             }, this));

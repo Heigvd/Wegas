@@ -677,8 +677,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         }
     });
     Plugin.EditFSMAction = EditFSMAction;
-
-
+    
     /**
      * @name Y.Plugin.EditEntityAction
      * @extends Y.Plugin.EntityAction
@@ -729,7 +728,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
 //        }
 //    });
 
-
     var EntityEditMenu = Y.Base.create("wegas-editentitytoolbar", Plugin.EntityAction, [], {
         execute: function() {
             var target = Y.Widget.getByNode(".wegas-layout-right > .wegas-widget"),
@@ -762,11 +760,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             target.toolbar.get("header").append(target.toolbar.get("header").one(".wegas-status-message"));// @hack move status node to the very end of th enode
         }
     }, {
-        NS: "toolbar",
-        ATTRS: {
-            entity: {},
-            dataSource: {}
-        }
+        NS: "toolbarmenu"
     });
     Y.Plugin.EntityEditMenu = EntityEditMenu;
 });
