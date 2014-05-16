@@ -184,6 +184,10 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 }
                 EditEntityAction.currentEntity = null;
             });
+            tab.form.detach("updated");
+            tab.form.on("updated", function(e) {
+                Plugin.EditEntityAction.showFormMessage("success", "Change not saved");
+            });
 
             //tab.form.detach("cancel");
             //tab.form.on("cancel", function() {
@@ -510,7 +514,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     on: {
                         success: Y.bind(function() {
                             //host.hideOverlay();
-                            if (EditEntityAction.currentEntity.get("id") === entity.get("id")) {
+                            if (EditEntityAction.currentEntity && EditEntityAction.currentEntity.get("id") === entity.get("id")) {
                                 EditEntityAction.hideRightTabs();
                             } else if (entity.get("@class") === "ListDescriptor") {
                                 for (i = 0; i < entity.get("items").length; i += 1) {
