@@ -81,8 +81,8 @@ YUI.add("wegas-inputex-list", function(Y) {
         renderField: function(fieldOptions) {
             var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions),
                     removebutton = new Y.Wegas.Button({
-                label: '<span class="wegas-icon wegas-icon-remove"></span>'
-            });
+                        label: '<span class="wegas-icon wegas-icon-remove"></span>'
+                    });
 
             removebutton.targetField = fieldInstance;
             removebutton.get("boundingBox").addClass("wegas-removebutton");
@@ -101,8 +101,8 @@ YUI.add("wegas-inputex-list", function(Y) {
         onAdd: function(e) {
             this.addField(Y.Lang.isString(
                     this.options.addType) ? {
-                        type: this.options.addType
-                    } : this.options.addType);
+                type: this.options.addType
+            } : this.options.addType);
             this.fireUpdatedEvt();
         },
         /**
@@ -135,10 +135,10 @@ YUI.add("wegas-inputex-list", function(Y) {
         },
         setValue: function(value, fireUpdatedEvent) {
             //EditableList.superclass.setValue.apply(this, arguments);
-            this.clear();
+            this.clear(fireUpdatedEvent);
             var i;
             for (i = 0; i < value.length; i += 1) {
-                this.addPluginField(value[i].fn, value[i].cfg);
+                this.addPluginField(value[i].fn, value[i].cfg, fireUpdatedEvent);
             }
 
             if (fireUpdatedEvent) {
@@ -214,10 +214,10 @@ YUI.add("wegas-inputex-list", function(Y) {
          */
         setValue: function(value, fireUpdatedEvent) {
             //EditableList.superclass.setValue.apply(this, arguments);
-            this.clear();
+            this.clear(fireUpdatedEvent);
             var i;
             for (i = 0; i < value.length; i += 1) {
-                this.addPluginField(value[i].fn, value[i].cfg);
+                this.addPluginField(value[i].fn, value[i].cfg, fireUpdatedEvent);
             }
 
             if (fireUpdatedEvent) {
@@ -229,7 +229,7 @@ YUI.add("wegas-inputex-list", function(Y) {
          * @param {string|function} fn
          * @param {Object} value
          */
-        addPluginField: function(fn, value) {
+        addPluginField: function(fn, value, fireUpdatedEvent) {
             Y.Wegas.use({type: fn}, Y.bind(function() { //load required modules
                 var cfg, targetPlg = Y.Plugin[fn],
                         w = new Y.Wegas.Text();                                 // Use this hack to retrieve a plugin config
@@ -239,7 +239,9 @@ YUI.add("wegas-inputex-list", function(Y) {
                 cfg.value = value;
                 inputEx.use(w[targetPlg.NS].getFormCfg(), Y.bind(function(cfg) {
                     this.addField(cfg);
-                    this.fireUpdatedEvt();
+                    if (fireUpdatedEvent !== false) {
+                        this.fireUpdatedEvt();
+                    }
                 }, this, cfg, value));
             }, this));
         }
