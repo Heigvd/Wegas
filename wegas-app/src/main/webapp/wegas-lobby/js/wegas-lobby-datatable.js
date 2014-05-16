@@ -51,12 +51,12 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable.render(this.get(CONTENTBOX));
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
 
-            this.get(CONTENTBOX).addClass("yui3-skin-wegas")
-                    .addClass("wegas-datatable-list");
+            this.get(CONTENTBOX).addClass("yui3-skin-wegas");
+            //   .addClass("wegas-datatable-list");
 
             if (this.toolbar) {
                 var toolbarNode = this.toolbar.get('header');
-                toolbarNode.append("<div class='wegas-datatable-viewbuttons'>"
+                toolbarNode.append("<div class='wegas-datatable-viewbuttons wegas-advanced-feature'>"
                         + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
                         + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
                         + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
@@ -315,9 +315,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     menuItems = this.get("children"),
                     entity = rec.get("entity"),
                     data = {
-                entity: entity,
-                dataSource: host.get(DATASOURCE)
-            };
+                        entity: entity,
+                        dataSource: host.get(DATASOURCE)
+                    };
 
             Plugin.EditorDTMenu.currentGameModel = entity;                    // @hack so game model creation will work
 
@@ -415,9 +415,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     menuItems = this.get("children"),
                     entity = rec.get("entity"),
                     data = {
-                entity: entity,
-                dataSource: host.get(DATASOURCE)
-            };
+                        entity: entity,
+                        dataSource: host.get(DATASOURCE)
+                    };
 
             if (entity) {
                 if (menuItems) {                                                // If there are menu items in the cfg
@@ -451,38 +451,38 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         }
     });
 
-    Plugin.EditorDTLink = Y.Base.create("admin-menu", Plugin.Base, [], {
-        initializer: function() {
-            this.afterHostEvent(RENDER, function() {
-                var host = this.get(HOST);
-                host.dataTable.delegate('click', function(e) {
-                    var rec = host.dataTable.getRecord(e.currentTarget),
-                            entity = rec.get("entity"),
-                            url = this.get("url");
-
-                    if (entity instanceof Wegas.persistence.GameModel) {
-                        url += "gameModelId=" + entity.get("id");
-                    } else if (entity instanceof Wegas.persistence.Player) {
-                        url += "id=" + entity.get("id");
-                    } else if (entity instanceof Wegas.persistence.Team) {
-                        url += "teamId=" + entity.get("id");
-                    } else {
-                        url += "gameId=" + entity.get("id");
-                    }
-                    window.open(url);
-                    e.halt(true);
-                }, '.yui3-datatable-data tr[data-yui3-record] a', this);
-            });
-        }
-    }, {
-        NS: "EditorDTLink",
-        NAME: "EditorDTLink",
-        ATTRS: {
-            url: {
-                value: "play.html?"
-            }
-        }
-    });
+    //Plugin.EditorDTLink = Y.Base.create("admin-menu", Plugin.Base, [], {
+    //    initializer: function() {
+    //        this.afterHostEvent(RENDER, function() {
+    //            var host = this.get(HOST);
+    //            host.dataTable.delegate('click', function(e) {
+    //                var rec = host.dataTable.getRecord(e.currentTarget),
+    //                        entity = rec.get("entity"),
+    //                        url = this.get("url");
+    //
+    //                if (entity instanceof Wegas.persistence.GameModel) {
+    //                    url += "gameModelId=" + entity.get("id");
+    //                } else if (entity instanceof Wegas.persistence.Player) {
+    //                    url += "id=" + entity.get("id");
+    //                } else if (entity instanceof Wegas.persistence.Team) {
+    //                    url += "teamId=" + entity.get("id");
+    //                } else {
+    //                    url += "gameId=" + entity.get("id");
+    //                }
+    //                window.open(url);
+    //                e.halt(true);
+    //            }, '.yui3-datatable-data tr[data-yui3-record] a', this);
+    //        });
+    //    }
+    //}, {
+    //    NS: "EditorDTLink",
+    //    NAME: "EditorDTLink",
+    //    ATTRS: {
+    //        url: {
+    //            value: "play.html?"
+    //        }
+    //    }
+    //});
 
     /**
      * @class Open a menu on right click, containing the admin edition field
@@ -503,9 +503,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     menuItems = this.get("children"),
                     entity = rec.get("entity"),
                     data = {
-                entity: entity,
-                dataSource: host.get(DATASOURCE)
-            },
+                        entity: entity,
+                        dataSource: host.get(DATASOURCE)
+                    },
             menuItems = entity.getMenuCfg(data).slice(0);                       // Fetch menu items
 
             Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning

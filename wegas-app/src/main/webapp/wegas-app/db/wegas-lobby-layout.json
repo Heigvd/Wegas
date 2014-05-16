@@ -132,7 +132,7 @@
                                         }, {
                                             "key": "createdTime",
                                             "label": "Joined",
-                                            "width": "140px",
+                                            "width": "125px",
                                             "formatter": "date"
                                         }]
                                 },
