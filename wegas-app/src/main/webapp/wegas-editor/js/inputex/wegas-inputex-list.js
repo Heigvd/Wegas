@@ -51,7 +51,7 @@ YUI.add("wegas-inputex-list", function(Y) {
         setOptions: function(options) {
             ListField.superclass.setOptions.call(this, options);
             this.options.className = options.className || 'inputEx-Field inputEx-ListField';
-            this.options.addType = options.addType || "variabledescriptorsetter";
+            this.options.addType = options.addType;
         },
         /**
          * Render the addButton

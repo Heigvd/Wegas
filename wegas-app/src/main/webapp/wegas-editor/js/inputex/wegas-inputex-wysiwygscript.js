@@ -36,7 +36,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             inputEx.WysiwygScript.superclass.setOptions.call(this, options);
             this.options.className = options.className || 'inputEx-Field inputEx-WysiwigScript';
             this.options.mode = options.mode || "wysiwyg";
-            this.options.expects = options.expects || "expression";             // condition or expression
+            this.options.expects = options.expects || "statement";              // conditon/statement/getter
             this.options.classFilter = options.classFilter;
         },
         /**
@@ -171,7 +171,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 useButtons: true,
                 parentEl: this.fieldContainer,
                 addType: {
-                    type: this.options.expects, // conditon/expression/getter,
+                    type: this.options.expects, // conditon/statement/getter,
                     classFilter: this.options.classFilter
                 }
             });
