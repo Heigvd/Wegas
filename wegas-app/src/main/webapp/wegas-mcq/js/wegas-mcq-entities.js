@@ -17,12 +17,12 @@ YUI.add('wegas-mcq-entities', function(Y) {
             HTML = "html", SCRIPT = "script", NUMBER = "number",
             Wegas = Y.Wegas,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * QuestionDescriptor mapper
@@ -42,6 +42,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Label",
+                    description: "Displayed to players",
                     index: -1
                 }
             },
@@ -229,6 +230,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Label",
+                    description: "Displayed to players",
                     index: -1
                 }
             },
@@ -427,14 +429,14 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Impact"
+                                label: "Impact description"
                             }
                         },
                         impact: {
                             optional: true,
                             _inputex: {
                                 _type: SCRIPT,
-                                label: null
+                                label: "Impact"
                             }
                         },
                         choiceDescriptorId: {
@@ -539,13 +541,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Impact"
+                    label: "Impact description"
                 }
             },
             impact: {
                 _inputex: {
                     _type: SCRIPT,
-                    label: null
+                    label: "Impact"
                 }
             },
             choiceDescriptorId: {

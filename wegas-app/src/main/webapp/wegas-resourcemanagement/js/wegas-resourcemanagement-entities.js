@@ -16,12 +16,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
             COMBINE = "combine", GROUP = "group", LIST = "list",
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
     /**
      * ResourceDescriptor mapper
      */
@@ -38,7 +38,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    label: "Resource name",
+                    label: "Label",
+                    description: "Displayed to players",
                     index: -1
                 }
             },

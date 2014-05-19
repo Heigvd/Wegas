@@ -214,9 +214,6 @@ body > .wegas-pageloader > .wegas-pageloader-content{
     background: url(../../wegas-app/images/wegas-app-sprite.png) 0 -1239px no-repeat,
         url(../../wegas-app/images/wegas-app-sprite.png) 0 -1285px no-repeat;
 }
-.wegas-page-editor .wegas-icon-text {
-    background: url(../images/wegas-icon-pages.png) 2px -59px no-repeat;
-}
 .wegas-page-editor .wegas-icon-page-display {
     background: url(../images/wegas-icon-pages.png) 0 -160px no-repeat;
 }
@@ -226,7 +223,7 @@ body > .wegas-pageloader > .wegas-pageloader-content{
 .wegas-page-editor .wegas-icon-gauge {
     background: url(../images/wegas-icon-pages.png) 0 -672px no-repeat;
 }
-.wegas-page-editor .wegas-icon-variable-template {
+.wegas-page-editor .wegas-icon-wegas-template {
     background: url(../images/wegas-icon-pages.png) 1px -890px no-repeat;
 }
 .wegas-page-editor .wegas-icon-image {
