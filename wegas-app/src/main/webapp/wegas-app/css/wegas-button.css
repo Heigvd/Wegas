@@ -29,7 +29,7 @@
     vertical-align: top;
 }
 .yui3-button .wegas-icon {
-    margin: -2px 2px 0 0;
+    margin: -3px 2px 0 0;
 }
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {
     display:none !important;
@@ -46,15 +46,13 @@
     background-position: 0px 0px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-newfile {
-    background: url(../images/wegas-app-sprite.png) no-repeat 1px -1210px,
-        url(../../wegas-editor/images/wegas-icon-files.png) no-repeat 1px -228px;
+    background-position: 1px -402px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-joingame {
-    background: url(../images/wegas-app-sprite.png) no-repeat 1px -482px;
+    background-position: 1px -482px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-newdir {
-    background: url(../images/wegas-app-sprite.png) no-repeat 1px -1167px,
-        url(../images/wegas-app-sprite.png) no-repeat 1px -272px;
+    background-position: 1px -1183px;
 }
 .yui3-skin-sam .wegas-icon-play {
     background-position: 0px -192px;
@@ -128,7 +126,7 @@
 .wegas-icon-view,.wegas-icon-open {
     /*background-position: 1px -709px;     Goggles */
     background-position: 0 -1432px;
-}
+} 
 .wegas-icon-back {
     background-position: 0 -1552px;
 }

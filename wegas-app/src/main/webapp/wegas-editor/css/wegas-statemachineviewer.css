@@ -33,7 +33,7 @@
     width:120px;
     height:48px;
     border:2px solid;
-    border-radius: 20px;
+    border-radius: 15px;
     padding: 5px;
     z-index: 5;
     background-color:rgba(244, 244, 244, 0.8);
@@ -41,8 +41,6 @@
     font-size: 0.8em;
 }
 .wegas-state-text {
-    word-break: break-all;
-    word-wrap:break-word;
     height:100%;
     display: block;
     display: -webkit-box;
