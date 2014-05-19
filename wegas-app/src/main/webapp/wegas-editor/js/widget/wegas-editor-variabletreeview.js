@@ -127,13 +127,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'ChoiceDescriptor':
                     children = Y.Array.map(entity.get("results"), function(result) {
                         return {
-                            label: "Result: " + result.get(NAME),
+                            label: result.get(NAME),
                             selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
                             data: {
                                 entity: result,
                                 parentEntity: entity
                             },
-                            iconCSS: "wegas-icon-variabledescriptor"
+                            iconCSS: "wegas-icon-result"
                         };
                     }, this);
                     return {
