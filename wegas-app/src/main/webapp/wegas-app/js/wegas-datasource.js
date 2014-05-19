@@ -1259,7 +1259,7 @@ YUI.add('wegas-datasource', function(Y) {
         _successHandler: function(e) {
             Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
         },
-        _failureHandler: function(e) {           
+        _failureHandler: function(e) {
         }
     });
     Plugin.PageCache = PageCache;

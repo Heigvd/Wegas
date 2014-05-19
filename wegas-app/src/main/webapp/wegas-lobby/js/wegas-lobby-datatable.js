@@ -51,18 +51,17 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable.render(this.get(CONTENTBOX));
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
 
-            this.get(CONTENTBOX).addClass("yui3-skin-wegas");
-            //   .addClass("wegas-datatable-list");
+            this.get(CONTENTBOX).addClass("yui3-skin-wegas")
+                    .addClass("wegas-datatable-table");
 
             if (this.toolbar) {
-                var toolbarNode = this.toolbar.get('header');
-                toolbarNode.append("<div class='wegas-datatable-viewbuttons wegas-advanced-feature'>"
+                this.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons wegas-advanced-feature'>"
                         + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
                         + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
                         + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
                         + "</div>");
                 this.buttonGroupCB = new Y.ButtonGroup({
-                    srcNode: toolbarNode.one(".wegas-datatable-viewbuttons"),
+                    srcNode: this.toolbar.get('header').one(".wegas-datatable-viewbuttons"),
                     type: 'radio',
                     on: {
                         selectionChange: Y.bind(function(e) {
@@ -73,7 +72,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }, this)
                     }
                 }).render();
-                this.viewHandler = Y.on("viewChange", function(e) {
+                this.viewHandler = Y.on("viewChange", function(e) {             // Global handler so any button fired will trigger view change
                     this.get(CONTENTBOX).toggleClass("wegas-datatable-grid", e.button.hasClass("button-gridview"))
                             .toggleClass("wegas-datatable-list", e.button.hasClass("button-listview"))
                             .toggleClass("wegas-datatable-table", e.button.hasClass("button-tableview"));
@@ -95,8 +94,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     ds.sendRequest(request);
                 }
             }
-
-
         },
         /**
          * @function
@@ -296,16 +293,32 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      */
     Plugin.EditorDTMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
+            this.currentSelection = -1;                                         // Remember currently selected id
+
             this.afterHostEvent(RENDER, function() {
                 var host = this.get(HOST);
-                host.dataTable.addAttr("selectedRow", {value: null});
 
+                host.dataTable.addAttr("selectedRow", {value: null});
                 host.dataTable.delegate('click', function(e) {
                     this.set('selectedRow', e.currentTarget);
                 }, '.yui3-datatable-data tr[data-yui3-record]', host.dataTable);
-
                 host.dataTable.after('selectedRowChange', this.onClick, this);
+
+                this.addedHandler = host.get(DATASOURCE).after("added", function(e) {// When an entity is created
+                    this.currentSelection = e.entity.get("id");                 // view it in the table
+                }, this);
             });
+            this.doAfter("syncUI", function() {
+                this.get("host").dataTable.get("data").each(function(r) {
+                    if (this.currentSelection === r.get("entity").get("id")) {
+                        host.dataTable.getRow(r).addClass("wegas-datatable-selected");
+                        //host.get(CONTENTBOX).all("wegas-datatable-selected").removeClass("wegas-datatable-selected");
+                    }
+                }, this);
+            });
+        },
+        destructor: function() {
+            this.addedHandler.detach();
         },
         onClick: function(e) {
             var host = this.get(HOST), button,
@@ -321,9 +334,13 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             Plugin.EditorDTMenu.currentGameModel = entity;                    // @hack so game model creation will work
 
-            if (last_tr) {
-                last_tr.removeClass("wegas-datatable-selected");
-            }
+            //if (last_tr) {
+            //    last_tr.removeClass("wegas-datatable-selected");
+            //}
+            host.get(CONTENTBOX).all("wegas-datatable-selected").removeClass("wegas-datatable-selected");
+
+            this.currentSelection = entity.get("id");
+
             tr.addClass("wegas-datatable-selected");
             if (entity) {
                 if (menuItems) {                                                // If there are menu items in the cfg
@@ -335,51 +352,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 button = Wegas.Widget.create(menuItems[0]);
                 button.render().fire("click");                                  // launch first button action
                 button.destroy();
-
-                //Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
-                //    switch (i.label) {
-                //        case Delete:
-                //        case Open in editor:
-                //        case Open:
-                //        case View:
-                //            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                //    }
-                //});
-                //if (menuItems.length === 0) {
-                //    return;
-                //}
-                //if (this.buttons) {
-                //    this.buttons.each(function(b) {                             // Remove existing buttons,
-                //        b.destroy();
-                //    });
-                //}
-                //this.buttons = Y.Array.map(menuItems, function(i) {           // Add new buttons to the toolbar
-                //    return host.toolbar.add(i);
-                //});
-                //if (this.get("autoClick")) {                                    // If we are in autoclick,
-
-                //Y.once("rightTabShown", function() {
-                //    var target = Y.Widget.getByNode("#rightTabView").item(0).witem(0);
-                //    if (target && !target.toolbar) {
-                //        target = target.item(0);
-                //    }
-                //
-                //    if (target && target.toolbar) {
-                //        this.buttons = target.toolbar.add(menuItems);       // Add new buttons to the right tab's toolbar
-                //
-                //        this.buttons.item(0).set("visible", false);
-                //        if (this.buttons.item(1))
-                //            this.buttons.item(1).get(CONTENTBOX).setStyle("marginLeft", "15px");
-                //    }
-                //}, this);
-
-                //var button = Wegas.Widget.create(menuItems[0]);
-                //button.render().fire("click");                              // launch first button action
-                //button.destroy();
-                //}
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
-                host.currentSelection = null;
+                this.currentSelection = null;
             }
         }
     }, {
