@@ -580,7 +580,6 @@ YUI.add('wegas-tabview', function(Y) {
         },
         onAddClick: function(e) {
             e.stopPropagation();
-            Wegas.app.widget.hidePosition("right");
             this.get('host').destroyAll();
         }
     }, {
