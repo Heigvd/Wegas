@@ -91,19 +91,19 @@ YUI.add('wegas-inbox', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     delBtn;
-            this.tabView = new Y.TabView(); // TabView widget used to display messages
-            this.tabView.render(cb); // and render it
-            this.tabView.get("boundingBox").addClass("horizontal-tabview"); // Add class to have horizontal tabview
+            this.tabView = new Y.TabView();                                     // TabView widget used to display messages
+            this.tabView.render(cb);                                            // and render it
+            this.tabView.get("boundingBox").addClass("horizontal-tabview");     // Add class to have horizontal tabview
             cb.append("<div style='clear:both'></div>");
             if (this.toolbar) {
                 delBtn = new Y.Wegas.Button({
                     label: "<span class='wegas-icon wegas-icon-cancel'></span>" + this.jsTranslator.getRB().Delete
-                }); // Create delete mail button
-                delBtn.on("click", function() { // On delete button click
+                });                                                             // Create delete mail button
+                delBtn.on("click", function() {                                 // On delete button click
                     var selection = this.tabView.get("selection");
-                    if (selection && !selection.msg // If a valid mail tab is selected
+                    if (selection && !selection.msg                             // If a valid mail tab is selected
                             && confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue?')) { // and user is sure
-                        this.deleteEmail(selection.msg); // destroy the message
+                        this.deleteEmail(selection.msg);                        // destroy the message
                     }
                 }, this);
                 this.toolbar.add(delBtn);
@@ -168,7 +168,9 @@ YUI.add('wegas-inbox', function(Y) {
         updateTabView: function(entities) {
             var selection = this.tabView.get("selection"),
                     oldMsg = selection && selection.msg;
+            this.isDestroying = true;
             this.tabView.destroyAll();
+            this.isDestroying = false;
             if (entities.length === 0) {
                 this.tabView.add(new Y.Tab({
                     label: '',
@@ -182,11 +184,11 @@ YUI.add('wegas-inbox', function(Y) {
                 });
                 this.tabView.add(tab);
                 tab.msg = entity;
-                if (oldMsg && oldMsg.get("id") === entity.get("id")) { // If the current tab was selected before sync,
+                if (oldMsg && oldMsg.get("id") === entity.get("id")) {          // If the current tab was selected before sync,
                     tab.set("selected", 2);
                 }
             }, this);
-            if (!this.tabView.get("selection")) { // Select the first tab by default
+            if (!this.tabView.get("selection")) {                               // Select the first tab by default
                 this.tabView.selectChild(0);
             }
         },
@@ -221,10 +223,10 @@ YUI.add('wegas-inbox', function(Y) {
          */
         onTabSelected: function(e) {
             var tab = e.newVal;
-            if (this.timer) { // If there is an active unread message timer,
-                this.timer.cancel(); // cancel it.
+            if (this.timer) {                                                   // If there is an active unread message timer,
+                this.timer.cancel();                                            // cancel it.
             }
-            if (tab && tab.msg) {
+            if (tab && tab.msg && !this.isDestroying) {
                 this.dataSource.sendRequest({//                                 // Retrieve the message body from the server
                     request: "/Inbox/Message/" + tab.msg.get("id") + "?view=Extended",
                     cfg: {
@@ -236,12 +238,12 @@ YUI.add('wegas-inbox', function(Y) {
                         }, this)
                     }
                 });
-                if (tab.msg.get("unread")) { // If the message is currently unread,
+                if (tab.msg.get("unread")) {                                    // If the message is currently unread,
                     this.timer = Y.later(this.get("setToReadAfter") * 1000, this,
-                            function(tab) { // Send a request to mark it as read
+                            function(tab) {                                     // Send a request to mark it as read
                                 Y.log("Sending message read update", "info", "InboxDisplay");
                                 tab.get("contentBox").one(".unread").removeClass("unread").addClass("read"); // Immediately update view (before request)
-                                tab.msg.set("unread", false); // Update the message (since there wont be no sync?)
+                                tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
                                 this.readRequestTid = this.dataSource.sendRequest({// Send reqest to mark as read
                                     request: "/Inbox/Message/Read/" + tab.msg.get("id"),
                                     cfg: {
