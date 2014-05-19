@@ -24,18 +24,10 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         /**
          *
          */
-        destroy: function() {
-            this.exprList.destroy();
-            this.viewSrc.destroy();
-            inputEx.WysiwygScript.superclass.destroy.call(this);
-        },
-        /**
-         *
-         */
         setOptions: function(options) {
             inputEx.WysiwygScript.superclass.setOptions.call(this, options);
             this.options.className = options.className || 'inputEx-Field inputEx-WysiwigScript';
-            this.options.mode = options.mode || "wysiwyg";
+            this.options.mode = options.mode || "wysiwyg";                      // wysywig / text
             this.options.expects = options.expects || "statement";              // conditon/statement/getter
             this.options.classFilter = options.classFilter;
         },
@@ -90,8 +82,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 if (!this.viewSrc.get("disabled")) {
                     if (this.options.mode === "wysiwyg") {                      // If current mode is wysiwyg
                         this.updateTextarea();                                  // update textatea content
-                    } else {
-                        this.updateExpressionList();
+                    } else if (!this.updateExpressionList()) {
+                        return;
                     }
                     this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
                 }
@@ -106,10 +98,18 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 if (this.options.mode === "text") {
                     this.updateExpressionList();
                 }
-            }, this);                // Whenever the value is updated, we synchronize the UI
+            }, this);                                                           // Whenever the value is updated, we synchronize the UI
 
             this.updateExpressionList();                                        // Synchronize the wysiwig list
             this.setMode(this.options.mode);                                    // Set the default mode (wysiwyg or source)
+        },
+        /**
+         *
+         */
+        destroy: function() {
+            this.exprList.destroy();
+            this.viewSrc.destroy();
+            inputEx.WysiwygScript.superclass.destroy.call(this);
         },
         /**
          *
@@ -134,7 +134,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         updateTextarea: function() {
             if (this.options.mode === "wysiwyg") {                              // If current mode is wysiwyg
                 inputEx.AceField.prototype.setValue.call(this, this.getValue().content);// update textatea content
-                //this.el.value = ;                        
             }
         },
         updateExpressionList: function() {
@@ -152,37 +151,38 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 for (i = 0; i < tree.body.length; i = i + 1) {
                     fields = fields.concat(this.generateExpression(tree.body[i].expression));
                 }
+                
+                this.viewSrc.set("disabled", false);
+
+                if (this.exprList) {
+                    this.exprList.destroy();
+                }
+                this.exprList = Y.inputEx({//                                       // Render the expression as a Y.inputEx.Wegas.ListField
+                    type: "listfield",
+                    fields: fields,
+                    useButtons: true,
+                    parentEl: this.fieldContainer,
+                    addType: {
+                        type: this.options.expects, // conditon/statement/getter,
+                        classFilter: this.options.classFilter
+                    }
+                });
+                this.exprList.on("updated", function() {                            // Whenever the list is update,
+                    if (this.options.mode === "wysiwyg") {
+                        this.fireUpdatedEvt();                                      // fire updated event
+                    }
+                }, this);
+
+                if (this.options.mode !== "wysiwyg") {
+                    this.exprList.hide();
+                }
+                return true;
             } catch (e) {
                 //Y.error("Error evaluating line: " + window.escodegen.generate(tree.body[i].expression, {indent: true}));
                 this.setMode("text");
-                this.viewSrc.set("disabled", true);
-                container.one(".msg").setContent("Unable to read this impact, displaying source only.");
+//                this.viewSrc.set("disabled", true);
+                container.one(".msg").setContent("Unable to read impact, displaying sources");
                 return;
-            }
-
-            this.viewSrc.set("disabled", false);
-
-            if (this.exprList) {
-                this.exprList.destroy();
-            }
-            this.exprList = Y.inputEx({//                                       // Render the expression as a Y.inputEx.Wegas.ListField
-                type: "listfield",
-                fields: fields,
-                useButtons: true,
-                parentEl: this.fieldContainer,
-                addType: {
-                    type: this.options.expects, // conditon/statement/getter,
-                    classFilter: this.options.classFilter
-                }
-            });
-            this.exprList.on("updated", function() {                            // Whenever the list is update,
-                if (this.options.mode === "wysiwyg") {
-                    this.fireUpdatedEvt();                                      // fire updated event
-                }
-            }, this);
-
-            if (this.options.mode !== "wysiwyg") {
-                this.exprList.hide();
             }
         },
         /**
@@ -197,7 +197,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 
                 case "Literal":
                     return expression.value;
-                    //return unesacapeJSString(expression.raw);
 
                 case "UnaryExpression":
                     return expression.operator + this.generateExpression(expression.argument);
@@ -264,19 +263,12 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             }
                             break;
                         default:
-                            //return new MethodSelect({
-                            //    object: this.generateExpression(expression.callee.object),
-                            //    name: expression.callee.property.value,
-                            //    arguments: expression.callee.arguments
                             var vdSelect = this.generateExpression(expression.callee.object), args = [];
 
                             Y.Array.each(expression.arguments, function(i) {
                                 args.push(this.generateExpression(i));
                             }, this);
                             Y.mix(vdSelect, {
-                                //type: "variabledescriptormethodselect",
-                                //object: this.generateExpression(expression.callee.object),
-                                //fields: [],
                                 method: expression.callee.property.name,
                                 arguments: args
 
