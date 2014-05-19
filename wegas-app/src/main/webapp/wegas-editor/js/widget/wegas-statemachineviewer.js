@@ -207,11 +207,11 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             var state, region = this.get(CONTENT_BOX).one('.scrollable').get('region'),
                     id = 0,
                     cfg = {
-                editorPosition: new Wegas.persistence.Coordinate({
-                    x: parseInt(region.width / 2 + this.scrollView.get('scrollX')),
-                    y: parseInt(region.height / 2 + this.scrollView.get('scrollY'))
-                })
-            };
+                        editorPosition: new Wegas.persistence.Coordinate({
+                            x: parseInt(region.width / 2 + this.scrollView.get('scrollX')),
+                            y: parseInt(region.height / 2 + this.scrollView.get('scrollY'))
+                        })
+                    };
             Y.Object.each(this.get(ENTITY).get(STATES), function(s, key) {      // Lookup for an available id for the new state
                 id = Math.max(id, +key);
             });
@@ -239,26 +239,26 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this._saveTimer = Y.later(100, this, function() {
                 var entity = this.get(ENTITY),
                         DEFAULTCB = {
-                    success: Y.bind(function() {
-                        this._saveOngoing = false;
-                        if (this._saveWaiting) {
-                            this.save();
-                        }
+                            success: Y.bind(function() {
+                                this._saveOngoing = false;
+                                if (this._saveWaiting) {
+                                    this.save();
+                                }
 
-                        this.highlightUnusedStates();
-                        this.hideOverlay();
-                    }, this),
-                    failure: Y.bind(function(e) {
-                        this._saveOngoing = false;
-                        if (this._saveWaiting) {
-                            this.save();
-                        }
-                        this.showMessage("error", e.response.data.message);
+                                this.highlightUnusedStates();
+                                this.hideOverlay();
+                            }, this),
+                            failure: Y.bind(function(e) {
+                                this._saveOngoing = false;
+                                if (this._saveWaiting) {
+                                    this.save();
+                                }
+                                this.showMessage("error", e.response.data.message);
 
-                        this.highlightUnusedStates();
-                        this.hideOverlay();
-                    }, this)
-                };
+                                this.highlightUnusedStates();
+                                this.hideOverlay();
+                            }, this)
+                        };
                 if (entity) {
                     //this.showOverlay();
                     //if (this._saveOngoing) {
@@ -377,9 +377,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
         renderUI: function() {
             this.get(BOUNDING_BOX).addClass(this.get(ENTITY) instanceof Wegas.persistence.DialogueState ? "sm-dialoguestate" : "sm-state")
                     .setStyles({
-                left: this.get(ENTITY).get("editorPosition").get("x") + "px",
-                top: this.get(ENTITY).get("editorPosition").get("y") + "px"
-            });
+                        left: this.get(ENTITY).get("editorPosition").get("x") + "px",
+                        top: this.get(ENTITY).get("editorPosition").get("y") + "px"
+                    });
         },
         syncUI: function() {
             var entity = this.get(ENTITY),
@@ -438,6 +438,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             }, ".state-initial", this);
             bb.on('click', function() {                                         // Label click
                 Plugin.EditEntityAction.hideRightTabs();
+                this.editionHighlight();
                 Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
             }, this);
 
@@ -456,6 +457,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                     }, this)
                 });
             }
+        },
+        editionHighlight: function() {
+            Y.all(".wegas-editing").removeClass("wegas-editing");
+            this.get(BOUNDING_BOX).addClass("wegas-editing");
         },
         onSelectTransitionMenu: function(type) {
             if (this.source !== null) {
@@ -608,10 +613,12 @@ YUI.add('wegas-statemachineviewer', function(Y) {
 
             this.connection.canvas.onclick = Y.bind(function() {                // Show edit form on connection click
                 Plugin.EditEntityAction.hideRightTabs();
+                this.editionHighlight();
                 Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
             }, this);
             Y.one(this.connection.getLabelOverlay().getElement()).on("click", function() {// Show edit form on label click
                 Plugin.EditEntityAction.hideRightTabs();
+                this.editionHighlight();
                 Plugin.EditEntityAction.showEditForm(this.get(ENTITY), Y.bind(this.setEntity, this));
             }, this);
             Y.one(this.connection.getOverlay("toolbox").getElement()).delegate("click", function(e) {// Delete transition button click
@@ -641,6 +648,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             Plugin.EditEntityAction.hideEditFormOverlay();
             this.updateLabel();
             this.get(PARENT).get(PARENT).save();
+        },
+        editionHighlight: function() {
+            Y.all(".wegas-editing").removeClass("wegas-editing");
+            new Y.Node(this.connection.getLabelOverlay().getElement()).addClass("wegas-editing");
         },
         updateLabel: function() {
             var label, entity = this.get(ENTITY);
