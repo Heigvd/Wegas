@@ -571,7 +571,6 @@ YUI.add('wegas-tabview', function(Y) {
         initializer: function() {
             var tabview = this.get('host');
             tabview.after('render', this.afterRender, this);
-
             tabview.get(CONTENTBOX).delegate('click', this.onAddClick, '.wegas-removeTabview a', this);
         },
         afterRender: function(e) {

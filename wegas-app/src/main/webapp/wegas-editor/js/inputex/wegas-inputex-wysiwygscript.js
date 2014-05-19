@@ -72,27 +72,27 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         renderComponent: function() {
             inputEx.Script.superclass.renderComponent.call(this);
 
-            this.viewSrc = new Y.Wegas.Button({// Add the "view src" button
+            // Add the "view src" button
+            this.viewSrc = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
-                tooltip: "View source"
-            });
-            this.viewSrc.get("boundingBox").addClass("inputEx-WysiwigScript-viewsrc");
-
-            this.viewSrc.after("click", function() {
-                if (!this.viewSrc.get("disabled")) {
-                    if (this.options.mode === "wysiwyg") {                      // If current mode is wysiwyg
-                        this.updateTextarea();                                  // update textatea content
-                    } else if (!this.updateExpressionList()) {
-                        return;
-                    }
-                    this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
+                tooltip: "View source",
+                cssClass: "inputEx-WysiwigScript-viewsrc",
+                on: {
+                    click: Y.bind(function() {
+                        if (!this.viewSrc.get("disabled")) {
+                            if (this.options.mode === "wysiwyg") {              // If current mode is wysiwyg
+                                this.updateTextarea();                          // update textatea content
+                            } else if (!this.updateExpressionList()) {
+                                return;
+                            }
+                            this.setMode((this.options.mode === "wysiwyg") ? "text" : "wysiwyg");
+                        }
+                    }, this)
                 }
-            }, this);
-            this.viewSrc.render(this.fieldContainer);
+            }).render(this.fieldContainer);
 
-            var container = new Y.Node(this.fieldContainer);                    // Render a div where the wysiwyg list will be rendered
-            container.prepend(this.viewSrc.get("boundingBox"));
-            container.append("<em class=\"msg\"></em>");
+            new Y.Node(this.fieldContainer).prepend(this.viewSrc.get("boundingBox"))// Move view src button to the top of the the wysiwyg list 
+                    .append("<em class=\"msg\"></em>");                         // Add a div for messages
 
             this.on("updated", function() {
                 if (this.options.mode === "text") {
@@ -151,13 +151,13 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 for (i = 0; i < tree.body.length; i = i + 1) {
                     fields = fields.concat(this.generateExpression(tree.body[i].expression));
                 }
-                
+
                 this.viewSrc.set("disabled", false);
 
                 if (this.exprList) {
                     this.exprList.destroy();
                 }
-                this.exprList = Y.inputEx({//                                       // Render the expression as a Y.inputEx.Wegas.ListField
+                this.exprList = Y.inputEx({//                                   // Render the expression as a Y.inputEx.Wegas.ListField
                     type: "listfield",
                     fields: fields,
                     useButtons: true,
@@ -167,9 +167,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         classFilter: this.options.classFilter
                     }
                 });
-                this.exprList.on("updated", function() {                            // Whenever the list is update,
+                this.exprList.on("updated", function() {                        // Whenever the list is update,
                     if (this.options.mode === "wysiwyg") {
-                        this.fireUpdatedEvt();                                      // fire updated event
+                        this.fireUpdatedEvt();                                  // fire updated event
                     }
                 }, this);
 
@@ -180,7 +180,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             } catch (e) {
                 //Y.error("Error evaluating line: " + window.escodegen.generate(tree.body[i].expression, {indent: true}));
                 this.setMode("text");
-//                this.viewSrc.set("disabled", true);
+                //this.viewSrc.set("disabled", true);
                 container.one(".msg").setContent("Unable to read impact, displaying sources");
                 return;
             }

@@ -33,6 +33,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
          *
          */
         renderUI: function() {
+            this.currentSelection = -1;
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
             });                                                                 // Instantiate treeview
@@ -61,13 +62,13 @@ YUI.add('wegas-editor-treeview', function(Y) {
                     ds.sendRequest(request);
                 }
             }
-           /* this.treeView.after("addChild", function(e){
-                if(e.child.get("selected")){
-                    e.child.get("boundingBox").scrollIntoView();
-                }
-            });*/
-            this.treeView.after("*:selectedChange", function(e){
-                if(e.newVal){
+            /* this.treeView.after("addChild", function(e){
+             if(e.child.get("selected")){
+             e.child.get("boundingBox").scrollIntoView();
+             }
+             });*/
+            this.treeView.after("*:selectedChange", function(e) {
+                if (e.newVal) {
                     e.target.get("boundingBox").scrollIntoView();
                 }
             });
@@ -222,8 +223,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 case 'Team':
                     var children = this.genTreeViewElements(entity.get("players")),
                             expanded = Y.Array.find(children, function(p) {
-                        return p.selected;
-                    }) || !collapsed;
+                                return p.selected;
+                            }) || !collapsed;
 
                     return {
                         type: 'TreeNode',

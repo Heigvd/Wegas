@@ -12,7 +12,7 @@
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
 
-    var ID = "id", CONTENTBOX = "contentBox", CLASS = "@class", NAME = "name",
+    var ID = "id", CLASS = "@class", NAME = "name",
             Wegas = Y.Wegas, Plugin = Y.Plugin,
             VariableTreeView;
 
@@ -29,7 +29,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         // ** Lifecycle methods ** //
         renderUI: function() {
             VariableTreeView.superclass.renderUI.apply(this);                   // Render treeview
-
             this.plug(Plugin.EditorTVDefaultMenuClick);                         // Open edit tab on left click
 
             this.treeView.plug(Plugin.TreeViewSortable, {
