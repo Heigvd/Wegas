@@ -10,20 +10,13 @@
     position:relative;
     overflow: hidden;
 }
-/*.wegas-pageeditor-designmode .wegas-widget{
-    box-shadow: 0px 0px 2px green, 0px 0px 2px violet inset !important;
-    overflow: hidden;
-}*/
 .wegas-list,
 .wegas-choicelist,
 .wegas-pageloader{
     -webkit-transition: padding-top 0.7s;
 }
-.wegas-pageeditor-designmode > .wegas-pageloader-content > .wegas-widget{
+.wegas-pageeditor-designmode > .wegas-pageloader-content > .wegas-widget-editable {
     box-shadow: 1px 1px 0 darkgray, -1px -1px 0 darkgray;
-    /*    border: 1px gray dashed;
-        border-top:none;
-        border-bottom: none;*/
 }
 .wegas-pageeditor-designmode .wegas-pageloader-content{
     position: relative;
@@ -42,14 +35,14 @@
     cursor:pointer;
     overflow: hidden;
 }
-.wegas-pageeditor-layoutmode .wegas-widget {
+.wegas-pageeditor-layoutmode .wegas-widget-editable {
     background: rgba(0,0,0,0.05) !important;
     color: #990808 !important;
     min-width: 20px;
     min-height: 20px;
     visibility: visible !important;
 }
-.wegas-pageeditor-layoutmode .wegas-widget > *{
+.wegas-pageeditor-layoutmode .wegas-widget-editable > *{
     background: none !important;
 }
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader{

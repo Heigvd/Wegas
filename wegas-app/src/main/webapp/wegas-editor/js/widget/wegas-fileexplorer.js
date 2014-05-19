@@ -24,7 +24,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             //tooltip: "Add a file",
             data: "add file"
         }, {
-            label: "New Folder",
+            label: "New folder",
             cssClass: "wegas-icon wegas-icon-newdir",
             //tooltip: "Add a folder",
             data: "add dir"
