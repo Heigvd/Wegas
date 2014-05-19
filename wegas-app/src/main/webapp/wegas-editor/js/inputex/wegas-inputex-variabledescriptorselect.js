@@ -41,7 +41,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.options.label = options.label;
             if (options.classFilter) {
                 this.options.classFilter = options.classFilter;
-                this.options.classFilter.push("ListDescriptor");
+                this.options.classFilter.push("ListDescriptor");                // Folders are always selectable (to select sub variables)
             }
         },
         /**

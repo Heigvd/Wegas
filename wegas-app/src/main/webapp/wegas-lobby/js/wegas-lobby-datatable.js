@@ -118,9 +118,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         destructor: function() {
             this.dataTable.destroy();
-            this.viewHandler.detach();
             this.updateHandler.detach();
             this.failureHandler.detach();
+            this.viewHandler && this.viewHandler.detach();
         },
         // *** Private Methods *** //
         /**
