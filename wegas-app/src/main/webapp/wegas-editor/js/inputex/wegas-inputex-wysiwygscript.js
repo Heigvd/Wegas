@@ -72,6 +72,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         renderComponent: function() {
             inputEx.Script.superclass.renderComponent.call(this);
 
+            var field = (new Y.Node(this.fieldContainer));
+
             // Add the "view src" button
             this.viewSrc = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
@@ -89,9 +91,24 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         }
                     }, this)
                 }
-            }).render(this.fieldContainer);
+            }).render(field);
+            this.addButton = new Y.Wegas.Button({
+                label: "<span class=\"wegas-icon wegas-icon-add\"></span>",
+                tooltip: "Add",
+                cssClass: "inputEx-WysiwigScript-add",
+                on: {
+                    click: Y.bind(function(e) {
+                        if (!this.addButton.get("disabled")) {
+                            this.exprList.onAdd();
+                           
+                        }
+                    }, this)
+                }
+            }).render(field);
 
-            new Y.Node(this.fieldContainer).prepend(this.viewSrc.get("boundingBox"))// Move view src button to the top of the the wysiwyg list 
+            (new Y.Node(this.fieldContainer))
+                    .prepend(this.viewSrc.get("boundingBox"))
+                    .prepend(this.addButton.get("boundingBox"))                 // Move view src and add buttons to the top of the the wysiwyg list 
                     .append("<em class=\"msg\"></em>");                         // Add a div for messages
 
             this.on("updated", function() {
@@ -100,7 +117,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 }
             }, this);                                                           // Whenever the value is updated, we synchronize the UI
 
-            this.updateExpressionList();                                        // Synchronize the wysiwig list
+            this.updateExpressionList();                                        // Synchronize the wysiwig list      
             this.setMode(this.options.mode);                                    // Set the default mode (wysiwyg or source)
         },
         /**
@@ -109,6 +126,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         destroy: function() {
             this.exprList.destroy();
             this.viewSrc.destroy();
+            this.addButton.destroy();
             inputEx.WysiwygScript.superclass.destroy.call(this);
         },
         /**
@@ -121,7 +139,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.viewSrc.set("selected", wysiwygmode ? 0 : 1);
             this.el.toggleView(!wysiwygmode);
             //this.wrapEl.style.display = (wysiwygmode) ? "none" : "block";
-
+            this.addButton.set("disabled", !wysiwygmode);
             if (wysiwygmode) {
                 this.exprList.show();
             } else {

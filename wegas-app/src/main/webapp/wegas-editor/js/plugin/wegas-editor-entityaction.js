@@ -88,36 +88,36 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         showUpdateForm: function(entity, dataSource) {
             var dataSource = dataSource,
                     doShow = function(entity, dataSource) {
-                var form = EditEntityAction.showEditForm(entity, function(data) { // Display the edit form
-                    // entity.setAttrs(cfg);
-                    dataSource.cache.put(data, {
-                        on: {
-                            success: function() {
-                                EditEntityAction.showFormMessage("success", "Item updated");
-                                EditEntityAction.hideEditFormOverlay();
-                            },
-                            failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
-                        }
-                    });
-                }), menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
-                    return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-                });                                                             // Retrieve menu and remove the first item
+                        var form = EditEntityAction.showEditForm(entity, function(data) { // Display the edit form
+                            // entity.setAttrs(cfg);
+                            dataSource.cache.put(data, {
+                                on: {
+                                    success: function() {
+                                        EditEntityAction.showFormMessage("success", "Item updated");
+                                        EditEntityAction.hideEditFormOverlay();
+                                    },
+                                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
+                                }
+                            });
+                        }), menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
+                            return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                        });                                                             // Retrieve menu and remove the first item
 
-                Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
-                    switch (i.label) {
-                        case "Delete":
-                        case "New":
-                        case "Add":
-                        case "Copy":
-                        case "View":
-                        case "Open in editor":
-                        case "Open":
-                        case "Edit":
-                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                    }
-                });
-                form.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "10px");
-            };
+                        Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                            switch (i.label) {
+                                case "Delete":
+                                case "New":
+                                case "Add":
+                                case "Copy":
+                                case "View":
+                                case "Open in editor":
+                                case "Open":
+                                case "Edit":
+                                    i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                            }
+                        });
+                        form.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "10px");
+                    };
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
 
@@ -232,6 +232,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         hideRightTabs: function() {
             Y.Widget.getByNode("#rightTabView").destroyAll();
+            Y.all(".wegas-editing").removeClass("wegas-editing");               // @Hack for state machine edition tab
             Y.Widget.getByNode(".wegas-layout-right > .wegas-widget").unplug(Y.Plugin.WidgetToolbar);
         },
         /**
@@ -681,7 +682,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         }
     });
     Plugin.EditFSMAction = EditFSMAction;
-    
+
     /**
      * @name Y.Plugin.EditEntityAction
      * @extends Y.Plugin.EntityAction

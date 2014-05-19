@@ -542,7 +542,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     });
     inputEx.registerType("condition", VariableDescriptorCondition, {});
 
-
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorGetter
      * @class

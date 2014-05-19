@@ -29,7 +29,7 @@
     vertical-align: top;
 }
 .yui3-button .wegas-icon {
-    margin: -3px 2px 0 0;
+    margin: -1px 2px 0 0;
 }
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {
     display:none !important;
@@ -97,7 +97,7 @@
     background-position: 0px -870px;
 }
 .yui3-skin-sam .wegas-icon-add {
-    background-position: 1px -1027px;
+    background-position: 1px -1028px;
 }
 .yui3-skin-sam .wegas-icon-remove {
     background-position: 1px -1002px;

@@ -311,8 +311,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.doAfter("syncUI", function() {
                 this.get("host").dataTable.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
-                        host.dataTable.getRow(r).addClass("wegas-datatable-selected");
-                        //host.get(CONTENTBOX).all("wegas-datatable-selected").removeClass("wegas-datatable-selected");
+                        this.get("host").dataTable.getRow(r).addClass("wegas-datatable-selected").scrollIntoView();
+                        //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                     }
                 }, this);
             });
@@ -323,7 +323,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         onClick: function(e) {
             var host = this.get(HOST), button,
                     tr = e.newVal, // the Node for the TR clicked ...
-                    last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
+                    //last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
                     rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
                     menuItems = this.get("children"),
                     entity = rec.get("entity"),
@@ -337,7 +337,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             //if (last_tr) {
             //    last_tr.removeClass("wegas-datatable-selected");
             //}
-            host.get(CONTENTBOX).all("wegas-datatable-selected").removeClass("wegas-datatable-selected");
+            host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
 
             this.currentSelection = entity.get("id");
 
