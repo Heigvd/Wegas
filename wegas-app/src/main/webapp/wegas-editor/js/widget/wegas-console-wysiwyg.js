@@ -50,11 +50,13 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             });
             cb.append('<div class="results"></div>');
 
+            this.toolbar.get("header").append(this.srcField.addButton.get("boundingBox").removeClass("inputEx-WysiwigScript-add")
+                    .append("Add impact"));
+
             this.renderRunButton();
 
-            this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc")
-                    .append("Source");
-            this.toolbar.add(this.srcField.viewSrc);
+            this.toolbar.get("header").append(this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc")
+                    .append("Source"));
         },
         /**
          * @function

@@ -151,14 +151,23 @@ div.inputEx-description {
 .inputEx-WysiwigScript {
     /*min-height: 56px;*/
 }
-.inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc {
-    background: #ededed;;
+.inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc,
+.inputEx-WysiwigScript .inputEx-WysiwigScript-add {
+    background-color: #ededed;;
     box-shadow: none;
-    margin-left: 25px;
-    padding: 4px 2px 1px 3px;
+    padding: 1px;
     margin-bottom: 2px;
     min-height: 23px;
+    border: 1px solid lightgray;
+    margin-top: 0;
 }
+.inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc {
+    border-left: none;
+}
+.inputEx-WysiwigScript .inputEx-WysiwigScript-add {
+    border-right: none;
+}
+.inputEx-WysiwigScript .inputEx-WysiwigScript-add.yui3-button-selected,
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc.yui3-button-selected {
     background: rgba(12, 63, 113, 0.44);;
 }
@@ -179,13 +188,16 @@ div.inputEx-description {
     float:none !important;
 }
 .yui3-skin-sam .inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
-    left: 1px;
-    top: -23px;
+    left: 0;
+    top: -24px;
     background-color: #ededed;
     margin-bottom: 2px;
     padding: 0;
-    min-height: 23px;
-    padding: 2px 0px 1px 2px;
+    min-height: 24px;
+    padding: 0px 0px 2px 2px;
+    border: 1px solid lightgray;
+    border-right: none;
+    display: none;
 }
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
     left: -22px;

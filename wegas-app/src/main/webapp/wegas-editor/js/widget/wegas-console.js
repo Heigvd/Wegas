@@ -29,7 +29,6 @@ YUI.add('wegas-console', function(Y) {
             this.renderRunButton();
         },
         destructor: function() {
-            this.runButton.destroy();
             this.srcField.destroy();
         },
         executeScript: function(scriptEntity) {
@@ -84,20 +83,20 @@ YUI.add('wegas-console', function(Y) {
          * @description Create and render the button for run the script.
          */
         renderRunButton: function() {
-            this.runButton = new Y.Button({
+            this.toolbar.add(new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
                 on: {
                     click: Y.bind(function() {
 
                         var playerList = this.getPlayerList(),
                                 multiPlayerScript = {
-                            playerIdList: playerList,
-                            script: {
-                                "@class": "Script",
-                                language: "JavaScript",
-                                content: this.srcField.getValue().content
-                            }
-                        };
+                                    playerIdList: playerList,
+                                    script: {
+                                        "@class": "Script",
+                                        language: "JavaScript",
+                                        content: this.srcField.getValue().content
+                                    }
+                                };
                         if (playerList.length === 0) {
                             return;
                         }
@@ -112,7 +111,7 @@ YUI.add('wegas-console', function(Y) {
                         //});
                     }, this)
                 }
-            }).render(this.toolbar.get('header'));
+            }));
 
         }
     });
