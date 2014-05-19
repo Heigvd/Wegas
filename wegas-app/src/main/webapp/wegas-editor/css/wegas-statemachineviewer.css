@@ -30,7 +30,6 @@
 }
 .yui3-wegas-state {
     position:absolute;
-    /*display:inline-block;*/
     width:120px;
     height:48px;
     border:2px solid;
@@ -40,7 +39,6 @@
     background-color:rgba(244, 244, 244, 0.8);
     cursor: move;
     font-size: 0.8em;
-
 }
 .wegas-state-text {
     word-break: break-all;
@@ -92,7 +90,6 @@
     height: 20px;
     border-radius: 10px;
 }
-
 .yui3-wegas-state:hover .state-toolbox{
     display:block;
 }
@@ -121,7 +118,6 @@
     background-position: 0px -772px;
     background-repeat: no-repeat;
 }
-
 .state-edit{
     display: inline-block;
     width: 49%;
@@ -153,10 +149,10 @@
     border-style:double;
     border-width:5px;
 }
-.wegas-statemachineviewer-content .currentState{
+.wegas-statemachineviewer .currentState{
     background-color:rgba(255, 170, 0, 0.7);
 }
-.wegas-statemachineviewer-content .unusedState{
+.wegas-statemachineviewer .unusedState{
     /*background-color:rgba(255, 115, 115, 0.7);*/
 }
 ._jsPlumb_connector{
@@ -238,11 +234,10 @@
     background-repeat: no-repeat;
     cursor: pointer;
 }
-
-.yui3-wegas-statemachineviewer-content .yui3-dd-dragging > *{
+.yui3-wegas-statemachineviewer .yui3-dd-dragging > *{
     display:none;
 }
-.yui3-wegas-statemachineviewer-content .yui3-dd-dragging{
+.yui3-wegas-statemachineviewer .yui3-dd-dragging{
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
@@ -250,3 +245,8 @@
     border-radius: 0;
 }
 
+/* Highlight state that is currently being edited */
+.wegas-statemachineviewer .wegas-editing {
+    font-weight: bolder;
+    background: #9fb3c7;
+}

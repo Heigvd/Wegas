@@ -154,8 +154,10 @@ div.inputEx-description {
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc {
     background: #ededed;;
     box-shadow: none;
-    margin-left: 16px;
-    padding: 2px;
+    margin-left: 25px;
+    padding: 4px 2px 1px 3px;
+    margin-bottom: 2px;
+    min-height: 23px;
 }
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc.yui3-button-selected {
     background: rgba(12, 63, 113, 0.44);;
@@ -177,8 +179,13 @@ div.inputEx-description {
     float:none !important;
 }
 .yui3-skin-sam .inputEx-WysiwigScript .inputEx-ListField .wegas-addbutton {
-    /*left: -50px;*/
-    top: -29px;
+    left: 1px;
+    top: -23px;
+    background-color: #ededed;
+    margin-bottom: 2px;
+    padding: 0;
+    min-height: 23px;
+    padding: 2px 0px 1px 2px;
 }
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
     left: -22px;
