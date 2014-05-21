@@ -1,3 +1,3071 @@
 {
-    "name": "fx"
+    "@class": "GameModel",
+    "pages": {
+        "1": {
+            "type": "AbsoluteLayout",
+            "cssClass": "layout",
+            "plugins": [{
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {
+                            "width": "980px",
+                            "height": ""
+                        }
+                    }
+                }],
+            "children": [{
+                    "custom": "<div class='wegas-template-title'>\n    <label>Phase</label>\n    <div><%= this.variable.getLabel() || 'Undefined' %></div>\n</div>",
+                    "data": {},
+                    "plugins": [{
+                            "cfg": {
+                                "styles": {
+                                    "bottom": "",
+                                    "left": "70px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "14px",
+                                    "zIndex": "10"
+                                }
+                            },
+                            "fn": "CSSPosition"
+                        }, {
+                            "cfg": {
+                                "styles": {
+                                    "height": "",
+                                    "width": ""
+                                }
+                            },
+                            "fn": "CSSSize"
+                        }],
+                    "type": "Template",
+                    "variable": {
+                        "content": "Variable.find(gameModel, \"periods\").item(Variable.find(gameModel, \"currentPhase\").getValue()-1)"
+                    }
+                }, {
+                    "data": {
+                        "label": "Period"
+                    },
+                    "plugins": [{
+                            "cfg": {
+                                "styles": {
+                                    "bottom": "",
+                                    "left": "70px",
+                                    "position": "absolute",
+                                    "right": "",
+                                    "top": "39px",
+                                    "zIndex": "10"
+                                }
+                            },
+                            "fn": "CSSPosition"
+                        }, {
+                            "cfg": {
+                                "styles": {
+                                    "height": "26px",
+                                    "width": "223px"
+                                }
+                            },
+                            "fn": "CSSSize"
+                        }],
+                    "type": "ValueboxTemplate",
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"periods\").item(Variable.find(gameModel, \"currentPhase\").getValue()-1)",
+                        "language": "JavaScript"
+                    }
+                }, {
+                    "label": "<span class=\"cep-icon cep-icon-home\"></span>Home",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "72px",
+                                    "left": "70px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 12px 0px 10px",
+                                    "border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "fontSize": "10px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": "27px"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "2",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "subpageVariable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "label": "<span class=\"cep-icon cep-icon-history\"></span>History",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "72px",
+                                    "left": "554px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 12px 0px 10px",
+                                    "border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "fontSize": "10px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": "27px"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "7",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "subpageVariable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "label": "<span class=\"cep-icon cep-icon-mail\"></span>Mails",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "72px",
+                                    "left": "458px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 0 0",
+                                    "border": "1px solid darkgray",
+                                    "fontSize": "10px",
+                                    "borderBottom": "none"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "93px",
+                                    "height": "27px"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "6",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "subpageVariable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                }
+                            }
+                        }, {
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"mailBox\");"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "label": "<span class=\"cep-icon cep-icon-employees\"></span>Team",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "72px",
+                                    "left": "366px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 0 0",
+                                    "border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "fontSize": "10px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "89px",
+                                    "height": "27px"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "5",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "subpageVariable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\")"
+                                }
+                            }
+                        }, {
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"team\")"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "label": "<span class=\"cep-icon cep-icon-actions\"></span>Actions",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "72px",
+                                    "left": "267px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 0 0",
+                                    "border": "1px solid darkgray",
+                                    "fontSize": "10px",
+                                    "borderBottom": "none"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "97px",
+                                    "height": "27px"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "4",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "subpageVariable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                }
+                            }
+                        }, {
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "Variable.find(gameModel, \"actions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "label": "<span class=\"cep-icon cep-icon-questions\"></span>Questions",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "72px",
+                                    "left": "153px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 0 0px ",
+                                    "border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "fontSize": "10px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "111px",
+                                    "height": "27px"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "3",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "subpageVariable": {
+                                    "@class": "Script",
+                                    "content": "Variable.find(gameModel, \"management\");"
+                                }
+                            }
+                        }, {
+                            "fn": "UnreadCount",
+                            "cfg": {
+                                "variable": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "Variable.find(gameModel, \"questions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "type": "LoginButton",
+                    "cssClass": "menu-loginbutton",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "72px",
+                                    "right": "0px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "fontWeight": "bolder",
+                                    "borderRadius": "5px 5px 0 0",
+                                    "padding": "5px 20px 0px 12px",
+                                    "border": "1px solid darkgray",
+                                    "borderBottom": "none",
+                                    "fontSize": "10px"
+                                }
+                            }
+                        }],
+                    "data": {},
+                    "labelIsUser": false,
+                    "preferencePageId": {},
+                    "targetPageLoader": {}
+                }, {
+                    "type": "PageLoader",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "102px",
+                                    "left": "0px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "980px",
+                                    "height": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "background": "url(wegas-cep/images/templatemo_banner_bg.jpg)  no-repeat 0 -1px",
+                                    "minHeight": "278px"
+                                }
+                            }
+                        }],
+                    "pageLoaderId": "maindisplayarea",
+                    "defaultPageId": "2",
+                    "variable": {},
+                    "page": {}
+                }, {
+                    "type": "BoxTemplate",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "6px",
+                                    "left": "",
+                                    "bottom": "",
+                                    "right": "0px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "64px",
+                                    "height": "66px"
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"timeCards\");"
+                    },
+                    "data": {}
+                }, {
+                    "type": "GaugeDisplay",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "0px",
+                                    "left": "789.5px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "104px",
+                                    "height": "74px"
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"management\");"
+                    },
+                    "label": "",
+                    "cfg": {}
+                }, {
+                    "type": "GaugeDisplay",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "0px",
+                                    "left": "651.5px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "100px",
+                                    "height": "65px"
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"users\")"
+                    },
+                    "label": "",
+                    "minValue": "",
+                    "maxValue": "",
+                    "cfg": {}
+                }, {
+                    "type": "GaugeDisplay",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "0px",
+                                    "left": "721.5px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "100px",
+                                    "height": "86px"
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"users\")"
+                    },
+                    "label": "Team",
+                    "minValue": "",
+                    "maxValue": "",
+                    "cfg": {}
+                }, {
+                    "label": "Next week",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "16px",
+                                    "left": "288.5px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "100px",
+                                    "height": "46px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSText",
+                            "cfg": {
+                                "styles": {
+                                    "color": "#ffffff",
+                                    "fontSize": "",
+                                    "fontStyle": "",
+                                    "textAlign": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSBackground",
+                            "cfg": {
+                                "styles": {
+                                    "backgroundColor": "#AF0303"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "padding": "13px 12px",
+                                    "fontWeight": "bold",
+                                    "textShadow": "1px 2px 1px #D34848"
+                                }
+                            }
+                        }, {
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "content": "Event.fire(\"nextPeriod\");"
+                                }
+                            }
+                        }],
+                    "data": {}
+                }, {
+                    "type": "Image",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "17px",
+                                    "left": "1px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "63px",
+                                    "height": "65px"
+                                }
+                            }
+                        }],
+                    "url": "wegas-pmg/images/pmg-logo-1.png"
+                }],
+            "@name": "Main"
+        },
+        "2": {
+            "type": "AbsoluteLayout",
+            "children": [{
+                    "type": "TextTemplate",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "0px",
+                                    "left": "0px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSStyles",
+                            "cfg": {
+                                "styles": {
+                                    "padding": "20px"
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"homePage\");"
+                    },
+                    "data": {}
+                }],
+            "@name": "Accueil"
+        },
+        "3": {
+            "type": "MCQTabView",
+            "variable": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "Variable.find(gameModel, \"questions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)"
+            },
+            "showUnanswered": true,
+            "@name": "Questions"
+        },
+        "4": {
+            "type": "MCQTabView",
+            "variable": {
+                "@class": "Script",
+                "language": "JavaScript",
+                "content": "Variable.find(gameModel, \"actions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)"
+            },
+            "showUnanswered": true,
+            "@name": "Actions"
+        },
+        "5": {
+            "type": "AbsoluteLayout",
+            "plugins": [{
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {}
+                    }
+                }],
+            "children": [{
+                    "type": "LeaderwayTeam",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "0px",
+                                    "left": "0px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {}
+                            }
+                        }],
+                    "listVariables": "team",
+                    "searchInProperties": ["properties"],
+                    "selectors": [{
+                            "type": "image",
+                            "name": "picture",
+                            "height": 35,
+                            "width": 35
+                        }, {
+                            "name": "label",
+                            "label": "Prénom : "
+                        }],
+                    "informations": [{
+                            "name": "Informations personnelles : ",
+                            "className": "titre"
+                        }, {
+                            "type": "image",
+                            "name": "picture",
+                            "height": "150",
+                            "width": "150",
+                            "className": "picture"
+                        }, {
+                            "name": "label",
+                            "label": "Nom : "
+                        }, {
+                            "name": "salary",
+                            "label": "Salaire : "
+                        }, {
+                            "type": "valueBox",
+                            "name": "moral",
+                            "label": "Moral : ",
+                            "maxValue": 100
+                        }, {
+                            "type": "valueBox",
+                            "name": "experience",
+                            "label": "Expérience : ",
+                            "maxValue": 100
+                        }, {
+                            "name": "description",
+                            "label": "Description : "
+                        }, {
+                            "type": "position",
+                            "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modèle �  atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sait ce que vous avez fait pour l'entreprise et travaillera �  son tour pour la développer.</li><li>Niveau 1 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos méthodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
+                            "selector": "li",
+                            "name": "leadershipLevel",
+                            "invert": "true",
+                            "minVal": -1
+                        }]
+                }],
+            "@name": "Team"
+        },
+        "6": {
+            "type": "AbsoluteLayout",
+            "children": [{
+                    "type": "InboxDisplay",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "0px",
+                                    "left": "0px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": ""
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "language": "JavaScript",
+                        "content": "Variable.find(gameModel, \"mailBox\");"
+                    },
+                    "template": "inbox",
+                    "setToReadAfter": 0.05
+                }],
+            "@name": "Mails"
+        },
+        "7": {
+            "type": "AbsoluteLayout",
+            "children": [{
+                    "id": 7,
+                    "type": "InboxDisplay",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "10",
+                                    "top": "0px",
+                                    "left": "0px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": ""
+                                }
+                            }
+                        }],
+                    "variable": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"history\");"
+                    },
+                    "template": "clean",
+                    "setToReadAfter": 0.05
+                }],
+            "@name": "History"
+        },
+        "@class": "GameModel"
+    },
+    "name": "Leaderway v2",
+    "description": "",
+    "createdTime": 1396516818643,
+    "template": true,
+    "childVariableDescriptors": [{
+            "@class": "ListDescriptor",
+            "name": "variables",
+            "label": "Variables",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [{
+                    "@class": "NumberDescriptor",
+                    "name": "users",
+                    "label": "Users",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 100.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultValue": 100.0
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "timeCards",
+                    "label": "Time cards",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 10.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 10.0
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "management",
+                    "label": "Management",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 100.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 0,
+                    "maxValue": 200,
+                    "defaultValue": 100.0
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "parent",
+                    "label": "Parent",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0.0
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "enfant",
+                    "label": "Enfant",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0.0
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "adulte",
+                    "label": "Adulte",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0.0
+                }]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "periods",
+            "label": "Periods",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [{
+                    "@class": "NumberDescriptor",
+                    "name": "period_1",
+                    "label": "Phase 1",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 2,
+                    "defaultValue": 1.0
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "currentPeriod_1",
+                    "label": "Phase 2",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1.0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": 10,
+                    "defaultValue": 1.0
+                }]
+        }, {
+            "@class": "NumberDescriptor",
+            "name": "currentPhase",
+            "label": "Current phase",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 1.0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "minValue": 0,
+            "maxValue": 10,
+            "defaultValue": 1.0
+        }, {
+            "@class": "ListDescriptor",
+            "name": "questions",
+            "label": "Questions",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [{
+                    "@class": "ListDescriptor",
+                    "name": "phase1",
+                    "label": "Phase 1",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ListDescriptor",
+                            "name": "period1",
+                            "label": "Period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "ListInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "QuestionDescriptor",
+                                    "name": "question",
+                                    "label": "Hector vous fait part d'une idée",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [{
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "oui",
+                                            "label": "Positif",
+                                            "title": "Je décide de l'écouter",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [{
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "<p>Vous devriez aller voire Hector</p>",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"management\").add(self, 1);\nVariable.find(gameModel, \"jessica_1_1\").enable(self);",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }, {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "non",
+                                            "label": "Non",
+                                            "title": "Non",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [{
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }],
+                                    "pictures": []
+                                }]
+                        }, {
+                            "@class": "ListDescriptor",
+                            "name": "period2_1",
+                            "label": "Period 2",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "ListInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "items": []
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "phase2",
+                    "label": "Phase 2",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ListDescriptor",
+                            "name": "period1_1",
+                            "label": "Period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "ListInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "QuestionDescriptor",
+                                    "name": "question_1",
+                                    "label": "Question",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [],
+                                    "pictures": []
+                                }]
+                        }]
+                }]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "actions",
+            "label": "Actions",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [{
+                    "@class": "ListDescriptor",
+                    "name": "phase1_1",
+                    "label": "Phase 1",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ListDescriptor",
+                            "name": "period1_2",
+                            "label": "Period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "ListInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "QuestionDescriptor",
+                                    "name": "question_2",
+                                    "label": "Demander du temps �  la direction",
+                                    "title": "Demander du temps �  la direction",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "<p>Vous aurez plus de cartes temps si vous faites cela.</p>",
+                                    "allowMultipleReplies": true,
+                                    "items": [{
+                                            "@class": "ChoiceDescriptor",
+                                            "name": "laPremi_reFois",
+                                            "label": "Choix",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": -1
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "PlayerScope"
+                                            },
+                                            "results": [{
+                                                    "@class": "Result",
+                                                    "name": "1ere fois",
+                                                    "answer": "<p>Ok voici 4&nbsp;cartes temps</p>",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"timeCards\").add(self, 4);\nVariable.find(gameModel, \"laPremi_reFois\").setCurrentResult(self, \"les fois suivantes\");\nVariable.find(gameModel, \"management\").sub(self, 5);",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }, {
+                                                    "@class": "Result",
+                                                    "name": "les fois suivantes",
+                                                    "answer": "<p>Faut pas &eacute;xag&eacute;rer, une fois c'est assez</p>",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"management\").sub(self, 5);",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }],
+                                    "pictures": []
+                                }]
+                        }, {
+                            "@class": "ListDescriptor",
+                            "name": "period2",
+                            "label": "Period 2",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "ListInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "items": []
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "phase2_1",
+                    "label": "Phase 2",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ListDescriptor",
+                            "name": "period1_1_1",
+                            "label": "Period 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "ListInstance"
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "items": [{
+                                    "@class": "QuestionDescriptor",
+                                    "name": "question_1_1",
+                                    "label": "Question",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [],
+                                    "pictures": []
+                                }]
+                        }]
+                }]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "team",
+            "label": "Team",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [{
+                    "@class": "ListDescriptor",
+                    "name": "fernand_1",
+                    "label": "Fernand",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ResourceDescriptor",
+                            "name": "fernand",
+                            "label": "Fernand",
+                            "title": "Fernand",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "true",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/fernandNeutre.png",
+                                    "leadershipLevel": "1"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "sylvie_1",
+                    "label": "Sylvie",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ResourceDescriptor",
+                            "name": "sylvie",
+                            "label": "Sylvie",
+                            "title": "Sylvie",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "true",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/sylvieNeutre.png",
+                                    "leadershipLevel": "3"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "marie_1",
+                    "label": "Marie",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "DialogueDescriptor",
+                            "name": "marie_AProposDeJess",
+                            "label": "Marie - A propos de Jess",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "FSMInstance",
+                                "currentStateId": 1,
+                                "enabled": true,
+                                "currentState": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie\").setInstanceProperty(self, \"picture\", \"/mariePerplexe.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Ah, c'est &agrave; ce sujet. Alors je reviendrai plus tard.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie\").setInstanceProperty(self, \"picture\", \"/marieConfiant.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>&ccedil;a tombe bien, moi aussi je voulais t'en parler.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie\").setInstanceProperty(self, \"picture\", \"/marieConfiant.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>Volontiers. Que veux-tu me dire ?</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 0,
+                                        "y": 66
+                                    },
+                                    "text": "<p>Merci de passer. Je voulais te parler de Jessica.</p>"
+                                }
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "states": {
+                                "9": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": null,
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie_AProposDeJess\").disable(self)",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 9,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 639,
+                                        "y": 69
+                                    },
+                                    "text": null
+                                },
+                                "8": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 9,
+                                            "actionText": "<p>Oui, je pense qu'il est parti pour un voyage professionnel, 2 semaines. Mais ne lui dit pas que je t'en ai parl&eacute;.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 9,
+                                            "actionText": "<p>oui</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 887,
+                                        "y": 259
+                                    },
+                                    "text": "<p>Ah, son mari est absent. Je ne savais pas...</p>\n<p>Mais &ccedil;a ne change rien sur le fait qu'elle n'effectue pas toujours le travail demand&eacute;.</p>"
+                                },
+                                "7": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 9,
+                                            "actionText": "<p>Bon, ne lui dit pas que je t'en ai parl&eacute;.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 1005,
+                                        "y": 84
+                                    },
+                                    "text": "<p>Un peu, mais c'est difficile. Tu sais, elle ne crois pas trop &agrave; la hi&eacute;rarchie et j'ai aussi peur de la d&eacute;motiver.</p>"
+                                },
+                                "6": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 9,
+                                            "actionText": "<p>Il doit y avoir une surcharge de travail et des probl&egrave;mes personnels.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 932,
+                                        "y": 0
+                                    },
+                                    "text": "<p>Vraiment, pourquoi ?</p>"
+                                },
+                                "5": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": null,
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 8,
+                                            "actionText": "<p>Je pense que ceci est d&ucirc; &agrave; une fatigue. Elle m'a aussi dit qu'elle avait de probl&egrave;mes &agrave; la maison et que son mari &eacute;tait absent pour quelques semaines.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 550,
+                                        "y": 169
+                                    },
+                                    "text": null
+                                },
+                                "4": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": null,
+                                            "preStateImpact": null,
+                                            "nextStateId": 5,
+                                            "actionText": null
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 456,
+                                        "y": 67
+                                    },
+                                    "text": "<p>En g&eacute;n&eacute;ral oui, mais parfois non.</p>"
+                                },
+                                "3": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie_AProposDeJess\").disable(self)",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 115,
+                                        "y": 443
+                                    },
+                                    "text": "<p>Ok, mais assez vite s'il te plait !</p>"
+                                },
+                                "2": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>transition automatique</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 400,
+                                        "y": 389
+                                    },
+                                    "text": "<p>Il me semble qu'elle pr&eacute;sente passablement de signe d'irritabilit&eacute; ces temps. Et quand on lui demande de faire un travail, elle ne r&eacute;pond pas ou soupire.</p>"
+                                },
+                                "1": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie\").setInstanceProperty(self, \"picture\", \"/mariePerplexe.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Ah, c'est &agrave; ce sujet. Alors je reviendrai plus tard.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie\").setInstanceProperty(self, \"picture\", \"/marieConfiant.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>&ccedil;a tombe bien, moi aussi je voulais t'en parler.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"marie\").setInstanceProperty(self, \"picture\", \"/marieConfiant.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>Volontiers. Que veux-tu me dire ?</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 0,
+                                        "y": 66
+                                    },
+                                    "text": "<p>Merci de passer. Je voulais te parler de Jessica.</p>"
+                                }
+                            },
+                            "content": null
+                        }, {
+                            "@class": "ResourceDescriptor",
+                            "name": "marie",
+                            "label": "Marie",
+                            "title": "Marie",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "true",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/marieNeutre.png",
+                                    "leadershipLevel": "3"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "hector_1",
+                    "label": "Hector",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "DialogueDescriptor",
+                            "name": "jessica_1_1",
+                            "label": "Hector Questions",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "FSMInstance",
+                                "currentStateId": 1,
+                                "enabled": false,
+                                "currentState": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Bonjour&nbsp;Hector, j'ai bien re&ccedil;u ta proposition.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 135,
+                                        "y": 86
+                                    },
+                                    "text": "<p>Bonjour</p>"
+                                }
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "states": {
+                                "3": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_1_1\").disable(self);",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>retour</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 399,
+                                        "y": 91
+                                    },
+                                    "text": "<p>Merci. Je vais y r&eacute;fl&eacute;chir alors</p>"
+                                },
+                                "1": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Bonjour&nbsp;Hector, j'ai bien re&ccedil;u ta proposition.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 135,
+                                        "y": 86
+                                    },
+                                    "text": "<p>Bonjour</p>"
+                                }
+                            },
+                            "content": null
+                        }, {
+                            "@class": "ResourceDescriptor",
+                            "name": "hector",
+                            "label": "Hector",
+                            "title": "Hector",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "true",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/hectorNeutre.png",
+                                    "leadershipLevel": "1"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "lucien_1",
+                    "label": "Lucien",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ResourceDescriptor",
+                            "name": "lucien",
+                            "label": "Lucien",
+                            "title": "Lucien",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "true",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/lucienNeutre.png",
+                                    "leadershipLevel": "1"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "jessica_2",
+                    "label": "Jessica",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "DialogueDescriptor",
+                            "name": "jessica_1",
+                            "label": "Jessica - Retour sur le travail",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "FSMInstance",
+                                "currentStateId": 1,
+                                "enabled": false,
+                                "currentState": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 4,
+                                            "actionText": "<p>Salut !</p>\n<p>Qu'est-ce que tu as fait ce week end ?</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Bonjour Jessica. Ton travail de cet semaine &eacute;tait nul!</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>Bonjour Jess! Tu as fait du bon boulot la semaine derni&egrave;re.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 287,
+                                        "y": 0
+                                    },
+                                    "text": "<p>Bonjour</p>"
+                                }
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "states": {
+                                "6": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_fatigue\").disable(self)",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 6,
+                                            "actionText": ""
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 240,
+                                        "y": 362
+                                    },
+                                    "text": "<p>Ah...</p>\n<p>Et tu trouves que c'est normal de souvent devoir travailler le week end ?</p>"
+                                },
+                                "5": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_fatigue\").disable(self)",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 525,
+                                        "y": 490
+                                    },
+                                    "text": "<p>Ah, c'est bien ! Pas trop fatigu&eacute; ?</p>"
+                                },
+                                "4": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 6,
+                                            "actionText": "<p>J'ai surtout travaill&eacute;. Pas mal de retard sur nos projets et jeudi il faut pr&eacute;senter une maquette au client.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>Du ski de fond</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>Du patin &agrave; glace avec les enfants.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 423,
+                                        "y": 240
+                                    },
+                                    "text": "<p>Un peu de ski. Et toi ?</p>"
+                                },
+                                "3": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_1\").disable(self);",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 133,
+                                        "y": 241
+                                    },
+                                    "text": "<p>J'ai fait de mon mieux pourtant</p>"
+                                },
+                                "2": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_1\").disable(self);",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 591,
+                                        "y": 226
+                                    },
+                                    "text": "<p>Ah je suis contente de l'apprendre</p>"
+                                },
+                                "1": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 4,
+                                            "actionText": "<p>Salut !</p>\n<p>Qu'est-ce que tu as fait ce week end ?</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Bonjour Jessica. Ton travail de cet semaine &eacute;tait nul!</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>Bonjour Jess! Tu as fait du bon boulot la semaine derni&egrave;re.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 287,
+                                        "y": 0
+                                    },
+                                    "text": "<p>Bonjour</p>"
+                                }
+                            },
+                            "content": null
+                        }, {
+                            "@class": "DialogueDescriptor",
+                            "name": "jessica_fatigue",
+                            "label": "Jessica-fatigue",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "FSMInstance",
+                                "currentStateId": 1,
+                                "enabled": true,
+                                "currentState": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Avec plaisir.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 4,
+                                            "actionText": "<p>J'ai assez peu de temps, mais avec plaisir.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>J'ai tr&egrave;s peu de temps.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 34,
+                                        "y": 101
+                                    },
+                                    "text": "<p>Salut,</p>\n<p>Tu tombes bien, je voulais te parler.</p>"
+                                }
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "states": {
+                                "11": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": null,
+                                    "transitions": [],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 346,
+                                        "y": 407
+                                    },
+                                    "text": null
+                                },
+                                "10": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 909,
+                                        "y": 8
+                                    },
+                                    "text": "<p>Tous les projets en m&ecirc;me temps, 3 pr&eacute;sentations &agrave; pr&eacute;parer pour des clients, inclue dans 4 groupes de travail, le bouclement financier annuel. Je commence &agrave; avoir mon bureau couvert de post-it avec les t&acirc;ches urgentes.</p>"
+                                },
+                                "8": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 10,
+                                            "actionText": "<p>Au travail, qu'est-ce qui se passe ?</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 654,
+                                        "y": 0
+                                    },
+                                    "text": "<p>Et bien, il me semble que je n'arrive plus &agrave; donner le tour. Au travail, on m'en demande toujours plus, &agrave; la maison, mon mari est en d&eacute;placement professionnel pour 2 semaines et&nbsp;je dois m'occuper des enfants, du m&eacute;nage.</p>"
+                                },
+                                "5": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_fatigue\").disable(self)",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 694,
+                                        "y": 177
+                                    },
+                                    "text": "<p>Je voulais qu'on parle de moi en fait</p>"
+                                },
+                                "4": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>Moi aussi, je suis fatigu&eacute;. Je devrais aller voir un m&eacute;decin &agrave; ton avis ?</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 273,
+                                        "y": 184
+                                    },
+                                    "text": "<p>Merci de prendre du temps pour moi.</p>\n<p>Je voulais juste te dire que je me sens tr&egrave;s fatigu&eacute;e ces temps.</p>"
+                                },
+                                "3": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica_fatigue\").disable(self)",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 11,
+                                            "actionText": "<p>Partir</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 119,
+                                        "y": 404
+                                    },
+                                    "text": "<p>Tu es sympa ! Toujours pr&ecirc;t &agrave; prendre du temps. Bon, je sais que tu es aussi bien occup&eacute;, mais je voulais juste te dire que je me sens tr&egrave;s fatigu&eacute;e ces temps.</p>"
+                                },
+                                "2": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 5,
+                                            "actionText": "<p>Moi aussi et je ne sais pas comment m'en sortir. Tu penses que je devrais aller voir un m&eacute;decin ?</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 8,
+                                            "actionText": "<p>Qu'est-ce qu'il t'arrive ?</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 334,
+                                        "y": 18
+                                    },
+                                    "text": "<p>Je sais que tu es tr&egrave;s occup&eacute;, mais je voulais juste te dire que je me sens tr&egrave;s fatigu&eacute;e ces temps.</p>"
+                                },
+                                "1": {
+                                    "@class": "DialogueState",
+                                    "label": null,
+                                    "onEnterEvent": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "transitions": [{
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 3,
+                                            "actionText": "<p>Avec plaisir.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 4,
+                                            "actionText": "<p>J'ai assez peu de temps, mais avec plaisir.</p>"
+                                        }, {
+                                            "@class": "DialogueTransition",
+                                            "triggerCondition": {
+                                                "@class": "Script",
+                                                "content": "",
+                                                "language": "JavaScript"
+                                            },
+                                            "preStateImpact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"jessica\").setInstanceProperty(self, \"picture\", \"/jessicaTriste.png\")",
+                                                "language": "JavaScript"
+                                            },
+                                            "nextStateId": 2,
+                                            "actionText": "<p>J'ai tr&egrave;s peu de temps.</p>"
+                                        }],
+                                    "editorPosition": {
+                                        "@class": "Coordinate",
+                                        "x": 34,
+                                        "y": 101
+                                    },
+                                    "text": "<p>Salut,</p>\n<p>Tu tombes bien, je voulais te parler.</p>"
+                                }
+                            },
+                            "content": null
+                        }, {
+                            "@class": "ResourceDescriptor",
+                            "name": "jessica",
+                            "label": "Jessica",
+                            "title": "Jessica",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "true",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/jessicaNeutre.png",
+                                    "leadershipLevel": "2"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }, {
+                    "@class": "ListDescriptor",
+                    "name": "daniela_1",
+                    "label": "Daniela",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "ListInstance"
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "items": [{
+                            "@class": "ResourceDescriptor",
+                            "name": "daniela",
+                            "label": "Daniela",
+                            "title": "Daniela",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {},
+                                "properties": {
+                                    "male": "false",
+                                    "experience": "70",
+                                    "salary": "6000",
+                                    "picture": "/danielaNeutre.png",
+                                    "leadershipLevel": "1"
+                                },
+                                "moral": 50,
+                                "moralHistory": [50, 50, 50, 50, 50, 50, 50, 50],
+                                "confidence": 1,
+                                "confidenceHistory": [1, 1, 1, 1]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {}
+                        }]
+                }]
+        }, {
+            "@class": "ListDescriptor",
+            "name": "triggers",
+            "label": "Triggers",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [{
+                    "@class": "FSMDescriptor",
+                    "name": "stateMachine",
+                    "label": "Passage semaine",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "FSMInstance",
+                        "currentStateId": 3,
+                        "enabled": true,
+                        "currentState": {
+                            "@class": "State",
+                            "label": "Etat initial",
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"mailBox\").sendMessage(self, \"Professeur\", \"Bienvenue\", \"<p>Bienvenue sur leaderway</p>\", []);",
+                                        "language": "JavaScript"
+                                    },
+                                    "nextStateId": 2
+                                }],
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 9,
+                                "y": 140
+                            }
+                        }
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "states": {
+                        "5": {
+                            "@class": "State",
+                            "label": "Phase 2 - Période 1",
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "Event.fired(\"nextPeriod\")",
+                                        "language": "JavaScript"
+                                    },
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"currentPeriod_1\").add(self, 1);\nVariable.find(gameModel, \"timeCards\").setValue(self, 15);",
+                                        "language": "JavaScript"
+                                    },
+                                    "nextStateId": 5
+                                }],
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 773,
+                                "y": 142
+                            }
+                        },
+                        "4": {
+                            "@class": "State",
+                            "label": "Phase 1 - Période 2",
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "Event.fired(\"nextPeriod\")",
+                                        "language": "JavaScript"
+                                    },
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"currentPhase\").add(self, 1);\nVariable.find(gameModel, \"timeCards\").setValue(self, 15);",
+                                        "language": "JavaScript"
+                                    },
+                                    "nextStateId": 5
+                                }],
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 521,
+                                "y": 144
+                            }
+                        },
+                        "3": {
+                            "@class": "State",
+                            "label": "Etat initial",
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    },
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"mailBox\").sendMessage(self, \"Professeur\", \"Bienvenue\", \"<p>Bienvenue sur leaderway</p>\", []);",
+                                        "language": "JavaScript"
+                                    },
+                                    "nextStateId": 2
+                                }],
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 9,
+                                "y": 140
+                            }
+                        },
+                        "2": {
+                            "@class": "State",
+                            "label": "Phase 1 - Période 1",
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "",
+                                "language": "JavaScript"
+                            },
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"question\").isNotReplied(self) && Event.fired(\"nextPeriod\")",
+                                        "language": "JavaScript"
+                                    },
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "RequestManager.sendCustomEvent(\"popupEvent\", {\"content\":\"<p>You must reply all questions</p>\"});",
+                                        "language": "JavaScript"
+                                    },
+                                    "nextStateId": 2
+                                }, {
+                                    "@class": "Transition",
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "Event.fired(\"nextPeriod\") && Variable.find(gameModel, \"question\").isReplied(self)",
+                                        "language": "JavaScript"
+                                    },
+                                    "preStateImpact": {
+                                        "@class": "Script",
+                                        "content": "Variable.find(gameModel, \"period_1\").add(self, 1);\nVariable.find(gameModel, \"timeCards\").setValue(self, 15);",
+                                        "language": "JavaScript"
+                                    },
+                                    "nextStateId": 4
+                                }],
+                            "editorPosition": {
+                                "@class": "Coordinate",
+                                "x": 261,
+                                "y": 142
+                            }
+                        }
+                    }
+                }]
+        }, {
+            "@class": "TextDescriptor",
+            "name": "homePage",
+            "label": "Home page",
+            "title": null,
+            "defaultInstance": {
+                "@class": "TextInstance",
+                "value": "<p>Welcome to&nbsp;this test game.</p>"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            }
+        }, {
+            "@class": "InboxDescriptor",
+            "name": "mailBox",
+            "label": "Mail box",
+            "title": null,
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": [],
+                "unreadCount": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": null
+        }, {
+            "@class": "InboxDescriptor",
+            "name": "history",
+            "label": "History",
+            "title": null,
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": [],
+                "unreadCount": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": null
+        }],
+    "scriptLibrary": {
+        "default": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "/**\r\n * History\r\n **/\r\nfunction sendHistory(type, title, msg) {\r\n    var phase = periods.getDescriptor().item(currentPhase.value - 1),\r\n            phaseText = type + \" - \" + phase.label + \" (\" + phase.getInstance().value + \")\";\r\n    Variable.find(gameModel, \"history\").sendMessage(self, phaseText, title, msg, []);\r\n}\r\n\r\nEvent.on(\"replyValidate\", function(e) {\r\n    var msg = \"\", root;\r\n    /* Assume third level*/\r\n    root = Variable.findParentList(e.question.getDescriptor());\r\n    root = Variable.findParentList(root);\r\n    root = Variable.findParentList(root);\r\n    msg += \"<b>\" + e.choice.getDescriptor().getTitle() + \"</b><br>\"; // Choice selected\r\n    msg += e.choice.getDescriptor().getDescription() + \"<br><hr><br>\"; // choice description\r\n    msg += e.reply.getResult().getAnswer(); //Reply\r\n\r\n    sendHistory(root.label, e.question.getDescriptor().getTitle(), msg, []);\r\n});"
+        }
+    },
+    "cssLibrary": {
+        "Default": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": "/* Layout */\r\n.wegas-playerview {\r\n    font-family: Arial, Helvetica, sans-serif;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content {\r\n    background: url(wegas-cep/images/templatemo_site_title_bg_wrapper.jpg) repeat-x 0 0,\r\n    url(wegas-cep/images/templatemo_banner_bg_wrapper.jpg) repeat-x 0 100px;\r\n}\r\n.wegas-playerview > .wegas-pageloader-content:after {\r\n    content: \" © 2014 Albasim\";\r\n    position: absolute;\r\n    bottom: 0px;\r\n    height: 50px;\r\n    width: 100%;\r\n    background: url(wegas-cep/images/templatemo_content_bg.jpg) top repeat-x;\r\n    font-size: 11px;\r\n    text-align: center;\r\n    padding-top: 15px;\r\n}\r\n.wegas-playerview .yui3-button{\r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n}\r\n\r\n.wegas-playerview .yui3-button:hover{\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#00000000',endColorstr='#26000000',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0,0,0,0.05)),to(rgba(0,0,0,0.15)));\r\n    background-image: -webkit-linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));\r\n    background-image: -moz-linear-gradient(top,transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));\r\n    background-image: -ms-linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));\r\n    background-image: -o-linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));\r\n    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));\r\n}\r\n\r\n/* Period/phases */\r\n.wegas-template-valuebox-unit {\r\n    float:left;\r\n    padding: 0px 4px;\r\n    color: white;\r\n    margin: 1px 0;\r\n    border:none;\r\n    border-right: 1px solid lightgray;\r\n    background: none;\r\n}\r\n.wegas-template-valuebox-unit:last-child {\r\n    border-right:none;\r\n}\r\n.wegas-template-valuebox-selected {\r\n    background-color:white;\r\n    color: black;\r\n}\r\n\r\n.wegas-template-valuebox label {\r\n    display: inline-block;\r\n    vertical-align: top;\r\n    margin-top: 5px;\r\n    margin-right: 5px;\r\n}\r\n.wegas-template-valuebox-units,\r\n.wegas-template-title div {\r\n    display: inline-block;\r\n    padding:0px 2px;\r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    background-color: #0981A9;\r\n    margin-top: 3px;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n.wegas-template-title div {\r\n    padding:2px 6px 1px;\r\n}\r\n\r\n/* Time cards */\r\n.wegas-template-box label, .wegas-template-box-value {\r\n    font-size: 11px;\r\n}\r\n.wegas-template-box-unit {\r\n    width: 7px;\r\n    height:10px;\r\n    float:left;\r\n    border: none;\r\n    border-radius: 2px;\r\n    background-color: #0981A9;\r\n    margin: 1px 1px 0 0;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n\r\n/* Gauges */ \r\n.wegas-gauge-content {\r\n    font-size: 10px;\r\n}\r\n\r\n/* Icons */\r\n.cep-icon {\r\n    display: inline-block;\r\n    width: 20px;\r\n    height: 19px;\r\n    margin: -2px 4px 0 0;\r\n    background-image: url(wegas-cep/images/cep-icons.png);\r\n}\r\n.cep-icon-questions {\r\n    background-position:0 -86px;\r\n}\r\n.cep-icon-home {\r\n    background-position:0 -157px;\r\n}\r\n.cep-icon-history {\r\n    background-position:0 -121px;\r\n}\r\n.cep-icon-mail {\r\n    background-position:0 -47px;\r\n}\r\n.cep-icon-employees {\r\n    background-position:0 -245px;\r\n}\r\n.cep-icon-actions {\r\n    background-position:0 -190px;\r\n}\r\n\r\n\r\n/* Team */\r\n.leaderway-team  {\r\n    width: 99%;\r\n    margin: 0 0.5%;\r\n    margin-bottom: 20px;\r\n}\r\n/*selectors*/\r\n.selectors {\r\n    text-align:center;\r\n    white-space:nowrap;\r\n}\r\n.selector {\r\n    display:inline-block;\r\n    width:100px;\r\n    text-align: center;\r\n    margin:10px;\r\n    padding:5px;\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    position: relative;\r\n}\r\n.leaderway-team .yui3-scrollview{\r\n    background:none;\r\n}\r\n.selector .leaderway-team-talk {\r\n    width:35px;\r\n    height:29px;\r\n    background: url(../../wegas-leaderway/images/talk-30.png) no-repeat;\r\n    position: absolute;\r\n    top: -6px;\r\n    left: 15px;\r\n}\r\n.selectors .current{\r\n    background: rgba(60, 100, 200, 0.3);\r\n}\r\n.selector:hover{\r\n    box-shadow: 0px 0px 4px #000000;\r\n    cursor:pointer;\r\n}\r\n.selector .nodeformatter-properties .label{\r\n    display: none;\r\n}\r\n/*informations*/\r\n.informations{\r\n    background: rgba(60, 100, 200, 0.1);\r\n    box-shadow: 0px 0px 4px #6D6D6D;\r\n    padding:10px;\r\n}\r\n.informations .titre{\r\n    font-weight: bold;\r\n    margin: 10px 0;\r\n}\r\n.informations .picture{\r\n    position:absolute;\r\n    margin-left:785px;\r\n    background-color: lightgray;\r\n    border:1px solid darkgray;\r\n}\r\n.informations .nodeformatter-properties{\r\n    margin:10px 0;\r\n    max-width: 760px;\r\n}\r\n.informations .nodeformatter-properties span{\r\n    display:inline-block;\r\n    vertical-align: top;\r\n}\r\n.informations .nodeformatter-valuebox {\r\n    clear:both;\r\n    height:15px;\r\n    margin:10px 0;\r\n}\r\n.informations .nodeformatter-valuebox .label,\r\n.informations .nodeformatter-valuebox .box-units,\r\n.informations .nodeformatter-valuebox .box-value{\r\n    float:left;\r\n}\r\n.informations .label{\r\n    width:80px;\r\n}\r\n.informations .nodeformatter-valuebox .box-units{\r\n    display:block;\r\n    background: rgba(60, 100, 200, 0.3);\r\n    width:200px;\r\n    height:15px;\r\n    font-size: 1em;\r\n    border: darkgray solid 1px;\r\n    overflow: hidden;\r\n}\r\n.informations .nodeformatter-valuebox .box-unit{\r\n    display:block;\r\n    background-color:#6F89A2;\r\n    background-image:url(../../wegas-leaderway/images/gaugeFiller.png);\r\n    background-repeat: repeat-x;\r\n    float:left;\r\n    width:2px;\r\n    height:15px;\r\n}\r\n.informations .nodeformatter-valuebox .box-value{\r\n    margin-left: 5px;\r\n    font-size: 0.8em;\r\n}\r\n.informations .nodeformatter-position{\r\n    margin:10px 0;\r\n}\r\n.informations li{\r\n    color:#6F89A2;\r\n    max-width: 759px;\r\n    margin-left:15px;\r\n}\r\n.informations .nodeformatter-position .previous{\r\n    color:black;\r\n}\r\n.informations .nodeformatter-position .current{\r\n    list-style-type:circle;\r\n    color:black;\r\n}\r\n\r\n.leaderway-team .buttons{\r\n    position: absolute;\r\n    top: 285px;\r\n    right: 24px;\r\n    width: 152px;\r\n}\r\n.leaderway-team .yui3-button {\r\n    color: rgb(255, 255, 255);\r\n    background-color: rgb(175, 3, 3);\r\n    padding: 7px 12px;\r\n    font-weight: bold;\r\n    text-shadow: rgb(211, 72, 72) 1px 2px 1px;\r\n    width: 100%;\r\n    display: block;\r\n    margin-top: 5px;\r\n    white-space: normal;\r\n    \r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    background-color: #0981A9;\r\n    margin-top: 3px;\r\n    color: white;\r\n}\r\n.wegas-panel-content {\r\n    padding: 20px;\r\n}\r\n.leaderway-team-panel .yui3-widget-hd {\r\n    text-align: right;\r\n}\r\n.leaderway-team-panel .yui3-widget-hd .yui3-button {\r\n    text-align: right;\r\n    background-color: transparent;\r\n    color: white;\r\n    font-weight: bolder;\r\n}\r\n.leaderway-team-panel .leaderway-team-picture {\r\n    float: left;\r\n    border: 1px solid darkgray;\r\n    background: white;\r\n    height: 250px;\r\n    width: 285px;\r\n}\r\n.leaderway-team-panel .wegas-simpledialogue {\r\n    width: 600px;\r\n    float: right;\r\n}\r\n.leaderway-team-panel .talk {\r\n    text-align: left;\r\n    margin-top: 20px;\r\n    margin-bottom: 40px;\r\n}\r\n.leaderway-team-panel .response {\r\n    text-align: right;\r\n}\r\n.leaderway-team-panel .response li {\r\n    margin-bottom: 8px;\r\n    cursor: pointer;\r\n    text-align: left;\r\n    padding: 1em;\r\n    margin-left: 12em;\r\n    border: 1px solid #999;\r\n    border-radius: 3px;\r\n    background-color: #0981A9;\r\n    margin-top: 1px;\r\n    color: white;\r\n    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);\r\n    background-image: -webkit-gradient(linear,0 0,0 100%,from(rgba(255, 255, 255, 0.30)),color-stop(40%,rgba(255, 255, 255, 0.15)),to(transparent));\r\n    background-image: -webkit-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -moz-linear-gradient(top,rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -ms-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: -o-linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    background-image: linear-gradient(rgba(255, 255, 255, 0.30),rgba(255, 255, 255, 0.15) 40%,transparent);\r\n    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n    -moz-box-shadow: 0 0 0 1px rgba(0,0,0,0.25) inset,0 2px 0 rgba(255,255,255,0.30) inset,0 1px 2px rgba(0,0,0,0.15);\r\n    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset,0 2px 0 rgba(255, 255, 255, 0.30) inset,0 1px 2px rgba(0, 0, 0, 0.15);\r\n}\r\n.leaderway-team-panel .response li:hover {\r\n     background: #0981A9;\r\n}"
+        }
+    },
+    "clientScriptLibrary": {
+        "default": {
+            "@class": "GameModelContent",
+            "contentType": null,
+            "content": ""
+        }
+    },
+    "properties": {},
+    "createdByName": "Francois-Xavier  "
 }
