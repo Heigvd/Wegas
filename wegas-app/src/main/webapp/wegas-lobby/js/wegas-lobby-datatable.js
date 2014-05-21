@@ -332,7 +332,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         dataSource: host.get(DATASOURCE)
                     };
 
-            Plugin.EditorDTMenu.currentGameModel = entity;                    // @hack so game model creation will work
+            if (tr.ancestors(".yui3-datatable-col-menu"))
+                return;                                                         // @hack not launched on menu click
+            Plugin.EditorDTMenu.currentGameModel = entity;                      // @hack so game model creation will work
 
             //if (last_tr) {
             //    last_tr.removeClass("wegas-datatable-selected");
