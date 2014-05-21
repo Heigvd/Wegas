@@ -495,7 +495,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 var i, it;
                 for (i = 0; i < items.length; i += 1) {
                     it = items[i];
-                    if (it instanceof persistence.QuestionDescriptor) {
+                    if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
                         acc.push(it);
                     } else if (it instanceof persistence.ListDescriptor) {
                         doFlatten(it.get(ITEMS));
