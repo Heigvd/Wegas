@@ -64,10 +64,9 @@ YUI.add('wegas-app', function(Y) {
                     requestCounter = 0,                                         // Request counter 
                     onRequest = function() {                                    // When a response to initial requests is received
                         requestCounter -= 1;
-                        if (requestCounter === 0) {                             // If all initial request arrived,
-                            var widget = Wegas.Widget.create(widgetCfg);        // instantiate the root widget
-                            widget.render();                                    // render it
-                            this.widget = widget;                               // push a reference
+                        if (requestCounter === 0) {                             // If all initial request are completed,
+                            this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
+                                    .render();                                  // and render it
                             this.fire("render");                                // fire a render event for some eventual post processing
                         }
                     };
@@ -88,6 +87,8 @@ YUI.add('wegas-app', function(Y) {
                     }
                     this.dataSources[name] = ds;                                // Push to data source list
                 }, this);
+                
+                this.dataSources.Variable = this.dataSources.VariableDescriptor;// @hack
 
                 requestCounter += 1;
                 this.dataSources.Page.once("response", function(e) {            // When page data source response arrives,

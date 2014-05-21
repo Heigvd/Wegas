@@ -5,14 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * Wegas loader, contains module definitions.
  *
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI().use(function(Y) {
     //"use strict";
 
@@ -374,6 +372,9 @@ YUI().use(function(Y) {
                 }
             }
         },
+        /**
+         * Editor
+         */
         "wegas-editor": {
             base: './wegas-editor/',
             root: '/wegas-editor/',
@@ -480,9 +481,6 @@ YUI().use(function(Y) {
                     requires: ['widget', 'panel', 'wegas-fileexplorer'],
                     ws_provides: 'FileSelect'
                 },
-                /**
-                 * Editor
-                 */
                 'wegas-editorcss': {
                     path: 'css/wegas-editor-min.css',
                     type: 'css'
@@ -599,13 +597,13 @@ YUI().use(function(Y) {
                 }
             }
         },
+        /*
+         * MCQ
+         */
         "wegas-mcq": {
             base: './wegas-mcq/',
             root: '/wegas-mcq/',
             modules: {
-                /*
-                 * MCQ
-                 */
                 'wegas-mcq-entities': {
                     ws_provides: "QuestionDescriptor"
                 },
@@ -622,13 +620,20 @@ YUI().use(function(Y) {
                     type: 'css'
                 }}
         },
+        /**
+         * Project Management Game
+         */
         "wegas-pmg": {
             base: './wegas-pmg/',
             root: '/wegas-pmg/',
             modules: {
-                /**
-                 * Project Management Game
-                 */
+                "wegas-inputex-var-autocomplete": {
+                    requires: 'inputex-string',
+                    ix_provides: 'wegasvarautocomplete'
+                },
+                "wegas-scheduledatatable": {
+                    ws_provides: 'ScheduleDT'
+                },
                 'wegas-pmgwidget-css': {
                     path: 'css/wegas-pmgwidget-min.css',
                     type: 'css'
@@ -722,58 +727,50 @@ YUI().use(function(Y) {
                 }
             }
         },
-        "wegas-resourcemanagement": {
-            base: './wegas-resourcemanagement/',
-            root: '/wegas-resourcemanagement/',
-            modules: {
-                /** Resource Management **/
-                'wegas-nodeformatter': {
-                    ws_provides: "NodeFormatter"
-                },
-                'wegas-itemselector': {
-                    requires: ['wegas-nodeformatter', 'scrollview', 'wegas-widgetmenu'],
-                    ws_provides: "ItemSelector"
-                },
-                'wegas-resourcemanagement-entities': {
-                    ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
-                },
-                "wegas-inputex-var-autocomplete": {
-                    requires: 'inputex-string',
-                    ix_provides: 'wegasvarautocomplete'
-                },
-                "wegas-scheduledatatable": {
-                    ws_provides: 'ScheduleDT'
-                }
-            }
-        },
+        /* Leaderway */
         "wegas-leaderway": {
             base: './wegas-leaderway/',
             root: '/wegas-leaderway/',
             modules: {
-                /* Leaderway */
-                'wegas-leaderway-folder': {
-                    requires: 'wegas-itemselector',
-                    ws_provides: "LWFolder"
+                'wegas-resourcemanagement-entities': {
+                    ws_provides: ['ResourceDescriptor', 'TaskDescriptor']
                 },
-                'wegas-leaderway-tasklist': {
-                    requires: 'datatable',
-                    ws_provides: "TaskList"
+                'wegas-nodeformatter': {},
+                'wegas-itemselector': {
+                    requires: ['wegas-nodeformatter', 'scrollview', "wegas-button", 'wegas-widgetmenu'],
+                    ws_provides: "ItemSelector"
                 },
-                'wegas-leaderway-score': {
-                    requires: 'datatable',
-                    ws_provides: "Score"
-                },
-                'wegas-leaderway-dialogue': {
-                    requires: ['charts', 'charts-legend'],
-                    ws_provides: "Dialogue"
+                'wegas-leaderway-team': {
+                    requires: ['wegas-itemselector', "wegas-injector",
+                        "wegas-panel", "wegas-simpledialogue"],
+                    ws_provides: "LeaderwayTeam"
                 },
                 "wegas-leaderway-translator": {
                     path: 'js/wegas-leaderway-translator/wegas-leaderway-translator-min.js',
                     pkg: 'js/wegas-leaderway-translator',
                     lang: ["en"]
                 }
+                //'wegas-leaderway-folder': {
+                //    requires: 'wegas-itemselector',
+                //    ws_provides: "LWFolder"
+                //},
+                //'wegas-leaderway-tasklist': {
+                //    requires: 'datatable',
+                //    ws_provides: "TaskList"
+                //},
+                //'wegas-leaderway-score': {
+                //    requires: 'datatable',
+                //    ws_provides: "Score"
+                //},
+                //'wegas-leaderway-dialogue': {
+                //    requires: ['charts', 'charts-legend'],
+                //    ws_provides: "Dialogue"
+                //},
             }
         },
+        /*
+         * Programming game
+         */
         "wegas-proggame": {
             base: './wegas-proggame/',
             root: '/wegas-proggame/',

@@ -152,7 +152,7 @@ YUI.add('wegas-scripteval', function(Y) {
     });
     Variable = {
         find: function(gameModel, name) {
-            return Y.Wegas.Facade.VariableDescriptor.cache.find("name", (Y.Lang.isString(gameModel)) ? gameModel : name);
+            return Y.Wegas.Facade.Variable.cache.find("name", (Y.Lang.isString(gameModel)) ? gameModel : name);
         }
     };
     Y.namespace('Plugin').ScriptEval = ScriptEval;
