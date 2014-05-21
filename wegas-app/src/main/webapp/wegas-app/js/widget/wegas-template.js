@@ -132,7 +132,7 @@ YUI.add("wegas-template", function(Y) {
         }
     });
     Wegas.ValueboxTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><br/><% } %><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
+        TEMPLATE: Micro.compile("<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% for(var i=+this.minValue; i < +this.maxValue + 1; i+=1){%>" +
                 "<div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div><% } %></span>" +
                 "</div></div>")
     });
