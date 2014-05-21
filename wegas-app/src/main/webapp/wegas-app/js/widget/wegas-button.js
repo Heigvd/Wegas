@@ -169,13 +169,13 @@ YUI.add("wegas-button", function(Y) {
          * unread on the host.
          */
         syncUI: function() {
-            var cb = this.get('host').get(CONTENTBOX),
-                    target = cb.one(".wegas-unreadcount"),
+            var bb = this.get('host').get(BOUNDINGBOX),
+                    target = bb.one(".wegas-unreadcount"),
                     unreadCount = this.getUnreadCount();
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
-                cb.append('<span class="wegas-unreadcount"></span>');
-                target = cb.one(".wegas-unreadcount");
+                bb.append('<span class="wegas-unreadcount"></span>');
+                target = bb.one(".wegas-unreadcount");
             }
 
             if (unreadCount > 0) {                                              // Update the content
@@ -183,6 +183,7 @@ YUI.add("wegas-button", function(Y) {
             } else {
                 target.setContent("");
             }
+            bb.toggleClass("wegas-unreadcount", unreadCount > 0);
         },
         /**
          * @function
