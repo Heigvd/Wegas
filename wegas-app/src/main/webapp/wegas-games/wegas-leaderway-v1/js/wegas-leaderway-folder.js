@@ -6,8 +6,6 @@ YUI.add('wegas-leaderway-folder', function(Y) {
     "use strict";
     var CONTENTBOX = 'contentBox', Folder;
     Folder = Y.Base.create("wegas-leaderway-folder", Y.Wegas.ItemSelector, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        handlers: null,
-        varToHide: null,
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
@@ -17,7 +15,6 @@ YUI.add('wegas-leaderway-folder', function(Y) {
          * Render the widget.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
             Folder.superclass.renderUI.apply(this);
         },
         /**
@@ -95,7 +92,7 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                     data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');"
+                        content: "Variable.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');"
                     }
                 }
             });
@@ -110,7 +107,7 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                         data: {
                             "@class": "Script",
                             language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
+                            content: "Variable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
                         }
                     }
                 });
@@ -229,7 +226,7 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                     data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.Wegas.Facade.core.script);var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
+                        content: "var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
                     }
                 }
             });

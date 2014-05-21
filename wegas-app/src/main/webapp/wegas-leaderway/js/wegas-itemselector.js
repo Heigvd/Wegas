@@ -14,7 +14,7 @@
 YUI.add('wegas-itemselector', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', ItemSelector;
+    var CONTENTBOX = 'contentBox', Wegas = Y.Wegas, ItemSelector;
     /**
      * @lends Y.Wegas.ItemSelector#
      */
@@ -26,14 +26,9 @@ YUI.add('wegas-itemselector', function(Y) {
      * @constructor
      * @description Display a given list of descriptor, each is selectable to display desired variables from it.
      */
-    ItemSelector = Y.Base.create("wegas-itemselector", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.Wegas.NodeFormatter], {
+    ItemSelector = Y.Base.create("wegas-itemselector", Y.Widget, [Wegas.Widget, Wegas.Editable, Wegas.NodeFormatter], {
         /** @lends Y.Wegas.ItemSelector# */
         CONTENT_TEMPLATE: '<div><div class="selectors"></div><div class="informations"></div></div>',
-        // *** Private fields *** //
-        /**
-         * The selected variable descriptor
-         */
-        currentItem: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -45,6 +40,10 @@ YUI.add('wegas-itemselector', function(Y) {
              * Reference to each used functions
              */
             this.handlers = {};
+            /**
+             * The selected variable descriptor
+             */
+            this.currentItem = null;
         },
         /**
          * @function
@@ -53,20 +52,13 @@ YUI.add('wegas-itemselector', function(Y) {
          * a ScrollView widget.
          */
         renderUI: function() {
-            var i, variables, cb = this.get(CONTENTBOX);
-            if (!this.get('listVariables')) {
+            var variables = this.findVariables(),
+                    cb = this.get(CONTENTBOX);
+
+            if (!variables)
                 return;
-            }
-            variables = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get('listVariables'));
-            if (!variables || !variables.get('items')) {
-                return;
-            }
-            for (i = 0; i < variables.get('items').length; i++) {
-                if (variables.get('items')[i].getInstance().get('active') == null || variables.get('items')[i].getInstance().get('active') == true) {
-                    this.currentItem = variables.get('items')[i];
-                    break;
-                }
-            }
+
+            this.currentItem = variables[0];
 
             /**
              * The reference to the ScrollView widget
@@ -86,31 +78,17 @@ YUI.add('wegas-itemselector', function(Y) {
          * @function
          * @private
          * @description bind function to events.
-         * When VariableDescriptorFacade is updated, do syncUI
+         * When VariableFacade is updated, do syncUI
          * When a "selector" div is clicked, set current item. PreventDevault to
          * prevent problem between click action and slide action (on SlidePanel)
          */
         bindUI: function() {
-            var cb = this.get(CONTENTBOX);
-            this.handlers.itemSelectorUpdate = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-
-            cb.one('.selectors').delegate('click', function(e) {
-                var variables, name;
-                e.preventDefault();
-                if (e.target.ancestors('.selector').item(0)) {
-                    name = e.target.ancestors('.selector').item(0).getAttribute("data-name");
-                } else {
-                    name = e.target.getAttribute("data-name");
-                }
-                variables = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get('listVariables'));
-                if (!variables || !variables.get('items'))
-                    return;
-
-                this.currentItem = Y.Array.find(variables.get('items'), function(item) {
-                    return item.get("name") === name;
-                });
+            this.handlers.itemSelectorUpdate = Wegas.Facade.Variable.after("update", this.syncUI, this);
+            this.get(CONTENTBOX).delegate('click', function(e) {
+                e.halt(true);
+                this.currentItem = e.currentTarget.variable;
                 this.syncUI();
-            }, '.selector', this);
+            }, '.selectors .selector', this);
         },
         /**
          * @function
@@ -118,13 +96,10 @@ YUI.add('wegas-itemselector', function(Y) {
          * @description refresh displayed values.
          */
         syncUI: function() {
-            var cb = this.get(CONTENTBOX), variables;
-            if (!this.get('listVariables'))
+            var resources = this.findVariables();
+            if (!resources)
                 return;
-            variables = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get('listVariables'));
-            if (!variables || !variables.get('items') || variables.get('items').length <= 0)
-                return;
-            this.createSelector(cb, variables.get('items'));
+            this.createSelector(resources);
             this.createInformations();
         },
         /**
@@ -133,9 +108,22 @@ YUI.add('wegas-itemselector', function(Y) {
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
+            this.scrollView.destroy();
             for (var k in this.handlers) {
                 this.handlers[k].detach();
             }
+        },
+        findVariables: function() {
+            if (!this.get('listVariables'))
+                return;
+
+            var variables = Wegas.Facade.Variable.cache.find("name", this.get('listVariables'));
+            if (!variables || !variables.get('items') || variables.get('items').length <= 0)
+                return;
+
+            return  Y.Array.filter(variables.get('items'), function(vd) {
+                return vd.get("active") !== false;
+            });
         },
         // *** Private Methods *** //
         /**
@@ -146,18 +134,17 @@ YUI.add('wegas-itemselector', function(Y) {
          * @description Delete selectors and, for all available instance,
          * re-create a selector.
          */
-        createSelector: function(cb, variables) {
-            var i, node = cb.one('.selectors'), selector;
+        createSelector: function(variables) {
+            var i, node = this.get("contentBox").one('.selectors'), selector;
             node.empty();
             for (i = 0; i < variables.length; i++) {
-                if (variables[i].getInstance().get('active') == null || variables[i].getInstance().get('active') == true) {
-                    selector = Y.Node.create('<div class="selector" data-name="' + variables[i].get('name') + '"></div>');
-                    if (variables[i] === this.currentItem) {
-                        selector.addClass('current');
-                    }
-                    this.createDOMProperties(selector, variables[i], this.get('selectors'));
-                    node.append(selector);
+                selector = Y.Node.create('<div class="selector"></div>');
+                if (variables[i] === this.currentItem) {
+                    selector.addClass('current');
                 }
+                selector.variable = variables[i];
+                this.createDOMProperties(selector, variables[i], this.get('selectors'));
+                node.append(selector);
             }
             this.scrollView.render();
         },
@@ -171,7 +158,7 @@ YUI.add('wegas-itemselector', function(Y) {
         createInformations: function() {
             var node = this.get(CONTENTBOX).one('.informations');
             node.empty();
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(this.currentItem, "Extended", {// just need to check if it causes bugs
+            Wegas.Facade.Variable.cache.getWithView(this.currentItem, "Extended", {// just need to check if it causes bugs
                 on: {
                     success: Y.bind(function(e) {
                         this.currentItem.set("description", e.response.entity.get("description"));// @hack how to mix two entities, one with the instance data and the other with descriptions, etc ?
@@ -180,7 +167,6 @@ YUI.add('wegas-itemselector', function(Y) {
                     }, this)
                 }
             });
-
         },
         /**
          * @function
@@ -320,6 +306,6 @@ YUI.add('wegas-itemselector', function(Y) {
             }
         }
     });
+    Wegas.ItemSelector = ItemSelector;
 
-    Y.namespace('Wegas').ItemSelector = ItemSelector;
 });

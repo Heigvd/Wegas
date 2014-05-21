@@ -421,6 +421,15 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         ATTRS: {
             "@class": {
                 value: "DialogueDescriptor"
+            },
+            title: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    label: "Label",
+                    description: "Displayed to players",
+                    index: -1
+                }
             }
         },
         EDITMENU: [{

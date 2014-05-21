@@ -154,8 +154,7 @@ YUI.add('wegas-nodeformatter', function(Y) {
                 }, this)
             });
         }
-
     });
     Y.namespace('Wegas').NodeFormatter = NodeFormatter;
-    
+
 });
