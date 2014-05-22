@@ -296,18 +296,22 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.currentSelection = -1;                                         // Remember currently selected id
 
             this.afterHostEvent(RENDER, function() {
-                var host = this.get(HOST);
+                var dt = this.get(HOST).dataTable;
 
-                host.dataTable.addAttr("selectedRow", {value: null});
-                host.dataTable.delegate('click', function(e) {
+                dt.addAttr("selectedRow", {value: null});
+                dt.delegate('click', function(e) {
+                    if (e.target.ancestor(".yui3-datatable-col-menu"))
+                        return;                                                 // @hack Prevent event on menu click
+
                     this.set('selectedRow', e.currentTarget);
-                }, '.yui3-datatable-data tr[data-yui3-record]', host.dataTable);
-                host.dataTable.after('selectedRowChange', this.onClick, this);
+                }, '.yui3-datatable-data tr[data-yui3-record]', dt);
+                dt.after('selectedRowChange', this.onClick, this);
 
-                this.addedHandler = host.get(DATASOURCE).after("added", function(e) {// When an entity is created
+                this.addedHandler = this.get(HOST).get(DATASOURCE).after("added", function(e) {// When an entity is created
                     this.currentSelection = e.entity.get("id");                 // view it in the table
                 }, this);
             });
+            
             this.doAfter("syncUI", function() {
                 this.get("host").dataTable.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
@@ -332,8 +336,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         dataSource: host.get(DATASOURCE)
                     };
 
-            if (tr.ancestors(".yui3-datatable-col-menu"))
-                return;                                                         // @hack not launched on menu click
             Plugin.EditorDTMenu.currentGameModel = entity;                      // @hack so game model creation will work
 
             //if (last_tr) {
