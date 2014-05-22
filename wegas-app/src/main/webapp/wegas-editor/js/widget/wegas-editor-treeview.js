@@ -12,9 +12,40 @@
 YUI.add('wegas-editor-treeview', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', DATASOURCE = "dataSource", ID = "id",
-            CLASS = "@class", NAME = "name", HOST = "host",
-            Plugin = Y.Plugin, Wegas = Y.Wegas, EditorTreeView;
+    var CONTENTBOX = 'contentBox',
+        DATASOURCE = "dataSource",
+        ID = "id",
+        CLASS = "@class",
+        NAME = "name",
+        HOST = "host",
+        Plugin = Y.Plugin,
+        Wegas = Y.Wegas,
+        EditorTreeView,
+        /**
+         * @function
+         * source: http://stackoverflow.com/a/15203639
+         */
+        isElementVisible = function(el) {
+            var eap,
+                rect = el.getBoundingClientRect(),
+                docEl = document.documentElement,
+                vWidth = window.innerWidth || docEl.clientWidth,
+                vHeight = window.innerHeight || docEl.clientHeight,
+                efp = function(x, y) {
+                    return document.elementFromPoint(x, y);
+                },
+                contains = "contains" in el ? "contains" : "compareDocumentPosition",
+                has = contains == "contains" ? 1 : 0x14;
+
+            // Return false if it's not in the viewport
+            if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight)
+                return false;
+
+            // Return true if any of its four corners are visible
+            return (
+                (eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has
+            );
+        };
 
     /**
      * @name Y.Wegas.EditorTreeView
@@ -36,12 +67,12 @@ YUI.add('wegas-editor-treeview', function(Y) {
             this.currentSelection = -1;
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Instantiate treeview
-            this.treeView.addTarget(this);                                      // Listen to treeview's events
-            this.treeView.render(this.get(CONTENTBOX));                         // Render treeview                   
+            }); // Instantiate treeview
+            this.treeView.addTarget(this); // Listen to treeview's events
+            this.treeView.render(this.get(CONTENTBOX)); // Render treeview                   
 
-            this.plug(Plugin.EditorTVContextMenu);                              // Open context menu on right click
-            this.plug(Plugin.RememberExpandedTreeView);                         // Selected node is preserved across requests
+            this.plug(Plugin.EditorTVContextMenu); // Open context menu on right click
+            this.plug(Plugin.RememberExpandedTreeView); // Selected node is preserved across requests
         },
         /**
          * @function
@@ -49,10 +80,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
          */
         bindUI: function() {
             var ds = this.get(DATASOURCE),
-                    request = this.get("request");
+                request = this.get("request");
             if (ds) {
-                this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
-                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
+                this.updateHandler = ds.after("update", this.syncUI, this); // Listen updates on the target datasource
+                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this); // GLOBAL error message
 
                 this.addedHandler = ds.after("added", function(e) {
                     this.currentSelection = e.entity.get("id");
@@ -67,9 +98,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
              e.child.get("boundingBox").scrollIntoView();
              }
              });*/
-            this.treeView.after("*:selectedChange", function(e) {
-                if (e.newVal) {
-                    e.target.get("boundingBox").scrollIntoView();
+            this.treeView.after("treeview:selectedChange", function(e) {
+                if (e.newVal && e.target.getSelection() &&
+                    !isElementVisible(e.target.getSelection().item(0).get("boundingBox").getDOMNode())) {
+                    e.target.getSelection().item(0).get("boundingBox").scrollIntoView(true);
                 }
             });
         },
@@ -104,8 +136,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
          */
         getNodes: function() {
             var ds = this.get(DATASOURCE),
-                    selector = this.get("dataSelector"),
-                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
+                selector = this.get("dataSelector"),
+                entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
 
             return this.genTreeViewElements(entities);
         },
@@ -113,9 +145,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
             return Y.Array.filter(Y.Array.map(elements, this.genTreeViewElement, this), Y.Lang.isObject);
         },
         genTreeViewElement: function(entity) {
-            var children = entity.get("players");                               // @hack so it works for team
+            var children = entity.get("players"); // @hack so it works for team
 
-            if (entity instanceof Wegas.persistence.User) {                     // @hack
+            if (entity instanceof Wegas.persistence.User) { // @hack
                 entity = entity.getMainAccount();
             }
 
@@ -179,18 +211,14 @@ YUI.add('wegas-editor-treeview', function(Y) {
      *
      */
     var TeamTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
-        CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">'
-                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">'
-                + '<div class="yui3-u yui3-u-col1">Name</div>'
-                //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
-                //+ '<div class="yui3-u">Players</div></div>'
-                + '</div>'
-                + '<div class="treeview"></div>'
-                + '</div>',
+        CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">' + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">' + '<div class="yui3-u yui3-u-col1">Name</div>'
+        //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
+        //+ '<div class="yui3-u">Players</div></div>'
+        + '</div>' + '<div class="treeview"></div>' + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Render the treeview
+            }); // Render the treeview
             this.treeView.addTarget(this);
             this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
 
@@ -203,10 +231,11 @@ YUI.add('wegas-editor-treeview', function(Y) {
             //}
         },
         getNodes: function() {
-            var entity = this.get("entity"), acc = [],
-                    nodes = this.genTreeViewElements(entity.get("teams"));
+            var entity = this.get("entity"),
+                acc = [],
+                nodes = this.genTreeViewElements(entity.get("teams"));
 
-            if (entity.get("properties.freeForAll")) {                          // Do not display teams in free for all game
+            if (entity.get("properties.freeForAll")) { // Do not display teams in free for all game
                 Y.Array.each(nodes, function(i) {
                     acc = acc.concat(i.children);
                 });
@@ -216,15 +245,15 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         genTreeViewElement: function(entity) {
             var elClass = entity.get(CLASS),
-                    collapsed = !this.isNodeExpanded(entity);
+                collapsed = !this.isNodeExpanded(entity);
             //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
 
             switch (elClass) {
                 case 'Team':
                     var children = this.genTreeViewElements(entity.get("players")),
-                            expanded = Y.Array.find(children, function(p) {
-                                return p.selected;
-                            }) || !collapsed;
+                        expanded = Y.Array.find(children, function(p) {
+                            return p.selected;
+                        }) || !collapsed;
 
                     return {
                         type: 'TreeNode',
@@ -301,19 +330,20 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         onTreeViewSelection: function(e) {
             var menuItems = this.getMenuItems(e.target.get("data")),
-                    host = this.get(HOST);
+                host = this.get(HOST);
 
             if (menuItems) {
                 host.toolbar.destroyAll();
-                host.toolbar.add(menuItems);                                    // Populate the menu with the elements associated to the
+                host.toolbar.add(menuItems); // Populate the menu with the elements associated to the
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
                 host.currentSelection = null;
             }
         },
         getMenuItems: function(data) {
-            var menuItems = this.get("children"), entity,
-                    host = this.get(HOST);
+            var menuItems = this.get("children"),
+                entity,
+                host = this.get(HOST);
 
             if (data) {
                 entity = data.entity || data.widget;
@@ -325,10 +355,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 if (menuItems) {
                     Wegas.Editable.mixMenuCfg(menuItems, data);
                 } else {
-                    menuItems = entity.getMenuCfg(data).slice(0);               // If no menu is provided, use a clone of the entity default value
+                    menuItems = entity.getMenuCfg(data).slice(0); // If no menu is provided, use a clone of the entity default value
                 }
 
-                Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                Y.Array.each(menuItems, function(i) { // @hack add icons to some buttons
                     switch (i.label) {
                         case "Delete":
                         case "New":
@@ -352,7 +382,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
     });
 
     /**
-     * 
+     *
      */
     Plugin.EditorTVDefaultMenuClick = Y.Base.create("admin-menu", Plugin.EditorTVToolbarMenu, [], {
         onTreeViewSelection: function(e) {
@@ -384,11 +414,11 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         onTreeViewClick: function(e) {
             var targetWidget = Y.Widget.getByNode(e.domEvent.target),
-                    menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget);    // Fetch menu items
+                menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget); // Fetch menu items
 
             //menuItems.splice(0, 1);                                           // Remove "Edit" button
 
-            Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
+            Y.Array.each(menuItems, function(i, itemIndex) { // @HACK Fix the submenu positioning
                 Y.Array.each(i.plugins, function(p, index) {
                     if (p.fn === "WidgetMenu") {
                         menuItems[itemIndex] = Y.mix({}, menuItems[itemIndex]);
@@ -409,8 +439,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
             if (menuItems) {
                 e.domEvent.preventDefault();
                 this.menu.destroyAll();
-                this.menu.add(menuItems);                                       // Populate the menu with the elements associated to the
-                this.menu.show();                                               // Move the right click position
+                this.menu.add(menuItems); // Populate the menu with the elements associated to the
+                this.menu.show(); // Move the right click position
                 this.menu.set("xy", [e.domEvent.pageX, e.domEvent.pageY]);
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVToolbarMenu");
@@ -427,7 +457,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
     });
 
     /**
-     * 
+     *
      */
     Plugin.EditorTVToggleClick = Y.Base.create("EditorTVToggleClick", Plugin.Base, [], {
         initializer: function() {
