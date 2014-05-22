@@ -13,11 +13,13 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     "use strict";
 
     var Plugin = Y.Plugin,
-            Action = Y.Plugin.Action,
-            Wegas = Y.Wegas,
-            WidgetAction,
-            PAGEDATASOURCE = Wegas.Facade.Page.cache,
-            UPDATED_MSG = "Item updated";
+        Action = Y.Plugin.Action,
+        Wegas = Y.Wegas,
+        WidgetAction, EditWidgetAction,
+        AddChildWidgetAction,
+        DeleteWidgetAction,
+        PAGEDATASOURCE = Wegas.Facade.Page.cache,
+        UPDATED_MSG = "Item updated";
 
     /**
      * @class
@@ -51,7 +53,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    var EditWidgetAction = function() {
+    EditWidgetAction = function() {
         EditWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(EditWidgetAction, WidgetAction, {
@@ -62,22 +64,24 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
         execute: function() {
             Plugin.EditEntityAction.hideRightTabs();
             var widget = this.get("widget"),
-                    form,
-                    menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
+                form,
+                menuItems = Y.Array.filter(widget.getMenuCfg().slice(0), function(i) {
 
-                        switch (i.label) { // @hack add icons to some buttons
-                            case "Delete":
-                            case "Edit":
-                                i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-                        }
+                    switch (i.label) { // @hack add icons to some buttons
+                        case "Delete":
+                        case "Edit":
+                            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                            break;
+                    }
 
-                        // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-                        return (i.label && (i.label !== "New" && i.label.indexOf("Edit") < 0));
-                    }); // Retrieve menu and remove the first item
+                    // return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                    return (i.label && (i.label !== "New" && i.label.indexOf("Edit") < 0));
+                }); // Retrieve menu and remove the first item
 
             form = Plugin.EditEntityAction.showEditForm(widget, Y.bind(function(val, entity) {
                 Plugin.EditEntityAction.showEditFormOverlay();
-                var i, plugins = {}, pls, plugin, cfg, oldCfg = entity.get("root").toObject();
+                var i, plugins = {},
+                    pls, plugin, cfg, oldCfg = entity.get("root").toObject();
                 /* Retrieve page's name if it has one */
                 if (val.hasOwnProperty("@pageName")) {
                     PAGEDATASOURCE.editMeta(entity.get("@pageId"), {
@@ -163,7 +167,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    var AddChildWidgetAction = function() {
+    AddChildWidgetAction = function() {
         AddChildWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(AddChildWidgetAction, WidgetAction, {
@@ -174,7 +178,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 Plugin.EditEntityAction.showEditForm(newWidget, Y.bind(function(val) {
                     Plugin.EditEntityAction.showEditFormOverlay();
                     var targetWidget = this.get("widget"),
-                            widget = Y.Wegas.Widget.create(val);
+                        widget = Y.Wegas.Widget.create(val);
                     targetWidget.add(widget);
 
                     this.get("dataSource").cache.patch(targetWidget.get("root").toObject(), Y.bind(function() {
@@ -213,14 +217,14 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
      * @extends Y.Plugin.WidgetAction
      * @constructor
      */
-    var DeleteWidgetAction = function() {
+    DeleteWidgetAction = function() {
         DeleteWidgetAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(DeleteWidgetAction, WidgetAction, {
         execute: function() {
             if (confirm("Are your sure you want to delete this element ?")) {
                 var targetWidget = this.get("widget"),
-                        root = targetWidget.get("root");
+                    root = targetWidget.get("root");
                 if (Plugin.EditEntityAction.currentEntity === targetWidget) {
                     Plugin.EditEntityAction.hideRightTabs();
                 }
@@ -245,7 +249,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     Y.extend(Plugin.DeleteLayoutWidgetAction, WidgetAction, {
         execute: function() {
             var targetWidget = this.get("widget"),
-                    root = targetWidget.get("root");
+                root = targetWidget.get("root");
             /*if (targetWidget.size() > 0) {
              alert("Please delete content first");
              } else */
@@ -272,7 +276,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     Y.extend(Plugin.DuplicateWidgetAction, WidgetAction, {
         execute: function() {
             var targetWidget = this.get("widget"),
-                    root = targetWidget.get("root");
+                root = targetWidget.get("root");
             /*if (targetWidget.size() > 0) {
              alert("Please delete content first");
              } else */
