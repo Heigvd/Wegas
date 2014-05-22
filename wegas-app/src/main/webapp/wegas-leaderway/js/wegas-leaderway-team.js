@@ -74,7 +74,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
             });
 
             return  Y.Array.filter(variables, function(vd) {
-                return vd && vd.get("active") !== false;
+                return vd && vd.getInstance().get("active") !== false;
             });
         },
         findDialogues: function(variable) {
