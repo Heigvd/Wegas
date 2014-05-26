@@ -130,11 +130,11 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
                         content: "store(" + this.get("variable.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');"
-                    })
+                    }
                 },
                 on: {
                     failure: Y.bind(function(e) {

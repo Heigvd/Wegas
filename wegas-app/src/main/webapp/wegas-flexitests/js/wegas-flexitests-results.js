@@ -45,11 +45,11 @@ YUI.add("wegas-flexitests-results", function(Y) {
                     request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
-                        data: Y.JSON.stringify({
+                        data: {
                             "@class": "Script",
                             language: "JavaScript",
                             content: script
-                        })
+                        }
                     },
                     on: {
                         success: Y.bind(function(e) {

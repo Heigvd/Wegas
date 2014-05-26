@@ -8,12 +8,10 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-console', function(Y) {
-    var CONTENTBOX = 'contentBox',
-            Console;
+    var CONTENTBOX = 'contentBox';
 
-    Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    Y.Wegas.Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         renderUI: function() {
             this.plug(Y.Plugin.WidgetToolbar);
 
@@ -112,9 +110,6 @@ YUI.add('wegas-console', function(Y) {
                     }, this)
                 }
             }));
-
         }
     });
-
-    Y.namespace('Wegas').Console = Console;
 });

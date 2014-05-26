@@ -271,13 +271,13 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 },
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         "language": "JavaScript",
                         "content": "importPackage(com.wegas.core.script);\n" +
                             "\nfleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
                             "\nfleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');"
-                    })
+                    }
                 }
             });
         },
@@ -291,11 +291,11 @@ YUI.add( "wegas-teaching-main", function ( Y ) {
                 },
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         "language": "JavaScript",
                         "content": "importPackage(com.wegas.core.script);\nrectangle" + (this.currentRectangle.get("id") + 1) + ".value='" + String(this.currentRectangle.get("label")).replace(/'/g, '&#39;') + "';"
-                    })
+                    }
                 }
             });
         },

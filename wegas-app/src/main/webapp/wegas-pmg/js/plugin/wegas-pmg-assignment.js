@@ -19,8 +19,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
      *  @constructor
      */
     var CONTENTBOX = "contentBox", HOST = "host",
-            Wegas = Y.Wegas,
-            Assignment = Y.Base.create("wegas-pmg-assignment", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+            Wegas = Y.Wegas, Assignment;
+
+    Assignment = Y.Base.create("wegas-pmg-assignment", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         handlers: null,
         menu: null,
         menuDetails: null,
@@ -148,8 +149,8 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             var i, tasks, items, taskDesc, label, array = [], no, taskExist,
                     assignments = resourceDesc.getInstance().get("assignments"),
                     taskExistence = function(item) {
-                return taskDesc.get("id") === item.get("taskDescriptorId");
-            };
+                        return taskDesc.get("id") === item.get("taskDescriptorId");
+                    };
             if (!this.get("taskList")) {
                 return;
             }
@@ -183,7 +184,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify(data.assignement)
+                    data: data.assignement
                 }
             });
         },

@@ -111,11 +111,11 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                     request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                     cfg: {
                         method: "POST",
-                        data: Y.JSON.stringify({
+                        data: {
                             "@class": "Script",
                             language: "JavaScript",
                             content: "importPackage(com.wegas.core.script);\nrestart.value ="+ this.restartValue +";"
-                        })
+                        }
                     }
                 });
             })

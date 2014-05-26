@@ -231,7 +231,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify(this.get("endImpact"))
+                    data: this.get("endImpact")
                 },
                 on: {
                     failure: Y.bind(function(e) {

@@ -9,23 +9,20 @@
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add( "wegas-monopoly-display", function ( Y ) {
+YUI.add("wegas-monopoly-display", function(Y) {
     "use strict";
 
     var Monopolydisplay;
 
-    Monopolydisplay = Y.Base.create( "wegas-monopoly-display", Y.Widget, [ Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable ], {
-
+    Monopolydisplay = Y.Base.create("wegas-monopoly-display", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         initializer: function() {
-           this.handlers = [];
+            this.handlers = [];
         },
-
         bindUI: function() {
             this.handlers.push(
-                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
+                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
         },
-
-        renderUI: function(){
+        renderUI: function() {
             var i;
             // dice
             this.dice = this.get("parent").item(0);
@@ -37,16 +34,15 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");
 
             // create box
-            for (i = 1; i <= 40; i++){
-                this.get("boundingBox").append("<div class='box"+i +"' />")
+            for (i = 1; i <= 40; i++) {
+                this.get("boundingBox").append("<div class='box" + i + "' />")
             }
         },
-
-        syncUI: function () {
+        syncUI: function() {
             var i, descriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position"),
-            game, team, t, ret = [];
+                    game, team, t, ret = [];
 
-            if (descriptor.get("scope") instanceof Y.Wegas.persistence.TeamScope){ //@fixme when game scope works
+            if (descriptor.get("scope") instanceof Y.Wegas.persistence.TeamScope) { //@fixme when game scope works
                 game = Y.Wegas.Facade.Game.cache.getCurrentGame();
 
                 for (i = 0; i < game.get("teams").length; i += 1) {
@@ -68,86 +64,79 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
             this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");
             this.checkState();
         },
-
-        doDraw: function (data) {
+        doDraw: function(data) {
             var i;
             for (i = 0; i < data.length; i += 1) {
                 console.log(data[i][0].get("name")); // team name
-                Y.one('.box'+data[i][1].get("value")).append("<div class='pion"+[i+1]+"'></div>");
+                Y.one('.box' + data[i][1].get("value")).append("<div class='pion" + [i + 1] + "'></div>");
             }
         },
-
-        removePions: function(){
+        removePions: function() {
             var i;
             for (i = 1; i <= 40; i += 1) {
-              Y.one('.box'+[i]).get('childNodes').remove();
+                Y.one('.box' + [i]).get('childNodes').remove();
             }
         },
-
-        setPion: function(value){
+        setPion: function(value) {
             var position;
 
             this.dice.rollButton.enable();
 
             position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value");
             position = value + position;
-            if (this.position > 40){
-                this.position -=40;
+            if (this.position > 40) {
+                this.position -= 40;
             }
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nposition.value ="+ position +";"
-                    })
+                        content: "importPackage(com.wegas.core.script);\nposition.value =" + position + ";"
+                    }
                 }
             });
 
         },
-
-        checkCurrentPlayer: function(){
+        checkCurrentPlayer: function() {
             var turn = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "turnOf"),
-                id;
-            if (turn.get("scope") instanceof Y.Wegas.persistence.GameModelScope){ //@fixme when gameScope works
+                    id;
+            if (turn.get("scope") instanceof Y.Wegas.persistence.GameModelScope) { //@fixme when gameScope works
                 id = Y.Wegas.Facade.Game.cache.getCurrentTeam().get("id");
             } else if (turn.get("scope") instanceof Y.Wegas.persistence.TeamScope) {
                 id = Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id");
             }
 
-            if (id == turn.get("scope").getInstance().get("value")){
-                if (this.state == "wait"){
+            if (id == turn.get("scope").getInstance().get("value")) {
+                if (this.state == "wait") {
                     this.setState("roll");
                 }
             } else {
                 this.checkState();
             }
         },
-
-        setCurrentPlayer: function(id){
+        setCurrentPlayer: function(id) {
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nturnOf.value ="+ id +";"
-                    })
+                        content: "importPackage(com.wegas.core.script);\nturnOf.value =" + id + ";"
+                    }
                 }
             });
         },
-
-        payPlayer: function (){
-        // TODO
-        // Check if box belong a palyer
-        // then: pay and disable buy button
+        payPlayer: function() {
+            // TODO
+            // Check if box belong a palyer
+            // then: pay and disable buy button
         },
-
-        checkState: function (){
-            switch (this.state){
+        checkState: function() {
+            switch (this.state) {
                 case "roll" :
                     this.buy.disable();
                     this.next.disable();
@@ -163,33 +152,31 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
                     this.next.disable();
             }
         },
-
-        checkPropertyBuyable : function(){
+        checkPropertyBuyable: function() {
             var position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value"),
-            boxValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "boxValue").getAttrs().items;
+                    boxValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "boxValue").getAttrs().items;
             position--;
             if (boxValue[position].getInstance().get("properties").playerId != "" ||
-            boxValue[position].getInstance().get("properties").playerId == "notBuyable"){
+                    boxValue[position].getInstance().get("properties").playerId == "notBuyable") {
                 this.buy.disable();
             } else {
                 this.buy.enable();
             }
         },
-
-        setState: function (newState){
+        setState: function(newState) {
             this.state = newState;
             Y.Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nstate.value ='"+ this.state +"';"
-                    })
+                        content: "importPackage(com.wegas.core.script);\nstate.value ='" + this.state + "';"
+                    }
                 },
                 on: {
-                    success: Y.bind(function (e) {
+                    success: Y.bind(function(e) {
                         this.checkState();
                     }, this)
                 }
@@ -197,5 +184,5 @@ YUI.add( "wegas-monopoly-display", function ( Y ) {
         }
     });
 
-    Y.namespace( "Wegas" ).Monopolydisplay = Monopolydisplay;
+    Y.namespace("Wegas").Monopolydisplay = Monopolydisplay;
 });
