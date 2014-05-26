@@ -20,16 +20,13 @@ YUI.add("wegas-treeview", function(Y) {
      * @constructor
      * @description Displays a treeview widget
      */
-    var TreeViewWidget = Y.Base.create("wegas-treeview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        renderUI: function() {
-            this.treeView = new Y.TreeView({
-                render: this.get("contentBox")
-            });
-            this.treeView.on("treenode:click", function(e) {
+    var TreeViewWidget = Y.Base.create("wegas-treeview", Y.TreeView, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        bindUI: function() {
+            TreeViewWidget.superclass.bindUI.call(this);
+            this.on("treenode:click", function(e) {
                 e.target.toggleTree();
             });
-            this.treeView.addTarget(this);
         }
     });
-    Y.namespace("Wegas").TreeViewWidget = TreeViewWidget;
+    Y.Wegas.TreeViewWidget = TreeViewWidget;
 });

@@ -70,7 +70,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
         if (level.onStart) {
             eval(level.onStart);
         }
-        this.log('Running Main...');
+        this.log('Running...');
         for (i = 0; i < level.maxTurns; i += 1) {
             //this.log('Turn ' + (i + 1));
 
@@ -207,10 +207,21 @@ Wegas.mix(ProgGameSimulation.prototype, {
             this.doSay({text: "There's nothing to read here."});
         }
     },
+    include: function(fileName) {
+        var msg, files = Variable.find(gameModel, "files");
+        if (files) {
+            msg = files.getInstance(self).getMessageBySubject(fileName);
+            if (msg) {
+                this.log("Including: " + fileName);
+                this.doEval("" + msg.body);
+                return;
+            }
+        }
+        this.log("Unable to include file: " + fileName);
+    },
     move: function() {
         var i, o, object = this.cObject,
                 moveV = this.dirToVector(object.direction);
-
         if (!this.beforeAction(object))
             return;
 
@@ -380,8 +391,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
 //            scope[i] = Wegas.bind(this.commands[i], this);
 //        }
         with (this) {
+            playerFn.apply(this);                                                           // run fn
             //(function(that) {
-            playerFn.apply(this/*, Wegas.Object.values(this.getArgs())*/);                       // run fn
+            //playerFn.apply(this/*, this.getArgs()));                                      // run fn
             //})(this);
         }
     },
