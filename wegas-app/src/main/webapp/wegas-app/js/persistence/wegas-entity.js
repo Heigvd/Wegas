@@ -731,8 +731,8 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 _inputex: {
-                    useButtons: true,
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    useButtons: true
+                    //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         },

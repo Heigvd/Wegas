@@ -133,12 +133,12 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
                 PAGEDATASOURCE.getIndex(function(index) {
                     var formCfg = widget.getFormCfg();
                     formCfg.fields.splice(0, 0, {
-                        label: "Page name",
+                        label: "Name",
                         name: "@pageName",
                         showMsg: true,
                         type: "string",
                         value: index[widget.get("@pageId")],
-                        wrapperClassName: "wegas-pagename-edition"
+                        wrapperClassName: "inputEx-fieldWrapper wegas-pagename-edition"
                     });
                     form.set("cfg", formCfg);
                 });

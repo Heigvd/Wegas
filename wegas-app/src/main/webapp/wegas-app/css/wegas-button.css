@@ -18,7 +18,7 @@
 }
 .yui3-skin-sam .yui3-button-primary, .yui3-skin-sam .yui3-button-selected {
     /*background: #0c3f71;*/
-    background: rgba(12, 63, 113, 0.44);
+    background-color: rgba(12, 63, 113, 0.44);
     border: none;
     box-shadow: none;
 }

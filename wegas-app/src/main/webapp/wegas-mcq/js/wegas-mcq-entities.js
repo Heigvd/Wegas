@@ -111,7 +111,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             //event: "mouseenter",
                             children: [{
                                     type: BUTTON,
-                                    label: "Single result",
+                                    label: "Standard",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -120,7 +120,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                                         }]
                                 }, {
                                     type: BUTTON,
-                                    label: "Multiple results",
+                                    label: "Conditionnal results",
                                     plugins: [{
                                             fn: "AddEntityChildAction",
                                             cfg: {
@@ -430,7 +430,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             optional: true,
                             format: HTML,
                             _inputex: {
-                                label: "Impact description"
+                                label: "Impact text"
                             }
                         },
                         impact: {
@@ -542,7 +542,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 optional: true,
                 format: HTML,
                 _inputex: {
-                    label: "Impact description"
+                    label: "Impact text"
                 }
             },
             impact: {

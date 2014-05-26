@@ -252,10 +252,14 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                                     if (this.get("library") === "CSS") {
                                         this.updateStyleSheet(this.currentScriptName, this.aceField.getValue());
                                     }
-                                    if (this.get("library") === "ClientScript") {
-                                        eval(this.aceField.getValue());
-                                    }
                                     this.hideOverlay();
+                                    if (this.get("library") === "ClientScript") {
+                                        try {
+                                            eval(this.aceField.getValue());
+                                        } catch (e) {
+                                            this.showMessageBis("error", "This script contains errors")
+                                        }
+                                    }
                                     //this.syncUI();
                                 },
                                 failure: function() {
