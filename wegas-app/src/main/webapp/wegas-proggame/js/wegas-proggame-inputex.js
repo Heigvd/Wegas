@@ -12,8 +12,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx,
-            Alignable = Y.Base.create("proggame-alignable", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]),
-            TILESIZE = 32;
+            TILESIZE = 32,
+            Alignable = Y.Base.create("proggame-alignable", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]);
 
     /**
      * ProgGameMap field
@@ -41,8 +41,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             var node = new Y.Node(this.divEl),
                     addButtonNode = new Y.Node(this.addButton);                 // The add column link
 
-            node.append("<div class=\"add-col\"><img />Add column</div>"),
-                    node.one(".add-col").on("click", function(e) {
+            node.append("<div class=\"add-col\"><img />Add column</div>");
+            node.one(".add-col").on("click", function() {
                 var i;
                 for (i = 0; i < this.subFields.length; i += 1) {
                     this.subFields[i].addElement();
@@ -121,9 +121,6 @@ YUI.add('wegas-proggame-inputex', function(Y) {
         },
         renderComponent: function() {
             this.node = Y.Node.create("<div class=\"inputex-proggametile\"><div></div></div>");
-            //this.node.setStyles({
-            //      background-position:
-            //});
             this.node.on("newValue", function(e) {
                 this.setValue({x: e.x, y: e.y});
             }, this);
