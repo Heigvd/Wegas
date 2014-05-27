@@ -92,7 +92,7 @@ YUI.add('wegas-team', function(Y) {
                 },
                 on: {
                     success: Y.bind(function() {
-                        this.showMessage("success", "Game joined");
+//                        this.showMessage("success", "Game joined");
 
                         Y.fire("gameJoined", {
                             gameId: this.getTargetGame().get("id"),

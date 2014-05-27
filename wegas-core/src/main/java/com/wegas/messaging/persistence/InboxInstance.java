@@ -133,6 +133,14 @@ public class InboxInstance extends VariableInstance {
     public void setUnreadCount(int count) {
         // only used to explicitely ignore while serializing
     }
+    public Message getMessageBySubject(String subject) {
+        for (Message m: this.getMessages()) {
+            if (m.getSubject().equals(subject)) {
+                return m;
+            }
+        }
+        return null;
+    }
 
     @Override
     public String toString() {

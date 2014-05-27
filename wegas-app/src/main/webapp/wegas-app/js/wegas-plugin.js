@@ -292,11 +292,11 @@ YUI.add('wegas-plugin', function(Y) {
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
                         content: script
-                    })
+                    }
                 },
                 on: {
                     success: function(r) {
