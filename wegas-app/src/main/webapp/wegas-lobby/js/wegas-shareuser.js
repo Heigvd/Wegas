@@ -12,8 +12,9 @@
 
 YUI.add('wegas-shareuser', function(Y) {
     'use strict';
-    var CONTENTBOX = 'contentBox',
-            ShareUser = Y.Base.create("wegas-shareuser", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
+    var CONTENTBOX = 'contentBox', ShareUser;
+
+    ShareUser = Y.Base.create("wegas-shareuser", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
         /**
          *
          */
@@ -28,14 +29,14 @@ YUI.add('wegas-shareuser', function(Y) {
             var el = this.get(CONTENTBOX),
                     e = this.get("entity"),
                     permissions = [{
-                    name: "username",
-                    type: 'markup',
-                    readonly: true,
-                    className: "username-field"
-                }, {
-                    name: "userId",
-                    type: "hidden"
-                }];
+                            name: "username",
+                            type: 'markup',
+                            readonly: true,
+                            className: "username-field"
+                        }, {
+                            name: "userId",
+                            type: "hidden"
+                        }];
 
             permissions = permissions.concat(Y.Array.map(this.get("permsList"), function(item) {
                 item.type = "boolean";
@@ -112,7 +113,7 @@ YUI.add('wegas-shareuser', function(Y) {
                 request: "/AutoComplete/" + query,
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify(data)
+                    data: data
                 },
                 on: {
                     success: Y.bind(function(e) {
@@ -319,7 +320,7 @@ YUI.add('wegas-shareuser', function(Y) {
                 checked = false;
                 checkboxes = users.item(i).all(".inputEx-CheckBox");
                 for (ii = 0; ii < checkboxes.size(); ii += 1) {
-                    if (checkboxes.item(ii).get("children").item(0).get("checked")){
+                    if (checkboxes.item(ii).get("children").item(0).get("checked")) {
                         checked = true;
                         break;
                     }

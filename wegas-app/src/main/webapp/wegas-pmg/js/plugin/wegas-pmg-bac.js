@@ -19,7 +19,9 @@ YUI.add('wegas-pmg-bac', function(Y) {
      *  @constructor
      */
     var Wegas = Y.Wegas,
-            Bac = Y.Base.create("wegas-pmg-bac", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+            Bac;
+
+    Bac = Y.Base.create("wegas-pmg-bac", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Bac */
 
         /**
@@ -86,11 +88,11 @@ YUI.add('wegas-pmg-bac', function(Y) {
                     method: "POST",
                     updateCache: false,
                     updateEvent: false,
-                    data: Y.JSON.stringify({
+                    data: {
                         "@class": "Script",
                         language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") +"').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
-                    })
+                        content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") + "').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
+                    }
                 }
             });
         },

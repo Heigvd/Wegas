@@ -613,6 +613,7 @@ YUI.add('wegas-tabview', function(Y) {
         resizeTabs: function() {
             var tabView = this.get('host');
             Y.once("domready", function() {
+                tabView.get(CONTENTBOX).addClass("wegas-tabview-resizetabs");
                 tabView.get(CONTENTBOX).all("> ul > li").setStyle("width", (100 / tabView.size()) + "%");
             });
         }

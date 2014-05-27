@@ -11,51 +11,41 @@
  */
 YUI.add('wegas-proggame-scriptfiles', function(Y) {
     "use strict";
-    var CONTENTBOX = 'contentBox';
+    var CONTENTBOX = 'contentBox', ScriptFiles, Wegas = Y.Wegas;
     /**
      *  @class Display the proggame files
      *  @name Y.Plugin.ScriptFiles
      *  @extends Y.Widget
      *  @constructor
      */
-    var ScriptFiles = Y.Base.create("wegas-proggame-scriptfiles", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        handlers: null,
+    ScriptFiles = Y.Base.create("wegas-proggame-scriptfiles", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+        CONTENT_TEMPLATE: "<div><div class='buttons'></div><div class='fileName'></div></div>",
         initializer: function() {
             this.handlers = {};
-
-            this.publish('openFile', {
-                broadcast: true,
-                emitFacade: true
-            });
         },
         renderUI: function() {
-            var cb = this.get(CONTENTBOX);
-            this.addButton = new Y.Wegas.Button({
-                label: "Add file"
-            });
-            this.addButton.render(cb);
-            cb.append("<div class='fileName'></div>");
-
-            this.createPanel();
+            this.addButton = new Wegas.Button({
+                label: "Add file",
+                on: {
+                    click: Y.bind(this.createPanel, this)
+                }
+            }).render(this.get(CONTENTBOX).one(".buttons"));                     // Render add file button
         },
         bindUI: function() {
-            this.handlers.sync = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
-
-            this.addButton.on("click", function(e) {
-                //this.newFilePanel.show();
-                this.createPanel().show();
-            }, this);
+            this.handlers.sync = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
-
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(this.get('variable.evaluated').getInstance(), "Extended", {
+            Wegas.Facade.VariableDescriptor.cache.getWithView(this.get('variable.evaluated').getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(e) {
+                        if (this.get("destroyed"))
+                            return;
+
                         var node, i,
                                 messages = e.response.entity.get("messages"),
                                 fileNameDiv = this.get(CONTENTBOX).one(".fileName");
 
-                        fileNameDiv.get('childNodes').remove();
+                        fileNameDiv.empty();
 
                         if (messages.length === 0) {
                             fileNameDiv.append("<p>No files to display</p>");
@@ -66,7 +56,6 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
                                 fileNameDiv.append(node);
 
                                 node.on("click", function(e) {
-                                    //console.log("openFile event");
                                     this.fire("openFile", {file: e.target.data});
                                 }, this);
                             }
@@ -76,40 +65,32 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
             });
         },
         createPanel: function() {
-            var node = Y.Node.create('<p><input type="text" name="fileName" placeholder="File name"/></p>'), that = this;
-            this.newFilePanel = new Y.Wegas.Panel({
-                srcNode: node,
+            var panel = new Wegas.Panel({
                 headerContent: 'Add a new file',
+                bodyContent: '<p><input type="text" name="fileName" placeholder="File name"/></p>',
                 width: 250,
                 modal: true,
                 centered: true,
-                visible: false,
                 render: true,
                 buttons: [{
                         value: 'Add',
                         section: Y.WidgetStdMod.FOOTER,
-                        action: function(e) {
-                            e.preventDefault();
-                            this.exit();
-                            that.addFile(this.get("srcNode").one("input").get("value"));
-                            this.get("srcNode").one("input").set("value", "");
-                        }
+                        action: Y.bind(function() {
+                            panel.exit();
+                            this.addFile(panel.getStdModNode("body").one("input").get("value"));
+                        }, this)
                     }, {
                         value: 'Cancel',
                         section: Y.WidgetStdMod.FOOTER,
-                        action: function(e) {
-                            e.preventDefault();
-                            this.exit();
-                        }
+                        action: "exit"
                     }
                 ]
             });
-            return this.newFilePanel;
+            return panel;
         },
         addFile: function(fileName) {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                //'Managed-Mode': 'false',
+            Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: {
@@ -135,7 +116,7 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
     }, {
         ATTRS: {
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "variable",
@@ -144,5 +125,5 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').ScriptFiles = ScriptFiles;
+    Wegas.ScriptFiles = ScriptFiles;
 });

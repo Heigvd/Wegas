@@ -19,7 +19,9 @@ YUI.add('wegas-pmg-reservation', function(Y) {
      *  @constructor
      */
     var Wegas = Y.Wegas,
-            Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+            Reservation;
+
+    Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Reservation */
 
         /**
@@ -77,7 +79,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 request: "/ResourceDescriptor/AbstractAssign/" + ressourceId,
                 cfg: {
                     method: "POST",
-                    data: Y.JSON.stringify(data)
+                    data: data
                 }
             });
         },
