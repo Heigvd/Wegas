@@ -7,11 +7,14 @@
  */
 package com.wegas.core.security.rest;
 
+import com.wegas.core.ejb.TeamFacade;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.Secured;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -39,6 +42,11 @@ public class AccountController {
      */
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
+    @EJB
+    private TeamFacade teamFacade;
 
     /**
      *
@@ -103,5 +111,17 @@ public class AccountController {
         accountFacade.remove(a);
         userFacade.remove(user);
         return user;
+    }
+    
+     /**
+     * 
+     * @param teamId
+     * @return 
+     */
+    @GET
+    @Path("FindByTeamId/{teamId: [1-9][0-9]*}")
+    public List<AbstractAccount> findByTeamId(@PathParam("teamId") Long teamId) {
+        Team entity = teamFacade.find(teamId);
+        return accountFacade.findByTeam(entity);
     }
 }

@@ -860,19 +860,19 @@ YUI().use(function(Y) {
                     requires: 'inputex-select',
                     ix_provides: 'roleselect'
                 },
-                'wegas-join': {
+                'wegas-team': {
                     requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
                         'wegas-editor-action', "wegas-inputex-multipleoptions",
                         'inputex-select', 'inputex-string', "inputex-list", "inputex-hidden",
                         "inputex-autocomplete", "inputex-password", "inputex-email", "wegas-gameinformation"],
-                    ws_provides: ["JoinTeam", "GameDescription"]
+                    ws_provides: ["Team", "JoinTeam", "EditTeam", "GameDescription"]
                 },
                 'wegas-gameinformation': {
                     path: 'js/wegas-gameinformation-min.js',
                     ws_provides: ['GameInformation']
                 },
                 'wegas-join-token': {
-                    requires: 'wegas-join',
+                    requires: 'wegas-team',
                     ws_provides: "TokenJoin"
                 },
                 'wegas-loginwidget': {

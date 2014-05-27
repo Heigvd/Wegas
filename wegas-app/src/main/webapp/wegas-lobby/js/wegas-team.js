@@ -9,20 +9,20 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-join', function(Y) {
+YUI.add('wegas-team', function(Y) {
     "use strict";
 
     /**
-     * @name Y.Wegas.JoinTeam
+     * @name Y.Wegas.Team
      * @extends Y.Widget
      * @augments Y.WidgetChild
      * @augments Y.Wegas.Widget
-     * @class class for join a team
+     * @class parent class for join, create a team or add member
      * @constructor
-     * @description Allows just to join a team
+     * @description Parent class
      */
     var CONTENTBOX = "contentBox",
-            JoinTeam = Y.Base.create("wegas-jointeam", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+            Team = Y.Base.create("wegas-team", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
         CONTENT_TEMPLATE: "<div><div class=\"wegas-gameinformation\"></div>"
                 + "<div class=\"teamselection\"></div>"
@@ -38,7 +38,7 @@ YUI.add('wegas-join', function(Y) {
             var cb = this.get(CONTENTBOX),
                     game = this.getTargetGame();
 
-            this.joinButton = new Y.Button({//                                  // Render the button
+            this.saveButton = new Y.Button({//                                  // Render the button
                 label: "Join game",
                 render: cb,
                 visible: false
@@ -51,14 +51,103 @@ YUI.add('wegas-join', function(Y) {
             });
         },
         bindUI: function() {
-            this.joinButton.on("click", this.onJoinClick, this);                // On join button click
+            this.saveButton.on("click", this.onSaveButtonClick, this);                // On join button click
         },
         destructor: function() {
+            this.saveButton.destroy();
+        },
+        getTargetEntity: function() {
+            var entity = this.get("entity");
+            if (Y.Lang.isArray(entity)) {
+                return entity[0];
+            } else {
+                return entity;
+            }
+        },
+        getTargetGame: function() {
+            var entity = this.get("entity");
+            if (Y.Lang.isArray(entity)) {
+                if (entity[1]) {
+                    return entity[1];
+                } else {
+                    return entity[0];
+                }
+            } else if (entity instanceof Y.Wegas.persistence.Team) {
+                return Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"));
+            } else {
+                return entity;
+            }
+        },
+        /**
+         * @function
+         * @private
+         * @description User rest request: rest/GameModel/1/Game/{gameModelID}/JoinTeam/{teamID}
+         */
+        sendJoinTeamRequest: function(teamId) {
+            this.showOverlay();
+            Y.Wegas.Facade.Game.sendRequest({
+                request: "/JoinTeam/" + teamId,
+                cfg: {
+                    updateCache: false
+                },
+                on: {
+                    success: Y.bind(function() {
+                        this.showMessage("success", "Game joined");
+
+                        Y.fire("gameJoined", {
+                            gameId: this.getTargetGame().get("id"),
+                            game: this.getTargetGame()
+                        });
+                        this.hideOverlay();
+
+                        this.get("contentBox").empty();
+
+                        var rightTab = Y.Widget.getByNode("#rightTabView");     // Empty right tab on join
+                        rightTab && rightTab.destroyAll();
+                    }, this),
+                    failure: Y.bind(function(e) {
+                        this.hideOverlay();
+                        this.showMessage("error", "Error joining team");
+                    }, this)
+                }
+            });
+        },
+        sendMultiJoinTeamRequest: function(teamId, playerToAdd) {
+            if (!playerToAdd) {
+                playerToAdd = this.teamEdition.getAccounts();
+            }
+            Y.Wegas.Facade.Game.sendRequest({//                                 // Add all player to the list in the list to the target game
+                request: "/JoinTeam/" + teamId,
+                cfg: {
+                    method: "POST",
+                    data: playerToAdd
+                },
+                on: {
+                    success: Y.bind(this.onSaved, this),
+                    failure: Y.bind(function(e) {
+                        this.teamId = teamId;                                   // @hack
+                        this.defaultFailureHandler(e);
+                    }, this)
+                }
+            });
+        }
+    }, {
+        ATTRS: {
+            entity: {},
+            customEvent: {
+                value: false
+            }
+        }
+    });
+    Y.namespace('Wegas').Team = Team;
+
+    var JoinTeam = Y.Base.create("wegas-jointeam", Y.Wegas.Team, [Y.WidgetChild, Y.Wegas.Widget], {
+        destructor: function() {
+            EditTeam.superclass.destructor.apply(this);
             if (this.teamField) {
                 this.teamField.destroy();
                 //this.playersField.destroy();
             }
-            this.joinButton.destroy();
         },
         onGameRetrieved: function(e) {
             var emptyChoices, choices,
@@ -138,7 +227,7 @@ YUI.add('wegas-join', function(Y) {
                 }
             }
             if (showTeamEdition || showTeamCreation) {
-                this.teamEdition = new Y.Wegas.TeamEdition({
+                this.teamEdition = new Y.Wegas.TeamFormList({
                     render: teamSelectionNode,
                     entity: entity
                 });
@@ -146,9 +235,9 @@ YUI.add('wegas-join', function(Y) {
                         Y.Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
 
-            this.joinButton.set("visible", true);
+            this.saveButton.set("visible", true);
         },
-        onJoinClick: function() {
+        onSaveButtonClick: function() {
             var entity = this.getTargetEntity(),
                     selectedField = (this.teamField) ? this.teamField.getSelected() : null,
                     name = (selectedField) ? selectedField.getValue() : null;
@@ -214,85 +303,13 @@ YUI.add('wegas-join', function(Y) {
                 this.sendTokenJoinGame(this.getTargetEntity().get("token"));    // use the token to join
             }
         },
-        getTargetEntity: function() {
-            var entity = this.get("entity");
-            if (Y.Lang.isArray(entity)) {
-                return entity[0];
-            } else {
-                return entity;
-            }
-        },
-        getTargetGame: function() {
-            var entity = this.get("entity");
-            if (Y.Lang.isArray(entity)) {
-                if (entity[1]) {
-                    return entity[1];
-                } else {
-                    return entity[0];
-                }
-            } else if (entity instanceof Y.Wegas.persistence.Team) {
-                return Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"));
-            } else {
-                return entity;
-            }
-        },
-        /**
-         * @function
-         * @private
-         * @description User rest request: rest/GameModel/1/Game/{gameModelID}/JoinTeam/{teamID}
-         */
-        sendJoinTeamRequest: function(teamId) {
-            this.showOverlay();
-            Y.Wegas.Facade.Game.sendRequest({
-                request: "/JoinTeam/" + teamId,
-                cfg: {
-                    updateCache: false
-                },
-                on: {
-                    success: Y.bind(function() {
-                        this.showMessage("success", "Game joined");
-
-                        Y.fire("gameJoined", {
-                            gameId: this.getTargetGame().get("id"),
-                            game: this.getTargetGame()
-                        });
-                        this.hideOverlay();
-
-                        this.get("contentBox").empty();
-
-                        var rightTab = Y.Widget.getByNode("#rightTabView");     // Empty right tab on join
-                        rightTab && rightTab.destroyAll();
-                    }, this),
-                    failure: Y.bind(function(e) {
-                        this.hideOverlay();
-                        this.showMessage("error", "Error joining team");
-                    }, this)
-                }
-            });
-        },
-        sendMultiJoinTeamRequest: function(teamId) {
-            Y.Wegas.Facade.Game.sendRequest({//                                 // Add all player to the list in the list to the target game
-                request: "/JoinTeam/" + teamId,
-                cfg: {
-                    method: "POST",
-                    data: this.teamEdition.getAccounts()
-                },
-                on: {
-                    success: Y.bind(this.onGameJoined, this),
-                    failure: Y.bind(function(e) {
-                        this.teamId = teamId;                                   // @hack
-                        this.defaultFailureHandler(e);
-                    }, this)
-                }
-            });
-        },
         /**
          * @function
          * @private
          * @description All events are added to the buttons
          * Create team button call rest url : rest/GameModel/{gameModelID}/Game/{gameID}/CreateTeam/{teamName}
          */
-        onGameJoined: function(e) {
+        onSaved: function(e) {
             //this.showMessage("success", "Game joined");
 
             Y.fire("gameJoined", {
@@ -331,15 +348,77 @@ YUI.add('wegas-join', function(Y) {
                 }
             });
         }
+    });
+    Y.namespace('Wegas').JoinTeam = JoinTeam;
+
+    var EditTeam = Y.Base.create("wegas-editteam", Y.Wegas.Team, [Y.WidgetChild, Y.Wegas.Widget], {
+        renderUI: function() {
+            EditTeam.superclass.renderUI.apply(this);
+            this.saveButton.set("visible", true);
+            this.saveButton.set("label", "Save");
+        },
+        onGameRetrieved: function(e) {
+            var cb = this.get(CONTENTBOX),
+                    entity = this.getTargetEntity(),
+                    teamId = this.get("teamId"),
+                    teamSelectionNode = cb.one(".teamselection");
+            
+            if (e) cb.one(".wegas-gameinformation").append(Y.Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
+            teamSelectionNode.append("<br /><div class=\"title\">Edit your team</div>");
+
+            this.teamEdition = new Y.Wegas.TeamFormList({
+                render: teamSelectionNode,
+                entity: entity
+            });
+
+            Y.Wegas.Facade.User.sendRequest({
+                request: "/Account/FindByTeamId/" + teamId,
+                on: {
+                    success: Y.bind(function(e) {
+                        this.joinedAccounts = [];
+                        Y.Array.each(e.response.entities, function(entity) {
+                            this.teamEdition.addExistingAccount(entity);
+                            this.joinedAccounts.push(entity);
+                        }, this);
+
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
+        },
+        onSaveButtonClick: function() {
+            var teamId = this.get("teamId"), i, playerToAdd = [], found;
+            Y.Array.each(this.teamEdition.getAccounts(), function(account) {
+                found = false;
+                for (i = 0; i < this.joinedAccounts.length; i += 1) {
+                    if (account.email === this.joinedAccounts[i].get("email")) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found)
+                    playerToAdd.push(account);
+            }, this);
+            this.showOverlay();
+            this.sendMultiJoinTeamRequest(teamId, playerToAdd);
+        },
+        onSaved: function() {
+            this.get(CONTENTBOX).one(".teamselection").get('childNodes').remove();
+            this.onGameRetrieved();
+            this.hideOverlay();
+            this.showMessage("success", "Players added to the team");
+        }
     }, {
         ATTRS: {
-            entity: {},
-            customEvent: {
-                value: false
+            teamId: {
+                _inputex: {
+                    _type: "integer",
+                    label: "Team id"
+                }
             }
         }
     });
-    Y.namespace('Wegas').JoinTeam = JoinTeam;
+    Y.namespace('Wegas').EditTeam = EditTeam;
 
     var GameDescription = Y.Base.create("wegas-gamedescription", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
@@ -379,7 +458,7 @@ YUI.add('wegas-join', function(Y) {
     });
     Y.namespace('Wegas').GameDescription = GameDescription;
 
-    var TeamEdition = Y.Base.create("wegas-editteam", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    var TeamFormList = Y.Base.create("wegas-teamformlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class=\"header yui3-g\">"
                 + "<div class=\"yui3-u\">First name</div>"
                 + "<div class=\"yui3-u\">Last name</div>"
@@ -467,12 +546,13 @@ YUI.add('wegas-join', function(Y) {
             cb.one(".inputEx-ListField").append('<div class="addTeamMember" style="cursor: pointer;"><span class=\"wegas-icon wegas-icon-add\"></span>Add member</div>');
             cb.one(".inputEx-ListField .addTeamMember").on("click", function() {
                 this.playersField.addElement();
+                Y.later(10, this, this.updateAutoCompletes);
             }, this);
 
             Y.on("domready", this.updateAutoCompletes, this);
-            cb.one("img.inputEx-ListField-addButton").on("click", function() {
-                Y.later(10, this, this.updateAutoCompletes);
-            }, this);// Add proper callback on autocomplete
+//            cb.one("img.inputEx-ListField-addButton").on("click", function() {
+//                Y.later(10, this, this.updateAutoCompletes);
+//            }, this);// Add proper callback on autocomplete
         },
         updateAutoCompletes: function() {
             var i, j;
@@ -512,7 +592,7 @@ YUI.add('wegas-join', function(Y) {
             entity: {}
         }
     });
-    Y.namespace('Wegas').TeamEdition = TeamEdition;
+    Y.namespace('Wegas').TeamFormList = TeamFormList;
 
     Y.inputEx.AutoComplete.prototype.buildAutocomplete = function() {
         // Call this function only when this.el AND this.listEl are available

@@ -327,21 +327,21 @@ font {
 }
 
 /* Edit team widget styles */
-.wegas-editteam .yui3-u {
+.wegas-teamformlist .yui3-u {
     width: 116px;
     padding-bottom: 3px;
 }
-.wegas-editteam  .yui3-u:first-child {
+.wegas-teamformlist  .yui3-u:first-child {
     padding-left: 22px;
 }
-.wegas-editteam .header .yui3-u {
+.wegas-teamformlist .header .yui3-u {
     color: #505050;
     font-style: italic;
 }
-.wegas-editteam-content  .inputEx-ListField {
+.wegas-teamformlist  .inputEx-ListField {
     padding-left: 20px;
 }
-.wegas-editteam  .inputEx-ListField .inputEx-Group .inputEx-fieldWrapper {
+.wegas-teamformlist  .inputEx-ListField .inputEx-Group .inputEx-fieldWrapper {
     float: left;    /* Player edition is displayed inline */
     padding-right: 3px;
 }

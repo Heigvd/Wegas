@@ -8,6 +8,8 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
@@ -206,5 +208,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             }
         }
         return accounts;
+    }
+    
+    public ArrayList<AbstractAccount> findByTeam(Team team) {
+        ArrayList<AbstractAccount> result = new ArrayList<>();
+        for (Player player : team.getPlayers()){
+            result.add(player.getUser().getMainAccount());
+        }
+        return result;
     }
 }
