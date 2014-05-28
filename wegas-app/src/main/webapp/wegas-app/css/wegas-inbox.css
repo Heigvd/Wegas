@@ -12,6 +12,9 @@
 .yui3-skin-sam .wegas-inbox {
     width: 100%;
 }
+.yui3-skin-sam .wegas-inbox-content { 
+    height: 100%;
+}
 .yui3-skin-sam .wegas-inbox .yui3-tab-label > div {
     padding: 0 10px;
 }

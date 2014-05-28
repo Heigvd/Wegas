@@ -229,6 +229,7 @@ div.inputEx-description {
 .inputEx-singleLineWysiwygScript textarea {
     height: 50px !important;
 }
+.inputEx-singleLineWysiwygScript .inputEx-WysiwigScript-add,
 .inputEx-singleLineWysiwygScript .wegas-addbutton,
 .inputEx-singleLineWysiwygScript .wegas-removebutton {
     display: none;
