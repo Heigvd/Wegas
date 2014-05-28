@@ -465,9 +465,9 @@ YUI.add('wegas-proggame-display', function(Y) {
     });
     Crafty.c("Door", {
         init: function() {
-            var c = this.__coord, doorSpeed = 500;
-
             this.requires("Tile, VerticalDoor, SpriteAnimation");
+            
+            var c = this.__coord, doorSpeed = 500;
             this.reel("openDoor", doorSpeed, c[0] / c[2], c[1] / c[3], 5);
             this.reel("closeDoor", doorSpeed, c[0] / c[2] + 4, c[1] / c[3], -5);
 
@@ -504,7 +504,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 }
                 this._open = v;
             });
-            this.initialize();
+            this.reset();
         },
         doorState: function(state) {
             this.open = state;

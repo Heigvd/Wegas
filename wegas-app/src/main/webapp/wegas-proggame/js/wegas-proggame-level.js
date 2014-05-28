@@ -277,7 +277,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 objects: Y.clone(this.get("objects"))
             });
 
-            this.debugTabView.item(0).get("panelNode").empty();                 // Empty log tab
+            this.debugTabView.item(0).get("panelNode").setContent("");                 // Empty log tab
 
             this.get(CONTENTBOX).one(".proggame-levelend").hide();
             this.get(CONTENTBOX).one(".terrain").show();
@@ -546,7 +546,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             });
 
-            Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") != \"true\"",
+            Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") === \"true\"",
                     Y.bind(function(result) {                                   //Check if breakpoint has been bought from the shop
                         if (result) {
                             packages.indlude = ProgGameLevel.API.include;
@@ -662,13 +662,16 @@ YUI.add('wegas-proggame-level', function(Y) {
          */
         showMessage: function(level, message) {
             var panel = this.getPanel({
-                bodyContent: "<div>" + message + "</div><button class='yui3-button proggame-button'>Continue</button>"
+                bodyContent: "<div>" + message + "</div><button class='yui3-button proggame-button'>Continuer</button>"
             });
             Y.later(50, this, function() {                                      // Hide panel anywhere user clicks
                 Y.one("body").once("click", function() {
                     panel.destroy();
                     //panel.exit();
                     this.show();
+                    if (this.get("root").get("@pageId") === "11") {
+                        this.showTutorial();
+                    }
                 }, this);
             });
         },
@@ -687,6 +690,66 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.hide();
             panel.get("boundingBox").addClass("proggame-panel");
             return panel;
+        },
+        showTutorial: function() {
+            var i = 0, cfgs = [{
+                    height: 95,
+                    width: 460,
+                    x: 402,
+                    y: 510,
+                    highlight: ".code",
+                    bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code vous permet de contrôler votre avatar.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                }, {
+                    height: 95,
+                    width: 430,
+                    x: 477,
+                    y: 610,
+                    highlight: ".proggame-buttons",
+                    bodyContent: "<div class='proggame-tuto-arrowright'></div><div>Pour exécuter votre code, cliquez sur la flèche verte.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                }, {
+                    height: 110,
+                    width: 600,
+                    x: 212,
+                    y: 230,
+                    highlight: ".proggame-lefttab",
+                    bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Vous pouvez ajouter des instructions en cliquant directement dessus dans l'<b>API</b> (Application Programming Interface).<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                }, {
+                    height: 105,
+                    width: 340,
+                    x: 256,
+                    y: 87,
+                    highlight: ".proggame-help",
+                    bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Pour revoir les objectifs du niveau, cliquez sur le bouton <b>Information</b>.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                }],
+                    panel = new Wegas.Panel({
+                        modal: true,
+                        centered: false,
+                        zIndex: 1000,
+                        render: true,
+                        buttons: []
+                    }),
+                    showTuto = function() {
+                        panel.setAttrs(cfgs[i]);
+                        Y.all(cfgs[i].highlight).addClass("proggame-tuto-highlight");
+                        Y.later(50, this, function() {                          // Hide panel anywhere user clicks
+                            Y.one("body").once("click", function(e) {
+                                e.halt(true);
+                                Y.all(cfgs[i].highlight).removeClass("proggame-tuto-highlight");
+                                i += 1;
+                                if (i === cfgs.length) {
+                                    Y.all(".proggame-tuto-transparentmask").remove(true);
+                                    Y.one(".yui3-widget-mask").setStyle("opacity", 0);
+                                    panel.destroy();
+                                } else {
+                                    showTuto();
+                                }
+                            }, this);
+                        });
+                    };
+            panel.get("boundingBox").addClass("proggame-tutorial");
+            Y.one(".yui3-widget-mask").setStyle("opacity", 0.3);
+            Y.one("body").append("<div class='proggame-tuto-transparentmask'></div>");
+            showTuto();
         },
         syncFrontUI: function() {
             var cb = this.get(CONTENTBOX);
@@ -733,6 +796,21 @@ YUI.add('wegas-proggame-level', function(Y) {
                 type: STRING,
                 _inputex: {
                     index: -1
+                }
+            },
+            map: {
+                type: ARRAY,
+                value: [
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
+                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
+                ],
+                validator: Y.Lang.isArray,
+                _inputex: {
+                    _type: "proggamemap",
+                    useButtons: true
                 }
             },
             objects: {
@@ -966,21 +1044,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                     _type: ACE
                 }
             },
-            map: {
-                type: ARRAY,
-                value: [
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 1}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}],
-                    [{x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}, {x: 0, y: 0}]
-                ],
-                validator: Y.Lang.isArray,
-                _inputex: {
-                    _type: "proggamemap",
-                    useButtons: true
-                }
-            },
             invites: {
                 type: ARRAY,
                 value: []
@@ -999,15 +1062,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             //    _inputex: {
             //        useButtons: true
             //    }
-            //},
-            //onTurn: {
-            //    type: STRING,
-            //    format: "text",
-            //    optional: true,
-            //    _inputex: {
-            //        _type: ACE
-            //    }
-            //},
+            //}
         },
         API: {
             say: {
@@ -1021,7 +1076,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                 tooltip: "read():Number\n\n"
                         + "Your avatar will read any panel on the same case as he is and return it.\n\n"
                         + "Returns\nNumber - The text on the panel"
-
             },
             move: {
                 label: "move()",

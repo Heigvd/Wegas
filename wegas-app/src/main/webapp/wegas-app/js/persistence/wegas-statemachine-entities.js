@@ -237,8 +237,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             onEnterEvent: {
                 _inputex: {
                     _type: "script",
-                    label: "On enter impact",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    label: "On enter impact"
                 }
             },
             transitions: {

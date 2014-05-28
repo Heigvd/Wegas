@@ -133,7 +133,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          * @description clear message (see function 'showMessage')
          */
         emptyMessage: function() {
-            this.getStatusNode().empty();
+            this.getStatusNode().setContent("");
         },
         /**
          * @function

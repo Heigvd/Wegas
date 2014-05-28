@@ -50,10 +50,6 @@ YUI.add('wegas-scripteval', function(Y) {
             }
             try {
                 result = this.localEval(script);
-                this.fire("evaluated", result);
-                if (cb && cb.success instanceof Function) {
-                    cb.success(result);
-                }
             } catch (error) {
                 this.run(null, {
                     cfg: {
@@ -82,6 +78,11 @@ YUI.add('wegas-scripteval', function(Y) {
                         }
                     }
                 });
+                return;
+            }            
+            this.fire("evaluated", result);
+            if (cb && cb.success instanceof Function) {
+                cb.success(result);
             }
         },
         run: function(script, cfg) {
