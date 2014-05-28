@@ -14,6 +14,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     var ENTITY = "entity", LABEL = "label", HOST = "host", CONTENTBOX = "contentBox",
             ID = "id", DATASOURCE = "dataSource",
             Plugin = Y.Plugin, Lang = Y.Lang, Action = Plugin.Action, Wegas = Y.Wegas,
+            persistence = Wegas.persistence,
             EntityAction, EditFSMAction;
     /**
      * @class
@@ -670,7 +671,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     }
                 });
             }, this, this.get("entity")));
-            tab.plug(Y.Plugin.Removeable);                                      // Removable tab
+            tab.plug(Y.Plugin.Removeable, {closeCallback: function() {
+                    var entity = EditEntityAction.currentEntity;
+                    if (/*entity instanceof persistence.FSMDescriptor
+                            ||*/ entity instanceof persistence.State
+                            || entity instanceof persistence.Transition) {
+                        EditEntityAction.hideRightTabs();
+                    }
+                }});                                      // Removable tab
         }
     }, {
         NS: "wegas",

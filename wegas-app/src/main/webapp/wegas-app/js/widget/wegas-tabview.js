@@ -384,7 +384,7 @@ YUI.add('wegas-tabview', function(Y) {
 
     /**
      * Removable plugin for tabview
-     *
+     * ATTRS: closeCallback : function to call once close is called.
      * @name Y.Plugin.Removeable
      * @extends Y.Plugin.Base
      * @class plugin to remove a tab in one click.
@@ -440,10 +440,20 @@ YUI.add('wegas-tabview', function(Y) {
         onRemoveClick: function(e) {
             this.get("host").remove().destroy();
             e.stopPropagation();
+        },
+        destructor: function() {
+            if(this.get("closeCallback")){
+                this.get("closeCallback")();
+            }
         }
     }, {
         NS: "removeable",
-        NAME: "removeableTabs"
+        NAME: "removeableTabs",
+        ATTRS: {
+            closeCallback: {
+                validator: Y.Lang.isFunction
+            }
+        }
     });
     Y.namespace("Plugin").Removeable = Removeable;
 
