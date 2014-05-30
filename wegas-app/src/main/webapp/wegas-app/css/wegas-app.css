@@ -129,7 +129,7 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
 .yui3-togglebutton-hidden{
     display: none;
 }
-.yui3-togglebutton-disabled{
+.yui3-togglebutton-disabled {
     cursor: default;
     background-image: none;
     filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
