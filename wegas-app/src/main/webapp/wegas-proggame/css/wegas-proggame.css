@@ -485,10 +485,12 @@ html, .editor-preview {
     margin: 0;
 }
 .proggame-panel .yui3-widget-bd {
-    padding: 170px 189px;
+    padding: 170px 129px;
     text-align: center;
     font-size: 1.4em;
     line-height: 1.3em;
+    margin: 25px 20px 0 0;
+    height: 295px !important;
 }
 .proggame-panel button {
     margin-top: 70px;
