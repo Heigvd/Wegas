@@ -251,16 +251,18 @@
                                                                 "type": "hidden",
                                                                 "value": "null"
                                                             }, {
-                                                                "label": "Scenario",
-                                                                "name": "gameModelId",
-                                                                "required": true,
-                                                                "filters": {"canInstantiate": true},
-                                                                "type": "gamemodelselect"
-                                                            }, {
                                                                 "label": "name",
                                                                 "name": "name",
                                                                 "required": true,
                                                                 "showMsg": true
+                                                            }, {
+                                                                "label": "Scenario",
+                                                                "name": "gameModelId",
+                                                                "required": true,
+                                                                "filters": {
+                                                                    "canInstantiate": true
+                                                                },
+                                                                "type": "gamemodelselect"
                                                             }]
                                                     }
                                                 }]
@@ -332,7 +334,6 @@
                                                             }, {
                                                                 "label": "properties",
                                                                 "name": "properties",
-                                                                "useButtons": true,
                                                                 "wrapperClassName": "inputEx-fieldWrapper wegas-advanced-feature",
                                                                 "type": "object",
                                                                 "fields": [],

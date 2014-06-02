@@ -17,12 +17,12 @@ YUI.add('wegas-entity', function(Y) {
             Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
             Base = Y.Base, Entity,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * @class Entity is used to represent db objects
@@ -177,7 +177,6 @@ YUI.add('wegas-entity', function(Y) {
                 },
                 _inputex: {
                     _type: "object",
-                    useButtons: true,
                     required: false,
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
@@ -318,6 +317,15 @@ YUI.add('wegas-entity', function(Y) {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-game-name'
                 }
             },
+            gameModelName: {
+                //"transient": true
+                type: STRING,
+                _inputex: {
+                    _type: "uneditable",
+                    label: "Scenario",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-scenario'
+                }
+            },
             description: {
                 type: STRING,
                 format: TEXT,
@@ -336,9 +344,6 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true
             },
             gameModel: {//                                                      // Extended view only
-                "transient": true
-            },
-            gameModelName: {
                 "transient": true
             },
             properties: {
@@ -419,9 +424,10 @@ YUI.add('wegas-entity', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
+                    _type: "accountkeylist",
                     label: "Option 2: Player accesses with username/password",
                     wrapperClassName: 'inputEx-fieldWrapper wegas-game-users',
-                    _type: "accountkeylist",
+                    index: 2,
                     description: "Player directly joins the game with username/password.<br />"
                             + " Each username/password can be used only once."
                 }
@@ -729,10 +735,6 @@ YUI.add('wegas-entity', function(Y) {
                                 value: null
                             }]
                     }
-                },
-                _inputex: {
-                    useButtons: true
-                    //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
         },
@@ -762,7 +764,7 @@ YUI.add('wegas-entity', function(Y) {
             },
             name: {
                 "transient": true,
-                getter: function(val) {
+                getter: function() {
                     if (this.get("firstname") || this.get("lastname")) {
                         return this.get("firstname") + " " + (this.get("lastname") || "");
 
@@ -830,8 +832,7 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 _inputex: {
-                    label: "Groups",
-                    useButtons: true
+                    label: "Groups"
                 }
             },
             permissions: {
@@ -857,7 +858,6 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 _inputex: {
-                    useButtons: true,
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
