@@ -9,7 +9,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
     "use strict";
     var CONTENT_BOX = 'contentBox', BOUNDING_BOX = 'boundingBox', PARENT = "parent",
             SID = "sid", ENTITY = "entity", STATES = "states",
-            Wegas = Y.Wegas, Plugin = Y.Plugin, StateMachineViewer, State, Transition, jp;
+            Wegas = Y.Wegas, Plugin = Y.Plugin, StateMachineViewer, State, Transition, jp, Queue;
 
     StateMachineViewer = Y.Base.create("wegas-statemachineviewer", Y.Widget, [Wegas.Widget, Y.WidgetParent, Y.WidgetChild], {
         //TODO : zoom on simple scroll (ie without altKey), move panel with mouse (overflow hidden); zoom disabled
@@ -25,6 +25,14 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.currentZoom = 1;
             this.nodes = {};
             this.events = [];
+            /**
+             * storing callback on save
+             */
+            this._queue = new Queue();
+            /**
+             * storing failure callback on save
+             */
+            this._fQueue = new Queue();
             this.jpLoaded = false;
             // Waiting for jsPlumb
             this.publish("jsPlumbLoaded", {
@@ -192,7 +200,7 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                         this.add(new Wegas.Transition({
                             entity: t
                         }));
-                    }, this)
+                    }, this);
                     //} catch (e) {
                     //    Y.error("Failed creating transition", e, "Y.Wegas.StateMachineViewer");
                     //}
@@ -231,7 +239,9 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 })).item(0);
             }
         },
-        save: function() {
+        save: function(callback, failureCallback) {
+            this._queue.add(callback);
+            this._fQueue.add(failureCallback);
             this._saveTimer && this._saveTimer.cancel();
             /**
              * avoid multiple calls. Save last.
@@ -239,32 +249,32 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this._saveTimer = Y.later(100, this, function() {
                 var entity = this.get(ENTITY),
                         DEFAULTCB = {
-                            success: Y.bind(function() {
+                            success: Y.bind(function(queue, e) {
                                 this._saveOngoing = false;
                                 if (this._saveWaiting) {
                                     this.save();
                                 }
-
+                                queue.call(e);
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
-                            }, this),
-                            failure: Y.bind(function(e) {
+                            }, this, this._queue),
+                            failure: Y.bind(function(queue, e) {
                                 this._saveOngoing = false;
                                 if (this._saveWaiting) {
                                     this.save();
                                 }
                                 this.showMessage("error", e.response.data.message);
-
+                                queue.call(e);
                                 this.highlightUnusedStates();
                                 this.hideOverlay();
-                            }, this)
+                            }, this, this._fQueue)
                         };
                 if (entity) {
                     //this.showOverlay();
-                    //if (this._saveOngoing) {
-                    //    this._saveWaiting = true;
-                    //    return;
-                    //}
+                    if (this._saveOngoing) {
+                        this._saveWaiting = true;
+                        return;
+                    }
                     this._saveOngoing = true;
                     this._saveWaiting = false;
                     entity = Y.JSON.parse(Y.JSON.stringify(entity));
@@ -277,6 +287,8 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                             on: DEFAULTCB
                         });
                     }
+                    this._queue = new Queue();
+                    this._fQueue = new Queue();
                 }
             });
         },
@@ -490,7 +502,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
                 text: entity.text
             });
             Plugin.EditEntityAction.hideEditFormOverlay();
-            this.get(PARENT).save();
+            Plugin.EditEntityAction.showFormMessage("success", "Saving ...");
+            this.get(PARENT).save(function() {
+                Plugin.EditEntityAction.showFormMessage("success", "Item updated");
+            });
             this.syncUI();
         },
         addTransition: function(target) {
@@ -647,7 +662,10 @@ YUI.add('wegas-statemachineviewer', function(Y) {
             this.get(ENTITY).setAttrs(entity);
             Plugin.EditEntityAction.hideEditFormOverlay();
             this.updateLabel();
-            this.get(PARENT).get(PARENT).save();
+            Plugin.EditEntityAction.showFormMessage("success", "Saving ...");
+            this.get(PARENT).get(PARENT).save(function() {
+                Plugin.EditEntityAction.showFormMessage("success", "Item updated");
+            });
         },
         editionHighlight: function() {
             Y.all(".wegas-editing").removeClass("wegas-editing");
@@ -689,4 +707,47 @@ YUI.add('wegas-statemachineviewer', function(Y) {
     Wegas.StateMachineViewer = StateMachineViewer;
     Wegas.State = State;
     Wegas.Transition = Transition;
+    (function() {
+        /**
+         * asynchronous function queuing
+         */
+        /**
+         * 
+         * @constructor Queue
+         */
+        var Q = function() {
+            this._q = []; // function queue
+            this._c = false; //commit,
+            this._r = null; //response
+        };
+        Q.prototype = {
+            add: function(cb) {
+                if (typeof cb !== "function") {
+                    return this;
+                }
+                if (this._c) { // already commited, run immediately
+                    cb(this._r);
+                } else {
+                    this._q.push(cb);
+                }
+                return this;
+            },
+            /**
+             * requirement met, call functions
+             * @param {type} args
+             * @returns {undefined}
+             */
+            call: function(args) {
+                if (this._c) {
+                    return;
+                }
+                this._r = args;
+                this._c = true;
+                while (this._q.length) {
+                    this._q.shift()(this._r);
+                }
+            }
+        };
+        Queue = Q;
+    }());
 });
