@@ -14,7 +14,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
     var CONTENTBOX = 'contentBox', Wegas = Y.Wegas, LeaderwayTeam;
 
     LeaderwayTeam = Y.Base.create("leaderway-team", Wegas.ItemSelector, [], {
-        CONTENT_TEMPLATE: '<div><div class="selectors"></div><div class="informations"></div><div class="buttons"></div></div>',
+        CONTENT_TEMPLATE: '<div><div class="selectors"></div><div class="main"><div class="informations"></div><div class="buttons"></div><div style="clear:both"></div></div></div>',
         renderUI: function() {
             LeaderwayTeam.superclass.renderUI.apply(this);
 

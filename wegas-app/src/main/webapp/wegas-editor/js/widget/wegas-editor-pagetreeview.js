@@ -298,20 +298,20 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
 
         },
-        getMenuItems: function(data, node) {
+        getMenuItems: function(data) {
             var menuItems = [], host = this.get("host");
             if (data.widget) {
                 menuItems = PageTreeviewToolbarMenu.superclass.getMenuItems.call(this, data);
             }
             if (data.page) {                                                    // First level click, need to mix page edition and widget edition
                 menuItems.splice(menuItems.length - 2, 2);                      // Remove widget delete, copy button
-                menuItems.splice(menuItems.length, 0, {//                       // Add page rename, copy and delete buttons
-                    type: "Button",
-                    label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Rename",
-                    on: {
-                        click: Y.bind(host.editPage, host, data)
-                    }
-                }, {
+                menuItems.splice(menuItems.length, 0, /*{//                       // Add page rename, copy and delete buttons
+                 type: "Button",
+                 label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Rename",
+                 on: {
+                 click: Y.bind(host.editPage, host, data)
+                 }
+                 }, */{
                     type: "Button",
                     label: "<span class=\"wegas-icon wegas-icon-copy\"></span>Copy",
                     on: {
