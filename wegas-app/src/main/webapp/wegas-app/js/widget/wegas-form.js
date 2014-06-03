@@ -119,6 +119,7 @@ YUI.add('wegas-form', function(Y) {
                         form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
                         this.set("form", form);
                         form.on("updated", function(e) {
+                            cfg;
                             this.fire("updated", e);
                         }, this);
                     }, this, cfg));
@@ -260,6 +261,20 @@ YUI.add('wegas-form', function(Y) {
         Y.on("blur", this.onBlur, this.el, this);
         Y.on("keypress", this.onKeyPress, this.el, this);
         Y.on("keyup", this.onKeyUp, this.el, this);
+    };
+    /**
+     * @hack do not fire event as typeInvite should not be considered.
+     */
+    inputEx.Field.prototype.onChange = function(e) {
+        if (e.prevVal === this.options.typeInvite) {                            // @Modified start
+            e.prevVal = "";
+        }
+        if (e.newVal === this.options.typeInvite) {
+            e.newVal = "";
+        }
+        if (e.newVal !== e.prevVal) {                                           // @Modified end (include)
+            this.fireUpdatedEvt();
+        }
     };
     /**
      * @hack Let inputex also get requirement from selectfields, lists
