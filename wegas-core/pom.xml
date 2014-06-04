@@ -72,6 +72,8 @@
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>provided</scope>
+            <!-- Compile scope is usefull to test JPQL queries-->
+<!--            <scope>compile</scope>-->
         </dependency>
 
         <!-- EclipseLink -->
