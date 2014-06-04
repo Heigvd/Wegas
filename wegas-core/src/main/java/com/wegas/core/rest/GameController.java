@@ -110,7 +110,7 @@ public class GameController {
     public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
         SecurityUtils.getSubject().checkPermission("GameModel:Instantiate:gm" + gameModelId);
 
-        gameFacade.publishAndCcreate(gameModelId, entity);
+        gameFacade.publishAndCreate(gameModelId, entity);
         //gameFacade.create(gameModelId, entity);
         return entity;
     }

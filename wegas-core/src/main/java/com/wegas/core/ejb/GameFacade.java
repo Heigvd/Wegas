@@ -88,7 +88,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game
      * @throws IOException
      */
-    public void publishAndCcreate(final Long gameModelId, final Game game) throws IOException {
+    public void publishAndCreate(final Long gameModelId, final Game game) throws IOException {
         GameModel gm = gameModelFacade.duplicate(gameModelId);
         gm.setName(gameModelFacade.find(gameModelId).getName());// @HACK Set name back to the original
         gm.setTemplate(false);
@@ -195,7 +195,7 @@ public class GameFacade extends BaseFacade<Game> {
     @Override
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
-        if(token.length() == 0){
+        if (token.length() == 0) {
             throw new WegasException("Key cannot be empty");
         }
         String[] splitedToken = entity.getToken().split("-");
@@ -299,14 +299,10 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
-        final Query getByGameId = em.createQuery("SELECT game FROM Game game "
-                + "WHERE game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC");
-
-        GameModel gm = new GameModel();
-        gm.getGames();
-        getByGameId.setParameter("gameModelId", gameModelId);
-        //getByGameId.setParameter("orderBy", orderBy);
-        return getByGameId.getResultList();
+        return em.createQuery("SELECT game FROM Game game "
+                + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC")
+                .setParameter("gameModelId", gameModelId)
+                .getResultList();
     }
 
     /**
@@ -315,9 +311,8 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findAll(final String orderBy) {
-        final Query getByGameId = em.createQuery("SELECT game FROM Game game ORDER BY game.createdTime ASC");
-        //getByGameId.setParameter("orderBy", orderBy);
-        return getByGameId.getResultList();
+        return em.createQuery("SELECT game FROM Game game WHERE TYPE(game) != DebugGame ORDER BY game.createdTime ASC")
+                .getResultList();
     }
 
     /**
@@ -330,8 +325,8 @@ public class GameFacade extends BaseFacade<Game> {
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId "
-                + "ORDER BY p.joinTime ASC");
-        getByGameId.setParameter("userId", userId);
+                + "ORDER BY p.joinTime ASC")
+                .setParameter("userId", userId);
 
         return this.findRegisterdGames(getByGameId);
     }
@@ -346,9 +341,9 @@ public class GameFacade extends BaseFacade<Game> {
         final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
-                + "ORDER BY p.joinTime ASC");
-        getByGameId.setParameter("userId", userId);
-        getByGameId.setParameter("gameModelId", gameModelId);
+                + "ORDER BY p.joinTime ASC")
+                .setParameter("userId", userId)
+                .setParameter("gameModelId", gameModelId);
 
         return this.findRegisterdGames(getByGameId);
     }
