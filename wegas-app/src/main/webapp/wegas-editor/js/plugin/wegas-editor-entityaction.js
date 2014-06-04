@@ -14,6 +14,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     var ENTITY = "entity", LABEL = "label", HOST = "host", CONTENTBOX = "contentBox",
             ID = "id", DATASOURCE = "dataSource",
             Plugin = Y.Plugin, Lang = Y.Lang, Action = Plugin.Action, Wegas = Y.Wegas,
+            persistence = Wegas.persistence,
             EntityAction, EditFSMAction;
     /**
      * @class
@@ -116,7 +117,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                                     i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                             }
                         });
-                        form.toolbar.add(menuItems).item(0).get(CONTENTBOX).setStyle("marginLeft", "10px");
+                        form.toolbar.add(menuItems);
+                        form.toolbar.item(0) && form.toolbar.item(0).get(CONTENTBOX).setStyle("marginLeft", "10px");
                     };
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
@@ -670,7 +672,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     }
                 });
             }, this, this.get("entity")));
-            tab.plug(Y.Plugin.Removeable);                                      // Removable tab
+            tab.plug(Y.Plugin.Removeable, {closeCallback: function() {
+                    var entity = EditEntityAction.currentEntity;
+                    if (/*entity instanceof persistence.FSMDescriptor
+                            ||*/ entity instanceof persistence.State
+                            || entity instanceof persistence.Transition) {
+                        EditEntityAction.hideRightTabs();
+                    }
+                }});                                      // Removable tab
         }
     }, {
         NS: "wegas",

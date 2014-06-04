@@ -307,6 +307,9 @@
                         <goals>
                             <goal>compress</goal>
                         </goals>
+                        <configuration>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                        </configuration>
                     </execution>
                 </executions>
             </plugin>

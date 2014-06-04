@@ -52,6 +52,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             this.toolbar.get("header").append(this.srcField.addButton.get("boundingBox").removeClass("inputEx-WysiwigScript-add")
                     .append("Add impact"));
+            this.srcField.addButton.fire("click");
 
             this.renderRunButton();
 

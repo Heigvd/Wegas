@@ -26,7 +26,7 @@ YUI.add('wegas-itemselector', function(Y) {
      * @constructor
      * @description Display a given list of descriptor, each is selectable to display desired variables from it.
      */
-    ItemSelector = Y.Base.create("wegas-itemselector", Y.Widget, [Wegas.Widget, Wegas.Editable, Wegas.NodeFormatter], {
+    ItemSelector = Y.Base.create("wegas-itemselector", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable, Wegas.NodeFormatter], {
         /** @lends Y.Wegas.ItemSelector# */
         CONTENT_TEMPLATE: '<div><div class="selectors"></div><div class="informations"></div></div>',
         // *** Lifecycle Methods *** //

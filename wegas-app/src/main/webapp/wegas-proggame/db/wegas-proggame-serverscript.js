@@ -68,7 +68,7 @@ Wegas.mix(ProgGameSimulation.prototype, {
         }
 
         if (level.onStart) {
-            eval(level.onStart);
+            this.doEval(level.onStart);
         }
         this.log('Running...');
         for (i = 0; i < level.maxTurns; i += 1) {
@@ -123,6 +123,9 @@ Wegas.mix(ProgGameSimulation.prototype, {
             return false;
         }
         this.ret.push(cfg);
+    },
+    lastCommand: function() {
+        return this.ret[this.ret.length - 1];
     },
     getCommands: function() {
         return this.ret;
@@ -202,10 +205,11 @@ Wegas.mix(ProgGameSimulation.prototype, {
         if (panel && panel.value) {
             value = this.doEval(panel.value);
             this.doSay({text: "It's written \"" + value + "\""});
-            return value;
         } else {
             this.doSay({text: "There's nothing to read here."});
         }
+        this.afterAction();
+        return value;
     },
     include: function(fileName) {
         var msg, files = Variable.find(gameModel, "files");

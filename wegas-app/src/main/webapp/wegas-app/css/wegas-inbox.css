@@ -12,26 +12,45 @@
 .yui3-skin-sam .wegas-inbox {
     width: 100%;
 }
+.yui3-skin-sam .wegas-inbox-content { 
+    height: 100%;
+}
+.yui3-skin-sam .wegas-inbox .yui3-tab-panel{
+    padding: 0  10px;
+}
 .yui3-skin-sam .wegas-inbox .yui3-tab-label > div {
     padding: 0 10px;
 }
 .yui3-skin-sam .wegas-inbox .unread {
     font-weight: bolder;
 }
+.yui3-skin-sam .wegas-inbox .msg-from,
+.yui3-skin-sam .wegas-inbox .msg-attachement {
+    color: #757575;
+    font-style: italic;
+}
+.yui3-skin-sam .wegas-inbox .msg-from:before {
+    content: "From "
+}
+.yui3-skin-sam .wegas-inbox .msg-attachement:before {
+    content: "Attachements "
+}
+/* Right tab format */
 .yui3-skin-sam .wegas-inbox .msg-header {
-    background: rgba(178, 210, 255, 0.6);
-    border-bottom: 1px solid lightgray;
-    border-right: 1px solid lightgray;
+    border-bottom: 2px solid lightgray;
+    padding: 11px 18px 0px;
 }
 .yui3-skin-sam .wegas-inbox .msg-header > div {
-    padding: 5px 10px;
+    padding-bottom: 2px;
 }
 .yui3-skin-sam .wegas-inbox .msg-header > div:empty {
     padding: 0;
 }
+.yui3-skin-sam .wegas-inbox .msg-header > .msg-subject {
+    font-size: 1.1em;
+    font-weight: bold;
+}
 .yui3-skin-sam .wegas-inbox .msg-body {
-    border-bottom: 1px solid lightgray;
-    border-right: 1px solid lightgray;
-    padding: 5px 10px;
+    padding: 8px 5px 0px 18px;
     background: none;
 }

@@ -28,6 +28,12 @@
 .cl {
     clear:both;
 }
+code {
+    margin: 0.5em 2em;
+    border: 1px solid white;
+    padding: 0.6em 2em;
+    display: block;
+}
 /*html, .editor-preview > .wegas-pageloader-content > .wegas-widget > div*/
 html, .editor-preview {
     background: url(../../wegas-proggame/images/proggame-background.jpg) top left no-repeat;
@@ -90,10 +96,17 @@ html, .editor-preview {
 /* Inbox styles */
 .yui3-skin-sam .wegas-inbox .horizontal-tabview {
     /*margin-left: 15px;*/
-    /*height: 654px;*/
-    overflow: auto;
+    /* height: 654px; */
+    /* overflow: auto; */
     /*width: 906px;*/
     /*margin: 0;*/
+    height: 100%;
+}
+.yui3-skin-sam .wegas-inbox .horizontal-tabview .yui3-tabview-content {
+    height: 100%;
+}
+.yui3-skin-sam .wegas-inbox .horizontal-tabview  .yui3-tabview-panel {
+    overflow: auto;
 }
 .yui3-skin-sam .wegas-inbox .yui3-tab {
     border: 7px solid #FFFFFF;
@@ -108,14 +121,16 @@ html, .editor-preview {
 }
 .yui3-skin-sam .wegas-inbox .yui3-tab:hover,
 .yui3-skin-sam .wegas-inbox .yui3-tab-selected {
-    background: none;
+    background: rgba(255,255,255,0.2);
     opacity: 1;
+    color: black;
 }
 .yui3-skin-sam .horizontal-tabview .yui3-tab-panel,
 .yui3-skin-sam .wegas-inbox .msg-body,
 .yui3-skin-sam .wegas-inbox .msg-header {
     background: transparent;
     border: none;
+    text-align: justify;
 }
 .yui3-skin-sam .wegas-inbox .msg-header {
     font-weight: bold;
@@ -470,13 +485,22 @@ html, .editor-preview {
     margin: 0;
 }
 .proggame-panel .yui3-widget-bd {
-    padding: 50px;
+    padding: 170px 129px;
+    text-align: center;
+    font-size: 1.4em;
+    line-height: 1.3em;
+    margin: 25px 20px 0 0;
+    height: 295px !important;
 }
 .proggame-panel button {
-    margin-top: 30px;
+    margin-top: 70px;
+    padding: 0.3em 1.1em 0.1em !important;
+    font-size: 2.3em !important;
+    line-height: 1.1em;
 }
 .yui3-skin-sam .yui3-widget-mask {
-    background: transparent;
+    /* background: transparent; */
+    opacity: 0;
 }
 
 /* Editor: Inputex map field */
@@ -597,16 +621,16 @@ html, .editor-preview {
     font-size: 2.1em;
     letter-spacing: 0em;
     font-family: "KG Ways to Say Goodbye";
-    padding-top: 62px;
+    padding-top: 42px;
 }
 .proggame-levelend-restart {
-    background: url(../../wegas-proggame/images/btnRestart.png) no-repeat top center;
+    background: url(../../wegas-proggame/images/proggame-levelend-restart.png) no-repeat top center;
     width: 75px;
     top: 312px;
     left: 304px;
 }
 .proggame-levelend-nextlevel {
-    background: url(../../wegas-proggame/images/btnNext.png) no-repeat top center;
+    background: url(../../wegas-proggame/images/proggame-levelend-next.png) no-repeat top center;
     width: 87px;
     top: 312px;
     left: 514px;
@@ -614,4 +638,35 @@ html, .editor-preview {
 .proggame-levelend-restart:hover, 
 .proggame-levelend-nextlevel:hover {
     opacity: 1;
+}
+
+/* Level tutorial */ 
+.proggame-tutorial {
+    z-index: 1002 !important;}
+.proggame-tuto-arrowleft,
+.proggame-tuto-arrowbottom,
+.proggame-tuto-arrowright {
+    float: left;
+    width: 61px;
+    height: 70px;
+    background: url(../../wegas-proggame/images/proggame-tuto-arrow.png) no-repeat 0px -146px;
+}
+.proggame-tuto-arrowbottom {    
+    float: right;
+    background-position: 0 5px;
+}
+.proggame-tuto-arrowright {
+    float: right;
+    background-position: 0 -211px;
+}
+.proggame-tuto-highlight {
+    z-index: 1001;
+}
+.proggame-tuto-mask {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    left: 0px;
+    z-index: 1002;
 }
