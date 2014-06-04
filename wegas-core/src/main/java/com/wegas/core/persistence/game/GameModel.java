@@ -39,9 +39,18 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
 
+    /**
+     *
+     */
     public enum PROPERTY {
 
+        /**
+         *
+         */
         websocket,
+        /**
+         *
+         */
         freeForAll
     }
     /**
@@ -158,6 +167,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.name = name;
     }
 
+    /**
+     *
+     * @param pageMap
+     * @throws RepositoryException
+     */
     @JsonCreator
     public GameModel(@JsonProperty("pages") JsonNode pageMap) throws RepositoryException {
         Map<String, JsonNode> map = new HashMap<>();
@@ -183,10 +197,17 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         }
     }
 
+    /**
+     *
+     */
     public void propagateGameModel() {
         this.propagateGameModel(this);
     }
 
+    /**
+     *
+     * @param list
+     */
     public void propagateGameModel(final DescriptorListI list) {
         for (VariableDescriptor vd : (List<VariableDescriptor>) list.getItems()) {
             this.variableDescriptors.add(vd);
@@ -226,16 +247,28 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         return SecurityUtils.getSubject().isPermitted("GameModel:View:gm" + this.id);
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonView(Views.IndexI.class)
     public Boolean getCanEdit() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + this.id);
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonView(Views.IndexI.class)
     public Boolean getCanDuplicate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Duplicate:gm" + this.id);
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonView(Views.IndexI.class)
     public Boolean getCanInstantiate() {
         return SecurityUtils.getSubject().isPermitted("GameModel:Instantiate:gm" + this.id);
@@ -433,6 +466,11 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.properties.put(key, value);
     }
 
+    /**
+     *
+     * @param p
+     * @return
+     */
     public Boolean hasProperty(PROPERTY p) {
         return this.properties.containsKey(p.toString());
     }
@@ -480,7 +518,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      * @param pageMap
-     * @throws RepositoryException
      */
     public final void setPages(Map<String, JsonNode> pageMap) {
         this.pages = pageMap;
@@ -563,6 +600,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.createdBy = createdBy;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getCreatedByName() {
         if (this.getCreatedBy() != null) {
             return this.getCreatedBy().getName();
@@ -572,6 +613,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
 
     /**
      *
+     * @param createdByName
      */
     public void setCreatedByName(String createdByName) {
         // Here so game deserialization works
@@ -589,5 +631,39 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setTemplate(Boolean template) {
         this.template = template;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Transient
+    public String getImageSrc() {
+        return this.getProperties().get("imageSrc");
+    }
+
+    /**
+     *
+     * @param s
+     */
+    public void setImageSrc(String s) {
+        // So jersey don't yell
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Transient
+    public String getIconSrc() {
+        return this.getProperties().get("iconSrc");
+    }
+
+    /**
+     *
+     * @param s
+     */
+    public void setIconSrc(String s) {
+        // So jersey don't yell
     }
 }

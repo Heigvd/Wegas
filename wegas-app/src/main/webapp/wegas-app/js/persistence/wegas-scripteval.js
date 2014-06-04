@@ -7,21 +7,7 @@
  */
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
-    var ScriptEval, Variable;
-
-    function buildItems(entity, acc) {                                  // Recursively build items lists
-        var j, items;
-        if (entity instanceof Y.Wegas.persistence.ListDescriptor) {
-            items = entity.get("items");
-            acc.items = [];
-            for (j in items) {
-                if (items.hasOwnProperty(j)) {
-                    acc.items.push(Y.JSON.parse(Y.JSON.stringify(items[j].getInstance())));
-                    buildItems(items[j], acc.items[acc.items.length - 1]);
-                }
-            }
-        }
-    }
+    var ScriptEval, Variable, Wegas = Y.Wegas;
 
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
         context: null,
@@ -42,7 +28,7 @@ YUI.add('wegas-scripteval', function(Y) {
          *  @param cb A callback object, containing success, failure function or just a function as success callback. First parameter passed will be result
          */
         eval: function(script, cb) {
-            var result, url;
+            var result;
             if (cb instanceof Function) {
                 cb = {
                     success: cb
@@ -79,7 +65,7 @@ YUI.add('wegas-scripteval', function(Y) {
                     }
                 });
                 return;
-            }            
+            }
             this.fire("evaluated", result);
             if (cb && cb.success instanceof Function) {
                 cb.success(result);
@@ -87,7 +73,7 @@ YUI.add('wegas-scripteval', function(Y) {
         },
         run: function(script, cfg) {
             this.get("host").sendRequest(Y.mix(cfg, {
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: script
@@ -122,14 +108,13 @@ YUI.add('wegas-scripteval', function(Y) {
             for (i in data) {
                 if (data.hasOwnProperty(i)) {
                     this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance()));
-                    buildItems(data[i], this.context[data[i].get('name')]);
-
-//                if (data[i] instanceof Y.Wegas.persistence.ListDescriptor) {
-//                    this.context[data[i].get('name')].items = [];
-//                    for (j in data[i].get("items")) {
-//                        this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
-//                    }
-//                }
+                    this.buildItems(data[i], this.context[data[i].get('name')]);
+                    //if (data[i] instanceof Wegas.persistence.ListDescriptor) {
+                    //    this.context[data[i].get('name')].items = [];
+                    //    for (j in data[i].get("items")) {
+                    //        this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
+                    //    }
+                    //}
                 }
             }
             /*SANDBOX*/
@@ -142,20 +127,32 @@ YUI.add('wegas-scripteval', function(Y) {
             Y.mix(this.context, {
                 VariableDescriptorFacade: Variable,
                 Variable: Variable,
-                self: Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
-                gameModel: Y.Wegas.Facade.GameModel.cache.getCurrentGameModel()
+                self: Wegas.Facade.Game.cache.getCurrentPlayer(),
+                gameModel: Wegas.Facade.GameModel.cache.getCurrentGameModel()
             });
+        },
+        buildItems: function(entity, acc) {                                     // Recursively build items lists
+            var j, items;
+            if (entity instanceof Wegas.persistence.ListDescriptor) {
+                items = entity.get("items");
+                acc.items = [];
+                for (j in items) {
+                    if (items.hasOwnProperty(j)) {
+                        acc.items.push(Y.JSON.parse(Y.JSON.stringify(items[j].getInstance())));
+                        this.buildItems(items[j], acc.items[acc.items.length - 1]);
+                    }
+                }
+            }
         }
-
     }, {
         NS: "script",
         NAME: "scriptEval"
     });
     Variable = {
         find: function(gameModel, name) {
-            return Y.Wegas.Facade.Variable.cache.find("name", (Y.Lang.isString(gameModel)) ? gameModel : name);
+            return Wegas.Facade.Variable.cache.find("name", (Y.Lang.isString(gameModel)) ? gameModel : name);
         }
     };
-    Y.namespace('Plugin').ScriptEval = ScriptEval;
+    Y.Plugin.ScriptEval = ScriptEval;
 
 });

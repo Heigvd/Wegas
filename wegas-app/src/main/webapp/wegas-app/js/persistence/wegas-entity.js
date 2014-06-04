@@ -206,6 +206,12 @@ YUI.add('wegas-entity', function(Y) {
             },
             createdByName: {
                 "transient": true
+            },
+            iconSrc: {
+                "transient": true
+            },
+            imageSrc: {
+                "transient": true
             }
         },
         EDITMENU: [{
@@ -443,6 +449,12 @@ YUI.add('wegas-entity', function(Y) {
                     });
                     return count;
                 }
+            },
+            iconSrc: {
+                "transient": true
+            },
+            imageSrc: {
+                "transient": true
             }
         },
         EDITMENU: [{

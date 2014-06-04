@@ -124,7 +124,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
         }
     });
 
-    Y.namespace('Wegas').PusherDataSource = PusherDataSource;
+    Y.Wegas.PusherDataSource = PusherDataSource;
     //new PusherConnectorFactory({applicationKey: "732a1df75d93d028e4f9"});
 });
 

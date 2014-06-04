@@ -343,11 +343,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /* Join game/team styles */
 .wegas-gameinformation {
-    border: 1px solid lightgray;
+    /* border: 1px solid lightgray; */
 }
-.wegas-gamedescription,
-.wegas-gameinformation,
-.wegas-jointeam-content {
+.wegas-gamedescription, .wegas-jointeam-content {
     padding: .5em;
 }
 .wegas-jointeam .title,
@@ -406,9 +404,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 19px;
 }
 .wegas-gameinformation img{
-    width: 20%;
+    /* width: 20%; */
     float: left;
-    margin-right: 1.5em;
+    margin-right: 1em;
     margin-top: 0.3em;
 }
 .wegas-gameinformation .title {

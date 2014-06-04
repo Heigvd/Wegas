@@ -12,6 +12,8 @@
 YUI.add('wegas-gameinformation', function(Y) {
     "use strict";
 
+    var CONTENTBOX = "contentBox", GameInformation, Wegas = Y.Wegas;
+
     /**
      * @name Y.Wegas.JoinTeam
      * @extends Y.Widget
@@ -21,17 +23,15 @@ YUI.add('wegas-gameinformation', function(Y) {
      * @constructor
      * @description Allows just to join a team
      */
-    var CONTENTBOX = "contentBox",
-            GameInformation = Y.Base.create("wegas-gameinformation", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    GameInformation = Y.Base.create("wegas-gameinformation", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
         // *** Private fields *** //
-
         renderUI: function() {
             var cb = this.get(CONTENTBOX), entity = this.get("entity"),
-                    game = (entity instanceof Y.Wegas.persistence.Team) ? Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"))
+                    game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
                     : entity;
 
-            Y.Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
+            Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
                         var game = e.response.entity;
@@ -45,18 +45,19 @@ YUI.add('wegas-gameinformation', function(Y) {
             entity: {}
         },
         renderGameInformation: function(game) {
-            var information = new Y.Node.create('<div></div>'), imgSrc = game.get("properties.imgSrc");
-            if (game.get("properties.imgSrc")) {
+            var information = new Y.Node.create('<div></div>'),
+                    imgSrc = game.get("imageSrc");
+            if (imgSrc) {
                 information.append('<img src=' + imgSrc + ' />');
             }
-            information.append('<div class="title">' + game.get("gameModelName") + " <br />" + game.get("name") +
-                    '</div><div class="subtitle">' + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));
+            information.append('<div class="title">' + game.get("gameModelName") + " <br />" + game.get("name") + "</div>"
+                    + '<div class="subtitle">' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
             if (game.get("description")) {
-                information.append('</div><div class="description"> ' + game.get("description") + '</div>');
+                information.append('<div class="description"> ' + game.get("description") + '</div>');
             }
             information.append('<div style="clear: both"/>');
             return information.getHTML();
         }
     });
-    Y.namespace('Wegas').GameInformation = GameInformation;
+    Wegas.GameInformation = GameInformation;
 });

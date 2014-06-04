@@ -45,7 +45,7 @@
 }
 .yui3-skin-sam .wegas-layout-right {
     padding-left: 8px;
-    width: 320px;
+    /* width: 320px; */
     right: 0;
 }
 .yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
