@@ -1,0 +1,13 @@
+{
+    "Team": {
+        "type": "EditTeam"
+    },
+    "UserPreferences": {
+        "type": "Form",
+        "plugins": [
+            {
+                "fn": "UserPreferences"
+            }
+        ]
+    }
+}

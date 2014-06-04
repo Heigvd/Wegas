@@ -153,7 +153,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-loginbutton': {
                     path: 'js/widget/wegas-loginbutton-min.js',
-                    requires: ['wegas-button', 'wegas-widgetmenu'],
+                    requires: ['wegas-button', 'wegas-widgetmenu', 'wegas-team'],
                     ws_provides: 'LoginButton'
                 },
                 'wegas-chat': {
@@ -228,6 +228,19 @@ YUI().use(function(Y) {
                     path: 'js/widget/wegas-googletranslate-min.js',
                     requires: "googletranslate",
                     ws_provides: "GoogleTranslate"
+                },
+                'wegas-teamcss': {
+                    path: 'css/wegas-team-min.css',
+                    type: 'css'
+                },
+                'wegas-team': {
+                    path: 'js/widget/wegas-team-min.js',
+                    requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
+                        'wegas-editor-action', "wegas-inputex-multipleoptions",
+                        'inputex-select', 'inputex-string', "inputex-list", "inputex-hidden",
+                        "inputex-autocomplete", "inputex-password", "inputex-email", "wegas-gameinformation",
+                        "wegas-teamcss", "autocomplete-highlighters"],
+                    ws_provides: ["Team", "JoinTeam", "EditTeam", "GameDescription"]
                 },
                 "wegas-jstranslator": {
                     pkg: 'js/',
@@ -859,13 +872,6 @@ YUI().use(function(Y) {
                 'wegas-inputex-roleselect': {
                     requires: 'inputex-select',
                     ix_provides: 'roleselect'
-                },
-                'wegas-team': {
-                    requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
-                        'wegas-editor-action', "wegas-inputex-multipleoptions",
-                        'inputex-select', 'inputex-string', "inputex-list", "inputex-hidden",
-                        "inputex-autocomplete", "inputex-password", "inputex-email", "wegas-gameinformation"],
-                    ws_provides: ["Team", "JoinTeam", "EditTeam", "GameDescription"]
                 },
                 'wegas-gameinformation': {
                     path: 'js/wegas-gameinformation-min.js',

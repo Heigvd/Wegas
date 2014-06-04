@@ -7,6 +7,7 @@
  */
 package com.wegas.core.security.rest;
 
+import com.sun.org.apache.xerces.internal.impl.dv.dtd.ENTITYDatatypeValidator;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
@@ -34,6 +35,8 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -87,7 +90,11 @@ public class UserController {
      */
     @Inject
     private RequestManager requestManager;
-
+    /**
+     *
+     */
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
     /**
      *
      * @return
@@ -136,6 +143,17 @@ public class UserController {
     public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         List<JpaAccount> accounts = this.getAutoComplete("%" + value + "%");
         for (int i = 0; i < accounts.size(); i++) {
+            em.detach(accounts.get(i));
+            String email = accounts.get(i).getEmail();
+            String res;
+            if (email.indexOf("@")<=4) {
+                res = email.substring(0, email.indexOf("@"));
+            } else {
+                res = email.substring(0, 4);
+            } 
+            res += "***";
+            res += email.substring(email.indexOf("@"));
+            accounts.get(i).setEmail(res);
             try {
                 Player p = playerFacade.findByGameIdAndUserId(gameId, accounts.get(i).getUser().getId());
                 if (accounts.get(i).getUser() == p.getUser()) {
