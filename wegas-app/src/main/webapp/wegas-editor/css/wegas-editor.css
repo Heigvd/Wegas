@@ -72,6 +72,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 100%;
     overflow: auto;
 }
+.editor-preview .layout .wegas-hastoolbar {
+    position:inherit;
+}
 .wegas-hastoolbar > .wegas-toolbar-sibling {
     position: absolute;
     top: 3em;
@@ -341,26 +344,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     padding-top: 0px;
 }
 
-/* Join game/team styles */
-.wegas-gameinformation {
-    border: 1px solid lightgray;
-}
-.wegas-gamedescription,
-.wegas-gameinformation,
-.wegas-jointeam-content {
-    padding: .5em;
-}
-.wegas-jointeam .title,
-.wegas-gameinformation .title,
-.wegas-gamedescription .title {
-    font-weight: bolder;
-    margin-bottom: 5px;
-}
-.wegas-join-token .wegas-gameinformation .title {
-    font-weight: bold;
-    color: #777;
-    font-size: 1.2em;
-}
+/* Join-token team styles */
 .wegas-join-token-content button,
 .wegas-jointeam-content button,
 .editor-button-resume {
@@ -375,9 +359,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     padding: 10px 0 20px;
     margin: 10px 10px 20px;
 }
-.wegas-gameinformation .description {
-    padding: 5px 0 10px;
-}
 .yui3-tabview .wegas-join-token-content > .inputEx-fieldWrapper{
     padding-top: 30px;
 }
@@ -385,63 +366,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-jointeam .inputEx-label{
     width: 11em;
 }
-.wegas-jointeam  .inputEx-ListField >span {
-    margin: 0 !important;
-}
-.wegas-jointeam .wegas-inputex-multioptions .inputEx-fieldWrapper  {
-    opacity: 0.8;
-    padding: 10px;
-}
-.wegas-jointeam .wegas-inputex-multioptions .wegas-inputex-multi-selected {
-    /*    box-shadow: 0 0 1px #6d6d6d;
-        background: #ededed;
-        opacity: 1;*/
-}
-.wegas-gameinformation .subtitle {
-    font-style: italic;
-    color: grey;
-}
-.wegas-jointeam .addTeamMember span{
-    margin-bottom: -3px;
-    height: 19px;
-}
-.wegas-gameinformation img{
-    width: 20%;
-    float: left;
-    margin-right: 1.5em;
-    margin-top: 0.3em;
-}
-.wegas-gameinformation .title {
-    font-size: 1.3em;
-    margin-top: 0.3em;
-}
-#rightTabView .wegas-jointeam .teamselection {
-    background: #f6f6f6;
-    padding-bottom: 10px;
-    padding-left: 0.6em;
-}
-#rightTabView .wegas-jointeam .teamselection:empty {
-    background: white;
-}
-#rightTabView .wegas-jointeam .wegas-gameinformation {
-    margin-bottom: 1em;
-}
-.wegas-jointeam img.inputEx-ListField-addButton{
-    display: none;
-}
 .open-game-tab {
     margin: 0 .5em;
 }
 
 /* Wegas editor icons */
-.yui3-skin-sam .wegas-icon {
-    display: inline-block;
-    height: 18px;
-    width: 18px;
-    overflow: hidden;
-    background-repeat: no-repeat;
-    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
-}
 .yui3-skin-sam .wegas-icon-game,
 .yui3-skin-sam .wegas-icon-gamemodel,
 .yui3-skin-sam .wegas-icon-team,

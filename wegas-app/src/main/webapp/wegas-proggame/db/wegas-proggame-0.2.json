@@ -983,7 +983,6 @@
                     "disabled": false,
                     "labelIsUser": false,
                     "label": "Account",
-                    "preferencePageId": 1000,
                     "targetPageLoader": "maindisplayarea",
                     "type": "LoginButton",
                     "plugins": [{
@@ -1671,7 +1670,6 @@
                         "cssClass": "menu-loginbutton",
                         "disabled": false,
                         "labelIsUser": false,
-                        "preferencePageId": 1000,
                         "targetPageLoader": "maindisplayarea",
                         "type": "LoginButton",
                         "plugins": [{
