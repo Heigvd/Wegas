@@ -38,6 +38,6 @@ YUI.add('wegas-websocketlistener', function(Y) {
         NS: "ws",
         NAME: "WebSocketListener"
     });
-    Y.namespace('Plugin').WebSocketListener = WebSocketListener;
+    Y.Plugin.WebSocketListener = WebSocketListener;
 
 });

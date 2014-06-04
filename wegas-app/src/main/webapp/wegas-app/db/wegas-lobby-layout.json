@@ -97,6 +97,7 @@
             }]
     },
     "center": {
+        "width": 830,
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",
@@ -348,7 +349,6 @@
             }]
     },
     "right": {
-        "width": 530,
         "children": [{
                 "type": "List",
                 "children": [{

@@ -59,9 +59,9 @@
     margin-right: 1px;
 }
 .wegas-game-scenario .inputEx-Field {
-   border: 1px solid lightgray;
-   padding: 2px;
-   background: #fafafa;
+    border: 1px solid lightgray;
+    padding: 2px;
+    background: #fafafa;
 }
 .wegas-game-token .inputEx-StringField-wrapper:before {
     content:"Enrolment key ";
@@ -175,8 +175,16 @@
     display:none;
 }
 .wegas-lobby-datatable .wegas-lobby-datatable-icon {
-    padding: 0 0 0 0.5em;
-    width: 22px;
+    /* width: 30px; */
+    padding: 0;
+    margin: 0;
+    padding: 2px 0 0 3px;
+}
+.wegas-lobby-datatable .wegas-lobby-datatable-icon .wegas-lobby-icon {
+    display: none;
+}
+.wegas-lobby-datatable .wegas-lobby-datatable-icon .wegas-lobby-thumb {
+    width: 205px;
 }
 .yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-table {
     table-layout: fixed;
@@ -268,9 +276,9 @@
     display: block;
 }
 .wegas-datatable-grid tr {
-    padding: 0.8em 1em;
+    padding: 0.8em 0.8em;
     min-height: 112px;
-    margin: 0.7em 1.3em 0.6em 0;
+    margin: 0em 0.6em 0.5em 0;
     display: inline-block;
     width: 205px;
     border: 1px solid #ededed;
@@ -295,11 +303,6 @@
     margin-left: 0;
     width: 205px;
 }
-.yui3-skin-sam .wegas-datatable-grid .wegas-icon-game {
-    background: transparent url(../images/wegas-preview-leaderway-1.png);
-    width: 205px;
-    height: 128px;
-}
 .yui3-skin-sam .wegas-datatable-grid td.yui3-datatable-col-name {
     font-size: 1.1em;
     font-weight: bold;
@@ -317,10 +320,14 @@
 }
 .yui3-skin-sam .wegas-datatable-grid td.wegas-datatable-menu {
     position: absolute;
-    right: 12px;
-    bottom: 20px;
+    right: 0.8em;
+    top: 0.8em;
     text-align: right;
-    width: 100px;
+    width: 112px;
+}
+
+.yui3-skin-sam .wegas-datatable-grid td.wegas-datatable-menu .yui3-button {
+    background-color: rgba(255,255,255,0.6);
 }
 
 /* Lobby datatable: List view */
@@ -335,26 +342,20 @@
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-header,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-cell {
-    padding: 1em 0.7em;
+    padding: 0.7em 0.7em 0.6em;
     border-bottom: none;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
     padding-right: 0;
     width: 71px;
 }
-.yui3-skin-sam .wegas-datatable-list .wegas-icon-game {
-    background: transparent url(../images/wegas-preview-leaderway-1.png);
-    width: 70px;
-    height: 42px;
-    background-size: 100%;
-}
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-name,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-gameModelName {
-    max-width: 300px;
-    min-width: 170px;
+    min-width: 200px;
     overflow: visible;
     word-wrap: break-word;
     white-space: normal;
+    word-break: break-word;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-menu {
     width: 100%;
@@ -369,6 +370,20 @@
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-createdTime {
     width: 85px;
+}
+.yui3-skin-sam .wegas-datatable-list .wegas-lobby-datatable-icon .wegas-lobby-thumb {
+    width: 95px; 
+}
+/* Lobby datatable: table view */
+.yui3-skin-sam .wegas-datatable-table .wegas-lobby-datatable-icon .wegas-lobby-icon {
+    display: initial;
+    width: 22px;
+    height: 22px;
+    margin-top: 3px;
+    margin-bottom: 0px;
+}
+.yui3-skin-sam .wegas-datatable-table .wegas-lobby-datatable-icon .wegas-lobby-thumb {
+    display: none;
 }
 .yui3-skin-sam .wegas-datatable-table .yui3-datatable-col-menu .yui3-button{
     padding: 0 1px 0 2px;
@@ -508,7 +523,7 @@
 
 /******************** AccountKey and EnrolementKey*****************************/
 .wegas-accountkey, .wegas-enrolmentkey {
-    font-size: 90%
+    font-size: 90%;
 }
 .wegas-accountkey > span {
     display: inline-block;

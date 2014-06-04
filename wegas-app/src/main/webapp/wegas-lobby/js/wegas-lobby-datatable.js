@@ -52,10 +52,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas")
-                    .addClass("wegas-datatable-table");
+                    .addClass("wegas-datatable-list");
 
             if (this.toolbar) {
-                this.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons wegas-advanced-feature'>"
+                this.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons'>"
                         + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
                         + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
                         + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
@@ -89,7 +89,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
                 this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
-
                 if (request) {
                     ds.sendRequest(request);
                 }
@@ -107,8 +106,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 return;
             }
 
-            var ds = this.get(DATASOURCE),
-                    data = this.genData(ds.cache.findAll());
+            var data = this.genData(this.get(DATASOURCE).cache.findAll());
 
             this.dataTable.set("data", data);
             this.hideOverlay();
@@ -144,7 +142,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         genEntityData: function(entity) {
             switch (entity.get("@class")) {
-
                 case 'DebugGame':
                     break;
 
@@ -154,7 +151,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         createdTime: entity.get("createdTime"),
                         gameModelName: entity.get("gameModelName") || "",
                         createdBy: entity.get("createdByName") || "undefined",
-                        playersCount: entity.get("playersCount")
+                        playersCount: entity.get("playersCount"),
+                        iconSrc: entity.get("iconSrc"),
+                        imageSrc: entity.get("imageSrc")
                                 //teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
                                 //token: entity.get("properties.freeForAll") ? entity.get("token") : "",
                     };
@@ -176,7 +175,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         return {
                             name: entity.get(NAME),
                             createdBy: entity.get("createdByName"),
-                            createdTime: entity.get("createdTime")
+                            createdTime: entity.get("createdTime"),
+                            iconSrc: entity.get("iconSrc"),
+                            imageSrc: entity.get("imageSrc")
                         };
                     }
                     break;
@@ -206,7 +207,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     }
                     return val;
                 }
-            }, emptyMessage: {
+            },
+            emptyMessage: {
                 value: "You have not joined any game yet"
             },
             dataTableCfg: {
@@ -244,7 +246,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').GameDataTable = GameDataTable;
+    Wegas.GameDataTable = GameDataTable;
 
     /**
      *  Request current user on host widget loaded
@@ -267,7 +269,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     Y.DataTable.BodyView.Formatters.icon = function(col) {
         col.className = 'wegas-lobby-datatable-icon';
         return function(o) {
-            return '<span class="wegas-icon ' + o.value + '"></span>';
+            return '<img class="wegas-lobby-icon" src="' + (o.data.iconSrc || "wegas-lobby/images/wegas-game-icon.png") + '" />'
+                    + '<img class="wegas-lobby-thumb" src="' + (o.data.imageSrc || "wegas-lobby/images/wegas-game-thumb.png") + '" />';
         };
     };
     Y.DataTable.BodyView.Formatters.link = function() {
@@ -309,17 +312,17 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
                 this.addedHandler = this.get(HOST).get(DATASOURCE).after("added", function(e) {// When an entity is created
                     this.currentSelection = e.entity.get("id");                 // view it in the table
-                    Y.later(20, this, function () {    
+                    Y.later(20, this, function() {
                         this.get("host").dataTable.get("data").each(function(r) {
                             if (this.currentSelection === r.get("entity").get("id")) {
                                 this.get("host").dataTable.getRow(r).scrollIntoView();
                                 //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                             }
                         }, this);
-                    })
+                    });
                 }, this);
             });
-            
+
             this.doAfter("syncUI", function() {
                 this.get("host").dataTable.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
@@ -376,7 +379,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             children: {}
         }
     });
-
 
     /**
      * @class Open a menu on click, containing the admin edition field
@@ -530,9 +532,11 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         }
     });
 
-    /** Shortcut to create public game treeview */
+    /** 
+     * Shortcut to create public game treeview 
+     */
     Wegas.PublicGameDataTable = Y.Base.create("wegas-lobby-datatable", GameDataTable, [], {
-        renderUI: function(cfg) {
+        renderUI: function() {
             this.setAttrs({
                 dataSource: "PublicGames",
                 dataTableCfg: {
@@ -594,7 +598,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                                                     }
                                                 }]
                                         }]
-                                }}]
+                                }
+                            }]
                     }]
             });
         }

@@ -196,7 +196,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     target = this.getPosition(position),
                     cfg = this.get(position);
 
-            if (cfg) {                                                  // If there is a provided configuration
+            if (cfg) {                                                          // If there is a provided configuration
                 if (position === "left") {
                     this.resizeLeft = new Y.Resize({
                         node: target,
@@ -218,11 +218,11 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     target.setStyles({
                         right: "0px",
                         left: "auto",
-                        width: cfg.width || 0
+                        width: cfg.width || (Y.DOM.winWidth() - this.get("center.width")) + "px"
                     });
                 }
 
-                for (i = 0; i < cfg.children.length; i = i + 1) {      // ender the children
+                for (i = 0; i < cfg.children.length; i = i + 1) {               // ender the children
                     cWidget = Y.Wegas.Widget.create(cfg.children[i]);
                     // cWidget.after("render", this.syncUI, this );
                     cWidget.render(target);
@@ -252,7 +252,6 @@ YUI.add('wegas-layout-resizable', function(Y) {
         /**
          * @lends Y.Wegas.ResizableLayout#
          */
-
         /**
          * @field
          * @static
@@ -296,6 +295,5 @@ YUI.add('wegas-layout-resizable', function(Y) {
             }
         }
     });
-
-    Y.namespace('Wegas').ResizableLayout = ResizableLayout;
+    Y.Wegas.ResizableLayout = ResizableLayout;
 });
