@@ -236,13 +236,20 @@ YUI.add('wegas-pageloader', function(Y) {
              * @deprecated
              */
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "hidden"
+                }
             },
             /**
              * 
              */
             page: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             },
             /**
              * A widget to render in current page (transient)

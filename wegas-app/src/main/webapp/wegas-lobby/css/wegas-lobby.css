@@ -47,14 +47,21 @@
 .wegas-game-token {
     padding-top: 10px;
 }
+.wegas-game-scenario .inputEx-label,
 .wegas-game-name .inputEx-label,
 .wegas-game-access .inputEx-label {
     width: 58px !important;
 }
+.wegas-game-scenario .inputEx-Field,
 .wegas-game-name .inputEx-Field,
 .wegas-game-access .inputEx-Field {
     margin-left: -68px;
     margin-right: 1px;
+}
+.wegas-game-scenario .inputEx-Field {
+   border: 1px solid lightgray;
+   padding: 2px;
+   background: #fafafa;
 }
 .wegas-game-token .inputEx-StringField-wrapper:before {
     content:"Enrolment key ";

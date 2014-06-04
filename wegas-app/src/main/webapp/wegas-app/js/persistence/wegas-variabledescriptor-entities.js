@@ -20,12 +20,12 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             HTML = "html",
             Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
             IDATTRDEF = {
-        type: STRING,
-        optional: true, // The id is optional for entites that have not been persisted
-        _inputex: {
-            _type: HIDDEN
-        }
-    };
+                type: STRING,
+                optional: true, // The id is optional for entites that have not been persisted
+                _inputex: {
+                    _type: HIDDEN
+                }
+            };
 
     /**
      * VariableDescriptor mapper
@@ -178,7 +178,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.GameScope = Base.create("GameScope", persistence.Scope, [], {
         getInstance: function() {
-            return this.get("variableInstances")["" + Wegas.Facade.Game.get('currentGameId')];
+            return this.get("variableInstances")[String(Wegas.Facade.Game.get('currentGameId'))];
         }
     }, {
         ATTRS: {
@@ -316,19 +316,20 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         METHODS: {
             setValue: {
                 label: "set",
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: HTML,
                         value: "",
-                        scriptType: STRING
+                        scriptType: STRING,
+                        required: true
                     }]
             },
             getValue: {
                 label: VALUE,
                 returns: STRING,
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }]
@@ -412,38 +413,41 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
          */
         METHODS: {
             add: {
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
-                        value: 1
+                        type: NUMBER,
+                        value: 1,
+                        required: true
                     }]
             },
             sub: {
                 label: "remove",
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
-                        value: 1
+                        type: NUMBER,
+                        value: 1,
+                        required: true
                     }]
             },
             setValue: {
                 label: "set",
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
-                        value: 1
+                        type: NUMBER,
+                        value: 1,
+                        required: true
                     }]
             },
             getValue: {
                 label: VALUE,
                 returns: NUMBER,
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }]
@@ -485,25 +489,27 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             var object = Wegas.Editable.prototype.clone.call(this), i;
             object.items = [];
             for (i in this.get(ITEMS)) {
-                object.items.push(this.get(ITEMS)[i].clone());
+                if (this.get(ITEMS).hasOwnProperty(i)) {
+                    object.items.push(this.get(ITEMS)[i].clone());
+                }
             }
             return object;
         },
         flatten: function() {
             var acc = [],
                     doFlatten = function(items) {
-                var i, it;
-                for (i = 0; i < items.length; i += 1) {
-                    it = items[i];
-                    if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
-                        acc.push(it);
-                    } else if (it instanceof persistence.ListDescriptor) {
-                        doFlatten(it.get(ITEMS));
-                    } else {
-                        acc.push(it);
-                    }
-                }
-            };
+                        var i, it;
+                        for (i = 0; i < items.length; i += 1) {
+                            it = items[i];
+                            if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
+                                acc.push(it);
+                            } else if (it instanceof persistence.ListDescriptor) {
+                                doFlatten(it.get(ITEMS));
+                            } else {
+                                acc.push(it);
+                            }
+                        }
+                    };
             doFlatten(this.get(ITEMS));
             return acc;
 
@@ -514,15 +520,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         depthFirstSearch: function(id) {
             var needle,
                     filterFn = function(it) {
-                if (it.get("id") === +id) {
-                    needle = it;
-                    return false;
-                } else if (it instanceof persistence.ListDescriptor) {
-                    return Y.Array.every(it.get(ITEMS), filterFn);
-                } else {
-                    return true;
-                }
-            };
+                        if (it.get("id") === +id) {
+                            needle = it;
+                            return false;
+                        } else if (it instanceof persistence.ListDescriptor) {
+                            return Y.Array.every(it.get(ITEMS), filterFn);
+                        } else {
+                            return true;
+                        }
+                    };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
         },
@@ -697,7 +703,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             sendMessage: {
                 label: "send message",
                 className: "wegas-method-sendmessage",
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }, {
@@ -711,7 +717,8 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     }, {
                         type: HTML,
                         label: "Body",
-                        scriptType: STRING
+                        scriptType: STRING,
+                        required: true
                     }, {
                         type: "list",
                         label: "Attachements",
@@ -728,7 +735,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             isEmpty: {
                 label: "is empty",
                 returns: BOOLEAN,
-                arguments: [{
+                "arguments": [{
                         type: HIDDEN,
                         value: SELF
                     }]
@@ -800,14 +807,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             if (this.get("content") === "") {                                   // empty scripts resolve to true
                 this.fire("evaluated", true);
             }
-            if (Wegas.Facade.VariableDescriptor.script.eval) {
+            if (Wegas.Facade.VariableDescriptor.script["eval"]) {
                 if (this._result) {
                     this.fire("evaluated", this._result);
                     return;
                 }
                 if (!this._inProgress) {
                     this._inProgress = true;
-                    Wegas.Facade.VariableDescriptor.script.eval(this.get("content"), {
+                    Wegas.Facade.VariableDescriptor.script["eval"](this.get("content"), {
                         success: Y.bind(function(result) {
                             if (result === true) {
                                 this._result = true;

@@ -195,9 +195,11 @@ public class GameFacade extends BaseFacade<Game> {
     @Override
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
-        String s = token.substring(token.length() - 1);
+        if(token.length() == 0){
+            throw new WegasException("Key cannot be empty");
+        }
         String[] splitedToken = entity.getToken().split("-");
-        if (!s.equals("-")) {
+        if (!token.endsWith("-")) {
             try {
                 Long.parseLong(splitedToken[splitedToken.length - 1]);
                 throw new WegasException("You can't have a trait followed by a number (example: xx-12)");

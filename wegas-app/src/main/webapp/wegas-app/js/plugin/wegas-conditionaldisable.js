@@ -11,14 +11,15 @@
  */
 YUI.add('wegas-conditionaldisable', function(Y) {
     "use strict";
+    var Wegas = Y.Wegas, Plugin = Y.Plugin, ConditionalDisable;
 
-    var ConditionalDisable = Y.Base.create("wegas-conditionaldisable", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    ConditionalDisable = Y.Base.create("wegas-conditionaldisable", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         handlers: null,
         initializer: function() {
             this.handlers = [];
             this.onceAfterHostEvent("render", function() {
                 this.conditionEval();
-                this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.conditionEval, this));
+                this.handlers.push(Wegas.Facade.VariableDescriptor.after("update", this.conditionEval, this));
             });
         },
         destructor: function() {
@@ -28,10 +29,10 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             }
         },
         conditionEval: function() {
-            if (Y.Wegas.Facade.VariableDescriptor.script) {
-                Y.Wegas.Facade.VariableDescriptor.script.eval(this.get("condition").content, Y.bind(function(result) {
+            if (Wegas.Facade.VariableDescriptor.script) {
+                Wegas.Facade.VariableDescriptor.script.eval(this.get("condition").content, Y.bind(function(result) {
                     var attr = this.get("attribute");
-                    if (attr === "class") {
+                    if (attr === "cssClass") {
                         this.get('host').get("boundingBox").toggleClass(this.get("value"), result);
                     } else {
                         this.get('host').set(this.get("attribute"), result);
@@ -44,7 +45,7 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             condition: {
                 _inputex: {
                     _type: 'script',
-                    label: 'Disable condition',
+                    label: 'Disable if',
                     expects: "condition"
                 }
             },
@@ -64,22 +65,17 @@ YUI.add('wegas-conditionaldisable', function(Y) {
                 }
             }
         },
-        NS: "ConditionalDisable",
-        NAME: "ConditionalDisable"
+        NS: "ConditionalDisable"
     });
-    Y.Plugin.ConditionalDisable = ConditionalDisable;
+    Plugin.ConditionalDisable = ConditionalDisable;
 
-    Y.Plugin.ConditionalDisable2 = Y.Base.create("wegas-conditionaldisable", ConditionalDisable, [], {}, {
-        NS: "ConditionalDisable2",
-        NAME: "ConditionalDisable2"
+    Plugin.ConditionalDisable2 = Y.Base.create("wegas-conditionaldisable2", ConditionalDisable, [], {}, {
+        NS: "ConditionalDisable2"
     });
-    Y.Plugin.ConditionalDisable3 = Y.Base.create("wegas-conditionaldisable", ConditionalDisable, [], {}, {
-        NS: "ConditionalDisable3",
-        NAME: "ConditionalDisable3"
+    Plugin.ConditionalDisable3 = Y.Base.create("wegas-conditionaldisable3", ConditionalDisable, [], {}, {
+        NS: "ConditionalDisable3"
     });
-    Y.Plugin.ConditionalDisable4 = Y.Base.create("wegas-conditionaldisable", ConditionalDisable, [], {}, {
-        NS: "ConditionalDisable4",
-        NAME: "ConditionalDisable4"
+    Plugin.ConditionalDisable4 = Y.Base.create("wegas-conditionaldisable4", ConditionalDisable, [], {}, {
+        NS: "ConditionalDisable4"
     });
-
 });

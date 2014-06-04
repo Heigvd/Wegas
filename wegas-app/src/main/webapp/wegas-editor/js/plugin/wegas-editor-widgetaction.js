@@ -147,12 +147,9 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             form.toolbar.add(menuItems).item(0).get("contentBox").setStyle("marginLeft", "10px");
         },
         highlight: function(widget, val) {
-            if (!widget.get("destroyed") && widget.get("boundingBox")) {
-                if (val || Y.Lang.isUndefined(val)) {
-                    widget.get("boundingBox").addClass("highlighted");
-                } else {
-                    widget.get("boundingBox").removeClass("highlighted");
-                }
+            var bb = widget.get("boundingBox");
+            if (bb && bb._node) {
+                bb.toggleClass("highlighted", val || Y.Lang.isUndefined(val));
             }
         }
     }, {

@@ -309,13 +309,21 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
                 this.addedHandler = this.get(HOST).get(DATASOURCE).after("added", function(e) {// When an entity is created
                     this.currentSelection = e.entity.get("id");                 // view it in the table
+                    Y.later(20, this, function () {    
+                        this.get("host").dataTable.get("data").each(function(r) {
+                            if (this.currentSelection === r.get("entity").get("id")) {
+                                this.get("host").dataTable.getRow(r).scrollIntoView();
+                                //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
+                            }
+                        }, this);
+                    })
                 }, this);
             });
             
             this.doAfter("syncUI", function() {
                 this.get("host").dataTable.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
-                        this.get("host").dataTable.getRow(r).addClass("wegas-datatable-selected").scrollIntoView();
+                        this.get("host").dataTable.getRow(r).addClass("wegas-datatable-selected");
                         //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                     }
                 }, this);

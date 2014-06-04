@@ -35,4 +35,25 @@
             -->
         </properties>
     </persistence-unit>
+<!--    JPQL TEST NETBEANS
+        Modify wegas-core's POM dependency, build wegas-core and activate this PU once build finished.
+        Check username/password.
+        POM's change: scope is 'compile' instead of 'provided' for next dependency
+
+            <groupId>org.glassfish.main.extras</groupId>
+            <artifactId>glassfish-embedded-all</artifactId>
+            <scope>compile</scope>
+    -->
+    
+    <!--    <persistence-unit name="RunJPQL" transaction-type="RESOURCE_LOCAL">
+        <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+        <exclude-unlisted-classes>false</exclude-unlisted-classes>
+        <jar-file>../../../target/wegas-core_1.0-SNAPSHOT.jar</jar-file>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/wegas_dev"/>
+            <property name="javax.persistence.jdbc.password" value=""/>
+            <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+            <property name="javax.persistence.jdbc.user" value="postgres"/>
+        </properties>
+    </persistence-unit>-->
 </persistence>
