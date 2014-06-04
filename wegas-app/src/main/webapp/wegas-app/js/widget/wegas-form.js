@@ -265,7 +265,7 @@ YUI.add('wegas-form', function(Y) {
     /**
      * @hack do not fire event as typeInvite should not be considered.
      */
-    inputEx.Field.prototype.onChange = function(e) {
+    inputEx.StringField.prototype.onChange = function(e) {
         if (e.prevVal === this.options.typeInvite) {                            // @Modified start
             e.prevVal = "";
         }
