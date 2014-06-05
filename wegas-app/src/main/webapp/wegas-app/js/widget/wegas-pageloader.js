@@ -5,16 +5,14 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-pageloader', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', PageLoader;
+    var CONTENTBOX = 'contentBox', PAGEID = "pageId", Wegas = Y.Wegas, PageLoader;
     /**
      * @name Y.Wegas.PageLoader
      * @extends Y.Widget
@@ -23,7 +21,7 @@ YUI.add('wegas-pageloader', function(Y) {
      * @constructor
      * @description Load pages and request widget to render.
      */
-    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    PageLoader = Y.Base.create("wegas-pageloader", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.PageLoader# */
 
         // *** Private fields *** //
@@ -41,7 +39,7 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this; // We keep a references of all loaded PageLoaders
+            PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
             this.publish("contentUpdated", {emitFacade: false});
         },
         /**
@@ -54,17 +52,17 @@ YUI.add('wegas-pageloader', function(Y) {
          * When an exception in fire, stop loading page, show error message.
          */
         bindUI: function() {
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", function() {// When the variable cache is update,
-                if (this.get("page") && "" + this.get("page.evaluated") !== "" + this.get('pageId')) {// and if the current page has change,
+            this.handlers.push(Wegas.Facade.VariableDescriptor.after("update", function() {// When the variable cache is update,
+                if (this.get("page") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
-                if (this.get("variable") && "" + this.get("variable.evaluated") !== "" + this.get('pageId')) {// @backwardcompatibilityand if the current page has change,
+                if (this.get("variable") && "" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
             }, this));
 
-            //Y.Wegas.Facade.Page.after("response", this.syncUI, this);
-            //this.handlers.push(Y.Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
+            //Wegas.Facade.Page.after("response", this.syncUI, this);
+            //this.handlers.push(Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
             //    if (e.page && ("" + e.page["@pageId"] === "" + this.get("pageId"))) {
             //        this.currentPageId = null; // @hack force update
             //        this.syncUI();
@@ -81,13 +79,13 @@ YUI.add('wegas-pageloader', function(Y) {
             var val = this.get("variable.evaluated"),
                     page = this.get("page.evaluated");
             if (page) {                                                         // If there is a page script
-                this.set("pageId", +page);                                      // display it
+                this.set(PAGEID, +page);                                        // display it
             } else if (val && val.getInstance().get('value')) {                 // @backwardcompatibility
-                this.set("pageId", val.getInstance().get('value'));
-            } else if (this.get("defaultPageId") && !this.get("pageId")) {      //in case a defaultPageId is defined and no pageId is
-                this.set("pageId", this.get("defaultPageId"));
+                this.set(PAGEID, val.getInstance().get('value'));
+            } else if (this.get("defaultPageId") && !this.get(PAGEID)) {        //in case a defaultPageId is defined and no pageId is
+                this.set(PAGEID, this.get("defaultPageId"));
             } else {
-                this.set("pageId", this.get("pageId")); // Otherwise use pageId (in case the setter has not been called yet)
+                this.set(PAGEID, this.get(PAGEID));                             // Otherwise use pageId (in case the setter has not been called yet)
             }
         },
         /**
@@ -126,7 +124,7 @@ YUI.add('wegas-pageloader', function(Y) {
          * @return boolean
          * @description Return true if an ancestor already loads pageId
          */
-        ancestorWithPage: function(pageId) {                                     //Page loader mustn't load the page who contain itself.
+        ancestorWithPage: function(pageId) {                                    //Page loader mustn't load the page who contain itself.
             var same = false;
             this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
                 var widget = Y.Widget.getByNode(node);
@@ -167,7 +165,7 @@ YUI.add('wegas-pageloader', function(Y) {
                 value: "maindisplayarea",
                 //value: "PageLoader" + Y.Lang.now(), //generate a default pageLoaderId
                 _inputex: {
-                    label: "Zone id"
+                    label: "Page display id"
                 }
             },
             /**
@@ -196,7 +194,7 @@ YUI.add('wegas-pageloader', function(Y) {
                     }
                     this.currentPageId = val;
                     Y.log("Getting page", "log", "Wegas.PageLoader");
-                    Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {// Retrieve page
+                    Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {// Retrieve page
                         this.showOverlay();
 
                         if (this.get("widget")) {
@@ -210,14 +208,14 @@ YUI.add('wegas-pageloader', function(Y) {
                             this.fire("contentUpdated");
                             return;
                         }
-                        this._set("pageId", val);
+                        this._set(PAGEID, val);
                         this.get(CONTENTBOX).empty();                           // Let the overlay appear during rendering
 
-                        Y.Wegas.Widget.use(widgetCfg, Y.bind(function() {       // Load the subwidget dependencies
+                        Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
                             try {
                                 Y.log("Rendering new widget", "log", "Wegas.PageLoader");
                                 widgetCfg.editable = true;
-                                var widget = Y.Wegas.Widget.create(widgetCfg);  // Render the subwidget
+                                var widget = Wegas.Widget.create(widgetCfg);    // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
                                 widget['@pageId'] = widgetCfg['@pageId'];       // @HACK set up a reference to the page
                                 this.set("widget", widget);
@@ -242,7 +240,8 @@ YUI.add('wegas-pageloader', function(Y) {
              * @deprecated
              */
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                optional: true,
                 _inputex: {
                     _type: "hidden"
                 }
@@ -251,9 +250,12 @@ YUI.add('wegas-pageloader', function(Y) {
              * 
              */
             page: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                optional: true,
                 _inputex: {
-                    _type: "variableselect",
+                    //_type: "variableselect",
+                    _type: "hidden",
+                    classFilter: ["NumberDescriptor", "TextDescriptor"],
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
@@ -268,7 +270,7 @@ YUI.add('wegas-pageloader', function(Y) {
                     }
                     if (v) {
                         v.addTarget(this);
-                    }                         // Event on the loaded widget will be forwarded
+                    }                                                           // Event on the loaded widget will be forwarded
                     return v;
                 }
             },
@@ -292,5 +294,5 @@ YUI.add('wegas-pageloader', function(Y) {
             return PageLoader.pageLoaderInstances[id];
         }
     });
-    Y.namespace('Wegas').PageLoader = PageLoader;
+    Y.Wegas.PageLoader = PageLoader;
 });
