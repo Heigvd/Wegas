@@ -118,7 +118,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             }
                         });
                         form.toolbar.add(menuItems);
-                        form.toolbar.item(0) && form.toolbar.item(0).get(CONTENTBOX).setStyle("marginLeft", "10px");
+                        form.toolbar.item(0) && form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px");
                     };
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
