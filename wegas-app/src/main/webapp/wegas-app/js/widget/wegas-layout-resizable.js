@@ -33,14 +33,6 @@ YUI.add('wegas-layout-resizable', function(Y) {
         /** @lends Y.Wegas.ResizableLayout# */
 
         // *** Private fields *** //
-        /**
-         * Reference to Y.Resize left object of the panel
-         */
-        resizeLeft: null,
-        /**
-         * Reference to Y.Resize right object of the panel
-         */
-        resizeRight: null,
         // *** Lifecycle Methods *** //
         /**
          * @function

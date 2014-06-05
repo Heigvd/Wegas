@@ -9,18 +9,17 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-jstranslator", function(Y) {
+YUI.add("wegas-translator", function(Y) {
 
-    function JSTranslator() {
-        this._strs = Y.Intl.get("wegas-jstranslator");
+    function Translator() {
+        this._strs = Y.Intl.get("wegas-translator");
     }
 
-    JSTranslator.prototype = {
-        constructor: JSTranslator,
+    Translator.prototype = {
+        constructor: Translator,
         getRB: function() {
             return this._strs;
         }
     };
-
-    Y.namespace('Wegas').JSTranslator = JSTranslator;
+    Y.namespace('Wegas').Translator = Translator;
 });

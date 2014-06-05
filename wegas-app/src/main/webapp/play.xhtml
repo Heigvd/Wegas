@@ -89,7 +89,7 @@
                                 ]
                             },
                             /* THIS IS NOT A COMMENT
-                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
+                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket') and !gameController.currentGameModel.getProperty('websocket').equals('')}">
                              */
                             Pusher: {
                                 type: "PusherDataSource",

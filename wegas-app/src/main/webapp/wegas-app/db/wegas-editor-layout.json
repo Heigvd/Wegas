@@ -208,7 +208,7 @@
             }]
     },
     "right": {
-        "width": "320px",
+        "width": "430px",
         "children": [{
                 "type": "TabView",
                 "id": "rightTabView",

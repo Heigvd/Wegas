@@ -95,6 +95,8 @@
 }
 .wegas-datatable-viewbuttons .yui3-button {
     padding: .4em 0.4em 0.3em 0.6em;
+    margin-right: 0em !important;  
+    padding: 0.3em 0.3em .3em 0.5em !important;
 }
 .yui3-button.button-gridview,
 .yui3-button.button-listview {
@@ -180,7 +182,7 @@
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-header,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-cell {
-    padding: 0.7em 0.7em 0.6em;
+    padding: 0.5em 0.7em 0.4em;
     border-bottom: none;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
@@ -217,8 +219,8 @@
     display: initial;
     width: 22px;
     height: 22px;
-    margin-top: 3px;
-    margin-bottom: 0px;
+    margin-top: 2px;
+    margin-bottom: -3px;
 }
 .yui3-skin-sam .wegas-datatable-table .wegas-lobby-datatable-icon .wegas-lobby-thumb {
     display: none;

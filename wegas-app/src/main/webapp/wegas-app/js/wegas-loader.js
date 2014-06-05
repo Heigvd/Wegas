@@ -200,7 +200,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inbox': {
                     path: 'js/widget/wegas-inbox-min.js',
-                    requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss", "wegas-widgettoolbar", "wegas-jstranslator", "template-micro"],
+                    requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss", "wegas-widgettoolbar", "wegas-translator", "template-micro"],
                     ws_provides: 'InboxDisplay'
                 },
                 'wegas-inboxcss': {
@@ -242,7 +242,7 @@ YUI().use(function(Y) {
                         "wegas-teamcss", "autocomplete-highlighters"],
                     ws_provides: ["Team", "JoinTeam", "EditTeam", "GameDescription"]
                 },
-                "wegas-jstranslator": {
+                "wegas-translator": {
                     pkg: 'js/',
                     lang: ["fr"]
                 },
@@ -621,7 +621,7 @@ YUI().use(function(Y) {
                     ws_provides: "QuestionDescriptor"
                 },
                 'wegas-mcq-tabview': {
-                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-jstranslator", 'wegas-mcq-tabviewcss', 'wegas-mcq-printcss'],
+                    requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-translator", 'wegas-mcq-tabviewcss', 'wegas-mcq-printcss'],
                     ws_provides: "MCQTabView"
                 },
                 'wegas-mcq-tabviewcss': {

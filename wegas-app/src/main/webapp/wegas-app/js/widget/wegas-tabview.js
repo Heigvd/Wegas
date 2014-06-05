@@ -442,7 +442,7 @@ YUI.add('wegas-tabview', function(Y) {
             e.stopPropagation();
         },
         destructor: function() {
-            if(this.get("closeCallback")){
+            if (this.get("closeCallback")) {
                 this.get("closeCallback")();
             }
         }
@@ -479,6 +479,11 @@ YUI.add('wegas-tabview', function(Y) {
          *  If "addChild" is fired by host, show tab.
          */
         initializer: function() {
+            Wegas.app.after("render", function() {
+                if (this.get("host").isEmpty()) {
+                    Wegas.app.widget.hidePosition("right");
+                }
+            }, this);
             this.afterHostEvent("removeChild", function() {
                 Y.later(100, this, function() {
                     if (this.get("host").isEmpty()) {

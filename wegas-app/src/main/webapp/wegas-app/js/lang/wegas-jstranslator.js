@@ -8,8 +8,8 @@
 /**
  * @fileoverview
  */
-YUI.add("lang/wegas-jstranslator", function(Y) {
-    Y.Intl.add("wegas-jstranslator", "default", {
+YUI.add("lang/wegas-translator", function(Y) {
+    Y.Intl.add("wegas-translator", "default", {
         Delete: "Delete",
         Empty: "Empty",
         No_description: "No description",

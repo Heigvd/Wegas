@@ -20,13 +20,11 @@ YUI.add('wegas-layout-panel', function(Y) {
      * @param Object Will be used to fill attributes field
      * @description Create a panel with all children
      */
-    var PanelWidget = Y.Base.create("wegas-panelwidget", Y.Wegas.Panel, [Y.WidgetChild, Y.Wegas.Editable,  Y.Wegas.Parent], {
+    var PanelWidget = Y.Base.create("wegas-panelwidget", Y.Wegas.Panel, [Y.Wegas.Parent, Y.WidgetChild, Y.Wegas.Editable], {
         /** @lends Y.Wegas.PanelWidget# */
 
     }, {
         /** @lends Y.Wegas.PanelWidget */
-
     });
     Y.namespace('Wegas').PanelWidget = PanelWidget;
-
 });

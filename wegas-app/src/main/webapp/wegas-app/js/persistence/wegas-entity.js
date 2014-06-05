@@ -181,11 +181,12 @@ YUI.add('wegas-entity', function(Y) {
                             name: "freeForAll",
                             type: "radio",
                             label: "Game is played",
+                            value: "false",
                             choices: [{
-                                    value: "false",
+                                    value: "true",
                                     label: "individually"
                                 }, {
-                                    value: "true",
+                                    value: "false",
                                     label: "in team"
                                 }]
                         }, {
