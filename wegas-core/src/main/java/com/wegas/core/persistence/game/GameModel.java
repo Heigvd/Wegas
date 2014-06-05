@@ -225,7 +225,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         super.merge(n);
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-
         //this.setParentGameModel(other.getParentGameModel());
     }
 
