@@ -30,7 +30,7 @@
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
             <!-- Dev tool: style sheet reference injected directly in the game model -->
-            <ui:repeat rendered="#{editorGameController.currentGameModel.getProperty('cssUri') != null}"
+            <ui:repeat rendered="#{editorGameController.currentGameModel.hasProperty('cssUri')}"
                        var="o" value="#{editorGameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
@@ -63,14 +63,14 @@
                             },
                             Page: {
                                 /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{!editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 * <ui:fragment rendered="#{!editorGameController.currentGameModel.hasProperty('pagesUri')}">
                                  */
                                 source: "rest/GameModel/#{editorGameController.currentGameModel.id}/Page/",
                                 /* THIS IS NOT A COMMENT
                                  * </ui:fragment>
                                  */
                                 /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.containsKey('pagesUri')}">
+                                 * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('pagesUri')}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.get('pagesUri')}",
                                 /* THIS IS NOT A COMMENT
@@ -124,7 +124,7 @@
                                     }]
                             },
                             /* THIS IS NOT A COMMENT
-                             * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket') and !editorGameController.currentGameModel.getProperty('websocket').equals('')}">
+                             * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('websocket')}">
                              */
                             Pusher: {
                                 type: "PusherDataSource",
@@ -162,7 +162,7 @@
                             preview.showOverlay();
                             Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
                         });
-                        
+
                         try {
                             #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
