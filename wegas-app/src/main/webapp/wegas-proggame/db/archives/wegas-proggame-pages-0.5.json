@@ -422,7 +422,6 @@
                 "labelIsUser": false,
                 "label": "Account",
                 "cssClass": "proggame-button-account",
-                "preferencePageId": 1000,
                 "targetPageLoader": "maindisplayarea",
                 "type": "LoginButton",
                 "plugins": [

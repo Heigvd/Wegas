@@ -326,27 +326,16 @@ font {
     border: none;
 }
 
-/* Edit team widget styles */
-.wegas-teamformlist .yui3-u {
-    width: 116px;
-    padding-bottom: 3px;
-}
-.wegas-teamformlist  .yui3-u:first-child {
-    padding-left: 22px;
-}
-.wegas-teamformlist .header .yui3-u {
-    color: #505050;
-    font-style: italic;
-}
-.wegas-teamformlist  .inputEx-ListField {
-    padding-left: 20px;
-}
-.wegas-teamformlist  .inputEx-ListField .inputEx-Group .inputEx-fieldWrapper {
-    float: left;    /* Player edition is displayed inline */
-    padding-right: 3px;
-}
-
 /* Onclick pointer style */
 .wegas-click {
     cursor: pointer;
+}
+/* Wegas add icon */
+.yui3-skin-sam .wegas-icon {
+    display: inline-block;
+    height: 18px;
+    width: 18px;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-image: url(../../wegas-app/images/wegas-app-sprite.png);
 }

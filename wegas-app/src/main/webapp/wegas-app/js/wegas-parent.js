@@ -149,6 +149,15 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
+                                                        label: "Preferences button",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "LoginButton"
+                                                                }
+                                                            }]
+                                                    }, {
+                                                        type: BUTTON,
                                                         label: "Form",
                                                         cssClass: "experimental",
                                                         plugins: [{
