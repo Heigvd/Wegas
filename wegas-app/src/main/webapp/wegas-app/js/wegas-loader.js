@@ -901,8 +901,12 @@ YUI().use(function(Y) {
                     ws_provides: "ShareUser"
                 },
                 'wegas-lobby-datatable': {
-                    requires: ['datatable', 'button-group'],
+                    requires: ['datatable', 'button-group', 'wegas-lobby-datatablecss'],
                     ws_provides: "GameDataTable"
+                },
+                'wegas-lobby-datatablecss': {
+                    path: 'css/wegas-lobby-datatable-min.css',
+                    type: 'css'
                 }
             }
         },
