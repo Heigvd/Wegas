@@ -44,14 +44,12 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public enum PROPERTY {
 
-        /**
-         *
-         */
         websocket,
-        /**
-         *
-         */
-        freeForAll
+        freeForAll,
+        pagesUri,
+        cssUri,
+        iconSrc,
+        imageSrc
     }
     /**
      *
