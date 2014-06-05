@@ -118,7 +118,7 @@
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -1050px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-textdescriptor,
-.yui3-skin-sam .wegas-icon-text {
+.yui3-skin-sam .wegas-page-editor .wegas-icon-text {
     background: url(../images/wegas-icon-pages.png) 2px -59px no-repeat;
 }
 .yui3-skin-sam .wegas-icon-inboxdescriptor {

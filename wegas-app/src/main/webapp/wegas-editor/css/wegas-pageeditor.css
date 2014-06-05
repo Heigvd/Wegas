@@ -216,13 +216,15 @@ body > .wegas-pageloader {
 .wegas-page-editor .wegas-icon-page-display {
     background: url(../images/wegas-icon-pages.png) 0 -160px no-repeat;
 }
-.wegas-page-editor .wegas-icon-button {
+.wegas-page-editor .wegas-icon-button,
+.wegas-page-editor .wegas-icon-wegas-login {
     background: url(../images/wegas-icon-pages.png) 0 -576px no-repeat;
 }
 .wegas-page-editor .wegas-icon-gauge {
     background: url(../images/wegas-icon-pages.png) 0 -672px no-repeat;
 }
-.wegas-page-editor .wegas-icon-wegas-template {
+.wegas-page-editor .wegas-icon-wegas-template,
+.wegas-page-editor .wegas-icon-wegas-custom-template {
     background: url(../images/wegas-icon-pages.png) 1px -890px no-repeat;
 }
 .wegas-page-editor .wegas-icon-image {
