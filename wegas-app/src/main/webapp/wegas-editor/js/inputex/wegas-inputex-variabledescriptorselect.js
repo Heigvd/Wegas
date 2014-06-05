@@ -84,7 +84,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (this.currentEntityField && !this._fallbackMode && this.currentEntityField.getValue()) {
                 return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
             } else if (this._fallbackMode) {
-                this.setClassFromState("invalid");
                 return this.inputs[0].getValue() || this.options.raw;
             } else {
                 return null;
@@ -176,7 +175,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 wrapperClassName: "inputEx-fieldWrapper wegas-variabledescriptor-select-fallback"
             });
             this.displayMessage(message);
-            this.setClassFromState("invalid");
             this._fallbackMode = true;
         },
         /**
