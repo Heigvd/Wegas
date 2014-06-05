@@ -224,10 +224,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             id = id + 1;
 
             state = new Wegas.persistence[type](cfg);                           // State or DialogueState
-            //this.setZoom(1, false);                                           // force setting default zoom to have correct position
-            this.addState(state, id);
+            //this.setZoom(1, false);                                           // force setting default zoom to have correct position            
             this.get(ENTITY).get(STATES)[id.toString()] = state;
             this.save();
+            this.addState(state, id);
         },
         addState: function(entity, id) {
             if (this.jpLoaded) {
@@ -373,7 +373,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         }
     });
 
-    State = Y.Base.create("wegas-state", Y.Widget, [Y.WidgetChild, Y.WidgetParent], {
+    State = Y.Base.create("wegas-state", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         BOUNDING_TEMPLATE: "<div>"
                 + "<div></div>"                                                 // Menu
                 + '<div class="wegas-state-text"></div>'
