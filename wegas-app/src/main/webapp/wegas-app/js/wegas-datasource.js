@@ -1051,12 +1051,14 @@ YUI.add('wegas-datasource', function(Y) {
          */
         setCache: function(pageId, object) {
             var old = Y.JSON.stringify(this.getCache(pageId));
-            delete object['@name'];
-            if (Y.JSON.stringify(object) !== old) {
-                this.get(HOST).data["" + pageId] = object;
-                this.fire("pageUpdated", {
-                    page: this.getPage(pageId)
-                });
+            if (Y.Lang.isObject(object)) {
+                delete object['@name'];
+                if (Y.JSON.stringify(object) !== old) {
+                    this.get(HOST).data["" + pageId] = object;
+                    this.fire("pageUpdated", {
+                        page: this.getPage(pageId)
+                    });
+                }
             }
         },
         /**
@@ -1237,7 +1239,11 @@ YUI.add('wegas-datasource', function(Y) {
                                 }
 
                             }
-                        }, this)}
+                        }, this),
+                        failure: function(e) {
+                            callback(null);
+                        }
+                    }
                 });
             }
             return page;
@@ -1281,10 +1287,17 @@ YUI.add('wegas-datasource', function(Y) {
         _beforeDefDataFn: function(e) {
             var data = e.data && (e.data.responseText || e.data),
                     payload = e.details[0];
-            payload.response = {
-                meta: {},
-                results: Y.JSON.parse(data)
-            };
+            if (e.error) {
+                payload.response = {
+                    meta: {},
+                    results: data
+                };
+            } else {
+                payload.response = {
+                    meta: {},
+                    results: Y.JSON.parse(data)
+                };
+            }
             this.get(HOST).fire("response", payload);
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },

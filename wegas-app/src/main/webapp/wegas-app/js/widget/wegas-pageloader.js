@@ -187,22 +187,28 @@ YUI.add('wegas-pageloader', function(Y) {
             pageId: {
                 type: "string",
                 "transient": true,
-                setter: function(val) {
-                    if (!val || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded,
+                setter: function(val, name, opts) {
+                    if (Y.Lang.isObject(opts) && opts.noquery) {
+                        return val;
+                    }
+                    if (!arguments.length || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded,
                         return val;                                             // do not continue
                     }
                     this.currentPageId = val;
                     Y.log("Getting page", "log", "Wegas.PageLoader");
                     Y.Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {// Retrieve page
-                        if (!widgetCfg) {
-                            return;
-                        }
                         this.showOverlay();
 
                         if (this.get("widget")) {
                             Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
                             this.get("widget").destroy();
                             this.set("widget", null);
+                        }
+                        if (!widgetCfg) {
+                            this.get(CONTENTBOX).setContent("<center><i>Page [" + this.currentPageId + "] was not found</i></center>");
+                            this.hideOverlay();
+                            this.fire("contentUpdated");
+                            return;
                         }
                         this._set("pageId", val);
                         this.get(CONTENTBOX).empty();                           // Let the overlay appear during rendering
@@ -216,7 +222,7 @@ YUI.add('wegas-pageloader', function(Y) {
                                 widget['@pageId'] = widgetCfg['@pageId'];       // @HACK set up a reference to the page
                                 this.set("widget", widget);
                             } catch (e) {
-                                this._state.add("widgetCfg", "value", widgetCfg);//@HACK : avoid some heavy computing, bypass setter!!! Warn, no events
+                                this.set("widgetCfg", widgetCfg);
                                 this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
                                 Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
                             } finally {
