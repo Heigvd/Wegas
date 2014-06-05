@@ -469,7 +469,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return
      */
     public Boolean hasProperty(PROPERTY p) {
-        return this.properties.containsKey(p.toString()) && !this.properties.get(p).equals("") && this.properties.get(p) != null;
+        return this.properties.containsKey(p.toString()) && !this.properties.get(p.toString()).equals("") && this.properties.get(p.toString()) != null;
     }
 
     /**
