@@ -35,12 +35,21 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     on: {
                         click: Y.bind(function() {
                             DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
-                                this.changePage(id);
+                                this.get("pageLoader").set("pageId", null, {noquery: true});   //be sure to change (stuck on an inexistant page 1)
+                                this.changePage(id, Y.bind(function(id, widget) {
+                                    this.treeView.some(function() {
+                                        if (+this.get("data.page") === +id) {
+                                            this.fire("click");
+                                            return true;
+                                        }
+                                    });
+                                }, this, id));
                             }, this));
                         }, this)
                     }
                 });
             }
+            this.getIndex();
         },
         bindUI: function() {
             this.after("treenode:nodeExpanded", function(e) {// Change the current page whenever a page node is expanded
@@ -205,7 +214,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             var treeNode, i;
             if (confirm("You are removing a page, this can't be undone. Are you sure?")) {
                 this.treeView.some(function() {
-                    if (this.get("data.page") === pageId) {
+                    if (+this.get("data.page") === +pageId) {
                         treeNode = this;
                         return true;
                     }
@@ -213,7 +222,12 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 DATASOURCE.deletePage(pageId, Y.bind(function() {
                     if (this.get("pageLoader").get("pageId") === pageId && treeNode.get("parent").size() > 1) {
                         i = treeNode.get("parent").indexOf(treeNode);
-                        this.changePage(treeNode.get("parent").item(i > 0 ? i - 1 : i + 1).get("data.page"));
+                        treeNode.get("parent").item(i > 0 ? i - 1 : i + 1).fire("click");
+                    } else {
+                        this.getIndex();
+                        if (this.treeView.size() === 0) {
+                            this.get("pageLoader").set("pageId", 1);
+                        }
                     }
                 }, this));
                 this.hideOverlay();
@@ -300,11 +314,16 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         getMenuItems: function(data) {
             var menuItems = [], host = this.get("host");
+            if (!Y.Lang.isObject(data)) {
+                return menuItems;
+            }
             if (data.widget) {
                 menuItems = PageTreeviewToolbarMenu.superclass.getMenuItems.call(this, data);
+                if (data.page) {
+                    menuItems.splice(menuItems.length - 2, 2);                      // Remove widget delete, copy button
+                }
             }
-            if (data.page) {                                                    // First level click, need to mix page edition and widget edition
-                menuItems.splice(menuItems.length - 2, 2);                      // Remove widget delete, copy button
+            if (data.page) {                                                    // First level click, need to mix page edition and widget edition                
                 menuItems.splice(menuItems.length, 0, /*{//                       // Add page rename, copy and delete buttons
                  type: "Button",
                  label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Rename",
@@ -324,6 +343,15 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         click: Y.bind(host.deletePage, host, data.page)
                     }
                 });
+                if (!data.widget) {
+                    menuItems.splice(0, 0, {
+                        type: "Button",
+                        label: "<span class=\"wegas-icon wegas-icon-edit\"></span>Rename",
+                        on: {
+                            click: Y.bind(host.editPage, host, data)
+                        }
+                    });
+                }
             }
             return menuItems;
         }
