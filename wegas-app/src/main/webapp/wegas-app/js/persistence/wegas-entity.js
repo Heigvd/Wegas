@@ -176,9 +176,39 @@ YUI.add('wegas-entity', function(Y) {
                     return value;
                 },
                 _inputex: {
-                    _type: "object",
                     required: false,
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    fields: [{
+                            name: "freeForAll",
+                            type: "radio",
+                            label: "Game is played",
+                            choices: [{
+                                    value: "false",
+                                    label: "individually"
+                                }, {
+                                    value: "true",
+                                    label: "in team"
+                                }]
+                        }, {
+                            name: "imageSrc",
+                            label: "Thumbnail",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        }, {
+                            name: "iconSrc",
+                            label: "Icon",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        }, {
+                            name: "cssUri",
+                            label: "Css uri",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        }, {
+                            name: "pagesUri",
+                            label: "Pages uri",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        }, {
+                            name: "websocket",
+                            label: "Websocket",
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        }]
                 }
             },
             description: {

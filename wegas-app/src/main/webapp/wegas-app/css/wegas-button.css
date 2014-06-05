@@ -60,6 +60,9 @@
 .yui3-skin-sam .wegas-icon-stop {
     background-position: 0px -172px;
 }
+.yui3-skin-sam .wegas-icon-zoom {
+    background-position: 0px -709px;
+}
 .yui3-skin-sam .wegas-icon-zoomin {
     background-position: 0px -124px;
 }
@@ -123,9 +126,9 @@
 .wegas-icon-open-in-editor {
     background-position: 0 -943px;
 }
-.wegas-icon-view,.wegas-icon-open {
+.wegas-icon-view, .wegas-icon-open {
     /*background-position: 1px -709px;     Goggles */
-    background-position: 0 -1432px;
+    background-position: 0 -1433px;
 } 
 .wegas-icon-back {
     background-position: 0 -1552px;

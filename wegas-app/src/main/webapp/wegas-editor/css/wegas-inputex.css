@@ -14,7 +14,7 @@ div.inputEx-hidden {
     display: none;
 }
 /* Add red border to invalid inputs */
-.inputEx-invalid > div > div >input {
+.inputEx-invalid > div > div > input {
     border: 1px solid #C00E0C;
     background: #ffDFD3;
 }
@@ -22,7 +22,7 @@ div.inputEx-hidden {
     border: 1px solid lightgray;
     background: white;
 }
-.inputEx-valid > div > div >input[disabled] {
+.inputEx-valid > div > div > input[disabled] {
     background-color: rgb(235, 235, 228);
 }
 
@@ -160,9 +160,6 @@ div.inputEx-description {
 }
 
 /* Wysiwyg code editor */
-.inputEx-WysiwigScript {
-    /*min-height: 56px;*/
-}
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc,
 .inputEx-WysiwigScript .inputEx-WysiwigScript-add {
     background-color: #ededed;;
@@ -335,7 +332,6 @@ img.inputEx-ListField-delButton {
     text-align: right;
     display: block;
 }
-
 .wegas-form  .inputEx-ListField-childContainer > div {
     position: relative;
 }
@@ -349,4 +345,12 @@ div.inputEx-ColorField button {
     background: url(../../wegas-app/images/wegas-app-sprite.png) 3px -683px;
     border: none;
     cursor: pointer;
+}
+/* Radio field */
+.yui3-skin-sam div.inputEx-RadioField-choice {
+    float: none;
+    padding-top: 0.3em;
+}
+div.inputEx-RadioField-choice input[type="radio"] {
+    vertical-align: middle;
 }

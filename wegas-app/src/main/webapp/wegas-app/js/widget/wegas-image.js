@@ -5,24 +5,23 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-image", function(Y) {
     "use strict";
-    var CONTENTBOX = "contentBox", WImage;
+    
     /**
-     * @name Y.Wegas.WWImage
+     * @name Y.Wegas.Image
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class class to display simple image
      * @constructor
      * @description  Display a string (given as ATTRS) in content box
      */
-    WImage = Y.Base.create("wegas-image", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /** @lends Y.Wegas.WImage# */
+    var Image = Y.Base.create("wegas-image", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        /** @lends Y.Wegas.Image# */
         image: null,
         CONTENT_TEMPLATE: "<img style='width:inherit;height:inherit'></img>",
         /**
@@ -69,7 +68,7 @@ YUI.add("wegas-image", function(Y) {
         }
 
     }, {
-        /** @lends Y.Wegas.WImage */
+        /** @lends Y.Wegas.Image */
         EDITORNAME: "Image",
         FILEENTRY: Y.Wegas.Facade.File.get("source") + "read",
         ATTRS: {
@@ -97,5 +96,5 @@ YUI.add("wegas-image", function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Image = WImage;
+    Y.namespace("Wegas").Image = Image;
 });
