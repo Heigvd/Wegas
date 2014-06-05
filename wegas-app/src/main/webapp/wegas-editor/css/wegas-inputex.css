@@ -22,6 +22,9 @@ div.inputEx-hidden {
     border: 1px solid lightgray;
     background: white;
 }
+.inputEx-valid > div > div >input[disabled] {
+    background-color: rgb(235, 235, 228);
+}
 
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;

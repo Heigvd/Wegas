@@ -361,7 +361,6 @@
                         "cssClass": "menu-loginbutton",
                         "disabled": false,
                         "labelIsUser": false,
-                        "preferencePageId": 1000,
                         "targetPageLoader": "maindisplayarea",
                         "type": "LoginButton"
                     }
