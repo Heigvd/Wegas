@@ -76,7 +76,7 @@ YUI.add('wegas-inbox', function(Y) {
         initializer: function() {
             this.dataSource = Wegas.Facade.VariableDescriptor;
             this.handlers = {};
-            this.jsTranslator = new Wegas.JSTranslator();
+            this.jsTranslator = new Wegas.Translator();
         },
         /**
          * @function

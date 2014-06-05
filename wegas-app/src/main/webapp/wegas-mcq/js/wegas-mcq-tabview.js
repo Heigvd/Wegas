@@ -26,24 +26,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
      */
     MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.MCQTabView# */
-
-        // *** Private fields *** //
-        /**
-         * TabView widget used to display question/choices and corresponding reply
-         */
-        tabView: null,
-        /**
-         * datasource from Y.Wegas.Facade.VariableDescriptor
-         */
-        dataSource: null,
-        /**
-         * Reference to each used functions
-         */
-        handlers: null,
-        /**
-         * JS translator
-         */
-        jsTranslator: null,
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -51,12 +33,24 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          * @description Set variable with initials values.
          */
         initializer: function() {
+            /**
+             * datasource from Y.Wegas.Facade.VariableDescriptor
+             */
             this.dataSource = Y.Wegas.Facade.VariableDescriptor;
             this.tabView = new Y.TabView();
+            /**
+             * TabView widget used to display question/choices and corresponding reply
+             */
             this.gallery = null;
+            /**
+             * Reference to each used functions
+             */
             this.handlers = {};
             this.isRemovingTabs = false;
-            this.jsTranslator = new Y.Wegas.JSTranslator();
+            /**
+             * JS translator
+             */
+            this.jsTranslator = new Y.Wegas.Translator();
         },
         /**
          * @function
