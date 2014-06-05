@@ -33,11 +33,12 @@ YUI.add('wegas-tooltip', function(Y) {
          * @private
          */
         initializer: function() {
-            var tt = Tooltip.getInstance();
-            tt.addTriggerNode(this.get("host").get("boundingBox"),
+            Tooltip.getInstance().addTriggerNode(this.get("host").get("boundingBox"),
                     this.get("content"));
+        },
+        destructor: function() {
+            Tooltip.getInstance().removeTriggerNode(this.get("host").get("boundingBox"));
         }
-
     }, {
         /** @lends Y.Plugin.Tooltip */
 
@@ -177,6 +178,17 @@ YUI.add('wegas-tooltip', function(Y) {
             this.get("content")[node.get("id")] = content;
             this.get("triggerNodes").push(node);
             this.syncUI();
+        },
+        /**
+         * @function
+         * @private
+         */
+        removeTriggerNode: function(node) {
+            delete this.get("content")[node.get("id")];
+            if (this._currTrigger.node === node) {
+                this._leaveTrigger();
+            }
+            this.get("triggerNodes").push(node);
         },
         /*
          * Default attribute change listener for
@@ -533,7 +545,7 @@ YUI.add('wegas-tooltip', function(Y) {
              * trigger node
              */
             autoHideDelay: {
-                value: 1000000
+                value: 10000
             },
             /*
              * Override the default visibility set by the widget base class
@@ -557,6 +569,6 @@ YUI.add('wegas-tooltip', function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Tooltip = Tooltip;
+    Wegas.Tooltip = Tooltip;
 
 });
