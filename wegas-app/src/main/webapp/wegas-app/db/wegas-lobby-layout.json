@@ -117,7 +117,7 @@
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
-                                            "width": "24px"
+                                            "width": "27px"
                                         }, {
                                             "key": "name",
                                             "label": "Name",
@@ -285,7 +285,7 @@
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
-                                            "width": "24px"
+                                            "width": "27px"
                                         }, {
                                             "key": "name",
                                             "label": "Name",
