@@ -66,7 +66,7 @@ public class WebsocketFacade {
         Long gameId = null;
         final GameModel gameModel = events.getUpdatedEntities().get(0).getScope().getVariableDescriptor().getGameModel();
 
-        if (!gameModel.hasProperty(GameModel.PROPERTY.websocket)) {
+        if (!gameModel.getProperties().getWebsocket().equals("")) {
             return;
         }
 

@@ -11,9 +11,9 @@
  */
 YUI.add('wegas-scheduledatatable', function(Y) {
     "use strict";
-    
+
     var Wegas = Y.Wegas, ScheduleDT;
-    
+
     /**
      *  @class Add column to datatable
      *  @name Y.Plugin.scheduleDT

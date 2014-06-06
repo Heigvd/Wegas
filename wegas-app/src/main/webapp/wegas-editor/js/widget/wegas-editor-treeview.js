@@ -13,39 +13,39 @@ YUI.add('wegas-editor-treeview', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-            DATASOURCE = "dataSource",
-            ID = "id",
-            CLASS = "@class",
-            NAME = "name",
-            HOST = "host",
-            Plugin = Y.Plugin,
-            Wegas = Y.Wegas,
-            EditorTreeView,
-            /**
-             * @function
-             * source: http://stackoverflow.com/a/15203639
-             */
-            isElementVisible = function(el) {
-                var eap,
-                        rect = el.getBoundingClientRect(),
-                        docEl = document.documentElement,
-                        vWidth = window.innerWidth || docEl.clientWidth,
-                        vHeight = window.innerHeight || docEl.clientHeight,
-                        efp = function(x, y) {
-                            return document.elementFromPoint(x, y);
-                        },
-                        contains = "contains" in el ? "contains" : "compareDocumentPosition",
-                        has = contains == "contains" ? 1 : 0x14;
+        DATASOURCE = "dataSource",
+        ID = "id",
+        CLASS = "@class",
+        NAME = "name",
+        HOST = "host",
+        Plugin = Y.Plugin,
+        Wegas = Y.Wegas,
+        EditorTreeView,
+        /**
+         * @function
+         * source: http://stackoverflow.com/a/15203639
+         */
+        isElementVisible = function(el) {
+            var eap,
+                rect = el.getBoundingClientRect(),
+                docEl = document.documentElement,
+                vWidth = window.innerWidth || docEl.clientWidth,
+                vHeight = window.innerHeight || docEl.clientHeight,
+                efp = function(x, y) {
+                    return document.elementFromPoint(x, y);
+                },
+                contains = "contains" in el ? "contains" : "compareDocumentPosition",
+                has = contains == "contains" ? 1 : 0x14;
 
-                // Return false if it's not in the viewport
-                if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight)
-                    return false;
+            // Return false if it's not in the viewport
+            if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight)
+                return false;
 
-                // Return true if any of its four corners are visible
-                return (
-                        (eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has
-                        );
-            };
+            // Return true if any of its four corners are visible
+            return (
+                (eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has
+                );
+        };
 
     /**
      * @name Y.Wegas.EditorTreeView
@@ -80,7 +80,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
          */
         bindUI: function() {
             var ds = this.get(DATASOURCE),
-                    request = this.get("request");
+                request = this.get("request");
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this); // Listen updates on the target datasource
                 this.failureHandler = ds.after("failure", this.defaultFailureHandler, this); // GLOBAL error message
@@ -100,7 +100,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
              });*/
             this.treeView.after("treeview:selectedChange", function(e) {
                 if (e.newVal && e.target.getSelection() &&
-                        !isElementVisible(e.target.getSelection().item(0).get("boundingBox").getDOMNode())) {
+                    !isElementVisible(e.target.getSelection().item(0).get("boundingBox").getDOMNode())) {
                     e.target.getSelection().item(0).get("boundingBox").scrollIntoView(true);
                 }
             });
@@ -136,8 +136,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
          */
         getNodes: function() {
             var ds = this.get(DATASOURCE),
-                    selector = this.get("dataSelector"),
-                    entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
+                selector = this.get("dataSelector"),
+                entities = (selector) ? ds.cache.find(selector.key, selector.val) : ds.cache.findAll();
 
             return this.genTreeViewElements(entities);
         },
@@ -212,9 +212,9 @@ YUI.add('wegas-editor-treeview', function(Y) {
      */
     var TeamTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">' + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">' + '<div class="yui3-u yui3-u-col1">Name</div>'
-                //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
-                //+ '<div class="yui3-u">Players</div></div>'
-                + '</div>' + '<div class="treeview"></div>' + '</div>',
+            //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
+            //+ '<div class="yui3-u">Players</div></div>'
+            + '</div>' + '<div class="treeview"></div>' + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
@@ -232,10 +232,10 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         getNodes: function() {
             var entity = this.get("entity"),
-                    acc = [],
-                    nodes = this.genTreeViewElements(entity.get("teams"));
+                acc = [],
+                nodes = this.genTreeViewElements(entity.get("teams"));
 
-            if (entity.get("properties.freeForAll")) { // Do not display teams in free for all game
+            if (entity.get("properties.freeForAll")) {                          // Do not display teams in free for all game
                 Y.Array.each(nodes, function(i) {
                     acc = acc.concat(i.children);
                 });
@@ -245,15 +245,15 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         genTreeViewElement: function(entity) {
             var elClass = entity.get(CLASS),
-                    collapsed = !this.isNodeExpanded(entity);
+                collapsed = !this.isNodeExpanded(entity);
             //selected = (this.currentSelection === entity.get(ID)) ? 2 : 0;
 
             switch (elClass) {
                 case 'Team':
                     var children = this.genTreeViewElements(entity.get("players")),
-                            expanded = Y.Array.find(children, function(p) {
-                                return p.selected;
-                            }) || !collapsed;
+                        expanded = Y.Array.find(children, function(p) {
+                            return p.selected;
+                        }) || !collapsed;
 
                     return {
                         type: 'TreeNode',
@@ -330,7 +330,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         onTreeViewSelection: function(e) {
             var menuItems = this.getMenuItems(e.target.get("data")),
-                    host = this.get(HOST);
+                host = this.get(HOST);
 
             if (menuItems) {
                 host.toolbar.destroyAll();
@@ -342,8 +342,8 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         getMenuItems: function(data) {
             var menuItems = this.get("children"),
-                    entity,
-                    host = this.get(HOST);
+                entity,
+                host = this.get(HOST);
 
             if (data) {
                 entity = data.entity || data.widget;
@@ -414,7 +414,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
         },
         onTreeViewClick: function(e) {
             var targetWidget = Y.Widget.getByNode(e.domEvent.target),
-                    menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget); // Fetch menu items
+                menuItems = this.getMenuItems(targetWidget.get("data"), targetWidget); // Fetch menu items
 
             //menuItems.splice(0, 1);                                           // Remove "Edit" button
 

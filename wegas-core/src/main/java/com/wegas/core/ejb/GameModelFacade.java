@@ -199,7 +199,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      * @return
      */
-    public List<GameModel> findTemplates() {
+    public List<GameModel> findTemplateGameModels() {
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery query = criteriaBuilder.createQuery();
         Root e = query.from(entityClass);

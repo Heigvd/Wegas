@@ -5,22 +5,21 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-plugin', function(Y) {
     "use strict";
+
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
+
     /**
      *  @name Y.Wegas.Plugin
      *  @class Extension that adds editable capacities to plugins
      *  @extends Y.Plugin
      *  @constructor
      */
-
     Wegas.Plugin = function() {
     };
     Y.mix(Wegas.Plugin.prototype, {});
@@ -71,7 +70,7 @@ YUI.add('wegas-plugin', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            this.handlers.push(this.get("host").get("boundingBox").addClass("wegas-"+this.get("targetEvent")));
+            this.handlers.push(this.get("host").get("boundingBox").addClass("wegas-" + this.get("targetEvent")));
             this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
@@ -274,11 +273,11 @@ YUI.add('wegas-plugin', function(Y) {
     Y.extend(SaveObjectAction, Action, {
         execute: function(e) {
             var overlayGuest,
-                    host = this.get(HOST),
-                    guest = host.get("root"),
-                    variable = this.get("variable.evaluated"),
-                    data = variable.get("name") + ".properties",
-                    script = this.get("clearStorage") ? data + ".clear();" : "", i;
+                host = this.get(HOST),
+                guest = host.get("root"),
+                variable = this.get("variable.evaluated"),
+                data = variable.get("name") + ".properties",
+                script = this.get("clearStorage") ? data + ".clear();" : "", i;
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
                 overlayGuest.showOverlay();

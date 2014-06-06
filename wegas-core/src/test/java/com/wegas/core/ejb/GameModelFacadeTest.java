@@ -59,7 +59,7 @@ public class GameModelFacadeTest {
         gameModel.getClientScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
         gameModel.getScriptLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
         gameModel.getCssLibrary().put(SCRIPTNAME, new GameModelContent(SCRIPTCONTENT));
-        gameModel.getProperties().put(SCRIPTNAME, SCRIPTCONTENT);
+        gameModel.getProperties().setPagesUri(SCRIPTCONTENT);
 
         gameModelFacade.create(gameModel);
         Assert.assertEquals(1, gameModelFacade.findAll().size());
@@ -67,7 +67,7 @@ public class GameModelFacadeTest {
         gameModel = gameModelFacade.find(gameModel.getId());
         Assert.assertEquals(name, gameModel.getName());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getClientScriptLibrary().get(SCRIPTNAME).getContent());
-        Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperty(SCRIPTNAME));
+        Assert.assertEquals(SCRIPTCONTENT, gameModel.getProperties().getPagesUri());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getCssLibrary().get(SCRIPTNAME).getContent());
         Assert.assertEquals(SCRIPTCONTENT, gameModel.getScriptLibrary().get(SCRIPTNAME).getContent());
 

@@ -219,9 +219,9 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     //}, {
     //    ATTRS: {}
     //});
-    //Y.namespace("Wegas").PMGDatatableModel = PMGDatatableModel;
+    //Y.Wegas.PMGDatatableModel = PMGDatatableModel;
 
-    Y.namespace("Wegas").PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
+    Y.Wegas.PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
         _createRowHTML: function(model, index, columns) {
             var data = model.toJSON(),
                     clientId = model.get('clientId'),

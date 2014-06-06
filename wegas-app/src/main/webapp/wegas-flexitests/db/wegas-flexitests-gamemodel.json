@@ -468,7 +468,7 @@
         }
     },
     "properties": {
-        "freeForAll": "true",
+        "freeForAll": true,
         "cssUri": "wegas-flexitests/css/wegas-flexitests.css"
     }
 }
