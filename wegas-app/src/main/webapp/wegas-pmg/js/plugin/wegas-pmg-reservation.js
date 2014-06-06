@@ -111,5 +111,5 @@ YUI.add('wegas-pmg-reservation', function(Y) {
         NS: "reservation",
         NAME: "Reservation"
     });
-    Y.namespace("Plugin").Reservation = Reservation;
+    Y.Plugin.Reservation = Reservation;
 });

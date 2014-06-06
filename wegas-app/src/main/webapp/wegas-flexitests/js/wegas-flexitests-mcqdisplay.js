@@ -5,18 +5,17 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
     "use strict";
+
     var INITIALVALUE = "flexi_initial_value";
 
-    Y.namespace('Wegas').FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,
+    Y.Wegas.FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,
             [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-
         /**
          * Lifecycle method
          * @function
@@ -97,7 +96,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                     this.fire("clientResponse", {value: i});
                     break;
                 }
-                counter+=1;
+                counter += 1;
             }
 
         },
@@ -159,9 +158,9 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                         question = this.get("variable.evaluated"),
                         engine = new Y.Template(Y.Template.Micro),
                         render = engine.compile("<select><option value='" + INITIALVALUE + "'>Choose:</option>" +
-                        "<% for(var i in this.get('properties')){ %>" +
-                        "<option value='<%= i%>'><%= this.get('properties')[i] %></option>" +
-                        "<% } %></select>");
+                                "<% for(var i in this.get('properties')){ %>" +
+                                "<option value='<%= i%>'><%= this.get('properties')[i] %></option>" +
+                                "<% } %></select>");
                 inputDiv.empty();
                 inputDiv.append(render(question));
             },
@@ -174,10 +173,10 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                         question = this.get("variable.evaluated"),
                         engine = new Y.Template(Y.Template.Micro),
                         render = engine.compile("<form>" +
-                        "<% for(var i in this.get('properties')){ %>" +
-                        "<label><input type='radio' name='mcq-flexi-radio' value='<%= i %>'><span><%= this.get('properties')[i] %></span></label>" +
-                        "<% } %>" +
-                        "</form>");
+                                "<% for(var i in this.get('properties')){ %>" +
+                                "<label><input type='radio' name='mcq-flexi-radio' value='<%= i %>'><span><%= this.get('properties')[i] %></span></label>" +
+                                "<% } %>" +
+                                "</form>");
                 inputDiv.empty();
                 inputDiv.append(render(question));
             }
@@ -244,4 +243,3 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
         }
     });
 });
-

@@ -676,7 +676,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + sizes[i];
         }
     });
-    Y.namespace('Wegas').FileExplorer = FileExplorer;
+    Wegas.FileExplorer = FileExplorer;
 
     FileUploader = Y.Base.create("wegas-fileuploader", Y.Widget, [Y.WidgetParent], {
         initializer: function() {

@@ -12,14 +12,15 @@
 YUI.add('wegas-pmg-occupationcolor', function(Y) {
     "use strict";
 
+    var Wegas = Y.Wegas, OccupationColor;
+
     /**
      *  @class color occupation in datatable
      *  @name Y.Plugin.OccupationColor
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            OccupationColor = Y.Base.create("wegas-pmg-occupationcolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    OccupationColor = Y.Base.create("wegas-pmg-occupationcolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.OccupationColor */
 
         /**
@@ -78,5 +79,5 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
         NS: "occupationcolor",
         NAME: "OccupationColor"
     });
-    Y.namespace("Plugin").OccupationColor = OccupationColor;
+    Y.Plugin.OccupationColor = OccupationColor;
 });

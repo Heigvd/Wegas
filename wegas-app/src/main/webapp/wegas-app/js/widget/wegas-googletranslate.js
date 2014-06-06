@@ -8,7 +8,6 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-googletranslate', function(Y) {
     "use strict";
 
@@ -52,6 +51,6 @@ YUI.add('wegas-googletranslate', function(Y) {
             //}, 'google_sectional_element');
         }
     });
-    Y.namespace("Wegas").GoogleTranslate = GoogleTranslate;
+    Y.Wegas.GoogleTranslate = GoogleTranslate;
 
 });

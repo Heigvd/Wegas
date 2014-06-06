@@ -65,6 +65,6 @@ YUI.add("wegas-text", function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Text = Text;
+    Y.Wegas.Text = Text;
 
 });

@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-cep-folder', function(Y) {
     "use strict";
 
@@ -61,7 +59,7 @@ YUI.add('wegas-cep-folder', function(Y) {
                 render: true,
                 buttons: []
             }),
-            dialogueDescriptor = this.findDialogue(),
+                    dialogueDescriptor = this.findDialogue(),
                     bodyNode = panel.getStdModNode("body", true);
 
             bodyNode.addClass("cep-folder-panel");
@@ -90,5 +88,5 @@ YUI.add('wegas-cep-folder', function(Y) {
             }, this);
         }
     });
-    Y.namespace('Wegas').CEPFolder = Folder;
+    Y.Wegas.CEPFolder = Folder;
 });

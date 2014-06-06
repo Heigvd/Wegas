@@ -354,6 +354,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').MCQTabView = MCQTabView;
+    Y.Wegas.MCQTabView = MCQTabView;
 
 });

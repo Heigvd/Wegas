@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Anthony Geiser <antho.geiser@gmail.com>
  */
-
 YUI.add("wegas-simpledialogue", function(Y) {
     "use strict";
 
@@ -83,5 +81,5 @@ YUI.add("wegas-simpledialogue", function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").SimpleDialogue = SimpleDialogue;
+    Y.Wegas.SimpleDialogue = SimpleDialogue;
 });

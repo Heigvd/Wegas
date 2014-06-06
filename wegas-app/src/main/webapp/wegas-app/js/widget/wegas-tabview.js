@@ -174,7 +174,7 @@ YUI.add('wegas-tabview', function(Y) {
             return nTab;
         }
     });
-    Y.namespace('Wegas').TabView = TabView;
+    Wegas.TabView = TabView;
 
     /**
      * Extension enabling a Tab to be a parent of another Widget.
@@ -380,7 +380,7 @@ YUI.add('wegas-tabview', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').Tab = Tab;
+    Wegas.Tab = Tab;
 
     /**
      * Removable plugin for tabview
@@ -455,7 +455,7 @@ YUI.add('wegas-tabview', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").Removeable = Removeable;
+    Plugin.Removeable = Removeable;
 
     /**
      * Plugin to toggle visibility of a tab
@@ -501,7 +501,7 @@ YUI.add('wegas-tabview', function(Y) {
         NS: "LayoutToggleTab",
         NAME: "LayoutToggleTab"
     });
-    Y.namespace("Plugin").LayoutToggleTab = LayoutToggleTab;
+    Plugin.LayoutToggleTab = LayoutToggleTab;
 
     /**
      * Override to add support for disabled tabs
@@ -559,7 +559,7 @@ YUI.add('wegas-tabview', function(Y) {
 //        NS: "EmptyTab",
 //        NAME: "EmptyTab"
 //    });
-//    Y.namespace("Plugin").EmptyTab = EmptyTab;
+//    Plugin.EmptyTab = EmptyTab;
 
     /**
      * Plugin add a tab for remove tabview
@@ -600,7 +600,7 @@ YUI.add('wegas-tabview', function(Y) {
         NS: "removetab",
         NAME: "removetab"
     });
-    Y.namespace("Plugin").RemoveTab = RemoveTab;
+    Plugin.RemoveTab = RemoveTab;
 
 
     /**
@@ -636,5 +636,5 @@ YUI.add('wegas-tabview', function(Y) {
         NS: "ResizeTabViewLinks",
         NAME: "ResizeTabViewLinks"
     });
-    Y.namespace("Plugin").ResizeTabViewLinks = ResizeTabViewLinks;
+    Plugin.ResizeTabViewLinks = ResizeTabViewLinks;
 });

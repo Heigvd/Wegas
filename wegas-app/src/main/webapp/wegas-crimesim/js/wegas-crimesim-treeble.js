@@ -5,14 +5,14 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-crimesim-treeble', function(Y) {
     "use strict";
+
     var CONTENTBOX = 'contentBox', Treeble;
+
     Treeble = Y.Base.create("wegas-crimesim-treeble", Y.Widget, [], {
 // *** Fields *** /
         datatable: null,
@@ -229,7 +229,8 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').CrimeSimTreeble = Treeble;
+    Y.Wegas.CrimeSimTreeble = Treeble;
+
     //Below : Hack because current verion of TreebleDataSource isn't on YUI (this is the worked version from Guithub).
     Y.TreebleDataSource.prototype.toggle = function(path, request, completion) {
         var searchOpen = function(

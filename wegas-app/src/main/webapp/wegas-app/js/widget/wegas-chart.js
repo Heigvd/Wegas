@@ -9,10 +9,10 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-chart', function(Y) {
-    var CONTENTBOX = 'contentBox',
-            Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    var CONTENTBOX = 'contentBox', Chart;
+
+    Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         bindUI: function() {
             this.dsUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
@@ -244,6 +244,5 @@ YUI.add('wegas-chart', function(Y) {
             }
         }
     });
-
-    Y.namespace('Wegas').Chart = Chart;
+    Y.Wegas.Chart = Chart;
 });

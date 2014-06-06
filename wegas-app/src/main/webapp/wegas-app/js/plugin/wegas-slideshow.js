@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview 
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -22,7 +21,7 @@ YUI.add("wegas-slideshow", function(Y) {
     var SlideShow = Y.Base.create("SlideShow", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         _timer: null,
         initializer: function() {
-            if(!this.get("host") instanceof Y.Wegas.ChoiceList){
+            if (!this.get("host") instanceof Y.Wegas.ChoiceList) {
                 Y.log("Host should be a ChoiceList", "warn", "Y.Plugin.SlideShow");
                 return;
             }
@@ -67,5 +66,5 @@ YUI.add("wegas-slideshow", function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").SlideShow = SlideShow;
+    Y.Plugin.SlideShow = SlideShow;
 });

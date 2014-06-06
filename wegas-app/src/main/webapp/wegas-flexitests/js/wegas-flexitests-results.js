@@ -5,13 +5,13 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-results", function(Y) {
     "use strict";
+
     var dateFormatter = function(o) {
         return (new Date(+o.value)).toLocaleString();
     }, UNWANTED_PROPS = function(item) {
@@ -26,7 +26,8 @@ YUI.add("wegas-flexitests-results", function(Y) {
         });
         return returnItem;
     };
-    Y.namespace("Wegas").FlexitestsResults = Y.Base.create("wegas-flexitests-results", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+
+    Y.Wegas.FlexitestsResults = Y.Base.create("wegas-flexitests-results", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class='config'></div>"
                 + "<div class='results'>Collecting results</div>",
         syncUI: function() {

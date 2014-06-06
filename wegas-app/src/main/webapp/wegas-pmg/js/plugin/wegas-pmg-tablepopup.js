@@ -12,14 +12,15 @@
 YUI.add('wegas-pmg-tablepopup', function(Y) {
     "use strict";
 
+    var Wegas = Y.Wegas, Tablepopup;
+
     /**
      *  @class add a popup on a table column
      *  @name Y.Plugin.Tablepopup
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            Tablepopup = Y.Base.create("wegas-pmg-tablepopup", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    Tablepopup = Y.Base.create("wegas-pmg-tablepopup", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Tablepopup */
         menuDetails: null,
         handlers: null,
@@ -30,7 +31,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            this.menuDetails = new Y.Wegas.Menu({
+            this.menuDetails = new Wegas.Menu({
                 width: this.get("width"),
                 points: ["tl", "tr"]
             });
@@ -48,7 +49,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                     dt = this.get("host").datatable;
                     field = this.get("field");
                     record = dt.getRecord(e.target);
-                    descriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("id", record.get("id"));
+                    descriptor = Wegas.Facade.VariableDescriptor.cache.find("id", record.get("id"));
 
                     this.menuDetails.attachTo(e.target);
 
@@ -65,8 +66,8 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
             }
         },
         request: function(descriptor) {
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(descriptor, "Extended", {// Retrieve the object from the server in Export view
-                on: Y.Wegas.superbind({
+            Wegas.Facade.VariableDescriptor.cache.getWithView(descriptor, "Extended", {// Retrieve the object from the server in Export view
+                on: Wegas.superbind({
                     success: function(e) {
                         var field = this.get("field");
                         if (e.response.entity.get(field)) {
@@ -119,5 +120,5 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
         NS: "tablepopup",
         NAME: "Tablepopup"
     });
-    Y.namespace("Plugin").Tablepopup = Tablepopup;
+    Y.Plugin.Tablepopup = Tablepopup;
 });

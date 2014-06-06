@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-crimesim-choicesrepliesunreadcount', function(Y) {
     "use strict";
 
@@ -48,6 +46,6 @@ YUI.add('wegas-crimesim-choicesrepliesunreadcount', function(Y) {
         NS: "ChoicesRepliesUnreadCount",
         NAME: "ChoicesRepliesUnreadCount"
     });
-    Y.namespace('Plugin').ChoicesRepliesUnreadCount = ChoicesRepliesUnreadCount;
+    Y.Plugin.ChoicesRepliesUnreadCount = ChoicesRepliesUnreadCount;
 
 });

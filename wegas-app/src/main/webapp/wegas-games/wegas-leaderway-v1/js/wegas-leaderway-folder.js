@@ -1,10 +1,18 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-leaderway-folder', function(Y) {
     "use strict";
+
     var CONTENTBOX = 'contentBox', Folder;
+
     Folder = Y.Base.create("wegas-leaderway-folder", Y.Wegas.ItemSelector, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         // *** Lifecycle Methods *** //
         initializer: function() {
@@ -294,5 +302,5 @@ YUI.add('wegas-leaderway-folder', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').LWFolder = Folder;
+    Y.Wegas.LWFolder = Folder;
 });

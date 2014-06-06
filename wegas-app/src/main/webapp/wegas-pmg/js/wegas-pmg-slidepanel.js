@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
@@ -116,5 +115,5 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         }
     });
 
-    Y.namespace("Wegas").PmgSlidePanel = SlidePanel;
+    Y.Wegas.PmgSlidePanel = SlidePanel;
 });

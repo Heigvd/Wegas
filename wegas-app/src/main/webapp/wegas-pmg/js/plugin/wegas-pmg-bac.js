@@ -82,8 +82,8 @@ YUI.add('wegas-pmg-bac', function(Y) {
             return true;
         },
         request: function(taskDescriptor) {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
+            Wegas.Facade.VariableDescriptor.sendRequest({
+                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     updateCache: false,
@@ -113,5 +113,5 @@ YUI.add('wegas-pmg-bac', function(Y) {
         NS: "bac",
         NAME: "Bac"
     });
-    Y.namespace("Plugin").Bac = Bac;
+    Y.Plugin.Bac = Bac;
 });

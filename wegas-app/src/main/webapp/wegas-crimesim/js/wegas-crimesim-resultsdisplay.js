@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
     "use strict";
 
@@ -259,5 +257,5 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         }
     });
 
-    Y.namespace('Wegas').ResultsDisplay = ResultsDisplay;
+    Y.Wegas.ResultsDisplay = ResultsDisplay;
 });

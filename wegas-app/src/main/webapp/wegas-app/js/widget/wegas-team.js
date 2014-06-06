@@ -11,7 +11,9 @@
  */
 YUI.add('wegas-team', function(Y) {
     "use strict";
-
+    
+    var CONTENTBOX = "contentBox", Wegas = Y.Wegas, Team;
+    
     /**
      * @name Y.Wegas.Team
      * @extends Y.Widget
@@ -21,8 +23,8 @@ YUI.add('wegas-team', function(Y) {
      * @constructor
      * @description Parent class
      */
-    var CONTENTBOX = "contentBox",
-            Team = Y.Base.create("wegas-team", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+
+    Team = Y.Base.create("wegas-team", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
 
         // *** Private fields *** //
@@ -42,7 +44,7 @@ YUI.add('wegas-team', function(Y) {
                 visible: false
             });
 
-            Y.Wegas.Facade.Game.cache.getWithView(game, "Extended", {//         // Get the game model full description
+            Wegas.Facade.Game.cache.getWithView(game, "Extended", {//         // Get the game model full description
                 on: {
                     success: Y.bind(this.onGameRetrieved, this)
                 }
@@ -70,8 +72,8 @@ YUI.add('wegas-team', function(Y) {
                 } else {
                     return entity[0];
                 }
-            } else if (entity instanceof Y.Wegas.persistence.Team) {
-                return Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"));
+            } else if (entity instanceof Wegas.persistence.Team) {
+                return Wegas.Facade.Game.cache.findById(entity.get("gameId"));
             } else {
                 return entity;
             }
@@ -83,7 +85,7 @@ YUI.add('wegas-team', function(Y) {
          */
         sendJoinTeamRequest: function(teamId) {
             this.showOverlay();
-            Y.Wegas.Facade.Game.sendRequest({
+            Wegas.Facade.Game.sendRequest({
                 request: "/JoinTeam/" + teamId,
                 cfg: {
                     updateCache: false
@@ -114,7 +116,7 @@ YUI.add('wegas-team', function(Y) {
             if (!playerToAdd) {
                 playerToAdd = this.teamEdition.getAccounts();
             }
-            Y.Wegas.Facade.Game.sendRequest({//                                 // Add all player to the list in the list to the target game
+            Wegas.Facade.Game.sendRequest({//                                 // Add all player to the list in the list to the target game
                 request: "/JoinTeam/" + teamId,
                 cfg: {
                     method: "POST",
@@ -137,9 +139,9 @@ YUI.add('wegas-team', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').Team = Team;
+    Wegas.Team = Team;
 
-    var JoinTeam = Y.Base.create("wegas-jointeam", Y.Wegas.Team, [Y.WidgetChild, Y.Wegas.Widget], {
+    var JoinTeam = Y.Base.create("wegas-jointeam", Wegas.Team, [Y.WidgetChild, Wegas.Widget], {
         CONTENT_TEMPLATE: "<div><div class=\"wegas-gameinformation\"></div>"
                 + "<div class=\"teamselection\"></div>"
                 + "</div>",
@@ -158,16 +160,16 @@ YUI.add('wegas-team', function(Y) {
                     game = this.getTargetGame(),
                     teams = game.get("teams"),
                     gameModel = e.response.entity.get("gameModel"),
-                    teamName = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("name")
+                    teamName = (entity instanceof Wegas.persistence.Team) ? entity.get("name")
                     : game.get("name") + "-" + (game.get("teams").length);
 
-            cb.one(".wegas-gameinformation").append(Y.Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
+            cb.one(".wegas-gameinformation").append(Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
 
             var showTeamSelection = false,
                     showTeamCreation = false,
                     showTeamEdition = false;                                    // Default case, free for all games
 
-            if (entity instanceof Y.Wegas.persistence.Team) {                   // If target entity is a team
+            if (entity instanceof Wegas.persistence.Team) {                   // If target entity is a team
                 if (gameModel.get("properties.freeForAll")) {                   // If game is free for all (no team)
                     this.sendJoinTeamRequest(entity.get("id"));                 // join it directly
                 } else if (entity.get("players").length === 0) {                // and this team is empty, (first connectin to this team)
@@ -176,7 +178,7 @@ YUI.add('wegas-team', function(Y) {
                     this.showMessageBis("error",
                             "This team has already been created. You can contact it's members so they can join you in.");
                 }
-            } else if (entity instanceof Y.Wegas.persistence.Game && // If target entity is a game
+            } else if (entity instanceof Wegas.persistence.Game && // If target entity is a game
                     !(gameModel && gameModel.get("properties.freeForAll"))) {   // and its game is not free for all (uses teams)
                 showTeamCreation = true;
             }
@@ -228,12 +230,12 @@ YUI.add('wegas-team', function(Y) {
                 }
             }
             if (showTeamEdition || showTeamCreation) {
-                this.teamEdition = new Y.Wegas.TeamFormList({
+                this.teamEdition = new Wegas.TeamFormList({
                     render: teamSelectionNode,
                     entity: entity
                 });
                 this.teamEdition.addExistingAccount(
-                        Y.Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
+                        Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
 
             this.saveButton.set("visible", true);
@@ -260,7 +262,7 @@ YUI.add('wegas-team', function(Y) {
                 if (this.teamId) {
                     this.sendMultiJoinTeamRequest(this.teamId);
                 } else {
-                    Y.Wegas.Facade.Game.sendRequest({//                             // create the team
+                    Wegas.Facade.Game.sendRequest({//                             // create the team
                         //request: "/" + entity.get("id") + "/CreateTeam/" + name,
                         request: "/" + entity.get("id") + "/CreateTeam",
                         cfg: {
@@ -281,7 +283,7 @@ YUI.add('wegas-team', function(Y) {
             } else if (this.showTeamEdition) {                                  // If joining
                 if (name !== entity.get("name")) {                              // If team name was edited,
                     entity.set("name", name);
-                    Y.Wegas.Facade.Game.sendRequest({//                         // update it
+                    Wegas.Facade.Game.sendRequest({//                         // update it
                         request: "/Team/" + entity.get("id"),
                         cfg: {
                             method: "PUT",
@@ -329,14 +331,14 @@ YUI.add('wegas-team', function(Y) {
         },
         sendTokenJoinGame: function(token) {
             this.showOverlay();
-            Y.Wegas.Facade.Game.sendRequest({
+            Wegas.Facade.Game.sendRequest({
                 request: "/JoinGame/" + token,
                 cfg: {
                     updateCache: !this.get("customEvent")
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        if (e.response.entity instanceof Y.Wegas.persistence.Team) { // If the returned value is a Team enity
+                        if (e.response.entity instanceof Wegas.persistence.Team) { // If the returned value is a Team enity
                             this.sendJoinTeamRequest(e.response.entity.get("id"));
                         } else {
                             // TODO
@@ -350,9 +352,9 @@ YUI.add('wegas-team', function(Y) {
             });
         }
     });
-    Y.namespace('Wegas').JoinTeam = JoinTeam;
+    Wegas.JoinTeam = JoinTeam;
 
-    var EditTeam = Y.Base.create("wegas-editteam", Y.Wegas.Team, [Y.WidgetChild, Y.Wegas.Widget], {
+    var EditTeam = Y.Base.create("wegas-editteam", Wegas.Team, [Y.WidgetChild, Wegas.Widget], {
         CONTENT_TEMPLATE: "<div>"
                 + "<div class=\"teamselection\"></div>"
                 + "</div>",
@@ -367,15 +369,15 @@ YUI.add('wegas-team', function(Y) {
                     teamId = this.get("teamId"),
                     teamSelectionNode = cb.one(".teamselection");
 
-//            if (e) cb.one(".wegas-gameinformation").append(Y.Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
+//            if (e) cb.one(".wegas-gameinformation").append(Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
             teamSelectionNode.append("<br /><div class=\"title\">Edit your team</div>");
 
-            this.teamEdition = new Y.Wegas.TeamFormList({
+            this.teamEdition = new Wegas.TeamFormList({
                 render: teamSelectionNode,
                 entity: entity
             });
 
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/Account/FindByTeamId/" + teamId,
                 on: {
                     success: Y.bind(function(e) {
@@ -415,16 +417,16 @@ YUI.add('wegas-team', function(Y) {
     }, {
         ATTRS: {
             entity: {
-                value: Y.Wegas.Facade.Game.cache.getCurrentGame()
+                value: Wegas.Facade.Game.cache.getCurrentGame()
             },
             teamId: {
-                value: Y.Wegas.Facade.Game.get("currentTeamId")
+                value: Wegas.Facade.Game.get("currentTeamId")
             }
         }
     });
-    Y.namespace('Wegas').EditTeam = EditTeam;
+    Wegas.EditTeam = EditTeam;
 
-    var GameDescription = Y.Base.create("wegas-gamedescription", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
+    var GameDescription = Y.Base.create("wegas-gamedescription", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
         /** @lends Y.Wegas.JoinTeam# */
         CONTENT_TEMPLATE: "<div><div class=\"title\"></div><div class=\"subtitle\"></div><div class=\"description wegas-loading-div\"></div></div>",
         // *** Private fields *** //
@@ -438,12 +440,12 @@ YUI.add('wegas-team', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     entity = this.get("entity"),
-                    game = (entity instanceof Y.Wegas.persistence.Team) ? Y.Wegas.Facade.Game.cache.findById(entity.get("gameId"))
+                    game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
                     : entity;
 
-            cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Y.Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
+            cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
 
-            Y.Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
+            Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
                         var game = e.response.entity;
@@ -460,9 +462,9 @@ YUI.add('wegas-team', function(Y) {
             entity: {}
         }
     });
-    Y.namespace('Wegas').GameDescription = GameDescription;
+    Wegas.GameDescription = GameDescription;
 
-    var TeamFormList = Y.Base.create("wegas-teamformlist", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    var TeamFormList = Y.Base.create("wegas-teamformlist", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class=\"header yui3-g\">"
                 + "<div class=\"yui3-u\">First name</div>"
                 + "<div class=\"yui3-u\">Last name</div>"
@@ -474,51 +476,51 @@ YUI.add('wegas-team', function(Y) {
             var cb = this.get("contentBox"), gameId = Y.Widget.getByNode(this._parentNode).getTargetGame().get("id"),
                     resultTemplate = "{highlighted} <p class='email'>{email}</p>",
                     autoCompleteCfg = {
-                type: "autocomplete",
-                autoComp: {
-                    minQueryLength: 2,
-                    maxResults: 30,
-                    resultFormatter: function(query, results) {
-                        return Y.Array.map(results, function(result) {
-                            return Y.Lang.sub(resultTemplate, {
-                                email: result.raw.email,
-                                highlighted: result.highlighted
-                            });
-                        });
-                    },
-                    resultHighlighter: function(query, results) {
-                        return Y.Array.map(results, function(result) {
-                            return Y.Highlight.all(result.raw.firstname + " " + result.raw.lastname, query);
-                        });
-                    },
-                    source: Y.Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}/" + gameId,
-                    enableCache: true,
-                    resultListLocator: Y.bind(function(responses) {
-                        var i;
-                        Y.Array.each(this.otherAccounts, function(account) {
-                            for (i = 0; i < responses.length; i += 1) {
-                                if (account.id === responses[i].id) {
-                                    responses.splice(i, 1);
-                                    break;
-                                }
+                        type: "autocomplete",
+                        autoComp: {
+                            minQueryLength: 2,
+                            maxResults: 30,
+                            resultFormatter: function(query, results) {
+                                return Y.Array.map(results, function(result) {
+                                    return Y.Lang.sub(resultTemplate, {
+                                        email: result.raw.email,
+                                        highlighted: result.highlighted
+                                    });
+                                });
+                            },
+                            resultHighlighter: function(query, results) {
+                                return Y.Array.map(results, function(result) {
+                                    return Y.Highlight.all(result.raw.firstname + " " + result.raw.lastname, query);
+                                });
+                            },
+                            source: Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}/" + gameId,
+                            enableCache: true,
+                            resultListLocator: Y.bind(function(responses) {
+                                var i;
+                                Y.Array.each(this.otherAccounts, function(account) {
+                                    for (i = 0; i < responses.length; i += 1) {
+                                        if (account.id === responses[i].id) {
+                                            responses.splice(i, 1);
+                                            break;
+                                        }
+                                    }
+                                });
+                                Y.Array.each(this.playersField.subFields, function(user) {
+                                    for (i = 0; i < responses.length; i += 1) {
+                                        if (user.getValue().email === responses[i].email) {
+                                            responses.splice(i, 1);
+                                            break;
+                                        }
+                                    }
+                                });
+                                return responses;
+                            }, this),
+                            align: {
+                                node: '.inputEx-AutoComplete',
+                                points: ['tl', 'bl']
                             }
-                        });
-                        Y.Array.each(this.playersField.subFields, function(user) {
-                            for (i = 0; i < responses.length; i += 1) {
-                                if (user.getValue().email === responses[i].email) {
-                                    responses.splice(i, 1);
-                                    break;
-                                }
-                            }
-                        });
-                        return responses;
-                    }, this),
-                    align: {
-                        node: '.inputEx-AutoComplete',
-                        points: ['tl', 'bl']
-                    }
-                }
-            };
+                        }
+                    };
 
             this.otherAccounts = [];
 
@@ -588,12 +590,14 @@ YUI.add('wegas-team', function(Y) {
                         }, this.playersField.subFields[i]);
                         field.wmodified = true;
                     }
-                    field.on("updated", function (e, aut, subfields) {
+                    field.on("updated", function(e, aut, subfields) {
                         fields = new Y.Node(subfields.getEl());
                         if (subfields.inputs[1].getValue() === "") {
-                            if (!fields.one(".wegas-newAccount")) fields.append("<p class='wegas-newAccount'>Your are creating a new account</p>");
+                            if (!fields.one(".wegas-newAccount"))
+                                fields.append("<p class='wegas-newAccount'>Your are creating a new account</p>");
                         } else {
-                            if (fields.one(".wegas-newAccount")) fields.one(".wegas-newAccount").remove();
+                            if (fields.one(".wegas-newAccount"))
+                                fields.one(".wegas-newAccount").remove();
                         }
                     }, this, this.playersField.subFields[i]);
                 }
@@ -601,7 +605,7 @@ YUI.add('wegas-team', function(Y) {
         },
         addExistingAccount: function(account) {
             var cb = this.get("contentBox"),
-                    firstname = (account instanceof Y.Wegas.persistence.GuestJpaAccount) ? account.getPublicName() :
+                    firstname = (account instanceof Wegas.persistence.GuestJpaAccount) ? account.getPublicName() :
                     account.get("firstname");
 
             this.otherAccounts.push(account.toObject());
@@ -623,7 +627,7 @@ YUI.add('wegas-team', function(Y) {
             entity: {}
         }
     });
-    Y.namespace('Wegas').TeamFormList = TeamFormList;
+    Wegas.TeamFormList = TeamFormList;
 
     Y.inputEx.AutoComplete.prototype.buildAutocomplete = function() {
         // Call this function only when this.el AND this.listEl are available
