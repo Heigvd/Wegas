@@ -106,8 +106,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-layout-absolute': {
                     path: 'js/widget/wegas-layout-absolute-min.js',
-                    requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssposition",
-                        "wegas-csssize", "wegas-parent"],
+                    requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssstyles-extra", "wegas-parent"],
                     ws_provides: ['AbsoluteLayout', "Position"]
                 },
                 'wegas-layout-absolutecss': {
