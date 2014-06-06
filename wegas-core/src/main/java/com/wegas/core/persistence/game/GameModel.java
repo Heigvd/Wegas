@@ -42,18 +42,6 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
-    public enum PROPERTY {
-
-        websocket,
-        freeForAll,
-        pagesUri,
-        cssUri,
-        iconSrc,
-        imageSrc
-    }
-    /**
-     *
-     */
     @Id
     @Column(name = "gamemodelid")
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -141,8 +129,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
-    @ElementCollection
-    private Map<String, String> properties = new HashMap<>();
+    @Embedded
+    private GameModelProperties properties = new GameModelProperties();
     /**
      * Holds a reference to the pages, used to serialize page and game model at
      * the same time.
@@ -219,11 +207,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void merge(AbstractEntity n) {
         GameModel other = (GameModel) n;
         this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
-
+        this.properties.merge(other.getProperties());
         super.merge(n);
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
-        //this.setParentGameModel(other.getParentGameModel());
     }
 
     /**
@@ -434,42 +419,15 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the properties
      */
-    public Map<String, String> getProperties() {
-        return properties;
+    public GameModelProperties getProperties() {
+        return this.properties;
     }
 
     /**
      * @param properties the properties to set
      */
-    public void setProperties(Map<String, String> properties) {
+    public void setProperties(GameModelProperties properties) {
         this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    public String getProperty(String key) {
-        return this.properties.get(key);
-    }
-
-    /**
-     *
-     * @param key
-     * @param value
-     */
-    public void setProperty(String key, String value) {
-        this.properties.put(key, value);
-    }
-
-    /**
-     *
-     * @param p
-     * @return
-     */
-    public Boolean hasProperty(PROPERTY p) {
-        return this.properties.containsKey(p.toString()) && !this.properties.get(p.toString()).equals("") && this.properties.get(p.toString()) != null;
     }
 
     /**
@@ -628,39 +586,5 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setTemplate(Boolean template) {
         this.template = template;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Transient
-    public String getImageSrc() {
-        return this.getProperties().get("imageSrc");
-    }
-
-    /**
-     *
-     * @param s
-     */
-    public void setImageSrc(String s) {
-        // So jersey don't yell
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Transient
-    public String getIconSrc() {
-        return this.getProperties().get("iconSrc");
-    }
-
-    /**
-     *
-     * @param s
-     */
-    public void setIconSrc(String s) {
-        // So jersey don't yell
     }
 }

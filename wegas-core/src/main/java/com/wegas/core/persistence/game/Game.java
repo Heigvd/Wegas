@@ -478,49 +478,13 @@ public class Game extends NamedEntity {
 
     /**
      *
-     * @return
+     * @param s
      */
-    public Map<String, String> getProperties() {
+    public void setProperties(GameModelProperties p) {
+        // So jersey don't yell
+    }
+
+    public GameModelProperties getProperties() {
         return this.getGameModel().getProperties();
-    }
-
-    /**
-     *
-     */
-    public void setProperties() {
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Transient
-    public String getImageSrc() {
-        return this.getProperties().get("imageSrc");
-    }
-
-    /**
-     *
-     * @param s
-     */
-    public void setImageSrc(String s) {
-        // So jersey don't yell
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Transient
-    public String getIconSrc() {
-        return this.getProperties().get("iconSrc");
-    }
-
-    /**
-     *
-     * @param s
-     */
-    public void setIconSrc(String s) {
-        // So jersey don't yell
     }
 }

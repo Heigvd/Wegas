@@ -5,16 +5,15 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang, Wegas = Y.Wegas,
-            BOUNDING_BOX = "boundingBox", BUTTON = "Button";
+        BOUNDING_BOX = "boundingBox", BUTTON = "Button";
+
     /**
      * @name Y.Wegas.Widget
      * @class Extension common to all wegas widgets
@@ -31,7 +30,7 @@ YUI.add("wegas-widget", function(Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-                || this.constructor.NAME.toLowerCase(); // the usual "yui3-" prefix)
+            || this.constructor.NAME.toLowerCase();                             // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
         this.publish("showOverlay", {// Add custom event
             emitFacade: true
@@ -62,8 +61,8 @@ YUI.add("wegas-widget", function(Y) {
         defaultFailureHandler: function(e) {
             this.hideOverlay();
             var error = e.response.message || e.response.results.message || "Error during request.",
-                    test = error.match(/ConstraintViolationException: (.*) is out of bound/),
-                    stringMessage = error.match(/Error: StringMessage: (.*)/);
+                test = error.match(/ConstraintViolationException: (.*) is out of bound/),
+                stringMessage = error.match(/Error: StringMessage: (.*)/);
             if (test) {
                 this.showMessageBis("error", "You don't have enough " + test[1] + ".");
             } else if (stringMessage) {
@@ -630,7 +629,7 @@ YUI.add("wegas-widget", function(Y) {
     Y.WidgetParent.ATTRS.defaultChildType = {
         setter: function(val) {
             var returnVal = Y.Attribute.INVALID_VALUE,
-                    FnConstructor = Lang.isString(val) ? Wegas[val] || Y[val] : val;
+                FnConstructor = Lang.isString(val) ? Wegas[val] || Y[val] : val;
             if (Lang.isFunction(FnConstructor)) {
                 returnVal = FnConstructor;
             }

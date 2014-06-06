@@ -7,9 +7,11 @@
  */
 YUI.add('wegas-editor-pagetreeview', function(Y) {
     "use strict";
+
     var PageTreeview, PageMeta, CONTENT_BOX = "contentBox",
             BOUNDING_BOX = "boundingBox",
             DATASOURCE = Y.Wegas.Facade.Page.cache;
+
     PageTreeview = Y.Base.create("wegas-editor-page", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], {
         initializer: function() {
             this.plug(Y.Plugin.WidgetToolbar);
@@ -349,7 +351,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").PageTreeview = PageTreeview;
+    Y.Wegas.PageTreeview = PageTreeview;
+
     PageMeta = Y.Base.create("wegas-pagemeta", Y.Wegas.persistence.Entity, [], {}, {
         ATTRS: {
             name: {

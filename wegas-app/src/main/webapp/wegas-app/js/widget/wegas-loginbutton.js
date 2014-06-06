@@ -12,6 +12,8 @@
 YUI.add("wegas-loginbutton", function(Y) {
     "use strict";
 
+    var Wegas = Y.Wegas, LoginButton;
+
     /**
      * @name Y.Wegas.LoginButton
      * @extends Y.Wegas.Button
@@ -20,8 +22,7 @@ YUI.add("wegas-loginbutton", function(Y) {
      * @description Button with special label and menu with two
      * options : set user preferences or logout
      */
-    var Wegas = Y.Wegas,
-            LoginButton = Y.Base.create("wegas-login", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+    LoginButton = Y.Base.create("wegas-login", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.LoginButton# */
 
         // *** Lifecycle Methods *** //
@@ -61,26 +62,26 @@ YUI.add("wegas-loginbutton", function(Y) {
             }
 
             this.menu.add([{
-                type: "Button",
-                label: "Preferences",
-                plugins: [{
-                        fn: "OpenPageAction",
-                        cfg: {
-                            subpageId: "UserPreferences",
-                            targetPageLoaderId: this.get("targetPageLoader")
-                        }
-                    }]
-            }, {
-                type: "Button",
-                label: "Logout",
-                plugins: [{
-                        fn: "OpenUrlAction",
-                        cfg: {
-                            url: "logout",
-                            target: "self"
-                        }
-                    }]
-            }]);
+                    type: "Button",
+                    label: "Preferences",
+                    plugins: [{
+                            fn: "OpenPageAction",
+                            cfg: {
+                                subpageId: "UserPreferences",
+                                targetPageLoaderId: this.get("targetPageLoader")
+                            }
+                        }]
+                }, {
+                    type: "Button",
+                    label: "Logout",
+                    plugins: [{
+                            fn: "OpenUrlAction",
+                            cfg: {
+                                url: "logout",
+                                target: "self"
+                            }
+                        }]
+                }]);
 
         },
         /**
@@ -171,5 +172,5 @@ YUI.add("wegas-loginbutton", function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').LoginButton = LoginButton;
+    Wegas.LoginButton = LoginButton;
 });

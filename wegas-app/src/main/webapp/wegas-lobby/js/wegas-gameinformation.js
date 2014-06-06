@@ -28,10 +28,10 @@ YUI.add('wegas-gameinformation', function(Y) {
         // *** Private fields *** //
         renderUI: function() {
             var cb = this.get(CONTENTBOX), entity = this.get("entity"),
-                    game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
-                    : entity;
+                game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
+                : entity;
 
-            Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
+            Wegas.Facade.Game.cache.getWithView(game, "Extended", {//           // Get the game model full description
                 on: {
                     success: Y.bind(function(e) {
                         var game = e.response.entity;
@@ -46,12 +46,12 @@ YUI.add('wegas-gameinformation', function(Y) {
         },
         renderGameInformation: function(game) {
             var information = new Y.Node.create('<div></div>'),
-                    imgSrc = game.get("imageSrc");
+                imgSrc = game.get("properties.imageUri");
             if (imgSrc) {
                 information.append('<img src=' + imgSrc + ' />');
             }
             information.append('<div class="title">' + game.get("gameModelName") + " <br />" + game.get("name") + "</div>"
-                    + '<div class="subtitle">' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
+                + '<div class="subtitle">' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
             if (game.get("description")) {
                 information.append('<div class="description"> ' + game.get("description") + '</div>');
             }

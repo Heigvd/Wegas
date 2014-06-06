@@ -144,7 +144,7 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         //String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
 
-        for (GameModel gm : gameModelFacade.findTemplates()) {
+        for (GameModel gm : gameModelFacade.findTemplateGameModels()) {
             //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
                     || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())

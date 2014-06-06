@@ -13,12 +13,12 @@
             <style type="text/css">#{gameController.styleSheets}</style>
 
             <!-- Dev tool: stylesheets reference injected directly in the game model -->
-            <ui:repeat rendered="#{gameController.currentGameModel.hasProperty('cssUri')}"
-                       var="o" value="#{gameController.currentGameModel.getProperty('cssUri').split(',')}" varStatus="status">
+            <ui:repeat rendered="#{gameController.currentGameModel.properties.cssUri != ''}"
+                       var="o" value="#{gameController.currentGameModel.properties.cssUri.split(',')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
-            <!--<meta name="google-translate-customization" content="#gameController.currentGameModel.getProperty('googleTranslateId')" />-->
+            <!--<meta name="google-translate-customization" content="gameController.currentGameModel.getProperty('googleTranslateId')" />-->
 
         </ui:define>
 
@@ -44,16 +44,16 @@
                             },
                             Page: {
                                 /*
-                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.hasProperty('pagesUri')}">
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{!gameController.currentGameModel.properties.pagesUri == ''}">
                                  */
                                 source: "rest/GameModel/#{gameController.currentGameModel.id}/Page/",
                                 /* THIS IS NOT A COMMENT
                                  * </ui:fragment>
                                  */
                                 /*
-                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.hasProperty('pagesUri')}">
+                                 *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.pagesUri != ''}">
                                  */
-                                source: "#{gameController.currentGameModel.getProperty('pagesUri')}",
+                                source: "#{gameController.currentGameModel.properties.pagesUri}",
                                 /* THIS IS NOT A COMMENT
                                  * </ui:fragment>
                                  */
@@ -89,12 +89,12 @@
                                 ]
                             },
                             /* THIS IS NOT A COMMENT
-                             * <ui:fragment rendered="#{gameController.currentGameModel.hasProperty('websocket')}">
+                             * <ui:fragment rendered="#{gameController.currentGameModel.properties.websocket != ''}">
                              */
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
-                                applicationKey: "#{gameController.currentGameModel.getProperty('websocket')}"
+                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
                             },
                             /* THIS IS NOT A COMMENT
                              * </ui:fragment>

@@ -170,7 +170,7 @@ YUI.add('datatable-csv', function(Y) {
         },
         DATA_URI_SUPPORT: undefined
     });
-    Y.namespace("Wegas").DatatableCSV = DatatableCSV;
+    Y.Wegas.DatatableCSV = DatatableCSV;
 
     imgTest.onload = imgTest.onerror = function() {
         if (imgTest.width === 1 && imgTest.height === 1) {

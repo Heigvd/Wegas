@@ -22,8 +22,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      * @description Allows just to join a team
      */
     var CONTENTBOX = "contentBox", DATASOURCE = "dataSource", NAME = "name",
-            RENDER = "render", HOST = "host", Wegas = Y.Wegas, Plugin = Y.Plugin,
-            GameDataTable;
+        RENDER = "render", HOST = "host", Wegas = Y.Wegas, Plugin = Y.Plugin,
+        GameDataTable;
 
     GameDataTable = Y.Base.create("wegas-lobby-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Private fields *** //
@@ -52,14 +52,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas")
-                    .addClass("wegas-datatable-list");
+                .addClass("wegas-datatable-list");
 
             if (this.toolbar) {
                 this.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons'>"
-                        + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
-                        + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
-                        + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
-                        + "</div>");
+                    + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
+                    + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
+                    + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
+                    + "</div>");
                 this.buttonGroupCB = new Y.ButtonGroup({
                     srcNode: this.toolbar.get('header').one(".wegas-datatable-viewbuttons"),
                     type: 'radio',
@@ -74,8 +74,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 }).render();
                 this.viewHandler = Y.on("viewChange", function(e) {             // Global handler so any button fired will trigger view change
                     this.get(CONTENTBOX).toggleClass("wegas-datatable-grid", e.button.hasClass("button-gridview"))
-                            .toggleClass("wegas-datatable-list", e.button.hasClass("button-listview"))
-                            .toggleClass("wegas-datatable-table", e.button.hasClass("button-tableview"));
+                        .toggleClass("wegas-datatable-list", e.button.hasClass("button-listview"))
+                        .toggleClass("wegas-datatable-table", e.button.hasClass("button-tableview"));
                 }, this);
             }
         },
@@ -85,7 +85,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
          */
         bindUI: function() {
             var ds = this.get(DATASOURCE),
-                    request = this.get("request");
+                request = this.get("request");
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
                 this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
@@ -152,10 +152,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         gameModelName: entity.get("gameModelName") || "",
                         createdBy: entity.get("createdByName") || "undefined",
                         playersCount: entity.get("playersCount"),
-                        iconSrc: entity.get("iconSrc"),
-                        imageSrc: entity.get("imageSrc")
-                                //teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
-                                //token: entity.get("properties.freeForAll") ? entity.get("token") : "",
+                        iconUri: entity.get("properties.iconUri"),
+                        imageUri: entity.get("properties.imageUri")
+                            //teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
+                            //token: entity.get("properties.freeForAll") ? entity.get("token") : "",
                     };
                     break;
 
@@ -176,8 +176,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             name: entity.get(NAME),
                             createdBy: entity.get("createdByName"),
                             createdTime: entity.get("createdTime"),
-                            iconSrc: entity.get("iconSrc"),
-                            imageSrc: entity.get("imageSrc")
+                            iconUri: entity.get("properties.iconUri"),
+                            imageUri: entity.get("properties.imageUri")
                         };
                     }
                     break;
@@ -269,8 +269,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     Y.DataTable.BodyView.Formatters.icon = function(col) {
         col.className = 'wegas-lobby-datatable-icon';
         return function(o) {
-            return '<img class="wegas-lobby-icon" src="' + (o.data.iconSrc || "wegas-lobby/images/wegas-game-icon.png") + '" />'
-                    + '<img class="wegas-lobby-thumb" src="' + (o.data.imageSrc || "wegas-lobby/images/wegas-game-thumb.png") + '" />';
+            return '<img class="wegas-lobby-icon" src="' + (o.data.iconUri || "wegas-lobby/images/wegas-game-icon.png") + '" />'
+                + '<img class="wegas-lobby-thumb" src="' + (o.data.imageUri || "wegas-lobby/images/wegas-game-thumb.png") + '" />';
         };
     };
     Y.DataTable.BodyView.Formatters.link = function() {
@@ -337,15 +337,15 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         onClick: function(e) {
             var host = this.get(HOST), button,
-                    tr = e.newVal, // the Node for the TR clicked ...
-                    //last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
-                    rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
-                    menuItems = this.get("children"),
-                    entity = rec.get("entity"),
-                    data = {
-                        entity: entity,
-                        dataSource: host.get(DATASOURCE)
-                    };
+                tr = e.newVal, // the Node for the TR clicked ...
+                //last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
+                rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
+                menuItems = this.get("children"),
+                entity = rec.get("entity"),
+                data = {
+                    entity: entity,
+                    dataSource: host.get(DATASOURCE)
+                };
 
             Plugin.EditorDTMenu.currentGameModel = entity;                      // @hack so game model creation will work
 
@@ -400,13 +400,13 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 return;
             }
             var host = this.get(HOST),
-                    rec = host.dataTable.getRecord(e.currentTarget), // the current Record for the clicked TR
-                    menuItems = this.get("children"),
-                    entity = rec.get("entity"),
-                    data = {
-                        entity: entity,
-                        dataSource: host.get(DATASOURCE)
-                    };
+                rec = host.dataTable.getRecord(e.currentTarget), // the current Record for the clicked TR
+                menuItems = this.get("children"),
+                entity = rec.get("entity"),
+                data = {
+                    entity: entity,
+                    dataSource: host.get(DATASOURCE)
+                };
 
             if (entity) {
                 if (menuItems) {                                                // If there are menu items in the cfg
@@ -487,14 +487,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         onTreeViewClick: function(e) {
             var host = this.get(HOST),
-                    tr = e.domEvent.target.ancestor("tr"), // the Node for the TR clicked ...
-                    rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
-                    menuItems = this.get("children"),
-                    entity = rec.get("entity"),
-                    data = {
-                        entity: entity,
-                        dataSource: host.get(DATASOURCE)
-                    },
+                tr = e.domEvent.target.ancestor("tr"), // the Node for the TR clicked ...
+                rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
+                menuItems = this.get("children"),
+                entity = rec.get("entity"),
+                data = {
+                    entity: entity,
+                    dataSource: host.get(DATASOURCE)
+                },
             menuItems = entity.getMenuCfg(data).slice(0);                       // Fetch menu items
 
             Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning

@@ -37,7 +37,7 @@ YUI.add('wegas-layout-absolute', function(Y) {
                             position: "absolute",
                             top: "0px",
                             left: "0px",
-                            zIndex:"10"
+                            zIndex: "10"
                         }
                     });
                 }
@@ -143,6 +143,6 @@ YUI.add('wegas-layout-absolute', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').AbsoluteLayout = AbsoluteLayout;
-    Y.namespace("Plugin").Position = PositionPlugin;
+    Y.Wegas.AbsoluteLayout = AbsoluteLayout;
+    Y.Plugin.Position = PositionPlugin;
 });

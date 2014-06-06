@@ -11,7 +11,7 @@
  */
 YUI.add("wegas-image", function(Y) {
     "use strict";
-    
+
     /**
      * @name Y.Wegas.Image
      * @extends Y.Widget
@@ -96,5 +96,5 @@ YUI.add("wegas-image", function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").Image = Image;
+    Y.Wegas.Image = Image;
 });

@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-logger', function (Y) {
+YUI.add('wegas-logger', function(Y) {
     "use strict";
 
     /**
@@ -28,12 +28,11 @@ YUI.add('wegas-logger', function (Y) {
          * @private
          */
         console: null,
-
         /**
          * @function
          * @private
          */
-        renderUI: function () {
+        renderUI: function() {
             Y.log('renderUI()', 'log', "Wegas.Logger");
 
             var node = Y.Node.create('<div style="height:50px"></div>');
@@ -41,16 +40,16 @@ YUI.add('wegas-logger', function (Y) {
 
             this.console = new Y.Console({
                 logSource: Y.Global,
-                plugins: [ Y.Plugin.ConsoleFilters ],
+                plugins: [Y.Plugin.ConsoleFilters],
                 width: '100%',
                 style: 'block'                                                  // 'inline'
-            //height: '300px',
-            //height: '98%',
-            //newestOnTop: false,
-            //logLevel :'log'
+                        //height: '300px',
+                        //height: '98%',
+                        //newestOnTop: false,
+                        //logLevel :'log'
             }).render(node);
         }
     });
-    Y.namespace('Wegas').Logger = Logger;
+    Y.Wegas.Logger = Logger;
 
 });
