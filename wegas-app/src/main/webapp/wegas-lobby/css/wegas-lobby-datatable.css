@@ -53,13 +53,9 @@
     text-decoration: none;
 }
 .yui3-skin-sam .wegas-lobby-datatable tr[data-yui3-record]:hover {
-    box-shadow: 0 0 1px #6d6d6d;
-}
-.yui3-skin-sam .wegas-lobby-datatable tr:hover {
     background-color: #f9f9f9;
 }
 .yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected {
-    box-shadow: 0 0 1px #6d6d6d !important;
     font-weight: bolder;
     background-color: #ededed !important;
 }
@@ -187,7 +183,7 @@
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
     padding-right: 0;
-    width: 71px;
+    width: 104px;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-name,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-gameModelName {
@@ -196,6 +192,8 @@
     word-wrap: break-word;
     white-space: normal;
     word-break: normal;
+    max-width: 200px;
+    width: 200px;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-menu {
     width: 100%;
@@ -206,7 +204,8 @@
 }
 .yui3-skin-sam .wegas-gamemodeldatatable .yui3-datatable-col-createdBy {
     display: table-cell;
-    min-width: 170px;
+    min-width: 200px;
+    max-width: 200px;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-createdTime {
     width: 85px;

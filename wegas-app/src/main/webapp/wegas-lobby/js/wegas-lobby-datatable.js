@@ -218,7 +218,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             formatter: "icon",
                             label: " ",
                             sortable: false,
-                            width: "24px"
+                            width: "27px"
                         }, {
                             key: NAME,
                             label: "Name",
