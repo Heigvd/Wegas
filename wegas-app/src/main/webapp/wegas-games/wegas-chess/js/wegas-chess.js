@@ -5,9 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
- * @author Benjamin Gerber <ger.benjamin@gmail.com>
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add("wegas-chess", function(Y) {
     "use strict";
@@ -342,5 +342,5 @@ YUI.add("wegas-chess", function(Y) {
         }
     });
 
-    Y.namespace("Wegas").ChessBoard = ChessBoard;
+    Y.Wegas.ChessBoard = ChessBoard;
 });

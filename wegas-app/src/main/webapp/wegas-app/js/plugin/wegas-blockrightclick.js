@@ -18,8 +18,7 @@ YUI.add('wegas-blockrightclick', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            BlockRightclick = Y.Base.create("wegas-blockrightclick", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var BlockRightclick = Y.Base.create("wegas-blockrightclick", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.BlockRightclick */
 
         /**
@@ -41,6 +40,6 @@ YUI.add('wegas-blockrightclick', function(Y) {
         NS: "BlockRightclick",
         NAME: "BlockRightclick"
     });
-    Y.namespace("Plugin").BlockRightclick = BlockRightclick;
+    Y.Plugin.BlockRightclick = BlockRightclick;
 
 });

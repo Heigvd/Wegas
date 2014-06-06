@@ -19,8 +19,7 @@ YUI.add('wegas-cssloader', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            CSSLoader = Y.Base.create("wegas-cssloader", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var CSSLoader = Y.Base.create("wegas-cssloader", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.CSSLoader */
 
         /**
@@ -79,6 +78,6 @@ YUI.add('wegas-cssloader', function(Y) {
             CSSLoader.sheets[id] = new Y.StyleSheet(content.replace(/\.\.\//g, ""));
         }
     });
-    Y.namespace("Plugin").CSSLoader = CSSLoader;
+    Y.Plugin.CSSLoader = CSSLoader;
 
 });

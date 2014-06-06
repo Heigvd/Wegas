@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add("wegas-inputex-keyvalue", function(Y) {
     "use strict";
 

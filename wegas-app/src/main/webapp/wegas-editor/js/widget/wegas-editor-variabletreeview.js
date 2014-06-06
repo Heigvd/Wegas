@@ -275,7 +275,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').VariableTreeView = VariableTreeView;
+    Wegas.VariableTreeView = VariableTreeView;
 
     /**
      * @class When a descriptor node is toggled, expand it

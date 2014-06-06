@@ -26,5 +26,5 @@ YUI.add('wegas-layout-panel', function(Y) {
     }, {
         /** @lends Y.Wegas.PanelWidget */
     });
-    Y.namespace('Wegas').PanelWidget = PanelWidget;
+    Y.Wegas.PanelWidget = PanelWidget;
 });

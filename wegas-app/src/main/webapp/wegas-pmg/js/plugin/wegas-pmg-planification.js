@@ -11,6 +11,8 @@
  */
 YUI.add('wegas-pmg-planification', function(Y) {
     "use strict";
+    
+    var Wegas = Y.Wegas, Planification;
 
     /**
      *  @class save or delete reservation
@@ -18,8 +20,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            Planification = Y.Base.create("wegas-pmg-planification", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    Planification = Y.Base.create("wegas-pmg-planification", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Planification */
 
         /**
@@ -36,7 +37,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
             }, "tbody .present, tbody .futur", this);
         },
         checkCache: function(descriptorId, periode) {
-            var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("id", descriptorId),
+            var vd = Wegas.Facade.VariableDescriptor.cache.find("id", descriptorId),
                     i, planPeriode;
 
             for (i = 0; i < vd.getInstance().get("plannification").length; i++) {
@@ -62,5 +63,5 @@ YUI.add('wegas-pmg-planification', function(Y) {
         NS: "planification",
         NAME: "Planification"
     });
-    Y.namespace("Plugin").Planification = Planification;
+    Y.Plugin.Planification = Planification;
 });

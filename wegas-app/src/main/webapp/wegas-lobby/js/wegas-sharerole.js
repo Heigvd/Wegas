@@ -8,10 +8,10 @@
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-sharerole', function(Y) {
-    var CONTENTBOX = 'contentBox',
-            ShareRole = Y.Base.create("wegas-sharerole", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
+    var CONTENTBOX = 'contentBox', ShareRole;
+
+    ShareRole = Y.Base.create("wegas-sharerole", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
         /**
          *
          */
@@ -24,10 +24,10 @@ YUI.add('wegas-sharerole', function(Y) {
                     e = this.get("entity"),
                     //gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e,
                     visibilityChoices = [
-                //{value: 'Private', label: 'Only people in the list can join'},
-                {value: 'Link', label: 'Anyone with the link can join'},
-                {value: 'Public', label: 'Everybody can join'}
-            ];
+                        //{value: 'Private', label: 'Only people in the list can join'},
+                        {value: 'Link', label: 'Anyone with the link can join'},
+                        {value: 'Public', label: 'Everybody can join'}
+                    ];
 
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
                     : "g" + e.get("id");
@@ -83,7 +83,7 @@ YUI.add('wegas-sharerole', function(Y) {
             }, this);
 
             //this.link.disable();
-            var inputNode = this.get("contentBox").one(".wegas-link input");
+            var inputNode = this.get(CONTENTBOX).one(".wegas-link input");
             inputNode.on("keypress", function(e) {
                 e.preventDefault();
             });                                                                 // Edition not allowed on the input node
@@ -137,6 +137,6 @@ YUI.add('wegas-sharerole', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').ShareRole = ShareRole;
+    Y.Wegas.ShareRole = ShareRole;
 
 });

@@ -18,9 +18,9 @@ YUI.add('wegas-pdf', function(Y) {
      *  @extends Y.Plugin.CSSStyles
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            CONTENTBOX = 'contentBox',
-            PDF = Y.Base.create("wegas-pdf", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var Wegas = Y.Wegas, CONTENTBOX = 'contentBox', PDF;
+
+    PDF = Y.Base.create("wegas-pdf", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.PDF */
 
         /**
@@ -51,11 +51,11 @@ YUI.add('wegas-pdf', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var items = e.response.entity.get("items"),
-                            htmlContent = new Y.Node.create("<div></div>"),
-                            i;
-                            //console.log(items.length);
-                            //console.log(items[0]);
-                        for (i = 0; i<items.length; i++){
+                                htmlContent = new Y.Node.create("<div></div>"),
+                                i;
+                        //console.log(items.length);
+                        //console.log(items[0]);
+                        for (i = 0; i < items.length; i++) {
 //                            var child = "<p>" + items[i].toJSON().name + "</p>";
 //                            htmlContent.appendChild(child);
 //                            console.log(items[i].toJSON());
@@ -79,6 +79,6 @@ YUI.add('wegas-pdf', function(Y) {
         NS: "PDF",
         NAME: "PDF"
     });
-    Y.namespace("Plugin").PDF = PDF;
+    Y.Plugin.PDF = PDF;
 
 });

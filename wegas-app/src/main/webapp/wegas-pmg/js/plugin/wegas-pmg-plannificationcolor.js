@@ -12,14 +12,15 @@
 YUI.add('wegas-pmg-plannificationcolor', function(Y) {
     "use strict";
 
+    var Wegas = Y.Wegas, Plannificationcolor;
+
     /**
      *  @class color plannification in datatable
      *  @name Y.Plugin.Plannificationcolor
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            Plannificationcolor = Y.Base.create("wegas-pmg-plannificationcolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    Plannificationcolor = Y.Base.create("wegas-pmg-plannificationcolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Plannificationcolor */
 
         /**
@@ -56,5 +57,5 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
         NS: "plannificationcolor",
         NAME: "Plannificationcolor"
     });
-    Y.namespace("Plugin").Plannificationcolor = Plannificationcolor;
+    Y.Plugin.Plannificationcolor = Plannificationcolor;
 });

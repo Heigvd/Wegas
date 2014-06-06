@@ -12,14 +12,15 @@
 YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
     "use strict";
 
+    var Wegas = Y.Wegas, PlannificationActivityColor;
+
     /**
      *  @class color plannification in datatable
      *  @name Y.Plugin.Plannificationcolor
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            PlannificationActivityColor = Y.Base.create("wegas-pmg-plannificationactivitycolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    PlannificationActivityColor = Y.Base.create("wegas-pmg-plannificationactivitycolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Plannificationcolor */
 
         /**
@@ -42,13 +43,13 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             for (i = 0; i < dt.data.size(); i++) {
                 for (ii = 0; ii < taskActivities.length; ii++) {
                     if (taskActivities[ii].get("taskDescriptorId") === dt.getRecord(i).get("id")) {
-                       this.addColor(host.schedule.getCell(i, parseInt(taskActivities[ii].get("time"))));
+                        this.addColor(host.schedule.getCell(i, parseInt(taskActivities[ii].get("time"))));
                     }
                 }
             }
         },
         findTaskActivities: function() {
-            var employees, resourDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "employees"),
+            var employees, resourDesc = Wegas.Facade.VariableDescriptor.cache.find("name", "employees"),
                     i, ii, iii, taskIndex, work, activities, dt = this.get("host").datatable,
                     taskActivities = [];
             if (!resourDesc) {
@@ -105,5 +106,5 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
         NS: "plannificationactivitycolor",
         NAME: "PlannificationActivityColor"
     });
-    Y.namespace("Plugin").PlannificationActivityColor = PlannificationActivityColor;
+    Y.Plugin.PlannificationActivityColor = PlannificationActivityColor;
 });

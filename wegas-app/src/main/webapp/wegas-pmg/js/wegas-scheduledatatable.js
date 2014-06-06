@@ -11,14 +11,16 @@
  */
 YUI.add('wegas-scheduledatatable', function(Y) {
     "use strict";
+
+    var Wegas = Y.Wegas, ScheduleDT;
+
     /**
      *  @class Add column to datatable
      *  @name Y.Plugin.scheduleDT
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-            ScheduleDT = Y.Base.create("wegas-scheduledatatable", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    ScheduleDT = Y.Base.create("wegas-scheduledatatable", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.CSSStyles */
 
         /**
@@ -52,15 +54,15 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     bindedCP = Y.bind(this.currentPeriod, this),
                     classTime,
                     formatter = function(o) {
-                if (bindedCP() < o.column.time) {
-                    o.className = "futur";
-                } else if (bindedCP() === o.column.time) {
-                    o.className = "present";
-                } else {
-                    o.className = "past";
-                }
-                return "";
-            };
+                        if (bindedCP() < o.column.time) {
+                            o.className = "futur";
+                        } else if (bindedCP() === o.column.time) {
+                            o.className = "present";
+                        } else {
+                            o.className = "past";
+                        }
+                        return "";
+                    };
 
             while (diff) {
                 if (diff > 0) {
@@ -150,5 +152,5 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         NS: "schedule",
         NAME: "ScheduleDT"
     });
-    Y.namespace("Plugin").ScheduleDT = ScheduleDT;
+    Y.Plugin.ScheduleDT = ScheduleDT;
 });

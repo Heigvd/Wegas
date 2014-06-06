@@ -12,8 +12,7 @@
  */
 YUI.add('wegas-lobby-treeview', function(Y) {
     "use strict";
-    var NAME = "name", CLASS = "@class", Wegas = Y.Wegas,
-            GameModelTreeView;
+    var NAME = "name", CLASS = "@class", Wegas = Y.Wegas, GameModelTreeView;
 
     /**
      *
@@ -60,7 +59,7 @@ YUI.add('wegas-lobby-treeview', function(Y) {
         //    }, 0);
         //}
     });
-    Y.namespace("Wegas").GameModelTreeView = GameModelTreeView;
+    Wegas.GameModelTreeView = GameModelTreeView;
     /**
      *
      */
@@ -88,7 +87,7 @@ YUI.add('wegas-lobby-treeview', function(Y) {
             //});
         }
     });
-    Y.namespace("Wegas").CreatedGameTreeView = CreatedGameTreeView;
+    Wegas.CreatedGameTreeView = CreatedGameTreeView;
 
 
     /**
@@ -136,7 +135,7 @@ YUI.add('wegas-lobby-treeview', function(Y) {
             return ret;
         }
     });
-    Y.namespace('Wegas').JoinedGameTreeView = JoinedGameTreeView;
+    Wegas.JoinedGameTreeView = JoinedGameTreeView;
 
     /**
      *
@@ -175,5 +174,5 @@ YUI.add('wegas-lobby-treeview', function(Y) {
             return ret;
         }
     });
-    Y.namespace('Wegas').PublicGameTreeView = PublicGameTreeView;
+    Wegas.PublicGameTreeView = PublicGameTreeView;
 });

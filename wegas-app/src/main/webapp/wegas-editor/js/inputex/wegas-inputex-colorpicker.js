@@ -5,15 +5,13 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 YUI.add("wegas-inputex-colorpicker", function(Y) {
 
-    var inputEx = Y.inputEx,
-            lang = Y.Lang;
+    var inputEx = Y.inputEx;
 
     Y.namespace("inputEx.Wegas").ColorField = function(options) {
         inputEx.Wegas.ColorField.superclass.constructor.call(this, options);
@@ -42,11 +40,11 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
             this.button.appendTo(this.wrapEl);
 
             this.fieldContainer.appendChild(this.wrapEl);
-            
+
             this.button.on('click', this._toggleOverlay, this, true);
 //            Y.one(this.el).on('click', this._toggleOverlay, this, true);
-            
-            Y.one(this.el).on("change",function(event) {
+
+            Y.one(this.el).on("change", function(event) {
                 this.markSelectedColor(this.el.value);
             }, this);
 
@@ -59,7 +57,7 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
                 thisBis.colorpicker = new Y.ColorPicker();
                 // render the widget into the #picker node
                 thisBis.colorpicker.render(thisBis.grid);
-                
+
                 swatch.one(".yui3-colorpicker-swatch").setStyle("border", "1px solid white");
                 swatch.one(".yui3-colorpicker-swatch").appendChild("<p style='text-align: center; margin-top: 9px'>Update Color</p>");
                 swatch.one(".yui3-colorpicker-swatch").on('click', function(e) {
@@ -89,9 +87,9 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
             if (this.paletteRendered) {
                 return;
             }
-            
+
             this.colorpicker.set("hex", this.el.value.substr(1));
-            if (this.el.value === "#ffffff"){
+            if (this.el.value === "#ffffff") {
                 this.colorpicker.set("hsl", {h: 0, s: 1, l: 1});
             }
             this.colorGrid = this.grid;
@@ -108,7 +106,7 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
                 zIndex: 1000
             });
             //his.oOverlay.render(this.fieldContainer);
-            
+
             this.oOverlay.render();
 
             this.oOverlay.on('visibleChange', function(e) {
@@ -131,7 +129,7 @@ YUI.add("wegas-inputex-colorpicker", function(Y) {
         markSelectedColor: function(value) {
 
             value = value || this.getValue();
-            
+
             // set background color on colorEl
             Y.one(this.el).setStyle('backgroundColor', value);
 

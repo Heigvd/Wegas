@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-app', function(Y) {
     "use strict";
 
@@ -60,16 +58,16 @@ YUI.add('wegas-app', function(Y) {
          */
         render: function() {
             var ds, dsClass, widgetCfg,
-                    dataSources = this.get('dataSources'), // Data sources cfg objects
-                    requestCounter = 0, // Request counter 
-                    onRequest = function() {                                    // When a response to initial requests is received
-                        requestCounter -= 1;
-                        if (requestCounter === 0) {                             // If all initial request are completed,
-                            this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
-                                    .render();                                  // and render it
-                            this.fire("render");                                // fire a render event for some eventual post processing
-                        }
-                    };
+                dataSources = this.get('dataSources'), // Data sources cfg objects
+                requestCounter = 0, // Request counter 
+                onRequest = function() {                                    // When a response to initial requests is received
+                    requestCounter -= 1;
+                    if (requestCounter === 0) {                             // If all initial request are completed,
+                        this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
+                            .render();                                  // and render it
+                        this.fire("render");                                // fire a render event for some eventual post processing
+                    }
+                };
 
             Y.io.header("Accept-Language", Y.config.lang);                      // Set up the language for all requests
             Y.on("io:failure", this.globalFailureHandler, this);                // Set up a default failure handler
@@ -130,7 +128,7 @@ YUI.add('wegas-app', function(Y) {
             var response, msg;
             try {
                 msg = "Error sending " + e.cfg.method + " request : " + e.target.get("source") + e.request
-                        + ", " + e.cfg.data + ": ";
+                    + ", " + e.cfg.data + ": ";
             } catch (e) {
                 msg = "Error sending request: ";
             }

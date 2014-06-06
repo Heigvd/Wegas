@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-cssstyles-extra', function(Y) {
     "use strict";
 
@@ -20,11 +18,13 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
      *  @extends Y.Plugin.CSSStyles
      *  @constructor
      */
-    var CSSBackground = function() {
+    var Plugin = Y.Plugin, CSSBackground, CSSSize, CSSText, CSSPosition;
+
+    CSSBackground = function() {
         CSSBackground.superclass.constructor.apply(this, arguments);
     };
 
-    CSSBackground = Y.extend(CSSBackground, Y.Plugin.CSSStyles, {
+    CSSBackground = Y.extend(CSSBackground, Plugin.CSSStyles, {
         /** @lends Y.Plugin.CSSBackground */
     }, {
         ATTRS: {
@@ -35,7 +35,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                             type: "colorpicker",
                             palette: 3,
                             name: "backgroundColor",
-                            label: "backround color"
+                            label: "backround"
                         }]
                 }
             }
@@ -43,7 +43,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         NS: "CSSBackground",
         NAME: "CSSBackground"
     });
-    Y.namespace("Plugin").CSSBackground = CSSBackground;
+    Plugin.CSSBackground = CSSBackground;
 
     /**
      *  @class Add text CSS styles
@@ -51,11 +51,11 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
      *  @extends Y.Plugin.CSSStyles
      *  @constructor
      */
-    var CSSPosition = function() {
+    CSSPosition = function() {
         CSSPosition.superclass.constructor.apply(this, arguments);
     };
 
-    CSSPosition = Y.extend(CSSPosition, Y.Plugin.CSSStyles, {
+    CSSPosition = Y.extend(CSSPosition, Plugin.CSSStyles, {
         /** @lends Y.Plugin.CSSPosition */
         initializer: function() {
         }
@@ -67,9 +67,9 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                     fields: [{
                             type: "hidden",
                             value: "absolute",
-//                        type: "select",
                             name: "position",
                             label: "position",
+                            //  type: "select",
                             choices: ["", "static", "relative", "absolute", "fixed", "inherit"]
 
                         }, {
@@ -101,7 +101,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         NS: "CSSPosition",
         NAME: "CSSPosition"
     });
-    Y.namespace("Plugin").CSSPosition = CSSPosition;
+    Plugin.CSSPosition = CSSPosition;
 
     /**
      *  @class Add text CSS styles
@@ -109,11 +109,11 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
      *  @extends Y.Plugin.CSSStyles
      *  @constructor
      */
-    var CSSText = function() {
+    CSSText = function() {
         CSSText.superclass.constructor.apply(this, arguments);
     };
 
-    CSSText = Y.extend(CSSText, Y.Plugin.CSSStyles, {
+    CSSText = Y.extend(CSSText, Plugin.CSSStyles, {
         /** @lends Y.Plugin.CSSText */
     }, {
         ATTRS: {
@@ -145,7 +145,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         NS: "CSSText",
         NAME: "CSSText"
     });
-    Y.namespace("Plugin").CSSText = CSSText;
+    Plugin.CSSText = CSSText;
 
     /**
      *  @class Add size CSS styles
@@ -153,11 +153,11 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
      *  @extends Y.Plugin.CSSStyles
      *  @constructor
      */
-    var CSSSize = function() {
+    CSSSize = function() {
         CSSSize.superclass.constructor.apply(this, arguments);
     };
 
-    CSSSize = Y.extend(CSSSize, Y.Plugin.CSSStyles, {
+    CSSSize = Y.extend(CSSSize, Plugin.CSSStyles, {
         /** @lends Y.Plugin.CSSSize */
         initializer: function() {
         }
@@ -181,5 +181,5 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         NS: "CSSSize",
         NAME: "CSSSize"
     });
-    Y.namespace("Plugin").CSSSize = CSSSize;
+    Plugin.CSSSize = CSSSize;
 });

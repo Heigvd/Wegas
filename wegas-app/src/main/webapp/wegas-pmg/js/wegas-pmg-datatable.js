@@ -5,20 +5,21 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
+
     var CONTENTBOX = "contentBox", Datatable, micro = new Y.Template(),
             JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
             TEMPLATES = {
-        template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
-        object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
-        requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
-        assignedRessource: micro.compile('<% var gras=false, currentPeriode = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getInstance().get("value"); for(var i = 0; i < this.length; i+=1){ gras=false; var occupations = this[i].ressourceInstance.get("occupations"); for(var oi = 0; oi<occupations.length; oi++) { if(occupations[oi].get("time")==currentPeriode && occupations[oi].get("editable")){gras=true; break;}} for (var j in this[i].ressourceInstance.get("skillsets")){ if (gras) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
-    };
+                template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
+                object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
+                requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
+                assignedRessource: micro.compile('<% var gras=false, currentPeriode = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getInstance().get("value"); for(var i = 0; i < this.length; i+=1){ gras=false; var occupations = this[i].ressourceInstance.get("occupations"); for(var oi = 0; oi<occupations.length; oi++) { if(occupations[oi].get("time")==currentPeriode && occupations[oi].get("editable")){gras=true; break;}} for (var j in this[i].ressourceInstance.get("skillsets")){ if (gras) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
+            };
+
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
 // *** Lifecycle Methods *** //
         initializer: function() {
@@ -118,7 +119,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return function(a, b, dir) {
                     var aa = Y.Object.values(a.get(col.key))[0] || '',
                             bb = Y.Object.values(b.get(col.key))[0] || '';
-                    if (typeof(aa) === "string" && typeof(bb) === "string") {// Not case sensitive
+                    if (typeof (aa) === "string" && typeof (bb) === "string") {// Not case sensitive
                         aa = aa.toLowerCase();
                         bb = bb.toLowerCase();
                     }
@@ -127,7 +128,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").PmgDatatable = Datatable;
+    Y.Wegas.PmgDatatable = Datatable;
 
     Y.mix(Y.DataTable.BodyView.Formatters, {
         requieredRessources: function(o) {
@@ -218,17 +219,17 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     //}, {
     //    ATTRS: {}
     //});
-    //Y.namespace("Wegas").PMGDatatableModel = PMGDatatableModel;
+    //Y.Wegas.PMGDatatableModel = PMGDatatableModel;
 
-    Y.namespace("Wegas").PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
+    Y.Wegas.PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
         _createRowHTML: function(model, index, columns) {
             var data = model.toJSON(),
                     clientId = model.get('clientId'),
                     values = {
-                rowId: this._getRowId(clientId),
-                clientId: clientId,
-                rowClass: (index % 2) ? this.CLASS_ODD : this.CLASS_EVEN
-            },
+                        rowId: this._getRowId(clientId),
+                        clientId: clientId,
+                        rowClass: (index % 2) ? this.CLASS_ODD : this.CLASS_EVEN
+                    },
             host = this.host || this,
                     i, len, col, token, value, formatterData;
             for (i = 0, len = columns.length; i < len; ++i) {

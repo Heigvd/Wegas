@@ -5,12 +5,13 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-scriptlibrary', function(Y) {
+    "use strict";
+
     var CONTENTBOX = 'contentBox',
             ScriptLibrary;
     /**
@@ -313,6 +314,6 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').ScriptLibrary = ScriptLibrary;
+    Y.Wegas.ScriptLibrary = ScriptLibrary;
 
 });

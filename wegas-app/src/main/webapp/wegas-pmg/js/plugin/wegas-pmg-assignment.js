@@ -297,5 +297,5 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         NS: "assignment",
         NAME: "Assignment"
     });
-    Y.namespace("Plugin").Assignment = Assignment;
+    Y.Plugin.Assignment = Assignment;
 });

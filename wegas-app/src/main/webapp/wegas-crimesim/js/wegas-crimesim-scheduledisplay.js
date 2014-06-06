@@ -374,8 +374,8 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var choiceDescriptor = reply.getChoiceDescriptor(),
                     status = reply.getStatus(this.currentTime),
                     ret = ['<div class="schedule-detail-reply"><h3>Period ',
-                reply.get("startTime") + 1, ': ', choiceDescriptor.get("title") || "undefined",
-                '</h3><div class="content">'];
+                        reply.get("startTime") + 1, ': ', choiceDescriptor.get("title") || "undefined",
+                        '</h3><div class="content">'];
 
             if (status === 0) {
                 ret.push(reply.get("result").get("answer"));
@@ -481,5 +481,5 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
         }
     });
-    Y.namespace('Wegas').ScheduleDisplay = ScheduleDisplay;
+    Y.Wegas.ScheduleDisplay = ScheduleDisplay;
 });

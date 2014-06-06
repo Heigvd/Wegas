@@ -9,10 +9,10 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-chat', function(Y) {
-    var CONTENTBOX = 'contentBox',
-            Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    var CONTENTBOX = 'contentBox', Chat;
+
+    Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div class='conversation'><div class='wegas-chat-msgs'></div></div>",
         initializer: function() {
             this.field = null;
@@ -67,6 +67,6 @@ YUI.add('wegas-chat', function(Y) {
             }
         }
     });
+    Y.Wegas.Chat = Chat;
 
-    Y.namespace('Wegas').Chat = Chat;
 });

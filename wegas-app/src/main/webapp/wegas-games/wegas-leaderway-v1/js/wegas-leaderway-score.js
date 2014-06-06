@@ -11,7 +11,9 @@
 YUI.add('wegas-leaderway-score', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
+    var CONTENTBOX = 'contentBox', Score;
+
+    Score = Y.Base.create("wegas-score", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
         // *** Fields *** /
         table: null,
         data: null,
@@ -147,5 +149,5 @@ YUI.add('wegas-leaderway-score', function(Y) {
         }
     });
 
-    Y.namespace('Wegas').Score = Score;
+    Y.Wegas.Score = Score;
 });

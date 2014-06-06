@@ -5,16 +5,13 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 YUI.add("wegas-monopoly-display", function(Y) {
     "use strict";
 
-    var Monopolydisplay;
-
-    Monopolydisplay = Y.Base.create("wegas-monopoly-display", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    var Monopolydisplay = Y.Base.create("wegas-monopoly-display", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         initializer: function() {
             this.handlers = [];
         },
@@ -184,5 +181,5 @@ YUI.add("wegas-monopoly-display", function(Y) {
         }
     });
 
-    Y.namespace("Wegas").Monopolydisplay = Monopolydisplay;
+    Y.Wegas.Monopolydisplay = Monopolydisplay;
 });

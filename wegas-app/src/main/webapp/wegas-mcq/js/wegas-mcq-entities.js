@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -27,7 +26,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * QuestionDescriptor mapper
      */
-    Y.namespace("Wegas.persistence").QuestionDescriptor = Y.Base.create("QuestionDescriptor", Wegas.persistence.ListDescriptor, [], {
+    Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Wegas.persistence.ListDescriptor, [], {
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         }

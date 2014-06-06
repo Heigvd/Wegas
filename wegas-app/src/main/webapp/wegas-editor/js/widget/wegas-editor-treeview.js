@@ -44,7 +44,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             // Return true if any of its four corners are visible
             return (
                 (eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has
-            );
+                );
         };
 
     /**
@@ -205,16 +205,16 @@ YUI.add('wegas-editor-treeview', function(Y) {
             request: {}
         }
     });
-    Y.namespace('Wegas').EditorTreeView = EditorTreeView;
+    Wegas.EditorTreeView = EditorTreeView;
 
     /**
      *
      */
     var TeamTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">' + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">' + '<div class="yui3-u yui3-u-col1">Name</div>'
-        //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
-        //+ '<div class="yui3-u">Players</div></div>'
-        + '</div>' + '<div class="treeview"></div>' + '</div>',
+            //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
+            //+ '<div class="yui3-u">Players</div></div>'
+            + '</div>' + '<div class="treeview"></div>' + '</div>',
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
@@ -235,7 +235,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
                 acc = [],
                 nodes = this.genTreeViewElements(entity.get("teams"));
 
-            if (entity.get("properties.freeForAll")) { // Do not display teams in free for all game
+            if (entity.get("properties.freeForAll")) {                          // Do not display teams in free for all game
                 Y.Array.each(nodes, function(i) {
                     acc = acc.concat(i.children);
                 });
@@ -298,7 +298,7 @@ YUI.add('wegas-editor-treeview', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').TeamTreeView = TeamTreeView;
+    Wegas.TeamTreeView = TeamTreeView;
 
     /**
      * @class To be plugged on a an EditorTreeview, keeps track of the

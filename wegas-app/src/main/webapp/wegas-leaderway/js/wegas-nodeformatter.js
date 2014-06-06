@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-nodeformatter', function(Y) {
     "use strict";
 
@@ -155,6 +153,6 @@ YUI.add('wegas-nodeformatter', function(Y) {
             });
         }
     });
-    Y.namespace('Wegas').NodeFormatter = NodeFormatter;
+    Y.Wegas.NodeFormatter = NodeFormatter;
 
 });

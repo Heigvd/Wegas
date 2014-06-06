@@ -82,6 +82,9 @@
 .yui3-skin-sam .wegas-lobby-datatable tr:hover .yui3-datatable-col-menu .yui3-button {
     visibility: visible;
 }
+.yui3-skin-sam .wegas-lobby-datatable td.yui3-datatable-col-iconCSS {
+    padding-right: 0;
+}
 
 /* Lobby datatable: view buttons */
 .wegas-datatable-viewbuttons {

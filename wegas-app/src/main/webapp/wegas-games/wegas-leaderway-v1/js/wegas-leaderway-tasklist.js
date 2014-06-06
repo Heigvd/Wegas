@@ -1,12 +1,20 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
-
 YUI.add('wegas-leaderway-tasklist', function(Y) {
     "use strict";
+
     var CONTENTBOX = 'contentBox', TaskList;
+
     TaskList = Y.Base.create("wegas-tasklist", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild, Y.Wegas.Editable], {
-// *** Fields *** /
+        // *** Fields *** /
         table: null,
         data: null,
         selectedTaskDescriptor: null,
@@ -328,5 +336,5 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
             },
         }
     });
-    Y.namespace('Wegas').TaskList = TaskList;
+    Y.Wegas.TaskList = TaskList;
 });

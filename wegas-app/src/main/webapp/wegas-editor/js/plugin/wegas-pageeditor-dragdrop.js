@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview PageEditor drag and drop Extension
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -83,7 +82,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 });
                 this.fixedOverlay(Y.Widget.getByNode(node));
             }, this);
-            this._dd.after("drag:drag", function(){
+            this._dd.after("drag:drag", function() {
                 this.fixedOverlay(this.shownOverlay._widget);
             }, this);
             this._dd.on("drag:end", function(e) {
@@ -173,5 +172,5 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
         }
 
     };
-    Y.namespace("Wegas").PageEditorDD = PageEditorDD;
+    Y.Wegas.PageEditorDD = PageEditorDD;
 });

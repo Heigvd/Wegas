@@ -5,23 +5,20 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-cssstyles', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, CSSStyles;
     /**
      *  @class Add styles CSS styles
      *  @name Y.Plugin.CSSStyles
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    CSSStyles = Y.Base.create("wegas-cssstyles", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var CSSStyles = Y.Base.create("wegas-cssstyles", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.CSSStyles */
 
         /**
@@ -223,6 +220,6 @@ YUI.add('wegas-cssstyles', function(Y) {
             "paddingRight"
         ]
     });
-    Y.namespace("Plugin").CSSStyles = CSSStyles;
+    Y.Plugin.CSSStyles = CSSStyles;
 
 });
