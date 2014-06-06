@@ -60,8 +60,8 @@ YUI.add('wegas-app', function(Y) {
          */
         render: function() {
             var ds, dsClass, widgetCfg,
-                    dataSources = this.get('dataSources'),                      // Data sources cfg objects
-                    requestCounter = 0,                                         // Request counter 
+                    dataSources = this.get('dataSources'), // Data sources cfg objects
+                    requestCounter = 0, // Request counter 
                     onRequest = function() {                                    // When a response to initial requests is received
                         requestCounter -= 1;
                         if (requestCounter === 0) {                             // If all initial request are completed,
@@ -87,7 +87,7 @@ YUI.add('wegas-app', function(Y) {
                     }
                     this.dataSources[name] = ds;                                // Push to data source list
                 }, this);
-                
+
                 this.dataSources.Variable = this.dataSources.VariableDescriptor;// @hack
 
                 requestCounter += 1;
@@ -96,7 +96,7 @@ YUI.add('wegas-app', function(Y) {
                     Wegas.use(widgetCfg, Y.bind(onRequest, this));              // Optim: Load pages dependencies as soon as the data is received
                 }, this);
             }, this));
-            
+
             // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
                 var body = Y.one("body");
@@ -139,14 +139,14 @@ YUI.add('wegas-app', function(Y) {
                 msg += "\n Server reply " + Y.JSON.stringify(response, null, "\t");
 
                 if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") {// If the user session has timed out,
-                    new Wegas.Panel({                                           // show a message that invites to reconnect
+                    new Wegas.Panel({// show a message that invites to reconnect
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
                         modal: true,
                         centered: true,
                         buttons: {
                             footer: [{
                                     label: 'Click here to reconnect',
-                                    action: function () {
+                                    action: function() {
                                         Y.config.win.location.reload();
                                     }
                                 }]
@@ -178,6 +178,15 @@ YUI.add('wegas-app', function(Y) {
                 getter: function() {
                     return Y.config.groups.wegas.base.replace("wegas-app/", "");
                 }
+            },
+            /**
+             * Currently no functionnality attached. Used for others to query mode.
+             * Editor / player.
+             */
+            editorMode: {
+                value: false,
+                writeOnce: "initOnly",
+                validator: Y.Lang.isBoolean
             }
         }
     });
