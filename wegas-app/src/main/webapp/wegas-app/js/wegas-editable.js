@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-editable', function(Y) {
     "use strict";
 
@@ -20,7 +18,7 @@ YUI.add('wegas-editable', function(Y) {
      *  Add custom attributes to be used in ATTR param in static cfg.
      */
     Y.Base._ATTR_CFG.push("type", "properties", "_inputex", "optional", "format",
-            "choices", "items", "enum", "default", "transient");
+        "choices", "items", "enum", "default", "transient");
     Y.Base._ATTR_CFG_HASH = Y.Array.hash(Y.Base._ATTR_CFG);
 
     /**
@@ -42,7 +40,7 @@ YUI.add('wegas-editable', function(Y) {
          */
         toJSON: function() {
             var k, ret = this.getAttrs(),
-                    attrCfgs = this.getAttrCfgs();
+                attrCfgs = this.getAttrCfgs();
 
             for (k in ret) {
                 if (attrCfgs[k] && attrCfgs[k]["transient"]) {                  // Remove any transient attribute
@@ -286,13 +284,13 @@ YUI.add('wegas-editable', function(Y) {
          */
         getRawModulesFromDefinition: function(cfg) {
             var i, props, type = cfg.type || cfg["@class"],
-                    module = YUI_config.groups.wegas.modulesByType[type],
-                    modules = [],
-                    pushFn = function(field) {
-                        if (field) {
-                            modules = modules.concat(Editable.getModulesFromDefinition(field));
-                        }
-                    };
+                module = YUI_config.groups.wegas.modulesByType[type],
+                modules = [],
+                pushFn = function(field) {
+                    if (field) {
+                        modules = modules.concat(Editable.getModulesFromDefinition(field));
+                    }
+                };
             if (Y.Lang.isArray(cfg)) {
                 return Y.Array.flatten(Y.Array.map(cfg, Editable.getModulesFromDefinition));
             }

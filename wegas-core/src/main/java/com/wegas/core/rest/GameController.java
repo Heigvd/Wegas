@@ -216,7 +216,7 @@ public class GameController {
         } catch (NoResultException e) {                                         // If there is no NoResultException, everything is ok, we can pursue
 
             SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
-            if (game.getGameModel().hasProperty(GameModel.PROPERTY.freeForAll)) {// If game is "freeForAll" (single team)
+            if (game.getGameModel().getProperties().getFreeForAll()) {          // If game is "freeForAll" (single team)
                 //if (game.getTeams().isEmpty()) {
                 if (game.getTeams().size() <= 1) {                              // Create a team if none present (first team is debug team)
                     teamFacade.create(game.getId(), new Team("Default"));

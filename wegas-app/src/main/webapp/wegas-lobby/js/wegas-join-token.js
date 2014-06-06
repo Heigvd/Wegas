@@ -37,9 +37,7 @@ YUI.add('wegas-join-token', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                    tokenParameter = Wegas.Helper.getURLParameter("token");
-
-//            cb.append("<h1>Team</h1>");
+                tokenParameter = Wegas.Helper.getURLParameter("token");
 
             this.tokenField = new Y.inputEx.StringField({//                     // Render
                 required: true,
@@ -104,7 +102,7 @@ YUI.add('wegas-join-token', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var cb = this.get(CONTENTBOX),
-                                entity = e.response.entity;
+                            entity = e.response.entity;
 
                         this.hideOverlay();
 
@@ -119,11 +117,11 @@ YUI.add('wegas-join-token', function(Y) {
                                 this.showMessageBis("error", "No game found for this key");
                             }
                         } else if (e.response.entities[0] instanceof Wegas.persistence.Team
-                                && !(e.response.entities[1].get("gameModel").get("properties.freeForAll")
-                                        || e.response.entities[0].get("players").length === 0)) {// If the token is already in use
+                            && !(e.response.entities[1].get("properties.freeForAll")
+                                || e.response.entities[0].get("players").length === 0)) {// If the token is already in use
 
                             this.showMessageBis("error",
-                                    "This team has already been created. You can contact it's members so they can join you in.");
+                                "This team has already been created. You can contact it's members so they can join you in.");
                         } else {
                             Y.log("sendTokenJoin(): Rendering team widget", "info", "Wegas.TokenJoin");
                             this.destructor();

@@ -13,16 +13,16 @@ YUI.add('wegas-entity', function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-            BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
-            Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
-            Base = Y.Base, Entity,
-            IDATTRDEF = {
-                type: STRING,
-                optional: true, // The id is optional for entites that have not been persisted
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
+        BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
+        Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
+        Base = Y.Base, Entity,
+        IDATTRDEF = {
+            type: STRING,
+            optional: true, // The id is optional for entites that have not been persisted
+            _inputex: {
+                _type: HIDDEN
+            }
+        };
 
     /**
      * @class Entity is used to represent db objects
@@ -163,47 +163,35 @@ YUI.add('wegas-entity', function(Y) {
             },
             properties: {
                 value: {},
-                getter: function(value, name) {
-                    var key = name.split(".")[1];
-                    if (Y.Lang.isString(value[key])) {
-                        switch (key) {
-                            case "freeForAll":
-                            case "allowCreateTeam":
-                            case "allowJoinTeam":
-                                value[key] = (value[key] === "true") ? true : false;
-                        }
-                    }
-                    return value;
-                },
                 _inputex: {
                     required: false,
                     fields: [{
                             name: "freeForAll",
                             type: "radio",
                             label: "Game is played",
-                            value: "false",
+                            value: false,
                             choices: [{
-                                    value: "true",
+                                    value: true,
                                     label: "individually"
                                 }, {
-                                    value: "false",
-                                    label: "in team"
+                                    value: false,
+                                    label: "in teams"
                                 }]
                         }, {
-                            name: "imageSrc",
+                            name: "imageUri",
                             label: "Thumbnail",
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                         }, {
-                            name: "iconSrc",
+                            name: "iconUri",
                             label: "Icon",
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                         }, {
                             name: "cssUri",
-                            label: "Css uri",
+                            label: "Stylesheets",
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                         }, {
                             name: "pagesUri",
-                            label: "Pages uri",
+                            label: "Pages",
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                         }, {
                             name: "websocket",
@@ -236,12 +224,6 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true
             },
             createdByName: {
-                "transient": true
-            },
-            iconSrc: {
-                "transient": true
-            },
-            imageSrc: {
                 "transient": true
             }
         },
@@ -384,9 +366,7 @@ YUI.add('wegas-entity', function(Y) {
                 "transient": true
             },
             properties: {
-                "transient": true,
-                value: {},
-                getter: persistence.GameModel.ATTRS.properties.getter
+                "transient": true
             },
             teams: {
                 "transient": true,
@@ -436,11 +416,11 @@ YUI.add('wegas-entity', function(Y) {
                     label: "Option 1: Player accesses through his account",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-token",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                            + "The enrolment key can be used by an unlimited number of players."
+                        + "The enrolment key can be used by an unlimited number of players."
 //                    description: "Players need to log in or create an account and then use the enrolment key to join the game."
-                            //        + "The key can be used to join multiple times."
-                            //description: "Leave blank for automatic generation",
-                            //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        //        + "The key can be used to join multiple times."
+                        //description: "Leave blank for automatic generation",
+                        //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             },
             keys: {
@@ -451,10 +431,10 @@ YUI.add('wegas-entity', function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-keys",
                     _type: "enrolmentkeylist",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                            + "Each enrolment key can be used only once."
+                        + "Each enrolment key can be used only once."
 //                    description: "Players need to log in or create an account and then use the enrolment key to join the game.<br />"
 //                            + "Each key can be used by only once."
-                            //"Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
+                        //"Player can join this game using an enrolment key as user name/password on the log in screen or by entering it in the lobby.<br />"
                 }
             },
             accountkeys: {
@@ -466,7 +446,7 @@ YUI.add('wegas-entity', function(Y) {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-game-users',
                     index: 2,
                     description: "Player directly joins the game with username/password.<br />"
-                            + " Each username/password can be used only once."
+                        + " Each username/password can be used only once."
                 }
             },
             playersCount: {
@@ -480,12 +460,6 @@ YUI.add('wegas-entity', function(Y) {
                     });
                     return count;
                 }
-            },
-            iconSrc: {
-                "transient": true
-            },
-            imageSrc: {
-                "transient": true
             }
         },
         EDITMENU: [{

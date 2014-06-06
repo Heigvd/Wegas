@@ -5,16 +5,15 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-
 YUI.add("wegas-parent", function(Y) {
     "use strict";
 
     var BUTTON = "Button";
+
     /**
      * @extends Y.Wegas.Widget
      * @constructor
@@ -25,12 +24,12 @@ YUI.add("wegas-parent", function(Y) {
         /*Check for Y.WidgetParent*/
         if (!this._add) {
             Y.log("Extension 'Y.WidgetParent' must be defined before Y.Wegas.Parent in " + this.constructor.NAME,
-                    "error", "Y.Wegas.Parent");
+                "error", "Y.Wegas.Parent");
         }
         /*Check for Y.Wegas.Editable*/
         if (!this.toJSON) {
             Y.log("Extension 'Y.Wegas.Editable' must be defined before Y.Wegas.Parent in " + this.constructor.NAME,
-                    "error", "Y.Wegas.Parent");
+                "error", "Y.Wegas.Parent");
         }
         this.onceAfter("render", function() {
             this.get("boundingBox").addClass("wegas-parent");

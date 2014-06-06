@@ -6641,7 +6641,7 @@
         }
     },
     "properties": {
-        "freeForAll": "true",
+        "freeForAll": true,
         "cssUri": "wegas-proggame/css/wegas-proggame.css"
     },
     "createdByName": "Francois-Xavier"
