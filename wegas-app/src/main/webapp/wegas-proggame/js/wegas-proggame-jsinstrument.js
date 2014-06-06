@@ -143,6 +143,6 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
 
         }
     });
-    Y.namespace("Wegas").JSInstrument = JSInstrument;
+    Y.Wegas.JSInstrument = JSInstrument;
 
 });

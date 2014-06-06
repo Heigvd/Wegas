@@ -12,7 +12,7 @@
 YUI.add("wegas-preview-fullscreen", function(Y) {
     "use strict";
 
-    Y.namespace("Plugin").PreviewFullScreen = Y.Base.create("wegas-preview-fullscreen", Y.Plugin.Base, [], {
+    Y.Plugin.PreviewFullScreen = Y.Base.create("wegas-preview-fullscreen", Y.Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent("render", this.render);
         },

@@ -67,7 +67,7 @@ YUI.add('wegas-tooltip', function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").Tooltip = TooltipPlg;
+    Y.Plugin.Tooltip = TooltipPlg;
 
     /**
      *  @name Y.Plugin.Tooltip

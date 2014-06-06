@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 YUI.add("wegas-teaching-main", function(Y) {
     "use strict";
 
@@ -44,10 +51,10 @@ YUI.add("wegas-teaching-main", function(Y) {
             /* Create and add 9 rectangles */
             var i, themes = this.get("themes"),
                     pos = [
-                [3, 78], [300, 78], [595, 78],
-                [3, 305], [300, 305], [595, 305],
-                [3, 530], [300, 530], [595, 530]
-            ];
+                        [3, 78], [300, 78], [595, 78],
+                        [3, 305], [300, 305], [595, 305],
+                        [3, 530], [300, 530], [595, 530]
+                    ];
             for (i = 0; i < 9; i += 1) {
                 this.createRectangle(pos[i][0], pos[i][1], i, themes[i] || "Undefined");
             }
@@ -105,19 +112,19 @@ YUI.add("wegas-teaching-main", function(Y) {
                     color = this.getColorByVal(val),
                     orientation = x1 == x2, // true = 1: vertical (else horizontal)
                     arrow = this.graphic.addShape({
-                type: Y.TeachingArrow,
-                stroke: {
-                    weight: 5,
-                    color: color
-                },
-                src: [x1, y1],
-                tgt: [x2, y2],
-                id: id,
-                val: val,
-                text: text,
-                orientation: orientation
-            }),
-            handleClick = Y.bind(this.showArrowEditor, this, arrow),
+                        type: Y.TeachingArrow,
+                        stroke: {
+                            weight: 5,
+                            color: color
+                        },
+                        src: [x1, y1],
+                        tgt: [x2, y2],
+                        id: id,
+                        val: val,
+                        text: text,
+                        orientation: orientation
+                    }),
+                    handleClick = Y.bind(this.showArrowEditor, this, arrow),
                     node = Y.Node(arrow.get('node'));
 
             node.on('click', handleClick);
@@ -128,9 +135,9 @@ YUI.add("wegas-teaching-main", function(Y) {
             // Button to edit arrow
             var cb = this.get("contentBox"),
                     buttonWidget = new Y.Button({
-                label: "Éditer",
-                render: cb
-            }), button = buttonWidget.get("contentBox");
+                        label: "Éditer",
+                        render: cb
+                    }), button = buttonWidget.get("contentBox");
 
             button.setStyle('position', 'absolute');
 
@@ -174,12 +181,12 @@ YUI.add("wegas-teaching-main", function(Y) {
                     label = (val.match(ereg, "$1") && val.match(ereg, "$1")[1]) || label,
                     description = val.replace(ereg, ""),
                     rectangle = new Y.Wegas.TeachingRectangle({
-                x: x,
-                y: y,
-                label: label,
-                description: description,
-                id: id
-            });
+                        x: x,
+                        y: y,
+                        label: label,
+                        description: description,
+                        id: id
+                    });
 
             rectangle.render(cb);
             rectangle.on('click', this.showRectangleEditor, this, rectangle);
@@ -342,9 +349,9 @@ YUI.add("wegas-teaching-main", function(Y) {
                 var drop = new Y.DD.Drop({//                                    // Init drop
                     node: n
                 }),
-                drag = new Y.DD.Drag({//                                        // Init drag
-                    node: n
-                }).plug(Y.Plugin.DDProxy, {
+                        drag = new Y.DD.Drag({//                                        // Init drag
+                            node: n
+                        }).plug(Y.Plugin.DDProxy, {
                     moveOnEnd: false                                            // We don't want the node to move on end drag
                 }).plug(Y.Plugin.DDConstrained, {
                     constrain2node: this.get(CONTENTBOX)                        // Keep nodes inside the workarea
@@ -378,5 +385,5 @@ YUI.add("wegas-teaching-main", function(Y) {
         }
     });
 
-    Y.namespace("Wegas").TeachingMain = TeachingMain;
+    Y.Wegas.TeachingMain = TeachingMain;
 });

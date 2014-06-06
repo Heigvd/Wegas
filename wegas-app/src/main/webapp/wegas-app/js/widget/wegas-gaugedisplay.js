@@ -9,7 +9,6 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add('wegas-gaugedisplay', function(Y) {
     "use strict";
 
@@ -343,5 +342,5 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         }
     });
 
-    Y.namespace('Wegas').GaugeDisplay = GaugeDisplay;
+    Y.Wegas.GaugeDisplay = GaugeDisplay;
 });

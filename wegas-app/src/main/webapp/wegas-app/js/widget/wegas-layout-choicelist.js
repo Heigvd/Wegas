@@ -19,8 +19,7 @@ YUI.add('wegas-layout-choicelist', function(Y) {
      * @constructor
      * @description class to serialize widgets
      */
-    var List = Y.Base.create("wegas-choicelist", Y.Wegas.List,
-            [Y.Wegas.Editable, Y.Wegas.Parent], {
+    var List = Y.Base.create("wegas-choicelist", Y.Wegas.List, [Y.Wegas.Editable, Y.Wegas.Parent], {
         /** @lends Y.Wegas.ChoiceList# */
         bindUI: function() {
             this.after("addChild", function() {
@@ -84,6 +83,6 @@ YUI.add('wegas-layout-choicelist', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').ChoiceList = List;
+    Y.Wegas.ChoiceList = List;
 
 });

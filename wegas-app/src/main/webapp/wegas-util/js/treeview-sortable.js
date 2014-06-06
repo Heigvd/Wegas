@@ -198,7 +198,7 @@ YUI.add("treeview-sortable", function(Y) {
             }
         }
     });
-    Y.namespace("Plugin").TreeViewSortable = TreeViewSortable;
+    Y.Plugin.TreeViewSortable = TreeViewSortable;
 
     /**
      * Extend so in works with nested lists

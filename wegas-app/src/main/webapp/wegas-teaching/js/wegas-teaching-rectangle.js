@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 YUI.add("wegas-teaching-rectangle", function(Y) {
     "use strict";
 
@@ -50,5 +57,5 @@ YUI.add("wegas-teaching-rectangle", function(Y) {
         }
     });
 
-    Y.namespace("Wegas").TeachingRectangle = TeachingRectangle;
+    Y.Wegas.TeachingRectangle = TeachingRectangle;
 });

@@ -38,7 +38,7 @@ YUI.add('wegas-join-token', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                     tokenParameter = Wegas.Helper.getURLParameter("token");
-            
+
 //            cb.append("<h1>Team</h1>");
 
             this.tokenField = new Y.inputEx.StringField({//                     // Render
@@ -120,7 +120,7 @@ YUI.add('wegas-join-token', function(Y) {
                             }
                         } else if (e.response.entities[0] instanceof Wegas.persistence.Team
                                 && !(e.response.entities[1].get("gameModel").get("properties.freeForAll")
-                                || e.response.entities[0].get("players").length === 0)) {// If the token is already in use
+                                        || e.response.entities[0].get("players").length === 0)) {// If the token is already in use
 
                             this.showMessageBis("error",
                                     "This team has already been created. You can contact it's members so they can join you in.");
@@ -139,5 +139,5 @@ YUI.add('wegas-join-token', function(Y) {
             });
         }
     });
-    Y.namespace('Wegas').TokenJoin = TokenJoin;
+    Wegas.TokenJoin = TokenJoin;
 });

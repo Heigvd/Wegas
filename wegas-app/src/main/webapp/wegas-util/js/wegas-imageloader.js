@@ -20,8 +20,8 @@ YUI.add('wegas-imageloader', function(Y) {
      */
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder,
             ImgageLoader = function() {
-        Y.Wegas.ImgageLoader.superclass.constructor.apply(this, arguments);
-    };
+                Y.Wegas.ImgageLoader.superclass.constructor.apply(this, arguments);
+            };
 
     ImgageLoader.NAME = 'ImgageLoader';
 
@@ -143,8 +143,7 @@ YUI.add('wegas-imageloader', function(Y) {
     Y.namespace("Wegas").ImgageLoader = ImgageLoader;
 
     function customBase64Encode(inputStr) {
-        var
-                bbLen = 3,
+        var bbLen = 3,
                 enCharLen = 4,
                 inpLen = inputStr.length,
                 inx = 0,
@@ -153,8 +152,7 @@ YUI.add('wegas-imageloader', function(Y) {
                 + "0123456789+/=",
                 output = "",
                 paddingBytes = 0;
-        var
-                bytebuffer = new Array(bbLen),
+        var bytebuffer = new Array(bbLen),
                 encodedCharIndexes = new Array(enCharLen);
 
         while (inx < inpLen) {

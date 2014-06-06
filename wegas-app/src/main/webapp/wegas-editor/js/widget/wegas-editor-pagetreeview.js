@@ -289,7 +289,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
         }
     });
-    Y.namespace("Wegas").PageTreeview = PageTreeview;
+    Wegas.PageTreeview = PageTreeview;
 
     var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.EditorTVDefaultMenuClick, [], {
         onTreeViewSelection: function(e) {

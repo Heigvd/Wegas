@@ -307,5 +307,5 @@ YUI.add('wegas-inbox', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').InboxDisplay = InboxDisplay;
+    Wegas.InboxDisplay = InboxDisplay;
 });

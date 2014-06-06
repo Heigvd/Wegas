@@ -5,21 +5,18 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
-YUI.add('wegas-langselector', function (Y) {
+YUI.add('wegas-langselector', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', LangSelector;
 
     LangSelector = Y.Base.create("wegas-langselector", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
-
         CONTENT_TEMPLATE: "<div><select class='wegas-langselector-select'></select></div>",
-
-        bindUI: function () {
+        bindUI: function() {
             var cb = this.get(CONTENTBOX);
-            cb.one('.wegas-langselector-select').on('change', function (e) {
+            cb.one('.wegas-langselector-select').on('change', function(e) {
                 var lang = e.currentTarget.get('value'),
-                url = window.location.href;
+                        url = window.location.href;
 
                 if (url.indexOf("&lang=") > -1) {
                     location.replace(url.replace(/&lang=[^&]*/i, "&lang=" + lang));
@@ -28,13 +25,12 @@ YUI.add('wegas-langselector', function (Y) {
                 }
             });
         },
-
-        syncUI: function () {
-            var i, cb =  this.get(CONTENTBOX), pageLang, selected = false,
-                url = window.location.href,
-                browserLang = navigator.language || navigator.userLanguage,
-                targetNode = cb.one('.wegas-langselector-select'),
-                items = this.get("items");
+        syncUI: function() {
+            var i, cb = this.get(CONTENTBOX), pageLang, selected = false,
+                    url = window.location.href,
+                    browserLang = navigator.language || navigator.userLanguage,
+                    targetNode = cb.one('.wegas-langselector-select'),
+                    items = this.get("items");
 
             if (items === null) {
                 return;
@@ -52,7 +48,7 @@ YUI.add('wegas-langselector', function (Y) {
                         targetNode.insert("<option selected='selected'>" + items[i] + "</option>");
                         selected = true;
                     } else if ((this.items[i].indexOf(browserLang) > -1 || browserLang.indexOf(items[i]) > -1)
-                        && url.indexOf("&lang=") <= -1) {
+                            && url.indexOf("&lang=") <= -1) {
                         targetNode.insert("<option selected='selected'>" + items[i] + "</option>");
                         selected = true;
                     } else {
@@ -64,7 +60,7 @@ YUI.add('wegas-langselector', function (Y) {
             }
         },
     }, {
-        ATTRS : {
+        ATTRS: {
             items: {
                 value: null,
                 validator: Y.Lang.isArray
@@ -72,5 +68,5 @@ YUI.add('wegas-langselector', function (Y) {
         }
     });
 
-    Y.namespace('Wegas').LangSelector = LangSelector;
+    Y.Wegas.LangSelector = LangSelector;
 });

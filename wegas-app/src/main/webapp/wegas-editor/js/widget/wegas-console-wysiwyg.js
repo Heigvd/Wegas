@@ -224,6 +224,6 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').WysiwygConsole = WysiwygConsole;
+    Wegas.WysiwygConsole = WysiwygConsole;
 
 });

@@ -9,7 +9,6 @@
  *
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-
 YUI.add('wegas-shareuser', function(Y) {
     'use strict';
     var CONTENTBOX = 'contentBox', ShareUser;
@@ -341,7 +340,7 @@ YUI.add('wegas-shareuser', function(Y) {
             }
         }
     });
-    Y.namespace('Wegas').ShareUser = ShareUser;
+    Y.Wegas.ShareUser = ShareUser;
 
     /**
      * @name Y.inputEx.Wegas.UserPermissionList

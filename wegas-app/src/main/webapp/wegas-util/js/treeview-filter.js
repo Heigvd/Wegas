@@ -95,5 +95,5 @@ YUI.add("treeview-filter", function(Y) {
         }
     });
 
-    Y.namespace("Plugin").TreeViewFilter = TreeViewFilter;
+    Y.Plugin.TreeViewFilter = TreeViewFilter;
 });

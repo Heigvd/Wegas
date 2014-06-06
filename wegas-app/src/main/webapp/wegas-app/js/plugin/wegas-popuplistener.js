@@ -5,17 +5,14 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-popuplistener', function(Y) {
     "use strict";
-    var stringToObject = function(o) {
-        return (Y.Lang.isString(o)) ? {content: o} : o;
-    },
-            PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
+    
+    var PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
         DEFAULT_CONFIG: function() {
             return {
                 align: {
@@ -65,7 +62,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             this.hideOverlay();
         },
         _show: function(event) {
-            event = Y.mix(this.DEFAULT_CONFIG(), stringToObject(event), true, null, 0, false);
+            event = Y.mix(this.DEFAULT_CONFIG(), PopupListener.stringToObject(event), true, null, 0, false);
             var panel = new Y.Wegas.Panel(event).render(this.get("host").get(this.get("targetAttr")));
             if (event.timeout) {
                 setTimeout(function() {
@@ -74,7 +71,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             }
         },
         _system: function(event, lvl) {
-            event = stringToObject(event);
+            event = PopupListener.stringToObject(event);
             this._show({
                 content: "<div class='icon icon-" + lvl + "'>" + ((event && event.content) ? event.content : "") + "</div>",
                 timeout: event.timeout ? event.timeout : false
@@ -119,8 +116,11 @@ YUI.add('wegas-popuplistener', function(Y) {
             showServerMessages: {
                 value: false
             }
+        },
+        stringToObject: function(o) {
+            return (Y.Lang.isString(o)) ? {content: o} : o;
         }
     });
 
-    Y.namespace("Plugin").PopupListener = PopupListener;
+    Y.Plugin.PopupListener = PopupListener;
 });

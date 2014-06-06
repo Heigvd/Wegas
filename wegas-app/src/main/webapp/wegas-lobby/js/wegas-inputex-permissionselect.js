@@ -113,7 +113,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             entity: {}
         }
     });
-    Y.namespace("Wegas").RolePermissionList = RolePermissionList;
+    Y.Wegas.RolePermissionList = RolePermissionList;
 
     /**
      *

@@ -86,6 +86,6 @@ YUI.add('wegas-layout-list', function(Y) {
         }
 
     });
-    Y.namespace('Wegas').List = List;
+    Y.Wegas.List = List;
 
 });
