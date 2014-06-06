@@ -15,7 +15,6 @@ YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang, Wegas = Y.Wegas,
             BOUNDING_BOX = "boundingBox", BUTTON = "Button";
-
     /**
      * @name Y.Wegas.Widget
      * @class Extension common to all wegas widgets
@@ -32,9 +31,8 @@ YUI.add("wegas-widget", function(Y) {
             }
         });
         this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
-                || this.constructor.NAME.toLowerCase();                         // the usual "yui3-" prefix)
+                || this.constructor.NAME.toLowerCase(); // the usual "yui3-" prefix)
         this._cssPrefix = this.constructor.CSS_PREFIX;
-
         this.publish("showOverlay", {// Add custom event
             emitFacade: true
         });
@@ -581,8 +579,6 @@ YUI.add("wegas-widget", function(Y) {
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
             var ds = Wegas.Facade.VariableDescriptor;
-
-
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
                 if (val.content) {                                              // Eval based on the field (new pattern)
@@ -594,7 +590,6 @@ YUI.add("wegas-widget", function(Y) {
                     }
                 } else if (val.name) {                                          // @backwardcompatibility
                     val.evaluated = ds.cache.find('name', val.name);
-
                 } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field
                     try {
                         val.evaluated = ds.cache.findById(Wegas.Facade.VariableDescriptor.script.localEval(val.expr));
@@ -608,7 +603,7 @@ YUI.add("wegas-widget", function(Y) {
             }
 
             if (val && fullName.indexOf(".") < 0) {                             // If the getter requires the full object (e.g. serialisation)
-                delete val.evaluated;                                           // Remove the ref to the evaluated descriptor
+                delete val.evaluated; // Remove the ref to the evaluated descriptor
             }
 
             return val;
@@ -618,7 +613,6 @@ YUI.add("wegas-widget", function(Y) {
         }
     });
     Y.namespace("Wegas").Widget = Widget;
-
     /**
      * @hack We override this function so widget are looked for in Wegas ns.
      */
@@ -630,7 +624,6 @@ YUI.add("wegas-widget", function(Y) {
         }
         return Y.WidgetParent.prototype.o_createChild.call(this, config);       //reroute
     };
-
     /**
      * 
      */
@@ -658,7 +651,6 @@ YUI.add("wegas-widget", function(Y) {
         //    });
         //}, this, this.removeAll()));
     };
-
     /** 
      * @hack
      */
@@ -673,9 +665,8 @@ YUI.add("wegas-widget", function(Y) {
                 Plugin = Y.Plugin[Plugin];
             }
         }
-        Y.Widget.prototype.oPlug.call(this, Plugin, config);                    //reroute
+        Y.Widget.prototype.oPlug.call(this, Plugin, config); //reroute
     };
-
     /**
      * Simulate a DOM Event bubbling up to a listener and stops.
      * @param {String} type
@@ -691,6 +682,21 @@ YUI.add("wegas-widget", function(Y) {
             }, true).fire(ev, data);
         } catch (e) {
             //no ancestor found
+        }
+    };
+    Widget.prototype.renderer = function() {
+        try {
+            Y.Widget.prototype.renderer.call(this, arguments);
+        } catch (e) {
+            if (!Y.Wegas.app.get("editorMode")) {                               //as a player, entire page will crash.
+                throw e;
+            }
+            this.get("boundingBox").setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
+            try {
+                Y.error("Failed to render " + this.getType() + ": " + e.message || "", e, this.constructor.NAME);
+            } catch (ex) {
+                //do crash parent widget in debug mode
+            }
         }
     };
 });

@@ -45,6 +45,7 @@
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
+                        editorMode: true,
                         dataSources: {
                             VariableDescriptor: {
                                 source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
@@ -73,10 +74,10 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.hasProperty('pagesUri')}">
                                  */
                                 source: "#{editorGameController.currentGameModel.getProperty('pagesUri')}",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
+                                        /* THIS IS NOT A COMMENT
+                                         * </ui:fragment>
+                                         */
+                                        initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
                                         fn: "JSONSchema"
@@ -164,7 +165,7 @@
                         });
 
                         try {
-                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
