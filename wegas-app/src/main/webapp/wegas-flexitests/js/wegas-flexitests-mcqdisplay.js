@@ -12,10 +12,10 @@
 YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
     "use strict";
 
-    var INITIALVALUE = "flexi_initial_value";
+    var INITIALVALUE = "flexi_initial_value", FlexitestsMCQ;
 
-    Y.Wegas.FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,
-            [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    FlexitestsMCQ = Y.Base.create("wegas-flexitests-mcqdisplay", Y.Widget,
+        [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /**
          * Lifecycle method
          * @function
@@ -77,19 +77,11 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
             }, this));
         },
         keyPressed: function(charCode) {
-            var choice, counter = 0, i;
-            if (this.get("responseType") !== "key") {
+            var choice = Y.Array.indexOf(FlexitestsMCQ.KEYS, charCode),
+                counter = 0, i;
+            if (this.get("responseType") !== "key"
+                || choice === -1) {
                 return;
-            }
-            switch (charCode) {
-                case "f":
-                    choice = 0;
-                    break;
-                case "h":
-                    choice = 1;
-                    break;
-                default:
-                    return;
             }
             for (i in this.get("variable.evaluated").get("properties")) {
                 if (counter === choice) {
@@ -98,7 +90,6 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 }
                 counter += 1;
             }
-
         },
         success: function() {
             if (+this.get("feedback") > 0) {
@@ -145,8 +136,8 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
         generators: {
             link: function() {
                 var cb = this.get("contentBox"),
-                        inputDiv = cb.one("." + this.getClassName("input")),
-                        question = this.get("variable.evaluated");
+                    inputDiv = cb.one("." + this.getClassName("input")),
+                    question = this.get("variable.evaluated");
                 inputDiv.empty();
                 for (var i in question.get("properties")) {
                     inputDiv.append("<span data-reference='" + i + "'>" + question.get("properties")[i] + "</span><br/>");
@@ -154,13 +145,13 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
             },
             selector: function() {
                 var cb = this.get("contentBox"),
-                        inputDiv = cb.one("." + this.getClassName("input")),
-                        question = this.get("variable.evaluated"),
-                        engine = new Y.Template(Y.Template.Micro),
-                        render = engine.compile("<select><option value='" + INITIALVALUE + "'>Choose:</option>" +
-                                "<% for(var i in this.get('properties')){ %>" +
-                                "<option value='<%= i%>'><%= this.get('properties')[i] %></option>" +
-                                "<% } %></select>");
+                    inputDiv = cb.one("." + this.getClassName("input")),
+                    question = this.get("variable.evaluated"),
+                    engine = new Y.Template(Y.Template.Micro),
+                    render = engine.compile("<select><option value='" + INITIALVALUE + "'>Choose:</option>" +
+                        "<% for(var i in this.get('properties')){ %>" +
+                        "<option value='<%= i%>'><%= this.get('properties')[i] %></option>" +
+                        "<% } %></select>");
                 inputDiv.empty();
                 inputDiv.append(render(question));
             },
@@ -169,14 +160,14 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
             },
             radio: function() {
                 var cb = this.get("contentBox"),
-                        inputDiv = cb.one("." + this.getClassName("input")),
-                        question = this.get("variable.evaluated"),
-                        engine = new Y.Template(Y.Template.Micro),
-                        render = engine.compile("<form>" +
-                                "<% for(var i in this.get('properties')){ %>" +
-                                "<label><input type='radio' name='mcq-flexi-radio' value='<%= i %>'><span><%= this.get('properties')[i] %></span></label>" +
-                                "<% } %>" +
-                                "</form>");
+                    inputDiv = cb.one("." + this.getClassName("input")),
+                    question = this.get("variable.evaluated"),
+                    engine = new Y.Template(Y.Template.Micro),
+                    render = engine.compile("<form>" +
+                        "<% for(var i in this.get('properties')){ %>" +
+                        "<label><input type='radio' name='mcq-flexi-radio' value='<%= i %>'><span><%= this.get('properties')[i] %></span></label>" +
+                        "<% } %>" +
+                        "</form>");
                 inputDiv.empty();
                 inputDiv.append(render(question));
             }
@@ -209,24 +200,19 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                 _inputex: {
                     label: "Response layout"
                 },
-                choices: [
-                    {
+                choices: [{
                         value: "link",
                         label: "Link"
-                    },
-                    {
+                    }, {
                         value: "selector",
                         label: "Selector"
-                    },
-                    {
+                    }, {
                         value: "key",
                         label: "Keyboard F/H"
-                    },
-                    {
+                    }, {
                         value: "radio",
                         label: "Horizontal scale"
-                    }
-                ]
+                    }]
             },
             variable: {
                 /**
@@ -240,6 +226,8 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
                     classFilter: ["ObjectDescriptor"]
                 }
             }
-        }
+        },
+        KEYS: ["f", "h"]
     });
+    Y.Wegas.FlexitestsMCQ = FlexitestsMCQ;
 });

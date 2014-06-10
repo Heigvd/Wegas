@@ -86,7 +86,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .wegas-hastoolbar > .wegas-toolbar {
     position: absolute;
-    top: 0;
 }
 .editor-preview {
     width:100%;

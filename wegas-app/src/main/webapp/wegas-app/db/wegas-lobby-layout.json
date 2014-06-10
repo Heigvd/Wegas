@@ -97,7 +97,7 @@
             }]
     },
     "center": {
-        "width": 830,
+        "width": 840,
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",

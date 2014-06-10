@@ -163,12 +163,14 @@ body > .wegas-pageloader, html{
 .flexitests .wegas-form{
     position: relative; 
 }
-.editor-preview .wegas-form .wegas-toolbar,
-.flexitests .wegas-form .wegas-toolbar{
+.wegas-playerview .wegas-form .wegas-toolbar {
     position: absolute;
-    bottom: -5px;
+    bottom: 0px;
     background:none;
     box-shadow: none;
+}
+.wegas-playerview .wegas-form .wegas-hastoolbar>.wegas-toolbar-sibling {
+    top: 0px;
 }
 .editor-preview .wegas-form .wegas-toolbar button + button,
 .flexitests .wegas-form .wegas-toolbar button + button{

@@ -5,13 +5,13 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-flexitests-controller", function(Y) {
     "use strict";
+
     Y.Wegas.FlexitestsController = Y.Base.create("wegas-flexitests-controller", Y.Wegas.AbsoluteLayout, [Y.Wegas.Editable, Y.Wegas.Parent], {
         BOUNDING_TEMPLATE: "<div><div class='flexi-mask'></div></div>",
         /**
@@ -76,7 +76,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         syncUI: function() {
             this.mcq = this.getChildById("flexi-mcq");
             var targetDescriptor = this.mcq.get("variable.evaluated"),
-                    props, exist = false, i, j, done = 0;
+                props, exist = false, i, j, done = 0;
             if (!targetDescriptor) {
                 this.showMessage("Unable to find target variable");
                 return;
@@ -109,8 +109,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         responseGiven: function(response) {
             var responseTime = Y.Lang.now() - this.startTime,
-                    reponseElement,
-                    elements = this.collectElements();
+                reponseElement,
+                elements = this.collectElements();
             this.ongoing = false;
             //this.mask();
             elements.index = +this.maxSize - this.questionToDo.length;
@@ -119,7 +119,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             elements.delay = responseTime;
             reponseElement = this.centerElement.getActiveElement().flexiresponse;
             if (reponseElement instanceof Y.Plugin.FlexiResponse &&
-                    reponseElement.get("value") === response) {
+                reponseElement.get("value") === response) {
                 elements.valid = true;
                 this.mcq.success(responseTime);
             } else {
@@ -146,8 +146,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.leftElement.set("element", +this.currentQuestionId);
             this.rightElement.set("element", +this.currentQuestionId);
             if (this.get("popupAfter") > 0 &&
-                    (this.maxSize - this.questionToDo.length) !== 1 &&
-                    ((this.maxSize - this.questionToDo.length - 1) % this.get("popupAfter")) === 0) {
+                (this.maxSize - this.questionToDo.length) !== 1 &&
+                ((this.maxSize - this.questionToDo.length - 1) % this.get("popupAfter")) === 0) {
                 this.get("boundingBox").emitDOMMessage("showPopup", {
                     content: this.get("popupContent"),
                     buttons: [{
@@ -165,10 +165,10 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         collectElements: function() {
             var elements = {},
-                    swaped = this.swapzone ? this.swapzone.swaped : false,
-                    left = this.leftElement.getActiveElement(),
-                    center = this.centerElement.getActiveElement(),
-                    right = this.rightElement.getActiveElement();
+                swaped = this.swapzone ? this.swapzone.swaped : false,
+                left = this.leftElement.getActiveElement(),
+                center = this.centerElement.getActiveElement(),
+                right = this.rightElement.getActiveElement();
             //if (swaped) {
             //    elements.left = right.get("content") || right.get("url");
             //    elements.right = left.get("content") || left.get("url");
@@ -217,8 +217,8 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         },
         generateNextId: function() {
             return this.get("random") ?
-                    this.questionToDo.splice(Math.round(Math.random() * (this.questionToDo.length - 1)), 1)[0] :
-                    this.questionToDo.shift();
+                this.questionToDo.splice(Math.round(Math.random() * (this.questionToDo.length - 1)), 1)[0] :
+                this.questionToDo.shift();
         },
         startStimuli: function() {
             this.get("boundingBox").focus();
