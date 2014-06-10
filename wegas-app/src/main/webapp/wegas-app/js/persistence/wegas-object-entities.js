@@ -13,8 +13,8 @@ YUI.add('wegas-object-entities', function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", NAME = "name", HTML = "html",
-            VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
-            Wegas = Y.Wegas;
+        VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
+        Wegas = Y.Wegas;
 
     /**
      * ObjectDescriptor mapper
@@ -83,7 +83,10 @@ YUI.add('wegas-object-entities', function(Y) {
             description: {
                 type: STRING,
                 format: HTML,
-                optional: true
+                optional: true,
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                }
             }
         },
         METHODS: {

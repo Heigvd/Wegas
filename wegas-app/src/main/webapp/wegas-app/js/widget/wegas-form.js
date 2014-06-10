@@ -73,7 +73,7 @@ YUI.add('wegas-form', function(Y) {
                     b.on = {
                         click: Y.bind(function() {
                             var form = this.get("form"),
-                                    val = form.getValue();
+                                val = form.getValue();
 
                             if (!form.validate()) {
                                 this.showMessageBis("error", "Some fields are not valid.");
@@ -117,9 +117,9 @@ YUI.add('wegas-form', function(Y) {
             Y.inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
                 var form = Y.inputEx(cfg);                                      // Initialize and render form
                 form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
+                form.removeClassFromState();                                    // Remove required state
                 this.set("form", form);
                 form.on("updated", function(e) {
-                    cfg;
                     this.fire("updated", e);
                 }, this);
             }, this, cfg));
@@ -217,6 +217,10 @@ YUI.add('wegas-form', function(Y) {
     inputEx.Field.prototype.removeClassName = function(className) {
         Y.one(this.divEl).removeClass(className);
     };
+    inputEx.Field.prototype.removeClassFromState = function() {
+        Y.one(this.divEl).all(".inputEx-invalid .inputEx-message").setContent("");
+        Y.one(this.divEl).all(".inputEx-invalid").removeClass("inputEx-invalid");
+    };
 
     Y.inputEx.Group.groupOptions.splice(0, 4);
     Y.inputEx.Group.groupOptions[0].label = null;
@@ -233,15 +237,17 @@ YUI.add('wegas-form', function(Y) {
         this.options.maxLength = options.maxLength;
         this.options.minLength = options.minLength;
         this.options.typeInvite = options.typeInvite;
-        if (!this.options.required && this.options.typeInvite === undefined) {  // @MODIFIED
-            this.options.typeInvite = "optional";
+        if (this.options.typeInvite === undefined) {
+            this.options.typeInvite = !this.options.required ? "optional" : "required";// @Modified
         }
+
         this.options.readonly = options.readonly;
         this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-                inputEx.browserAutocomplete :
-                (options.autocomplete === false || options.autocomplete === "off") ? false : true;
+            inputEx.browserAutocomplete :
+            (options.autocomplete === false || options.autocomplete === "off") ? false : true;
         this.options.trim = (options.trim === true) ? true : false;
     };
+
     /** 
      * Modified to allow changes on the fly
      */
@@ -281,12 +287,12 @@ YUI.add('wegas-form', function(Y) {
      */
     inputEx.getRawModulesFromDefinition = function(inputexDef) {
         var type = inputexDef.type || 'string',
-                module = YUI_config.groups.inputex.modulesByType[type],
-                modules = [module || type],
-                //set fields if they exist
-                fields = inputexDef.fields
-                //else see if we have elementType for lists - if neither then we end up with null
-                || inputexDef.availableFields || [];
+            module = YUI_config.groups.inputex.modulesByType[type],
+            modules = [module || type],
+            //set fields if they exist
+            fields = inputexDef.fields
+            //else see if we have elementType for lists - if neither then we end up with null
+            || inputexDef.availableFields || [];
 
         if (inputexDef.elementType) {
             fields.push(inputexDef.elementType);

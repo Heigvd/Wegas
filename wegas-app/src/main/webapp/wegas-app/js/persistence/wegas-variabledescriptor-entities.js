@@ -15,17 +15,17 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-            SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
-            ITEMS = "items", BUTTON = "Button", VALUE = "value", TEXT = "text",
-            HTML = "html",
-            Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
-            IDATTRDEF = {
-                type: STRING,
-                optional: true, // The id is optional for entites that have not been persisted
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
+        SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
+        ITEMS = "items", BUTTON = "Button", VALUE = "value", TEXT = "text",
+        HTML = "html",
+        Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
+        IDATTRDEF = {
+            type: STRING,
+            optional: true, // The id is optional for entites that have not been persisted
+            _inputex: {
+                _type: HIDDEN
+            }
+        };
 
     /**
      * VariableDescriptor mapper
@@ -68,7 +68,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             scope: {
                 valueFn: function() {
-                    return new persistence.TeamScope();                 // Should the default scope be set server or client side?
+                    return new persistence.TeamScope();                         // Should the default scope be set server or client side?
                 },
                 validator: function(o) {
                     return o instanceof persistence.Scope;
@@ -360,14 +360,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 value: "NumberDescriptor"
             },
             minValue: {
-                type: STRING,
+                type: NUMBER,
                 optional: true,
                 _inputex: {
                     label: 'Minimum'
                 }
             },
             maxValue: {
-                type: STRING,
+                type: NUMBER,
                 optional: true,
                 _inputex: {
                     label: 'Maximum'
@@ -398,10 +398,9 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     },
                     id: IDATTRDEF,
                     value: {
-                        type: STRING,
+                        type: NUMBER,
                         _inputex: {
-                            label: 'Default value',
-                            regexp: /^[0-9]*$/
+                            label: 'Default value'
                         }
                     }
 
@@ -463,10 +462,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 value: "NumberInstance"
             },
             value: {
-                type: STRING,
-                _inputex: {
-                    regexp: /^[0-9]*$/
-                }
+                type: NUMBER
             },
             history: {
                 type: ARRAY,
@@ -497,19 +493,19 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         flatten: function() {
             var acc = [],
-                    doFlatten = function(items) {
-                        var i, it;
-                        for (i = 0; i < items.length; i += 1) {
-                            it = items[i];
-                            if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
-                                acc.push(it);
-                            } else if (it instanceof persistence.ListDescriptor) {
-                                doFlatten(it.get(ITEMS));
-                            } else {
-                                acc.push(it);
-                            }
+                doFlatten = function(items) {
+                    var i, it;
+                    for (i = 0; i < items.length; i += 1) {
+                        it = items[i];
+                        if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
+                            acc.push(it);
+                        } else if (it instanceof persistence.ListDescriptor) {
+                            doFlatten(it.get(ITEMS));
+                        } else {
+                            acc.push(it);
                         }
-                    };
+                    }
+                };
             doFlatten(this.get(ITEMS));
             return acc;
 
@@ -519,16 +515,16 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
         },
         depthFirstSearch: function(id) {
             var needle,
-                    filterFn = function(it) {
-                        if (it.get("id") === +id) {
-                            needle = it;
-                            return false;
-                        } else if (it instanceof persistence.ListDescriptor) {
-                            return Y.Array.every(it.get(ITEMS), filterFn);
-                        } else {
-                            return true;
-                        }
-                    };
+                filterFn = function(it) {
+                    if (it.get("id") === +id) {
+                        needle = it;
+                        return false;
+                    } else if (it instanceof persistence.ListDescriptor) {
+                        return Y.Array.every(it.get(ITEMS), filterFn);
+                    } else {
+                        return true;
+                    }
+                };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
         },
@@ -571,7 +567,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 getter: function() {
                     var inst = this.getInstance();
                     if (!Y.Lang.isUndefined(inst)
-                            && this.get(ITEMS)[inst.get(VALUE)]) {
+                        && this.get(ITEMS)[inst.get(VALUE)]) {
 
                         return this.get(ITEMS)[inst.get(VALUE)];
                     } else {

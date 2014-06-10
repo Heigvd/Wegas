@@ -191,8 +191,8 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
-    word-break: break-all;
-    word-wrap:break-word;
+    word-break: break-word;
+    word-wrap: normal;
 }
 .transition-label:empty {
     padding: 0;
