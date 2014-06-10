@@ -88,8 +88,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         },
         defineMaxGaugeValue: function() {
             var variableDescriptor = this.get("variable.evaluated"),
-                    maxVal = this.get("maxValue") || variableDescriptor.get("maxValue") || this.MAXVAL,
-                    minVal = this.get("minValue") || variableDescriptor.get("minValue") || 0;
+                    maxVal = this.get("maxValue") || variableDescriptor ? variableDescriptor.get("maxValue") : null || this.MAXVAL,
+                    minVal = this.get("minValue") || variableDescriptor ? variableDescriptor.get("minValue") : null || 0;
             return maxVal - minVal;
         },
         angleTransform: function(angle) {
@@ -127,7 +127,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             var maxVal, minVal, value, label,
                     variableDescriptor = this.get("variable.evaluated");
             if (!variableDescriptor) {
-                Y.log("error", "Unable to find variable descriptot", "Y.Wegas.GaugeDisplay");
+                this.get("boundingBox").setHTML("<i>Unable to find variable</i>");
+                Y.log("Unable to find variable descriptor", "error", "Y.Wegas.GaugeDisplay");
                 return;
             }
 
