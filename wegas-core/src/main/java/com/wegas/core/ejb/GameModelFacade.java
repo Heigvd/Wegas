@@ -141,7 +141,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             } catch (NoResultException ex) {
                 newGameModel.setName(newName);
                 added = true;
-            } catch (NonUniqueResultException ex) {   
+            } catch (NonUniqueResultException ex) {
                 suffix++;
             }
         }
