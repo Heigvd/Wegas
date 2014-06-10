@@ -288,6 +288,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-cssstyles": {
                     path: 'js/plugin/wegas-cssstyles-min.js',
+                    requires: ['wegas-plugin'],
                     ws_provides: 'CSSStyles'
                 },
                 "wegas-cssstyles-extra": {
