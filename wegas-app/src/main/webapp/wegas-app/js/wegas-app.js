@@ -176,6 +176,15 @@ YUI.add('wegas-app', function(Y) {
                 getter: function() {
                     return Y.config.groups.wegas.base.replace("wegas-app/", "");
                 }
+            },
+            /**
+             * Currently no functionnality attached. Used for others to query mode.
+             * Editor / player.
+             */
+            editorMode: {
+                value: false,
+                writeOnce: "initOnly",
+                validator: Y.Lang.isBoolean
             }
         }
     });
