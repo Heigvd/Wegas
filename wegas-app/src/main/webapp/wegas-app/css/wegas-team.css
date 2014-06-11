@@ -119,6 +119,10 @@
 .wegas-teamformlist .wegas-newAccount {
     font-style: italic;
     margin-bottom: 5px;
+    float: left;
+}
+.wegas-teamformlist .inputEx-fieldWrapper .inputEx-ListField-childContainer fieldset {
+    float: left;
 }
 .wegas-teamformlist .inputEx-ListField-childContainer {
     margin-bottom: 10px;
