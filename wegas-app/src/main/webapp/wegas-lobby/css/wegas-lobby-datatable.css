@@ -215,6 +215,7 @@
 }
 .yui3-skin-sam .wegas-datatable-list .wegas-lobby-datatable-icon .wegas-lobby-thumb {
     width: 95px;
+    background: #ededed;
 }
 /* Lobby datatable: table view */
 .yui3-skin-sam .wegas-datatable-table .wegas-lobby-datatable-icon .wegas-lobby-icon {
