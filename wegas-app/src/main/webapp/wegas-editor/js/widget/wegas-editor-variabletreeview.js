@@ -13,8 +13,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
 
     var ID = "id", CLASS = "@class", NAME = "name",
-            Wegas = Y.Wegas, Plugin = Y.Plugin,
-            VariableTreeView;
+        Wegas = Y.Wegas, Plugin = Y.Plugin,
+        VariableTreeView;
 
     /**
      * @name Y.Wegas.VariableTreeView
@@ -42,7 +42,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             });                                                                 // Add sortable plugin to the treeview
             this.treeView.sortable.on("sort", function(e) {                     // On sort event,
                 var entity = e.dragWidget.get("data.entity"),
-                        dropEntity = e.dropWidget.get("data.entity");
+                    dropEntity = e.dropWidget.get("data.entity");
 
                 Wegas.Facade.VariableDescriptor.cache.move(entity, dropEntity, e.index);// call facade method
             });
@@ -55,11 +55,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          */
         genTreeViewElement: function(entity) {
             var children,
-                    elClass = entity.get(CLASS),
-                    collapsed = !this.isNodeExpanded(entity),
-                    selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
-                    text = entity.getEditorLabel(), /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
-                    tooltip = "Type: " + entity.getType().replace("Descriptor", "");
+                elClass = entity.get(CLASS),
+                collapsed = !this.isNodeExpanded(entity),
+                selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
+                text = entity.getEditorLabel(), /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
+                tooltip = null;
+            //tooltip = "Type: " + entity.getType().replace("Descriptor", "");
 
             if (entity.get("items")) {
                 collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
@@ -181,7 +182,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          */
         genScopeTreeViewElements: function(el) {
             var children = [], i, label, team, player, instance,
-                    instances = el.get("scope").get("variableInstances");
+                instances = el.get("scope").get("variableInstances");
 
             for (i in instances) {
                 if (instances.hasOwnProperty(i)) {
@@ -302,8 +303,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         },
         fillsLeaf: function(e) {
             var node = e.node,
-                    entity = node.get("data.entity"),
-                    id = entity.get(ID);
+                entity = node.get("data.entity"),
+                id = entity.get(ID);
 
             if (entity instanceof Wegas.persistence.ListDescriptor) {
                 if (node.size() > 0) {
@@ -311,7 +312,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
                 node.add(this.get("host").genTreeViewElements(entity.get("items")));
             } else if (entity instanceof Wegas.persistence.VariableDescriptor
-                    && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
+                && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
 
                 if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
                     return;

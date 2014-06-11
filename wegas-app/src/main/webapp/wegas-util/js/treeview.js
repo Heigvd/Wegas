@@ -9,48 +9,21 @@
  * @fileoverview
  * @author Cyril Junod
  */
-YUI.add('treeview', function(Y) {
+YUI.add("treeview", function(Y) {
     "use strict";
-    var getClassName = Y.ClassNameManager.getClassName,
-            TREEVIEW = 'treeview',
-            TREENODE = 'treenode',
-            //TREELEAF = 'treeleaf',
-            CONTENT_BOX = "contentBox",
-            BOUNDING_BOX = "boundingBox",
-            classNames = {
-        loading: getClassName(TREENODE, "loading"),
-        collapsed: getClassName(TREENODE, "collapsed"),
-        visibleRightWidget: getClassName(TREEVIEW, "visible-right"),
-        multiSelect: getClassName(TREEVIEW, "multiselect"),
-        emptyMSG: getClassName(TREEVIEW, "empty-msg")
-    },
-    RIGHTWIDGETSETTERFN = function(v) {
-        var rightWidget = this.get("rightWidget"),
-                targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
-        if (rightWidget !== v && rightWidget) {                             // Remove existing child
-            if (rightWidget instanceof Y.Node) {                            // Case 1: Y.Node
-                rightWidget.remove();
-            } else {
-                rightWidget.get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
-                rightWidget.removeTarget(this);
-                this.set("parent", null);
-            }
-        }
-        if (v) {                                                            // Append the new widget
-            if (v instanceof Y.Node) {                                      // Case 1: Y.Node
-                v.appendTo(targetNode);
-            } else {                                                        // Case 2: Y.Widget
-                if (v.get("rendered")) {
-                    v.get(BOUNDING_BOX).appendTo(targetNode);
-                } else {
-                    v.render(targetNode);
-                }
-                v.set("parent", this);
-                v.addTarget(this);
-            }
-        }
-        return v;
-    };
+
+    var HOST = "host", SELECTED = "selected", SELECTION = "selection",
+        TREEVIEW = "treeview", TREENODE = "treenode", CONTENT = "content",
+        //TREELEAF = "treeleaf",
+        CONTENT_BOX = "contentBox", BOUNDING_BOX = "boundingBox",
+        getClassName = Y.ClassNameManager.getClassName,
+        classNames = {
+            loading: getClassName(TREENODE, "loading"),
+            collapsed: getClassName(TREENODE, "collapsed"),
+            visibleRightWidget: getClassName(TREEVIEW, "visible-right"),
+            multiSelect: getClassName(TREEVIEW, "multiselect"),
+            emptyMSG: getClassName(TREEVIEW, "empty-msg")
+        };
     /**
      * TreeView main class
      * <p><strong>Attributes</strong></p>
@@ -63,9 +36,8 @@ YUI.add('treeview', function(Y) {
      * @constructor
      * @param Object Will be used to fill attributes field
      */
-    Y.TreeView = Y.Base.create("treeview", Y.Widget, [Y.WidgetParent], {
+    Y.TreeView = Y.Base.create(TREEVIEW, Y.Widget, [Y.WidgetParent], {
         /** @lends Y.TreeView# */
-        BOUNDING_TEMPLATE: "<div></div>",
         CONTENT_TEMPLATE: "<ul></ul>",
         /**
          * Lifecycle method
@@ -77,7 +49,7 @@ YUI.add('treeview', function(Y) {
             this.publish("nodeClick", {
                 defaultFn: function(e) {
                     this.deselectAll();
-                    e.node.set("selected", 2);
+                    e.node.set(SELECTED, 2);
                 }
             });
         },
@@ -93,10 +65,10 @@ YUI.add('treeview', function(Y) {
                     this.fire("nodeClick", {node: e.node, domEvent: e.domEvent});
                 }
             });
-//            this.after("*:addChild", function(e) {
-//                /* Selection is not updated if a child with selected attribute is added, force it. */
-//                e.target._set("selection", e.target.get("selection"));
-//            });
+            //this.after("*:addChild", function(e) {
+            //    /* Selection is not updated if a child with selected attribute is added, force it. */
+            //    e.target._set(SELECTION, e.target.get(SELECTION));
+            //});
             this.after("addChild", function(e) {
                 this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).remove(true);
             });
@@ -122,7 +94,7 @@ YUI.add('treeview', function(Y) {
         },
         syncUI: function() {
             this.each(function(child) {
-                var s = child.get("selected");
+                var s = child.get(SELECTED);
                 if (s) {
                     this._updateSelection({target: child, newVal: s});
                 }
@@ -156,25 +128,25 @@ YUI.add('treeview', function(Y) {
             });
         },
         getSelection: function() {
-            var selection = this.get("selection");
+            var selection = this.get(SELECTION);
             if (selection) {
-                while (selection.item(0).get("selection")) {
-                    selection = selection.item(0).get("selection");
+                while (selection.item(0).get(SELECTION)) {
+                    selection = selection.item(0).get(SELECTION);
                 }
             }
             return selection;
         },
         saveState: function() {
-            var State = {}, getChildsState = function(o, item, index) {
+            var state = {}, getChildsState = function(o, item, index) {
                 if (item instanceof Y.TreeNode) {
                     o[index] = {expanded: !item.get(BOUNDING_BOX).hasClass(classNames.collapsed)};
                     item.each(Y.bind(getChildsState, item, o[index]));
                 }
             };
-            this.each(Y.bind(getChildsState, this, State));
-            return State;
+            this.each(Y.bind(getChildsState, this, state));
+            return state;
         },
-        applyState: function(State) {
+        applyState: function(state) {
             var setChildsState = function(o, item, index) {
                 if (item instanceof Y.TreeNode) {
                     if (o[index]) {
@@ -185,17 +157,15 @@ YUI.add('treeview', function(Y) {
                         }
                         item.each(Y.bind(setChildsState, item, o[index]));
                     }
-
-
                 }
             };
-            this.each(Y.bind(setChildsState, this, State));
+            this.each(Y.bind(setChildsState, this, state));
         }
     }, {
         /**
          * @lends Y.TreeView
          */
-        NAME: 'treeview',
+        NAME: TREEVIEW,
         ATTRS: {
             visibleRightWidget: {
                 value: false,
@@ -209,12 +179,40 @@ YUI.add('treeview', function(Y) {
                 readOnly: true
             },
             emptyMsg: {
-                value: 'empty',
+                value: "empty",
                 setter: function(v) {
                     this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).setHTML(v);
                     return v;
                 }
             }
+        },
+        RIGHTWIDGETSETTERFN: function(v) {
+            var rightWidget = this.get("rightWidget"),
+                targetNode = this.get(BOUNDING_BOX).one(".yui3-tree-rightwidget");
+
+            if (rightWidget !== v && rightWidget) {                             // Remove existing child
+                if (rightWidget instanceof Y.Node) {                            // Case 1: Y.Node
+                    rightWidget.remove();
+                } else {
+                    rightWidget.get(BOUNDING_BOX).remove(); // Case 2: Y.Widget
+                    rightWidget.removeTarget(this);
+                    this.set("parent", null);
+                }
+            }
+            if (v) {                                                            // Append the new widget
+                if (v instanceof Y.Node) {                                      // Case 1: Y.Node
+                    v.appendTo(targetNode);
+                } else {                                                        // Case 2: Y.Widget
+                    if (v.get("rendered")) {
+                        v.get(BOUNDING_BOX).appendTo(targetNode);
+                    } else {
+                        v.render(targetNode);
+                    }
+                    v.set("parent", this);
+                    v.addTarget(this);
+                }
+            }
+            return v;
         }
     });
     /**
@@ -235,7 +233,13 @@ YUI.add('treeview', function(Y) {
      */
     Y.TreeNode = Y.Base.create("treenode", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
         /** @lends Y.TreeNode# */
-        BOUNDING_TEMPLATE: "<li></li>",
+        BOUNDING_TEMPLATE: "<li>"
+            + "<div class='content-header yui3-treenode-content-header'>"
+            + "<span class='yui3-treenode-content-toggle'></span>"
+            + "<span class='yui3-treenode-content-icon'></span>"
+            + "<span class='yui3-treenode-content-label'></span>"
+            + "<div class=\"yui3-treenode-content-rightwidget yui3-tree-rightwidget\">"
+            + "</div></li>",
         CONTENT_TEMPLATE: "<ul></ul>",
         /**
          * Lifecycle method
@@ -271,18 +275,8 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         renderUI: function() {
-            var bb = this.get(BOUNDING_BOX), header;
-            header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
-            bb.prepend(header);
-            this.toggleNode = Y.Node.create("<span class='" + this.getClassName("content", "toggle") + "'></span>");
-            this.iconNode = Y.Node.create("<span class='" + this.getClassName("content", "icon") + "'></span>");
-            this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'></span>");
-            header.append(this.toggleNode);
-            header.append(this.iconNode);
-            header.append(this.labelNode);
-            header.append("<div class=\"" + this.getClassName("content", "rightwidget") + " yui3-tree-rightwidget\">");
-            if (this.get('collapsed') && !bb.hasClass(classNames.collapsed)) {
-                bb.addClass(classNames.collapsed);
+            if (this.get("collapsed")) {
+                this.get(BOUNDING_BOX).addClass(classNames.collapsed);
             }
         },
         /**
@@ -292,25 +286,27 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.toggleNode.on("click", function(e) {
+            var bb = this.get(BOUNDING_BOX);
+
+            bb.one(".yui3-treenode-content-toggle").on("click", function(e) {
                 e.stopPropagation();
                 this.fire("toggleClick", {
                     node: this
                 });
             }, this);
-            this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).before("dblclick", function(e) {
+            bb.one("." + this.getClassName(CONTENT, "header")).before("dblclick", function(e) {
                 e.halt(true);
                 this.toggleTree();
             }, this);
-            this.get(BOUNDING_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
+            bb.one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopPropagation();
-                if (node.hasClass(this.getClassName("content", "icon"))) {
+                if (node.hasClass(this.getClassName(CONTENT, "icon"))) {
                     this.fire("iconClick", {
                         node: this
                     });
                 }
-                if (node.hasClass(this.getClassName("content", "label"))) {
+                if (node.hasClass(this.getClassName(CONTENT, "label"))) {
                     this.fire("labelClick", {
                         node: this
                     });
@@ -320,7 +316,7 @@ YUI.add('treeview', function(Y) {
                     domEvent: e
                 });
             }, this);
-            this.get(BOUNDING_BOX).on("click", function(e) {
+            bb.on("click", function(e) {
                 e.stopPropagation();
             });
             this.before("collapsedChange", function(e) {
@@ -363,7 +359,7 @@ YUI.add('treeview', function(Y) {
             this.set("collapsed", this.get("collapsed"));
             this.set("cssClass", this.get("cssClass"));
             this.each(function(child) {
-                var s = child.get("selected");
+                var s = child.get(SELECTED);
                 if (s) {
                     this._updateSelection({target: child, newVal: s});
                 }
@@ -377,7 +373,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            this.blur(); //remove a focused node generates some errors
+            this.blur();                                                        //remove a focused node generates some errors
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }
@@ -399,7 +395,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         expand: function(fireEvent) {
-            this.set("collapsed", false, {fireEvent: (fireEvent === undefined) ? true : fireEvent});
+            this.set("collapsed", false, {fireEvent: fireEvent});
         },
         /**
          * Collapse the treeNode
@@ -409,7 +405,7 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         collapse: function(fireEvent) {
-            this.set("collapsed", true, {fireEvent: (fireEvent === undefined) ? true : fireEvent});
+            this.set("collapsed", true, {fireEvent: fireEvent});
         },
         /**
          * Expand all subtree
@@ -438,25 +434,6 @@ YUI.add('treeview', function(Y) {
                     item.collapseAll(fireEvent);
                 }
             });
-        },
-        /**
-         * Destroy subtree
-         * @public
-         * @function
-         * @returns {undefined}
-         */
-        destroyChildren: function() {
-            this.removeAll().each(this.destroyChild, this);
-        },
-        /**
-         * Destroy a specific child and it's subchild
-         * @private
-         * @function
-         * @param {TreeNode|TreeLeaf} item to destroy
-         * @returns {undefined}
-         */
-        destroyChild: function(item) {
-            item.destroy();
         },
         /**
          * Only render Child on opened tree
@@ -493,21 +470,19 @@ YUI.add('treeview', function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    if (this.labelNode) {
-                        this.labelNode.setContent(v);
-                    }
+                    this.get(BOUNDING_BOX).one(".yui3-treenode-content-label").setContent(v);
                     return v;
                 }
             },
             selected: {
                 setter: function(v) {
                     if (this.get(BOUNDING_BOX)._node) {
-                        this.get(BOUNDING_BOX).removeClass("selected")
-                                .removeClass("sub-partially-selected")
-                                .removeClass("sub-fully-selected");
+                        this.get(BOUNDING_BOX).removeClass(SELECTED)
+                            .removeClass("sub-partially-selected")
+                            .removeClass("sub-fully-selected");
                     }
-                    if (v && !this.get("selection")) {
-                        this.get(BOUNDING_BOX).addClass("selected");
+                    if (v && !this.get(SELECTION)) {
+                        this.get(BOUNDING_BOX).addClass(SELECTED);
                     } else if (v === 2) {
                         this.get(BOUNDING_BOX).addClass("sub-partially-selected");
                     } else if (v === 1) {
@@ -542,17 +517,13 @@ YUI.add('treeview', function(Y) {
                 validator: function(o) {
                     return o instanceof Y.Widget || o instanceof Y.Node || o === null;
                 },
-                setter: RIGHTWIDGETSETTERFN
+                setter: Y.TreeView.RIGHTWIDGETSETTERFN
             },
             loading: {
                 value: false,
                 validator: Y.Lang.isBoolean,
                 setter: function(v) {
-                    if (v) {
-                        this.get(BOUNDING_BOX).addClass(classNames.loading);
-                    } else {
-                        this.get(BOUNDING_BOX).removeClass(classNames.loading);
-                    }
+                    this.get(BOUNDING_BOX).toggleClass(classNames.loading, v);
                     return v;
                 }
             },
@@ -560,10 +531,11 @@ YUI.add('treeview', function(Y) {
                 value: getClassName("treenode", "default-icon"),
                 validator: Y.Lang.isString,
                 setter: function(v) {
+                    var iconNode = this.get(BOUNDING_BOX).one(".yui3-treenode-content-icon");
                     if (this.currentIconCSS) {
-                        this.iconNode.removeClass(this.currentIconCSS);
+                        iconNode.removeClass(this.currentIconCSS);
                     }
-                    this.iconNode.addClass(v);
+                    iconNode.addClass(v);
                     this.currentIconCSS = v;
                     return v;
                 }
@@ -606,7 +578,11 @@ YUI.add('treeview', function(Y) {
          * @field
          * @private
          */
-        CONTENT_TEMPLATE: "<div></div>",
+        CONTENT_TEMPLATE: "<div><div class='content-header yui3-treeleaf-content-header'>"
+            + "<span class='yui3-treeleaf-content-icon'></span>"
+            + "<span class='yui3-treeleaf-content-label'></span>"
+            + "<div class=\"yui3-treeleaf-content-rightwidget yui3-tree-rightwidget\"></div>"
+            + "</div></div>",
         /**
          * @field
          * @private
@@ -636,32 +612,15 @@ YUI.add('treeview', function(Y) {
          * @function
          * @returns {undefined}
          */
-        renderUI: function() {
-            var cb = this.get(CONTENT_BOX), header;
-            header = Y.Node.create("<div class='content-header " + this.getClassName("content", "header") + "'></div>");
-            cb.append(header);
-            this.iconNode = Y.Node.create("<span class='" + this.getClassName("content", "icon") + "'></span>");
-            this.labelNode = Y.Node.create("<span class='" + this.getClassName("content", "label") + "'></span>");
-            header.append(this.iconNode);
-            header.append(this.labelNode);
-            header.append("<div class=\"" + this.getClassName("content", "rightwidget") + " yui3-tree-rightwidget\">");
-        },
-        /**
-         * Lifecycle method
-         * @private
-         * @function
-         * @returns {undefined}
-         */
         bindUI: function() {
-            this.events.fullClick = this.get(CONTENT_BOX).one("." + this.getClassName("content", "header")).on("click", function(e) {
-                var node = e.target;
+            this.events.fullClick = this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
                 e.stopImmediatePropagation();
-                if (node.hasClass(this.getClassName("content", "icon"))) {
+                if (e.target.hasClass(this.getClassName(CONTENT, "icon"))) {
                     this.fire("iconClick", {
                         node: this
                     });
                 }
-                if (node.hasClass(this.getClassName("content", "label"))) {
+                if (e.target.hasClass(this.getClassName(CONTENT, "label"))) {
                     this.fire("labelClick", {
                         node: this
                     });
@@ -672,7 +631,7 @@ YUI.add('treeview', function(Y) {
                 });
             }, this);
             //one line, prevent special chars
-            this.labelNode.on("blur", function(e) {
+            this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "label")).on("blur", function(e) {
                 e.target.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
             }, this);
         },
@@ -698,16 +657,14 @@ YUI.add('treeview', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            this.blur(); //remove a focused node generates some errors
-            this.set("selected", 0);
+            this.blur();                                                        //remove a focused node generates some errors
+            this.set(SELECTED, 0);
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
                 try {
                     this.get("rightWidget").destroy();
                 } catch (e) {
                 }
             }
-//            this.iconNode.remove(true);
-//            this.labelNode.remove(true);
         }
     }, {
         /** @lends Y.TreeLeaf */
@@ -717,22 +674,16 @@ YUI.add('treeview', function(Y) {
                 value: "",
                 validator: Y.Lang.isString,
                 setter: function(v) {
-                    if (this.labelNode) {
-                        this.labelNode.setContent(v);
-                    }
+                    this.get(BOUNDING_BOX).one(".yui3-treeleaf-content-label").setContent(v);
                     return v;
                 },
-                getter: function(v) {
-                    return this.labelNode.getContent();
+                getter: function() {
+                    return this.get(BOUNDING_BOX).one(".yui3-treeleaf-content-label").getContent();
                 }
             },
             selected: {
                 setter: function(v) {
-                    if (v) {
-                        this.get(BOUNDING_BOX).addClass("selected");
-                    } else {
-                        this.get(BOUNDING_BOX).removeClass("selected");
-                    }
+                    this.get(BOUNDING_BOX).toggleClass(SELECTED, v);
                     return v;
                 }
             },
@@ -766,17 +717,13 @@ YUI.add('treeview', function(Y) {
                 validator: function(o) {
                     return o instanceof Y.Widget || o instanceof Y.Node || o === null;
                 },
-                setter: RIGHTWIDGETSETTERFN
+                setter: Y.TreeView.RIGHTWIDGETSETTERFN
             },
             editable: {
                 value: false,
                 validator: Y.Lang.isBoolean,
                 setter: function(v) {
-                    if (v) {
-                        this.labelNode.setAttribute("contenteditable", "true");
-                    } else {
-                        this.labelNode.setAttribute("contenteditable", "false");
-                    }
+                    this.get(BOUNDING_BOX).one(".yui3-treeleaf-content-label").setAttribute("contenteditable", v ? "true" : "false");
                     return v;
                 }
             },
@@ -784,11 +731,7 @@ YUI.add('treeview', function(Y) {
                 value: false,
                 validator: Y.Lang.isBoolean,
                 setter: function(v) {
-                    if (v) {
-                        this.get(CONTENT_BOX).addClass(classNames.loading);
-                    } else {
-                        this.get(CONTENT_BOX).removeClass(classNames.loading);
-                    }
+                    this.get(CONTENT_BOX).toggleClass(classNames.loading, v);
                     return v;
                 }
             },
@@ -796,10 +739,11 @@ YUI.add('treeview', function(Y) {
                 value: getClassName("treeleaf", "default-icon"),
                 validator: Y.Lang.isString,
                 setter: function(v) {
+                    var iconNode = this.get(BOUNDING_BOX).one(".yui3-treeleaf-content-icon");
                     if (this.currentIconCSS) {
-                        this.iconNode.removeClass(this.currentIconCSS);
+                        iconNode.removeClass(this.currentIconCSS);
                     }
-                    this.iconNode.addClass(v);
+                    iconNode.addClass(v);
                     this.currentIconCSS = v;
                     return v;
                 }
@@ -814,19 +758,19 @@ YUI.add('treeview', function(Y) {
      */
     Y.Plugin.TeamSelection = Y.Base.create("TeamSelection", Y.Plugin.Base, [], {
         initializer: function() {
-            this.get("host").each(function(child) {
-                if (child.get("selected")) {
-                    child.set("selected", 1);
+            this.get(HOST).each(function(child) {
+                if (child.get(SELECTED)) {
+                    child.set(SELECTED, 1);
                 }
             });
-            this.get("host").after('render', function() {
+            this.get(HOST).after("render", function() {
                 this.after("treeleaf:selectedChange", function(e) {
                     if (e.newVal > 0) {
                         e.target.get("parent").selectAll();
                     } else {
                         e.target.get("parent").deselectAll();
                     }
-                },this);
+                }, this);
             });
         }
     }, {
@@ -840,18 +784,14 @@ YUI.add('treeview', function(Y) {
         initializer: function() {
             this.onHostEvent("nodeClick", function(e) {
                 e.preventDefault();
-                if (e.node && e.node !== this.get("host")) {
-                    if (e.node.get("selected")) {
-                        e.node.set("selected", 0);
-                    } else {
-                        e.node.set("selected", 1);
-                    }
+                if (e.node && e.node !== this.get(HOST)) {
+                    e.node.set(SELECTED, e.node.get(SELECTED) ? 0 : 1);
                 }
             });
-            this.get("host").get(BOUNDING_BOX).addClass(classNames.multiSelect);
+            this.get(HOST).get(BOUNDING_BOX).addClass(classNames.multiSelect);
         },
         destructor: function() {
-            this.get("host").get(BOUNDING_BOX).removeClass(classNames.multiSelect);
+            this.get(HOST).get(BOUNDING_BOX).removeClass(classNames.multiSelect);
         }
     }, {
         NS: "treeviewselect"
@@ -867,20 +807,15 @@ YUI.add('treeview', function(Y) {
                     this.deselectAll();
                 }
                 if (e.node && e.node !== this) {
-                    if (e.node.get("selected")) {
-                        e.node.set("selected", 0);
-                    } else {
-                        e.node.set("selected", 1);
-                    }
+                    e.node.set(SELECTED, e.node.get(SELECTED) ? 0 : 1);
                 }
-            }, this.get("host"));
-            this.get("host").get(BOUNDING_BOX).addClass(classNames.multiSelect);
+            }, this.get(HOST));
+            this.get(HOST).get(BOUNDING_BOX).addClass(classNames.multiSelect);
         },
         destructor: function() {
-            this.get("host").get(BOUNDING_BOX).removeClass(classNames.multiSelect);
+            this.get(HOST).get(BOUNDING_BOX).removeClass(classNames.multiSelect);
         }
     }, {
         NS: "treeviewselect"
     });
-
 });
