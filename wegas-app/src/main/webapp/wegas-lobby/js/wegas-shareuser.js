@@ -28,14 +28,14 @@ YUI.add('wegas-shareuser', function(Y) {
             var el = this.get(CONTENTBOX),
                     e = this.get("entity"),
                     permissions = [{
-                            name: "username",
-                            type: 'markup',
-                            readonly: true,
-                            className: "username-field"
-                        }, {
-                            name: "userId",
-                            type: "hidden"
-                        }];
+                    name: "username",
+                    type: 'markup',
+                    readonly: true,
+                    className: "username-field"
+                }, {
+                    name: "userId",
+                    type: "hidden"
+                }];
 
             permissions = permissions.concat(Y.Array.map(this.get("permsList"), function(item) {
                 item.type = "boolean";
@@ -300,6 +300,7 @@ YUI.add('wegas-shareuser', function(Y) {
                                     if (splitedPerm[2] === this.userList.targetEntityId) {
                                         if (field.options.value === splitedPerm[0] + ":" + splitedPerm[1]) {
                                             field.setValue(true, false);
+                                            newField.gameModelAddRight(field.options.value);
                                         }
                                     }
                                 }
@@ -402,8 +403,10 @@ YUI.add('wegas-shareuser', function(Y) {
             this.getParentField().currentWidget.showMessageBis("success", "Saving...");
             if (fieldValue) {
                 this.addPermission(fieldInstance.options.value + ":" + this.parentField.targetEntityId, this.getValue().userId);
+                this.gameModelAddRight(fieldInstance.options.value);
             } else {
                 this.removePermission(fieldInstance.options.value + ":" + this.parentField.targetEntityId, this.getValue().userId);
+                this.gameModelRemoveRight(fieldInstance.options.value);
             }
             PermissionGroup.superclass.onChange.apply(this, arguments);
         },
@@ -418,7 +421,9 @@ YUI.add('wegas-shareuser', function(Y) {
                         this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("error", "Error removing permission");
+                        if (e.response.results.exception !== "javax.persistence.NoResultException") {
+                            this.getParentField().currentWidget.showMessageBis("error", "Error removing permission");
+                        }
                     }, this)
                 }
             });
@@ -438,6 +443,22 @@ YUI.add('wegas-shareuser', function(Y) {
                     }, this)
                 }
             });
+        },
+        gameModelAddRight: function(fieldInstance) {                            // @hack (hardcode)
+            if (fieldInstance === "GameModel:View,Edit,Delete,Duplicate,Instantiate") { // If GameModel has right edit -> then add the other rights
+                this.inputs[3].disable();
+                this.inputs[4].disable();
+                this.inputs[3].setValue(true, false);
+                this.inputs[4].setValue(true, false);
+            }
+        },
+        gameModelRemoveRight: function(fieldInstance) {                         // @hack (hardcode)
+            if (fieldInstance === "GameModel:View,Edit,Delete,Duplicate,Instantiate") { // If GameModel hasn't right edit -> then remove the other rights
+                this.inputs[3].enable();
+                this.inputs[4].enable();
+                this.inputs[3].setValue(false, true);
+                this.inputs[4].setValue(false, true);
+            }
         }
     });
     Y.inputEx.registerType("permissiongroup", PermissionGroup);
