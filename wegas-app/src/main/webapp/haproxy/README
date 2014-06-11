@@ -1,0 +1,3 @@
+Haproxy custom error files.
+They are in /etc/haproxy/errors at least on our configuration.
+reload haproxy for those change to be taken into account.
