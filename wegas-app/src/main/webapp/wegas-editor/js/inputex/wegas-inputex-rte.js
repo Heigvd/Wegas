@@ -154,7 +154,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
         setValue: function(value, sendUpdatedEvent) {
             var tmceI = tinyMCE.get(this.el.id);
 
-            if (value) {
+            if (value && Wegas.Facade.File) {
                 value = value.replace(
                         new RegExp("data-file=\"([^\"]*)\"", "gi"),
                         "src=\"" + Wegas.Facade.File.getPath() + "$1\""
