@@ -160,6 +160,28 @@ YUI.add("treeview", function(Y) {
                 }
             };
             this.each(Y.bind(setChildsState, this, state));
+        },
+        /**
+         * 
+         * @param {type} testFn
+         * @returns {Y.TreeNode|Y.TreeLeaf}
+         */
+        find: function(testFn) {
+            var find = function(widget) {
+                if (testFn(widget)) {
+                    return widget;
+                }
+                if (widget.each) {                                              // Is a treeview or a treenode
+                    for (var i = 0; i < widget.size(); i += 1) {
+                        var test = find(widget.item(i));
+                        if (test) {
+                            return test;
+                        }
+                    }
+                }
+                return null;
+            };
+            return find(this);
         }
     }, {
         /**

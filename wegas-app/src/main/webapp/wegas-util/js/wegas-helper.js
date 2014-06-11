@@ -39,9 +39,9 @@ YUI.add('wegas-helper', function(Y) {
          */
         htmlEntities: function(str) {
             return String(str).replace(/&/g, '&amp;')
-                    .replace(/</g, '&lt;')
-                    .replace(/>/g, '&gt;')
-                    .replace(/"/g, '&quot;');
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
         },
         /**
          * Replace any text line return
@@ -88,7 +88,7 @@ YUI.add('wegas-helper', function(Y) {
          */
         formatDate: function(timestamp, fmt) {
             var date = new Date(timestamp),
-                    months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
             function pad(value) {
                 return (value.toString().length < 2) ? '0' + value : value;
             }
@@ -123,11 +123,11 @@ YUI.add('wegas-helper', function(Y) {
          */
         smartDate: function(timestamp) {
             var date = new Date(timestamp),
-                    now = new Date(),
-                    diffN = now.getTime() - timestamp,
-                    oneMinute = 60 * 1000,
-                    oneHour = 60 * oneMinute,
-                    oneDay = 24 * oneHour;
+                now = new Date(),
+                diffN = now.getTime() - timestamp,
+                oneMinute = 60 * 1000,
+                oneHour = 60 * oneMinute,
+                oneDay = 24 * oneHour;
             // oneMonth =  30 * oneDay,
             // oneYear =  365 * oneDay;
 
@@ -140,7 +140,7 @@ YUI.add('wegas-helper', function(Y) {
             } else if (diffN < oneHour) {                                      // last hour
                 return  Math.round(diffN / oneMinute) + " minutes ago";
             } else if (diffN < oneDay
-                    && now.getDay() === date.getDay()) {                            // Today
+                && now.getDay() === date.getDay()) {                            // Today
                 return Helper.formatDate(timestamp, "%H:%i");
             } else if (date.getYear() === now.getYear()) {                      // This year
                 return Helper.formatDate(timestamp, "%d %M");
@@ -184,6 +184,34 @@ YUI.add('wegas-helper', function(Y) {
         },
         getFilename: function(path) {
             return path.replace(/^.*[\\\/]/, '');
+        },
+        /**
+         * @function
+         * source: http://stackoverflow.com/a/15203639
+         * @param {type} el
+         * @returns {Boolean}
+         */
+        isElementVisible: function(el) {
+            if (el.getDOMNode) {
+                el = el.getDOMNode();
+            }
+            var eap,
+                rect = el.getBoundingClientRect(),
+                docEl = document.documentElement,
+                vWidth = window.innerWidth || docEl.clientWidth,
+                vHeight = window.innerHeight || docEl.clientHeight,
+                efp = function(x, y) {
+                    return document.elementFromPoint(x, y);
+                },
+                contains = "contains" in el ? "contains" : "compareDocumentPosition",
+                has = contains == "contains" ? 1 : 0x14;
+
+            // Return false if it's not in the viewport
+            if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight)
+                return false;
+
+            // Return true if any of its four corners are visible
+            return ((eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has);
         }
     };
     Y.namespace("Wegas").Helper = Helper;
