@@ -122,7 +122,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 if (this.options.mode === "text") {
                     this.updateExpressionList();
                 }
-                this.setClassFromState();
+//                this.setClassFromState();
             }, this);                                                           // Whenever the value is updated, we synchronize the UI
 
             this.updateExpressionList();                                        // Synchronize the wysiwig list      
