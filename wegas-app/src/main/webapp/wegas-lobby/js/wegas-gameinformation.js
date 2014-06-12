@@ -27,7 +27,7 @@ YUI.add('wegas-gameinformation', function(Y) {
         /** @lends Y.Wegas.JoinTeam# */
         // *** Private fields *** //
         renderUI: function() {
-            var cb = this.get(CONTENTBOX), entity = this.get("entity"),
+            var entity = this.get("entity"),
                 game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
                 : entity;
 
@@ -35,7 +35,7 @@ YUI.add('wegas-gameinformation', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var game = e.response.entity;
-                        cb.append(GameInformation.renderGameInformation(game));
+                        this.get(CONTENTBOX).append(GameInformation.renderGameInformation(game));
                     }, this)
                 }
             });
@@ -50,7 +50,8 @@ YUI.add('wegas-gameinformation', function(Y) {
             if (imgSrc) {
                 information.append('<img src=' + imgSrc + ' />');
             }
-            information.append('<div class="title">' + game.get("gameModelName") + " <br />" + game.get("name") + "</div>"
+            information.append('<div class="title">' + game.get("gameModelName") + "</div>"
+                + '<div class="gametitle">' + game.get("name") + "</div>"
                 + '<div class="subtitle">' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
             if (game.get("description")) {
                 information.append('<div class="description"> ' + game.get("description") + '</div>');

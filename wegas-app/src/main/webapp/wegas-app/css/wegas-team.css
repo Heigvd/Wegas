@@ -26,7 +26,6 @@
     padding: 0 0 10px 0.6em;
     margin: 1em 0 1em 0;
 }
-
 .wegas-editteam {
     width: 50%;
     margin-left: auto;
@@ -48,11 +47,9 @@
 .wegas-jointeam-content {
     padding: .5em;
 }
-.wegas-jointeam .title,
-.wegas-gameinformation .title,
-.wegas-gamedescription .title {
+.wegas-jointeam .title, .wegas-gamedescription .title {
     font-weight: bolder;
-    margin-bottom: 5px;
+    /* margin-bottom: 5px; */
 }
 .wegas-gameinformation .description {
     padding: 5px 0 10px;
@@ -77,6 +74,14 @@
 .wegas-gameinformation .title {
     font-size: 1.3em;
     margin-top: 0.3em;
+    font-weight: bolder;
+}
+.wegas-gameinformation .gametitle {
+    margin-bottom: 10px;
+    font-size: 1.1em;
+    color: grey;
+    font-weight: bold;
+    font-style: italic;
 }
 #rightTabView .wegas-jointeam .teamselection {
     background: #f6f6f6;
