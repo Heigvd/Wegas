@@ -66,6 +66,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 var node = new Y.Node(this.fieldset);
                 node.get("parentNode").prepend("<label>" + this.options.label + "</label>");
             }
+            this.on("updated", function() {
+                this.setClassFromState();
+            });
         },
         /**
          * @function
@@ -131,7 +134,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                         this._fallbackMode = true;
                         this._renderSelectConfig(null);
                         this.displayMessage("Unable to find variable '" + this.options.value + "'");
-                        this.setClassFromState("invalid");
+//                        this.setClassFromState("invalid");
                     } else {
                         this._fallback(this.options.raw, "Unable to parse field");
                         return;
@@ -435,6 +438,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             return args.join(", ");
         },
         onChange: function(fieldValue, fieldInstance) {
+            if (!fieldValue) {
+                return;
+            }
             var entity = Y.Wegas.Facade.VariableDescriptor.cache.find('name', fieldValue);
             if (this.isGlobalMethod(fieldValue)) {
                 this.options.value = fieldValue;

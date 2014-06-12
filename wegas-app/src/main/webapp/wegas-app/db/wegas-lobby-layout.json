@@ -156,7 +156,7 @@
                                                             "cfg": {
                                                                 "tabSelector": "#rightTabView",
                                                                 "emptyTab": true,
-                                                                "label": "Open game",
+                                                                "label": "Details",
                                                                 "wchildren": [{
                                                                         "type": "List",
                                                                         "children": [{

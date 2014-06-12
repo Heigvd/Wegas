@@ -107,3 +107,21 @@
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header:hover {
     background-color: #EDEDED;
 }
+
+/* Page title styles */
+.yui3-skin-sam .wegas-title   {
+    padding-top: 0 !important;
+    margin-top: 3px !important;
+    font-size: 1.4em !important;
+    line-height: 1em !important;
+    margin-bottom: 0px !important;
+    height: 36px !important;
+}
+.yui3-skin-sam .wegas-title > div  {
+    text-align:left;
+}
+.yui3-skin-sam .wegas-title > .gametitle  {
+    color: #e0e0e0;
+    font-style: italic;
+    font-size: 0.7em;
+}

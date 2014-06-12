@@ -622,15 +622,15 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     label: "Object",
                                     targetClass: "ObjectDescriptor"
                                 }, {
-                                    type: "NewEntityButton",
+                                    type: "AddEntityChildButton",
                                     label: "State machine",
                                     targetClass: "FSMDescriptor"
                                 }, {
-                                    type: "NewEntityButton",
+                                    type: "AddEntityChildButton",
                                     label: "Inbox",
                                     targetClass: "InboxDescriptor"
                                 }, {
-                                    type: "NewEntityButton",
+                                    type: "AddEntityChildButton",
                                     label: "Dialogue",
                                     targetClass: "DialogueDescriptor",
                                     cssClass: "experimental wegas-advaned-feature"
@@ -640,7 +640,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                                     targetClass: "StringDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
-                                    type: "NewEntityButton",
+                                    type: "AddEntityChildButton",
                                     label: "Object",
                                     targetClass: "ObjectDescriptor",
                                     cssClass: "wegas-advanced-feature"
