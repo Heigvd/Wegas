@@ -451,7 +451,7 @@ public class UserFacade extends BaseFacade<User> {
         String subject = "Wegas account";
         String body = "A new password for your wegas account has been successfully created: " + newPassword;
         if (acc != null) {
-            emailFacade.send(acc.getEmail(), "admin@wegas.com", subject, body);
+            emailFacade.send(acc.getEmail(), "albasim@heig-vd.ch", subject, body);
             acc.setPassword(newPassword);
             acc.setPasswordHex(null);                                           //force JPA update
         }
