@@ -203,10 +203,7 @@ YUI.add('wegas-entity', function(Y) {
             description: {
                 type: STRING,
                 format: HTML,
-                optional: true,
-                _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
-                }
+                optional: true
             },
             canView: {
                 "transient": true
