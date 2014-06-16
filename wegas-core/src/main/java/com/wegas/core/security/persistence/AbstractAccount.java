@@ -59,8 +59,7 @@ public class AbstractAccount extends AbstractEntity {
     //@Basic(optional = false)
     @Column(length = 100)
     //@Pattern(regexp = "^\\w+$")
-    @JsonIgnore
-    private String username;
+    private String username = "";
     /**
      *
      */

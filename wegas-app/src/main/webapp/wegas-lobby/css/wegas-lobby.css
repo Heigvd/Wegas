@@ -13,9 +13,9 @@
 .yui3-skin-sam #centerTabView .yui3-tab {
     max-width: 130px;
 }
-.yui3-skin-sam #gameModelsTab .yui3-tab-label {
+/*.yui3-skin-sam #gameModelsTab .yui3-tab-label {
     margin-left: 0.5em;
-}
+}*/
 #rightTabView .yui3-tab-remove {
     display: none;
 }

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.security.servlet;
 
-import com.wegas.core.Helper;
 import java.io.IOException;
 import java.net.URLEncoder;
 import javax.servlet.ServletRequest;

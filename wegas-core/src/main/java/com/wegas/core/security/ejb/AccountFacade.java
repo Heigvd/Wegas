@@ -8,6 +8,7 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -81,6 +82,14 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 revivedRoles.add(roleFacade.find(r.getId()));
             } catch (EJBException e) {
                 // not able to revive this role
+            }
+        }
+        if (!account.getUsername().equals("") && account.getUsername() != null) {
+            try {
+                this.findByUsername(account.getUsername());
+                throw new WegasException("This username is already in use");
+            } catch (NoResultException | WegasException e) {
+                // GOTCHA no username could be found, do not use
             }
         }
         AbstractAccount oAccount = super.update(entityId, account);
@@ -209,10 +218,10 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
         return accounts;
     }
-    
+
     public ArrayList<AbstractAccount> findByTeam(Team team) {
         ArrayList<AbstractAccount> result = new ArrayList<>();
-        for (Player player : team.getPlayers()){
+        for (Player player : team.getPlayers()) {
             result.add(player.getUser().getMainAccount());
         }
         return result;

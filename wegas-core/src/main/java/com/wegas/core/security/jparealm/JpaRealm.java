@@ -12,6 +12,7 @@ package com.wegas.core.security.jparealm;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 import com.wegas.core.Helper;
+import com.wegas.core.exception.NoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
@@ -49,8 +50,18 @@ public class JpaRealm extends AuthorizingRealm {
             SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
             info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
             return info;
-        } catch (EJBException e) {
-            return null;
+
+        } catch (NoResultException e) {                                         // Could not find correponding mail, 
+            try {
+                JpaAccount account = (JpaAccount) accountFacade().findByUsername(token.getUsername());// try with the username
+                SimpleAuthenticationInfo info = new SimpleAuthenticationInfo(account.getId(), account.getPasswordHex(), getName());
+                info.setCredentialsSalt(new SimpleByteSource(account.getSalt()));
+                return info;
+
+            } catch (NamingException ex) {
+                logger.error("Unable to find AocountFacade EJB", ex);
+                return null;
+            }
         } catch (NamingException ex) {
             logger.error("Unable to find AocountFacade EJB", ex);
             return null;

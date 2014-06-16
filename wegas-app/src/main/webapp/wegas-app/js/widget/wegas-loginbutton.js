@@ -35,8 +35,6 @@ YUI.add("wegas-loginbutton", function(Y) {
          * Add plugin menu with 2 options : open page "user preferences" and logout
          */
         bindUI: function() {
-            Wegas.LoginButton.superclass.bindUI.apply(this, arguments);
-
             this.handlers = {};
             this.handlers.userUpdate = Wegas.Facade.User.after("update", this.syncUI, this);
             if (Wegas.Facade.VariableDescriptor)
@@ -119,8 +117,9 @@ YUI.add("wegas-loginbutton", function(Y) {
                     name = cPlayer.get("name");
                 }
             }
-            if (!this.get("label")) {
+            if (!this.get("label") || this.customLabel) {
                 this.set("label", name);
+                this.customLabel = true;
             }
         },
         destructor: function() {
