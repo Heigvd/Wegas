@@ -237,18 +237,31 @@ html, .editor-preview {
     font-size: 20px;
     letter-spacing: 2px;
 }
-.proggame-title .proggame-help {
+.proggame-title .proggame-help,
+.proggame-title .proggame-level{
     width: 32px;
     height: 32px;
     position: absolute;
-    left: 210px;
-    top: 37px;
     background: url(../../wegas-proggame/images/proggame-button-info.png);
     cursor: pointer;
+}
+.proggame-title .proggame-help {
+    left: 175px;
+    top: 37px;  
 }
 .proggame-title .proggame-help:hover {
     background-position: 0 -32px;
 }
+.proggame-title .proggame-level {
+    left: 210px;
+    top: 37px;
+    background-position: 0 -69px;
+}
+
+.proggame-title .proggame-level:hover {
+    background-position: 0 -107px;
+}
+
 .wegas-proggame-level .yui3-button {
     background: none;
     color: white;
@@ -651,7 +664,8 @@ html, .editor-preview {
     z-index: 1002 !important;}
 .proggame-tuto-arrowleft,
 .proggame-tuto-arrowbottom,
-.proggame-tuto-arrowright {
+.proggame-tuto-arrowright,
+.proggame-tuto-arrowtop {
     float: left;
     width: 61px;
     height: 70px;
@@ -660,6 +674,11 @@ html, .editor-preview {
 .proggame-tuto-arrowbottom {    
     float: right;
     background-position: 0 5px;
+}
+.proggame-tuto-arrowtop {    
+    float: none;
+    background-position: 0 -77px;
+    margin-left: 120px;
 }
 .proggame-tuto-arrowright {
     float: right;
