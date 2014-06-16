@@ -7,10 +7,6 @@
  */
 package com.wegas.core.security.guest;
 
-/**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- */
 import com.wegas.core.security.jparealm.*;
 import com.wegas.core.Helper;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -31,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class GuestRealm extends AuthorizingRealm {
 

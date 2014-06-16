@@ -20,7 +20,7 @@ YUI.add("wegas-userpreferences", function(Y) {
                         fieldsToIgnore = [];
 
                 for (k in entity.toObject()) {                                  //hide ineditable fields
-                    if (k !== 'firstname' && k !== 'lastname'
+                    if (k !== 'firstname' && k !== 'lastname' && k !== 'username'
                             && k !== 'password' && k !== 'submit') {
                         fieldsToIgnore.push(k);
                     }

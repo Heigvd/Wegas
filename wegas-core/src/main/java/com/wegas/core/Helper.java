@@ -10,6 +10,7 @@ package com.wegas.core;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.StringTokenizer;
@@ -23,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class Helper {
 
@@ -116,7 +117,6 @@ public class Helper {
         Matcher matcher = pattern.matcher(sb.toString());
         return matcher.replaceAll("_$1");                                       //Replace special chars and initial digit with "_"
     }
-
 
     /**
      *
@@ -227,5 +227,14 @@ public class Helper {
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
         }
         return null;
+    }
+
+    public static int[] toArray(List<Integer> list) {
+        int[] ret = new int[list.size()];
+        int i = 0;
+        for (Integer e : list) {
+            ret[i++] = e.intValue();
+        }
+        return ret;
     }
 }

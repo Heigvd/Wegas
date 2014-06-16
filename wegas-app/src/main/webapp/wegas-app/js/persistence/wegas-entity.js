@@ -806,6 +806,13 @@ YUI.add('wegas-entity', function(Y) {
                     _type: "email"
                 }
             },
+            username: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    description: "Can be used to log in"
+                }
+            },
             hash: {
                 "transient": true
             },
