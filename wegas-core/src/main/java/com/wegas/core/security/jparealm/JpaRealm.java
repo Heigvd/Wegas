@@ -7,10 +7,6 @@
  */
 package com.wegas.core.security.jparealm;
 
-/**
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- */
 import com.wegas.core.Helper;
 import com.wegas.core.exception.NoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -29,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author fx
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class JpaRealm extends AuthorizingRealm {
 

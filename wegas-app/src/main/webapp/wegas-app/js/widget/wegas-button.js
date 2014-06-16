@@ -5,18 +5,16 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add("wegas-button", function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox',
-            BOUNDINGBOX = 'boundingBox',
-            Wegas = Y.Wegas, Button;
+        BOUNDINGBOX = 'boundingBox',
+        Wegas = Y.Wegas, Button;
 
     /**
      * @name Y.Wegas.Button
@@ -170,8 +168,8 @@ YUI.add("wegas-button", function(Y) {
          */
         syncUI: function() {
             var bb = this.get('host').get(BOUNDINGBOX),
-                    target = bb.one(".wegas-unreadcount"),
-                    unreadCount = this.getUnreadCount();
+                target = bb.one(".wegas-unreadcount"),
+                unreadCount = this.getUnreadCount();
 
             if (!target) {                                                      // If the counter span has not been rendered, do it
                 bb.append('<span class="wegas-unreadcount"></span>');
@@ -204,7 +202,7 @@ YUI.add("wegas-button", function(Y) {
          */
         getUnreadCount: function() {
             var i, instance, messages, items, count = 0,
-                    descriptor = this.get('variable.evaluated');
+                descriptor = this.get('variable.evaluated');
 
             if (!descriptor) {
                 return 0;
@@ -214,14 +212,14 @@ YUI.add("wegas-button", function(Y) {
                 items = descriptor.flatten();
                 for (i = 0; i < items.length; i = i + 1) {
                     if (Wegas.persistence.QuestionDescriptor
-                            && items[i] instanceof Wegas.persistence.QuestionDescriptor) {
+                        && items[i] instanceof Wegas.persistence.QuestionDescriptor) {
                         instance = items[i].getInstance();
                         //count += instance.get("unread") ? 1 : 0;
                         if (instance.get("replies")) {
                             count += instance.get("replies").length === 0 && instance.get("active") ? 1 : 0; // only count if it is active
                         }
                     } else if (Wegas.persistence.FSMDescriptor
-                            && items[i] instanceof Wegas.persistence.FSMDescriptor) {
+                        && items[i] instanceof Wegas.persistence.FSMDescriptor) {
                         instance = items[i].getInstance();
                         //count += instance.get("unread") ? 1 : 0;
                         if (instance.get("enabled")) {
