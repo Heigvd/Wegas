@@ -9,12 +9,12 @@
  * @fileoverview
  * @author Cyril Junod
  */
-
 YUI.add("wegas-gallery", function(Y) {
     "use strict";
+
     var Gallery,
-            CONTENT_BOX = "contentBox",
-            BOUNDING_BOX = "boundingBox";
+        CONTENT_BOX = "contentBox",
+        BOUNDING_BOX = "boundingBox";
 
     /**
      * ATTRS:<br/>
@@ -96,9 +96,9 @@ YUI.add("wegas-gallery", function(Y) {
         renderUI: function() {
             // LAZY init
             this.scrollView.get(BOUNDING_BOX).append("<div class='gallery-mask gallery-mask-left'><div></div></div>"
-                    + "<div class='gallery-mask gallery-mask-right'><div></div></div>"
-                    + "<div class='gallery-toggle'></div>"
-                    + "<div class='gallery-scroll-indicator'></div>");
+                + "<div class='gallery-mask gallery-mask-right'><div></div></div>"
+                + "<div class='gallery-toggle'></div>"
+                + "<div class='gallery-scroll-indicator'></div>");
             if (this.get("lightGallery")) {
                 this.scrollView.get(BOUNDING_BOX).addClass("wegas-lightGallery");
             } else if (this.get("gallery").length > 0) {
@@ -120,11 +120,11 @@ YUI.add("wegas-gallery", function(Y) {
                 return;
             }
             var smaH, smaW, container,
-                    selW = parseInt(this.get("selectedWidth")),
-                    selH = this.get("selectedHeight"),
-                    galleryId = "#" + this.scrollView.get("id") + " ", // prefix css with id, allow multiple instance with different style
-                    styleSheet = Y.StyleSheet(this.get("id")),
-                    bb = this.scrollView.get(BOUNDING_BOX);
+                selW = parseInt(this.get("selectedWidth")),
+                selH = this.get("selectedHeight"),
+                galleryId = "#" + this.scrollView.get("id") + " ", // prefix css with id, allow multiple instance with different style
+                styleSheet = Y.StyleSheet(this.get("id")),
+                bb = this.scrollView.get(BOUNDING_BOX);
 
             this.set("selectedWidth", this.get("selectedWidth"));
             this.set("selectedHeight", selH);
@@ -336,12 +336,12 @@ YUI.add("wegas-gallery", function(Y) {
          */
         setSelected: function(index) {
             var bb = this.scrollView.get(BOUNDING_BOX),
-                    list = this.get(CONTENT_BOX).all("li");
+                list = this.get(CONTENT_BOX).all("li");
 
             index = +index;
 
             list.removeClass("gallery-selected")
-                    .removeClass("gallery-before-selected");
+                .removeClass("gallery-before-selected");
 
             if (+index > 0) {
                 list.item(index - 1).addClass("gallery-before-selected");
@@ -368,8 +368,8 @@ YUI.add("wegas-gallery", function(Y) {
          */
         loadImage: function(index) {
             var target = this.get(CONTENT_BOX).all("li").item(index),
-                    cfg = this.get("gallery")[index],
-                    img = Y.Node.create("<img src='" + cfg.srcUrl + "' />");
+                cfg = this.get("gallery")[index],
+                img = Y.Node.create("<img src='" + cfg.srcUrl + "' />");
 
             if (target.hasChildNodes()) {
                 return;

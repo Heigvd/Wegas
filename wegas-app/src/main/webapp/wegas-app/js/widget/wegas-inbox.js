@@ -13,7 +13,7 @@ YUI.add('wegas-inbox', function(Y) {
     "use strict";
 
     var CONTENTBOX = 'contentBox', Micro = Y.Template.Micro, Wegas = Y.Wegas,
-            InboxDisplay;
+        InboxDisplay;
     /**
      * @name Y.Wegas.InboxDisplay
      * @extends Y.Widget
@@ -46,14 +46,14 @@ YUI.add('wegas-inbox', function(Y) {
         TEMPLATES: {
             inbox: {
                 tab: Micro.compile("<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'>"
-                        + "<div class='msg-subject'><%=this.get('subject')%></div>"
-                        + "<% if (this.get('from')){ %><div class='msg-from'><%= this.get('from') %></div><% } %>"),
+                    + "<div class='msg-subject'><%=this.get('subject')%></div>"
+                    + "<% if (this.get('from')){ %><div class='msg-from'><%= this.get('from') %></div><% } %>"),
                 content: Micro.compile("<div class='msg-header'><div class='msg-subject'><%=this.get('subject')%></div>"
-                        + "<% if (this.get('from')) { %><div class='msg-from'><%= this.get('from') %></div><% } %>"
-                        + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
-                        + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
-                        + "<% } %></div>"
-                        + "<div class='msg-body'><%== this.get('body') %></div>")
+                    + "<% if (this.get('from')) { %><div class='msg-from'><%= this.get('from') %></div><% } %>"
+                    + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
+                    + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
+                    + "<% } %></div>"
+                    + "<div class='msg-body'><%== this.get('body') %></div>")
             },
             /**
              * inbox without labels.
@@ -61,9 +61,9 @@ YUI.add('wegas-inbox', function(Y) {
             clean: {
                 tab: Micro.compile("<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'><div class='left'><%= this.get('from') %> </div><div class='right'><%=this.get('subject')%></div></div>"),
                 content: Micro.compile("<div class='msg-header'><div class='msg-subject'><%=this.get('subject')%></div>"
-                        + "<div class='msg-from'><%= this.get('from') %></div>"
-                        + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'  target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div></div>"
-                        + "<div class='msg-body'><%== this.get('body') %></div>")
+                    + "<div class='msg-from'><%= this.get('from') %></div>"
+                    + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'  target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div></div>"
+                    + "<div class='msg-body'><%== this.get('body') %></div>")
             }
         },
         // *** Lifecycle Methods *** //
@@ -85,7 +85,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                    delBtn;
+                delBtn;
             this.tabView = new Y.TabView();                                     // TabView widget used to display messages
             this.tabView.render(cb);                                            // and render it
             this.tabView.get("boundingBox").addClass("horizontal-tabview");     // Add class to have horizontal tabview
@@ -97,7 +97,7 @@ YUI.add('wegas-inbox', function(Y) {
                 delBtn.on("click", function() {                                 // On delete button click
                     var selection = this.tabView.get("selection");
                     if (selection && !selection.msg                             // If a valid mail tab is selected
-                            && confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue?')) { // and user is sure
+                        && confirm('The e-mail "' + selection.msg.get("subject") + '" will be deleted permanently. Continue?')) { // and user is sure
                         this.deleteEmail(selection.msg);                        // destroy the message
                     }
                 }, this);
@@ -162,7 +162,7 @@ YUI.add('wegas-inbox', function(Y) {
          */
         updateTabView: function(entities) {
             var selection = this.tabView.get("selection"),
-                    oldMsg = selection && selection.msg;
+                oldMsg = selection && selection.msg;
             this.isDestroying = true;
             this.tabView.destroyAll();
             this.isDestroying = false;
@@ -183,8 +183,13 @@ YUI.add('wegas-inbox', function(Y) {
                     tab.set("selected", 2);
                 }
             }, this);
-            if (!this.tabView.get("selection")) {                               // Select the first tab by default
-                this.tabView.selectChild(0);
+
+            this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select a mail on the left</div>");
+
+            if (this.get("autoOpenFirstMail")) {
+                if (!this.tabView.get("selection")) {                               // Select the first tab by default
+                    this.tabView.selectChild(0);
+                }
             }
         },
         /**
@@ -222,6 +227,7 @@ YUI.add('wegas-inbox', function(Y) {
                 this.timer.cancel();                                            // cancel it.
             }
             if (tab && tab.msg && !this.isDestroying) {
+                this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
                 this.dataSource.sendRequest({//                                 // Retrieve the message body from the server
                     request: "/Inbox/Message/" + tab.msg.get("id") + "?view=Extended",
                     cfg: {
@@ -235,17 +241,17 @@ YUI.add('wegas-inbox', function(Y) {
                 });
                 if (tab.msg.get("unread")) {                                    // If the message is currently unread,
                     this.timer = Y.later(this.get("setToReadAfter") * 1000, this,
-                            function(tab) {                                     // Send a request to mark it as read
-                                Y.log("Sending message read update", "info", "InboxDisplay");
-                                tab.get(CONTENTBOX).one(".unread").removeClass("unread").addClass("read"); // Immediately update view (before request)
-                                tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
-                                this.readRequestTid = this.dataSource.sendRequest({// Send reqest to mark as read
-                                    request: "/Inbox/Message/Read/" + tab.msg.get("id"),
-                                    cfg: {
-                                        method: "PUT"
-                                    }
-                                });
-                            }, tab);
+                        function(tab) {                                     // Send a request to mark it as read
+                            Y.log("Sending message read update", "info", "InboxDisplay");
+                            tab.get(CONTENTBOX).one(".unread").removeClass("unread").addClass("read"); // Immediately update view (before request)
+                            tab.msg.set("unread", false);                   // Update the message (since there wont be no sync?)
+                            this.readRequestTid = this.dataSource.sendRequest({// Send reqest to mark as read
+                                request: "/Inbox/Message/Read/" + tab.msg.get("id"),
+                                cfg: {
+                                    method: "PUT"
+                                }
+                            });
+                        }, tab);
                 }
             }
         },
@@ -302,6 +308,14 @@ YUI.add('wegas-inbox', function(Y) {
                 type: "number",
                 _inputex: {
                     label: "Mark as read after (s.)",
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                }
+            },
+            autoOpenFirstMail: {
+                value: false,
+                type: "boolean",
+                _inputex: {
+                    label: "Automatically open first mail",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
