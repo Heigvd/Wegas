@@ -11,9 +11,9 @@
 YUI.add("wegas-statemachine-entities", function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", SELF = "self", BOOLEAN = "boolean",
-            NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
-            STATES = "states", ID = "id", HTML = "html",
-            Wegas = Y.Wegas;
+        NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
+        STATES = "states", ID = "id", HTML = "html",
+        Wegas = Y.Wegas, persistence = Wegas.persistence;
     /*******************************/
     /******** STATEMACHINE *********/
     /*******************************/
@@ -21,7 +21,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * FSMInstance Entity
      */
-    Wegas.persistence.FSMInstance = Y.Base.create("FSMInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.FSMInstance = Y.Base.create("FSMInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "FSMInstance"
@@ -50,11 +50,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
-                            //,
-                            //elementType:{
-                            //    type:NUMBER,
-                            //    readonly:true
-                            //}
+                        //,
+                        //elementType:{
+                        //    type:NUMBER,
+                        //    readonly:true
+                        //}
                 }
             }
         }
@@ -62,7 +62,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * FSMDescriptor Entity
      */
-    Wegas.persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", Wegas.persistence.VariableDescriptor, [], {
+    persistence.FSMDescriptor = Y.Base.create("FSMDescriptor", persistence.VariableDescriptor, [], {
         // *** Lifecycle methods *** //
         /**
          * Find a transition by it's id
@@ -71,7 +71,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          */
         getTransitionById: function(id) {
             var i, t, states = this.get(STATES),
-                    trs;
+                trs;
             for (i in states) {
                 trs = states[i].get("transitions");
                 for (t in trs) {
@@ -89,8 +89,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          */
         getFullHistory: function() {
             var i, transitionHistory = this.getInstance().get("transitionHistory"),
-                    fullHistory = [],
-                    tmpTransition = null;
+                fullHistory = [],
+                tmpTransition = null;
             //TODO :Currently assuming it begins with initialState. May be wrong?
             fullHistory.push(this.getState(this.getInitialStateId()));
             for (i = 0; i < transitionHistory.length; i += 1) {
@@ -120,10 +120,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             defaultInstance: {
                 valueFn: function() {
-                    return new Wegas.persistence.FSMInstance();
+                    return new persistence.FSMInstance();
                 },
                 validator: function(o) {
-                    return o instanceof Wegas.persistence.FSMInstance;
+                    return o instanceof persistence.FSMInstance;
                 },
                 properties: {
                     '@class': {
@@ -215,7 +215,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * State Entity
      */
-    Wegas.persistence.State = Y.Base.create("State", Wegas.persistence.Entity, [], {
+    persistence.State = Y.Base.create("State", persistence.Entity, [], {
         // *** Lifecycle methods *** //
         initializer: function() {
         }
@@ -245,7 +245,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             editorPosition: {
                 valueFn: function() {
-                    return new Wegas.persistence.Coordinate({
+                    return new persistence.Coordinate({
                         x: 30,
                         y: 30
                     });
@@ -256,7 +256,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * TransitionDescriptor Entity
      */
-    Wegas.persistence.Transition = Y.Base.create("Transition", Wegas.persistence.Entity, [], {}, {
+    persistence.Transition = Y.Base.create("Transition", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Transition",
@@ -291,14 +291,14 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * TriggerDescriptor Entity
      */
-    Wegas.persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", Wegas.persistence.FSMDescriptor, [], {}, {
+    persistence.TriggerDescriptor = Y.Base.create("TriggerDescriptor", persistence.FSMDescriptor, [], {}, {
         ATTRS: {
             "@class": {
                 value: "TriggerDescriptor"
             },
             defaultInstance: {
                 valueFn: function() {
-                    return new Wegas.persistence.TriggerInstance();
+                    return new persistence.TriggerInstance();
                 },
                 properties: {
                     '@class': {
@@ -363,7 +363,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /*
      * TriggerInstance Entity
      */
-    Wegas.persistence.TriggerInstance = Y.Base.create("TriggerInstance", Wegas.persistence.FSMInstance, [], {}, {
+    persistence.TriggerInstance = Y.Base.create("TriggerInstance", persistence.FSMInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "TriggerInstance"
@@ -385,23 +385,22 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /**
      * DialogueDescriptor Entity
      */
-
-    Wegas.persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", Wegas.persistence.FSMDescriptor, [], {
+    persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", persistence.FSMDescriptor, [], {
         /**
          * Triggers a Dialogue Transition programmatically
-         * @param {DialogueTransition} transition - the transition object to trigger.
+         * @param {sitionnsition} transition - the transition object to trigger.
          * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to execute.
          */
         doTransition: function(transition, callbacks) {
             var request;
-            if (transition instanceof Wegas.persistence.DialogueTransition) {
+            if (transition instanceof persistence.DialogueTransition) {
                 if (!this.get(ID) || !transition.get(ID)) {
                     Y.error("Trying to call an unpersisted transition", new Error("Calling a detached entity"), "Y.Wegas.persistence.DialogueDescriptor");
                     return false;
                 }
                 request = "/StateMachine/" + this.get(ID)
-                        + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                        + "/Do/" + transition.get(ID);
+                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
+                    + "/Do/" + transition.get(ID);
                 try {
                     Wegas.Facade.VariableDescriptor.sendRequest({
                         request: request,
@@ -455,8 +454,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /**
      * DialogueTransition Entity
      */
-    Wegas.persistence.DialogueTransition = Y.Base.create("DialogueTransition", Wegas.persistence.Transition, [], {}, {
-        EDITORNAME: "choice",
+    persistence.DialogueTransition = Y.Base.create("DialogueTransition", persistence.Transition, [], {}, {
+        EDITORNAME: "Choice",
         ATTRS: {
             "@class": {
                 value: "DialogueTransition"
@@ -473,24 +472,30 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     index: -1,
                     label: "Text"
                 }
+            },
+            index: {
+                type: NUMBER,
+                _inputex: {
+                    value: 0
+                }
             }
         }
     });
     /**
      * DialogueState Entity
      */
-    Wegas.persistence.DialogueState = Y.Base.create("DialogueState", Wegas.persistence.State, [], {
+    persistence.DialogueState = Y.Base.create("DialogueState", persistence.State, [], {
         /*
          *
          */
         getAvailableActions: function(callback) {
             var i, transitions = this.get("transitions"),
-                    ctrlObj = {
-                        availableActions: [],
-                        toEval: 0
-                    };
+                ctrlObj = {
+                    availableActions: [],
+                    toEval: 0
+                };
             for (i in transitions) {
-                if (transitions[i] instanceof Wegas.persistence.DialogueTransition) {
+                if (transitions[i] instanceof persistence.DialogueTransition) {
                     if (!transitions[i].get("triggerCondition")) {
                         ctrlObj.availableActions.push(transitions[i]);
                     } else {
@@ -556,7 +561,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     /**
      * Coordinate embeddable mapper
      **/
-    Wegas.persistence.Coordinate = Y.Base.create("Coordinate", Wegas.persistence.Entity, [], {}, {
+    persistence.Coordinate = Y.Base.create("Coordinate", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Coordinate"

@@ -59,6 +59,7 @@ public class State extends AbstractEntity {
      */
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
+    @OrderColumn(name = "index")
     private List<Transition> transitions = new ArrayList<>();
     /**
      *
