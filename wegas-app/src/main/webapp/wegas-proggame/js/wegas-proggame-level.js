@@ -29,7 +29,7 @@ YUI.add('wegas-proggame-level', function(Y) {
     ProgGameLevel = Y.Base.create("wegas-proggame-level", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Fields *** //
         CONTENT_TEMPLATE: '<div>'
-                + '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help"></div></div>'
+                + '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="level information"></div><div class="proggame-level" title="back to level selection"></div></div>'
                 + '<div class="proggame-lefttab"></div>'
                 + '<div class="proggame-view">'
                 + '<div class="message"></div>'
@@ -72,6 +72,10 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             this.editorTabView = new Y.TabView().render(cb.one(".code"));       // Render the tabview for scripts
             this.mainEditorTab = this.addEditorTab("Main", this.get("defaultCode"));// Add the "Main" tabview, which containes the code that will be executed
+
+            if (ProgGameLevel.main) {
+                this.mainEditorTab.aceField.setValue(ProgGameLevel.main);
+            }
 
             this.runButton = new Wegas.Button({//                               // Render run button
                 cssClass: "proggame-runbutton",
@@ -141,11 +145,18 @@ YUI.add('wegas-proggame-level', function(Y) {
                 this.showMessage(INFO, this.get("intro"));                      // redisplay the introduction
             }, this);
 
-            this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
-                subpageId: 2,
-                targetEvent: "gameWon",
-                targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
-            });
+            cb.one(".proggame-level").on(CLICK, function() {                    // When level button is clicked,
+                this.plug(Y.Plugin.OpenPageAction, {
+                    subpageId: 4,
+                    targetPageLoaderId: "maindisplayarea"
+                });
+            }, this);
+
+//            this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
+//                subpageId: 2,
+//                targetEvent: "gameWon",
+//                targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
+//            });
 
             this.display.after('commandExecuted', this.consumeCommand, this);   // When a command is executed, continue stack evaluation
             this.after('commandExecuted', this.consumeCommand, this);           // idem
@@ -158,12 +169,13 @@ YUI.add('wegas-proggame-level', function(Y) {
                     this.resetUI();
                     this.mainEditorTab.aceField.setValue(this.get("defaultCode"));
                     this.set(STATE, IDLE);
-                });
+                }, true);
             }, ".proggame-levelend-restart", this);
             cb.delegate(CLICK, function() {                                     // End level screen: next level button:
                 this.doNextLevel(function() {
+                    this.mainEditorTab.aceField.setValue("");
                     this.fire("gameWon");                                       // trigger open page plugin
-                });
+                }, false);
             }, ".proggame-levelend-nextlevel", this);
             //this.handlers.response = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this); // If data changes, refresh
         },
@@ -173,8 +185,8 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"",
                     Y.bind(function(result) {                                   //Check if breakpoint has been bought from the shop
-                        this.disableBreakpoint = result;
-                    }, this));
+                this.disableBreakpoint = result;
+            }, this));
         },
         destructor: function() {
             this.display.destroy();
@@ -185,6 +197,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             Y.Object.each(this.handlers, function(h) {
                 h.detach();
             });
+            ProgGameLevel.main = this.mainEditorTab.aceField.getValue();
         },
         /**
          * Override to prevent the serialization of the openpage action we
@@ -310,12 +323,12 @@ YUI.add('wegas-proggame-level', function(Y) {
         doLevelEndAnimation: function() {
             var cb = this.get(CONTENTBOX), counter = 0, money = 100,
                     timer = Y.later(20, this, function() {
-                        cb.one(".proggame-levelend-money").setContent(counter);
-                        counter++;
-                        if (counter > money) {
-                            timer.cancel();
-                        }
-                    }, null, true);
+                cb.one(".proggame-levelend-money").setContent(counter);
+                counter++;
+                if (counter > money) {
+                    timer.cancel();
+                }
+            }, null, true);
 
             cb.one(".proggame-levelend").show();
             cb.one(".terrain").hide();
@@ -396,14 +409,18 @@ YUI.add('wegas-proggame-level', function(Y) {
                 session.addGutterDecoration(line, "proggame-currentgutterline");
             }
         },
-        doNextLevel: function(fn) {
+        doNextLevel: function(fn, retry) {
+            var content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
+            if (retry) {
+                content = content + 'maxLevel.value = currentLevel.value;' + 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
+            }
             Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
                     data: {
                         "@class": "Script",
-                        content: this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);"
+                        content: content
                     }
                 },
                 on: {
@@ -415,17 +432,17 @@ YUI.add('wegas-proggame-level', function(Y) {
             var _file = file,
                     saveTimer = new Wegas.Timer(),
                     tab = this.editorTabView.add({//                            // Render tab
-                        label: label
-                    }).item(0),
+                label: label
+            }).item(0),
                     aceField = new Y.inputEx.AceField({//                       // Render ace editor
-                        parentEl: tab.get("panelNode"),
-                        name: TEXT,
-                        type: ACE,
-                        height: "140px",
-                        language: "javascript",
-                        theme: "twilight",
-                        value: code
-                    });
+                parentEl: tab.get("panelNode"),
+                name: TEXT,
+                type: ACE,
+                height: "140px",
+                language: "javascript",
+                theme: "twilight",
+                value: code
+            });
 
             tab.set("selected", 1);
             tab.aceField = aceField;                                            // Set up a reference to the ace field
@@ -539,10 +556,10 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") === \"true\"",
                     Y.bind(function(result) {                                   // Check if breakpoint has been bought from the shop
-                        if (result) {
-                            packages.indlude = ProgGameLevel.API.include;
-                        }
-                    }, this));
+                if (result) {
+                    packages.indlude = ProgGameLevel.API.include;
+                }
+            }, this));
 
             this.apiTabView = new Y.TabView({//                                 // Render the tabview for files and api
                 children: [{
@@ -1111,6 +1128,20 @@ YUI.add('wegas-proggame-level', function(Y) {
                 y: 87,
                 highlight: ".proggame-help",
                 bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Pour revoir les objectifs du niveau, cliquez sur le bouton <b>Information</b>.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+            }, {
+                height: 190,
+                width: 360,
+                x: 705,
+                y: 54,
+                highlight: ".proggame-help",
+                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Le shop vous permet d'acheter des outils qui facilitront le développement.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+            }, {
+                height: 190,
+                width: 360,
+                x: 803,
+                y: 54,
+                highlight: ".proggame-help",
+                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la théorie nécessaire pour chaque niveau dans la boite mail.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }]
     });
     Wegas.ProgGameLevel = ProgGameLevel;
