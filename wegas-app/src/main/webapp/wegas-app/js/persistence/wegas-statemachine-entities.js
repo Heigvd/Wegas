@@ -14,9 +14,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
         STATES = "states", ID = "id", HTML = "html",
         Wegas = Y.Wegas, persistence = Wegas.persistence;
-    /*******************************/
-    /******** STATEMACHINE *********/
-    /*******************************/
 
     /*
      * FSMInstance Entity
@@ -281,6 +278,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 _inputex: {
                     _type: HIDDEN
                 }
+            },
+            index: {
+                type: NUMBER,
+                _inputex: {
+                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                    value: 0
+                }
             }
         }
     });
@@ -451,6 +455,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: "DeleteFSMButton"
             }]
     });
+
     /**
      * DialogueTransition Entity
      */
@@ -481,6 +486,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         }
     });
+
     /**
      * DialogueState Entity
      */

@@ -9,12 +9,12 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-entity', function(Y) {
+YUI.add("wegas-entity", function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
         BUTTON = "Button", TEXT = "text", HTML = "html", GROUP = "group",
-        Wegas = Y.namespace("Wegas"), persistence = Y.namespace('Wegas.persistence'),
+        Wegas = Y.namespace("Wegas"), persistence = Y.namespace("Wegas.persistence"),
         Base = Y.Base, Entity,
         IDATTRDEF = {
             type: STRING,
@@ -62,12 +62,12 @@ YUI.add('wegas-entity', function(Y) {
                     return val * 1;
                 },
                 _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
                     index: -2,
                     disable: true
                 }
             },
-            '@class': {
+            "@class": {
                 value: "null",
                 writeOnce: "initOnly",
                 type: STRING,
@@ -180,23 +180,23 @@ YUI.add('wegas-entity', function(Y) {
                         }, {
                             name: "imageUri",
                             label: "Thumbnail",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                         }, {
                             name: "iconUri",
                             label: "Icon",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                         }, {
                             name: "cssUri",
                             label: "Stylesheets",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                         }, {
                             name: "pagesUri",
                             label: "Pages",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                         }, {
                             name: "websocket",
                             label: "Websocket",
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                         }]
                 }
             },
@@ -234,7 +234,7 @@ YUI.add('wegas-entity', function(Y) {
                         cfg: {
                             label: "Details",
                             emptyTab: true,
-                            tabSelector: '#rightTabView',
+                            tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "EditEntityForm"
                                 }]
@@ -243,7 +243,7 @@ YUI.add('wegas-entity', function(Y) {
                         fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
-                            tabSelector: '#rightTabView',
+                            tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "ShareUser",
                                     permsList: [{
@@ -262,7 +262,7 @@ YUI.add('wegas-entity', function(Y) {
                     }]
             }, {
                 type: BUTTON,
-                label: 'Open',
+                label: "Open",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -307,7 +307,7 @@ YUI.add('wegas-entity', function(Y) {
                                                                 value: "GameModel:Instantiate"
                                                             }]
                                                     }],
-                                                tabSelector: '#rightTabView'
+                                                tabSelector: "#rightTabView"
                                             }
                                         }]
                                 }]
@@ -330,7 +330,7 @@ YUI.add('wegas-entity', function(Y) {
             name: {
                 type: STRING,
                 _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-name'
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-name"
                 }
             },
             gameModelName: {
@@ -339,7 +339,7 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: "uneditable",
                     label: "Scenario",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-scenario'
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-scenario"
                 }
             },
             description: {
@@ -347,7 +347,7 @@ YUI.add('wegas-entity', function(Y) {
                 format: TEXT,
                 optional: true,
                 _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             },
             createdByName: {
@@ -393,16 +393,16 @@ YUI.add('wegas-entity', function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-access",
                     interactions: [{
                             valueTrigger: "ENROLMENTKEY",
-                            actions: [{name: 'token', action: 'show'},
-                                //{name: 'url', action: 'show'},
-                                {name: 'keys', action: 'hide'},
-                                {name: 'accountkeys', action: 'hide'}]
+                            actions: [{name: "token", action: "show"},
+                                //{name: "url", action: "show"},
+                                {name: "keys", action: "hide"},
+                                {name: "accountkeys", action: "hide"}]
                         }, {
                             valueTrigger: "SINGLEUSAGEENROLMENTKEY",
-                            actions: [{name: 'token', action: 'hide'},
-                                //{name: 'url', action: 'hide'},
-                                {name: 'keys', action: 'show'},
-                                {name: 'accountkeys', action: 'show'}]
+                            actions: [{name: "token", action: "hide"},
+                                //{name: url, action: hide},
+                                {name: "keys", action: "show"},
+                                {name: "accountkeys", action: "show"}]
                         }]
                 }
             },
@@ -417,7 +417,7 @@ YUI.add('wegas-entity', function(Y) {
 //                    description: "Players need to log in or create an account and then use the enrolment key to join the game."
                         //        + "The key can be used to join multiple times."
                         //description: "Leave blank for automatic generation",
-                        //wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                        //wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             },
             keys: {
@@ -440,7 +440,7 @@ YUI.add('wegas-entity', function(Y) {
                 _inputex: {
                     _type: "accountkeylist",
                     label: "Option 2: Player accesses with username/password",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-game-users',
+                    wrapperClassName: "inputEx-fieldWrapper wegas-game-users",
                     index: 2,
                     description: "Player directly joins the game with username/password.<br />"
                         + " Each username/password can be used only once."
@@ -469,7 +469,7 @@ YUI.add('wegas-entity', function(Y) {
                         cfg: {
                             label: "Details",
                             emptyTab: true,
-                            tabSelector: '#rightTabView',
+                            tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "List",
                                     cssClass: "wegas-lobby-editgame",
@@ -491,7 +491,7 @@ YUI.add('wegas-entity', function(Y) {
                         fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
-                            tabSelector: '#rightTabView',
+                            tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "ShareUser",
                                     permsList: [
@@ -515,7 +515,7 @@ YUI.add('wegas-entity', function(Y) {
                         fn: "OpenTabActionThi",
                         cfg: {
                             label: "Players",
-                            tabSelector: '#rightTabView',
+                            tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "TeamTreeView",
                                     plugins: [{
@@ -570,7 +570,7 @@ YUI.add('wegas-entity', function(Y) {
                                                                 value: "Game:Edit,View"
                                                             }]
                                                     }],
-                                                tabSelector: '#rightTabView'
+                                                tabSelector: "#rightTabView"
                                             }
                                         }]
                                 }, {
@@ -593,7 +593,7 @@ YUI.add('wegas-entity', function(Y) {
      */
     persistence.Team = Base.create("Team", persistence.Entity, [], {}, {
         ATTRS: {
-            '@class': {
+            "@class": {
                 value: "Team"
             },
             name: {
@@ -879,7 +879,7 @@ YUI.add('wegas-entity', function(Y) {
                     }
                 },
                 _inputex: {
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         },

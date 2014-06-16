@@ -39,11 +39,19 @@ public class Transition extends AbstractEntity {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+
+    /**
+     *
+     */
+    @JsonView(Views.EditorExtendedI.class)
+    private Integer index = 0;
+
     /**
      *
      */
     @Embedded
     private Script triggerCondition;
+
     /**
      *
      */
@@ -56,13 +64,11 @@ public class Transition extends AbstractEntity {
     })
     @JsonView(Views.EditorExtendedI.class)
     private Script preStateImpact;
-    private Long nextStateId;
 
     /**
      *
      */
-    public Transition() {
-    }
+    private Long nextStateId;
 
     @Override
     public Long getId() {
@@ -128,5 +134,20 @@ public class Transition extends AbstractEntity {
         this.nextStateId = newTranstion.nextStateId;
         this.preStateImpact = newTranstion.preStateImpact;
         this.triggerCondition = newTranstion.triggerCondition;
+        this.index = newTranstion.index;
+    }
+
+    /**
+     * @return the index
+     */
+    public Integer getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }

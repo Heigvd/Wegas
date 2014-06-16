@@ -68,7 +68,8 @@ YUI.add('wegas-leaderway-team', function(Y) {
                 return;
 
             variables = Y.Array.map(variables.get('items'), function(employeeFolder) {
-                return Y.Array.find(employeeFolder.get('items'), function(vd) {
+                return employeeFolder instanceof Wegas.persistence.ListDescriptor &&
+                    Y.Array.find(employeeFolder.get('items'), function(vd) {
                     return vd instanceof Wegas.persistence.ResourceDescriptor;
                 });
             });

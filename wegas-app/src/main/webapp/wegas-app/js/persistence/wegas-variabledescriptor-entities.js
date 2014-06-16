@@ -11,7 +11,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-YUI.add('wegas-variabledescriptor-entities', function(Y) {
+YUI.add("wegas-variabledescriptor-entities", function(Y) {
     "use strict";
 
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
@@ -32,7 +32,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
         getInstance: function(player) {
-            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get('currentPlayerId');
+            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get("currentPlayerId");
             return this.get("scope").getInstance(playerId);
         },
         getLabel: function() {
@@ -56,7 +56,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 type: STRING,
                 optional: true,
                 _inputex: {
-                    wrapperClassName: 'wegas-advanced-feature',
+                    wrapperClassName: "wegas-advanced-feature",
                     label: "Script alias",
                     index: -1,
                     //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
@@ -78,37 +78,37 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         type: STRING,
                         choices: [{
                                 value: "TeamScope",
-                                label: 'different for each team'
+                                label: "different for each team"
                             }, {
                                 value: "PlayerScope",
-                                label: 'different for each user'
+                                label: "different for each user"
                             }, {
                                 value: "GameScope",
-                                label: 'different for each game'
+                                label: "different for each game"
                             }, {
                                 value: "GameModelScope",
-                                label: 'the same for everybody'
+                                label: "the same for everybody"
                             }],
                         _inputex: {
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            label: 'Variable is'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
+                            label: "Variable is"
                         }
                     },
                     broadcastScope: {
                         type: STRING,
                         choices: [{
                                 value: "TeamScope",
-                                label: 'anyone in the player\'s team'
+                                label: "anyone in the player's team"
                             }, {
                                 value: "PlayerScope",
-                                label: 'the current player only'
+                                label: "the current player only"
                             }, {
                                 value: "GameScope",
-                                label: 'anybody in the game'
+                                label: "anybody in the game"
                             }],
                         _inputex: {
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            label: 'Variable is visible by'
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
+                            label: "Variable is visible by"
                         }
                     }
                 }
@@ -178,7 +178,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.GameScope = Base.create("GameScope", persistence.Scope, [], {
         getInstance: function() {
-            return this.get("variableInstances")[String(Wegas.Facade.Game.get('currentGameId'))];
+            return this.get("variableInstances")[String(Wegas.Facade.Game.get("currentGameId"))];
         }
     }, {
         ATTRS: {
@@ -193,7 +193,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
      */
     persistence.TeamScope = Base.create("TeamScope", persistence.Scope, [], {
         getInstance: function(playerId) {
-            return this.get("variableInstances")[Wegas.Facade.Game.get('currentTeamId')];
+            return this.get("variableInstances")[Wegas.Facade.Game.get("currentTeamId")];
         }
     }, {
         ATTRS: {
@@ -255,7 +255,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         _inputex: {
-                            value: 'StringInstance',
+                            value: "StringInstance",
                             _type: HIDDEN
                         }
                     },
@@ -263,7 +263,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: {
                         type: STRING,
                         _inputex: {
-                            label: 'Default value'
+                            label: "Default value"
                         }
                     }
 
@@ -297,7 +297,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         _inputex: {
-                            value: 'TextInstance',
+                            value: "TextInstance",
                             _type: HIDDEN
                         }
                     },
@@ -306,7 +306,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                         type: HTML,
                         optional: true,
                         _inputex: {
-                            label: 'Default value'
+                            label: "Default value"
                         }
                     }
 
@@ -363,14 +363,14 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 type: NUMBER,
                 optional: true,
                 _inputex: {
-                    label: 'Minimum'
+                    label: "Minimum"
                 }
             },
             maxValue: {
                 type: NUMBER,
                 optional: true,
                 _inputex: {
-                    label: 'Maximum'
+                    label: "Maximum"
                 }
             },
             value: {
@@ -392,7 +392,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         _inputex: {
-                            value: 'NumberInstance',
+                            value: "NumberInstance",
                             _type: HIDDEN
                         }
                     },
@@ -400,7 +400,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     value: {
                         type: NUMBER,
                         _inputex: {
-                            label: 'Default value'
+                            label: "Default value"
                         }
                     }
 
@@ -469,7 +469,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                 _inputex: {
                     _type: "list",
                     useButtons: true,
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
         }
@@ -580,7 +580,7 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
                     "@class": {
                         type: STRING,
                         _inputex: {
-                            value: 'ListInstance',
+                            value: "ListInstance",
                             _type: HIDDEN
                         }
                     },
@@ -684,11 +684,11 @@ YUI.add('wegas-variabledescriptor-entities', function(Y) {
             },
             defaultInstance: {
                 properties: {
-                    '@class': {
+                    "@class": {
                         type: STRING,
                         _inputex: {
                             _type: HIDDEN,
-                            value: 'InboxInstance'
+                            value: "InboxInstance"
                         }
                     },
                     id: IDATTRDEF
