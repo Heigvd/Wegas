@@ -9,8 +9,10 @@ package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.statemachine.Transition;
+import com.wegas.core.rest.util.Views;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -21,6 +23,9 @@ public class DialogueTransition extends Transition {
 
     @Lob
     private String actionText;
+
+    @JsonView(Views.EditorExtendedI.class)
+    private Integer index = 0;
 
     /**
      * @return the actionText
@@ -38,7 +43,23 @@ public class DialogueTransition extends Transition {
 
     @Override
     public void merge(AbstractEntity other) {
-        this.actionText = ((DialogueTransition) other).actionText;
+        DialogueTransition otherDialogue = (DialogueTransition) other;
+        this.actionText = otherDialogue.actionText;
+        this.index = otherDialogue.index;
         super.merge(other);
+    }
+
+    /**
+     * @return the index
+     */
+    public Integer getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 }
