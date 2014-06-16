@@ -219,7 +219,8 @@ YUI.add('wegas-plugin', function(Y) {
             subpageVariable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    _type: "variableselect",
+                    _type: "hidden",
+                    //_type: "variableselect",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
