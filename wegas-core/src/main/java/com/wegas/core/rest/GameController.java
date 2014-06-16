@@ -16,7 +16,6 @@ import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.GameEnrolmentKey;
-import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -105,6 +104,7 @@ public class GameController {
      * @param gameModelId
      * @param entity
      * @return
+     * @throws IOException
      */
     @POST
     public Game create(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
@@ -115,6 +115,13 @@ public class GameController {
         return entity;
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param entity
+     * @return
+     * @throws IOException
+     */
     @POST
     @Path("ShadowCreate")
     public Game shadowCreate(@PathParam("gameModelId") Long gameModelId, Game entity) throws IOException {
@@ -130,6 +137,7 @@ public class GameController {
      * @param gameModelId
      * @param entity
      * @return
+     * @throws IOException
      */
     @POST
     @Path("{gmId : [1-9][0-9]*}")
@@ -218,10 +226,16 @@ public class GameController {
             SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
             if (game.getGameModel().getProperties().getFreeForAll()) {          // If game is "freeForAll" (single team)
                 //if (game.getTeams().isEmpty()) {
-                if (game.getTeams().size() <= 1) {                              // Create a team if none present (first team is debug team)
-                    teamFacade.create(game.getId(), new Team("Default"));
-                }
-                Team team = game.getTeams().get(1);                             // Join the first team available
+
+                // Version 1: Create a team for each user 
+                Team team = new Team("Team-" + game.getTeams().size());
+                teamFacade.create(game.getId(), team);
+
+                // Version 2: Use same team for everybody
+                //if (game.getTeams().size() <= 1) {                              // Create a team if none present (first team is debug team)
+                //    teamFacade.create(game.getId(), new Team("Default"));
+                //}
+                //Team team = game.getTeams().get(1);                             // Join the first team available
                 return Arrays.asList(team, game);
             } else {
                 return game;
@@ -243,6 +257,12 @@ public class GameController {
         return gameFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
     }
 
+    /**
+     *
+     * @param teamId
+     * @param accounts
+     * @return
+     */
     @POST
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, List<AbstractAccount> accounts) {
@@ -311,7 +331,8 @@ public class GameController {
 
     /**
      *
-     * @param entityId
+     * @param gameId
+     * @param accountNumber
      * @return
      */
     @POST
@@ -322,6 +343,11 @@ public class GameController {
         return gameFacade.createGameAccount(g, accountNumber);
     }
 
+    /**
+     *
+     * @param token
+     * @return
+     */
     @GET
     @Path("/FindByToken/{token : .*}/")
     public Game findByToken(@PathParam("token") String token) {

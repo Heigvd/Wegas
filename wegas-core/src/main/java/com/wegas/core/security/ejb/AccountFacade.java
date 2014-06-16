@@ -84,11 +84,13 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 // not able to revive this role
             }
         }
-        if (!account.getUsername().equals("") && account.getUsername() != null) {
+        if (!account.getUsername().equals("") && account.getUsername() != null) {// If the provided username is not null
             try {
-                this.findByUsername(account.getUsername());
-                throw new WegasException("This username is already in use");
-            } catch (NoResultException | WegasException e) {
+                AbstractAccount a = this.findByUsername(account.getUsername());
+                if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
+                    throw new WegasException("This username is already in use");// throw an exception
+                }
+            } catch (NoResultException e) {
                 // GOTCHA no username could be found, do not use
             }
         }
@@ -219,6 +221,11 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         return accounts;
     }
 
+    /**
+     *
+     * @param team
+     * @return
+     */
     public ArrayList<AbstractAccount> findByTeam(Team team) {
         ArrayList<AbstractAccount> result = new ArrayList<>();
         for (Player player : team.getPlayers()) {
