@@ -54,3 +54,8 @@
     padding: 8px 5px 0px 18px;
     background: none;
 }
+.yui3-skin-sam .wegas-inbox-invite {
+     text-align: center;
+     font-style: italic;
+     padding-top: 30px;
+}
