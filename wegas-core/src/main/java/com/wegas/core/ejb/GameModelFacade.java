@@ -79,6 +79,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         return em;
     }
 
+    /**
+     *
+     *
+     * @param entity
+     */
     @Override
     public void create(final GameModel entity) {
         super.create(entity);

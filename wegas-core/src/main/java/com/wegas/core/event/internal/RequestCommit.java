@@ -18,6 +18,10 @@ public class RequestCommit implements Serializable {
 
     private EntityUpdatedEvent request;
 
+    /**
+     *
+     * @param request
+     */
     public RequestCommit(EntityUpdatedEvent request) {
         this.request = request;
     }

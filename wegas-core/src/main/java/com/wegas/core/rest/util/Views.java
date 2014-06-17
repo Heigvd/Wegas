@@ -27,6 +27,9 @@ public class Views {
     public static interface ExtendedI {
     }
 
+    /**
+     *
+     */
     public static interface EditorExtendedI extends ExtendedI {
     }
 
@@ -47,6 +50,9 @@ public class Views {
     public static interface WithScopeI {
     }
 
+    /**
+     *
+     */
     public static interface SinglePlayerI extends WithScopeI {
     }
 

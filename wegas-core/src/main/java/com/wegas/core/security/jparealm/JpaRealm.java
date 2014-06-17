@@ -102,6 +102,11 @@ public class JpaRealm extends AuthorizingRealm {
         return Helper.lookupBy(AccountFacade.class);
     }
 
+    /**
+     *
+     * @param info
+     * @param p
+     */
     public static void addPermissions(SimpleAuthorizationInfo info, Permission p) {
         info.addStringPermission(p.getValue());
         if (p.getInducedPermission() != null && !p.getInducedPermission().isEmpty()) {

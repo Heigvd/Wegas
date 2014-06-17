@@ -62,7 +62,6 @@ public class PlayerScope extends AbstractScope {
 
     /**
      *
-     * @param playerId
      * @param v
      */
     @Override

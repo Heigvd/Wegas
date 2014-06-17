@@ -19,17 +19,32 @@ public class ExceptionEvent extends ClientEvent {
 
     private List<Exception> exceptions;
 
+    /**
+     *
+     */
     public ExceptionEvent() {
     }
 
+    /**
+     *
+     * @param exceptions
+     */
     public ExceptionEvent(List<Exception> exceptions) {
         this.exceptions = exceptions;
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Exception> getExceptions() {
         return exceptions;
     }
 
+    /**
+     *
+     * @param exceptions
+     */
     public void setExceptions(List<Exception> exceptions) {
         this.exceptions = exceptions;
     }

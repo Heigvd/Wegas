@@ -142,6 +142,10 @@ public class JpaAccount extends AbstractAccount {
         return email;
     }
 
+    /**
+     *
+     * @return
+     */
     public String getHash() {
         if (email != null) {
             return Helper.md5Hex(email);

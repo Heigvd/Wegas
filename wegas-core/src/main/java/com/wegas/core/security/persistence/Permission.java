@@ -48,13 +48,25 @@ public class Permission extends AbstractEntity {
     @JsonIgnore
     private Role role;
 
+    /**
+     *
+     */
     public Permission() {
     }
 
+    /**
+     *
+     * @param value
+     */
     public Permission(String value) {
         this.value = value;
     }
 
+    /**
+     *
+     * @param value
+     * @param inducedPermission
+     */
     public Permission(String value, String inducedPermission) {
         this.value = value;
         this.inducedPermission = inducedPermission;
@@ -116,6 +128,10 @@ public class Permission extends AbstractEntity {
         return id;
     }
 
+    /**
+     *
+     * @param id
+     */
     public void setId(Long id) {
         this.id = id;
     }

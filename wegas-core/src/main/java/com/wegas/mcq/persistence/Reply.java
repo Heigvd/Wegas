@@ -62,6 +62,9 @@ public class Reply extends AbstractEntity {
         this.setStartTime(other.getStartTime());
     }
 
+    /**
+     *
+     */
     @PostPersist
     @PostUpdate
     @PostRemove

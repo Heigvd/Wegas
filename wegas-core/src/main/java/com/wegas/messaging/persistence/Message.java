@@ -128,7 +128,6 @@ public class Message extends NamedEntity {
 
     /**
      *
-     * @throws NamingException
      */
     @PostPersist
     @PostUpdate
@@ -218,7 +217,7 @@ public class Message extends NamedEntity {
     }
 
     /**
-     * @param mailboxInstanceEntity
+     * @param inboxInstance
      */
     public void setInboxInstance(InboxInstance inboxInstance) {
         this.inboxInstance = inboxInstance;

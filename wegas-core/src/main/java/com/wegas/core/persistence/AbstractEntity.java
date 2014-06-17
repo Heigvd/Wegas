@@ -130,7 +130,7 @@ public abstract class AbstractEntity implements Serializable, Cloneable {
 
     /**
      *
-     * @return @throws IOException
+     * @return 
      * @throws IOException
      */
     public String toJson() throws IOException {

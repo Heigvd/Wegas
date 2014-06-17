@@ -56,6 +56,12 @@ public class TeamFacade extends BaseFacade<Team> {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @return
+     */
     public Team findByName(Long gameModelId, String name) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();

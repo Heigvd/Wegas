@@ -42,7 +42,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
         syncUI: function() {
             LeaderwayTeam.superclass.syncUI.apply(this);
             var cb = this.get(CONTENTBOX);
-            if (this.panel) {
+            if (this.panel && !this.panel.get("destroyed")) {
                 var dialogue = Wegas.Facade.Variable.cache.findById(this.currentDialogue.get("id")).getInstance(); // Force cache refresh
                 if (!dialogue.get("enabled")) {
                     this.panel.destroy();
@@ -68,7 +68,8 @@ YUI.add('wegas-leaderway-team', function(Y) {
                 return;
 
             variables = Y.Array.map(variables.get('items'), function(employeeFolder) {
-                return Y.Array.find(employeeFolder.get('items'), function(vd) {
+                return employeeFolder instanceof Wegas.persistence.ListDescriptor &&
+                    Y.Array.find(employeeFolder.get('items'), function(vd) {
                     return vd instanceof Wegas.persistence.ResourceDescriptor;
                 });
             });

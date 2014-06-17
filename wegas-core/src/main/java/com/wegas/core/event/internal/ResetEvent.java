@@ -24,24 +24,44 @@ public class ResetEvent implements Serializable {
     private GameModel gameModel = null;
     private Game game = null;
 
+    /**
+     *
+     * @param game
+     */
     public ResetEvent(Game game) {
         this.game = game;
     }
 
+    /**
+     *
+     * @param gameModel
+     */
     public ResetEvent(GameModel gameModel) {
         this.gameModel = gameModel;
     }
 
+    /**
+     *
+     * @param gameModel
+     */
     public void setGameModel(GameModel gameModel) {
         this.game = null;
         this.gameModel = gameModel;
     }
 
+    /**
+     *
+     * @param game
+     */
     public void setGame(Game game) {
         this.gameModel = null;
         this.game = game;
     }
 
+    /**
+     *
+     * @return
+     */
     public AbstractEntity getContext() {
         if (this.game == null) {
             return this.gameModel;
@@ -50,6 +70,10 @@ public class ResetEvent implements Serializable {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public List<Player> getConcernedPlayers() {
         if (this.getContext() instanceof Game) {
             return ((Game) (this.getContext())).getPlayers();
