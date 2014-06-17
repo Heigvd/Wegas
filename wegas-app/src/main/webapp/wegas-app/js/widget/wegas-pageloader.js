@@ -53,10 +53,10 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Wegas.Facade.VariableDescriptor.after("update", function() {// When the variable cache is update,
-                if (this.get("page") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
+                if (this.get("page.content") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
-                if (this.get("variable") && "" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
+                if (this.get("variable.content") && "" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
             }, this));
@@ -77,7 +77,7 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         syncUI: function() {
             var val = this.get("variable.evaluated"),
-                    page = this.get("page.evaluated");
+                page = this.get("page.evaluated");
             if (page) {                                                         // If there is a page script
                 this.set(PAGEID, +page);                                        // display it
             } else if (val && val.getInstance().get('value')) {                 // @backwardcompatibility
@@ -253,8 +253,8 @@ YUI.add('wegas-pageloader', function(Y) {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 _inputex: {
-                    //_type: "variableselect",
-                    _type: "hidden",
+                    _type: "variableselect",
+//                    _type: "hidden",
                     classFilter: ["NumberDescriptor", "TextDescriptor"],
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }

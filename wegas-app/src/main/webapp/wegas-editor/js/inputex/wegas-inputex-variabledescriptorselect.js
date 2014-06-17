@@ -647,6 +647,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 }]
                         }, {
                             type: "number",
+                            required: true,
                             value: this.options.rightValue || 0
                         }]
                 });
@@ -666,6 +667,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 }]
                         }, {
                             type: "string",
+                            required: true,
                             value: this.options.rightValue
                         }]
                 });
