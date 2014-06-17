@@ -411,8 +411,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         doNextLevel: function(fn, retry) {
             var content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
+            content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
             if (retry) {
-                content = content + 'maxLevel.value = currentLevel.value;' + 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
+                content  += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
             }
             Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
