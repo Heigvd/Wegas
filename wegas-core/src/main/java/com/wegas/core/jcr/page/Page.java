@@ -47,6 +47,12 @@ public class Page implements Serializable {
         this.extractAttrs();
     }
 
+    /**
+     *
+     * @param n
+     * @throws RepositoryException
+     * @throws IOException
+     */
     public Page(Node n) throws RepositoryException, IOException {
         this.id = n.getName();
         this.setContent(n.getProperty("content").getString());
@@ -153,7 +159,13 @@ public class Page implements Serializable {
     }
 
     //@TODO : tokenizer
-    public String extract(String jsonPath) {
+
+    /**
+     *
+     * @param jsonPath
+     * @return
+     */
+        public String extract(String jsonPath) {
         JsonNode node = this.content;
         final String[] xpath = jsonPath.trim().split("\\.|\\[|\\]");
         for (int i = 0; i < xpath.length; i++) {

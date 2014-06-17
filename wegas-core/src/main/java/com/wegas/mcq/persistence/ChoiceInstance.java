@@ -103,12 +103,16 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     * @param currentResultName the currentResultName to set
+     * @param currentResultIndex
      */
     public void setCurrentResultIndex(int currentResultIndex) {
         this.currentResultIndex = currentResultIndex;
     }
 
+    /**
+     *
+     * @return
+     */
     @JsonIgnore
     public int getSerializedResultIndex() {
         return this.currentResultIndex;

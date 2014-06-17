@@ -22,9 +22,17 @@ public class CustomEvent extends ClientEvent {
     private String type;
     private Object payload;
 
+    /**
+     *
+     */
     public CustomEvent() {
     }
 
+    /**
+     *
+     * @param type
+     * @param payload
+     */
     public CustomEvent(String type, Object payload) {
         this.type = type;
         this.payload = payload;
@@ -33,7 +41,6 @@ public class CustomEvent extends ClientEvent {
     /**
      *
      * @return @throws IOException
-     * @throws IOException
      */
     public String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();

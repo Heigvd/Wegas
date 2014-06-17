@@ -39,7 +39,12 @@ public class WebsocketController {
     /**
      * Retrieve
      *
+     * @param entityType
+     * @param data
+     * @param eventType
+     * @param entityId
      * @return
+     * @throws java.io.IOException
      */
     @POST
     @Path("Send/{entityType : .*}/{entityId : .*}/{eventType : .*}")

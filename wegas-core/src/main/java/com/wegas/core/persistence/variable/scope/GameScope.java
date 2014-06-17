@@ -47,6 +47,9 @@ public class GameScope extends AbstractScope {
     @JsonIgnore
     private Map<Long, VariableInstance> gameVariableInstances = new HashMap<>();
 
+    /**
+     *
+     */
     @PrePersist
     public void prePersist() {
         this.propagateDefaultInstance(false);

@@ -42,13 +42,25 @@ public class GameModelContent implements Serializable {
     //@JsonView({Views.Export.class})
     private String content = "";
 
+    /**
+     *
+     */
     public GameModelContent() {
     }
 
+    /**
+     *
+     * @param content
+     */
     public GameModelContent(String content) {
         this.content = content;
     }
 
+    /**
+     *
+     * @param contentType
+     * @param content
+     */
     public GameModelContent(String contentType, String content) {
         this.contentType = contentType;
         this.content = content;
@@ -64,8 +76,8 @@ public class GameModelContent implements Serializable {
     /**
      * @param contentType the contentType to set
      */
-    public void setContentType(String type) {
-        this.contentType = type;
+    public void setContentType(String contentType) {
+        this.contentType = contentType;
     }
 
     /**

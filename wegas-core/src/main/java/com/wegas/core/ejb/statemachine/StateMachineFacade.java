@@ -85,6 +85,10 @@ public class StateMachineFacade implements Serializable {
         this.runForPlayer(player);
     }
 
+    /**
+     *
+     * @param resetEvent
+     */
     public void resetEventListener(@Observes ResetEvent resetEvent) {
         logger.debug("Received Reset event");
         System.out.println("ResetEvent");

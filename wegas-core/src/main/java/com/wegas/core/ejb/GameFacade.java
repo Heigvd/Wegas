@@ -452,6 +452,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      *
+     * @param user
      * @param game
      */
     public void addRights(User user, Game game) {

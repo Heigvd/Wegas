@@ -40,6 +40,9 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
     @OrderColumn
     private List<VariableDescriptor> items = new ArrayList<>();
 
+    /**
+     *
+     */
     public ListDescriptor() {
         super();
     }
@@ -52,6 +55,11 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         super(name);
     }
 
+    /**
+     *
+     * @param name
+     * @param defaultInstance
+     */
     public ListDescriptor(String name, VariableInstance defaultInstance) {
         super(name, defaultInstance);
     }

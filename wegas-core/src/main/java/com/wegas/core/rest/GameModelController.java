@@ -60,6 +60,13 @@ public class GameModelController {
         return gm;
     }
 
+    /**
+     *
+     * @param templateGameModelId
+     * @param gm
+     * @return
+     * @throws IOException
+     */
     @POST
     @Path("{templateGameModelId : [1-9][0-9]*}")
     public GameModel templateCreate(@PathParam("templateGameModelId") Long templateGameModelId, GameModel gm) throws IOException {

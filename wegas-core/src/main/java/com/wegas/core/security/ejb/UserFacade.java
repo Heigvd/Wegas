@@ -487,6 +487,12 @@ public class UserFacade extends BaseFacade<User> {
         return this.getCurrentUser().equals(playerFacade.find(playerId).getUser());
     }
 
+    /**
+     *
+     * @param accountRoles
+     * @param compareRoles
+     * @return
+     */
     public boolean hasRoles(ArrayList<String> accountRoles, ArrayList<Role> compareRoles) {
         for (int i = 0; i < accountRoles.size(); i++) {
             for (int ii = 0; ii < compareRoles.size(); ii++) {
@@ -498,6 +504,11 @@ public class UserFacade extends BaseFacade<User> {
         return false;
     }
 
+    /**
+     *
+     * @param gmId
+     * @param newGmId
+     */
     public void duplicatePermissionByInstance(String gmId, String newGmId) {
         List<AbstractAccount> accounts = this.findAccountPermissionByInstance(gmId);
         String splitedPermission[];

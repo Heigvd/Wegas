@@ -76,6 +76,11 @@ public class GuestRealm extends AuthorizingRealm {
         return Helper.lookupBy(AccountFacade.class);
     }
 
+    /**
+     *
+     * @return
+     * @throws NamingException
+     */
     public RoleFacade roleFacade() throws NamingException {
         return Helper.lookupBy(RoleFacade.class);
     }

@@ -37,12 +37,22 @@ public class ResourceController {
     @EJB
     private ResourceFacade resourceFacade;
 
+    /**
+     *
+     * @param resourceInstanceId
+     * @param data
+     */
     @POST
     @Path("AbstractAssign/{resourceId : [1-9][0-9]*}")
     public void save(@PathParam("resourceId") Long resourceInstanceId, AbstractAssignement data) {
         resourceFacade.addAbstractAssignement(resourceInstanceId, data);
     }
 
+    /**
+     *
+     * @param abstractAssignementId
+     * @param type
+     */
     @DELETE
     @Path("AbstractRemove/{abstractAssignementId : [1-9][0-9]*}/{type}")
     public void delete(@PathParam("abstractAssignementId") Long abstractAssignementId,
@@ -50,36 +60,69 @@ public class ResourceController {
         resourceFacade.removeAbstractAssignement(abstractAssignementId, type);
     }
 
+    /**
+     *
+     * @param resourceInstanceId
+     * @param task
+     */
     @POST
     @Path("Assign/{resourceId : [1-9][0-9]*}")
     public void addAssignment(@PathParam("resourceId") Long resourceInstanceId, TaskDescriptor task) {
         resourceFacade.addAbstractAssignement(resourceInstanceId, new Assignment(task));
     }
 
+    /**
+     *
+     * @param resourceInstanceId
+     * @param time
+     */
     @POST
     @Path("Reserve/{resourceId : [1-9][0-9]*}/{time : [1-9][0-9]*}")
     public void addReservation(@PathParam("resourceId") Long resourceInstanceId, @PathParam("time") double time) {
         resourceFacade.addAbstractAssignement(resourceInstanceId, new Occupation(time));
     }
 
+    /**
+     *
+     * @param assignmentId
+     * @param index
+     * @return
+     */
     @POST
     @Path("MoveAssignment/{assignmentId : [1-9][0-9]*}/{index : [0-9]*}")
     public ResourceInstance moveAssignment(@PathParam("assignmentId") Long assignmentId, @PathParam("index") Integer index) {
         return resourceFacade.moveAssignment(assignmentId, index);
     }
 
+    /**
+     *
+     * @param assignmentId
+     * @return
+     */
     @DELETE
     @Path("RemoveAssignment/{assignmentId : [1-9][0-9]*}")
     public ResourceInstance removeAssignment(@PathParam("assignmentId") Long assignmentId) {
         return resourceFacade.removeAssignment(assignmentId);
     }
 
+    /**
+     *
+     * @param taskInstanceId
+     * @param periode
+     * @return
+     */
     @POST
     @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
     public TaskInstance addTaskPlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
         return resourceFacade.addTaskPlannification(taskInstanceId, periode);
     }
 
+    /**
+     *
+     * @param taskInstanceId
+     * @param periode
+     * @return
+     */
     @DELETE
     @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
     public TaskInstance removePlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {

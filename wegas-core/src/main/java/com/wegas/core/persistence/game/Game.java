@@ -16,7 +16,6 @@ import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -478,12 +477,16 @@ public class Game extends NamedEntity {
 
     /**
      *
-     * @param s
+     * @param p
      */
     public void setProperties(GameModelProperties p) {
         // So jersey don't yell
     }
 
+    /**
+     *
+     * @return
+     */
     public GameModelProperties getProperties() {
         return this.getGameModel().getProperties();
     }
