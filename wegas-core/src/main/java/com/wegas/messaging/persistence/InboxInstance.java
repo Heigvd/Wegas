@@ -31,6 +31,9 @@ import org.slf4j.LoggerFactory;
 @XmlType(name = "InboxInstance")
 public class InboxInstance extends VariableInstance {
 
+    /**
+     *
+     */
     protected static final org.slf4j.Logger logger = LoggerFactory.getLogger(InboxInstance.class);
     private static final long serialVersionUID = 1L;
     /**
@@ -95,6 +98,7 @@ public class InboxInstance extends VariableInstance {
      * @param from
      * @param subject
      * @param body
+     * @return 
      */
     public Message sendMessage(String from, String subject, String body) {
         Message msg = new Message(from, subject, body);
@@ -108,6 +112,7 @@ public class InboxInstance extends VariableInstance {
      * @param subject
      * @param body
      * @param attachements
+     * @return 
      */
     public Message sendMessage(final String from, final String subject, final String body, final List<String> attachements) {
         final Message msg = new Message(from, subject, body, attachements);
@@ -130,9 +135,19 @@ public class InboxInstance extends VariableInstance {
         return unread;
     }
 
+    /**
+     *
+     * @param count
+     */
     public void setUnreadCount(int count) {
         // only used to explicitely ignore while serializing
     }
+
+    /**
+     *
+     * @param subject
+     * @return
+     */
     public Message getMessageBySubject(String subject) {
         for (Message m: this.getMessages()) {
             if (m.getSubject().equals(subject)) {

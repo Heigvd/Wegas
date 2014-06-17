@@ -140,10 +140,20 @@ public class Role extends AbstractEntity {
         }
     }
 
+    /**
+     *
+     * @param permission
+     * @return
+     */
     public boolean addPermission(String permission) {
         return this.addPermission(new Permission(permission));
     }
 
+    /**
+     *
+     * @param permission
+     * @return
+     */
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {
             permission.setRole(this);
@@ -153,6 +163,11 @@ public class Role extends AbstractEntity {
         }
     }
 
+    /**
+     *
+     * @param permission
+     * @return
+     */
     public boolean removePermission(String permission) {
         Permission perm = new Permission(permission);
         Permission currPerm;

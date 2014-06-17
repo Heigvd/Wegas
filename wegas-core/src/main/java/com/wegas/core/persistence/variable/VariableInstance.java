@@ -159,6 +159,10 @@ abstract public class VariableInstance extends AbstractEntity {
         }
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
@@ -203,6 +207,10 @@ abstract public class VariableInstance extends AbstractEntity {
         return teamScopeKey;
     }
 
+    /**
+     *
+     * @param teamScopeKey
+     */
     public void setTeamScopeKey(Long teamScopeKey) {
         this.teamScopeKey = teamScopeKey;
     }
@@ -225,10 +233,18 @@ abstract public class VariableInstance extends AbstractEntity {
         return gameScope;
     }
 
+    /**
+     *
+     * @param playerScopeKey
+     */
     public void setPlayerScopeKey(Long playerScopeKey) {
         this.playerScopeKey = playerScopeKey;
     }
 
+    /**
+     *
+     * @param gameScopeKey
+     */
     public void setGameScopeKey(Long gameScopeKey) {
         this.gameScopeKey = gameScopeKey;
     }
@@ -288,6 +304,10 @@ abstract public class VariableInstance extends AbstractEntity {
         return defaultDescriptor;
     }
 
+    /**
+     *
+     * @return
+     */
     public VariableDescriptor findDescriptor() {
         if (this.getScope() != null) {
             return this.getDescriptor();

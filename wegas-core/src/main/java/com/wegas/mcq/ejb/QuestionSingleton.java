@@ -29,6 +29,11 @@ public class QuestionSingleton {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    /**
+     *
+     * @param instanceId
+     * @return
+     */
     public int findReplyCount(Long instanceId) {
         final Query query = em.createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
         query.setParameter("id", instanceId);

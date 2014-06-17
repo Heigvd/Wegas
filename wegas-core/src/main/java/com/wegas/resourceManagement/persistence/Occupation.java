@@ -69,6 +69,7 @@ public class Occupation extends AbstractAssignement {
 
     /**
      *
+     * @param time
      */
     public Occupation(double time) {
         this.time = time;

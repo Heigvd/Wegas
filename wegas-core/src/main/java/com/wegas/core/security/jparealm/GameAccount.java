@@ -23,20 +23,35 @@ public class GameAccount extends JpaAccount {
 
     private Game game;
 
+    /**
+     *
+     */
     public GameAccount() {
     }
 
+    /**
+     *
+     * @return
+     */
     @ManyToOne
     @XmlTransient
     public Game getGame() {
         return game;
     }
 
+    /**
+     *
+     * @return
+     */
     @Transient
     public String getToken() {
         return this.game.getToken();
     }
 
+    /**
+     *
+     * @param game
+     */
     public void setGame(Game game) {
         this.game = game;
     }

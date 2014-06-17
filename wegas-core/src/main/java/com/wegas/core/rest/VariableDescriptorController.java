@@ -121,6 +121,11 @@ public class VariableDescriptorController {
         return variableDescriptorFacade.update(entityId, entity);
     }
 
+    /**
+     *
+     * @param descriptorId
+     * @param index
+     */
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId, @PathParam("index") int index) {
@@ -130,6 +135,12 @@ public class VariableDescriptorController {
         variableDescriptorFacade.move(descriptorId, index);
     }
 
+    /**
+     *
+     * @param descriptorId
+     * @param parentDescriptorId
+     * @param index
+     */
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,

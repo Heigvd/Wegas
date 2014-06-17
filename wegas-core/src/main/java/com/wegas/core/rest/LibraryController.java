@@ -39,6 +39,12 @@ public class LibraryController {
     @EJB
     private LibraryFacade libraryFacade;
 
+    /**
+     *
+     * @param gameModelId
+     * @param library
+     * @return
+     */
     @GET
     @Path("{library:.*}")
     public Map get(@PathParam("gameModelId") Long gameModelId,
@@ -49,6 +55,13 @@ public class LibraryController {
         return libraryFacade.findLibrary(gameModelId, library);
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param library
+     * @param key
+     * @return
+     */
     @GET
     @Path("{library:.*}/{key : [a-zA-Z0-9_]+}")
     public String edit(@PathParam("gameModelId") Long gameModelId,
@@ -63,6 +76,7 @@ public class LibraryController {
     /**
      *
      * @param gameModelId
+     * @param library
      * @param script
      * @param key
      * @return p
@@ -83,6 +97,7 @@ public class LibraryController {
     /**
      *
      * @param gameModelId
+     * @param library
      * @param key
      * @return
      */

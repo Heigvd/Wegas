@@ -78,6 +78,9 @@ public class Player extends AbstractEntity {
         this.name = name;
     }
 
+    /**
+     *
+     */
     @PrePersist
     @PreUpdate
     public void preUpdate() {
