@@ -189,6 +189,14 @@ public class PageController {
                 .header("Page", name).build();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param pageId
+     * @return
+     * @throws RepositoryException
+     * @throws IOException
+     */
     @GET
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") String gameModelId,

@@ -57,6 +57,10 @@ public class ComboController {
      *
      */
     final static public String MediaTypeCss = "text/css; charset=ISO-8859-1";
+
+    /**
+     *
+     */
     final static public String MediaTypeJs = "text/javascript; charset=ISO-8859-1";
     /**
      *

@@ -21,10 +21,17 @@ public class CacheManagerHolder {
 
     private final CacheManager instance;
 
+    /**
+     *
+     */
     public CacheManagerHolder() {
         instance = CacheManager.getInstance();
     }
 
+    /**
+     *
+     * @return
+     */
     public CacheManager getInstance() {
         return instance;
     }

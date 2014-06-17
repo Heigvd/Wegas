@@ -29,7 +29,7 @@ public class DescriptorRevivedEvent implements Serializable {
 
     /**
      *
-     * @param p
+     * @param entity
      */
     public DescriptorRevivedEvent(VariableDescriptor entity) {
         this.entity = entity;

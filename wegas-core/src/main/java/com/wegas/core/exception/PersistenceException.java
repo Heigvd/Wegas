@@ -23,6 +23,10 @@ public class PersistenceException extends RuntimeException {
         super();
     }
 
+    /**
+     *
+     * @param message
+     */
     public PersistenceException(String message) {
         super(message);
     }

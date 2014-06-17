@@ -61,7 +61,8 @@ public class ResourceFacade {
     /**
      *
      * @param resourceInstance
-     * @param taskInstance
+     * @param taskDescriptor
+     * @return
      */
     public Assignment assign(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
@@ -70,9 +71,9 @@ public class ResourceFacade {
 
     /**
      *
-     * @param p
-     * @param resourceDescriptorId
+     * @param resourceInstanceId
      * @param taskDescriptorId
+     * @return
      */
     public Assignment assign(Long resourceInstanceId, Long taskDescriptorId) {
         return this.assign((ResourceInstance) variableInstanceFacade.find(resourceInstanceId), (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
@@ -81,7 +82,8 @@ public class ResourceFacade {
     /**
      *
      * @param resourceInstance
-     * @param taskInstance
+     * @param taskDescriptor
+     * @return
      */
     public Activity createActivity(ResourceInstance resourceInstance, TaskDescriptor taskDescriptor) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
@@ -90,8 +92,9 @@ public class ResourceFacade {
 
     /**
      *
-     * @param resourceInstance
-     * @param taskInstance
+     * @param resourceInstanceId
+     * @param taskDescriptorId
+     * @return
      */
     public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
         return this.createActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
@@ -113,6 +116,7 @@ public class ResourceFacade {
     /**
      *
      * @param resourceInstance
+     * @return
      */
     public Occupation addOccupation(ResourceInstance resourceInstance) {
         resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstance.getId());
@@ -122,8 +126,8 @@ public class ResourceFacade {
 
     /**
      *
-     * @param resourceInstance
-     * @param taskInstance
+     * @param resourceInstanceId
+     * @return
      */
     public Occupation addOccupation(Long resourceInstanceId) {
         ResourceInstance resourceInstance = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
@@ -134,6 +138,7 @@ public class ResourceFacade {
      *
      * @param assignementId
      * @param index
+     * @return
      */
     public ResourceInstance moveAssignment(final Long assignementId, final int index) {
         final Assignment assignement = this.em.find(Assignment.class, assignementId);
@@ -142,6 +147,11 @@ public class ResourceFacade {
         return assignement.getResourceInstance();
     }
 
+    /**
+     *
+     * @param assignementId
+     * @return
+     */
     public ResourceInstance removeAssignment(final Long assignementId) {
         final Assignment assignement = this.em.find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
@@ -160,6 +170,12 @@ public class ResourceFacade {
         return ti;
     }
 
+    /**
+     *
+     * @param resourceInstanceId
+     * @param abstractAssignement
+     * @return
+     */
     public ResourceInstance addAbstractAssignement(Long resourceInstanceId, AbstractAssignement abstractAssignement) {
         ResourceInstance res = (ResourceInstance) variableInstanceFacade.find(resourceInstanceId);
         if (abstractAssignement instanceof Occupation) {
@@ -175,6 +191,11 @@ public class ResourceFacade {
         return res;
     }
 
+    /**
+     *
+     * @param abstractAssignementId
+     * @param type
+     */
     public void removeAbstractAssignement(Long abstractAssignementId, String type) {
         switch (type) {
             case "occupations":
@@ -191,34 +212,70 @@ public class ResourceFacade {
         }
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Occupation findOccupation(Long id) {
         return em.find(Occupation.class, id);
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Activity findActivity(Long id) {
         return em.find(Activity.class, id);
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public Assignment findAssignment(Long id) {
         return em.find(Assignment.class, id);
     }
 
+    /**
+     *
+     * @param id
+     * @return
+     */
     public TaskInstance findTaskInstance(Long id) {
         return em.find(TaskInstance.class, id);
     }
 
+    /**
+     *
+     * @param taskInstanceId
+     * @param periode
+     * @return
+     */
     public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().add(periode);
         return ti;
     }
 
+    /**
+     *
+     * @param taskInstanceId
+     * @param periode
+     * @return
+     */
     public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(periode);
         return ti;
     }
 
+    /**
+     *
+     * @param event
+     */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
         logger.debug("Received DescriptorRevivedEvent event");
 

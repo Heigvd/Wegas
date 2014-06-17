@@ -19,6 +19,10 @@ public class GuestToken implements HostAuthenticationToken, RememberMeAuthentica
     private Long principal;
     private String host = null;
 
+    /**
+     *
+     * @param principal
+     */
     public GuestToken(Long principal) {
         this.principal = principal;
     }

@@ -12,6 +12,7 @@ import java.util.Comparator;
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
+ * @param <T>
  */
 public class AlphanumericComparator<T extends CharSequence> implements Comparator<T> {
 

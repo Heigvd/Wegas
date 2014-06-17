@@ -113,6 +113,12 @@ public class QuestionController {
         return reply.getQuestionInstance();
     }
 
+    /**
+     *
+     * @param replyId
+     * @param reply
+     * @return
+     */
     @PUT
     @Path("Reply/{entityId: [1-9][0-9]*}")
     public Reply update(@PathParam("entityId") Long replyId, Reply reply) {

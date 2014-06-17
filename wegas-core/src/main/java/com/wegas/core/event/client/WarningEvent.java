@@ -16,9 +16,17 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "WarningEvent")
 public class WarningEvent extends CustomEvent {
 
+    /**
+     *
+     */
     public WarningEvent() {
     }
 
+    /**
+     *
+     * @param type
+     * @param payload
+     */
     public WarningEvent(String type, Object payload) {
         super(type, payload);
     }

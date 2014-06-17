@@ -279,18 +279,42 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         return em;
     }
 
+    /**
+     *
+     */
     public static class EventObject {
 
+        /**
+         *
+         */
         public Reply reply;
+
+        /**
+         *
+         */
         public ChoiceInstance choice;
+
+        /**
+         *
+         */
         public QuestionInstance question;
 
+        /**
+         *
+         * @param reply
+         * @param choice
+         * @param question
+         */
         public EventObject(Reply reply, ChoiceInstance choice, QuestionInstance question) {
             this.reply = reply;
             this.choice = choice;
             this.question = question;
         }
 
+        /**
+         *
+         * @param reply
+         */
         public EventObject(Reply reply) {
             this.reply = reply;
         }

@@ -128,6 +128,11 @@ public class UserController {
         return userFacade.find(entityId);
     }
 
+    /**
+     *
+     * @param value
+     * @return
+     */
     @GET
     @Path("AutoComplete/{value}")
     public List<JpaAccount> getAutoComplete(@PathParam("value") String value) {
@@ -137,6 +142,12 @@ public class UserController {
         return accountFacade.findByNameOrEmail("%" + value + "%", true);
     }
 
+    /**
+     *
+     * @param value
+     * @param gameId
+     * @return
+     */
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
     public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
@@ -165,6 +176,12 @@ public class UserController {
         return accounts;
     }
 
+    /**
+     *
+     * @param value
+     * @param rolesList
+     * @return
+     */
     @POST
     @Path("AutoComplete/{value}")
     public List<JpaAccount> getAutoCompleteByRoles(@PathParam("value") String value, HashMap<String, Object> rolesList) {
@@ -184,6 +201,11 @@ public class UserController {
         return returnValue;
     }
 
+    /**
+     *
+     * @param values
+     * @return
+     */
     @GET
     @Path("FindAccountsByEmailValues")
     public List<Map> findAccountsByEmailValues(@QueryParam("values") List<String> values) {
@@ -208,6 +230,11 @@ public class UserController {
         return returnValue;
     }
 
+    /**
+     *
+     * @param values
+     * @return
+     */
     @GET
     @Path("FindAccountsByName")
     public List<JpaAccount> findAccountsByName(@QueryParam("values") List<String> values) {
@@ -295,6 +322,8 @@ public class UserController {
      * @param remember
      * @param request
      * @param response
+     * @throws javax.servlet.ServletException
+     * @throws java.io.IOException
      */
     @POST
     @Path("Authenticate")
@@ -321,12 +350,18 @@ public class UserController {
         }
     }
 
+    /**
+     *
+     */
     @POST
     @Path("GuestLogin")
     public void guestLogin() {
         userFacade.guestLogin();
     }
 
+    /**
+     *
+     */
     @POST
     @Path("TeacherGuestLogin")
     public void teacherGuestLogin() {
@@ -334,6 +369,10 @@ public class UserController {
         user.getMainAccount().addRole(roleFacade.findByName("Scenarist"));
     }
 
+    /**
+     *
+     * @return
+     */
     @GET
     @Path("LoggedIn")
     public boolean isLoggedIn() {
@@ -413,7 +452,7 @@ public class UserController {
     /**
      * Get all GameModel permissions by GameModel id
      *
-     * @param id
+     * @param instance
      * @return
      */
     @GET
@@ -461,6 +500,12 @@ public class UserController {
         return this.userFacade.addRolePermission(roleId, permission);
     }
 
+    /**
+     *
+     * @param roleName
+     * @param permission
+     * @return
+     */
     @POST
     @Path("AddPermission/{roleName}/{permission}")
     public boolean addPermissionsByInstance(@PathParam(value = "roleName") String roleName, @PathParam(value = "permission") String permission) {
@@ -484,6 +529,12 @@ public class UserController {
         return this.userFacade.deleteRolePermissionsByIdAndInstance(roleId, id);
     }
 
+    /**
+     *
+     * @param roleName
+     * @param id
+     * @return
+     */
     @POST
     @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
@@ -491,6 +542,11 @@ public class UserController {
         return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
     }
 
+    /**
+     *
+     * @param entityId
+     * @return
+     */
     @GET
     @Path("FindAccountPermissionByInstance/{entityId}")
     public List<AbstractAccount> findAccountPermissionByInstance(@PathParam("entityId") String entityId) {
@@ -500,6 +556,11 @@ public class UserController {
         return userFacade.findAccountPermissionByInstance(entityId);
     }
 
+    /**
+     *
+     * @param permission
+     * @param accountId
+     */
     @POST
     @Path("addAccountPermission/{permission}/{accountId : [1-9][0-9]*}")
     public void addAccountPermission(@PathParam("permission") String permission,
@@ -512,6 +573,11 @@ public class UserController {
         userFacade.addAccountPermission(accountId, permission);
     }
 
+    /**
+     *
+     * @param entityId
+     * @param accountId
+     */
     @DELETE
     @Path("DeleteAccountPermissionByInstanceAndAccount/{entityId}/{accountId : [1-9][0-9]*}")
     public void deleteAccountPermissionByInstanceAndAccount(@PathParam("entityId") String entityId,
@@ -522,6 +588,11 @@ public class UserController {
         userFacade.deleteAccountPermissionByInstanceAndAccount(entityId, accountId);
     }
 
+    /**
+     *
+     * @param permission
+     * @param accountId
+     */
     @DELETE
     @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
     public void DeleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,

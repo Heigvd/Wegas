@@ -38,7 +38,8 @@ public class DialogueTransition extends Transition {
 
     @Override
     public void merge(AbstractEntity other) {
-        this.actionText = ((DialogueTransition) other).actionText;
+        DialogueTransition otherDialogue = (DialogueTransition) other;
+        this.actionText = otherDialogue.actionText;
         super.merge(other);
     }
 }

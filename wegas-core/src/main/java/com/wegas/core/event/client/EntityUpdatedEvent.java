@@ -24,9 +24,16 @@ public class EntityUpdatedEvent extends ClientEvent {
 
     private List<VariableInstance> updatedEntities = new ArrayList<>();
 
+    /**
+     *
+     */
     public EntityUpdatedEvent() {
     }
 
+    /**
+     *
+     * @param updatedEntities
+     */
     public EntityUpdatedEvent(List<VariableInstance> updatedEntities) {
         this.updatedEntities = updatedEntities;
     }
@@ -45,6 +52,10 @@ public class EntityUpdatedEvent extends ClientEvent {
         this.updatedEntities = updatedEntities;
     }
 
+    /**
+     *
+     * @param vi
+     */
     public void addEntity(VariableInstance vi) {
         this.updatedEntities.add(vi);
     }
@@ -52,7 +63,6 @@ public class EntityUpdatedEvent extends ClientEvent {
     /**
      *
      * @return @throws IOException
-     * @throws IOException
      */
     public String toJson() throws IOException {
         ObjectMapper mapper = JacksonMapperProvider.getMapper();

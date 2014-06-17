@@ -44,6 +44,10 @@ public class UpdateController {
     @EJB
     GameModelFacade gameModelFacade;
 
+    /**
+     *
+     * @return
+     */
     @GET
     public String index() {
         String ret = "";
@@ -57,9 +61,8 @@ public class UpdateController {
     /**
      * Retrieve
      *
-     * @param req
+     * @param gameModelId
      * @return
-     * @throws IOException
      */
     @GET
     @Path("Encode/{gameModelId : ([1-9][0-9]*)}")
@@ -76,6 +79,11 @@ public class UpdateController {
         return "Finished";
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @return
+     */
     @GET
     @Path("UpdateScript/{gameModelId : ([1-9][0-9]*)}")
     public String script(@PathParam("gameModelId") Long gameModelId) {

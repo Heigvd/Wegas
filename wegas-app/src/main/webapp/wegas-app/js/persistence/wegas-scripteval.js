@@ -7,11 +7,13 @@
  */
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
+
     var ScriptEval, Variable, Wegas = Y.Wegas;
 
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
-        context: null,
-        upToDate: false,
+        /**
+         * 
+         */
         initializer: function() {
             this.context = {};
             this.upToDate = false;
@@ -148,11 +150,11 @@ YUI.add('wegas-scripteval', function(Y) {
         NS: "script",
         NAME: "scriptEval"
     });
+    Y.Plugin.ScriptEval = ScriptEval;
+
     Variable = {
         find: function(gameModel, name) {
             return Wegas.Facade.Variable.cache.find("name", (Y.Lang.isString(gameModel)) ? gameModel : name);
         }
     };
-    Y.Plugin.ScriptEval = ScriptEval;
-
 });

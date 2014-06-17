@@ -159,6 +159,7 @@ public class FileController {
      *
      * @param gameModelId
      * @param name
+     * @param request
      * @return
      */
     @GET

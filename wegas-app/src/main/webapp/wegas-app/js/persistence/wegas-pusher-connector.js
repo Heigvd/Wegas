@@ -5,12 +5,12 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
+
     /**
      * PusherConnector singleton for each applicationKey
      * @name Y.Wegas.util.PusherConnector
@@ -42,8 +42,8 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 //Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
-            Pusher.log = Y.log;    // Enable pusher logging - don't include this in production
-            document.WEB_SOCKET_DEBUG = true;// Flash fallback logging - don't include this in production
+            Pusher.log = Y.log;                                                 // Enable pusher logging - don't include this in production
+            document.WEB_SOCKET_DEBUG = true;                                   // Flash fallback logging - don't include this in production
             this.pusher = new Pusher(cfg["applicationKey"]);
             this.pusher.connection.bind('error', function(err) {
                 if (err.data && err.data.code === 4004) {
@@ -107,9 +107,10 @@ YUI.add('wegas-pusher-connector', function(Y) {
          */
         destructor: function() {
             this.pusher.disconnect();
-//            delete this.constructor.INSTANCES[this.get("applicationKey")];
+            //delete this.constructor.INSTANCES[this.get("applicationKey")];
         }
-    }, {/* @lends Y.Wegas.util.PusherConnector */
+    }, {
+        /* @lends Y.Wegas.util.PusherConnector */
         /**
          * Store running instances.
          * @private
@@ -123,8 +124,6 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }
         }
     });
-
     Y.Wegas.PusherDataSource = PusherDataSource;
     //new PusherConnectorFactory({applicationKey: "732a1df75d93d028e4f9"});
 });
-

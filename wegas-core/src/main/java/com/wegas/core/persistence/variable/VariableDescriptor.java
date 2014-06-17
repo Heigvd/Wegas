@@ -144,12 +144,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      * @param name
+     * @param defaultInstance
      */
     public VariableDescriptor(String name, T defaultInstance) {
         this.name = name;
         this.defaultInstance = defaultInstance;
     }
 
+    /**
+     *
+     * @param defaultInstance
+     */
     public VariableDescriptor(T defaultInstance) {
         this.defaultInstance = defaultInstance;
     }
@@ -274,6 +279,9 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         return scope;
     }
 
+    /**
+     *
+     */
     @PrePersist
     public void prePersist() {
         if (this.getScope() == null) {

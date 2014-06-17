@@ -60,6 +60,14 @@ public class Helper {
         }
     }
 
+    /**
+     *
+     * @param <T>
+     * @param context
+     * @param type
+     * @return
+     * @throws NamingException
+     */
     public static <T> T lookupBy(Context context, Class<T> type) throws NamingException {
         return lookupBy(context, type, type);
     }
@@ -201,6 +209,12 @@ public class Helper {
         }
     }
 
+    /**
+     *
+     * @param propertyName
+     * @param defaultValue
+     * @return
+     */
     public static String getWegasProperty(String propertyName, String defaultValue) {
         String ret = getWegasProperty(propertyName);
         if (ret == null) {
@@ -210,6 +224,11 @@ public class Helper {
         }
     }
 
+    /**
+     *
+     * @param array
+     * @return
+     */
     public static String hex(byte[] array) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < array.length; ++i) {
@@ -219,6 +238,11 @@ public class Helper {
         return sb.toString();
     }
 
+    /**
+     *
+     * @param message
+     * @return
+     */
     public static String md5Hex(String message) {
         try {
             MessageDigest md =
@@ -229,6 +253,11 @@ public class Helper {
         return null;
     }
 
+    /**
+     *
+     * @param list
+     * @return
+     */
     public static int[] toArray(List<Integer> list) {
         int[] ret = new int[list.size()];
         int i = 0;
