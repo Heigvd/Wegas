@@ -25,7 +25,9 @@ div.inputEx-hidden {
 .inputEx-valid > div > div > input[disabled] {
     background-color: rgb(235, 235, 228);
 }
-
+.inputEx-valid .inputEx-CheckBox > input[disabled] + .inputEx-CheckBox-rightLabel{
+    color: lightgray;
+}
 div.inputEx-Field input, div.inputEx-Field textarea, div.inputEx-Field select {
     border: 1px solid lightgray;
 }
