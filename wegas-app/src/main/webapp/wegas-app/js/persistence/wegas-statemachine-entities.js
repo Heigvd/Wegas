@@ -197,7 +197,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         type: HIDDEN,
                         value: SELF
                     }],
-                returns: BOOLEAN
+                returns: BOOLEAN,
+                localEval: function(self) {
+                    return this.getInstance(self).get("enabled");
+                }
             },
             isDisabled: {
                 label: "is inactive",
@@ -205,7 +208,10 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         type: HIDDEN,
                         value: SELF
                     }],
-                returns: BOOLEAN
+                returns: BOOLEAN,
+                localEval: function(self) {
+                    return !this.getInstance(self).get("enabled");
+                }
             }
         }
     });

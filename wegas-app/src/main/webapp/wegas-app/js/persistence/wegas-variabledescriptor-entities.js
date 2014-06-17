@@ -31,6 +31,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * VariableDescriptor mapper
      */
     persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
+        initializer: function() {
+            persistence.VariableDescriptor.superclass.constructor.apply(this, arguments);
+            Y.Object.each(this.getMethodCfgs(), function(i, key) {              // Push server methods to variables
+                if (i.localEval) {
+                    this[key] = Y.bind(i.localEval, this);
+                }
+            }, this);
+        },
         getInstance: function(player) {
             var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get("currentPlayerId");
             return this.get("scope").getInstance(playerId);
