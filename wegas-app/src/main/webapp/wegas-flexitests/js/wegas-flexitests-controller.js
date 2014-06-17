@@ -313,10 +313,11 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             },
             endImpact: {
                 label: "End impact",
+                optional: true,
                 _inputex: {
                     _type: "script",
-                    description: "What should happen once there is no more questions",
-                    optional: true
+                    description: "What should happen once there is no more questions"
+                    
                 }
             }
         }

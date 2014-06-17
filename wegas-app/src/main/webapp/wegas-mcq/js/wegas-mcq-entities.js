@@ -549,6 +549,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             },
             impact: {
+                optional:true,
                 _inputex: {
                     _type: SCRIPT,
                     label: "Impact"
