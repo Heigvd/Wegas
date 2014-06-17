@@ -56,7 +56,7 @@
                                     "label": "Impact",
                                     "wchildren": [{
                                             "type": "WysiwygConsole",
-                                            "cssClass": "wegas-console"
+                                            "cssClass": "wegas-console wegas-editor-console"
                                         }]
                                 }, {
                                     "type": "Button",

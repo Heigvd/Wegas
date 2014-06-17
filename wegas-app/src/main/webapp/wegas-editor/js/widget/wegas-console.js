@@ -66,8 +66,10 @@ YUI.add('wegas-console', function(Y) {
                         this.showMessage("success", "The impact has been successfully completed", 4000);
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
                                 + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
-                        this.srcField.setValue();
-                        this.srcField.addButton.getNode().simulate("click");
+                        if (!this.get("boundingBox").hasClass("wegas-editor-console")) {
+                            this.srcField.setValue();
+                            this.srcField.addButton.getNode().simulate("click");
+                        }
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -90,13 +92,13 @@ YUI.add('wegas-console', function(Y) {
 
                         var playerList = this.getPlayerList(),
                                 multiPlayerScript = {
-                                    playerIdList: playerList,
-                                    script: {
-                                        "@class": "Script",
-                                        language: "JavaScript",
-                                        content: this.srcField.getValue().content
-                                    }
-                                };
+                            playerIdList: playerList,
+                            script: {
+                                "@class": "Script",
+                                language: "JavaScript",
+                                content: this.srcField.getValue().content
+                            }
+                        };
                         if (playerList.length === 0) {
                             return;
                         }
