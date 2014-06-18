@@ -197,9 +197,11 @@ YUI.add('wegas-plugin', function(Y) {
             return targetPageLoader;
         },
         _subpage: function() {
-            if (this.get("subpageVariable.content")) {
-                if (this.get("subpageVariable.evaluated")) {
-                    return this.get("subpageVariable.evaluated").getInstance().get("value");
+            var variable;
+            if (this.get("variable.content")) {
+                variable = this.get("variable.evaluated");
+                if (variable) {
+                    return variable.getInstance().get("value");
                 }
             }
             return this.get("subpageId");
@@ -230,7 +232,7 @@ YUI.add('wegas-plugin', function(Y) {
                     value: "maindisplayarea"
                 }
             },
-            subpageVariable: {
+            variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 _inputex: {
