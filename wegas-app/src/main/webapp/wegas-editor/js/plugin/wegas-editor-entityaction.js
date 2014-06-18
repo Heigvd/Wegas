@@ -517,18 +517,21 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     on: {
                         success: Y.bind(function() {
                             //host.hideOverlay();
-                            if (EditEntityAction.currentEntity && EditEntityAction.currentEntity.get("id") === entity.get("id")) {
-                                EditEntityAction.hideRightTabs();
-                            } else if (entity.get("@class") === "ListDescriptor") {
-                                for (i = 0; i < entity.get("items").length; i += 1) {
-                                    if (EditEntityAction.currentEntity.get("id") === entity.get("items")[i].get("id")) {
+                            if (EditEntityAction.currentEntity) {
+                                if (EditEntityAction.currentEntity.get("id") === entity.get("id")) {
+                                    EditEntityAction.hideRightTabs();
+
+                                } else if (entity.get("@class") === "ListDescriptor") {
+                                    for (i = 0; i < entity.get("items").length; i += 1) {
+                                        if (EditEntityAction.currentEntity.get("id") === entity.get("items")[i].get("id")) {
+                                            EditEntityAction.hideRightTabs();
+                                        }
+                                    }
+                                } else if (entity.get("@class") === "FSMDescriptor") {
+                                    if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
+                                            EditEntityAction.currentEntity.get("@class") === "State") {
                                         EditEntityAction.hideRightTabs();
                                     }
-                                }
-                            } else if (entity.get("@class") === "FSMDescriptor") {
-                                if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
-                                        EditEntityAction.currentEntity.get("@class") === "State") {
-                                    EditEntityAction.hideRightTabs();
                                 }
                             }
                         }, this),
@@ -618,7 +621,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         execute: function() {
             var entity = this.get(ENTITY),
                     tab = Wegas.TabView.findTab("State machine");
-            if (this.get("host").DeleteEntityAction.confirmDelete && tab.item(0).get("entity").get("id") === entity.get("id")) {
+            if (this.get("host").DeleteEntityAction.confirmDelete && tab && tab.item(0).get("entity").get("id") === entity.get("id")) {
                 tab.remove().destroy();
             }
         }

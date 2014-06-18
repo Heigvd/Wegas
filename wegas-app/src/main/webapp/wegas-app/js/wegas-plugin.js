@@ -241,7 +241,7 @@ YUI.add('wegas-plugin', function(Y) {
             var host = this.get(HOST);
             if (!host.get("disabled")) {
                 host.showOverlay();
-                Wegas.Facade.VariableDescriptor.script.run(this.get("onClick"), {
+                Wegas.Facade.VariableDescriptor.script.remoteEval(this.get("onClick"), {
                     on: {
                         success: Y.bind(host.hideOverlay, host),
                         failure: Y.bind(host.defaultFailureHandler, host)

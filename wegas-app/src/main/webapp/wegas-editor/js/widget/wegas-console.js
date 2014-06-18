@@ -9,6 +9,8 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 YUI.add('wegas-console', function(Y) {
+    "use strict";
+
     var CONTENTBOX = 'contentBox';
 
     Y.Wegas.Console = Y.Base.create("wegas-console", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget], {
@@ -41,16 +43,15 @@ YUI.add('wegas-console', function(Y) {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
-                                + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
+                            + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
-                                + e.response.results.message + "</div>");
+                            + e.response.results.message + "</div>");
                     }, this)
                 }
             });
-
         },
         multiExecuteScript: function(multiPlayerScript) {
             this.showOverlay();
@@ -65,7 +66,7 @@ YUI.add('wegas-console', function(Y) {
                         this.hideOverlay();
                         this.showMessage("success", "The impact has been successfully completed", 4000);
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
-                                + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
+                            + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
                         this.srcField.setValue();
                         this.srcField.addButton.getNode().simulate("click");
                     }, this),
@@ -73,7 +74,7 @@ YUI.add('wegas-console', function(Y) {
                         this.hideOverlay();
                         this.showMessage("error", "An error has occurred, please retry again", 4000);
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
-                                + e.response.results.message + "</div>");
+                            + e.response.results.message + "</div>");
                     }, this)
                 }
             });
@@ -87,16 +88,15 @@ YUI.add('wegas-console', function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
                 on: {
                     click: Y.bind(function() {
-
                         var playerList = this.getPlayerList(),
-                                multiPlayerScript = {
-                                    playerIdList: playerList,
-                                    script: {
-                                        "@class": "Script",
-                                        language: "JavaScript",
-                                        content: this.srcField.getValue().content
-                                    }
-                                };
+                            multiPlayerScript = {
+                                playerIdList: playerList,
+                                script: {
+                                    "@class": "Script",
+                                    language: "JavaScript",
+                                    content: this.srcField.getValue().content
+                                }
+                            };
                         if (playerList.length === 0) {
                             return;
                         }
