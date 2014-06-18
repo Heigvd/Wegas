@@ -253,7 +253,7 @@ YUI.add('wegas-shareuser', function(Y) {
             }
         },
         addToUserlist: function(id, label) {
-            var accountFind;
+            var accountFind, newPermGroup;
             accountFind = Y.Array.find(this.userList.getValue(), Y.bind(function(item) {
                 if (item.userId === id) {
                     return true;
@@ -261,10 +261,11 @@ YUI.add('wegas-shareuser', function(Y) {
             }), this);
 
             if (!accountFind) {
-                this.userList.addElement({
+                newPermGroup = this.userList.addElement({
                     username: label,
                     userId: id
                 });
+                this.defaultSelectedPerm(newPermGroup);
             }
         },
         checkFieldValue: function(usernameList, account) {
@@ -313,6 +314,16 @@ YUI.add('wegas-shareuser', function(Y) {
                 }
             });
         },
+        defaultSelectedPerm: function(permGroup) {
+            var selectedPerm = this.get("selectedPermsList");
+            Y.Array.each(permGroup.inputs, function(input) {
+                Y.Array.each(selectedPerm, function(perm) {
+                    if(input.options.value === perm){
+                        input.setValue(true);
+                    }
+                });
+            });
+        },
         hideUsersWithoutVisiblePermission: function() {
             var i, ii, checkboxes, checked,
                     users = this.get(CONTENTBOX).one(".inputEx-ListField-childContainer").get("children");
@@ -333,6 +344,9 @@ YUI.add('wegas-shareuser', function(Y) {
     }, {
         ATTRS: {
             permsList: {
+                value: []
+            },
+            selectedPermsList: {
                 value: []
             },
             entity: {},

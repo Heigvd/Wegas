@@ -66,9 +66,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 var node = new Y.Node(this.fieldset);
                 node.get("parentNode").prepend("<label>" + this.options.label + "</label>");
             }
-            this.on("updated", function() {
-                this.setClassFromState();
-            });
+//            this.on("updated", function() {
+//                this.setClassFromState();
+//            });
         },
         /**
          * @function
@@ -647,6 +647,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 }]
                         }, {
                             type: "number",
+                            required: true,
                             value: this.options.rightValue || 0
                         }]
                 });
@@ -666,6 +667,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                                 }]
                         }, {
                             type: "string",
+                            required: true,
                             value: this.options.rightValue
                         }]
                 });

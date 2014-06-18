@@ -131,6 +131,7 @@ YUI.add("wegas-widget", function(Y) {
             parent = this.get("parent");
             index = parent.indexOf(this);
             cfg = this.toObject();
+            this.remove();
             this.destroy();
             return parent.add(cfg, index).item(0);
         },
