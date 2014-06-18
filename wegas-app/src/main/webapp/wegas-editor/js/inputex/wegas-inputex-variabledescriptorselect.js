@@ -66,9 +66,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 var node = new Y.Node(this.fieldset);
                 node.get("parentNode").prepend("<label>" + this.options.label + "</label>");
             }
-            this.on("updated", function() {
-                this.setClassFromState();
-            });
+//            this.on("updated", function() {
+//                this.setClassFromState();
+//            });
         },
         /**
          * @function
