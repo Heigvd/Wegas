@@ -75,8 +75,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         },
         isEmpty: function() {
             return this.options.mode === "wysiwyg" ?
-                    this.exprList.getArray().join("").trim() === "" :
-                    this.getValue().content.trim() === "";
+                this.exprList.getArray().join("").trim() === "" :
+                this.getValue().content.trim() === "";
 
         },
         // *** Private Methods *** //
@@ -117,9 +117,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 }
             }).render(field);
             (new Y.Node(this.fieldContainer))
-                    .prepend(this.viewSrc.get("boundingBox"))
-                    .prepend(this.addButton.get("boundingBox"))                 // Move view src and add buttons to the top of the the wysiwyg list 
-                    .append("<em class=\"msg\"></em>"); // Add a div for messages
+                .prepend(this.viewSrc.get("boundingBox"))
+                .prepend(this.addButton.get("boundingBox"))                 // Move view src and add buttons to the top of the the wysiwyg list 
+                .append("<em class=\"msg\"></em>"); // Add a div for messages
 
             this.on("updated", function() {
                 if (this.options.mode === "text") {
@@ -156,6 +156,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 this.exprList.hide();
             }
         },
+        updateTypeInvite: function() {
+            //nothing to do, let other do that
+        },
         /**
          *
          */
@@ -166,8 +169,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         },
         updateExpressionList: function() {
             var i, tree,
-                    container = new Y.Node(this.fieldContainer),
-                    fields = [];
+                container = new Y.Node(this.fieldContainer),
+                fields = [];
             container.one(".msg").setContent(""); // Reset layout
 
             try { // Generate the syntaxic tree using esprima    
@@ -207,9 +210,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     if (this.options.mode === "wysiwyg") {
                         this.fireUpdatedEvt(); // fire updated event
                     }
-                    if(this.validate()){
-                        this.setClassFromState();
-                    }
+//                    if(this.validate()){
+//                        this.setClassFromState();
+//                    }
                 }, this);
                 if (this.options.mode !== "wysiwyg") {
                     this.exprList.hide();
@@ -259,7 +262,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 case "LogicalExpression":
                     if (expression.operator === "&&") {
                         return this.generateExpression(expression.left).
-                                concat(this.generateExpression(expression.right));
+                            concat(this.generateExpression(expression.right));
                     }
                     break;
                 case "CallExpression":
