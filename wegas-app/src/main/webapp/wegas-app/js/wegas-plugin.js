@@ -70,7 +70,7 @@ YUI.add('wegas-plugin', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            this.handlers.push(this.get("host").get("boundingBox").addClass("wegas-" + this.get("targetEvent")));
+            this.get("host").get("boundingBox").addClass("wegas-" + this.get("targetEvent"));
             this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
@@ -169,12 +169,11 @@ YUI.add('wegas-plugin', function(Y) {
     };
     Y.extend(OpenPageAction, Action, {
         initializer: function() {
-            OpenPageAction.superclass.initializer.apply(this, arguments);
             this.afterHostEvent("render", function() {
-                var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId'));
+                var targetPageLoader = this._getTargetPageLoader();
                 if (targetPageLoader) {
                     targetPageLoader.onceAfter("render", function(e, targetPageLoader) {
-                        if ("" + targetPageLoader.get("pageId") === "" + this.subpage()) {
+                        if ("" + targetPageLoader.get("pageId") === "" + this._subpage()) {
                             this.get(HOST).set("selected", 1);
                         }
                     }, this, targetPageLoader);
@@ -182,14 +181,27 @@ YUI.add('wegas-plugin', function(Y) {
             }, this);
         },
         execute: function() {
-            var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId'));
-            targetPageLoader.set("pageId", this.subpage());
+            var targetPageLoader = this._getTargetPageLoader();
+            if (!targetPageLoader) {
+                return;
+            }
+            targetPageLoader.set("pageId", this._subpage());
             this.get(HOST).set("selected", 1);
         },
-        subpage: function() {
-            if (!this.get("subpageId")) {
-                if (this.get("subpageVariable.evaluated")) {
-                    return this.get("subpageVariable.evaluated").getInstance().get("value");
+        _getTargetPageLoader: function() {
+            var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId')),
+                parentPageLoader;
+            if (!targetPageLoader) {
+                parentPageLoader = Y.Widget.getByNode(this.get("host").get("root").get("boundingBox").ancestor());
+            }
+            return targetPageLoader;
+        },
+        _subpage: function() {
+            var variable;
+            if (this.get("variable.content")) {
+                variable = this.get("variable.evaluated");
+                if (variable) {
+                    return variable.getInstance().get("value");
                 }
             }
             return this.get("subpageId");
@@ -210,17 +222,22 @@ YUI.add('wegas-plugin', function(Y) {
                 type: "string",
                 value: "maindisplayarea",
                 _inputex: {
-                    label: "Target zone",
-                    //_type: "pageloaderselect",//@fixme There a bug with this widget when the target page is not loaded
-                    value: "maindisplayarea",
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    label: "Target",
+//                    _type: "pageloaderselect",
+                    _type: "select",
+                    choices: [
+                        {label: "Entire page", value: "previewPageLoader"},
+                        "maindisplayarea"
+                    ],
+                    value: "maindisplayarea"
                 }
             },
-            subpageVariable: {
+            variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                optional: true,
                 _inputex: {
-                    _type: "hidden",
-                    //_type: "variableselect",
+//                    _type: "hidden",
+                    _type: "variableselect",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }

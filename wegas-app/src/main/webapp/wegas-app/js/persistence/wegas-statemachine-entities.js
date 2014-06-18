@@ -238,6 +238,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             onEnterEvent: {
+                optional: true,
                 _inputex: {
                     _type: "script",
                     label: "On enter impact"
@@ -268,6 +269,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             triggerCondition: {
+                optional: true,
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Condition',
@@ -275,6 +277,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             preStateImpact: {
+                optional:true,
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Impact'
@@ -342,6 +345,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             triggerEvent: {
+                optional:true,
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Condition',

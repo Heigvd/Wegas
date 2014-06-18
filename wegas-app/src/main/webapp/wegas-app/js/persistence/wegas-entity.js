@@ -246,6 +246,7 @@ YUI.add("wegas-entity", function(Y) {
                             tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "ShareUser",
+                                    cssClass: "editor-scenarist-share",
                                     permsList: [{
                                             rightLabel: "Edit",
                                             value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
@@ -494,6 +495,7 @@ YUI.add("wegas-entity", function(Y) {
                             tabSelector: "#rightTabView",
                             wchildren: [{
                                     type: "ShareUser",
+                                    cssClass: "editor-trainer-share",
                                     permsList: [
                                         //{
                                         //    rightLabel: "Play",
@@ -508,7 +510,8 @@ YUI.add("wegas-entity", function(Y) {
                                         //    value: "Game:Token"
                                         //}
                                     ],
-                                    roleList: ["Teacher", "Administrator", "Scenarist"]
+                                    roleList: ["Teacher", "Administrator", "Scenarist"],
+                                    selectedPermsList: ["Game:View,Edit"]
                                 }]
                         }
                     }, {

@@ -408,8 +408,9 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         doNextLevel: function(fn, retry) {
             var content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
+            content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
             if (retry) {
-                content = content + 'maxLevel.value = currentLevel.value;' + 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
+                content  += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
             }
             Wegas.Facade.VariableDescriptor.sendRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
@@ -1127,15 +1128,15 @@ YUI.add('wegas-proggame-level', function(Y) {
                 width: 360,
                 x: 705,
                 y: 54,
-                highlight: ".proggame-help",
+                highlight: ".proggame-button-shop",
                 bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Le shop vous permet d'acheter des outils qui facilitront le développement.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
                 height: 190,
                 width: 360,
                 x: 803,
                 y: 54,
-                highlight: ".proggame-help",
-                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la théorie nécessaire pour chaque niveau dans la boite mail.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                highlight: ".proggame-button-courses",
+                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la théorie nécessaire pour chaque niveau dans la boîte mail.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }]
     });
     Wegas.ProgGameLevel = ProgGameLevel;

@@ -36,7 +36,7 @@ YUI().use(function(Y) {
                     requires: [
                         'base', 'plugin', "array-extras", 'timers',
                         'wegas-helper', 'wegas-entity', 'wegas-datasource'
-                                // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
+                            // 'wegas-appcss',                              // @fixme There is an i in css include order, this one got hardcoded in the jsp file
                     ]
                 },
                 'wegas-appcss': {
@@ -447,7 +447,7 @@ YUI().use(function(Y) {
                 },
                 'wegas-inputex-pageloaderselect': {
                     path: 'js/inputex/wegas-inputex-pageloaderselect-min.js',
-                    requires: 'inputex-select',
+                    requires: 'wegas-inputex-combobox',
                     ix_provides: 'pageloaderselect'
                 },
                 'wegas-inputex-wysiwygscript': {
@@ -488,6 +488,11 @@ YUI().use(function(Y) {
                     path: 'js/inputex/wegas-inputex-contextgroup-min.js',
                     requires: ['inputex-group', 'inputex-select'],
                     ix_provides: 'contextgroup'
+                },
+                "wegas-inputex-combobox": {
+                    path: 'js/inputex/wegas-inputex-combobox-min.js',
+                    requires: ['inputex-autocomplete', 'autocomplete', 'autocomplete-filters'],
+                    ix_provides: 'combobox'
                 },
                 'wegas-panel-fileselect': {
                     path: 'js/widget/wegas-panel-fileselect-min.js',
@@ -1013,7 +1018,7 @@ YUI().use(function(Y) {
                 ace: {
                     async: false,
                     path: "ace/src-min/ace.js"
-                            //fullpath: "//rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
+                        //fullpath: "//rawgithub.com/ajaxorg/ace-builds/master/src-min-noconflict/ace.js"
                 },
                 pusher: {
                     fullpath: "//js.pusher.com/2.2/pusher.min.js"
@@ -1021,16 +1026,16 @@ YUI().use(function(Y) {
                 googletranslate: {
                     async: false,
                     fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
-                            //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit&hl=en"
+                        //fullpath: "//translate.google.com/translate_a/element.js?ug=section&hl=en&cb=googleSectionalElementInit&hl=en"
                 }
             }
         }
     });
     function loadModules(group) {
         var i, modules = group.modules,
-                module, type,
-                moduleName,
-                allModules = [];
+            module, type,
+            moduleName,
+            allModules = [];
         for (moduleName in modules) {                                           // Loop through all modules
             if (modules.hasOwnProperty(moduleName)) {
                 allModules.push(moduleName); // Build a list of all modules
