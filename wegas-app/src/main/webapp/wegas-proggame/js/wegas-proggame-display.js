@@ -109,8 +109,8 @@ YUI.add('wegas-proggame-display', function(Y) {
 
                 default:
                     entity = this.getEntity(command.id);
-                    if (entity && typeof entity["exec" + command.type] === "function") {
-                        entity["exec" + command.type](command);
+                    if (entity && typeof entity[command.type] === "function") {
+                        entity[command.type](command);
                         return;
                     } else {
                         Y.log("No action defined for '" + command.type + "'", "error", "Wegas.ProggameDisplay");
@@ -223,7 +223,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     }, this);
             this.isDying = false;
         },
-        execDie: function() {
+        die: function() {
             this.isDying = true;
             this.tween({alpha: 0}, 50);
         }
@@ -388,7 +388,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 Crafty.trigger(COMMANDEXECUTED);
             });
         },
-        execTrap: function() {
+        trap: function() {
             var frameTime = ProgGameDisplay.speedToFrame(ProgGameDisplay.SPEED.TRAP, this._x, this._y, this._x, this._y + 64);
             this.move("n", 64);
             this.addComponent("Collide");

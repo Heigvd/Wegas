@@ -12,15 +12,15 @@ YUI.add('wegas-proggame-level', function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", HIDDEN = "hidden", ARRAY = "array",
-            NUMBER = "number", STRING = "string", NUMBER = "number", BOOLEAN = "boolean",
-            TEXT = "text", ACE = "ace", CLICK = "click", ID = "id",
-            LABEL = "label", GROUP = "group", _X = "x", _Y = "y", INFO = "info",
-            STATE = "state", IDLE = "idle", PROGGAMELEVEL = "Wegas.ProgGameLevel",
-            RUN_BUTTON_LABEL = "<span class='proggame-play'></span>",
-            STOP_BUTTON_LABEL = "<span class='proggame-stop'></span>",
-            DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
-            SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
-            Wegas = Y.Wegas, ProgGameLevel;
+        NUMBER = "number", STRING = "string", NUMBER = "number", BOOLEAN = "boolean",
+        TEXT = "text", ACE = "ace", CLICK = "click", ID = "id",
+        LABEL = "label", GROUP = "group", _X = "x", _Y = "y", INFO = "info",
+        STATE = "state", IDLE = "idle", PROGGAMELEVEL = "Wegas.ProgGameLevel",
+        RUN_BUTTON_LABEL = "<span class='proggame-play'></span>",
+        STOP_BUTTON_LABEL = "<span class='proggame-stop'></span>",
+        DEBUG_BUTTON_LABEL = "<span class='proggame-playpause'></span>",
+        SMALLSTOP_BUTTON_LABEL = "<span class='proggame-stop-small'></span>",
+        Wegas = Y.Wegas, ProgGameLevel;
 
     /**
      *  The level display class controls script input, ia, debugger and
@@ -29,29 +29,29 @@ YUI.add('wegas-proggame-level', function(Y) {
     ProgGameLevel = Y.Base.create("wegas-proggame-level", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Fields *** //
         CONTENT_TEMPLATE: '<div>'
-                + '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="level information"></div><div class="proggame-level" title="back to level selection"></div></div>'
-                + '<div class="proggame-lefttab"></div>'
-                + '<div class="proggame-view">'
-                + '<div class="message"></div>'
-                + '<div class="ui">'
-                + '<div class="terrain-ui player-ui"></div>'
-                + '<div class="terrain-ui enemy-ui"></div>'
+            + '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="Level information"></div><div class="proggame-level" title="Back to level selection"></div></div>'
+            + '<div class="proggame-lefttab"></div>'
+            + '<div class="proggame-view">'
+            + '<div class="message"></div>'
+            + '<div class="ui">'
+            + '<div class="terrain-ui player-ui"></div>'
+            + '<div class="terrain-ui enemy-ui"></div>'
 
-                + '<div class="proggame-levelend" style="display:none">'
-                + '<div class="proggame-levelend-star proggame-levelend-star-1"></div>'
-                + '<div class="proggame-levelend-star proggame-levelend-star-2"></div>'
-                + '<div class="proggame-levelend-star proggame-levelend-star-3"></div>'
-                + '<div class="proggame-levelend-money">100</div>'
-                + '<div class="proggame-levelend-restart">TRY AGAIN</div>'
-                + '<div class="proggame-levelend-nextlevel">NEXT LEVEL</div>'
-                + '</div>'
+            + '<div class="proggame-levelend" style="display:none">'
+            + '<div class="proggame-levelend-star proggame-levelend-star-1"></div>'
+            + '<div class="proggame-levelend-star proggame-levelend-star-2"></div>'
+            + '<div class="proggame-levelend-star proggame-levelend-star-3"></div>'
+            + '<div class="proggame-levelend-money">100</div>'
+            + '<div class="proggame-levelend-restart">TRY AGAIN</div>'
+            + '<div class="proggame-levelend-nextlevel">NEXT LEVEL</div>'
+            + '</div>'
 
-                + '<div class="terrain"></div>'
-                + '</div>'
-                + '<div class="proggame-buttons"></div>'
-                + '<div class="proggame-debugger"></div>'
-                + '<div class="code"></div>'
-                + '</div>',
+            + '<div class="terrain"></div>'
+            + '</div>'
+            + '<div class="proggame-buttons"></div>'
+            + '<div class="proggame-debugger"></div>'
+            + '<div class="code"></div>'
+            + '</div>',
         // *** Lifecycle Methods *** //
         initializer: function() {
             this.handlers = {};
@@ -61,7 +61,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                    label = this.get(LABEL).split("-");
+                label = this.get(LABEL).split("-");
 
             cb.one(".proggame-title h1").setHTML(label[0]);                     // Display level name
             cb.one(".proggame-title h2").setHTML(label[1]);                     // Display level name
@@ -183,10 +183,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.display.syncUI();                                              // Sync the canvas
             this.syncFrontUI();                                                 // Sync the on screen display
 
-            Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"",
-                    Y.bind(function(result) {                                   //Check if breakpoint has been bought from the shop
-                this.disableBreakpoint = result;
-            }, this));
+            this.disableBreakpoint = Wegas.Facade.VariableDescriptor.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"");
         },
         destructor: function() {
             this.display.destroy();
@@ -227,11 +224,11 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         debug: function() {
             var code = this.instrument(this.mainEditorTab.aceField.getValue()),
-                    breakpoints = Y.Object.keys(this.mainEditorTab.aceField.editor.getSession().getBreakpoints());
+                breakpoints = Y.Object.keys(this.mainEditorTab.aceField.editor.getSession().getBreakpoints());
 
             Y.log("Sending request: current step: " + this.currentBreakpointStep
-                    + ", breakpoints: " + Y.JSON.stringify(breakpoints)
-                    + "\ninstrumented code: \n" + code, INFO, PROGGAMELEVEL);
+                + ", breakpoints: " + Y.JSON.stringify(breakpoints)
+                + "\ninstrumented code: \n" + code, INFO, PROGGAMELEVEL);
 
             this.sendRunRequest(code, {
                 debug: true,
@@ -244,7 +241,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             Y.log("reRun()", INFO, PROGGAMELEVEL);
 
             var code = this.instrument(this.mainEditorTab.aceField.getValue()), // Fetch instrumented code
-                    breakpoints = Y.Object.keys(this.mainEditorTab.aceField.editor.getSession().getBreakpoints()); // and breakpoints
+                breakpoints = Y.Object.keys(this.mainEditorTab.aceField.editor.getSession().getBreakpoints()); // and breakpoints
 
             Y.log("instrumented code: " + code + ", current step: " + this.currentBreakpointStep + ", breakpoints: " + Y.JSON.stringify(breakpoints), INFO, PROGGAMELEVEL);
 
@@ -267,9 +264,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                 cfg: {
                     method: "POST",
                     data: "run("
-                            + "function (name) {with(this) {" + code + "\n}}, " // Player's code
-                            + Y.JSON.stringify(this.toObject()) + ", "          // the current level
-                            + Y.JSON.stringify(interpreterCfg) + ");"
+                        + "function (name) {with(this) {" + code + "\n}}, " // Player's code
+                        + Y.JSON.stringify(this.toObject()) + ", "          // the current level
+                        + Y.JSON.stringify(interpreterCfg) + ");"
                 },
                 on: {
                     success: Y.bind(this.onServerReply, this),
@@ -322,13 +319,13 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         doLevelEndAnimation: function() {
             var cb = this.get(CONTENTBOX), counter = 0, money = 100,
-                    timer = Y.later(20, this, function() {
-                cb.one(".proggame-levelend-money").setContent(counter);
-                counter++;
-                if (counter > money) {
-                    timer.cancel();
-                }
-            }, null, true);
+                timer = Y.later(20, this, function() {
+                    cb.one(".proggame-levelend-money").setContent(counter);
+                    counter++;
+                    if (counter > money) {
+                        timer.cancel();
+                    }
+                }, null, true);
 
             cb.one(".proggame-levelend").show();
             cb.one(".terrain").hide();
@@ -350,7 +347,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 switch (command.type) {
                     case "updated":
                         Y.mix(this.findObject(command.object.id),
-                                command.object, true);                          // Update target object cfg
+                            command.object, true);                          // Update target object cfg
                         this.syncFrontUI();
                         this.consumeCommand();
                         break;
@@ -430,19 +427,19 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         addEditorTab: function(label, code, file) {
             var _file = file,
-                    saveTimer = new Wegas.Timer(),
-                    tab = this.editorTabView.add({//                            // Render tab
-                label: label
-            }).item(0),
-                    aceField = new Y.inputEx.AceField({//                       // Render ace editor
-                parentEl: tab.get("panelNode"),
-                name: TEXT,
-                type: ACE,
-                height: "140px",
-                language: "javascript",
-                theme: "twilight",
-                value: code
-            });
+                saveTimer = new Wegas.Timer(),
+                tab = this.editorTabView.add({//                            // Render tab
+                    label: label
+                }).item(0),
+                aceField = new Y.inputEx.AceField({//                       // Render ace editor
+                    parentEl: tab.get("panelNode"),
+                    name: TEXT,
+                    type: ACE,
+                    height: "140px",
+                    language: "javascript",
+                    theme: "twilight",
+                    value: code
+                });
 
             tab.set("selected", 1);
             tab.aceField = aceField;                                            // Set up a reference to the ace field
@@ -470,7 +467,7 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             aceField.editor.on("guttermousedown", Y.bind(function(e) {          // Add breakpoints on gutter click
                 if (e.domEvent.target.className.indexOf("ace_gutter-cell") === -1
-                        || this.disableBreakpoint) {                            // Check if breakpoint has been bought from the shop
+                    || this.disableBreakpoint) {                            // Check if breakpoint has been bought from the shop
                     return;
                 }
                 if (tab.get(LABEL) !== "Main") {                                // Breakpoints are not implemented in files yet
@@ -478,7 +475,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                     return;
                 }
                 var row = e.getDocumentPosition().row,
-                        session = e.editor.getSession();
+                    session = e.editor.getSession();
                 if (!session.getBreakpoints()[row]) {
                     session.setBreakpoint(row);
                 } else {
@@ -554,12 +551,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             });
 
-            Wegas.Facade.VariableDescriptor.script.eval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") === \"true\"",
-                    Y.bind(function(result) {                                   // Check if breakpoint has been bought from the shop
-                if (result) {
-                    packages.indlude = ProgGameLevel.API.include;
-                }
-            }, this));
+            if (Wegas.Facade.VariableDescriptor.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") === \"true\"")) {
+                packages.indlude = ProgGameLevel.API.include;
+            }
 
             this.apiTabView = new Y.TabView({//                                 // Render the tabview for files and api
                 children: [{
@@ -614,7 +608,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                         on: {
                             success: Y.bind(function(e) {
                                 var file = e.response.entity,
-                                        tab = this.addEditorTab(file.get("subject"), file.get("body"), file);// and display it in a new tab
+                                    tab = this.addEditorTab(file.get("subject"), file.get("body"), file);// and display it in a new tab
                                 tab.plug(Y.Plugin.Removeable);
                             }, this)
                         }
@@ -1041,29 +1035,29 @@ YUI.add('wegas-proggame-level', function(Y) {
             say: {
                 label: "say(text:String)",
                 tooltip: "say(text: String)\n\n"
-                        + "Your avatar will loudly say the content of the text parameter.\n\n"
-                        + "Parameters\ntext:String - The text you want to say out lout"
+                    + "Your avatar will loudly say the content of the text parameter.\n\n"
+                    + "Parameters\ntext:String - The text you want to say out lout"
             },
             read: {
                 label: "read():Number",
                 tooltip: "read():Number\n\n"
-                        + "Your avatar will read any panel on the same case as he is and return it.\n\n"
-                        + "Returns\nNumber - The text on the panel"
+                    + "Your avatar will read any panel on the same case as he is and return it.\n\n"
+                    + "Returns\nNumber - The text on the panel"
             },
             move: {
                 label: "move()",
                 tooltip: "move()\n\n"
-                        + "Using this function, your avatar will move one tile  in the direction he is currently facing."
+                    + "Using this function, your avatar will move one tile  in the direction he is currently facing."
             },
             left: {
                 label: "left()",
                 tooltip: "left()\n\n"
-                        + "Your avatar turns to the left without moving."
+                    + "Your avatar turns to the left without moving."
             },
             right: {
                 label: "right()",
                 tooltip: "right()\n\n"
-                        + "Your avatar turns to the left without moving."
+                    + "Your avatar turns to the left without moving."
             },
             "Math.PI": {
                 pkg: "Math",
@@ -1074,30 +1068,30 @@ YUI.add('wegas-proggame-level', function(Y) {
                 label: "floor():Number",
                 pkg: "Math",
                 tooltip: "Math.floor():Number\n\n"
-                        + "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n"
-                        + "Parameters\nx:Number - The number you want to round\n"
-                        + "Returns\nNumber - The nearest integer when rounding downwards"
-                        //tooltipHTML: "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.<br /><br />"
-                        //        + "<b>Parameters</b><br />x:Number - The number you want to round"
-                        //        + "<b>Returns</b><br />Number - The nearest integer when rounding downwards",
+                    + "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.\n\n"
+                    + "Parameters\nx:Number - The number you want to round\n"
+                    + "Returns\nNumber - The nearest integer when rounding downwards"
+                    //tooltipHTML: "The floor() method rounds a number DOWNWARDS to the nearest integer, and returns the result.<br /><br />"
+                    //        + "<b>Parameters</b><br />x:Number - The number you want to round"
+                    //        + "<b>Returns</b><br />Number - The nearest integer when rounding downwards",
 
             },
             "Math.round": {
                 pkg: "Math",
                 label: "round(x:Number):Number",
                 tooltip: "Math.round(x:Number):Number\n\n"
-                        + "If the fractional portion of number is .5 or greater, the argument is rounded to the next higher integer. If the fractional portion of number is less than .5, the argument is rounded to the next lower integer.\n"
-                        + "Because round is a static method of Math, you always use it as Math.round(), rather than as a method of a Math object you created.\n\n"
-                        //+ "The Math.round() function returns the value of a number rounded to the nearest integer.\n\n"
-                        + "Parameters\n"
-                        + "x:Number - The number you want to round\n"
-                        + "Returns\n"
-                        + "Number - the value of x rounded to the nearest integer"
+                    + "If the fractional portion of number is .5 or greater, the argument is rounded to the next higher integer. If the fractional portion of number is less than .5, the argument is rounded to the next lower integer.\n"
+                    + "Because round is a static method of Math, you always use it as Math.round(), rather than as a method of a Math object you created.\n\n"
+                    //+ "The Math.round() function returns the value of a number rounded to the nearest integer.\n\n"
+                    + "Parameters\n"
+                    + "x:Number - The number you want to round\n"
+                    + "Returns\n"
+                    + "Number - the value of x rounded to the nearest integer"
             },
             include: {
                 label: "include(name:String)",
                 tooltip: "include(name:String)\n\n"
-                        + "Allows to include a file from your file library. This way you can reuse your code multiple times."
+                    + "Allows to include a file from your file library. This way you can reuse your code multiple times."
             }
         },
         TUTORIAL: [{

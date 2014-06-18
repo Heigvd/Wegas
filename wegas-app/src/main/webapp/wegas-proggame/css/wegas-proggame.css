@@ -246,15 +246,15 @@ html, .editor-preview {
     cursor: pointer;
 }
 .proggame-title .proggame-help {
-    left: 175px;
-    top: 37px;  
+    left: 181px;
+    top: 28px;  
 }
 .proggame-title .proggame-help:hover {
     background-position: 0 -32px;
 }
 .proggame-title .proggame-level {
-    left: 210px;
-    top: 37px;
+    left: 212px;
+    top: 27px;
     background-position: 0 -69px;
 }
 

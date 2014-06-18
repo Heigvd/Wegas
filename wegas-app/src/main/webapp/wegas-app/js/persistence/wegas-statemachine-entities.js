@@ -334,6 +334,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     }
                 }
             },
+            oneShot: {
+                type: BOOLEAN,
+                value: true,
+                _inputex: {
+                    label: 'Only once'
+                }
+            },
             triggerEvent: {
                 _inputex: {
                     _type: SCRIPT,
@@ -345,13 +352,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Impact'
-                }
-            },
-            oneShot: {
-                type: BOOLEAN,
-                value: true,
-                _inputex: {
-                    label: 'Only once'
                 }
             },
             states: {
