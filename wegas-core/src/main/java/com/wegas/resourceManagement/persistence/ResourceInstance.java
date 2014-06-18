@@ -116,6 +116,8 @@ public class ResourceInstance extends VariableInstance {
         this.properties.putAll(other.getProperties());
         this.setMoral(other.getMoral());
         this.setConfidence(other.getConfidence());
+        this.setMoralHistory(other.getMoralHistory());
+        this.setConfidenceHistory(other.getConfidenceHistory());
     }
 
     /**
