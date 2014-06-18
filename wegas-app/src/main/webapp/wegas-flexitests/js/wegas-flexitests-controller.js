@@ -44,7 +44,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.constructor.superclass.bindUI.apply(this);
+            Y.Wegas.FlexitestsController.superclass.bindUI.apply(this);
             this.set("tabIndex", -1);
             this.after("*:currentLoadingChange", function(e) {
                 var i, noready = false;
@@ -267,7 +267,6 @@ YUI.add("wegas-flexitests-controller", function(Y) {
          */
         destructor: function() {
             var i;
-            this.constructor.superclass.destructor.apply(this);
             for (i = 0; i < this.events.length; i += 1) {
                 this.events[i].detach();
             }

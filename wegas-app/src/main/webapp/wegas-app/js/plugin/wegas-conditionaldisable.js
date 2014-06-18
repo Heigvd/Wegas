@@ -30,8 +30,9 @@ YUI.add('wegas-conditionaldisable', function(Y) {
         },
         conditionEval: function() {
             if (Wegas.Facade.VariableDescriptor.script) {
-                Wegas.Facade.VariableDescriptor.script.eval(this.get("condition").content, Y.bind(function(result) {
-                    var attr = this.get("attribute");
+                Wegas.Facade.VariableDescriptor.script.eval(this.get("condition"), Y.bind(function(e) {
+                    var attr = this.get("attribute"),
+                        result = e.response.entity;
                     if (attr === "cssClass") {
                         this.get('host').get("boundingBox").toggleClass(this.get("value"), result);
                     } else {

@@ -386,9 +386,7 @@ YUI.add("wegas-parent", function(Y) {
                         fn: "DeleteLayoutWidgetAction"
                     }]
             }],
-        _buildCfg: {
-            aggregate: ["EDITMENU"]
-        }
+        _buildCfg: {}
     });
     Y.namespace("Wegas").Parent = Parent;
 });

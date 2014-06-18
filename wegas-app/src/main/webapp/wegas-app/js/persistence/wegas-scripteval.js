@@ -29,51 +29,46 @@ YUI.add('wegas-scripteval', function(Y) {
          *  @param script The script to evaluate
          *  @param cb A callback object, containing success, failure function or just a function as success callback. First parameter passed will be result
          */
-        eval: function(script, cb) {
+        eval: function(script, cfg) {
             var result;
-            if (cb instanceof Function) {
-                cb = {
-                    success: cb
+
+            if (cfg instanceof Function) {                                      // Normalize callback argument
+                cfg = {
+                    on: {
+                        success: cfg
+                    }
                 };
             }
+
             try {
-                result = this.localEval(script);
-            } catch (error) {
-                this.run(null, {
-                    cfg: {
-                        method: "POST",
-                        data: script,
-                        headers: {
-                            'Managed-Mode': 'false'
-                        }
-                    },
-                    on: {
-                        success: function(response) {
-                            if (cb && cb.success instanceof Function) {
-                                cb.success(Y.JSON.parse(response.responseText));
-                            }
-                        },
-                        failure: function(response) {
-                            var result;
-                            try {
-                                result = Y.JSON.parse(response.responseText);
-                            } catch (e) {
-                                result = null;
-                            }
-                            if (cb && cb.failure instanceof Function) {
-                                cb.failure(result);
-                            }
-                        }
+                result = this.localEval(script);                                // Try to do local eval
+            } catch (error) {                                                   // And if there is an error  
+                this.remoteEval(script, cfg);                                   // Use server fallback
+                return;                                                         // and stop the method
+            }
+
+            this.fire("evaluated", result);
+            if (cfg && cfg.on && cfg.on.success instanceof Function) {
+                cfg.on.success({//                                              // Make the result from the local eval look like a server response
+                    response: {
+                        entity: result
                     }
                 });
-                return;
-            }
-            this.fire("evaluated", result);
-            if (cb && cb.success instanceof Function) {
-                cb.success(result);
             }
         },
-        run: function(script, cfg) {
+        /**
+         * 
+         * @param {type} script
+         * @param {type} cfg
+         */
+        remoteEval: function(script, cfg) {
+            if (Y.Lang.isString(script)) {                                      // Normalize script argument
+                script = {
+                    "@class": "Script",
+                    content: script
+                };
+            }
+
             this.get("host").sendRequest(Y.mix(cfg, {
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
@@ -88,6 +83,9 @@ YUI.add('wegas-scripteval', function(Y) {
          * @return {Any} value locally evaluated
          */
         localEval: function(script) {
+            if (Y.Lang.isObject(script)) {                                      // Normalize script argument
+                script = script.content;
+            }
             /*jslint evil: true */
             if (!this.upToDate) {                                               //Only compute if new value
                 this._buildContext();

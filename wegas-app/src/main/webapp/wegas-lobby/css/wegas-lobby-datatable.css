@@ -185,8 +185,8 @@
     border-bottom: none;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
-    padding-right: 0;
-    width: 104px;
+    padding-right: 4px;
+    width: 95px!important;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-name,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-gameModelName {

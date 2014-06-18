@@ -31,18 +31,30 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * VariableDescriptor mapper
      */
     persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
+        /**
+         * 
+         */
         initializer: function() {
             persistence.VariableDescriptor.superclass.constructor.apply(this, arguments);
-            Y.Object.each(this.getMethodCfgs(), function(i, key) {              // Push server methods to variables
-                if (i.localEval) {
-                    this[key] = Y.bind(i.localEval, this);
+            Y.Object.each(this.getMethodCfgs(), function(i, key) {              // Push server methods defined in the METHODS static to the proto
+                if (!this.constructor.prototype[key] && i.localEval) {
+                    this.constructor.prototype[key] = i.localEval;
                 }
             }, this);
         },
+        /**
+         * 
+         * @param {Y.Wegas.persistence.Player} player
+         * @returns {Y.Wegas.persistence.VariableInstance}
+         */
         getInstance: function(player) {
             var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get("currentPlayerId");
             return this.get("scope").getInstance(playerId);
         },
+        /**
+         * 
+         * @returns {String}
+         */
         getLabel: function() {
             return this.get("label");
         }
@@ -682,9 +694,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     });
 
     persistence.InboxDescriptor = Base.create("InboxDescriptor", persistence.VariableDescriptor, [], {
-        isEmpty: function(player) {
-            return this.getInstance(player).get("messages").length < 1;
-        }
     }, {
         ATTRS: {
             "@class": {
@@ -742,9 +751,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "arguments": [{
                         type: HIDDEN,
                         value: SELF
-                    }]
+                    }],
+                localEval: function(player) {
+                    return this.getInstance(player).get("messages").length < 1;
+                }
             }
-
         }
     });
 

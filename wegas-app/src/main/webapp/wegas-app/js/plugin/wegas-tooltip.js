@@ -13,9 +13,9 @@ YUI.add('wegas-tooltip', function(Y) {
     "use strict";
 
     var Wegas = Y.Wegas, TooltipPlg, Tooltip, Lang = Y.Lang,
-            Node = Y.Node,
-            OX = -10000,
-            OY = -10000;
+        Node = Y.Node,
+        OX = -10000,
+        OY = -10000;
 
     /**
      *  @class To be pluged on a Y.Widget to display a tooltip on mouseover
@@ -34,8 +34,11 @@ YUI.add('wegas-tooltip', function(Y) {
          */
         initializer: function() {
             Tooltip.getInstance().addTriggerNode(this.get("host").get("boundingBox"),
-                    this.get("content"));
+                this.get("content"));
         },
+        /**
+         * 
+         */
         destructor: function() {
             Tooltip.getInstance().removeTriggerNode(this.get("host").get("boundingBox"));
         }
@@ -58,7 +61,7 @@ YUI.add('wegas-tooltip', function(Y) {
                 format: "html",
                 setter: function(val) {
                     Tooltip.getInstance().addTriggerNode(this.get("host").
-                            get("boundingBox"), val);
+                        get("boundingBox"), val);
                     return val;
                 },
                 _inputex: {
@@ -238,7 +241,7 @@ YUI.add('wegas-tooltip', function(Y) {
                 eventHandles.delegate = null;
             }
             eventHandles.delegate = Y.delegate("mouseenter", Y.bind(this._onNodeMouseEnter, this),
-                    this.get("delegate"), this.get("delegateSelect"));
+                this.get("delegate"), this.get("delegateSelect"));
         },
         /*
          * Default mouse enter DOM event listener.
@@ -381,7 +384,7 @@ YUI.add('wegas-tooltip', function(Y) {
         _setCurrentTrigger: function(node, x, y) {
 
             var title, currTrigger = this._currTrigger,
-                    triggerHandles = this._eventHandles.trigger;
+                triggerHandles = this._eventHandles.trigger;
 
             this._setTriggerContent(node);
 
@@ -406,11 +409,11 @@ YUI.add('wegas-tooltip', function(Y) {
         _clearCurrentTrigger: function() {
 
             var currTrigger = this._currTrigger,
-                    triggerHandles = this._eventHandles.trigger;
+                triggerHandles = this._eventHandles.trigger;
 
             if (currTrigger.node) {
                 var node = currTrigger.node,
-                        title = currTrigger.title || "";
+                    title = currTrigger.title || "";
 
                 currTrigger.node = null;
                 currTrigger.title = "";
