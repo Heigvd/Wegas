@@ -152,6 +152,10 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     margin-left: auto;
     margin-right: auto;
 }
+.wegas-pageloader-content{
+    width: inherit;
+    height: inherit;
+}
 /*body, html, body > .wegas-pageloader, body > .wegas-pageloader > .wegas-pageloader-content{
     width:100%;
     height:100%;
