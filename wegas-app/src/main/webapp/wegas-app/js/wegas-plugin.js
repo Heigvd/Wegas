@@ -12,7 +12,17 @@
 YUI.add('wegas-plugin', function(Y) {
     "use strict";
 
-    var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas");
+    var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas"),
+        PAGELOADER_CONFIG = {
+            FULL_PAGE: {
+                label: "Entire page",
+                value: "Entire page"
+            },
+            CURRENT_PAGE_LOADER: {
+                label: "Current page display",
+                value: "Current page display"
+            }
+        }, PREVIEW_PAGELOADER_ID = "previewPageLoader";
 
     /**
      *  @name Y.Wegas.Plugin
@@ -176,11 +186,14 @@ YUI.add('wegas-plugin', function(Y) {
             this.afterHostEvent("render", function() {
                 var targetPageLoader = this._getTargetPageLoader();
                 if (targetPageLoader) {
-                    targetPageLoader.onceAfter("render", function(e, targetPageLoader) {
-                        if ("" + targetPageLoader.get("pageId") === "" + this._subpage()) {
-                            this.get(HOST).set("selected", 1);
+                    this.get(HOST).set("selected", ~~("" + targetPageLoader.get("pageId") === "" + this._subpage()));
+                    this.handlers.push(targetPageLoader.after("pageIdChange", function() {
+                        try {
+                            this.get(HOST).set("selected", ~~("" + targetPageLoader.get("pageId") === "" + this._subpage()));
+                        } catch (e) {
+                            //no more node...
                         }
-                    }, this, targetPageLoader);
+                    }, this));
                 }
             }, this);
         },
@@ -198,13 +211,18 @@ YUI.add('wegas-plugin', function(Y) {
                     pageLoader.set("pageId", this._subpage());
                 }, this, targetPageLoader)
                 ));
-            this.get(HOST).set("selected", 1);
         },
         _getTargetPageLoader: function() {
-            var targetPageLoader = Wegas.PageLoader.find(this.get('targetPageLoaderId')),
-                parentPageLoader;
-            if (!targetPageLoader) {
-                parentPageLoader = Y.Widget.getByNode(this.get("host").get("root").get("boundingBox").ancestor());
+            var targetPageLoader, plID = this.get('targetPageLoaderId');
+            switch (plID) {
+                case PAGELOADER_CONFIG.FULL_PAGE.value:
+                    targetPageLoader = Wegas.PageLoader.find(PREVIEW_PAGELOADER_ID);
+                    break;
+                case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
+                    targetPageLoader = Y.Widget.getByNode(this.get("host").get("root").get("boundingBox").ancestor());
+                    break;
+                default:
+                    targetPageLoader = Wegas.PageLoader.find(plID);
             }
             return targetPageLoader;
         },
@@ -232,16 +250,15 @@ YUI.add('wegas-plugin', function(Y) {
             },
             targetPageLoaderId: {
                 type: "string",
-                value: "maindisplayarea",
+                value: "",
                 _inputex: {
                     label: "Target",
-//                    _type: "pageloaderselect",
-                    _type: "select",
+                    _type: "pageloaderselect",
+//                    _type: "select",
                     choices: [
-                        {label: "Entire page", value: "previewPageLoader"},
-                        "maindisplayarea"
-                    ],
-                    value: "maindisplayarea"
+                        PAGELOADER_CONFIG.FULL_PAGE,
+                        PAGELOADER_CONFIG.CURRENT_PAGE_LOADER
+                    ]
                 }
             },
             variable: {
