@@ -26,6 +26,20 @@ YUI.add("wegas-inputex-rte", function(Y) {
     };
 
     Y.extend(RTEField, inputEx.Textarea, {
+        /**
+         * Set the default values of the options
+         * @param {Object} options Options object as passed to the constructor
+         */
+        setOptions: function(options) {
+            RTEField.superclass.setOptions.call(this, options);
+
+            this.options.opts = options.opts || {};
+            this.options.typeInvite = null;
+        },
+        /**
+         * 
+         * @returns {undefined}
+         */
         destroy: function() {
             if (this.editor) {
                 try {
@@ -45,16 +59,6 @@ YUI.add("wegas-inputex-rte", function(Y) {
             RTEField.superclass.destroy.call(this);
         },
         /**
-         * Set the default values of the options
-         * @param {Object} options Options object as passed to the constructor
-         */
-        setOptions: function(options) {
-            RTEField.superclass.setOptions.call(this, options);
-
-            this.options.opts = options.opts || {};
-            this.options.typeInvite = null;
-        },
-        /**
          * Render the field using the YUI Editor widget
          */
         renderComponent: function() {
@@ -63,7 +67,7 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 this.editor = new tinymce.Editor(this.el.id, {
                     plugins: [
                         "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
-                                //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                            //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
                     ],
                     external_plugins: {
                         "dynamic_toolbar": Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
@@ -94,9 +98,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         }, {
                             title: 'Title 2',
                             block: 'h2'
-                                    // styles : {
-                                    //    color : '#ff0000'
-                                    // }
+                                // styles : {
+                                //    color : '#ff0000'
+                                // }
                         }, {
                             title: 'Title 3',
                             block: 'h3'
@@ -124,8 +128,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
                 e.preventDefault();
 
                 var win = RTEField.filePanel.win,
-                        field_name = RTEField.filePanel.field_name,
-                        targetInput = win.document.getElementById(field_name);
+                    field_name = RTEField.filePanel.field_name,
+                    targetInput = win.document.getElementById(field_name);
                 targetInput.value = Wegas.Facade.File.getPath() + path;        // update the input field
 
                 if (typeof (win.ImageDialog) !== "undefined") {                 // are we an image browser
@@ -156,9 +160,9 @@ YUI.add("wegas-inputex-rte", function(Y) {
 
             if (value && Wegas.Facade.File) {
                 value = value.replace(
-                        new RegExp("data-file=\"([^\"]*)\"", "gi"),
-                        "src=\"" + Wegas.Facade.File.getPath() + "$1\""
-                        + " href=\"" + Wegas.Facade.File.getPath() + "$1\"");  // @hack Place both href and src so it will work for both <a> and <img> elements
+                    new RegExp("data-file=\"([^\"]*)\"", "gi"),
+                    "src=\"" + Wegas.Facade.File.getPath() + "$1\""
+                    + " href=\"" + Wegas.Facade.File.getPath() + "$1\"");       // @hack Place both href and src so it will work for both <a> and <img> elements
             }
             RTEField.superclass.setValue.call(this, value, sendUpdatedEvent);
 
@@ -174,8 +178,8 @@ YUI.add("wegas-inputex-rte", function(Y) {
             tinyMCE.triggerSave();
             //return RTEField.superclass.getValue.call(this).replace(reg, "data-file=\"$3\" $1");
             return RTEField.superclass.getValue.call(this)
-                    .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"), "data-file=\"$3\"")// Replace absolute path with injector style path
-                    .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"), "data-file=\"$3\"");// Replace absolute path with injector style path
+                .replace(new RegExp("((src|href)=\".*/rest/File/GameModelId/.*/read([^\"]*)\")", "gi"), "data-file=\"$3\"")// Replace absolute path with injector style path
+                .replace(new RegExp("((src|href)=\".*/rest/GameModel/.*/File/read([^\"]*)\")", "gi"), "data-file=\"$3\"");// Replace absolute path with injector style path
         }
     });
     inputEx.registerType("html", RTEField, []);                                 // Register this class as "html" type

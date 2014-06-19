@@ -5,12 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-
 YUI.add("wegas-inputex-list", function(Y) {
     "use strict";
 
@@ -52,6 +50,7 @@ YUI.add("wegas-inputex-list", function(Y) {
             ListField.superclass.setOptions.call(this, options);
             this.options.className = options.className || 'inputEx-Field inputEx-ListField';
             this.options.addType = options.addType;
+            this.options.sortable = options.sortable || false;
         },
         /**
          * Render the addButton
@@ -79,30 +78,67 @@ YUI.add("wegas-inputex-list", function(Y) {
             this.addButton.on("click", this.onAdd, this);
         },
         renderField: function(fieldOptions) {
-            var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions),
-                    removebutton = new Y.Wegas.Button({
-                        label: '<span class="wegas-icon wegas-icon-remove"></span>'
-                    });
+            var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions);
 
-            removebutton.targetField = fieldInstance;
-            removebutton.get("boundingBox").addClass("wegas-removebutton");
-            removebutton.render(fieldInstance.divEl);
-            removebutton.on("click", this.onRemove, this);
+            new Y.Wegas.Button({//                                              // Render remove line button
+                label: '<span class="wegas-icon wegas-icon-remove"></span>',
+                cssClass: "wegas-removebutton",
+                on: {
+                    click: Y.bind(this.onRemove, this, fieldInstance)
+                }
+            }).render(fieldInstance.divEl);
 
+            if (this.options.sortable) {                                        // Render move up/down buttons
+                new Y.Wegas.Button({
+                    label: '<span class="wegas-icon wegas-icon-moveup"></span>',
+                    cssClass: "wegas-moveupbutton",
+                    on: {
+                        click: Y.bind(this.move, this, fieldInstance, -1)
+                    }
+                }).render(fieldInstance.divEl);
+                new Y.Wegas.Button({
+                    label: '<span class="wegas-icon wegas-icon-movedown"></span>',
+                    cssClass: "wegas-movedownbutton",
+                    on: {
+                        click: Y.bind(this.move, this, fieldInstance, 1)
+                    }
+                }).render(fieldInstance.divEl);
+            }
             return fieldInstance;
         },
-        onRemove: function(e) {
-            var i = Y.Array.indexOf(this.inputs, e.target.targetField),
-                    d = this.inputs[i];
+        move: function(field, direction) {
+            var i = Y.Array.indexOf(this.inputs, field),
+                tmp = this.inputs[i];
+
+            if (this.inputs[i + direction]) {
+                this.inputs[i] = this.inputs[i + direction];
+                this.inputs[i + direction] = tmp;
+
+                if (Y.one(this.inputs[i].divEl).one(".mce-tinymce")) {
+                    Y.one(this.inputs[i].divEl).swap(tmp.divEl);
+                } else {
+                    Y.one(tmp.divEl).swap(this.inputs[i].divEl);
+                }
+
+                Y.one(tmp.divEl).setStyle("backgroundColor", "#ededed")
+                    .transition({
+                        duration: 1,
+                        easing: 'ease-out',
+                        backgroundColor: "#FFFFFF"
+                    });                                                         // Animate the moved node so the user can see the change
+
+                this.fireUpdatedEvt();
+            }
+        },
+        onRemove: function(field) {
+            var i = Y.Array.indexOf(this.inputs, field),
+                d = this.inputs[i];
             d.destroy();
             this.inputs.splice(i, 1);
             this.fireUpdatedEvt();
         },
         onAdd: function(e) {
-            this.addField(Y.Lang.isString(
-                    this.options.addType) ? {
-                type: this.options.addType
-            } : this.options.addType);
+            this.addField(Y.Lang.isString(this.options.addType) ? {type: this.options.addType} : this.options.addType);
             this.fireUpdatedEvt();
         },
         /**
@@ -110,7 +146,6 @@ YUI.add("wegas-inputex-list", function(Y) {
          */
         runInteractions: function() {
         }
-
     });
     inputEx.registerType("listfield", ListField);                               // Register this class as "list" type
 
@@ -159,14 +194,13 @@ YUI.add("wegas-inputex-list", function(Y) {
         /**
          * Override to prevent field creation on click
          */
-        onAdd: function(e) {
+        onAdd: function() {
         },
         /**
          * Override to disable
          */
         runInteractions: function() {
         }
-
     });
     inputEx.registerType("editablelist", EditableList);                         // Register this class as "list" type
 
@@ -232,7 +266,7 @@ YUI.add("wegas-inputex-list", function(Y) {
         addPluginField: function(fn, value, fireUpdatedEvent) {
             Y.Wegas.use({type: fn}, Y.bind(function() { //load required modules
                 var cfg, targetPlg = Y.Plugin[fn],
-                        w = new Y.Wegas.Text();                                 // Use this hack to retrieve a plugin config
+                    w = new Y.Wegas.Text();                                 // Use this hack to retrieve a plugin config
                 w.plug(targetPlg);
                 cfg = w[targetPlg.NS].getFormCfg();
                 cfg.name = targetPlg.NAME;
