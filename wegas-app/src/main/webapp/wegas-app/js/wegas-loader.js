@@ -246,7 +246,9 @@ YUI().use(function(Y) {
                     lang: ["fr"]
                 },
                 /** Plugins **/
-                'wegas-plugin': {},
+                'wegas-plugin': {
+                    requires: ["timers"]
+                },
                 'wegas-userpreferences': {
                     path: 'js/plugin/wegas-userpreferences-min.js',
                     requires: ["wegas-form", "wegas-plugin"],
