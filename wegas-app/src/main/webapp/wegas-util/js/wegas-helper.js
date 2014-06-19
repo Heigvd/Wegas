@@ -8,6 +8,7 @@
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-helper', function(Y) {
     "use strict";
@@ -157,7 +158,7 @@ YUI.add('wegas-helper', function(Y) {
         hashCode: function(value) {
             return Y.Array.reduce(value.split(""), 0, function(prev, curr) {
                 prev = ((prev << 5) - prev) + curr.charCodeAt(0);
-                return prev |= 0;                                               //Force 32 bits
+                return prev |= 0; //Force 32 bits
             });
         },
         /**
@@ -205,18 +206,15 @@ YUI.add('wegas-helper', function(Y) {
                 },
                 contains = "contains" in el ? "contains" : "compareDocumentPosition",
                 has = contains == "contains" ? 1 : 0x14;
-
             // Return false if it's not in the viewport
             if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight)
                 return false;
-
             // Return true if any of its four corners are visible
             return ((eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has);
         }
     };
     Y.namespace("Wegas").Helper = Helper;
     Y.namespace("Wegas").superbind = Y.Wegas.Helper.superbind;
-
     Y.namespace("Wegas").Timer = Y.Base.create("wegas-timer", Y.Base, [], {
         start: function() {
             if (!this.handler) {
@@ -247,4 +245,58 @@ YUI.add('wegas-helper', function(Y) {
             }
         }
     });
+    /**
+     * asynchronous function queuing, chain asychronous operations
+     *
+     * @class Y.Wegas.Helper.Queue
+     * @constructor
+     */
+    Helper.Queue = (function() {
+        /**
+         * 
+         * @constructor Q
+         * @returns {_L250.Q}
+         */
+        var Q = function() {
+            this._f = []; // function queue
+            this._a = []; // arguments queue
+            this._lock = false;
+        },
+            doNext = function(queue) {
+                var cb;
+                if (queue._f.length && !queue._lock) {
+                    queue._lock = true;
+                    cb = queue._f.shift();
+                    cb.apply(cb, [queue].concat(queue._a.shift()));
+                }
+            };
+        Q.prototype = {
+            /*@lends Y.Wegas.Helper.Queue#*/
+            /**
+             * Add a function to queue and runs it if lock is released.
+             * Chainable.
+             * @param {Function} cb callback function
+             * @param {Any*} args additional arguments passed to callback function.
+             * @returns {_L250.Q.prototype}
+             */
+            add: function(cb, args) {
+                if (typeof cb !== "function") {
+                    return this;
+                }
+                this._f.push(cb);
+                this._a.push(Array.prototype.splice.call(arguments, 0, 1));
+                doNext(this);
+                return this;
+            },
+            /**
+             * release lock and run next function if any.
+             * @returns {undefined}
+             */
+            next: function() {
+                this._lock = false;
+                doNext(this);
+            }
+        };
+        return  Q;
+    }());
 });
