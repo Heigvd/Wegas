@@ -88,7 +88,11 @@ YUI.add('wegas-plugin', function(Y) {
         destructor: function() {
             var i;
             for (i = 0; i < this.handlers.length; i += 1) {
-                this.handlers[i].detach();
+                if (this.handlers[i].detach) { // EventHandle
+                    this.handlers[i].detach();
+                } else if (this.handlers[i].cancel) { //Timer
+                    this.handlers[i].cancel();
+                }
             }
         }
     }, {
@@ -182,10 +186,18 @@ YUI.add('wegas-plugin', function(Y) {
         },
         execute: function() {
             var targetPageLoader = this._getTargetPageLoader();
-            if (!targetPageLoader) {
+            if (!targetPageLoader || this.get("host").get("disabled")) {
                 return;
             }
-            targetPageLoader.set("pageId", this._subpage());
+            /* 
+             * Changing a page may call a page destructor and thus destroying other Action assossiated with this 'targetEvent'
+             * in case this' host belongs to destructed page. That's the reason to delay a page change
+             */
+            this.handlers.push(Y.soon(
+                Y.bind(function(pageLoader) {
+                    pageLoader.set("pageId", this._subpage());
+                }, this, targetPageLoader)
+                ));
             this.get(HOST).set("selected", 1);
         },
         _getTargetPageLoader: function() {
