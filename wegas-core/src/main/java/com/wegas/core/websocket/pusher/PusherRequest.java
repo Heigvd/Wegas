@@ -78,19 +78,35 @@ public class PusherRequest {
 		return Pusher.triggerPush(channelName, eventName, jsonData, socketId);
 	}
 
-	public void setEventName(String eventName) {
+    /**
+     *
+     * @param eventName
+     */
+    public void setEventName(String eventName) {
 		this.eventName = eventName;
 	}
 
-	public String getEventName() {
+    /**
+     *
+     * @return
+     */
+    public String getEventName() {
 		return eventName;
 	}
 
-	public void setChannelName(String channelName) {
+    /**
+     *
+     * @param channelName
+     */
+    public void setChannelName(String channelName) {
 		this.channelName = channelName;
 	}
 
-	public String getChannelName() {
+    /**
+     *
+     * @return
+     */
+    public String getChannelName() {
 		return channelName;
 	}
 

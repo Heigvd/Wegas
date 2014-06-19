@@ -39,10 +39,19 @@ public class ScriptController {
      */
     @EJB
     private ScriptFacade scriptManager;
+    /**
+     *
+     */
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
     @EJB
     private RequestFacade requestFacade;
+    /**
+     *
+     */
     @EJB
     private PlayerFacade playerFacadeFacade;
 

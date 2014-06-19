@@ -144,7 +144,7 @@ div.inputEx-description {
 .wegas-inputex-variabledescriptorselect .inputEx-CombineField,
 .wegas-inputex-variabledescriptorselect .inputEx-Group .inputEx-Group,
 .wegas-inputex-variabledescriptorselect div.inputEx-fieldWrapper {
-    float: left;
+    float: none;
     padding-left:0;
 }
 .wegas-inputex-variabledescriptorselect fieldset {
@@ -162,8 +162,14 @@ div.inputEx-description {
 }
 
 /* Wysiwyg code editor */
-.inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc,
-.inputEx-WysiwigScript .inputEx-WysiwigScript-add {
+.inputEx-WysiwigScriptWrapper {
+    padding: 0px!important;
+}
+.inputEx-WysiwigScriptWrapper > div.inputEx-label {
+    margin-left: 0px !important;
+    margin-right: 6px;
+}
+.inputEx-WysiwigScript > .yui3-button {
     background-color: #ededed;;
     box-shadow: none;
     padding: 1px;
@@ -171,12 +177,10 @@ div.inputEx-description {
     min-height: 23px;
     border: 1px solid lightgray;
     margin-top: 0;
+    border-right: none;
 }
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc {
-    border-left: none;
-}
-.inputEx-WysiwigScript .inputEx-WysiwigScript-add {
-    border-right: none;
+    border-right: 1px solid lightgray;
 }
 .inputEx-WysiwigScript .inputEx-WysiwigScript-add.yui3-button-selected,
 .inputEx-WysiwigScript .inputEx-WysiwigScript-viewsrc.yui3-button-selected {
@@ -186,17 +190,43 @@ div.inputEx-description {
 .inputEx-WysiwigScript .inputEx-CombineField,
 .inputEx-WysiwigScript .inputEx-Group .inputEx-Group,
 .inputEx-WysiwigScript div.inputEx-fieldWrapper {
-    float: left;
+    float: none !important; 
     padding-left:0;
+    display: inline-block !important;
+    vertical-align: top;
+    margin-right: -2px;
+}
+.inputEx-WysiwigScript div.wegas-method-returnline {
+    margin-left: 57px;
+    margin-top: -3px;
+}
+.inputEx-WysiwigScript div.wegas-method-returnline .inputEx-fieldWrapper,
+.inputEx-WysiwigScript div.wegas-method-returnline .inputEx-Group,
+.inputEx-WysiwigScript div.wegas-method-returnline .inputEx-Group fieldset {
+    width: 100%;
 }
 .inputEx-WysiwigScript div.inputEx-CombineField {
     padding:0;
 }
 .inputEx-WysiwigScript .wegas-method-sendmessage {
-    padding: 28px 5px 0px 10px;
+    padding: 0px 5px 0px 57px;
+    margin-bottom: 4px;
+    margin-top: -3px;
 }
+
 .inputEx-WysiwigScript .wegas-method-sendmessage .inputEx-fieldWrapper {
-    float:none !important;
+    display: block !important;
+    float: initial !important;
+    margin-bottom: 2px;
+}
+.inputEx-WysiwigScript .wegas-method-sendmessage .inputEx-ListField-addButton + span {
+    display: inline-block;
+    vertical-align: top;
+    margin-top: -1px;
+    margin-left: 2px !important;
+}
+.inputEx-WysiwigScript .wegas-method-sendmessage .inputEx-ListField-addButton + span::after {
+    content: "Attachements";
 }
 .inputEx-WysiwigScript option:disabled,
 .inputEx-WysiwigScript option[disabled]{
@@ -216,7 +246,20 @@ div.inputEx-description {
     display: none;
 }
 .inputEx-WysiwigScript .inputEx-ListField .wegas-removebutton {
-    left: -22px;
+    left: 114px;
+}
+.inputEx-WysiwigScript .inputEx-ListField .wegas-moveupbutton {
+    left: 80px;
+    width: 11px;
+    display: none;
+}
+.inputEx-WysiwigScript .inputEx-ListField .wegas-movedownbutton {
+    left: 96px;
+    display: none;
+}
+.inputEx-WysiwigScript .inputEx-ListField > fieldset > div:hover .wegas-moveupbutton,
+.inputEx-WysiwigScript .inputEx-ListField > fieldset > div:hover .wegas-movedownbutton {
+    display: block;
 }
 /* single line wysywyg script */
 .inputEx-singleLineWysiwygScript {
@@ -232,8 +275,7 @@ div.inputEx-description {
     height: 50px !important;
 }
 .inputEx-singleLineWysiwygScript .inputEx-WysiwigScript-add,
-.inputEx-singleLineWysiwygScript .wegas-addbutton,
-.inputEx-singleLineWysiwygScript .wegas-removebutton {
+.inputEx-singleLineWysiwygScript .yui3-button {
     display: none;
 }
 .inputEx-singleLineWysiwygScript .inputEx-fieldWrapper {
@@ -264,9 +306,12 @@ img.inputEx-ListField-delButton {
 }
 .inputEx-ListField > fieldset > div {
     position:relative;
+    padding-left: 135px;
 }
 .yui3-skin-sam .inputEx-ListField .wegas-addbutton,
-.yui3-skin-sam .inputEx-ListField .wegas-removebutton {
+.yui3-skin-sam .inputEx-ListField .wegas-removebutton,
+.yui3-skin-sam .inputEx-ListField .wegas-moveupbutton, 
+.yui3-skin-sam .inputEx-ListField .wegas-movedownbutton {
     background: none;
     border: none;
     -moz-box-shadow: none;
@@ -279,7 +324,6 @@ img.inputEx-ListField-delButton {
     top: 0;
     z-index: 10; /* to allow click events */
 }
-
 .yui3-skin-sam .inputEx-ListField .wegas-addbutton:after {
     content: none;  /** remove submenu indicator for this button */
 }

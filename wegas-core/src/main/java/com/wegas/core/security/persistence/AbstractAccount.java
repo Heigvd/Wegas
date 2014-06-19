@@ -225,15 +225,27 @@ public class AbstractAccount extends AbstractEntity {
     /**
      *
      * @param permission
+     * @param inducedPermission
+     * @return
      */
     public boolean addPermission(String permission, String inducedPermission) {
         return this.addPermission(new Permission(permission, inducedPermission));
     }
 
+    /**
+     *
+     * @param permission
+     * @return
+     */
     public boolean addPermission(String permission) {
         return this.addPermission(new Permission(permission));
     }
 
+    /**
+     *
+     * @param permission
+     * @return
+     */
     public boolean addPermission(Permission permission) {
         if (!this.permissions.contains(permission)) {
             permission.setAccount(this);

@@ -150,7 +150,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 100%;
 }
 .wegas-console-wysiwyg .inputEx-WysiwigScript > .inputEx-Field {    
-    padding: 0.5em 0.5em 0.5em 140px;
+    padding: .5em;
 }
 
 /* YUI3 Console style override */

@@ -70,6 +70,10 @@ public class StateMachineInstance extends VariableInstance implements Serializab
         return states.get(this.currentStateId);
     }
 
+    /**
+     *
+     * @param state
+     */
     @JsonIgnore
     public void setCurrentState(State state) {
         //Not meant to be used
