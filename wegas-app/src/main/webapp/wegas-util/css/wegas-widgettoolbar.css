@@ -74,8 +74,10 @@
 }
 .wegas-toolbar .inputEx-fieldWrapper {
     margin:0;
-    padding-left: 4px;
+    padding-left: 3px;
     display:inline-block;
+    margin-right: 4px;
+    margin-top: 1px;
 }
 .wegas-toolbar select {
     margin: 1px 0;

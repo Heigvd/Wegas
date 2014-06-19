@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-inputex-hashlist", function (Y) {
+YUI.add("wegas-inputex-hashlist", function(Y) {
     "uset strict";
 
     /**
@@ -18,7 +18,7 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
      * @class
      * @constructor
      */
-    var inputEx = Y.inputEx, HashList = function (options) {
+    var inputEx = Y.inputEx, HashList = function(options) {
         HashList.superclass.constructor.call(this, options);
     };
     Y.extend(HashList, inputEx.ListField, {
@@ -28,12 +28,11 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
          * @function
          * @private
          */
-        setOptions: function (options) {
+        setOptions: function(options) {
             HashList.superclass.setOptions.call(this, options);
             this.options.keyField = options.keyField || "id";
             this.options.valueField = options.valueField;
         },
-
         /**
          * Convert the array of 2d elements to an javascript object
          *
@@ -41,17 +40,17 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
          * @private
          */
         seq: 2000,
-        getValue: function () {
+        getValue: function() {
             var i, v = HashList.superclass.getValue.call(this),
-            ret = {}, id;
+                ret = {}, id;
 
-            for(i = 0; i < v.length; i++) {
+            for (i = 0; i < v.length; i++) {
                 id = v[i][this.options.keyField];
 
                 if (Y.Lang.isArray(v[i])) {
                     ret[v[i][0]] = v[i][1];
 
-                }else if (!id) {
+                } else if (!id) {
                     id = this.seq;
                     ret[id] = this.seq;
                     this.seq++;
@@ -66,17 +65,16 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
             }
             return ret;
         },
-
         /**
          * Convert the object into a list of pairs
          *
          * @function
          * @private
          */
-        setValue: function (v, sendUpdatedEvent) {
+        setValue: function(v, sendUpdatedEvent) {
             var key, val = [];
 
-            if (this.options.elementType.type == "combine") {
+            if (this.options.elementType.type === "combine") {
                 for (key in v) {
                     if (v.hasOwnProperty(key)) {
                         val.push([key, v[key]]);
@@ -89,7 +87,6 @@ YUI.add("wegas-inputex-hashlist", function (Y) {
                     }
                 }
             }
-
             HashList.superclass.setValue.call(this, val, sendUpdatedEvent);
         }
     });

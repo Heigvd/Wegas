@@ -49,13 +49,13 @@
     background-position: 1px -402px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-joingame {
-    background-position: 1px -483px;
+    background-position: 1px -1028px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-newdir {
     background-position: 1px -1183px;
 }
 .yui3-skin-sam .wegas-icon-play {
-    background-position: 0px -192px;
+    background-position: 1px -192px;
 }
 .yui3-skin-sam .wegas-icon-stop {
     background-position: 0px -172px;
@@ -100,7 +100,7 @@
     background-position: 0px -870px;
 }
 .yui3-skin-sam .wegas-icon-add {
-    background-position: 1px -1027px;
+    background-position: 2px -1028px;
 }
 .yui3-skin-sam .wegas-icon-remove {
     background-position: 1px -1002px;
@@ -141,4 +141,10 @@
 }
 .wegas-icon-tableview {
     background-position: 0 -1599px;
+}
+.yui3-skin-sam .wegas-icon-moveup {
+    background: transparent url(../..//lib/inputex/src/inputex-list/assets/skins/sam/bullet_arrow_up.png) no-repeat scroll 0% !important;
+}
+.yui3-skin-sam .wegas-icon-movedown {
+    background: transparent url(../..//lib/inputex/src/inputex-list/assets/skins/sam/bullet_arrow_down.png) no-repeat scroll 0px 1px !important;
 }

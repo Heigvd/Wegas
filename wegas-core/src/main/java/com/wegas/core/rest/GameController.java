@@ -7,6 +7,7 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
@@ -228,7 +229,7 @@ public class GameController {
                 //if (game.getTeams().isEmpty()) {
 
                 // Version 1: Create a team for each user 
-                Team team = new Team("Team-" + game.getTeams().size());
+                Team team = new Team("Team-" + Helper.genToken(20));
                 teamFacade.create(game.getId(), team);
 
                 // Version 2: Use same team for everybody
