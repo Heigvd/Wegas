@@ -254,7 +254,6 @@ YUI.add('wegas-plugin', function(Y) {
                 _inputex: {
                     label: "Target",
                     _type: "pageloaderselect",
-//                    _type: "select",
                     choices: [
                         PAGELOADER_CONFIG.FULL_PAGE,
                         PAGELOADER_CONFIG.CURRENT_PAGE_LOADER
