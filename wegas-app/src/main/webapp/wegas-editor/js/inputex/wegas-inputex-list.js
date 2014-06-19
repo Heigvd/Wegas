@@ -114,14 +114,18 @@ YUI.add("wegas-inputex-list", function(Y) {
                 this.inputs[i] = this.inputs[i + direction];
                 this.inputs[i + direction] = tmp;
 
-                Y.one(this.inputs[i].divEl).swap(tmp.divEl);
+                if (Y.one(this.inputs[i].divEl).one(".mce-tinymce")) {
+                    Y.one(this.inputs[i].divEl).swap(tmp.divEl);
+                } else {
+                    Y.one(tmp.divEl).swap(this.inputs[i].divEl);
+                }
 
                 Y.one(tmp.divEl).setStyle("backgroundColor", "#ededed")
-                    .transition({// Animate the moved node so the user can see the change
+                    .transition({
                         duration: 1,
                         easing: 'ease-out',
                         backgroundColor: "#FFFFFF"
-                    });
+                    });                                                         // Animate the moved node so the user can see the change
 
                 this.fireUpdatedEvt();
             }

@@ -236,7 +236,8 @@ YUI.add('wegas-plugin', function(Y) {
                 _inputex: {
                     label: "Target",
 //                    _type: "pageloaderselect",
-                    _type: "select",
+//                    _type: "select",
+                    _type: "hidden",
                     choices: [
                         {label: "Entire page", value: "previewPageLoader"},
                         "maindisplayarea"
