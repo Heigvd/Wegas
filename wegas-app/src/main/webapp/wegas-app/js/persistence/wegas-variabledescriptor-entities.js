@@ -336,6 +336,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         METHODS: {
             setValue: {
                 label: "set",
+                className: "wegas-method-returnline",
                 "arguments": [{
                         type: HIDDEN,
                         value: SELF
@@ -437,7 +438,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         value: SELF
                     }, {
                         type: NUMBER,
-                        value: 1,
                         required: true
                     }]
             },
@@ -448,7 +448,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         value: SELF
                     }, {
                         type: NUMBER,
-                        value: 1,
                         required: true
                     }]
             },
@@ -459,7 +458,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         value: SELF
                     }, {
                         type: NUMBER,
-                        value: 1,
                         required: true
                     }]
             },
@@ -734,7 +732,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         required: true
                     }, {
                         type: "list",
-                        label: "Attachements",
+                        label: "",
                         scriptType: STRING,
                         useButtons: true,
                         /*sortable: true*/
@@ -839,7 +837,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             this._inProgress = false;
                             this.fire("evaluated", this._result);
                         }, this),
-                        failure: Y.bind(function(result) {
+                        failure: Y.bind(function() {
                             this._result = false;
                             this._inProgress = false;
                             this.fire("evaluated", false);
