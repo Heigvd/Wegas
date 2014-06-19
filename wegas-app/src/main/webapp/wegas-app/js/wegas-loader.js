@@ -493,7 +493,7 @@ YUI().use(function(Y) {
                 },
                 "wegas-inputex-combobox": {
                     path: 'js/inputex/wegas-inputex-combobox-min.js',
-                    requires: ['inputex-autocomplete', 'autocomplete', 'autocomplete-filters'],
+                    requires: ['inputex-autocomplete', 'inputex-string', 'autocomplete', 'autocomplete-filters'],
                     ix_provides: 'combobox'
                 },
                 'wegas-panel-fileselect': {
