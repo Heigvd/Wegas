@@ -38,7 +38,7 @@ YUI.add("wegas-inputex-combobox", function(Y) {
             options.className = options.className || 'inputEx-Field inputEx-AutoComplete inputEx-ComboBox';
             options.autoComp = Y.merge(options.autoComp, {
                 minQueryLength: 0,
-                activateFirstItem: true,
+                activateFirstItem: false,
                 tabSelect: false,
                 resultFilters: function(q, results) {
                     q = q.toLowerCase();
@@ -58,15 +58,6 @@ YUI.add("wegas-inputex-combobox", function(Y) {
             inputEx.Wegas.Combobox.superclass.renderComponent.call(this);
             Y.one(this.el).ancestor().setStyle("position", "relative")
                 .appendChild("<span class='inputex-combobox-select'></span>")
-                .setStyles({
-                    position: "absolute",
-                    cursor: "pointer",
-                    display: "inline",
-                    height: "15px",
-                    width: "15px",
-                    background: 'url("wegas-app/images/wegas-icon-toggle.png") 4px 7px',
-                    right: "0px",
-                    top: "3px"})
                 .on("click", function(e) {
                     e.stopPropagation();
                     if (!this.yEl) {
@@ -89,6 +80,9 @@ YUI.add("wegas-inputex-combobox", function(Y) {
             this.yEl.ac._updateValue(this.getValue());
             this.yEl.ac._ariaSay('item_selected', {item: this.getValue()});
             this.yEl.ac.hide();
+        },
+        onBlur: function() {
+            Y.inputEx.StringField.prototype.onBlur.call(this);
         },
 //        getValue: function(value) {
 //            return inputEx.Wegas.Combobox.superclass.getValue.call(this, value);
