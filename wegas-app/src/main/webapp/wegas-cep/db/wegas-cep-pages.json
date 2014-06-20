@@ -69,6 +69,7 @@
                                 "cssClass": "fr timecards"
                             }, {
                                 "type": "GaugeDisplay",
+                                "label": "Utilisateurs",
                                 "variable": {
                                     "name": "customerApproval"
                                 },
@@ -79,6 +80,7 @@
                                 "cssClass": "fr"
                             }, {
                                 "type": "GaugeDisplay",
+                                "label": "Direction",
                                 "variable": {
                                     "name": "managementApproval"
                                 },
@@ -89,6 +91,7 @@
                                 "cssClass": "fr"
                             }, {
                                 "type": "GaugeDisplay",
+                                "label": "Equipe",
                                 "variable": {
                                     "name": "teamMotivation"
                                 },

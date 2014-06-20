@@ -52,7 +52,7 @@ YUI.add('wegas-gameinformation', function(Y) {
             }
             information.append('<div class="title">' + game.get("gameModelName") + "</div>"
                 + '<div class="gametitle">' + game.get("name") + "</div>"
-                + '<div class="subtitle">' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
+                + '<div class="subtitle">Created by ' + game.get("createdByName") + ", " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
             if (game.get("description")) {
                 information.append('<div class="description"> ' + game.get("description") + '</div>');
             }
