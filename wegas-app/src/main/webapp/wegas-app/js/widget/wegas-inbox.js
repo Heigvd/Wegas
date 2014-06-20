@@ -184,6 +184,7 @@ YUI.add('wegas-inbox', function(Y) {
                 }
             }, this);
 
+            this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
             this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select a mail on the left</div>");
 
             if (this.get("autoOpenFirstMail")) {
