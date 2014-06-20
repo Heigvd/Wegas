@@ -11,7 +11,7 @@
  */
 YUI.add("wegas-inputex-pageloaderselect", function(Y) {
     "use strict";
-    var PREVIEW_PAGELOADER_ID = "previewPageLoader", ENTIRE_PAGE_LABEL = "Entire Page";
+    var PREVIEW_PAGELOADER_ID = "previewPageLoader";
 
     Y.namespace("inputEx.Wegas").PageloaderSelect = function(options) {
         Y.inputEx.Wegas.PageloaderSelect.superclass.constructor.call(this, options);
@@ -20,10 +20,12 @@ YUI.add("wegas-inputex-pageloaderselect", function(Y) {
         setOptions: function(options) {
             var list, root = Y.Wegas.PageLoader.pageLoaderInstances[PREVIEW_PAGELOADER_ID];
             Y.inputEx.Wegas.PageloaderSelect.superclass.setOptions.call(this, options);
+            if (Y.Lang.isArray(options.choices)) {
+                this.options.autoComp.source = this.options.autoComp.source.concat(options.choices);
+            }
             list = root ?
                 root.get("contentBox").all(".wegas-pageloader") :
                 new Y.ArrayList();
-            this.options.autoComp.source.push({value: root.get("pageLoaderId"), label: ENTIRE_PAGE_LABEL});
             list.each(function(item) {
                 var w = Y.Widget.getByNode(item);
                 if (root.get("widget") === w.get("root")) { //only pageloader on currently edited page. Not those on subpages.
@@ -32,6 +34,9 @@ YUI.add("wegas-inputex-pageloaderselect", function(Y) {
 
             }, this);
             this._buildSource();
+            this.options.autoComp.source = Y.Array.unique(this.options.autoComp.source, function(a, b) {
+                return a.label === b.label;
+            });
         }
     });
 
