@@ -29,10 +29,10 @@
     color: #757575;
     font-style: italic;
 }
-.yui3-skin-sam .wegas-inbox .msg-from:before {
+.yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-from:before {
     content: "From "
 }
-.yui3-skin-sam .wegas-inbox .msg-attachement:before {
+.yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-attachement:before {
     content: "Attachements "
 }
 /* Right tab format */
