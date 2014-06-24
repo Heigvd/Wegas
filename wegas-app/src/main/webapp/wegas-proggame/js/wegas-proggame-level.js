@@ -535,6 +535,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 node = ProgGameLevel.API[i] || {
                     label: i + "()"
                 };
+                node.data = i;
                 if (node.pkg) {
                     if (!packages[node.pkg]) {
                         packages[node.pkg] = {
@@ -584,7 +585,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             }).render(this.get(CONTENTBOX).one(".proggame-lefttab"));
 
             this.apiTabView.item(0).witem(0).on("treeleaf:click", function(e) { // When api is clicked, insert function in editor
-                var toInsert = e.target.get("label").replace(/([^\(]*).*/gi, "$1");
+                var toInsert = e.target.get("data");
                 this.editorTabView.get("selection").aceField.editor.insert(toInsert + "();\n");
                 e.halt(true);
             }, this);
@@ -640,7 +641,6 @@ YUI.add('wegas-proggame-level', function(Y) {
                         label: label + ": Array[" + o.length + "]",
                         children: Y.Array.map(o, genItems),
                         iconCSS: ""
-
                     };
                 } else {
                     return {
