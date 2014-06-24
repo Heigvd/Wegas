@@ -77,8 +77,11 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         syncUI: function() {
             var val = this.get("variable.evaluated"),
-                page = this.get("page.evaluated");
-            if (page) {                                                         // If there is a page script
+                    page = this.get("page.evaluated");
+
+            if (page && page.getInstance) {
+                this.set(PAGEID, page.getInstance().get('value'));
+            } else if (page) {                                                  // If there is a page script
                 this.set(PAGEID, +page);                                        // display it
             } else if (val && val.getInstance().get('value')) {                 // @backwardcompatibility
                 this.set(PAGEID, val.getInstance().get('value'));
