@@ -668,7 +668,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 Y.one("body").once(CLICK, function() {
                     panel.destroy();
                     this.show();
-                    if (this.get("root").get("@pageId") === "11") {
+                    if ("" + this.get("root").get("@pageId") === "11") {
                         this.showTutorial();
                     }
                 }, this);
