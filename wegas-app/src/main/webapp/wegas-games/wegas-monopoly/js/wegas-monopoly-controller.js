@@ -59,7 +59,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
         },
         clickNext: function() {
             var turn = Wegas.Facade.VariableDescriptor.cache.find("name", "turnOf"),
-                    player;
+                player;
             this.next.on("click", function() {
                 if (turn.get("scope") instanceof Wegas.persistence.GameModelScope) { //@fixme when gameScope works
                     player = Wegas.Facade.Game.cache.getCurrentGame().get("teams");
@@ -102,17 +102,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 } else {
                     this.restartValue = "true";
                 }
-                Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nrestart.value =" + this.restartValue + ";"
-                        }
-                    }
-                });
+                Wegas.Facade.VariableDescriptor.script.run("restart.value =" + this.restartValue + ";");
             })
         },
         buyProperty: function() {
@@ -122,7 +112,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
                 position--;
                 // check if property is free
                 if (this.boxValue[position].getInstance().get("properties").playerId != "" ||
-                        this.boxValue[position].getInstance().get("properties").playerId == "notBuyable") {
+                    this.boxValue[position].getInstance().get("properties").playerId == "notBuyable") {
                     alert("this property is not buyable");
                     return;
                 }
@@ -151,17 +141,7 @@ YUI.add('wegas-monopoly-controller', function(Y) {
 
         },
         setMoney: function(value) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "money.value =" + value + ";"
-                    }
-                }
-            });
+            Wegas.Facade.VariableDescriptor.script.run("money.value =" + value + ";");
         }
 
     }, {

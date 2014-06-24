@@ -42,16 +42,7 @@ YUI.add("wegas-flexitests-results", function(Y) {
 
             if (!this.get("simpleMode")) {
                 this.get("contentBox").one(".config").setContent("Extracting test page " + this.get("testPage") + " configuration");
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: script
-                        }
-                    },
+                Y.Wegas.Facade.VariableDescriptor.script.run(script, {
                     on: {
                         success: Y.bind(function(e) {
                             Y.Wegas.Facade.Page.cache.getPage(this.get("testPage"), Y.bind(function(page) {

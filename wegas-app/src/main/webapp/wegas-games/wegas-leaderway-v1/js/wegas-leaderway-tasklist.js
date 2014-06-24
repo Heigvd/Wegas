@@ -159,8 +159,8 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         getTasksData: function(listTasksDescriptor) {
             var i, j, k, termData, workers = new Array(), taskDescriptor, taskInstance, resourceDescriptor, resourceInstance, comment,
-                    listResourcesDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "resources"),
-                    currentWeekInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week").getInstance();
+                listResourcesDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "resources"),
+                currentWeekInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week").getInstance();
             for (i = 0; i < listTasksDescriptor.get('items').length; i++) {
                 workers.length = 0;
                 taskDescriptor = listTasksDescriptor.get('items')[i];
@@ -227,7 +227,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         selectRow: function(e) {
             var i, cb = this.get(CONTENTBOX),
-                    listTasksDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), taskDescriptorId;
+                listTasksDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"), taskDescriptorId;
             //deselect old row
             if (this.get("pickingMode") === "true") {
                 cb.all('.yui3-datatable-content .selected').removeClass('selected');
@@ -256,16 +256,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         assignTask: function(resourceDescriptor, taskDescriptor) {
             if (taskDescriptor && resourceDescriptor) {
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nactions.value -= 1\nassignTask(" + resourceDescriptor.get('id') + "," + taskDescriptor.get('id') + ");"
-                        }
-                    },
+                Y.Wegas.Facade.VariableDescriptor.script.run("actions.value -= 1\nassignTask(" + resourceDescriptor.get('id') + "," + taskDescriptor.get('id') + ");", {
                     on: {
                         success: Y.bind(this.assignTaskResult, this, true),
                         failure: Y.bind(this.assignTaskResult, this, false)
@@ -311,7 +302,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
          */
         goToFinalPage: function() {
             var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
-                    targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
+                targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");

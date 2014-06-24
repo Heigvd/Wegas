@@ -42,8 +42,8 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
                             return;
 
                         var node, i,
-                                messages = e.response.entity.get("messages"),
-                                fileNameDiv = this.get(CONTENTBOX).one(".fileName");
+                            messages = e.response.entity.get("messages"),
+                            fileNameDiv = this.get(CONTENTBOX).one(".fileName");
 
                         fileNameDiv.empty();
 
@@ -89,16 +89,7 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
             return panel;
         },
         addFile: function(fileName) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "Variable.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);"
-                    }
-                },
+            Wegas.Facade.VariableDescriptor.script.run("Variable.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);", {
                 on: {
                     success: Y.bind(function(e) {
                         this.fire("openFile", {file: e.response.entity});

@@ -63,17 +63,7 @@ YUI.add("wegas-chess", function(Y) {
                     script += "destroy(\"" + colidee.name + "\");";             // destroy it
                 }
 
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: script
-                        }
-                    }
-                });
+                Y.Wegas.Facade.VariableDescriptor.script.run(script);
             }, ".chess-move", this);
         },
         /**

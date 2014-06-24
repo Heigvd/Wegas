@@ -433,17 +433,7 @@ YUI.add('wegas-leaderway-dialogue', function(Y) {
         setCurrentPage: function() {
             var currentPage = this.get("root").get("@pageId");
             if (currentPage || currentPage === 0) {
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: "importPackage(com.wegas.core.script);\nVariable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
-                        }
-                    }
-                });
+                Y.Wegas.Facade.VariableDescriptor.script.run("Variable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");");
             }
         },
         // *** hack Methods *** //

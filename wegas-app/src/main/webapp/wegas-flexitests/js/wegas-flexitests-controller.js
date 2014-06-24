@@ -227,12 +227,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.ongoing = true;
         },
         runEndScript: function() {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: this.get("endImpact")
-                },
+            Y.Wegas.Facade.VariableDescriptor.script.run(this.get("endImpact"), {
                 on: {
                     failure: Y.bind(function(e) {
                         Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsController");
@@ -316,7 +311,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                 _inputex: {
                     _type: "script",
                     description: "What should happen once there is no more questions"
-                    
+
                 }
             }
         }

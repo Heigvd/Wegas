@@ -23,12 +23,12 @@ YUI.add("wegas-book-fight", function(Y) {
         alternative: null,
         doFight: function(e) {
             var combatSkill = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "combatSkill"),
-                    stamina = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "stamina").
-                    getInstance().get("value"),
-                    damageGiven, damageTaken, handicap,
-                    diceValue = e.target.result;
+                stamina = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "stamina").
+                getInstance().get("value"),
+                damageGiven, damageTaken, handicap,
+                diceValue = e.target.result;
             handicap = combatSkill.getInstance().
-                    get("value") - this.opponentCombatSkill;
+                get("value") - this.opponentCombatSkill;
             if (handicap < -10)
                 handicap = -10;
             if (handicap > 10)
@@ -76,17 +76,8 @@ YUI.add("wegas-book-fight", function(Y) {
         setStamina: function(stamina) {
             if (typeof stamina !== "number")
                 return;
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\nstamina.value =" + stamina + ";"
-                    }
-                }
-            });
+            
+            Y.Wegas.Facade.VariableDescriptor.script.run("stamina.value =" + stamina + ";");
         },
         doBattleResult: function(success) {
             var cb = this.get(CONTENTBOX);
@@ -101,7 +92,7 @@ YUI.add("wegas-book-fight", function(Y) {
         displayOpponentState: function(cb) {
             cb.one(".opponent .stamina .value").setHTML(this.opponentStamina);
             cb.one(".opponent .combatSkill .value").
-                    setHTML(this.opponentCombatSkill);
+                setHTML(this.opponentCombatSkill);
         },
         initializer: function() {
             this.dice = new Y.Wegas.Dice({
@@ -136,16 +127,16 @@ YUI.add("wegas-book-fight", function(Y) {
             var cb = this.get(CONTENTBOX), opponement;
             opponement = Y.Node.create("<div class='opponent'></div>");
             opponement.append("<div class='name'></div>").
-                    append("<div class='stamina'></div>").
-                    append("<div class='combatSkill'></div>");
+                append("<div class='stamina'></div>").
+                append("<div class='combatSkill'></div>");
             opponement.one(".stamina").append("<div class='label'></div>").
-                    append("<div class='value'></div>");
+                append("<div class='value'></div>");
             opponement.one(".combatSkill").append("<div class='label'></div>").
-                    append("<div class='value'></div>");
+                append("<div class='value'></div>");
             opponement.one(".stamina .label").
-                    setHTML(this.get("staminaLabel"));
+                setHTML(this.get("staminaLabel"));
             opponement.one(".combatSkill .label").
-                    setHTML(this.get("combatSkillLabel"));
+                setHTML(this.get("combatSkillLabel"));
             opponement.one(".name").setHTML(this.get("name"));
             cb.append(opponement);
             cb.append("<div class='dice'></div>");

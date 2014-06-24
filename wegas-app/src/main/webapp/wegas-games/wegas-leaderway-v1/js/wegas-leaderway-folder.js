@@ -93,32 +93,12 @@ YUI.add('wegas-leaderway-folder', function(Y) {
             if (!currentRes) {
                 return;
             }
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "Variable.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');"
-                    }
-                }
-            });
+            Y.Wegas.Facade.VariableDescriptor.script.run("Variable.findByName(self.getGameModel(), 'nameOfCurrentEmployee').getInstance(self).setValue('" + currentRes + "');");
         },
         setCurrentPage: function() {
             var currentPage = this.get("root").get("@pageId");
             if (currentPage || currentPage === 0) {
-                Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                    request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST",
-                        data: {
-                            "@class": "Script",
-                            language: "JavaScript",
-                            content: "Variable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");"
-                        }
-                    }
-                });
+                Y.Wegas.Facade.VariableDescriptor.script.run("Variable.findByName(self.getGameModel(), 'previousPage').getInstance(self).setValue(" + currentPage + ");");
             }
         },
         /**
@@ -128,9 +108,9 @@ YUI.add('wegas-leaderway-folder', function(Y) {
          */
         getOccupationObject: function(resourceInstance) {
             var i, j, occupationObject = null, sick = false,
-                    taskListDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"),
-                    listAbsenceDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "absences"),
-                    taskDescriptor;
+                taskListDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "tasks"),
+                listAbsenceDescriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "absences"),
+                taskDescriptor;
             for (i = 0; i < listAbsenceDescriptor.get('items').length; i++) {
                 taskDescriptor = listAbsenceDescriptor.get('items')[i];
                 if (taskDescriptor.getInstance().get('active')) {
@@ -227,22 +207,12 @@ YUI.add('wegas-leaderway-folder', function(Y) {
         decreaseResourceState: function() {
             if (!this.currentResourceDescriptor)
                 return;
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);"
-                    }
-                }
-            });
+            Y.Wegas.Facade.VariableDescriptor.script.run("var i, listRes, resInst;\nlistRes = VariableDescriptor.findByName(self.getGameModel(), 'resources');\nfor(i=0;i<listRes.items.size();i++){\nif(listRes.items.get(i).getName() == '" + this.currentResourceDescriptor.get('name') + "'){\nresInst = listRes.items.get(i).getInstance(self);\nbreak;\n}\n}\nresInst.setMoral(resInst.getMoral()-15);\nresInst.setConfidence(resInst.getConfidence()-10);");
         },
         createHiddenVarList: function() {
             var i, j, vari, list,
-                    splitter = this.get('hiddenVariablesSeparator'),
-                    hiddenVar = this.get('hiddenVariables');
+                splitter = this.get('hiddenVariablesSeparator'),
+                hiddenVar = this.get('hiddenVariables');
             if (!splitter || !hiddenVar) {
                 return;
             }
@@ -273,7 +243,7 @@ YUI.add('wegas-leaderway-folder', function(Y) {
          */
         goToFinalPage: function() {
             var currentWeek = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "week"),
-                    targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
+                targetPageLoader = Y.Wegas.PageLoader.find("maindisplayarea");
             if (parseInt(currentWeek.getInstance().get('value')) > currentWeek.get('maxValue')) {
                 targetPageLoader.once("widgetChange", function(e) {
                     e.newVal.setCurrentDialogue("dialogueFinal");

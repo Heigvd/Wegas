@@ -78,6 +78,12 @@ YUI.add('wegas-scripteval', function(Y) {
             }));
         },
         /**
+         * Sugar
+         */
+        run: function(script, cfg) {
+            this.remoteEval(script, cfg);
+        },
+        /**
          * Tries to evaluate the script locally, using variables cache
          * @param {String} script The script to eval localy
          * @return {Any} value locally evaluated
