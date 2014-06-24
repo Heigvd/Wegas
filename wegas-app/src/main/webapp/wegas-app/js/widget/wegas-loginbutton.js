@@ -80,7 +80,6 @@ YUI.add("wegas-loginbutton", function(Y) {
                             }
                         }]
                 }]);
-
         },
         /**
          * @function
@@ -98,9 +97,10 @@ YUI.add("wegas-loginbutton", function(Y) {
                 mainAccount = cUser.getMainAccount(),
                 gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
-            if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) {   // If current account is a Guest,
+            if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) {     // If current account is a Guest,
                 this.menu.getMenu().item(0).hide();                             // hide the "Preference" button
             }
+            
             if (this.get("forcedLabel")) {
                 this.set("label", this.get("forcedLabel"));
             } else if (this.get('labelIsUser')) {
