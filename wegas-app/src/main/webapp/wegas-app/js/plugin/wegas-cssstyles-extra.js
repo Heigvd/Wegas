@@ -35,7 +35,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                             type: "colorpicker",
                             palette: 3,
                             name: "backgroundColor",
-                            label: "backround"
+                            label: "background"
                         }]
                 }
             }

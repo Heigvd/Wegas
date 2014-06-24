@@ -353,7 +353,10 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "arguments": [{
                         type: HIDDEN,
                         value: SELF
-                    }]
+                    }],
+                localEval: function(player) {
+                    return this.getInstance(player).get("value");
+                }
             }
         }
     });
