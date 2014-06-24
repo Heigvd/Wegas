@@ -50,11 +50,11 @@ YUI.add("wegas-teaching-main", function(Y) {
 
             /* Create and add 9 rectangles */
             var i, themes = this.get("themes"),
-                    pos = [
-                        [3, 78], [300, 78], [595, 78],
-                        [3, 305], [300, 305], [595, 305],
-                        [3, 530], [300, 530], [595, 530]
-                    ];
+                pos = [
+                    [3, 78], [300, 78], [595, 78],
+                    [3, 305], [300, 305], [595, 305],
+                    [3, 530], [300, 530], [595, 530]
+                ];
             for (i = 0; i < 9; i += 1) {
                 this.createRectangle(pos[i][0], pos[i][1], i, themes[i] || "Undefined");
             }
@@ -92,7 +92,7 @@ YUI.add("wegas-teaching-main", function(Y) {
 
             // Set correct image (vertical or horizontal)
             var direction = (arrow.get('orientation') == this.ORIENTATION_HORIZONTAL) ? "horizontal" : "vertical",
-                    buttons = this.buttonGroup.getButtons();
+                buttons = this.buttonGroup.getButtons();
 
             buttons.item(0).set('label', '<span class="icon ' + direction + '-normal"></span>');
             buttons.item(1).set('label', '<span class="icon ' + direction + '-inverse"></span>');
@@ -107,25 +107,25 @@ YUI.add("wegas-teaching-main", function(Y) {
             //var arrowInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "arrow" + id);
             //var val = arrowInstance.getInstance().get("value");
             var arrowInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "fleche" + id).getInstance(),
-                    val = arrowInstance.get("properties").value,
-                    text = arrowInstance.get("properties").text,
-                    color = this.getColorByVal(val),
-                    orientation = x1 == x2, // true = 1: vertical (else horizontal)
-                    arrow = this.graphic.addShape({
-                        type: Y.TeachingArrow,
-                        stroke: {
-                            weight: 5,
-                            color: color
-                        },
-                        src: [x1, y1],
-                        tgt: [x2, y2],
-                        id: id,
-                        val: val,
-                        text: text,
-                        orientation: orientation
-                    }),
-                    handleClick = Y.bind(this.showArrowEditor, this, arrow),
-                    node = Y.Node(arrow.get('node'));
+                val = arrowInstance.get("properties").value,
+                text = arrowInstance.get("properties").text,
+                color = this.getColorByVal(val),
+                orientation = x1 == x2, // true = 1: vertical (else horizontal)
+                arrow = this.graphic.addShape({
+                    type: Y.TeachingArrow,
+                    stroke: {
+                        weight: 5,
+                        color: color
+                    },
+                    src: [x1, y1],
+                    tgt: [x2, y2],
+                    id: id,
+                    val: val,
+                    text: text,
+                    orientation: orientation
+                }),
+                handleClick = Y.bind(this.showArrowEditor, this, arrow),
+                node = Y.Node(arrow.get('node'));
 
             node.on('click', handleClick);
             //this.createButton(x1, y1, orientation, handleClick);
@@ -134,10 +134,10 @@ YUI.add("wegas-teaching-main", function(Y) {
         createButton: function(x1, y1, orientation, handleClick) {
             // Button to edit arrow
             var cb = this.get("contentBox"),
-                    buttonWidget = new Y.Button({
-                        label: "Éditer",
-                        render: cb
-                    }), button = buttonWidget.get("contentBox");
+                buttonWidget = new Y.Button({
+                    label: "Éditer",
+                    render: cb
+                }), button = buttonWidget.get("contentBox");
 
             button.setStyle('position', 'absolute');
 
@@ -152,7 +152,7 @@ YUI.add("wegas-teaching-main", function(Y) {
         },
         createLabel: function(x1, y1, text, orientation, handleClick) {
             var cb = this.get("contentBox"),
-                    label = Y.Node.create("<div class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
+                label = Y.Node.create("<div class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
             cb.append(label);
             label.setStyle('position', 'absolute');
             var child = label.one('*');
@@ -175,71 +175,50 @@ YUI.add("wegas-teaching-main", function(Y) {
             //var rectangles = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "rectangles").getAttrs().items;
             //var val = rectangles[id].getInstance().get("value");
             var cb = this.get("contentBox"),
-                    rectangleInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "rectangle" + (id + 1)),
-                    val = rectangleInstance.getInstance().get("value");
+                rectangleInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "rectangle" + (id + 1)),
+                val = rectangleInstance.getInstance().get("value");
             var ereg = /(.*)\|\|\|/i, // the label is the first part of the string separated with a "|||"
-                    label = (val.match(ereg, "$1") && val.match(ereg, "$1")[1]) || label,
-                    description = val.replace(ereg, ""),
-                    rectangle = new Y.Wegas.TeachingRectangle({
-                        x: x,
-                        y: y,
-                        label: label,
-                        description: description,
-                        id: id
-                    });
+                label = (val.match(ereg, "$1") && val.match(ereg, "$1")[1]) || label,
+                description = val.replace(ereg, ""),
+                rectangle = new Y.Wegas.TeachingRectangle({
+                    x: x,
+                    y: y,
+                    label: label,
+                    description: description,
+                    id: id
+                });
 
             rectangle.render(cb);
             rectangle.on('click', this.showRectangleEditor, this, rectangle);
         },
         saveCurrentArrow: function() {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\n" +
-                                "\nfleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
-                                "\nfleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');"
-                    }
-                }
-            });
+            Y.Wegas.Facade.VariableDescriptor.script.run(
+                "fleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
+                "fleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');");
         },
         saveCurrentRectangle: function() {
             this.saveRectangle(this.currentRectangle);
         },
         saveRectangle: function(rectangle) {
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: "importPackage(com.wegas.core.script);\n"
-                                + "rectangle" + (rectangle.get("id") + 1) + ".value='" + String(rectangle.get("label")).replace(/'/g, '&#39;') + "|||" + String(rectangle.get("description")).replace(/'/g, '&#39;') + "';"
-                    }
-                }
-            });
+            Y.Wegas.Facade.VariableDescriptor.script.run("rectangle" + (rectangle.get("id") + 1) + ".value='" + String(rectangle.get("label")).replace(/'/g, '&#39;') + "|||" + String(rectangle.get("description")).replace(/'/g, '&#39;') + "';");
         },
         initArrowEditor: function() {
             this.arrowEditor = new Y.Panel({
                 headerContent: "Edit relation",
                 bodyContent: "<br/>Type:&nbsp;&nbsp;<input placeholder=\"Not set\"/><br /><br />"
-                        + "Direction:<br/>"
-                        + "<div class='arrow-buttons'>"
-                        + "<button value=\"1\"></button>"
-                        + "<button value=\"2\"></button>"
-                        + "<button value=\"3\"></button>"
-                        + "<button value=\"0\"></button></div><br/>",
+                    + "Direction:<br/>"
+                    + "<div class='arrow-buttons'>"
+                    + "<button value=\"1\"></button>"
+                    + "<button value=\"2\"></button>"
+                    + "<button value=\"3\"></button>"
+                    + "<button value=\"0\"></button></div><br/>",
                 xy: [120, 100],
                 width: 300,
                 zIndex: 50000,
                 modal: true,
                 visible: false,
                 render: true
-                        //plugins: [Y.Plugin.Drag]
+                    //plugins: [Y.Plugin.Drag]
             });
             this.arrowEditor.addButton({
                 value: 'Save',
@@ -256,8 +235,8 @@ YUI.add("wegas-teaching-main", function(Y) {
             });
 
             var links = this.get("availableLinkLabels"),
-                    bodyNode = this.arrowEditor.getStdModNode("body"),
-                    inputNode = bodyNode.one("input");
+                bodyNode = this.arrowEditor.getStdModNode("body"),
+                inputNode = bodyNode.one("input");
 
             bodyNode.setStyles({
                 padding: "8px",
@@ -349,9 +328,9 @@ YUI.add("wegas-teaching-main", function(Y) {
                 var drop = new Y.DD.Drop({//                                    // Init drop
                     node: n
                 }),
-                        drag = new Y.DD.Drag({//                                        // Init drag
-                            node: n
-                        }).plug(Y.Plugin.DDProxy, {
+                    drag = new Y.DD.Drag({//                                        // Init drag
+                        node: n
+                    }).plug(Y.Plugin.DDProxy, {
                     moveOnEnd: false                                            // We don't want the node to move on end drag
                 }).plug(Y.Plugin.DDConstrained, {
                     constrain2node: this.get(CONTENTBOX)                        // Keep nodes inside the workarea
@@ -359,9 +338,9 @@ YUI.add("wegas-teaching-main", function(Y) {
 
                 drag.on('drag:drophit', function(e) {
                     var drag = Y.Widget.getByNode(e.drag.get('node')),
-                            drop = Y.Widget.getByNode(e.drop.get('node')),
-                            tmpDescription = drag.get("description"),
-                            tmpLabel = drag.get("label");
+                        drop = Y.Widget.getByNode(e.drop.get('node')),
+                        tmpDescription = drag.get("description"),
+                        tmpLabel = drag.get("label");
 
                     drag.set("description", drop.get("description"));           // Switch descriptionsand label
                     drag.set("label", drop.get("label"));

@@ -333,16 +333,7 @@ YUI.add('wegas-plugin', function(Y) {
                 script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        language: "JavaScript",
-                        content: script
-                    }
-                },
+            Wegas.Facade.VariableDescriptor.script.run(script, {
                 on: {
                     success: function(r) {
                         if (overlayGuest) {
