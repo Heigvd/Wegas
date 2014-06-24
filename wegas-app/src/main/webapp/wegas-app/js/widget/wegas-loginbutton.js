@@ -92,34 +92,28 @@ YUI.add("wegas-loginbutton", function(Y) {
             Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
 
             var cUser = Wegas.Facade.User.get("currentUser"),
-                    cPlayer = Wegas.Facade.Game.cache.getCurrentPlayer(),
-                    cTeam = Wegas.Facade.Game.cache.getCurrentTeam(),
-                    name = cUser.get("name") || "undefined",
-                    mainAccount = cUser.getMainAccount(),
-                    gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
-
-            if (mainAccount) {
-                name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
-            }
+                cPlayer = Wegas.Facade.Game.cache.getCurrentPlayer(),
+                cTeam = Wegas.Facade.Game.cache.getCurrentTeam(),
+                name = cUser.get("name") || "undefined",
+                mainAccount = cUser.getMainAccount(),
+                gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
             if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) {   // If current account is a Guest,
                 this.menu.getMenu().item(0).hide();                             // hide the "Preference" button
             }
-
-            if (!this.get('labelIsUser')) {
-                if (cPlayer) {
-                    name = cPlayer.get("name");
+            if (this.get("forcedLabel")) {
+                this.set("label", this.get("forcedLabel"));
+            } else if (this.get('labelIsUser')) {
+                if (mainAccount) {
+                    name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
                 }
-                if (cTeam) {
-                    name = cTeam.get("name") + " : " + name;
-                }
-                if (gameModel && gameModel.get("properties.freeForAll")) {
-                    name = cPlayer.get("name");
-                }
-            }
-            if (!this.get("label") || this.customLabel) {
                 this.set("label", name);
-                this.customLabel = true;
+            } else {
+                if (cTeam && !(gameModel && gameModel.get("properties.freeForAll"))) {
+                    this.set("label", cTeam.get("name") + " : " + cPlayer.get("name"));
+                } else {
+                    this.set("label", cPlayer.get("name") || name);
+                }
             }
         },
         destructor: function() {
@@ -144,6 +138,14 @@ YUI.add("wegas-loginbutton", function(Y) {
         ATTRS: {
             label: {
                 "transient": true
+            },
+            forcedLabel: {
+                type: "string",
+                optional: true,
+                _inputex: {
+                    label: "Label",
+                    description: "Player name is used if blank"
+                }
             },
             data: {
                 "transient": true
