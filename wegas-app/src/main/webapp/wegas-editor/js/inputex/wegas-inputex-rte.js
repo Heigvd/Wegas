@@ -73,14 +73,15 @@ YUI.add("wegas-inputex-rte", function(Y) {
                         "dynamic_toolbar": Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
                     },
                     toolbar1: "bold italic bullist | link image media code addToolbarButton",
-                    toolbar2: "forecolor backcolor | fontselect |  fontsizeselect | styleselect",
-                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselectspellchecker template
+                    toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
+                    toolbar3: "fontselect fontsizeselect styleselect",
+                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
                     // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
                     menubar: false,
                     statusbar: false,
                     relative_urls: false,
                     toolbar_items_size: 'small',
-                    hidden_tootlbar: [2],
+                    hidden_tootlbar: [2, 3],
                     file_browser_callback: this.onFileBrowserClick,
                     setup: Y.bind(function(editor) {
                         editor.on('change', Y.bind(this.fireUpdatedEvt, this));
