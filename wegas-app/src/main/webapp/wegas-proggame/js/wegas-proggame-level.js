@@ -29,7 +29,8 @@ YUI.add('wegas-proggame-level', function(Y) {
     ProgGameLevel = Y.Base.create("wegas-proggame-level", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Fields *** //
         CONTENT_TEMPLATE: '<div>'
-            + '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="Level information"></div><div class="proggame-level" title="Back to level selection"></div></div>'
+            + '<div class="proggame-title"><h1></h1><h2></h2><div class="proggame-help" title="Level information"></div>'
+            + '<div class="proggame-level" title="Back to level selection"></div></div>'
             + '<div class="proggame-lefttab"></div>'
             + '<div class="proggame-view">'
             + '<div class="message"></div>'
@@ -84,7 +85,6 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             this.stopButton = new Wegas.Button({//                              // Render stop button
                 label: SMALLSTOP_BUTTON_LABEL,
-                //disabled: true,
                 visible: false,
                 cssClass: "proggame-smallbutton"
             }).render(cb.one(".proggame-buttons"));
@@ -146,17 +146,23 @@ YUI.add('wegas-proggame-level', function(Y) {
             }, this);
 
             cb.one(".proggame-level").on(CLICK, function() {                    // When level button is clicked,
-                this.plug(Y.Plugin.OpenPageAction, {
-                    subpageId: 4,
-                    targetPageLoaderId: "maindisplayarea"
+                //this.plug(Y.Plugin.OpenPageAction, {
+                //    subpageId: 4,
+                //    targetPageLoaderId: "maindisplayarea"
+                //}); 
+                this.plug(Y.Plugin.ExecuteScriptAction, {
+                    onClick: {
+                        "@class": "Script",
+                        content: "Variable.find(gameModel, \"currentLevel\").setValue(self, 4)"
+                    }
                 });
             }, this);
 
-//            this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
-//                subpageId: 2,
-//                targetEvent: "gameWon",
-//                targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
-//            });
+            //this.plug(Y.Plugin.OpenPageAction, {//                              // Whenever level is finished,
+            //    subpageId: 2,
+            //    targetEvent: "gameWon",
+            //    targetPageLoaderId: "maindisplayarea"                           // display the page 2 which shows the last level
+            //});
 
             this.display.after('commandExecuted', this.consumeCommand, this);   // When a command is executed, continue stack evaluation
             this.after('commandExecuted', this.consumeCommand, this);           // idem
@@ -245,10 +251,10 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             Y.log("instrumented code: " + code + ", current step: " + this.currentBreakpointStep + ", breakpoints: " + Y.JSON.stringify(breakpoints), INFO, PROGGAMELEVEL);
 
-            this.sendRunRequest(code, {
+            this.sendRunRequest(code, {//                                       // Run instrumented code on the server
                 debug: true,
-                watches: this.watches, // Watched values
-                breakpoints: breakpoints, // breakpoints
+                watches: this.watches, //                                       // Watched values
+                breakpoints: breakpoints, //                                    // breakpoints
                 startStep: this.currentBreakpointStep - 1,
                 targetStep: this.currentBreakpointStep
             });
@@ -264,8 +270,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                 cfg: {
                     method: "POST",
                     data: "run("
-                        + "function (name) {with(this) {" + code + "\n}}, " // Player's code
-                        + Y.JSON.stringify(this.toObject()) + ", "          // the current level
+                        + "function (name) {with(this) {" + code + "\n}}, "     // Player's code
+                        + Y.JSON.stringify(this.toObject()) + ", "              // the current level
                         + Y.JSON.stringify(interpreterCfg) + ");"
                 },
                 on: {
@@ -410,17 +416,9 @@ YUI.add('wegas-proggame-level', function(Y) {
             var content = this.get("onWin") + ";Variable.find(gameModel, \"money\").add(self, 100);";
             content += "maxLevel.value = Math.max(maxLevel.value, currentLevel.value);";
             if (retry) {
-                content  += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
+                content += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
             }
-            Wegas.Facade.VariableDescriptor.sendRequest({
-                request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
-                cfg: {
-                    method: "POST",
-                    data: {
-                        "@class": "Script",
-                        content: content
-                    }
-                },
+            Wegas.Facade.VariableDescriptor.script.run(content, {
                 on: {
                     success: Y.bind(fn, this)
                 }
@@ -429,10 +427,10 @@ YUI.add('wegas-proggame-level', function(Y) {
         addEditorTab: function(label, code, file) {
             var _file = file,
                 saveTimer = new Wegas.Timer(),
-                tab = this.editorTabView.add({//                            // Render tab
+                tab = this.editorTabView.add({//                                // Render tab
                     label: label
                 }).item(0),
-                aceField = new Y.inputEx.AceField({//                       // Render ace editor
+                aceField = new Y.inputEx.AceField({//                           // Render ace editor
                     parentEl: tab.get("panelNode"),
                     name: TEXT,
                     type: ACE,
@@ -468,7 +466,7 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             aceField.editor.on("guttermousedown", Y.bind(function(e) {          // Add breakpoints on gutter click
                 if (e.domEvent.target.className.indexOf("ace_gutter-cell") === -1
-                    || this.disableBreakpoint) {                            // Check if breakpoint has been bought from the shop
+                    || this.disableBreakpoint) {                                // Check if breakpoint has been bought from the shop
                     return;
                 }
                 if (tab.get(LABEL) !== "Main") {                                // Breakpoints are not implemented in files yet
