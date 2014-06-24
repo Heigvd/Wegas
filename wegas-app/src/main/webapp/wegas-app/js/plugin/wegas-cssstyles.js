@@ -150,7 +150,7 @@ YUI.add('wegas-cssstyles', function(Y) {
                             }, {
                                 type: "select",
                                 name: "fontStyle",
-                                choices: ["", "normal", "italic", "oblique", "inherit"]
+                                choices: ["normal", "italic", "oblique", "inherit"]
                             }, {
                                 name: "fontFamily"
                             }, {
@@ -168,9 +168,13 @@ YUI.add('wegas-cssstyles', function(Y) {
                             }, {
                                 name: "textAlign",
                                 type: "select",
-                                choices: ["", "left", "right", "center", "justify", "inherit"]
+                                choices: ["left", "right", "center", "justify", "inherit"]
                             }, {
                                 name: "textShadow"
+                            }, {
+                                name: "textTransform",
+                                type: "select",
+                                choices: ["uppercase", "lowercase", "capitalize"]
                             }, {
                                 name: "top"
                             }, {

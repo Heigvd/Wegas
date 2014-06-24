@@ -186,13 +186,14 @@ YUI.add('wegas-inbox', function(Y) {
                 }
             }, this);
 
-            this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
-            this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
 
             if (this.get("autoOpenFirstMail")) {
                 if (!this.tabView.get("selection")) {                               // Select the first tab by default
                     this.tabView.selectChild(0);
                 }
+            } else {
+                this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
+                this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
             }
         },
         /**
@@ -318,8 +319,7 @@ YUI.add('wegas-inbox', function(Y) {
                 value: false,
                 type: "boolean",
                 _inputex: {
-                    label: "Automatically open first mail",
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    label: "Automatically open first mail"
                 }
             }
         }
