@@ -75,7 +75,7 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                         }, {
                             type: "hidden",
                             name: "zIndex",
-                            value: "10"
+                            value: ""
                         }, {
                             type: "string",
                             name: "top",

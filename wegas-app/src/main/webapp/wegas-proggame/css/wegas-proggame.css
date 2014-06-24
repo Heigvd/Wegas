@@ -432,10 +432,10 @@ html, .editor-preview {
 }
 .proggame-view .ui {    
 }
-.proggame-view .terrain {
+/*.proggame-view .terrain {
     margin-left: 352px;
-    margin-top: 129px;
-}
+    margin-top: 129px;*/
+/*}*/
 #cr-stage {
     overflow: visible !important;                                               /* Allow overflow, for text (say). Works only for DOM elements */
 }

@@ -15,9 +15,9 @@ YUI.add('wegas-proggame-display', function(Y) {
     "use strict";
 
     var COMMANDEXECUTED = "commandExecuted",
-            RENDERMETHOD = (Crafty.support.canvas) ? "Canvas" : "DOM",
-            TILESIZE = 32,
-            Wegas = Y.Wegas, ProgGameDisplay;
+        RENDERMETHOD = (Crafty.support.canvas) ? "Canvas" : "DOM",
+        TILESIZE = 32,
+        Wegas = Y.Wegas, ProgGameDisplay;
 
     /**
      * Level display, should handle canvas, for now renders the level as a
@@ -31,13 +31,17 @@ YUI.add('wegas-proggame-display', function(Y) {
         },
         renderUI: function() {
             var i, j, pos, entity,
-                    objects = this.get("objects"),
-                    map = this.get("map"),
-                    gridH = map.length,
-                    gridW = map[0].length;
+                objects = this.get("objects"),
+                map = this.get("map"),
+                gridH = map.length,
+                gridW = map[0].length;
 
             Crafty("*").destroy();                                              // @HACK Destructor sometimes not called !
 
+            this.get("boundingBox").setStyles({
+                marginTop: (Math.floor((15 - gridW) / 2) * 32) + "px",
+                marginLeft: (Math.floor((29 - gridH) / 2) * 32) + "px"
+            });
             Crafty.init(TILESIZE * gridW, TILESIZE * gridH);                    // Init crafty
 
             if (Crafty.support.canvas) {
@@ -47,17 +51,17 @@ YUI.add('wegas-proggame-display', function(Y) {
             for (i = 0; i < gridH; i += 1) {                                    // Render tiles
                 for (j = 0; j < gridW; j += 1) {
                     Crafty.e((map[i][j] && map[i][j].y) ? "PathTile" : "EmptyTile")
-                            .attr({
-                                x: TILESIZE * j,
-                                y: TILESIZE * i
-                            });
+                        .attr({
+                            x: TILESIZE * j,
+                            y: TILESIZE * i
+                        });
                 }
             }
 
             Y.Object.each(objects, function(cfg) {                              // Render objects (PC, traps, etc.)
                 pos = ProgGameDisplay.getRealXYPos(cfg);                        // Place it on the map
                 entity = Crafty.e(cfg.components)                               // Instantiate an entity
-                        .attr(Y.mix(pos, cfg.attrs));
+                    .attr(Y.mix(pos, cfg.attrs));
                 if (entity.execMove) {                                          // Allows to turn the player to the right direction
                     entity.execMove(cfg.direction, pos);
                 }
@@ -182,17 +186,17 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("move4Direction", {//requires Tween and spriteAnimation with "moveUp", "moveRight" "moveDown" and "moveLeft" animation
         init: function() {
             this.requires("Tween")
-                    .bind("TweenEnd", function() {
-                        this.pauseAnimation().resetAnimation();
-                        if (this.doDelay) {
-                            this.doDelay = false;
-                            Y.later(500, this, function() {
-                                Crafty.trigger(COMMANDEXECUTED);
-                            });
-                        } else {
+                .bind("TweenEnd", function() {
+                    this.pauseAnimation().resetAnimation();
+                    if (this.doDelay) {
+                        this.doDelay = false;
+                        Y.later(500, this, function() {
                             Crafty.trigger(COMMANDEXECUTED);
-                        }
-                    }, this);
+                        });
+                    } else {
+                        Crafty.trigger(COMMANDEXECUTED);
+                    }
+                }, this);
         },
         execMove: function(direction, target, minDuration) {
             var animDir = this.dir2anim[direction];
@@ -215,12 +219,12 @@ YUI.add('wegas-proggame-display', function(Y) {
         isDying: null,
         init: function() {
             this.requires("Tween")
-                    .bind("TweenEnd", function() {
-                        if (this.isDying) {
-                            Crafty.trigger(COMMANDEXECUTED);
-                            this.destroy();
-                        }
-                    }, this);
+                .bind("TweenEnd", function() {
+                    if (this.isDying) {
+                        Crafty.trigger(COMMANDEXECUTED);
+                        this.destroy();
+                    }
+                }, this);
             this.isDying = false;
         },
         die: function() {
@@ -232,47 +236,47 @@ YUI.add('wegas-proggame-display', function(Y) {
         init: function() {
             var moveSpeed = 500;
             this.requires("2D," + RENDERMETHOD + ", CharacterSprite, SpriteAnimation, move4Direction, Speaker, Collision")
-                    .reel("moveUp", moveSpeed, 0, 2, 7)
-                    .reel("moveRight", moveSpeed, 0, 0, 7)
-                    .reel("moveDown", moveSpeed, 0, 2, 7)
-                    .reel("moveLeft", moveSpeed, 0, 1, 7)
-                    .reel("handsUp", moveSpeed, 0, 6, 7)
-                    .reel("gzRight", 2000, 0, 20, 7)
-                    .reel("gzLeft", 2000, 0, 21, 7)
-                    .onHit("Collide", function() {
-                        this.h -= 1;
-                        this.y += 1;
-                    })
-                    .bind("TweenEnd", function() {
-                        var col = this.hit("Character");
-                        if (col) {
-                            if (this._currentReelId === "moveRight") {
-                                this.attr({
-                                    x: this._x - 6
-                                }).animate("gzRight");
-                                col[0].obj.attr({
-                                    x: col[0].obj._x + 6
-                                }).animate("gzLeft");
-                            } else {                                            // All other moves. up/down/left
-                                this.attr({
-                                    x: this._x + 6
-                                }).animate("gzLeft");
-                                col[0].obj.attr({
-                                    x: col[0].obj._x - 6
-                                }).animate("gzRight");
-                            }
+                .reel("moveUp", moveSpeed, 0, 2, 7)
+                .reel("moveRight", moveSpeed, 0, 0, 7)
+                .reel("moveDown", moveSpeed, 0, 2, 7)
+                .reel("moveLeft", moveSpeed, 0, 1, 7)
+                .reel("handsUp", moveSpeed, 0, 6, 7)
+                .reel("gzRight", 2000, 0, 20, 7)
+                .reel("gzLeft", 2000, 0, 21, 7)
+                .onHit("Collide", function() {
+                    this.h -= 1;
+                    this.y += 1;
+                })
+                .bind("TweenEnd", function() {
+                    var col = this.hit("Character");
+                    if (col) {
+                        if (this._currentReelId === "moveRight") {
+                            this.attr({
+                                x: this._x - 6
+                            }).animate("gzRight");
+                            col[0].obj.attr({
+                                x: col[0].obj._x + 6
+                            }).animate("gzLeft");
+                        } else {                                            // All other moves. up/down/left
+                            this.attr({
+                                x: this._x + 6
+                            }).animate("gzLeft");
+                            col[0].obj.attr({
+                                x: col[0].obj._x - 6
+                            }).animate("gzRight");
                         }
-                    });
+                    }
+                });
         },
         wave: function(times) {
             var pos = Y.clone(this.__coord);
             this.pauseAnimation()
-                    .bind("AnimationEnd", function() {
-                        if (this._currentReelId === "handsUp") {
-                            this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
-                        }
-                    })
-                    .animate("handsUp", times || 1);
+                .bind("AnimationEnd", function() {
+                    if (this._currentReelId === "handsUp") {
+                        this.sprite(pos[0] / pos[2], pos[1] / pos[3]);
+                    }
+                })
+                .animate("handsUp", times || 1);
         }
     });
     Crafty.c("Speaker", {
@@ -283,27 +287,27 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
 
             var pos = [this._x, this._y],
-                    textE = Crafty.e("2D, DOM, Text")
-                    .text(text.toUpperCase())
-                    .attr({
-                        z: 401,
-                        visible: false
-                    })
-                    .css({
-                        "background-color": "rgb(50, 50, 40)",
-                        border: "7px solid #FFFFFF",
-                        "-moz-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                        "-webkit-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                        "-o-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                        "border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
-                        "font-family": "KG Ways to Say Goodbye",
-                        "line-height": "1.1em",
-                        "font-size": "1.6em",
-                        "max-width": "400px",
-                        color: "white",
-                        padding: "4px 4px 2px"
-                    }),
-                    connector = Crafty.e("2D, DOM").css({
+                textE = Crafty.e("2D, DOM, Text")
+                .text(text.toUpperCase())
+                .attr({
+                    z: 401,
+                    visible: false
+                })
+                .css({
+                    "background-color": "rgb(50, 50, 40)",
+                    border: "7px solid #FFFFFF",
+                    "-moz-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-webkit-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "-o-border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "border-image": "url(" + Wegas.app.get("base") + '/wegas-proggame/images/dialog.png' + ") 7 stretch",
+                    "font-family": "KG Ways to Say Goodbye",
+                    "line-height": "1.1em",
+                    "font-size": "1.6em",
+                    "max-width": "400px",
+                    color: "white",
+                    padding: "4px 4px 2px"
+                }),
+                connector = Crafty.e("2D, DOM").css({
                 background: "url(" + Wegas.app.get("base") + "/wegas-proggame/images/dialogConnector.png) 0 " + (think ? 0 : (-32 + "px"))
             }).attr({
                 z: 402,
@@ -318,16 +322,16 @@ YUI.add('wegas-proggame-display', function(Y) {
                 });
                 Y.later(300, this, function() {                                 // Attach a little later so the font file has enough time to be loaded
                     this.attach(connector)
-                            .attr({
-                                x: pos[0] - this._element.offsetWidth / 2 + 14,
-                                y: pos[1] - this._element.offsetHeight - 32
-                            });
+                        .attr({
+                            x: pos[0] - this._element.offsetWidth / 2 + 14,
+                            y: pos[1] - this._element.offsetHeight - 32
+                        });
                     this.visible = true;
                     connector.shift(this._element.offsetWidth / 2 - 16, this._element.offsetHeight - 7)
-                            .css({
-                                width: "32px",
-                                height: "32px"
-                            });
+                        .css({
+                            width: "32px",
+                            height: "32px"
+                        });
                     connector.visible = true;
                 });
             });
@@ -348,7 +352,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("NPC", {
         init: function() {
             this.requires("TintSprite, Character")
-                    .tintSprite("D6D600", 1);
+                .tintSprite("D6D600", 1);
         }
     });
     Crafty.c("Tile", {
@@ -369,7 +373,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("Trap", {
         init: function() {
             this.requires("Tile, TrapSprite, SpriteAnimation, Tween, Collision")
-                    .collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
+                .collision([10, 13], [3, 24], [10, 27], [25, 25], [28, 13]);
             var c = this.__coord;
             this.reset();
             this.reel("trap", 100, c[0] / c[2], c[1] / c[3], 5);
@@ -467,7 +471,7 @@ YUI.add('wegas-proggame-display', function(Y) {
     Crafty.c("Controller", {
         init: function() {
             var controllerSpeed = 500,
-                    c = this.__coord;
+                c = this.__coord;
             this.requires("Tile, ControllerSprite, SpriteAnimation");
             this.reel("disableController", controllerSpeed, c[0] / c[2], c[1] / c[3], 4);
             this.reel("enableController", controllerSpeed, c[0] / c[2] + 3, c[1] / c[3], -4);
@@ -565,11 +569,11 @@ YUI.add('wegas-proggame-display', function(Y) {
         _color: Crafty.toRGB("FFFFFF"),
         init: function() {
             this.bind("Draw", this.draw)
-                    .bind("RemoveComponent", function(e) {
-                        if (e === "TintSprite") {
-                            this.unbind("Draw", this.draw);
-                        }
-                    });
+                .bind("RemoveComponent", function(e) {
+                    if (e === "TintSprite") {
+                        this.unbind("Draw", this.draw);
+                    }
+                });
         },
         tintSprite: function(color, opacity) {
             this.__newColor = true;
@@ -579,7 +583,7 @@ YUI.add('wegas-proggame-display', function(Y) {
         },
         draw: function() {
             var img = document.createElement("img"),
-                    ctx = tmp_canvas.getContext("2d");
+                ctx = tmp_canvas.getContext("2d");
             if (!this.__oldImg) {
                 this.__oldImg = this.img;
             } else if (!this.__newColor) {

@@ -77,7 +77,7 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         syncUI: function() {
             var val = this.get("variable.evaluated"),
-                    page = this.get("page.evaluated");
+                page = this.get("page.evaluated");
 
             if (page && page.getInstance) {
                 this.set(PAGEID, page.getInstance().get('value'));
@@ -257,7 +257,8 @@ YUI.add('wegas-pageloader', function(Y) {
                 optional: true,
                 _inputex: {
                     _type: "variableselect",
-//                    _type: "hidden",
+                    label: "Variable",
+                    //_type: "hidden",
                     classFilter: ["NumberDescriptor", "TextDescriptor"],
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
