@@ -56,12 +56,26 @@ div.inputEx-fieldWrapper {
 }
 
 /* Wegas Form Widget Styles */
+
+/* Styles for form edition */
+.wegas-form div.inputEx-TypeField-PropertiesPanel {
+    padding-left: 140px;
+}
+.wegas-form legend.inputEx-Group-legend {
+    margin-left: -116px;
+    color: #2647a0;
+    width: 130px;
+    padding: 0.2em 0.5em 0 0;
+}
+.wegas-form  .inputEx-ListField {
+    padding: 0px!important;
+}
 .wegas-form-content {
     padding: 20px 10px 20px !important;
 }
 .wegas-form div.inputEx-fieldWrapper,
 .wegas-form div.inputEx-Field {
-    float:none;
+    float:none; 
 }
 /*.wegas-form-centent .inputEx-Group,*/
 .wegas-form select {
@@ -98,7 +112,7 @@ div.inputEx-description {
 .wegas-form > div > div > fieldset > div div.inputEx-label,
 .wegas-form div.inputEx-CombineField > div.inputEx-label,
 .wegas-form div.inputEx-fieldWrapper > div.inputEx-label {
-    margin-left:-135px;
+    margin-left: -135px;
     width: 129px;
     padding-right: 0px;
 }
@@ -161,9 +175,13 @@ div.inputEx-description {
     white-space: nowrap;
 }
 
-/* Wysiwyg code editor */
-.inputEx-WysiwigScriptWrapper {
+/* Wysiwyg code editor */ 
+.inputEx-WysiwigScriptWrapper,
+.wegas-inputex-variabledescriptorselect-group {
     padding: 0px!important;
+}
+.inputEx-Group .inputEx-Group .inputEx-WysiwigScriptWrapper {
+    margin-left: -135px;
 }
 .inputEx-WysiwigScriptWrapper > div.inputEx-label {
     margin-left: 0px !important;
@@ -276,13 +294,16 @@ div.inputEx-description {
 }
 .inputEx-singleLineWysiwygScript .inputEx-WysiwigScript-add,
 .inputEx-singleLineWysiwygScript .yui3-button {
-    display: none;
+    display: none !important;
 }
 .inputEx-singleLineWysiwygScript .inputEx-fieldWrapper {
     margin-bottom: 0px;
 }
 
 /* Original inputex listfield styles */
+.inputEx-ListField legend.inputEx-Group-legend {
+    margin-left: 0;
+}
 .inputEx-ListField-childContainer > div {
     position: relative;
 }
@@ -328,7 +349,7 @@ img.inputEx-ListField-delButton {
     content: none;  /** remove submenu indicator for this button */
 }
 .inputEx-ListField .wegas-addbutton {
-    left: -3px;
+    left: 53px!important;
 }
 .inputEx-ListField .wegas-removebutton {
     left: -120px;
@@ -359,32 +380,6 @@ img.inputEx-ListField-delButton {
     border-radius: 3px;
     margin-right: 1px;
 }
-
-/* Styles for form edition */
-.wegas-form div.inputEx-TypeField-PropertiesPanel {
-    padding-left: 140px;
-}
-.wegas-form legend.inputEx-Group-legend {
-    margin-left: -116px;
-    color: #2647a0;
-    width: 130px;
-    padding: 0.2em 0.5em 0 0;
-}
-.wegas-form /*.inputEx-label + */  .inputEx-ListField {
-    /*padding-top:1.5em;*/
-    /*padding-top: 0.3em;*/
-}
-/*.wegas-form legend.inputEx-Group-legend span {
-    text-align: right;
-    display: block;
-}
-.wegas-form  .inputEx-ListField-childContainer > div {
-    position: relative;
-}
-.wegas-form .inputEx-ListField-childContainer > div > img.inputEx-ListField-delButton {
-    position: absolute;
-    left: -111px;
-}*/
 
 /* Color field styles */
 div.inputEx-ColorField button {

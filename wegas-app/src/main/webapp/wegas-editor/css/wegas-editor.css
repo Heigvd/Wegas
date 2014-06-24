@@ -28,7 +28,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-stdmode .editor-playerProperties-button {
     display: none;
 }
-.wegas-group-administrator .editor-administrator-button {
+.wegas-role-administrator .editor-administrator-button {
     display: inline-block;
 }
 

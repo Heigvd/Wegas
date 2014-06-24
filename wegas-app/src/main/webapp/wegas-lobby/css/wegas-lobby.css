@@ -19,6 +19,11 @@
 #rightTabView .yui3-tab-remove {
     display: none;
 }
+.wegas-role-teacher #gamesTreeViewTab,
+.wegas-role-scenarist #gamesTreeViewTab,
+.wegas-role-teacher #gameModelsTab {
+    display: inline-block;
+}
 
 /** Edit game form */
 .wegas-lobby-editgame  .wegas-form-content {

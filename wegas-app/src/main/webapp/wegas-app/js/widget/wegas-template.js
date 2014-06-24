@@ -88,7 +88,8 @@ YUI.add("wegas-template", function(Y) {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "variable"
+                    label: "variable",
+                    classFilter: ["NumberDescriptor"]
                 }
             },
             data: {
@@ -158,6 +159,21 @@ YUI.add("wegas-template", function(Y) {
                 + "<%= (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>")
     });
     Wegas.TextTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div><%== this.value || 'Unable to find value' %></div>")
+        TEMPLATE: Micro.compile("<div><%== this.variable.getValue() || 'Unable to find value' %></div>")
+    }, {
+        ATTRS: {
+            /**
+             * The target variable, returned either based on the variableName attribute,
+             * and if absent by evaluating the expr attribute.
+             */
+            variable: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "variable",
+                    classFilter: ["TextDescriptor"]
+                }
+            }
+        }
     });
 });
