@@ -142,8 +142,11 @@ div.inputEx-description {
 }
 
 /* Variable descriptor select */
-.wegas-inputex-variabledescriptorselect-group{
+.wegas-inputex-variabledescriptorselect-group {
     clear:both;
+}
+.inputEx-singleLineWysiwygScript .wegas-inputex-variabledescriptorselect-group {
+    padding-left: 0px;
 }
 .wegas-inputex-variabledescriptorselect-group > label {
     float: left;
@@ -176,12 +179,11 @@ div.inputEx-description {
 }
 
 /* Wysiwyg code editor */ 
-.inputEx-WysiwigScriptWrapper,
-.wegas-inputex-variabledescriptorselect-group {
-    padding: 0px!important;
+.inputEx-WysiwigScriptWrapper {
+    padding: 0px!important; 
 }
 .inputEx-Group .inputEx-Group .inputEx-WysiwigScriptWrapper {
-    margin-left: -135px;
+    margin-left: -135px; 
 }
 .inputEx-WysiwigScriptWrapper > div.inputEx-label {
     margin-left: 0px !important;
