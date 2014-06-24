@@ -290,6 +290,7 @@ div.inputEx-description {
     margin: 0;
     top: -2px;
     right: -2px;
+    display: block !important;
 }
 .inputEx-singleLineWysiwygScript textarea {
     height: 50px !important;
