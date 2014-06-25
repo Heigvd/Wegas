@@ -58,14 +58,14 @@ YUI.add('wegas-app', function(Y) {
          */
         render: function() {
             var ds, dsClass, widgetCfg,
-                dataSources = this.get('dataSources'), // Data sources cfg objects
-                requestCounter = 0, // Request counter 
-                onRequest = function() {                                    // When a response to initial requests is received
+                dataSources = this.get('dataSources'), //                       // Data sources cfg objects
+                requestCounter = 0, //                                          // Request counter 
+                onRequest = function() {                                        // When a response to initial requests is received
                     requestCounter -= 1;
-                    if (requestCounter === 0) {                             // If all initial request are completed,
-                        this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
-                            .render();                                  // and render it
-                        this.fire("render");                                // fire a render event for some eventual post processing
+                    if (requestCounter === 0) {                                 // If all initial request are completed,
+                        this.widget = Wegas.Widget.create(widgetCfg)            // instantiate the root widget
+                            .render();                                          // and render it
+                        this.fire("render");                                    // fire a render event for some eventual post processing
                     }
                 };
 
@@ -115,6 +115,7 @@ YUI.add('wegas-app', function(Y) {
             Y.Object.each(this.dataSources, function(i) {
                 i.destroy();
             });
+            this.widget.destroy();
         },
         // ** Private methods ** //
         /**
@@ -176,15 +177,6 @@ YUI.add('wegas-app', function(Y) {
                 getter: function() {
                     return Y.config.groups.wegas.base.replace("wegas-app/", "");
                 }
-            },
-            /**
-             * Currently no functionnality attached. Used for others to query mode.
-             * Editor / player.
-             */
-            editorMode: {
-                value: false,
-                writeOnce: "initOnly",
-                validator: Y.Lang.isBoolean
             }
         }
     });

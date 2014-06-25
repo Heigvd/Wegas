@@ -12,7 +12,7 @@
 YUI.add("wegas-widget", function(Y) {
     "use strict";
     var Lang = Y.Lang, Wegas = Y.Wegas,
-        BOUNDING_BOX = "boundingBox", BUTTON = "Button";
+        BOUNDING_BOX = "boundingBox", BUTTON = "Button", PARENT = "parent";
 
     /**
      * @name Y.Wegas.Widget
@@ -20,18 +20,14 @@ YUI.add("wegas-widget", function(Y) {
      */
     function Widget() {
         this.after("render", function() {
-            var bb = this.get(BOUNDING_BOX);
-            bb.addClass("wegas-widget");
-            if (this.get("cssClass")) {
-                bb.addClass(this.get("cssClass"));
-            }
-            if (this.isEditable()) {
-                bb.addClass("wegas-widget-editable");
-            }
+            this.get(BOUNDING_BOX)
+                .addClass("wegas-widget")
+                .toggleClass(this.get("cssClass"), this.get("cssClass"))        // Add cssClass atrribute if the widget has one
+                .toggleClass("wegas-widget-editable", this.isEditable());
         });
-        this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX               // If no prefix is set, use the name (without
+        this._cssPrefix = this.constructor.CSS_PREFIX = this.constructor.CSS_PREFIX// If no prefix is set, use the name (without
             || this.constructor.NAME.toLowerCase();                             // the usual "yui3-" prefix)
-        this._cssPrefix = this.constructor.CSS_PREFIX;
+
         this.publish("showOverlay", {// Add custom event
             emitFacade: true
         });
@@ -64,13 +60,13 @@ YUI.add("wegas-widget", function(Y) {
                 test = error.match(/ConstraintViolationException: (.*) is out of bound/),
                 stringMessage = error.match(/Error: StringMessage: (.*)/);
             if (test) {
-                this.showMessageBis("error", "You don't have enough " + test[1] + ".");
+                this.showMessage("error", "You don't have enough " + test[1] + ".");
             } else if (stringMessage) {
-                this.showMessageBis("error", stringMessage[1].split(" in <")[0]);
+                this.showMessage("error", stringMessage[1].split(" in <")[0]);
             } else if (error.match(/ERROR: duplicate key value violates unique constraint "unq_game_0"/)) {
-                this.showMessageBis("error", "This name is already in use");
+                this.showMessage("error", "This name is already in use");
             } else {
-                this.showMessageBis("error", error);
+                this.showMessage("error", error);
             }
             // e.halt(true);
         },
@@ -102,22 +98,20 @@ YUI.add("wegas-widget", function(Y) {
          * @param timeout
          * @description
          *
-         * @deprecated Will be replace by showMessageBis
          */
         showMessage: function(level, txt, timeout) {
             this.emitDOMMessage(level, {content: txt, timeout: timeout});
         },
-        emitDOMMessage: function() {
-            var bb = this.get("boundingBox");
-            bb.emitDOMMessage.apply(bb, arguments);
-        },
         /**
-         * Will replace the original showMessage
+         * @deprecated 
          */
-        showMessageBis: function(level, msg, timeout) {
+        emitDOMMessage: function(type, cfg) {
+            this.get(BOUNDING_BOX).emitDOMMessage(type, cfg);
+        },
+        showMessageBis: function(level, txt, timeout) {
             this.fire("wegas:message", {
                 level: level,
-                content: msg,
+                content: txt,
                 timeout: timeout
             });
         },
@@ -128,7 +122,7 @@ YUI.add("wegas-widget", function(Y) {
                 parent.reload();
                 return parent.get("widget"); // dependencies should (and must) be loaded by now that way we obtain the new widget
             }
-            parent = this.get("parent");
+            parent = this.get(PARENT);
             index = parent.indexOf(this);
             cfg = this.toObject();
             this.remove();
@@ -136,7 +130,7 @@ YUI.add("wegas-widget", function(Y) {
             return parent.add(cfg, index).item(0);
         },
         isEditable: function() {
-            return this.get("editable") || (this.get("parent") && this.get("parent").isEditable && this.get("parent").isEditable());
+            return this.get("editable") || (this.get(PARENT) && this.get(PARENT).isEditable && this.get(PARENT).isEditable());
         }
     });
     Y.mix(Widget, {
@@ -688,9 +682,7 @@ YUI.add("wegas-widget", function(Y) {
         try {
             Y.Widget.prototype.renderer.call(this, arguments);
         } catch (e) {
-            if (!Y.Wegas.app.get("editorMode")) {                               //as a player, entire page will crash.
-                throw e;
-            }
+            //throw e;
             this.get("boundingBox").setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
             try {
                 Y.error("Failed to render " + this.getType() + ": " + e.message || "", e, this.constructor.NAME);

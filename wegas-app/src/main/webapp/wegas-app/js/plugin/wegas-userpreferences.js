@@ -48,7 +48,7 @@ YUI.add("wegas-userpreferences", function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.showMessage("success", "Your account had been successfully updated", 4000);
+                        this.showMessage("success", "Your account has been successfully updated", 4000);
                         this.hideOverlay();
                     }, host),
                     failure: Y.bind(function(e) {

@@ -198,11 +198,7 @@
                                             "showServerMessages": true
                                         }
                                     }
-
-                                ],
-                                "plugins_old": [{
-                                        "fn": "CSSLoader"
-                                    }]
+                                ]
                             }]
                     }]
             }]

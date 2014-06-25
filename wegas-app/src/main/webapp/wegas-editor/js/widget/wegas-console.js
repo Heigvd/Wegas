@@ -85,6 +85,10 @@ YUI.add('wegas-console', function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>Run",
                 on: {
                     click: Y.bind(function() {
+                        if (!this.srcField.validate()) {
+                            this.showMessage("error", "Some fields are invalid", 1000);
+                            return;
+                        }
                         var playerList = this.getPlayerList(),
                             multiPlayerScript = {
                                 playerIdList: playerList,

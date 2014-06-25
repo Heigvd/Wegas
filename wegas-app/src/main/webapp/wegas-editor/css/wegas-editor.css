@@ -125,6 +125,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 }
 /* Styles for Animator -> impact game */
+.wegas-stdmode .wegas-console-wysiwyg .inputEx-WysiwigScript > .yui3-button {
+    display: none; /* Remove add button*/
+}
 .wegas-stdmode .wegas-console-wysiwyg .results {
     display: none;    
 }
