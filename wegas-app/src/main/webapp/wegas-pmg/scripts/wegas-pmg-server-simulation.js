@@ -11,7 +11,7 @@ function runSimulation() {
 
     taskTable = {};
     for (var i = 0; i < steps; i++) {
-        calculTasksProgress(i);
+        step(i);
         debug('---');
     }
 }
@@ -25,22 +25,23 @@ function runSimulation() {
  *   Then, check the end of a requirement inactivities (function ''checkEnd'');
  * @param {Number} currentStep
  */
-function calculTasksProgress(currentStep) {
-    var i, work, activitiesAsNeeds, oneTaskPerActivity, allCurrentActivities,
-            taskProgress, allCurrentActivities,
-            requirementsByWork, taskInst;
+function step(currentStep) {
+    var i, work, activities, oneTaskPerActivity, allCurrentActivities,
+        taskProgress, allCurrentActivities,
+        requirementsByWork, taskInst;
 
     //create activities
     allCurrentActivities = createActivities(currentStep);
 
     //get one unique requirement by activities and calculate its progression
-    activitiesAsNeeds = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
-    for (i = 0; i < activitiesAsNeeds.length; i++) { //for each need
-        calculateProgressOfNeed(activitiesAsNeeds[i], allCurrentActivities, currentStep);
+    activities = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
+
+    for (i = 0; i < activities.length; i++) {                                   //for each need
+        calculateProgressOfNeed(activities[i], allCurrentActivities, currentStep);
     }
 
     //get each modified task and calculate is new quality and completeness
-    oneTaskPerActivity = getUniqueTasksInActivities(activitiesAsNeeds);
+    oneTaskPerActivity = getUniqueTasksInActivities(activities);
     for (i = 0; i < oneTaskPerActivity.length; i++) {
         taskProgress = 0;
         taskInst = oneTaskPerActivity[i].taskDescriptor.getInstance(self);
@@ -48,7 +49,7 @@ function calculTasksProgress(currentStep) {
         for (work in requirementsByWork) {
             taskProgress += requirementsByWork[work].completeness;
         }
-        taskProgress = (taskProgress > 97) ? 100 : taskProgress; //>97 yes, don t frustrate the players please.
+        taskProgress = (taskProgress > 97) ? 100 : taskProgress;                //>97 yes, don t frustrate the players please.
         taskInst.setProperty('completeness', Math.round(taskProgress));
         taskInst.setProperty('quality', calculateTaskQuality(oneTaskPerActivity[i].taskDescriptor));
     }
@@ -63,7 +64,7 @@ function calculTasksProgress(currentStep) {
  */
 function getPlannifiedCompleteness(taskInst) {
     var i, planif = taskInst.getPlannification(), planifArray = [],
-            pastPeriods = 0;
+        pastPeriods = 0;
     for (i = 0; i < planif.size(); i++) { //transform list to array to use function ''indexOf''
         planifArray.push(parseInt(planif.get(i)));
     }
@@ -85,8 +86,8 @@ function getPlannifiedCompleteness(taskInst) {
  */
 function getCurrentTaskDelay(taskDesc) {
     var planif, delay = 0, planif = taskDesc.getInstance(self).getPlannification(),
-            completeness = parseInt(taskDesc.getInstance(self).getProperty('completeness')),
-            planifiedCompleteness = getPlannifiedCompleteness(taskDesc.getInstance(self));
+        completeness = parseInt(taskDesc.getInstance(self).getProperty('completeness')),
+        planifiedCompleteness = getPlannifiedCompleteness(taskDesc.getInstance(self));
     if (completeness > 0 && planif.length > 0) {
         if (planifiedCompleteness <= 0) {
             delay = completeness + 100;
@@ -162,8 +163,8 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
     var i, ret = [];
     for (i = 0; i < activities.length; i++) {
         if (activity.time === activities[i].time
-                && activity.taskDescriptor === activities[i].taskDescriptor
-                && activity.requirement === activities[i].requirement) {
+            && activity.taskDescriptor === activities[i].taskDescriptor
+            && activity.requirement === activities[i].requirement) {
             ret.push(activities[i]);
         }
     }
@@ -179,9 +180,9 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
  */
 function createActivities(currentStep) {
     var i, employee, activity, assignables, existingActivity,
-            activities = [],
-            employees = flattenList(Variable.findByName(gm, 'employees')),
-            currentPeriod = getCurrentPeriod().getValue(self) + currentStep / 10;
+        activities = [],
+        employees = flattenList(Variable.findByName(gm, 'employees')),
+        currentPeriod = getCurrentPeriod().getValue(self) + currentStep / 10;
     if (!employees) {
         return [];
     }
@@ -256,8 +257,8 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
     for (i = 0; i < employeeInst.activities.size(); i++) {
         activity = employeeInst.activities.get(i);
         if (activity.taskDescriptor === taskDesc                                // if the task of activity match with the given task (same task and same employee == same activity)
-                && period - Math.floor(period) !== 0                            // if it s not a new period (current step !== 0)
-                && parseFloat(activity.time) === getFloat(period - 0.1)) { //if activity was used the last step
+            && period - Math.floor(period) !== 0                            // if it s not a new period (current step !== 0)
+            && parseFloat(activity.time) === getFloat(period - 0.1)) { //if activity was used the last step
             occurence = activity;
             break;
         }
@@ -278,7 +279,7 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
     for (i = 0; i < employeeInst.activities.size(); i++) {
         activity = employeeInst.activities.get(i);
         if (activity.taskDescriptor === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)
-                && currentPeriod > parseFloat(activity.time)) {
+            && currentPeriod > parseFloat(activity.time)) {
             occurence = true;
             break;
         }
@@ -294,7 +295,7 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
  */
 function isReservedToWork(employeeInst) {
     var i, occupations = employeeInst.getOccupations(),
-            currentPeriod = getCurrentPeriod().getValue(self), reservedToWork = false;
+        currentPeriod = getCurrentPeriod().getValue(self), reservedToWork = false;
     for (i = 0; i < occupations.size(); i++) {
         if (parseInt(occupations.get(i).time) === currentPeriod && !isTrue(occupations.get(i).getEditable())) {
             return false;
@@ -330,8 +331,8 @@ function getAssignables(assignments, currentStep) {
             }
             if (!exist) {
                 sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
-                        'Je suis censé travailler sur la tâche "' + taskDesc.getLabel() + '" mais je ne suis pas qualifié pour ce travail. <br/> Salutations <br/>' + assignments.get(i).resourceInstance.getDescriptor().getLabel() + '<br/> ' + assignments.get(i).resourceInstance.skillsets.keySet().toArray()[0],
-                        assignments.get(i).resourceInstance.getDescriptor().getLabel());
+                    'Je suis censé travailler sur la tâche "' + taskDesc.getLabel() + '" mais je ne suis pas qualifié pour ce travail. <br/> Salutations <br/>' + assignments.get(i).resourceInstance.getDescriptor().getLabel() + '<br/> ' + assignments.get(i).resourceInstance.skillsets.keySet().toArray()[0],
+                    assignments.get(i).resourceInstance.getDescriptor().getLabel());
                 assignments.remove(i);
                 //TODO add unworked hours
             }
@@ -351,7 +352,7 @@ function getAssignables(assignments, currentStep) {
  */
 function checkAssignments(assignments, currentStep) {
     var i, taskDesc, employeeInst, employeeName,
-            employeeJob, taskInst, nextTasks, exist;
+        employeeJob, taskInst, nextTasks, exist;
     if (assignments.size() <= 0) {
         return [];
     }
@@ -366,19 +367,19 @@ function checkAssignments(assignments, currentStep) {
         if (parseFloat(taskInst.getProperty('completeness')) >= 100) {
             if (nextTasks[0]) {
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche "' + taskDesc.getLabel() + '" est terminée, je passe à la tâche ' + nextTasks[0].taskDescriptor.getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                        employeeName);
+                    'La tâche "' + taskDesc.getLabel() + '" est terminée, je passe à la tâche ' + nextTasks[0].taskDescriptor.getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                    employeeName);
             } else {
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche "' + taskDesc.getLabel() + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                        employeeName);
+                    'La tâche "' + taskDesc.getLabel() + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                    employeeName);
             }
             assignments.remove(i);
             break;
         } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
             sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
-                    'Je suis sensé travailler sur la tâche "' + taskDesc.getLabel() + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                    employeeName);
+                'Je suis sensé travailler sur la tâche "' + taskDesc.getLabel() + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                employeeName);
             assignments.remove(i);
             //TODO add unworked hours
             break;
@@ -446,8 +447,8 @@ function selectFirstUncompletedWork(requirements, reqByWorks, metier) {
  */
 function selectRequirement(taskInst, employeeInst, workAs, reqByWorks) {
     var i, requirements = taskInst.getRequirements(), req, selectedReq = null,
-            totalOfPersonneInTask = 0, deltaLevel = 1000,
-            level = parseInt(employeeInst.skillsets.get(employeeInst.skillsets.keySet().toArray()[0]));
+        totalOfPersonneInTask = 0, deltaLevel = 1000,
+        level = parseInt(employeeInst.skillsets.get(employeeInst.skillsets.keySet().toArray()[0]));
     for (i = 0; i < requirements.size(); i++) {
         totalOfPersonneInTask += parseInt(requirements.get(i).getQuantity());
     }
@@ -525,13 +526,13 @@ function getRequirementsByWork(requirements) {
  */
 function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentStep) {
     var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,
-            affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
-            employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,
-            employeesMotivationFactor, employeesSkillsetXActivityRate = 0,
-            employeeSkillsetFactor, activityCoefficientXActivityRate = 0, otherWorkFactor = 1,
-            correctedRessources, reqByWorks, numberOfEmployeeOnNeedOnNewTask = 0,
-            needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,
-            averageSkillsetQuality, stepQuality = 0;
+        affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
+        employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,
+        employeesMotivationFactor, employeesSkillsetXActivityRate = 0,
+        employeeSkillsetFactor, activityCoefficientXActivityRate = 0, otherWorkFactor = 1,
+        correctedRessources, reqByWorks, numberOfEmployeeOnNeedOnNewTask = 0,
+        needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,
+        averageSkillsetQuality, stepQuality = 0;
 
     taskDesc = activityAsNeeds.taskDescriptor;
     if (currentStep === 0) {
@@ -700,10 +701,10 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
  */
 function getRandomFactorFromTask(taskInst) {
     var rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
-            randomDurationSup = parseFloat(taskInst.getProperty('randomDurationSup')),
-            randomDurationInf = parseFloat(taskInst.getProperty('randomDurationInf')),
-            duration = parseInt(taskInst.getDuration()), delta,
-            randomFactor, x = Math.random();
+        randomDurationSup = parseFloat(taskInst.getProperty('randomDurationSup')),
+        randomDurationInf = parseFloat(taskInst.getProperty('randomDurationInf')),
+        duration = parseInt(taskInst.getDuration()), delta,
+        randomFactor, x = Math.random();
 
     if (rn < 3) {
         delta = -(0.25 * x + 0.75) * randomDurationInf;
@@ -810,7 +811,7 @@ function flattenList(list, finalList) {
  */
 function checkEnd(allCurrentActivities, currentStep) {
     var i, employeeInst, taskInst, taskDesc, employeeName, employeeJob,
-            nextWork, reqByWorks;
+        nextWork, reqByWorks;
     for (i = 0; i < allCurrentActivities.length; i++) {
         taskDesc = allCurrentActivities[i].taskDescriptor;
         taskInst = taskDesc.getInstance(self);
@@ -824,8 +825,8 @@ function checkEnd(allCurrentActivities, currentStep) {
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.skillsets.keySet().toArray()[0].toString());
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
-                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                        employeeName);
+                    'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                    employeeName);
 //                sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
 //                        'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
 //                        employeeName);
@@ -879,5 +880,10 @@ function sendMessage(subject, content, from) {
 function debug(msg) {
     if (testMode) {
         println(msg);
+    }
+}
+Y = {
+    Array: {
+        each:
     }
 }

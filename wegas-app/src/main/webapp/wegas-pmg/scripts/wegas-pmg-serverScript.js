@@ -11,7 +11,7 @@ var gm = self.getGameModel();
  */
 function nextPeriod() {
     var currentPhase = getCurrentPhase(),
-            currentPeriod = getCurrentPeriod();
+        currentPeriod = getCurrentPeriod();
 
     //allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
@@ -76,17 +76,17 @@ function allPhaseQuestionAnswered() {
  */
 function updateVariables() {
     var i, j, task, employeesRequired,
-            ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, activeTasks = 0,
-            tasksQuality = 0, tasksScale = 0,
-            costsJaugeValue = 100, delayJaugeValue = 100, qualityJaugeValue = 0,
-            tasks = Variable.findByName(gm, 'tasks'),
-            costs = Variable.findByName(gm, 'costs'),
-            delay = Variable.findByName(gm, 'delay'),
-            quality = Variable.findByName(gm, 'quality'),
-            planedValue = Variable.findByName(gm, 'planedValue'),
-            earnedValue = Variable.findByName(gm, 'earnedValue'),
-            actualCost = Variable.findByName(gm, 'actualCost'),
-            exectutionPeriods = Variable.findByName(gm, 'periodPhase3');
+        ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, activeTasks = 0,
+        tasksQuality = 0, tasksScale = 0,
+        costsJaugeValue = 100, delayJaugeValue = 100, qualityJaugeValue = 0,
+        tasks = Variable.findByName(gm, 'tasks'),
+        costs = Variable.findByName(gm, 'costs'),
+        delay = Variable.findByName(gm, 'delay'),
+        quality = Variable.findByName(gm, 'quality'),
+        planedValue = Variable.findByName(gm, 'planedValue'),
+        earnedValue = Variable.findByName(gm, 'earnedValue'),
+        actualCost = Variable.findByName(gm, 'actualCost'),
+        exectutionPeriods = Variable.findByName(gm, 'periodPhase3');
 
     for (i = 0; i < tasks.items.size(); i++) {
         task = tasks.items.get(i).getInstance(self);
@@ -176,10 +176,10 @@ function updateVariables() {
  */
 function workOnTask(empName, taskName) {
     var i, activity,
-            employee = Variable.findByName(gm, empName).getInstance(),
-            task = Variable.findByName(gm, taskName),
-            currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self),
-            previousPeriod = currentPeriod - 1;
+        employee = Variable.findByName(gm, empName).getInstance(),
+        task = Variable.findByName(gm, taskName),
+        currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self),
+        previousPeriod = currentPeriod - 1;
 
     for (i = 0; i < employee.activities.size(); i++) {
         activity = employee.activities.get(i);
@@ -197,9 +197,9 @@ function workOnTask(empName, taskName) {
  */
 function workOnProject(name) {
     var i, task,
-            activityNotFinish = false, hasOccupation = false, occupation,
-            employee = Variable.findByName(gm, name).getInstance(),
-            currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self);
+        activityNotFinish = false, hasOccupation = false, occupation,
+        employee = Variable.findByName(gm, name).getInstance(),
+        currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self);
 
     //Check if has a not finished activity
     for (i = 0; i < employee.activities.size(); i++) {
@@ -287,7 +287,7 @@ function addArtosPredecessor() {
  */
 function addPredecessor(descName, listPredName) {
     var i, ii, iii, taskDescList = Variable.findByName(gm, 'tasks'),
-            taskDesc;
+        taskDesc;
 
     for (i = 0; i < taskDescList.items.size(); i++) {
         taskDesc = taskDescList.items.get(i);
