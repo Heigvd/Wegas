@@ -43,7 +43,14 @@ Y.Array.unique = function(array, testFn) {
     return results;
 };
 
-
+Y.Array.find = function(a, f, o) {
+    for (var i = 0, l = a.length; i < l; i++) {
+        if (i in a && f.call(o, a[i], i, a)) {
+            return a[i];
+        }
+    }
+    return null;
+};
 /**
  * Transform a wegas List in an array.
  * If the wegas list contain other wegas list (and contain other wegas list, etc),
@@ -57,7 +64,7 @@ function flattenList(list, finalList) {
     finalList = (finalList) ? finalList : [];
     for (i = 0; i < list.items.size(); i++) {
         el = list.items.get(i);
-        if (el.getClass() && el.getClass().toString() === 'class com.wegas.core.persistence.variable.ListDescriptor') {
+        if (el.getClass() && el.getClass().toString() == 'class com.wegas.core.persistence.variable.ListDescriptor') {
             finalList = this.flattenList(el, finalList);
         } else {
             finalList.push(el);

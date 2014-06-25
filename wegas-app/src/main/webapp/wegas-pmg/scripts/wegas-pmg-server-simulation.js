@@ -1,6 +1,10 @@
 //Global variable for easy use
 importPackage(javax.naming);
-var gm = self.getGameModel(), testMode = true, steps = 10, minTaskDuration = 0.1, taskTable = {};
+var gm = self.getGameModel(),
+    testMode = true,
+    STEPS = 10,
+    minTaskDuration = 0.1,
+    taskTable = {};
 
 /**
  * Divide period in steps (see global variable).
@@ -10,7 +14,7 @@ function runSimulation() {
     debug('==============================');
 
     taskTable = {};
-    for (var i = 0; i < steps; i++) {
+    for (var i = 0; i < STEPS; i++) {
         step(i);
         debug('---');
     }
@@ -160,15 +164,11 @@ function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
  * @returns {Array} an Array of Activity
  */
 function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
-    var i, ret = [];
-    for (i = 0; i < activities.length; i++) {
-        if (activity.time === activities[i].time
-            && activity.taskDescriptor === activities[i].taskDescriptor
-            && activity.requirement === activities[i].requirement) {
-            ret.push(activities[i]);
-        }
-    }
-    return ret;
+    return activities.filter(function(a) {
+        return activity.time === a.time
+            && activity.taskDescriptor === a.taskDescriptor
+            && activity.requirement === a.requirement;
+    });
 }
 
 /**
@@ -189,7 +189,7 @@ function createActivities(currentStep) {
     for (i = 0; i < employees.length; i++) {
         employee = employees[i].getInstance(self);
         if (isReservedToWork(employee)) {                                       //have a 'player created' occupation
-            assignables = checkAssignments(employee.assignments, currentStep);
+            assignables = checkAssignments(employee, currentStep);
             if (assignables.length > 0) {                                       //have assignable tasks
                 existingActivity = findLastStepCorrespondingActivity(employee, assignables[0].taskDescriptor, currentPeriod);
                 if (existingActivity) {                                         //set corresponding past activity if it existe. Else create it.
@@ -295,20 +295,17 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
  */
 function isReservedToWork(employeeInst) {
     var i, occupations = employeeInst.getOccupations(),
-        currentPeriod = getCurrentPeriod().getValue(self), reservedToWork = false;
+        currentPeriod = getCurrentPeriod().getValue(self);
     for (i = 0; i < occupations.size(); i++) {
-        if (parseInt(occupations.get(i).time) === currentPeriod && !isTrue(occupations.get(i).getEditable())) {
-            return false;
-        }
-        if (parseInt(occupations.get(i).time) === currentPeriod && isTrue(occupations.get(i).getEditable())) {
-            reservedToWork = true;
+        if (parseInt(occupations.get(i).time) === currentPeriod) {
+            return occupations.get(i).editable;                                 // Illness, etc. occupations are not editable
         }
     }
-    return reservedToWork;
+    return false;
 }
 
 /**
- *  Return the given list but without the invalide Assignments.
+ *  Return the given list but without the invalid Assignments.
  *  An valid assignment is one where its bound task completion is < 100 and
  *  where a employee can progress decently without problem of predecessor
  *   ( see function ''getPredecessorFactor'');
@@ -350,16 +347,16 @@ function getAssignables(assignments, currentStep) {
  * @param {Number} currentStep
  * @returns {Array} An Array of Assignment
  */
-function checkAssignments(assignments, currentStep) {
-    var i, taskDesc, employeeInst, employeeName,
-        employeeJob, taskInst, nextTasks, exist;
-    if (assignments.size() <= 0) {
+function checkAssignments(employeeInst, currentStep) {
+    if (employeeInst.assignements.isEmpty()) {
         return [];
     }
-    employeeInst = assignments.get(0).resourceInstance;
-    employeeName = employeeInst.descriptor.label;
-    employeeJob = employeeInst.skillsets.keySet().toArray()[0];
-    nextTasks = getAssignables(employeeInst.assignments, currentStep);
+    var i, taskDesc, taskInst, exist,
+        assignments = employeeInst.assignements,
+        employeeName = employeeInst.descriptor.label,
+        employeeJob = employeeInst.skillsets.keySet().toArray()[0],
+        nextTasks = getAssignables(employeeInst.assignments, currentStep);
+
     for (i = 0; i < assignments.size(); i++) {
         exist = false;
         taskDesc = assignments.get(i).taskDescriptor;
@@ -525,27 +522,29 @@ function getRequirementsByWork(requirements) {
  * @returns {Number} a number between 0 and 100
  */
 function calculateProgress(activity, allActivities, currentStep) {
-    var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,
-        affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
-        employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,
+    var i, employeeDesc, employeeInst, activityRate, averageSkillsetQuality,
+        correctedRessources,
+        affectedEmployeesDesc = [], stepAdvance = 1, sumActivityRate = 0,
+        employeesMotivationXActivityRate = 0,
         employeesMotivationFactor, employeesSkillsetXActivityRate = 0,
-        employeeSkillsetFactor, activityCoefficientXActivityRate = 0, otherWorkFactor = 1,
-        correctedRessources, reqByWorks, numberOfEmployeeOnNeedOnNewTask = 0,
-        needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,
-        averageSkillsetQuality, stepQuality = 0;
+        employeeSkillsetFactor, activityCoefficientXActivityRate = 0,
+        numberOfEmployeeOnNeedOnNewTask = 0, otherWorkFactor = 1,
+        needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0,
+        stepQuality = 0,
+        taskDesc = activity.taskDescriptor,
+        taskInst = taskDesc.getInstance(self),
+        requirements = taskInst.getRequirements(),
+        reqByWorks = getRequirementsByWork(requirements),
+        selectedReq = activity.getRequirement(),
+        workAs = selectedReq.getWork(),
+        sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allActivities, activity),
+        // @fixme should thie be here or in the next loop?
+        level = parseInt(activity.resourceInstance.skillsets.get(activity.resourceInstance.skillsets.keySet().toArray()[0])),
+        deltaLevel = level - parseInt(selectedReq.getLevel());
 
-    taskDesc = activity.taskDescriptor;
     if (currentStep === 0) {
         taskTable[taskDesc.getName()] = parseInt(taskDesc.getInstance(self).getProperty('completeness'));
     }
-    taskInst = taskDesc.getInstance(self);
-    requirements = taskInst.getRequirements();
-    reqByWorks = getRequirementsByWork(requirements);
-    selectedReq = activity.getRequirement();
-    workAs = selectedReq.getWork();
-    sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allActivities, activity);
-    level = parseInt(activity.resourceInstance.skillsets.get(activity.resourceInstance.skillsets.keySet().toArray()[0]));
-    deltaLevel = level - parseInt(selectedReq.getLevel());
 
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
@@ -590,7 +589,7 @@ function calculateProgress(activity, allActivities, currentStep) {
     }
 
     // calculate baseAdvance
-    stepAdvance *= 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))); //baseAdvance
+    stepAdvance *= 1 / (STEPS * (parseInt(taskDesc.getInstance(self).getDuration()))); //baseAdvance
 
     // calculate numberOfRessourcesFactor
     if (reqByWorks[workAs].totalOfEmployees !== 0) {
@@ -650,7 +649,7 @@ function calculateProgress(activity, allActivities, currentStep) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activity.resourceInstance.getProperty('wage')) / 4) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activity.resourceInstance.getProperty('wage')) / 4) / STEPS)));
 
     debug('sameNeedActivity.length : ' + sameNeedActivity.length);
     debug('employeesMotivationFactor : ' + employeesMotivationFactor);
@@ -666,7 +665,7 @@ function calculateProgress(activity, allActivities, currentStep) {
     debug('NeedMotivationFactor : ' + employeesMotivationXActivityRate / sumActivityRate);
     debug('NeedSkillsetFactor : ' + employeesMotivationXActivityRate / sumActivityRate);
     debug('ActivityNeedRateFactor : ' + activityCoefficientXActivityRate / sumActivityRate);
-    debug('baseAdvance : ' + 1 / (steps * (parseInt(taskDesc.getInstance(self).getDuration()))));
+    debug('baseAdvance : ' + 1 / (STEPS * (parseInt(taskDesc.getInstance(self).getDuration()))));
     debug('numberOfRessourcesFactor : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);
     debug('otherWorkFactor : ' + otherWorkFactor);
     debug('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskInst));
@@ -674,7 +673,7 @@ function calculateProgress(activity, allActivities, currentStep) {
     debug('taskbonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));
     debug('projectBonusRatio : ' + parseFloat(Variable.findByName(gm, 'bonusRatio').getValue(self)));
     debug('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
-    debug('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activity.resourceInstance.getProperty('wage')) / steps))); //predecessor factor);
+    debug('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activity.resourceInstance.getProperty('wage')) / STEPS))); //predecessor factor);
     debug('stepAdvance : ' + stepAdvance);
     debug('need completeness : ' + parseFloat(selectedReq.getCompleteness()));
     debug('needProgress : ' + needProgress);
@@ -796,12 +795,12 @@ function checkEnd(allCurrentActivities, currentStep) {
         employeeInst = allCurrentActivities[i].resourceInstance;
         employeeName = employeeInst.getDescriptor().getLabel();
         employeeJob = employeeInst.skillsets.keySet().toArray()[0];
-        if (currentStep === steps - 1) {
-            checkAssignments(employeeInst.assignments, currentStep);
+        if (currentStep === STEPS - 1) {
+            checkAssignments(employeeInst, currentStep);
         } else if (parseFloat(taskInst.getProperty('completeness')) < 100) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
             nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.skillsets.keySet().toArray()[0].toString());
-            if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
+            if (allCurrentActivities[i].requirement.work != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
                     'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
