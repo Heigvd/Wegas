@@ -103,17 +103,17 @@ YUI.add("wegas-loginbutton", function(Y) {
 
             if (this.get("forcedLabel")) {
                 this.set("label", this.get("forcedLabel"));
-            } else if (this.get('labelIsUser')) {
-                if (mainAccount) {
-                    name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
-                }
-                this.set("label", name);
-            } else {
+            } else if (!this.get('labelIsUser') && cPlayer) {
                 if (cTeam && !(gameModel && gameModel.get("properties.freeForAll"))) {
                     this.set("label", cTeam.get("name") + " : " + cPlayer.get("name"));
                 } else {
                     this.set("label", cPlayer.get("name") || name);
                 }
+            } else {
+                if (mainAccount) {
+                    name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
+                }
+                this.set("label", name);
             }
         },
         destructor: function() {

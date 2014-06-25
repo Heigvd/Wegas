@@ -11,7 +11,7 @@
  */
 YUI.add('wegas-popuplistener', function(Y) {
     "use strict";
-    
+
     var PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
         DEFAULT_CONFIG: function() {
             return {
@@ -90,8 +90,8 @@ YUI.add('wegas-popuplistener', function(Y) {
         },
         onShowOverlay: function(e) {
             this.get("host").get(this.get("targetAttr"))
-                    .addClass("wegas-loading")
-                    .prepend("<div class='wegas-loading-overlay'></div>");
+                .addClass("wegas-loading")
+                .prepend("<div class='wegas-loading-overlay'></div>");
             e.halt(true);
         },
         onHideOverlay: function(e) {
@@ -100,8 +100,8 @@ YUI.add('wegas-popuplistener', function(Y) {
         },
         hideOverlay: function() {
             this.get("host").get(this.get("targetAttr"))
-                    .removeClass("wegas-loading")
-                    .all("> .wegas-loading-overlay").remove(true);
+                .removeClass("wegas-loading")
+                .all("> .wegas-loading-overlay").remove(true);
         }
     }, {
         NS: "popuplistener",
