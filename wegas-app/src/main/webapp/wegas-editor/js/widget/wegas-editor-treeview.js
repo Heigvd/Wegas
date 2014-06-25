@@ -93,6 +93,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.treeView.destroy();
             this.updateHandler.detach();
             this.failureHandler.detach();
+            this.addedHandler.detach();
         },
         // *** Private Methods *** //
         /**
@@ -415,6 +416,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
         },
         getMenuItems: function(data) {
             return Plugin.EditorTVToolbarMenu.prototype.getMenuItems.call(this, data);
+        },
+        destructor: function() {
+            this.menu.destroy();
         }
     }, {
         NS: "contextmenu",

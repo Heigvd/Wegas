@@ -17,8 +17,6 @@ import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Locale;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
@@ -29,7 +27,7 @@ import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
 
-/**
+/*
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
@@ -177,7 +175,7 @@ public class RequestController implements Serializable {
         String cssClass = "";
         try {
             for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()) {
-                cssClass += " wegas-group-" + r.getName();
+                cssClass += " wegas-role-" + r.getName();
             }
             return cssClass.toLowerCase();
         } catch (NoResultException e) {

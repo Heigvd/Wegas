@@ -12,7 +12,7 @@
 YUI.add('wegas-form', function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx, lang = Y.Lang, Wegas = Y.Wegas, Form;
+    var FORM = "form", inputEx = Y.inputEx, lang = Y.Lang, Wegas = Y.Wegas, Form;
 
     /**
      * @name Y.Wegas.Form
@@ -65,14 +65,14 @@ YUI.add('wegas-form', function(Y) {
          * @returns {undefined}
          */
         destructor: function() {
-            this.set("form", null);
+            this.set(FORM, null);
         },
         addButton: function(b) {
             switch (b.action) {
                 case "submit":
                     b.on = {
                         click: Y.bind(function() {
-                            var form = this.get("form"),
+                            var form = this.get(FORM),
                                 val = form.getValue();
 
                             if (!form.validate()) {
@@ -104,8 +104,7 @@ YUI.add('wegas-form', function(Y) {
          * @description set the given form to null
          */
         destroyForm: function() {
-            this.get("form").destroy();
-            this.set("form", null);
+            this.set(FORM, null);
         },
         setCfg: function(val) {
             var cfg = Y.clone(val);                                             // Duplicate so val will be untouched while serializing
@@ -118,7 +117,7 @@ YUI.add('wegas-form', function(Y) {
                 var form = Y.inputEx(cfg);                                      // Initialize and render form
                 form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
                 form.removeClassFromState();                                    // Remove required state
-                this.set("form", form);
+                this.set(FORM, form);
                 form.on("updated", function(e) {
                     this.fire("updated", e);
                 }, this);
@@ -146,8 +145,8 @@ YUI.add('wegas-form', function(Y) {
                 "transient": true,
                 value: {},
                 setter: function(val) {
-                    if (this.get("form")) {
-                        this.get("form").setValue(val, false);
+                    if (this.get(FORM)) {
+                        this.get(FORM).setValue(val, false);
                     }
                     return val;
                 }
@@ -158,8 +157,8 @@ YUI.add('wegas-form', function(Y) {
             form: {
                 "transient": true,
                 setter: function(val) {
-                    if (this.get("form")) {                                     // If there is alread a form instantiated, destroy it
-                        this.get("form").destroy();
+                    if (this.get(FORM)) {                                       // If there is alread a form instantiated, destroy it
+                        this.get(FORM).destroy();
                     }
                     return val;
                 }

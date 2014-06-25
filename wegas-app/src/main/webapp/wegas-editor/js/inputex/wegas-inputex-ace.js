@@ -29,7 +29,7 @@ YUI.add('wegas-inputex-ace', function(Y) {
          */
         setOptions: function(options) {
             inputEx.AceField.superclass.setOptions.call(this, options);
-
+            this.handlers = {};
             this.options.language = options.language || "javascript";
             this.options.theme = options.theme || "textmate";
             this.options.height = options.height || "75px";
@@ -41,12 +41,19 @@ YUI.add('wegas-inputex-ace', function(Y) {
         enable: function() {
             this.editor.setReadOnly(false);
         },
+        destroy: function() {
+            inputEx.AceField.superclass.destroy.call(this);
+            Y.Object.each(this.handlers, function(i) {
+                i.detach();
+            });
+            this.editor.destroy();
+        },
         /**
          * Render the field using the YUI Editor widget
          */
         renderComponent: function() {
             if (window.ace) {                                                   // Ace is present, launch it
-                this.el = Y.Node.create('<div>' + (this.options.value || "") + '</div>');//@fixme
+                this.el = Y.Node.create('<div>' + (this.options.value || "") + '</div>');
                 this.fieldContainer.appendChild(this.el.getDOMNode());
 
                 this.el.setStyle("height", this.options.height);
@@ -63,11 +70,13 @@ YUI.add('wegas-inputex-ace', function(Y) {
                 this.session = this.editor.getSession();
                 this.session.setMode("ace/mode/" + this.options.language);
 
-                Y.Wegas.app.after("layout:resize", function() {                 // Every time the layout is resized (wegas editor only)
-                    Y.once('domready', this.resize, this);                      // resize ace viewport
-                }, this.editor);
+                this.handlers.resize =
+                    Y.Wegas.app.after("layout:resize", function() {             // Every time the layout is resized (wegas editor only)
+                        Y.once('domready', this.resize, this);                  // resize ace viewport
+                    }, this.editor);
 
-                Y.after('windowresize', Y.bind(this.editor.resize, this.editor));// Every time window is resized, resize ace viewport
+                this.handlers.wresize =
+                    Y.after('windowresize', Y.bind(this.editor.resize, this.editor));// Every time window is resized, resize ace viewport
             } else {                                                            // Fallback with textarea
                 Y.log("Unable to find Ace libraries, falling back to text field", "error", "Wegas.Inputex.Ace");
                 inputEx.AceField.superclass.renderComponent.call(this);

@@ -209,8 +209,7 @@ YUI.add('wegas-plugin', function(Y) {
             this.handlers.push(Y.soon(
                 Y.bind(function(pageLoader) {
                     pageLoader.set("pageId", this._subpage());
-                }, this, targetPageLoader)
-                ));
+                }, this, targetPageLoader)));
         },
         _getTargetPageLoader: function() {
             var targetPageLoader, plID = this.get('targetPageLoaderId');
@@ -264,7 +263,6 @@ YUI.add('wegas-plugin', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 _inputex: {
-//                    _type: "hidden",
                     _type: "variableselect",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
