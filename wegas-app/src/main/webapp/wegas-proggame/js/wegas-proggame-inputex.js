@@ -12,8 +12,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
     "use strict";
 
     var inputEx = Y.inputEx,
-            TILESIZE = 32,
-            Alignable = Y.Base.create("proggame-alignable", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]);
+        TILESIZE = 32,
+        Alignable = Y.Base.create("proggame-alignable", Y.Widget, [Y.WidgetPosition, Y.WidgetPositionAlign, Y.WidgetStack, Y.WidgetPositionConstrain]);
 
     /**
      * ProgGameMap field
@@ -39,7 +39,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             inputEx.ProgGameMap.superclass.renderComponent.call(this);
 
             var node = new Y.Node(this.divEl),
-                    addButtonNode = new Y.Node(this.addButton);                 // The add column link
+                addButtonNode = new Y.Node(this.addButton);                 // The add column link
 
             node.append("<div class=\"add-col\"><img />Add column</div>");
             node.one(".add-col").on("click", function() {
@@ -50,8 +50,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             }, this);
             addButtonNode.wrap("<div class=\"add-row\"></div>");
             addButtonNode.get("parentNode")
-                    .append("Add row")
-                    .on("click", this.onAddButton, this);
+                .append("Add row")
+                .on("click", this.onAddButton, this);
             node.delegate("mousedown", function(e) {
                 e.halt(true);
                 this._paint = {
@@ -79,7 +79,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
             }
 
             var j, defaultValue = [],
-                    mapWidth = (this.subFields.length > 0) ? this.subFields[0].getValue().length : 0;
+                mapWidth = (this.subFields.length > 0) ? this.subFields[0].getValue().length : 0;
 
             for (j = 0; j < mapWidth; j += 1) {
                 defaultValue.push({x: 0, y: 0});
@@ -137,8 +137,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
                         zIndex: 100
                     });
                     var cb = this.alignable.get("contentBox"),
-                            ct = ["<div class=\"table\">"],
-                            spriteSheet = Y.Wegas.ProgGameDisplay.SPRITESHEETS["TileSprite"];
+                        ct = ["<div class=\"table\">"],
+                        spriteSheet = Y.Wegas.ProgGameDisplay.SPRITESHEETS["TileSprite"];
 
                     for (i = 0; i < spriteSheet.height; i += 1) {
                         ct.push("<div>");
@@ -163,7 +163,7 @@ YUI.add('wegas-proggame-inputex', function(Y) {
                     }, ".table div div", this);
                 }
 
-                Y.on("domready", function() {
+                Y.once("domready", function() {
                     this.outHandler = this.alignable.get("boundingBox").on("clickoutside", function() {
                         if (this.alignable.get("visible")) {
                             this.alignable.hide();
@@ -174,6 +174,12 @@ YUI.add('wegas-proggame-inputex', function(Y) {
                 this.alignable.show();
             }, this);
             this.fieldContainer.appendChild(this.node.getDOMNode());
+        },
+        destroy: function() {
+            this.alignable && this.alignable.destroy();
+            this.node.destroy();
+            this.outHandler && this.outHandler.destroy();
+            inputEx.ProgGameTile.superclass.destroy.call(this);
         }
     });
 

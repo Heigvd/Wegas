@@ -35,7 +35,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                 map = this.get("map"),
                 gridH = map.length,
                 gridW = map[0].length;
-
+            Crafty.stop();
             Crafty("*").destroy();                                              // @HACK Destructor sometimes not called !
 
             this.get("boundingBox").setStyles({
@@ -77,6 +77,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             }, this));
         },
         destructor: function() {
+            Crafty.stop();
             Crafty("*").destroy();
             Crafty.unbind(COMMANDEXECUTED);
         },
@@ -320,7 +321,7 @@ YUI.add('wegas-proggame-display', function(Y) {
                     width: "initial",
                     height: "initial"
                 });
-                Y.later(300, this, function() {                                 // Attach a little later so the font file has enough time to be loaded
+                this._renderTimer = Y.later(300, this, function() {                                 // Attach a little later so the font file has enough time to be loaded
                     this.attach(connector)
                         .attr({
                             x: pos[0] - this._element.offsetWidth / 2 + 14,
@@ -335,8 +336,12 @@ YUI.add('wegas-proggame-display', function(Y) {
                     connector.visible = true;
                 });
             });
+            textE.bind("Remove", function() {
+                this._renderTimer && this._renderTimer.cancel();
+                this._endTimer && this._endTimer.cancel();
+            });
             this.attach(textE);
-            Y.later(delay || 3500, textE, function() {
+            textE._endTimer = Y.later(delay || 3500, textE, function() {
                 this.destroy();
                 if (!preventEvent) {
                     Crafty.trigger(COMMANDEXECUTED);
@@ -377,7 +382,7 @@ YUI.add('wegas-proggame-display', function(Y) {
             var c = this.__coord;
             this.reset();
             this.reel("trap", 100, c[0] / c[2], c[1] / c[3], 5);
-            Y.later(1, this, function() {                                       // Add a tile to show where the trap is
+            this._delayTile=Y.later(1, this, function() {                                       // Add a tile to show where the trap is
                 Crafty.e("Tile, TileSprite").sprite(0, 5).attr({
                     x: this._x,
                     y: this._y
@@ -409,6 +414,9 @@ YUI.add('wegas-proggame-display', function(Y) {
             }
             this.visible = false;
             this.removeComponent("Collide");
+        },
+        remove:function(){
+            this._delayTile.cancel();
         }
     });
     Crafty.c("Door", {
