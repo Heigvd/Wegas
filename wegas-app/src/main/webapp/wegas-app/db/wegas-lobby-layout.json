@@ -355,6 +355,11 @@
                         "type": "TabView",
                         "id": "rightTabView",
                         "cssClass": "wegas-tabview-fullheight"
+                    }],
+                "plugins": [{
+                        "fn": "PopupListener"
+                    }, {
+                        "fn": "Injector"
                     }]
             }]
     }

@@ -233,6 +233,7 @@
             {
                 "cssClass": "pmg-timevariable",
                 "type": "BoxTemplate",
+                "label": "timeCards",
                 "data": {},
                 "variable": {
                     "content": "Variable.find('timeCards').item(currentPhase.value)"

@@ -427,6 +427,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 e.currentTarget.menu = new Wegas.List({
                     children: menuItems
                 });
+                e.currentTarget.menu.addTarget(this.get(HOST));
                 e.currentTarget.menu.render(e.currentTarget.one("td.yui3-datatable-col-menu"));
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");

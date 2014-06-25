@@ -30,15 +30,11 @@ function runSimulation() {
  * @param {Number} currentStep
  */
 function step(currentStep) {
-    var i, work, activities, oneTaskPerActivity, allCurrentActivities,
-        taskProgress, allCurrentActivities,
-        requirementsByWork, taskInst;
-
-    //create activities
-    allCurrentActivities = createActivities(currentStep);
-
-    //get one unique requirement by activities and calculate its progression
-    activities = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
+    var i, work, oneTaskPerActivity,
+        taskProgress,
+        requirementsByWork, taskInst,
+        allCurrentActivities = createActivities(currentStep), //                // create activities
+        activities = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);//get one unique requirement by activities and calculate its progression
 
     for (i = 0; i < activities.length; i++) {                                   //for each need
         calculateProgress(activities[i], allCurrentActivities, currentStep);
