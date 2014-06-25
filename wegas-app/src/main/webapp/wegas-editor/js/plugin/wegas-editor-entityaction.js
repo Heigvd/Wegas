@@ -259,7 +259,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(NewEntityAction, EditEntityAction, {
         showAddForm: function(entity) {
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
-            EditEntityAction.showEditForm(entity, function(newVal) {
+            EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
                 var dataSource = this.get(DATASOURCE);
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
@@ -273,7 +273,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     },
                     failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
-            }, null, this.get("formCfg"));
+            }, this), null, this.get("formCfg"));
         },
         execute: function() {
             Wegas.Editable.useAndRevive({
@@ -426,7 +426,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
-            EditEntityAction.showEditForm(entity, function(newVal) {
+            EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor
                 // we need to look for the one that was not there before
@@ -455,7 +455,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                     }, this),
                     failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
-            }, null, this.get("formCfg"));
+            }, this), null, this.get("formCfg"));
         },
         execute: function() {
             Wegas.Editable.useAndRevive({// Load target class dependencies
@@ -515,7 +515,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 this.get(DATASOURCE).cache.deleteObject(entity, {
                     on: {
                         success: Y.bind(function() {
-                            //host.hideOverlay();
+                            host.hideOverlay();
                             if (EditEntityAction.currentEntity) {
                                 if (EditEntityAction.currentEntity.get("id") === entity.get("id")) {
                                     EditEntityAction.hideRightTabs();
@@ -746,6 +746,10 @@ YUI.add('wegas-editor-entityaction', function(Y) {
 
     var EntityEditMenu = Y.Base.create("wegas-editentitytoolbar", Plugin.EntityAction, [], {
         execute: function() {
+            Y.later(1, this, function() {
+                EditEntityAction.currentEntity = this.get("entity");// @hack
+            });
+
             var target = Y.Widget.getByNode(".wegas-layout-right > .wegas-widget"),
                 menuItems = this.get("entity").getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
 
