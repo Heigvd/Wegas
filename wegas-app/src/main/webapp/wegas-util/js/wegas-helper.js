@@ -295,6 +295,16 @@ YUI.add('wegas-helper', function(Y) {
             next: function() {
                 this._lock = false;
                 doNext(this);
+            },
+            /**
+             * remove further callbacks.
+             * Chainable.
+             * @returns {_L254.Q.prototype}
+             */
+            empty: function() {
+                this._f.length = 0;
+                this._a.length = 0;
+                return this;
             }
         };
         return  Q;
