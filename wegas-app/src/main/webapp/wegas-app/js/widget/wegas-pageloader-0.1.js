@@ -16,23 +16,22 @@ YUI.add('wegas-pageloader', function(Y) {
     var CONTENTBOX = 'contentBox', PAGEID = "pageId", Wegas = Y.Wegas, PageLoader,
         renderPage = function(pageId, queue) {
             Y.log("Getting page " + pageId, "log", "Wegas.PageLoader");
+            this.showOverlay();
+            if (this.get("widget")) {
+                Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
+//                this.get("widget").remove();
+                this.get("widget").destroy();
+                this.set("widget", null);
+            }
             Wegas.Facade.Page.cache.getPage(pageId, Y.bind(function(id, widgetCfg) {// Retrieve page
-                this.showOverlay();
 
-                if (this.get("widget")) {
-                    Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
-                    this.get("widget").remove();
-                    this.get("widget").destroy();
-                    this.set("widget", null);
-                }
                 if (!widgetCfg) {
                     this.get(CONTENTBOX).setContent("<center><i>Page [" + this.currentPageId + "] was not found</i></center>");
-                    this.hideOverlay();
                     this.fire("contentUpdated");
                     return;
                 }
 //                            this._set(PAGEID, val);
-                this.get(CONTENTBOX).empty();                           // Let the overlay appear during rendering
+//                this.get(CONTENTBOX).empty();                           // @FIXME : after a sub-pageloader is destroyed, this pageloader cannot be destroyed.
 
                 Wegas.Widget.use(widgetCfg, Y.bind(function(id) {         // Load the subwidget dependencies
                     if (this.currentPageId !== id) {                  // page changed in between
@@ -52,7 +51,6 @@ YUI.add('wegas-pageloader', function(Y) {
                         this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
                         Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
                     } finally {
-                        this.hideOverlay();
                         this.fire("contentUpdated");
                     }
                 }, this, id));
@@ -87,7 +85,8 @@ YUI.add('wegas-pageloader', function(Y) {
             this.queue = new Y.Wegas.Helper.Queue();
             PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
             this.publish("contentUpdated", {emitFacade: false});
-            this.on("contentUpdated", function() {
+            this.on("contentUpdated", function(e) {
+                this.hideOverlay();
                 this.queue.next();
             });
         },
@@ -109,6 +108,11 @@ YUI.add('wegas-pageloader', function(Y) {
                     this.syncUI();                                              // sync the view
                 }
             }, this));
+            this.after("*:destroy", function(e) {
+                if (e.target === this.get("widget")) {
+                    this.set("widget", null);
+                }
+            });
 
             //Wegas.Facade.Page.after("response", this.syncUI, this);
             //this.handlers.push(Wegas.Facade.Page.cache.after("pageUpdated", function(e) {
@@ -150,6 +154,7 @@ YUI.add('wegas-pageloader', function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
+            this.queue.empty();
             delete PageLoader.pageLoaderInstances[this.get("pageLoaderId")];
         },
         /**
