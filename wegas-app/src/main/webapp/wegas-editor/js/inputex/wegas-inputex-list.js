@@ -36,10 +36,9 @@ YUI.add("wegas-inputex-list", function(Y) {
     var ListField = function(options) {
         ListField.superclass.constructor.call(this, options);
 
-        var parentNode = new Y.Node(this.fieldset);
         //parentNode.insert(this.addButton.get("boundingBox").remove(), 1);
         this.addButton.render(this.fieldset);
-        parentNode.prepend(this.addButton.get("boundingBox"));
+        Y.one(this.fieldset).prepend(this.addButton.get("boundingBox"));
     };
     Y.extend(ListField, inputEx.Group, {
         /**

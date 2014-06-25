@@ -12,10 +12,10 @@
 YUI.add('wegas-editor-entityaction', function(Y) {
     "use strict";
     var ENTITY = "entity", LABEL = "label", HOST = "host", CONTENTBOX = "contentBox",
-            ID = "id", DATASOURCE = "dataSource",
-            Plugin = Y.Plugin, Lang = Y.Lang, Action = Plugin.Action, Wegas = Y.Wegas,
-            persistence = Wegas.persistence,
-            EntityAction, EditFSMAction;
+        ID = "id", DATASOURCE = "dataSource",
+        Plugin = Y.Plugin, Lang = Y.Lang, Action = Plugin.Action, Wegas = Y.Wegas,
+        persistence = Wegas.persistence,
+        EntityAction, EditFSMAction;
     /**
      * @class
      * @name Y.Plugin.EntityAction
@@ -88,47 +88,47 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         showUpdateForm: function(entity, dataSource) {
             var dataSource = dataSource,
-                    doShow = function(entity, dataSource) {
-                        var form = EditEntityAction.showEditForm(entity, function(data) { // Display the edit form
-                            // entity.setAttrs(cfg);
-                            dataSource.cache.put(data, {
-                                on: {
-                                    success: function() {
-                                        EditEntityAction.showFormMessage("success", "Item updated");
-                                        EditEntityAction.hideEditFormOverlay();
-                                    },
-                                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
-                                }
-                            });
-                        }), menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
-                            return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-                        });                                                             // Retrieve menu and remove the first item
-
-                        Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
-                            switch (i.label) {
-                                case "Delete":
-                                case "New":
-                                case "Add":
-                                case "Copy":
-                                case "View":
-                                case "Open in editor":
-                                case "Open":
-                                case "Edit":
-                                    i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                doShow = function(entity, dataSource) {
+                    var form = EditEntityAction.showEditForm(entity, function(data) { // Display the edit form
+                        // entity.setAttrs(cfg);
+                        dataSource.cache.put(data, {
+                            on: {
+                                success: function() {
+                                    EditEntityAction.showFormMessage("success", "Item updated");
+                                    EditEntityAction.hideEditFormOverlay();
+                                },
+                                failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                             }
                         });
-                        form.toolbar.add(menuItems);
-                        form.toolbar.item(0) && form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px");
-                    };
+                    }), menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
+                        return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
+                    });                                                             // Retrieve menu and remove the first item
+
+                    Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
+                        switch (i.label) {
+                            case "Delete":
+                            case "New":
+                            case "Add":
+                            case "Copy":
+                            case "View":
+                            case "Open in editor":
+                            case "Open":
+                            case "Edit":
+                                i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                        }
+                    });
+                    form.toolbar.add(menuItems);
+                    form.toolbar.item(0) && form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px");
+                };
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.getEditionTab();                                   // Create the edition tab (and the left panel won't pop in and out)
 
             if ((Wegas.persistence.VariableDescriptor &&
-                    (entity instanceof Wegas.persistence.VariableDescriptor     // Those classes may not be loaded
-                            || entity instanceof Wegas.persistence.VariableInstance))
-                    || entity instanceof Wegas.persistence.JpaAccount
-                    || entity instanceof Wegas.persistence.GameModel
-                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entity, just need to check if it causes bugs
+                (entity instanceof Wegas.persistence.VariableDescriptor     // Those classes may not be loaded
+                    || entity instanceof Wegas.persistence.VariableInstance))
+                || entity instanceof Wegas.persistence.JpaAccount
+                || entity instanceof Wegas.persistence.GameModel
+                || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entity, just need to check if it causes bugs
                 EditEntityAction.showEditFormOverlay();
                 dataSource.cache.getWithView(entity, "EditorExtended", {
                     on: {
@@ -156,7 +156,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             EditEntityAction.currentEntity = entity;
 
             var tab = EditEntityAction.getEditionTab(),
-                    name = entity.getType().replace("Descriptor", "").replace("Instance", "");
+                name = entity.getType().replace("Descriptor", "").replace("Instance", "");
 
             if (!entity.get(ID) && !(entity instanceof Y.Widget)) {           // No id -> new entity
                 name = "New " + name.toLowerCase();
@@ -203,7 +203,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         getEditionTab: function() {
             if (!EditEntityAction.tab || EditEntityAction.tab.get("destroyed")) {// First make sure the edit tab does not exist
                 var tab = Wegas.TabView.createTab("Edit", '#rightTabView', {}, 0), // Create a tab,
-                        form = new Wegas.Form();                                // and a form
+                    form = new Wegas.Form();                                // and a form
 
 //                tab.plug(Plugin.Removeable);                                    // make it closeable
                 tab.add(form);
@@ -258,9 +258,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     };
     Y.extend(NewEntityAction, EditEntityAction, {
         showAddForm: function(entity) {
-            var dataSource = this.get(DATASOURCE);
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, function(newVal) {
+                var dataSource = this.get(DATASOURCE);
                 dataSource.cache.post(newVal, null, {
                     success: function(e) {
                         //EditEntityAction.hideEditFormOverlay();
@@ -329,9 +329,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         },
         doExecute: function(descriptor) {
             var entity = this.get(ENTITY),
-                    host = this.get(HOST),
-                    dataSource = this.get(DATASOURCE),
-                    newEntity, targetArray;
+                host = this.get(HOST),
+                dataSource = this.get(DATASOURCE),
+                newEntity, targetArray;
 
             switch (this.get("method").toString().toLowerCase()) {
                 case "put":
@@ -425,13 +425,12 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     };
     Y.extend(AddEntityChildAction, NewEntityAction, {
         showAddForm: function(entity, parentData) {
-            var dataSource = this.get(DATASOURCE);
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, function(newVal) {
                 //@Hack since the server return the parent list,
                 // and we have no way to identify the newly created descriptor
                 // we need to look for the one that was not there before
-                var idBack = [];
+                var dataSource = this.get(DATASOURCE), idBack = [];
                 Y.Array.each(parentData.get("items"), function(e) {
                     idBack.push(e.get(ID));
                 });
@@ -441,8 +440,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
 
                         var entity = e.response.entity;
                         if (Wegas.persistence.VariableDescriptor                // If entity is loaded
-                                && entity instanceof Wegas.persistence.VariableDescriptor
-                                && entity.get("items")) {                       // If the parent list of the edited item was returned,
+                            && entity instanceof Wegas.persistence.VariableDescriptor
+                            && entity.get("items")) {                           // If the parent list of the edited item was returned,
                             entity = Y.Array.find(entity.get("items"), function(e) {// need to look up for the edited entity
                                 return Y.Array.indexOf(idBack, e.get(ID)) === -1;
                             });
@@ -509,7 +508,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(DeleteEntityAction, EntityAction, {
         execute: function() {
             var entity = this.get(ENTITY), i,
-                    host = this.get(HOST);
+                host = this.get(HOST);
             if (confirm("Are your sure your want to delete this " + entity.getType().toLowerCase() + " ?")) {
                 host.showOverlay();
                 this.confirmDelete = true;
@@ -529,7 +528,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                                     }
                                 } else if (entity.get("@class") === "FSMDescriptor") {
                                     if (EditEntityAction.currentEntity.get("@class") === "Transition" ||
-                                            EditEntityAction.currentEntity.get("@class") === "State") {
+                                        EditEntityAction.currentEntity.get("@class") === "State") {
                                         EditEntityAction.hideRightTabs();
                                     }
                                 }
@@ -620,7 +619,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     Y.extend(DeleteFSMAction, DeleteEntityAction, {
         execute: function() {
             var entity = this.get(ENTITY),
-                    tab = Wegas.TabView.findTab("State machine");
+                tab = Wegas.TabView.findTab("State machine");
             if (this.get("host").DeleteEntityAction.confirmDelete && tab && tab.item(0).get("entity").get("id") === entity.get("id")) {
                 tab.remove().destroy();
             }
@@ -657,7 +656,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
          */
         execute: function() {
             var tab = Wegas.TabView.findTabAndLoadWidget("State machine", // Load and display the editor in a new tab
-                    "#centerTabView", {}, Y.mix(this.get("viewerCfg"), {
+                "#centerTabView", {}, Y.mix(this.get("viewerCfg"), {
                 type: "StateMachineViewer",
                 plugins: [{
                         fn: "WidgetToolbar"
@@ -678,8 +677,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             tab.plug(Y.Plugin.Removeable, {closeCallback: function() {
                     var entity = EditEntityAction.currentEntity;
                     if (/*entity instanceof persistence.FSMDescriptor
-                            ||*/ entity instanceof persistence.State
-                            || entity instanceof persistence.Transition) {
+                     ||*/ entity instanceof persistence.State
+                        || entity instanceof persistence.Transition) {
                         EditEntityAction.hideRightTabs();
                     }
                 }});                                      // Removable tab
@@ -748,7 +747,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
     var EntityEditMenu = Y.Base.create("wegas-editentitytoolbar", Plugin.EntityAction, [], {
         execute: function() {
             var target = Y.Widget.getByNode(".wegas-layout-right > .wegas-widget"),
-                    menuItems = this.get("entity").getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
+                menuItems = this.get("entity").getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
 
             Y.Array.each(menuItems, function(i) {                               // @hack Add icons to some buttons
                 switch (i.label) {

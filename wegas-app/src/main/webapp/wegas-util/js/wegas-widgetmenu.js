@@ -12,7 +12,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
     "use strict";
 
     var HOST = "host", BOUNDINGBOX = "boundingBox",
-            WidgetMenu, Menu, MenuBar;
+        WidgetMenu, Menu, MenuBar;
 
     /**
      * @name Y.Plugin.WidgetMenu
@@ -70,8 +70,8 @@ YUI.add('wegas-widgetmenu', function(Y) {
         },
         add: function(widget, index) {
             var children = this.get("children"),
-                    i = (typeof index === 'number') ? index : children.length,
-                    w = Y.Lang.isArray(widget) ? widget : [widget];
+                i = (typeof index === 'number') ? index : children.length,
+                w = Y.Lang.isArray(widget) ? widget : [widget];
             Array.prototype.splice.apply(children, [i, 0].concat(w));
             this.set("children", children);
         },
@@ -97,9 +97,9 @@ YUI.add('wegas-widgetmenu', function(Y) {
         getMenu: function() {
             if (!this.menu) {
                 var cfg = this.get("menuCfg"),
-                        host = this.get(HOST),
-                        parent = host.get("parent"),
-                        menu;
+                    host = this.get(HOST),
+                    parent = host.get("parent"),
+                    menu;
                 cfg.zIndex = WidgetMenu.menuIndex;                              // Better exemple for this at http://yuilibrary.com/yui/docs/overlay/overlay-stack.html
                 WidgetMenu.menuIndex += 1;
                 cfg.children = this.get("children");
@@ -139,8 +139,8 @@ YUI.add('wegas-widgetmenu', function(Y) {
             targetNode: {
                 getter: function() {
                     var host = this.get(HOST),
-                            node = (host instanceof Y.Widget) ?
-                            host.get(BOUNDINGBOX) : host;
+                        node = (host instanceof Y.Widget) ?
+                        host.get(BOUNDINGBOX) : host;
                     return node;
                 }
             },
