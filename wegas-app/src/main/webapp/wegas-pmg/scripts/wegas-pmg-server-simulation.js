@@ -4,7 +4,7 @@ var gm = self.getGameModel(), testMode = true, steps = 10, minTaskDuration = 0.1
 
 /**
  * Divide period in steps (see global variable).
- * Call function calculTasksProgress at each step.
+ * Call function step at each step.
  */
 function runSimulation() {
     debug('==============================');
@@ -20,7 +20,7 @@ function runSimulation() {
  * Call fonction to creat activities (createActivities) then get each
  *  activities (but only one per task's requirement). for each activities,
  *   Call the function to calculate the progression of each requirement
- *   (calculateProgressOfNeed).
+ *   (calculateProgress).
  *   Then, calculate and set the quality and the completeness for each tasks
  *   Then, check the end of a requirement inactivities (function ''checkEnd'');
  * @param {Number} currentStep
@@ -37,7 +37,7 @@ function step(currentStep) {
     activities = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
 
     for (i = 0; i < activities.length; i++) {                                   //for each need
-        calculateProgressOfNeed(activities[i], allCurrentActivities, currentStep);
+        calculateProgress(activities[i], allCurrentActivities, currentStep);
     }
 
     //get each modified task and calculate is new quality and completeness
@@ -520,11 +520,11 @@ function getRequirementsByWork(requirements) {
 /**
  * Calculate the progression and the quality of each worked requirement at this step.
  * Return the progression of the requirement.
- * @param {Activity} activityAsNeeds an Activity
- * @param {Array} allCurrentActivities an Array of Activity
+ * @param {Activity} activity an Activity
+ * @param {Array} allActivities an Array of Activity
  * @returns {Number} a number between 0 and 100
  */
-function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentStep) {
+function calculateProgress(activity, allActivities, currentStep) {
     var i, taskDesc, taskInst, employeeDesc, employeeInst, activityRate, sameNeedActivity,
         affectedEmployeesDesc = [], requirements, stepAdvance = 1, sumActivityRate = 0,
         employeesMotivationXActivityRate = 0, deltaLevel, workAs, selectedReq,
@@ -534,17 +534,17 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
         needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,
         averageSkillsetQuality, stepQuality = 0;
 
-    taskDesc = activityAsNeeds.taskDescriptor;
+    taskDesc = activity.taskDescriptor;
     if (currentStep === 0) {
         taskTable[taskDesc.getName()] = parseInt(taskDesc.getInstance(self).getProperty('completeness'));
     }
     taskInst = taskDesc.getInstance(self);
     requirements = taskInst.getRequirements();
     reqByWorks = getRequirementsByWork(requirements);
-    selectedReq = activityAsNeeds.getRequirement();
+    selectedReq = activity.getRequirement();
     workAs = selectedReq.getWork();
-    sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allCurrentActivities, activityAsNeeds);
-    level = parseInt(activityAsNeeds.resourceInstance.skillsets.get(activityAsNeeds.resourceInstance.skillsets.keySet().toArray()[0]));
+    sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allActivities, activity);
+    level = parseInt(activity.resourceInstance.skillsets.get(activity.resourceInstance.skillsets.keySet().toArray()[0]));
     deltaLevel = level - parseInt(selectedReq.getLevel());
 
     //For each need
@@ -650,7 +650,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.resourceInstance.getProperty('wage')) / 4) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activity.resourceInstance.getProperty('wage')) / 4) / steps)));
 
     debug('sameNeedActivity.length : ' + sameNeedActivity.length);
     debug('employeesMotivationFactor : ' + employeesMotivationFactor);
@@ -674,7 +674,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
     debug('taskbonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));
     debug('projectBonusRatio : ' + parseFloat(Variable.findByName(gm, 'bonusRatio').getValue(self)));
     debug('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
-    debug('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.resourceInstance.getProperty('wage')) / steps))); //predecessor factor);
+    debug('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activity.resourceInstance.getProperty('wage')) / steps))); //predecessor factor);
     debug('stepAdvance : ' + stepAdvance);
     debug('need completeness : ' + parseFloat(selectedReq.getCompleteness()));
     debug('needProgress : ' + needProgress);
@@ -782,28 +782,6 @@ function getFloat(number, numberOfDigit) {
 }
 
 /**
- * Transform a wegas List in an array.
- * If the wegas list contain other wegas list (and contain other wegas list, etc),
- *  put each other list at the same level in the returned one level (flat) Array.
- * @param {List} list
- * @param {List} finalList
- * @returns {Array} the given finalList, in an Array object
- */
-function flattenList(list, finalList) {
-    var i, el;
-    finalList = (finalList) ? finalList : [];
-    for (i = 0; i < list.items.size(); i++) {
-        el = list.items.get(i);
-        if (el.getClass() && el.getClass().toString() === 'class com.wegas.core.persistence.variable.ListDescriptor') {
-            finalList = this.flattenList(el, finalList);
-        } else {
-            finalList.push(el);
-        }
-    }
-    return finalList;
-}
-
-/**
  * Check the end of a task or of a requirement and send corresponding messages.
  * if it's the last step, call function ''checkAssignments'' to send other kind of messages.
  * @param {Array} allCurrentActivities, an Array of Activity
@@ -880,10 +858,5 @@ function sendMessage(subject, content, from) {
 function debug(msg) {
     if (testMode) {
         println(msg);
-    }
-}
-Y = {
-    Array: {
-        each:
     }
 }
