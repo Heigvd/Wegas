@@ -28,3 +28,33 @@ function testsimplepmg() {
     nextPeriod();                                                               // Avant-projet -> Plannification
     nextPeriod();                                                               // Plannification -> Execution
 }
+
+
+/**
+ * Debbug function to create automatically some occupations and assignements in
+ *  some employees.
+ * @returns {String}
+ */
+function tempInit() {
+    var occupation, employees = flattenList(Variable.findByName(gm, 'employees')),
+            tasks = Variable.findByName(gm, 'tasks');
+
+    occupation = employees[0].getInstance(self).addOccupation();
+    occupation.setTime(1.0);
+    occupation = employees[0].getInstance(self).addOccupation();
+    occupation.setTime(2.0);
+    occupation = employees[1].getInstance(self).addOccupation();
+    occupation.setTime(1.0);
+    occupation = employees[2].getInstance(self).addOccupation();
+    occupation.setTime(2.0);
+    occupation = employees[2].getInstance(self).addOccupation();
+    occupation.setTime(3.0);
+    occupation.setEditable(false);
+
+    //tasks.items.get(0).getPredecessors().add(tasks.items.get(1));
+
+    employees[1].getInstance(self).assign(tasks.items.get(0));
+    employees[0].getInstance(self).assign(tasks.items.get(1));
+
+    return 'is initialized';
+}

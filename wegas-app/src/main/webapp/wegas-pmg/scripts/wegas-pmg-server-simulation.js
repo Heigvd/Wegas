@@ -8,7 +8,6 @@ var gm = self.getGameModel(), testMode = true, steps = 10, minTaskDuration = 0.1
  */
 function runSimulation() {
     debug('==============================');
-    debug('==============================');
 
     taskTable = {};
     for (var i = 0; i < steps; i++) {
@@ -30,68 +29,30 @@ function calculTasksProgress(currentStep) {
     var i, work, activitiesAsNeeds, oneTaskPerActivity, allCurrentActivities,
             taskProgress, allCurrentActivities,
             requirementsByWork, taskInst;
-    
+
     //create activities
     allCurrentActivities = createActivities(currentStep);
-    
+
     //get one unique requirement by activities and calculate its progression
     activitiesAsNeeds = getActivitiesWithEmployeeOnDifferentNeeds(allCurrentActivities);
     for (i = 0; i < activitiesAsNeeds.length; i++) { //for each need
         calculateProgressOfNeed(activitiesAsNeeds[i], allCurrentActivities, currentStep);
     }
-    
+
     //get each modified task and calculate is new quality and completeness
     oneTaskPerActivity = getUniqueTasksInActivities(activitiesAsNeeds);
     for (i = 0; i < oneTaskPerActivity.length; i++) {
         taskProgress = 0;
-        taskInst = oneTaskPerActivity[i].getTaskDescriptor().getInstance(self);
+        taskInst = oneTaskPerActivity[i].taskDescriptor.getInstance(self);
         requirementsByWork = getRequirementsByWork(taskInst.getRequirements());
         for (work in requirementsByWork) {
             taskProgress += requirementsByWork[work].completeness;
         }
         taskProgress = (taskProgress > 97) ? 100 : taskProgress; //>97 yes, don t frustrate the players please.
         taskInst.setProperty('completeness', Math.round(taskProgress));
-        taskInst.setProperty('quality', calculateTaskQuality(oneTaskPerActivity[i].getTaskDescriptor()));
+        taskInst.setProperty('quality', calculateTaskQuality(oneTaskPerActivity[i].taskDescriptor));
     }
     checkEnd(allCurrentActivities, currentStep);
-}
-/**
- * Print a console msg if in debug mode
- * 
- * @param {String} msg
- */
-function debug(msg) {
-    if (testMode) {
-        println(msg);
-    }
-}
-/**
- * This function calculate the planned value at a given time
- * @param {Integer} periods
- * @returns {Long} Planned value
- */
-function calculatePlanedValue(periods) {
-    var i, ii, iii, taskInst, pv = 0, plannification, period,
-            tasks = Variable.findByName(gm, 'tasks');
-
-    for (i = 0; i < periods; i++) {
-        for (ii = 0; ii < tasks.items.size(); ii++) {
-            taskInst = tasks.items.get(ii).getInstance(self);
-            if (isTrue(taskInst.getActive())) {
-                if (taskInst.getPlannification().size() === 0 && i === 0) {
-                    pv += parseInt(taskInst.getProperty('bac'));
-                }
-                for (iii = 0; iii < taskInst.getPlannification().size(); iii++) {
-                    plannification = parseInt(taskInst.getPlannification().get(iii));
-                    period = i + 1;
-                    if (plannification === period) {
-                        pv += parseInt(taskInst.getProperty('bac')) / taskInst.getPlannification().size();
-                    }
-                }
-            }
-        }
-    }
-    return pv;
 }
 
 /**
@@ -102,11 +63,11 @@ function calculatePlanedValue(periods) {
  */
 function getPlannifiedCompleteness(taskInst) {
     var i, planif = taskInst.getPlannification(), planifArray = [],
-            time = getCurrentInGameTime(), pastPeriods = 0;
+            pastPeriods = 0;
     for (i = 0; i < planif.size(); i++) { //transform list to array to use function ''indexOf''
         planifArray.push(parseInt(planif.get(i)));
     }
-    for (i = 0; i <= time.period; i++) {
+    for (i = 0; i <= getCurrentPeriod().getValue(self); i++) {
         if (planifArray.indexOf(i) > -1) {
             pastPeriods += 1;
         }
@@ -151,7 +112,7 @@ function getUniqueTasksInActivities(activities) {
     for (i = 0; i < activities.length; i++) {
         wasAdded = false;
         for (j = 0; j < oneTaskPerActivity.length; j++) {
-            if (oneTaskPerActivity[j].getTaskDescriptor() === activities[i].getTaskDescriptor()) {
+            if (oneTaskPerActivity[j].taskDescriptor === activities[i].taskDescriptor) {
                 wasAdded = true;
                 break;
             }
@@ -198,18 +159,15 @@ function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
  * @returns {Array} an Array of Activity
  */
 function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
-    var i, employeeInst, selectedReq, sortedActivities = [], selectedReqI;
-    employeeInst = activity.getResourceInstance();
-    selectedReq = activity.getRequirement();
+    var i, ret = [];
     for (i = 0; i < activities.length; i++) {
-        if (parseFloat(activity.getTime()) === parseFloat(activities[i].getTime()) && activity.getTaskDescriptor() === activities[i].getTaskDescriptor()) {
-            selectedReqI = activities[i].getRequirement();
-            if (selectedReq === selectedReqI) {
-                sortedActivities.push(activities[i]);
-            }
+        if (activity.time === activities[i].time
+                && activity.taskDescriptor === activities[i].taskDescriptor
+                && activity.requirement === activities[i].requirement) {
+            ret.push(activities[i]);
         }
     }
-    return sortedActivities;
+    return ret;
 }
 
 /**
@@ -220,34 +178,34 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
  * @returns {Array} an Array of Activity
  */
 function createActivities(currentStep) {
-    var i, listEmployees = flattenList(Variable.findByName(gm, 'employees')),
-            employeeDesc, employeeInst, activity, activities = [], assignables,
-            existanteActivity, time = getCurrentInGameTime().period + currentStep / 10;
-    if (!listEmployees) {
-        return activities;
+    var i, employee, activity, assignables, existingActivity,
+            activities = [],
+            employees = flattenList(Variable.findByName(gm, 'employees')),
+            currentPeriod = getCurrentPeriod().getValue(self) + currentStep / 10;
+    if (!employees) {
+        return [];
     }
-    for (i = 0; i < listEmployees.length; i++) {
-        employeeDesc = listEmployees[i];
-        employeeInst = employeeDesc.getInstance(self);
-        if (isReservedToWork(employeeInst)) { //have a 'player created' occupation
-            assignables = checkAssignments(employeeInst.getAssignments(), currentStep);
-            if (assignables.length > 0) { //have assignable tasks
-                existanteActivity = findLastStepCorrespondingActivity(employeeInst, assignables[0].getTaskDescriptor(), time);
-                if (existanteActivity) { //set corresponding past activity if it existe. Else create it.
-                    activity = existanteActivity;
+    for (i = 0; i < employees.length; i++) {
+        employee = employees[i].getInstance(self);
+        if (isReservedToWork(employee)) {                                       //have a 'player created' occupation
+            assignables = checkAssignments(employee.assignments, currentStep);
+            if (assignables.length > 0) {                                       //have assignable tasks
+                existingActivity = findLastStepCorrespondingActivity(employee, assignables[0].taskDescriptor, currentPeriod);
+                if (existingActivity) {                                         //set corresponding past activity if it existe. Else create it.
+                    activity = existingActivity;
                 } else {
-                    activity = employeeInst.createActivity(assignables[0].getTaskDescriptor());
+                    activity = employee.createActivity(assignables[0].taskDescriptor);
                 }
-                if (selectRequirementFromActivity(activity) === null) {          // Possible d'améliorer la performance en ne créant pas d'activity. Mais nécessite de créer une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
-                    employeeInst.removeActivity(activity);
-                    continue;
+                if (selectRequirementFromActivity(activity) === null) {         // Possible d'améliorer la performance en ne créant pas d'activity. Mais nécessite de créer une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
+                    employee.removeActivity(activity);
+                } else {
+                    activity.setRequirement(selectRequirementFromActivity(activity));
+                    activity.setTime(currentPeriod);
+                    activities.push(activity);
                 }
-                activity.setRequirement(selectRequirementFromActivity(activity));
-                activity.setTime(time);
-                activities.push(activity);
             }
         }
-        removeAssignmentsFromCompleteTasks(employeeInst);
+        removeAssignmentsFromCompleteTasks(employee);
     }
     return activities;
 }
@@ -257,13 +215,13 @@ function createActivities(currentStep) {
  * @param {ResourceInstance} employeeInst
  */
 function removeAssignmentsFromCompleteTasks(employeeInst) {
-    var assignment, i, taskInst;
+    var assignment, i, task;
 
-    for (i = 0; i < employeeInst.getAssignments().size(); i++) {
-        assignment = employeeInst.getAssignments().get(i);
-        taskInst = assignment.getTaskDescriptor().getInstance(self);
-        if (taskInst.getProperty('completeness') >= 100) {
-            employeeInst.getAssignments().remove(i);
+    for (i = 0; i < employeeInst.assignments.size(); i++) {
+        assignment = employeeInst.assignments.get(i);
+        task = assignment.taskDescriptor.getInstance(self);
+        if (task.getPropertyD('completeness') >= 100) {
+            task.assignments.remove(i);
         }
     }
 }
@@ -277,11 +235,11 @@ function removeAssignmentsFromCompleteTasks(employeeInst) {
  */
 function selectRequirementFromActivity(activity) {
     var selectedReq, workAs, taskInst, reqByWorks, metier;
-    taskInst = activity.getTaskDescriptor().getInstance(self);
-    metier = activity.getResourceInstance().getSkillsets().keySet().toArray()[0].toString();
+    taskInst = activity.taskDescriptor.getInstance(self);
+    metier = activity.resourceInstance.skillsets.keySet().toArray()[0].toString();
     reqByWorks = getRequirementsByWork(taskInst.getRequirements());
     workAs = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, metier);
-    selectedReq = selectRequirement(taskInst, activity.getResourceInstance(), workAs, reqByWorks);
+    selectedReq = selectRequirement(taskInst, activity.resourceInstance, workAs, reqByWorks);
     return selectedReq;
 }
 
@@ -293,13 +251,13 @@ function selectRequirementFromActivity(activity) {
  * @param {Number} currentPeriod
  * @returns {Activity} activity
  */
-function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod) {
+function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
     var i, activity, occurence = null;
-    for (i = 0; i < employeeInst.getActivities().size(); i++) {
-        activity = employeeInst.getActivities().get(i);
-        if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)
-                && currentPeriod - Math.floor(currentPeriod) !== 0 //if it s not a new period (current step !== 0)
-                && parseFloat(activity.getTime()) === getFloat(currentPeriod - 0.1)) { //if activity was used the last step
+    for (i = 0; i < employeeInst.activities.size(); i++) {
+        activity = employeeInst.activities.get(i);
+        if (activity.taskDescriptor === taskDesc                                // if the task of activity match with the given task (same task and same employee == same activity)
+                && period - Math.floor(period) !== 0                            // if it s not a new period (current step !== 0)
+                && parseFloat(activity.time) === getFloat(period - 0.1)) { //if activity was used the last step
             occurence = activity;
             break;
         }
@@ -317,10 +275,10 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, currentPeriod
  */
 function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) {
     var i, activity, occurence = false;
-    for (i = 0; i < employeeInst.getActivities().size(); i++) {
-        activity = employeeInst.getActivities().get(i);
-        if (activity.getTaskDescriptor() === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)
-                && currentPeriod > parseFloat(activity.getTime())) {
+    for (i = 0; i < employeeInst.activities.size(); i++) {
+        activity = employeeInst.activities.get(i);
+        if (activity.taskDescriptor === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)
+                && currentPeriod > parseFloat(activity.time)) {
             occurence = true;
             break;
         }
@@ -336,12 +294,12 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
  */
 function isReservedToWork(employeeInst) {
     var i, occupations = employeeInst.getOccupations(),
-            time = getCurrentInGameTime(), reservedToWork = false;
+            currentPeriod = getCurrentPeriod().getValue(self), reservedToWork = false;
     for (i = 0; i < occupations.size(); i++) {
-        if (parseInt(occupations.get(i).getTime()) === time.period && !isTrue(occupations.get(i).getEditable())) {
+        if (parseInt(occupations.get(i).time) === currentPeriod && !isTrue(occupations.get(i).getEditable())) {
             return false;
         }
-        if (parseInt(occupations.get(i).getTime()) === time.period && isTrue(occupations.get(i).getEditable())) {
+        if (parseInt(occupations.get(i).time) === currentPeriod && isTrue(occupations.get(i).getEditable())) {
             reservedToWork = true;
         }
     }
@@ -361,10 +319,10 @@ function getAssignables(assignments, currentStep) {
     for (i = 0; i < assignments.size(); i++) {
         work = null;
         exist = false;
-        taskDesc = assignments.get(i).getTaskDescriptor();
+        taskDesc = assignments.get(i).taskDescriptor;
         if (parseInt(taskDesc.getInstance(self).getProperty('completeness')) < 100 && getPredecessorFactor(taskDesc) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20%
             for (ii = 0; ii < taskDesc.getInstance(self).getRequirements().size(); ii++) {
-                if (assignments.get(i).getResourceInstance().getSkillsets().keySet().toArray()[0].toString() == taskDesc.getInstance(self).getRequirements().get(ii).getWork().toString()) {
+                if (assignments.get(i).resourceInstance.skillsets.keySet().toArray()[0].toString() == taskDesc.getInstance(self).getRequirements().get(ii).getWork().toString()) {
                     exist = true;
                     assignables.push(assignments.get(i));
                     break;
@@ -372,8 +330,8 @@ function getAssignables(assignments, currentStep) {
             }
             if (!exist) {
                 sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.getLabel(),
-                        'Je suis censé travailler sur la tâche "' + taskDesc.getLabel() + '" mais je ne suis pas qualifié pour ce travail. <br/> Salutations <br/>' + assignments.get(i).getResourceInstance().getDescriptor().getLabel() + '<br/> ' + assignments.get(i).getResourceInstance().getSkillsets().keySet().toArray()[0],
-                        assignments.get(i).getResourceInstance().getDescriptor().getLabel());
+                        'Je suis censé travailler sur la tâche "' + taskDesc.getLabel() + '" mais je ne suis pas qualifié pour ce travail. <br/> Salutations <br/>' + assignments.get(i).resourceInstance.getDescriptor().getLabel() + '<br/> ' + assignments.get(i).resourceInstance.skillsets.keySet().toArray()[0],
+                        assignments.get(i).resourceInstance.getDescriptor().getLabel());
                 assignments.remove(i);
                 //TODO add unworked hours
             }
@@ -397,18 +355,18 @@ function checkAssignments(assignments, currentStep) {
     if (assignments.size() <= 0) {
         return [];
     }
-    employeeInst = assignments.get(0).getResourceInstance();
+    employeeInst = assignments.get(0).resourceInstance;
     employeeName = employeeInst.descriptor.label;
-    employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
-    nextTasks = getAssignables(employeeInst.getAssignments(), currentStep);
+    employeeJob = employeeInst.skillsets.keySet().toArray()[0];
+    nextTasks = getAssignables(employeeInst.assignments, currentStep);
     for (i = 0; i < assignments.size(); i++) {
         exist = false;
-        taskDesc = assignments.get(i).getTaskDescriptor();
+        taskDesc = assignments.get(i).taskDescriptor;
         taskInst = taskDesc.getInstance();
         if (parseFloat(taskInst.getProperty('completeness')) >= 100) {
             if (nextTasks[0]) {
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
-                        'La tâche "' + taskDesc.getLabel() + '" est terminée, je passe à la tâche ' + nextTasks[0].getTaskDescriptor().getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                        'La tâche "' + taskDesc.getLabel() + '" est terminée, je passe à la tâche ' + nextTasks[0].taskDescriptor.getLabel() + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                         employeeName);
             } else {
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.getLabel(),
@@ -441,8 +399,8 @@ function getPredecessorFactor(taskDesc) {
     numberOfPredecessors = 0;
     predecessors = taskDesc.getPredecessors();
     for (i = 0; i < predecessors.size(); i++) {
-        if (isTrue(predecessors.get(i).getInstance(self).getActive())) {
-            predecessorsAdvancements += parseInt(predecessors.get(i).getInstance(self).getProperty('completeness'));
+        if (isTrue(predecessors.get(i).getInstance(self).active)) {
+            predecessorsAdvancements += predecessors.get(i).getInstance(self).getPropertyD('completeness');
             numberOfPredecessors += 1;
         }
     }
@@ -489,7 +447,7 @@ function selectFirstUncompletedWork(requirements, reqByWorks, metier) {
 function selectRequirement(taskInst, employeeInst, workAs, reqByWorks) {
     var i, requirements = taskInst.getRequirements(), req, selectedReq = null,
             totalOfPersonneInTask = 0, deltaLevel = 1000,
-            level = parseInt(employeeInst.getSkillsets().get(employeeInst.getSkillsets().keySet().toArray()[0]));
+            level = parseInt(employeeInst.skillsets.get(employeeInst.skillsets.keySet().toArray()[0]));
     for (i = 0; i < requirements.size(); i++) {
         totalOfPersonneInTask += parseInt(requirements.get(i).getQuantity());
     }
@@ -575,7 +533,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
             needProgress, motivationXActivityRate = 0, skillsetXActivityRate = 0, level,
             averageSkillsetQuality, stepQuality = 0;
 
-    taskDesc = activityAsNeeds.getTaskDescriptor();
+    taskDesc = activityAsNeeds.taskDescriptor;
     if (currentStep === 0) {
         taskTable[taskDesc.getName()] = parseInt(taskDesc.getInstance(self).getProperty('completeness'));
     }
@@ -585,12 +543,12 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
     selectedReq = activityAsNeeds.getRequirement();
     workAs = selectedReq.getWork();
     sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allCurrentActivities, activityAsNeeds);
-    level = parseInt(activityAsNeeds.getResourceInstance().getSkillsets().get(activityAsNeeds.getResourceInstance().getSkillsets().keySet().toArray()[0]));
+    level = parseInt(activityAsNeeds.resourceInstance.skillsets.get(activityAsNeeds.resourceInstance.skillsets.keySet().toArray()[0]));
     deltaLevel = level - parseInt(selectedReq.getLevel());
 
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
-        employeeInst = sameNeedActivity[i].getResourceInstance();
+        employeeInst = sameNeedActivity[i].resourceInstance;
         employeeDesc = employeeInst.getDescriptor();
         affectedEmployeesDesc.push(employeeDesc);
         activityRate = parseFloat(employeeDesc.getInstance(self).getProperty('activityRate'));
@@ -615,12 +573,12 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
         activityCoefficientXActivityRate += parseFloat(employeeDesc.getProperty('coef_activity')) * activityRate;
 
         //Calcul variable for learnFactor
-        if (!haveCorrespondingActivityInPast(employeeInst, taskDesc, getCurrentInGameTime().period)) {
+        if (!haveCorrespondingActivityInPast(employeeInst, taskDesc, getCurrentPeriod().getValue(self))) {
             numberOfEmployeeOnNeedOnNewTask++;
         }
         //Calculate variable for quality
         motivationXActivityRate += parseInt(employeeInst.getMoral()) * activityRate;
-        skillsetXActivityRate += parseInt(employeeInst.getSkillsets().get(employeeInst.getSkillsets().keySet().toArray()[0])) * activityRate; //level * activityRate
+        skillsetXActivityRate += parseInt(employeeInst.skillsets.get(employeeInst.skillsets.keySet().toArray()[0])) * activityRate; //level * activityRate
     }
 
     //calculate needMotivationFactor, needSkillsetFactor and activityNeedRateFactor
@@ -691,7 +649,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / 4) / steps)));
+    taskInst.setProperty('wages', (parseInt(taskInst.getProperty('wages')) + Math.round((parseInt(activityAsNeeds.resourceInstance.getProperty('wage')) / 4) / steps)));
 
     debug('sameNeedActivity.length : ' + sameNeedActivity.length);
     debug('employeesMotivationFactor : ' + employeesMotivationFactor);
@@ -715,7 +673,7 @@ function calculateProgressOfNeed(activityAsNeeds, allCurrentActivities, currentS
     debug('taskbonusRatio : ' + parseFloat(taskInst.getProperty('bonusRatio')));
     debug('projectBonusRatio : ' + parseFloat(Variable.findByName(gm, 'bonusRatio').getValue(self)));
     debug('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
-    debug('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.getResourceInstance().getProperty('wage')) / steps))); //predecessor factor);
+    debug('wages : ' + (parseInt(taskInst.getProperty('wages')) + (parseInt(activityAsNeeds.resourceInstance.getProperty('wage')) / steps))); //predecessor factor);
     debug('stepAdvance : ' + stepAdvance);
     debug('need completeness : ' + parseFloat(selectedReq.getCompleteness()));
     debug('needProgress : ' + needProgress);
@@ -790,51 +748,10 @@ function calculateTaskQuality(taskDesc) {
     return Math.round((needQualityXNeedProgress / needProgress));
 }
 
-/**
- * Debbug function to create automatically some occupations and assignements in
- *  some employees.
- * @returns {String}
- */
-function tempInit() {
-    var occupation, listEmployees = flattenList(Variable.findByName(gm, 'employees')),
-            listTasks = Variable.findByName(gm, 'tasks');
-
-    occupation = listEmployees[0].getInstance(self).addOccupation();
-    occupation.setTime(1.0);
-    occupation = listEmployees[0].getInstance(self).addOccupation();
-    occupation.setTime(2.0);
-    occupation = listEmployees[1].getInstance(self).addOccupation();
-    occupation.setTime(1.0);
-    occupation = listEmployees[2].getInstance(self).addOccupation();
-    occupation.setTime(2.0);
-    occupation = listEmployees[2].getInstance(self).addOccupation();
-    occupation.setTime(3.0);
-    occupation.setEditable(false);
-
-    //listTasks.items.get(0).getPredecessors().add(listTasks.items.get(1));
-
-    listEmployees[1].getInstance(self).assign(listTasks.items.get(0));
-    listEmployees[0].getInstance(self).assign(listTasks.items.get(1));
-
-    return 'is initialized';
-}
-
-/**
- * Return an object containing values of current period and current phase.
- * @returns {Object} object current time -> {period: x, phase: y}
- */
-function getCurrentInGameTime() {
-    var inGameTime = {phase: null, period: null},
-    phases = Variable.findByName(gm, 'currentPeriod');
-    inGameTime.phase = parseInt(currentPhase.value);
-    if (phases !== null && inGameTime.phase !== null) {
-        inGameTime.period = parseInt(phases.items.get(inGameTime.phase).getInstance(self).value);
-    }
-    return inGameTime;
-}
 function getCurrentPhase() {
     return Variable.findByName(gm, 'currentPhase');
 }
+
 function getCurrentPeriod() {
     var periods = Variable.findByName(gm, 'currentPeriod');
     if (periods !== null && currentPhase.value !== null) {
@@ -876,7 +793,7 @@ function flattenList(list, finalList) {
     finalList = (finalList) ? finalList : [];
     for (i = 0; i < list.items.size(); i++) {
         el = list.items.get(i);
-        if (el.getClass() && el.getClass().toString() == 'class com.wegas.core.persistence.variable.ListDescriptor') {
+        if (el.getClass() && el.getClass().toString() === 'class com.wegas.core.persistence.variable.ListDescriptor') {
             finalList = this.flattenList(el, finalList);
         } else {
             finalList.push(el);
@@ -895,16 +812,16 @@ function checkEnd(allCurrentActivities, currentStep) {
     var i, employeeInst, taskInst, taskDesc, employeeName, employeeJob,
             nextWork, reqByWorks;
     for (i = 0; i < allCurrentActivities.length; i++) {
-        taskDesc = allCurrentActivities[i].getTaskDescriptor();
+        taskDesc = allCurrentActivities[i].taskDescriptor;
         taskInst = taskDesc.getInstance(self);
-        employeeInst = allCurrentActivities[i].getResourceInstance();
+        employeeInst = allCurrentActivities[i].resourceInstance;
         employeeName = employeeInst.getDescriptor().getLabel();
-        employeeJob = employeeInst.getSkillsets().keySet().toArray()[0];
+        employeeJob = employeeInst.skillsets.keySet().toArray()[0];
         if (currentStep === steps - 1) {
-            checkAssignments(employeeInst.getAssignments(), currentStep);
+            checkAssignments(employeeInst.assignments, currentStep);
         } else if (parseFloat(taskInst.getProperty('completeness')) < 100) {
             reqByWorks = getRequirementsByWork(taskInst.getRequirements());
-            nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.getSkillsets().keySet().toArray()[0].toString());
+            nextWork = selectFirstUncompletedWork(taskInst.getRequirements(), reqByWorks, employeeInst.skillsets.keySet().toArray()[0].toString());
             if (allCurrentActivities[i].getRequirement().getWork() != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.getLabel() + ' en partie terminée',
                         'Nous avons terminé la partie ' + allCurrentActivities[i].getRequirement().getWork() + ' de la tâche ' + taskDesc.getLabel() + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
@@ -951,5 +868,16 @@ function sendMessage(subject, content, from) {
     }
     else {
         println('Bean InGameMailFacade does not exist, unable to send in-game message: ' + subject);
+    }
+}
+
+/**
+ * Print a console msg if in debug mode
+ * 
+ * @param {String} msg
+ */
+function debug(msg) {
+    if (testMode) {
+        println(msg);
     }
 }

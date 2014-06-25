@@ -78,7 +78,7 @@ function updateVariables() {
     var i, j, task, employeesRequired,
             ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, activeTasks = 0,
             tasksQuality = 0, tasksScale = 0,
-            costsJaugeValue, qualityJaugeValue, delayJaugeValue, qualityJaugeValue = 0,
+            costsJaugeValue = 100, delayJaugeValue = 100, qualityJaugeValue = 0,
             tasks = Variable.findByName(gm, 'tasks'),
             costs = Variable.findByName(gm, 'costs'),
             delay = Variable.findByName(gm, 'delay'),
@@ -119,7 +119,7 @@ function updateVariables() {
     //projectCompleteness.setValue(self, sumProjectCompleteness);
 
     // pv = for each task, sum -> bac * task completeness / 100
-    planedValue.setValue(self, calculatePlanedValue(exectutionPeriods.getValue(self) - 1));
+    planedValue.setValue(self, calculatePlanedValue(exectutionPeriods.getValue(self)));
     // ev = for each task, sum -> bac * planified task completeness / 100
     earnedValue.setValue(self, ev);
     // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
@@ -138,7 +138,9 @@ function updateVariables() {
     costs.setValue(self, costsJaugeValue);
 
     // delay = EV / PV * 100
-    delayJaugeValue = Math.round(earnedValue.getValue(self) * 100 / planedValue.getValue(self));
+    if (planedValue.getValue(self) > 0) {
+        delayJaugeValue = Math.round(earnedValue.getValue(self) * 100 / planedValue.getValue(self));
+    }
     delayJaugeValue = Math.min(Math.max(delayJaugeValue, delay.minValueD), delay.maxValueD);
     delay.setValue(self, delayJaugeValue);
 
