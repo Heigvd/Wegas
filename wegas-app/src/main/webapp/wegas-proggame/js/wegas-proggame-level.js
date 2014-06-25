@@ -192,15 +192,18 @@ YUI.add('wegas-proggame-level', function(Y) {
             this.disableBreakpoint = Wegas.Facade.VariableDescriptor.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"");
         },
         destructor: function() {
+            ProgGameLevel.main = this.mainEditorTab.aceField.getValue();        // Save the actual edtion field to a static var
+
             this.display.destroy();
             this.runButton.destroy();
+            this.stopButton.destroy();
             this.debugTabView.destroy();
             this.apiTabView.destroy();
             this.idleHandler.cancel();
             Y.Object.each(this.handlers, function(h) {
                 h.detach();
             });
-            ProgGameLevel.main = this.mainEditorTab.aceField.getValue();
+            this.editorTabView.destroy();
         },
         /**
          * Override to prevent the serialization of the openpage action we
@@ -260,8 +263,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             });
         },
         instrument: function(code) {
-            var ins = new Wegas.JSInstrument();                                 // Instantiate js instrumenter
-            return ins.instrument(code);                                        // return instrumented value of the code
+            return Wegas.JSInstrument.instrument(code);                         // return instrumented value of the code
         },
         sendRunRequest: function(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
@@ -442,7 +444,11 @@ YUI.add('wegas-proggame-level', function(Y) {
 
             tab.set("selected", 1);
             tab.aceField = aceField;                                            // Set up a reference to the ace field
-
+            tab.saveTimer = saveTimer;
+            tab.before("destroy", function () {
+                this.aceField.destroy();
+                this.saveTimer.destroy();
+            });
             aceField.session.on("change", Y.bind(function() {                   // Every time the code is changed is entered
                 if (this.get(STATE) === "breaking") {                           // stop debug session
                     this.set(STATE, IDLE);

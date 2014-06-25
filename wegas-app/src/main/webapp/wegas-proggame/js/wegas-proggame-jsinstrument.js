@@ -16,7 +16,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
      * table element.
      *
      */
-    var JSInstrument = Y.Base.create("wegas-proggame-display", Y.Base, [], {
+    var JSInstrument = Y.Base.create("wegas-proggame-display", Y.Base, [], {}, {
         instrument: function(code) {
             var tree, getDebugStatement = function(line) {
                 return {
@@ -64,7 +64,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                 });
 
                 //console.log("Wegas.JSInstrument: Parsed source tree:", tree);
-                this.traverse(tree, function(object, path) {
+                JSInstrument.traverse(tree, function(object, path) {
                     var add = [], inter;
                     switch (object['type']) {
                         case "BlockStatement":
@@ -79,7 +79,7 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                                 }
                                 add.push(inter);
                             });
-                            object.body = this.zip(object.body, add);
+                            object.body = JSInstrument.zip(object.body, add);
                             //object.body.push(getDebugStatement(object.loc.end.line));
                             break;
                     }
@@ -89,13 +89,13 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                     indent: true
                 });
                 instrumentedCode = instrumentedCode.replace(/___DEBUGBLOCK___/g, "(function(){ var i, w = watches, ret = {};"
-                        + "for(i=0;i<w.length;i++){"
-                        + "try {"
-                        + "ret[w[i]]=eval(w[i]);"
-                        //ret[this.watches[i]] = this.doEval(this.watches[i]);
-                        + "} catch(e){}"
-                        + "}"
-                        + "return ret;})()");                                   // This function returns any watched variable int he scope, so it can be used in the breakpoint event
+                    + "for(i=0;i<w.length;i++){"
+                    + "try {"
+                    + "ret[w[i]]=eval(w[i]);"
+                    //ret[this.watches[i]] = this.doEval(this.watches[i]);
+                    + "} catch(e){}"
+                    + "}"
+                    + "return ret;})()");                                   // This function returns any watched variable int he scope, so it can be used in the breakpoint event
 
                 return instrumentedCode;
             } catch (e) {
@@ -135,14 +135,12 @@ YUI.add('wegas-proggame-jsinstrument', function(Y) {
                 if (object.hasOwnProperty(key)) {
                     child = object[key];
                     if (typeof child === 'object' && child !== null) {
-                        this.traverse(child, visitor, [object].concat(path));
+                        JSInstrument.traverse(child, visitor, [object].concat(path));
                     }
                 }
             }
             visitor.call(this, object, path);
-
         }
     });
     Y.Wegas.JSInstrument = JSInstrument;
-
 });
