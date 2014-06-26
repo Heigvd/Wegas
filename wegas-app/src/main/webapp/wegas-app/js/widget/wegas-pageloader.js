@@ -9,10 +9,12 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-pageloader', function(Y) {
+YUI.add("wegas-pageloader", function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox', PAGEID = "pageId", Wegas = Y.Wegas, PageLoader;
+    var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
+        Wegas = Y.Wegas, PageLoader;
+
     /**
      * @name Y.Wegas.PageLoader
      * @extends Y.Widget
@@ -25,10 +27,6 @@ YUI.add('wegas-pageloader', function(Y) {
         /** @lends Y.Wegas.PageLoader# */
 
         // *** Private fields *** //
-        /**
-         * Current page id
-         */
-        currentPageId: null,
         // *** Lifecycle Methods ***/
         /**
          * @function
@@ -39,6 +37,10 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
+            /**
+             * Current page id
+             */
+            this._pageId = null;
             PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
             this.publish("contentUpdated", {emitFacade: false});
         },
@@ -80,12 +82,12 @@ YUI.add('wegas-pageloader', function(Y) {
                 page = this.get("page.evaluated");
 
             if (page && page.getInstance) {
-                this.set(PAGEID, page.getInstance().get('value'));
+                this.set(PAGEID, page.getInstance().get("value"));
             } else if (page) {                                                  // If there is a page script
                 this.set(PAGEID, +page);                                        // display it
-            } else if (val && val.getInstance().get('value')) {                 // @backwardcompatibility
-                this.set(PAGEID, val.getInstance().get('value'));
-            } else if (this.get("defaultPageId") && !this.get(PAGEID)) {        //in case a defaultPageId is defined and no pageId is
+            } else if (val && val.getInstance().get("value")) {                 // @backwardcompatibility
+                this.set(PAGEID, val.getInstance().get("value"));
+            } else if (this.get("defaultPageId") && !this.get(PAGEID)) {        // in case a defaultPageId is defined and no pageId is
                 this.set(PAGEID, this.get("defaultPageId"));
             } else {
                 this.set(PAGEID, this.get(PAGEID));                             // Otherwise use pageId (in case the setter has not been called yet)
@@ -98,8 +100,8 @@ YUI.add('wegas-pageloader', function(Y) {
          * remove instance kept in PageLoader.pageLoaderInstances.
          */
         destructor: function() {
-            if (this.get("widget")) {
-                this.get("widget").destroy();
+            if (this.get(WIDGET)) {
+                this.get(WIDGET).destroy();
             }
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
@@ -113,7 +115,7 @@ YUI.add('wegas-pageloader', function(Y) {
          */
         reload: function() {
             this.showOverlay();
-            this.currentPageId = null;
+            this._pageId = null;
             this.syncUI();
         },
         getEditorLabel: function() {
@@ -128,18 +130,14 @@ YUI.add('wegas-pageloader', function(Y) {
          * @description Return true if an ancestor already loads pageId
          */
         ancestorWithPage: function(pageId) {                                    //Page loader mustn't load the page who contain itself.
-            var same = false;
-            this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
+            return this.get("boundingBox").ancestors("." + this.getClassName(), false).some(function(node) {
                 var widget = Y.Widget.getByNode(node);
-                if (+pageId === +widget.currentPageId || +pageId === +widget.get('variable.evaluated')) {
-                    same = true;
-                    this.showMessage("warn", "Pageloader [" + this.get("pageLoaderId") + "] tries to load page (" + pageId + ") already loaded by one of its ancestor[" + widget.get("pageLoaderId") + "].");
+                if (+pageId === +widget._pageId || +pageId === +widget.get("variable.evaluated")) {
+                    this.showMessage("warn", "Page display \"" + this.get("pageLoaderId") + "\" tries to load page " + pageId + " which is already loaded by its parent page display \"" + widget.get("pageLoaderId") + "\"");
                     return true;
                 }
             }, this);
-            return same;
         }
-
     }, {
         /** @lends Y.Wegas.PageLoader */
         EDITORNAME: "Page display",
@@ -192,27 +190,23 @@ YUI.add('wegas-pageloader', function(Y) {
                     if (Y.Lang.isObject(opts) && opts.noquery) {
                         return val;
                     }
-                    if (!arguments.length || val === this.currentPageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded,
+                    if (!arguments.length || val === this._pageId || this.ancestorWithPage(val)) {// If the widget is currently being loaded,
                         return val;                                             // do not continue
                     }
-                    this.currentPageId = val;
-                    Y.log("Getting page", "log", "Wegas.PageLoader");
+                    this._pageId = val;
+                    Y.log("Getting page: " + val + ", pageLoaderId: " + this.get("pageLoaderId"), "log", "Wegas.PageLoader");
+
                     Wegas.Facade.Page.cache.getPage(val, Y.bind(function(widgetCfg) {// Retrieve page
                         this.showOverlay();
 
-                        if (this.get("widget")) {
-                            Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
-                            this.get("widget").destroy();
-                            this.set("widget", null);
-                        }
+                        Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
+                        this.set(WIDGET, null);
                         if (!widgetCfg) {
-                            this.get(CONTENTBOX).setContent("<center><i>Page [" + this.currentPageId + "] was not found</i></center>");
+                            this.get(CONTENTBOX).setContent("<center><i>Page [" + this._pageId + "] was not found</i></center>");
                             this.hideOverlay();
                             this.fire("contentUpdated");
                             return;
                         }
-                        this._set(PAGEID, val);
-                        this.get(CONTENTBOX).empty();                           // Let the overlay appear during rendering
 
                         Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
                             try {
@@ -220,12 +214,12 @@ YUI.add('wegas-pageloader', function(Y) {
                                 widgetCfg.editable = true;
                                 var widget = Wegas.Widget.create(widgetCfg);    // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
-                                widget['@pageId'] = widgetCfg['@pageId'];       // @HACK set up a reference to the page
-                                this.set("widget", widget);
+                                widget["@pageId"] = widgetCfg["@pageId"];       // @HACK set up a reference to the page
+                                this.set(WIDGET, widget);
                             } catch (e) {
                                 this.set("widgetCfg", widgetCfg);
                                 this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
-                                Y.log('renderUI(): Error rendering widget: ' + (e.stack || e), 'error', 'Wegas.PageLoader');
+                                Y.log("renderUI(): Error rendering widget: " + (e.stack || e), "error", "Wegas.PageLoader");
                             } finally {
                                 this.hideOverlay();
                                 this.fire("contentUpdated");
@@ -258,9 +252,8 @@ YUI.add('wegas-pageloader', function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "Variable",
-                    //_type: "hidden",
                     classFilter: ["NumberDescriptor", "TextDescriptor"],
-                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             },
             /**
@@ -269,12 +262,12 @@ YUI.add('wegas-pageloader', function(Y) {
             widget: {
                 "transient": true,
                 setter: function(v) {
-                    if (this.get("widget")) {
-                        this.get("widget").removeTarget(this);
+                    if (this.get(WIDGET)) {
+                        this.get(WIDGET).destroy();
                     }
                     if (v) {
-                        v.addTarget(this);
-                    }                                                           // Event on the loaded widget will be forwarded
+                        v.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);// Event on the loaded widget will be forwarded
+                    }
                     return v;
                 }
             },
@@ -282,11 +275,11 @@ YUI.add('wegas-pageloader', function(Y) {
                 "transient": true,
                 getter: function(val) {
                     var p;
-                    if (this.get("widget")) {
-                        return Y.JSON.stringify(this.get("widget").toObject("@pageId"), null, "\t");
+                    if (this.get(WIDGET)) {
+                        return Y.JSON.stringify(this.get(WIDGET).toObject("@pageId"), null, "\t");
                     } else if (val) {
                         p = Y.clone(val);
-                        delete p['@pageId'];
+                        delete p["@pageId"];
                         return Y.JSON.stringify(val, null, "\t");
                     }
                     return val;
@@ -298,5 +291,5 @@ YUI.add('wegas-pageloader', function(Y) {
             return PageLoader.pageLoaderInstances[id];
         }
     });
-    Y.Wegas.PageLoader = PageLoader;
+    Wegas.PageLoader = PageLoader;
 });

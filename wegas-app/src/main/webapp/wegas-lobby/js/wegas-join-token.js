@@ -129,7 +129,9 @@ YUI.add('wegas-join-token', function(Y) {
                                 entity: e.response.entities,
                                 render: cb
                             });
-                            this.teamWidget.addTarget(this);                    // So overlay and message events will be forwarded
+
+                            this.teamWidget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // So overlay and message events will be forwarded
+                            //this.teamWidget.addTarget(this);                    // So overlay and message events will be forwarded
                         }
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
