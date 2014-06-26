@@ -13,8 +13,8 @@ YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
     var Plugin = Y.Plugin, Wegas = Y.Wegas,
-            CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
-            TabView, Tab;
+        CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
+        TabView, Tab;
     /**
      * @name Y.Wegas.TabView
      * @extends Y.TabView
@@ -270,22 +270,6 @@ YUI.add('wegas-tabview', function(Y) {
         /**
          * @function
          * @private
-         * @description call render method of widget parent.
-         */
-        renderUI: function() {
-            Tab.superclass.renderUI.apply(this, arguments);
-        },
-        /**
-         * @function
-         * @private
-         * @description call sync method of widget parent.
-         */
-        syncUI: function() {
-            Tab.superclass.syncUI.apply(this, arguments);
-        },
-        /**
-         * @function
-         * @private
          * @description delete Tab in owner Tabview.
          *  call explicitly destructor method of widget parent.
          */
@@ -409,8 +393,8 @@ YUI.add('wegas-tabview', function(Y) {
          */
         initializer: function() {
             var tab = this.get('host'),
-                    //cb = tab.get("parent").get(CONTENTBOX),
-                    bb = tab.get(BOUNDINGBOX);
+                //cb = tab.get("parent").get(CONTENTBOX),
+                bb = tab.get(BOUNDINGBOX);
 
             bb.addClass('yui3-tabview-removeable');
             bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);

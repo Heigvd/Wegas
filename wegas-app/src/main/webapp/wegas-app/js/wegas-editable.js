@@ -269,7 +269,7 @@ YUI.add('wegas-editable', function(Y) {
                 return i === "";
             });
             if (modules.length > 0) {
-                Y.log("Asynchronous loading for modules:" + modules.join(), "info", "Wegas.Editable");
+                Y.log("Loading modules:" + modules.join(), "info", "Wegas.Editable");
             }
             modules.push(cb);
             Y.use.apply(Y, modules);

@@ -9,9 +9,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     "use strict";
 
     var PageTreeview, CONTENT_BOX = "contentBox",
-            BOUNDING_BOX = "boundingBox", HOST = "host",
-            Wegas = Y.Wegas, Plugin = Y.Plugin,
-            DATASOURCE = Wegas.Facade.Page.cache;
+        BOUNDING_BOX = "boundingBox", HOST = "host",
+        Wegas = Y.Wegas, Plugin = Y.Plugin,
+        DATASOURCE = Wegas.Facade.Page.cache;
 
     PageTreeview = Y.Base.create("wegas-editor-page", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         renderUI: function() {
@@ -36,7 +36,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         click: Y.bind(function() {
                             DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
                                 this.get("pageLoader").set("pageId", null, {noquery: true});   //be sure to change (stuck on an inexistant page 1)
-                                this.changePage(id, Y.bind(function(id, widget) {
+                                this.changePage(id, Y.bind(function(id) {
                                     this.treeView.some(function() {
                                         if (+this.get("data.page") === +id) {
                                             this.fire("click");
@@ -128,7 +128,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             selected = widget.get("boundingBox").hasClass("highlighted") ? 2 : 0;
             if (widget.each && !(widget instanceof Wegas.PageLoader)) {
                 treeNode = new Y.TreeNode({
-                    label: widget.getEditorLabel() ? widget.getEditorLabel() : "<i>" + widget.getType() + "</i>",
+                    label: widget.getEditorLabel() || "<i>" + widget.getType() + "</i>",
                     tooltip: "Type: " + widget.getType(),
                     selected: selected,
                     data: {
@@ -155,24 +155,24 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             node.add(treeNode);
         },
         buildIndex: function(index) {
-            var i, node, page = this.get("pageLoader").get("pageId"),
-                    twState,
-                    pageFound = false,
-                    buildSub = function(node, widget) {
-                        this.buildSubTree(node, widget);
-                        if (node.item(0) && node.item(0).expand) {
-                            node.item(0).expand(false);
-                        }
-                        this.treeView.applyState(twState);
-                        this.hideOverlay();
-                        /*
-                         * after a widget.rebuild(), update references.
-                         */
-                        if (node.item(0)) {
-                            node.item(0).get("data.widget").detach("*:addChild", this.getIndex, this);
-                            node.item(0).get("data.widget").onceAfter("*:addChild", this.getIndex, this);
-                        }
-                    };
+            var i, node, page = this.get("pageLoader").currentPageId,
+                twState,
+                pageFound = false,
+                buildSub = function(node, widget) {
+                    this.buildSubTree(node, widget);
+                    if (node.item(0) && node.item(0).expand) {
+                        node.item(0).expand(false);
+                    }
+                    this.treeView.applyState(twState);
+                    this.hideOverlay();
+                    /*
+                     * after a widget.rebuild(), update references.
+                     */
+                    if (node.item(0)) {
+                        node.item(0).get("data.widget").detach("*:addChild", this.getIndex, this);
+                        node.item(0).get("data.widget").onceAfter("*:addChild", this.getIndex, this);
+                    }
+                };
 
             this.showOverlay();
             this.treeView.destroyAll();
@@ -248,20 +248,20 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
         },
         changePage: function(pageId, callback) {
-            if (parseInt(this.get("pageLoader").get("pageId"), 10) === parseInt(pageId, 10)) {
+            var pageLoader = this.get("pageLoader");
+            if (parseInt(pageLoader.get("pageId"), 10) === parseInt(pageId, 10)) {
                 if (Y.Lang.isFunction(callback)) {
-                    callback(this.get("pageLoader").get("widget"));
+                    callback(pageLoader.get("widget"));
                 }
                 return;
             }
             this.showOverlay();
 
-            this.get("pageLoader").onceAfter("contentUpdated", function() {
-                var pageLoader = this.get("pageLoader");
-                if (Y.Lang.isFunction(callback)) {
-                    callback(pageLoader.get("widget"));
-                }
-            }, this);
+            if (Y.Lang.isFunction(callback)) {
+                pageLoader.onceAfter("contentUpdated", function() {
+                    callback(this.get("pageLoader").get("widget"));
+                }, this);
+            }
             this.get("pageLoader").set("pageId", pageId);
         },
         destructor: function() {
@@ -294,7 +294,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     var PageTreeviewToolbarMenu = Y.Base.create("wegas-editor-page", Plugin.EditorTVDefaultMenuClick, [], {
         onTreeViewSelection: function(e) {
             var selection = e.target, data = selection.get("data"),
-                    page, widget;
+                page, widget;
             if (Y.Lang.isUndefined(data)) {
                 return;
             }
@@ -362,7 +362,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
     var PageTreeViewContextMenu = Y.Base.create("admin-menu", Plugin.EditorTVContextMenu, [], {
         onTreeViewClick: function(e) {
             var targetWidget = Y.Widget.getByNode(e.domEvent.target),
-                    page = targetWidget.get("data.page");
+                page = targetWidget.get("data.page");
 
             if (page) {
                 //return;
