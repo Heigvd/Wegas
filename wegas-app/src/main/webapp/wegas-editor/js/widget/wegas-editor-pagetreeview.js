@@ -155,7 +155,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             node.add(treeNode);
         },
         buildIndex: function(index) {
-            var i, node, page = this.get("pageLoader").currentPageId,
+            var i, node, page = this.get("pageLoader")._pageId,
                 twState,
                 pageFound = false,
                 buildSub = function(node, widget) {

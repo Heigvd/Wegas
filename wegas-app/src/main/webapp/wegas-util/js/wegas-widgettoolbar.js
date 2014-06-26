@@ -79,7 +79,8 @@ YUI.add("wegas-widgettoolbar", function(Y) {
                     //srcNode: bb.one(".wegas-toolbar-header"),
                     //render: true
             });
-            this.menuBar.addTarget(host);
+            this.menuBar.on(["*:message", "*:showOverlay", "*:hideOverlay"], host.fire, host);
+            //this.menuBar.addTarget(host);
             this.menuBar.render(bb.one(".wegas-toolbar"));
             this.menuBar.get(BOUNDINGBOX).addClass("wegas-toolbar-header");
 

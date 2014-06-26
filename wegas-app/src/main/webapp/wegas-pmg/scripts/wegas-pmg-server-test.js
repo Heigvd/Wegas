@@ -30,22 +30,23 @@ function testsimplepmg() {
     resourceController.addTaskPlannification(task2.getInstance(self).id, 2);
     resourceController.addTaskPlannification(task2.getInstance(self).id, 3);
 
-    resourceController.addAssignment(yves.id, task1);
-    resourceController.addAssignment(yves.id, task2);
-    resourceController.addAssignment(paul.id, task1);
-    resourceController.addAssignment(jean.id, task2);
+    resourceController.addAssignment(informaticien1.id, task1);
+    resourceController.addAssignment(informaticien2.id, task1);
+    
+    resourceController.addAssignment(informaticien1.id, task2);
+    resourceController.addAssignment(commercial1.id, task2);
 
-    resourceController.addReservation(yves.id, 1);
-    resourceController.addReservation(paul.id, 1);
-    resourceController.addReservation(yves.id, 2);
-    resourceController.addReservation(yves.id, 3);
-    resourceController.addReservation(jean.id, 2);
-    resourceController.addReservation(jean.id, 3);
+    resourceController.addReservation(informaticien1.id, 1);
+    resourceController.addReservation(informaticien1.id, 2);
+    resourceController.addReservation(informaticien1.id, 3);
+    resourceController.addReservation(informaticien2.id, 1);
+    resourceController.addReservation(commercial1.id, 2);
+    resourceController.addReservation(commercial1.id, 3);
 
     nextPeriod();                                                               // Avant-projet -> Plannification
     nextPeriod();                                                               // Plannification -> Execution
 }
-
+testsimplepmg() ;
 /**
  * Debbug function to create automatically some occupations and assignements in
  *  some employees.

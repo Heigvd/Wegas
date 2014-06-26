@@ -427,7 +427,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 e.currentTarget.menu = new Wegas.List({
                     children: menuItems
                 });
-                e.currentTarget.menu.addTarget(this.get(HOST));
+                e.currentTarget.menu.on(["*:message", "*:showOverlay", "*:hideOverlay"], host.fire, host);
+                // e.currentTarget.menu.addTarget(this.get(HOST));
                 e.currentTarget.menu.render(e.currentTarget.one("td.yui3-datatable-col-menu"));
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
@@ -483,7 +484,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.onHostEvent("contextmenu", this.onTreeViewClick, this);
 
             this.menu = new Wegas.Menu();
-            this.menu.addTarget(this.get(HOST));
+            this.menu.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.get(HOST).fire, this.get(HOST));
+            //this.menu.addTarget(this.get(HOST));
             this.menu.render();
         },
         onTreeViewClick: function(e) {
