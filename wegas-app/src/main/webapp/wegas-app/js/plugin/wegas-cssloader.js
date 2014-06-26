@@ -30,7 +30,7 @@ YUI.add('wegas-cssloader', function(Y) {
             //var cGameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
             //
             //if (cGameModel.get("properties.cssUri")) {
-            //    Y.Array.each(cGameModel.get("properties.cssUri").split(","), function(name) {// Load sheet reference provided through game model properties
+            //    Y.Array.each(cGameModel.get("properties.cssUri").split(";"), function(name) {// Load sheet reference provided through game model properties
             //        this.loadSheet("custom" + name, Wegas.app.get('base') + Y.Lang.trim(name) + '?id=' + Wegas.Helper.genId());
             //    }, this);
             //}

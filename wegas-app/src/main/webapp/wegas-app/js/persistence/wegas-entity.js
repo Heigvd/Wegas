@@ -186,6 +186,10 @@ YUI.add("wegas-entity", function(Y) {
                             label: "Icon",
                             wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                         }, {
+                            name: "scriptFiles",
+                            label: "Scripts",
+                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                        }, {
                             name: "cssUri",
                             label: "Stylesheets",
                             wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"

@@ -15,9 +15,11 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -85,7 +87,7 @@ public class ScriptFacade implements Serializable {
      * @throws WegasException
      */
     public Object eval(Script script, Map<String, AbstractEntity> arguments) throws ScriptException, WegasException {
-        if(script == null){
+        if (script == null) {
             return null;
         }
         ScriptEngine engine = requestManager.getCurrentEngine();
@@ -139,7 +141,7 @@ public class ScriptFacade implements Serializable {
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
         evt.getEngine().put("Event", event);                                    // Inject the Event manager
         event.detachAll();
-
+        this.injectStaticScript(evt);
         for (Entry<String, GameModelContent> arg
                 : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
             try {
@@ -157,6 +159,32 @@ public class ScriptFacade implements Serializable {
                 evt.getEngine().put(vd.getName(), vi);
             } catch (IllegalArgumentException ex) {
                 //logger.error("Missing name for Variable label [" + vd.getLabel() + "]");
+            }
+        }
+    }
+
+    /**
+     * Inject script files specified in GameModel's property scriptFiles into engine
+     *
+     * @param evt EngineInvocationEvent
+     * @throws ScriptException
+     */
+    private void injectStaticScript(EngineInvocationEvent evt) throws ScriptException {
+        String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
+        Integer index = currentPath.indexOf("WEB-INF");
+        if (index < 1) { // @ TODO find an other way to get web app root currently war packaging required.
+            return;
+        }
+        String root = currentPath.substring(0, index);
+        String[] files = new String[0];
+        if (evt.getPlayer().getGameModel().getProperties().getScriptFiles() != null) { //@TODO : precompile? cache ?
+            files = evt.getPlayer().getGameModel().getProperties().getScriptFiles().split(";");
+        }
+        for (String f : files) {
+            try {
+                evt.getEngine().eval(new java.io.FileReader(root + f));
+            } catch (FileNotFoundException ex) {
+                logger.warn("File " + root + f + " was not found");
             }
         }
     }
