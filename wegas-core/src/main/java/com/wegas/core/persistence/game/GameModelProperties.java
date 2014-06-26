@@ -46,7 +46,7 @@ public class GameModelProperties implements Serializable {
      *
      */
     @JsonView({Views.ExtendedI.class})
-    private String scriptFiles = "";
+    private String scriptUri = "";
     /**
      *
      */
@@ -73,7 +73,7 @@ public class GameModelProperties implements Serializable {
         this.setImageUri(other.getImageUri());
         this.setWebsocket(other.getWebsocket());
         this.setCssUri(other.getCssUri());
-        this.setScriptFiles(other.getScriptFiles());
+        this.setScriptUri(other.getScriptUri());
     }
 
     /**
@@ -136,16 +136,16 @@ public class GameModelProperties implements Serializable {
      *
      * @return
      */
-    public String getScriptFiles() {
-        return scriptFiles;
+    public String getScriptUri() {
+        return scriptUri;
     }
 
     /**
      *
-     * @param scriptFiles
+     * @param scriptUri
      */
-    public void setScriptFiles(String scriptFiles) {
-        this.scriptFiles = scriptFiles;
+    public void setScriptUri(String scriptUri) {
+        this.scriptUri = scriptUri;
     }
 
     /**
