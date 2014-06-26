@@ -1,3 +1,16 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @fileoverview
+ * @author Benjamin Gerber <ger.benjamin@gmail.com>
+ * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
 //Global variable for easy use
 var gm = self.getGameModel();
 
@@ -13,9 +26,9 @@ function nextPeriod() {
     var currentPhase = getCurrentPhase(),
         currentPeriod = getCurrentPeriod();
 
-    //allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
+    //allPhaseQuestionAnswered();                                               // First Check if all questions are answered
 
-    if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {              // If end of phase
+    if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
         currentPhase.add(self, 1);
         //currentPeriod.setValue(self, 1);// Why?
         if (currentPhase.getValue(self) === 2) {
@@ -25,7 +38,7 @@ function nextPeriod() {
     } else if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
         runSimulation();
         currentPeriod.add(self, 1);
-        if (checkEndOfProject()) {                                              //if the project ended
+        if (checkEndOfProject()) {                                              // If the project is over
             currentPhase.add(self, 1);
         }
     } else {                                                                    // Otherwise pass to next period
@@ -85,13 +98,13 @@ function calculatePlanedValue(period) {
         task = tasks.items.get(i).getInstance(self);
         if (task.active) {
             totalPv += task.getPropertyD('bac');
-            if (task.getPlannification().size() === 0) {
+            if (task.plannification.size() === 0) {
                 pv += task.getPropertyD('bac');
             }
-            for (j = 0; j < task.getPlannification().size(); j++) {
-                println("s" + task.getPlannification().get(j) + "*" + task.getPropertyD('bac') + "*" + (task.getPropertyD('bac') / task.getPlannification().size()));
-                if (parseInt(task.getPlannification().get(j)) < period) {
-                    pv += task.getPropertyD('bac') / task.getPlannification().size();
+            for (j = 0; j < task.plannification.size(); j++) {
+                println("s" + task.plannification.get(j) + "*" + task.getPropertyD('bac') + "*" + (task.getPropertyD('bac') / task.plannification.size()));
+                if (parseInt(task.plannification.get(j)) < period) {
+                    pv += task.getPropertyD('bac') / task.plannification.size();
                 }
             }
         }
@@ -205,7 +218,7 @@ function updateVariables() {
  */
 function workOnTask(empName, taskName) {
     var i, activity,
-        employee = Variable.findByName(gm, empName).getInstance(),
+        employee = Variable.findByName(gm, empName).getInstance(self),
         task = Variable.findByName(gm, taskName),
         currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self),
         previousPeriod = currentPeriod - 1;
@@ -227,7 +240,7 @@ function workOnTask(empName, taskName) {
 function workOnProject(name) {
     var i, task,
         activityNotFinish = false, hasOccupation = false, occupation,
-        employee = Variable.findByName(gm, name).getInstance(),
+        employee = Variable.findByName(gm, name).getInstance(self),
         currentPeriod = Variable.findByName(gm, "periodPhase3").getValue(self);
 
     //Check if has a not finished activity

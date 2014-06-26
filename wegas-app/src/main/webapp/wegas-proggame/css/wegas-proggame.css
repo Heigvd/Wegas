@@ -42,6 +42,11 @@ html, .editor-preview {
     font-family: "Verdana", "Arial", Sans-Serif;
     font-size: 9pt;    
 }
+/* The game is aligned on the left */
+.wegas-playerview > .wegas-pageloader-content > div {
+    margin-left: 0;
+    margin-right: 0;
+}
 
 /* Menu styles */
 .proggame-menu {

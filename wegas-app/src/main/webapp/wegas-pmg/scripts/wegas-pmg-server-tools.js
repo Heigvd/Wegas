@@ -1,59 +1,70 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @fileoverview
+ * @author Yannick Lagger <lagger.yannick@gmail.com>
+ */
 // Functions for addArtosPredecessor
 function addArtosPredecessor() {
     var listPredName = [];
     // ChoixEnvironnementDéveloppement predecessor
     listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');
-    addPredecessor(Variable.findByName(gm, 'DossierSpécifications').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'DossierSpécifications').name, listPredName);
 
     // ModélisationDonnées predecessor
     listPredName = [];
     listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
-    addPredecessor(Variable.findByName(gm, 'ModélisationDonnées').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ModélisationDonnées').name, listPredName);
 
     // ModélisationTraitements predecessor
     listPredName = [];
     listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
-    addPredecessor(Variable.findByName(gm, 'ModélisationTraitements').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ModélisationTraitements').name, listPredName);
 
     // ModélisationIHM predecessor
     listPredName = [];
     listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
-    addPredecessor(Variable.findByName(gm, 'ModélisationIHM').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ModélisationIHM').name, listPredName);
 
     // ProgrammationBD predecessor
     listPredName = [];
     listPredName.push('ModélisationDonnées');
-    addPredecessor(Variable.findByName(gm, 'ProgrammationBD').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ProgrammationBD').name, listPredName);
 
     // ProgrammationTraitements predecessor
     listPredName = [];
     listPredName.push('ModélisationDonnées', 'ModélisationTraitements');
-    addPredecessor(Variable.findByName(gm, 'ProgrammationTraitements').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ProgrammationTraitements').name, listPredName);
 
     // ProgrammationIHM predecessor
     listPredName = [];
     listPredName.push('ModélisationIHM');
-    addPredecessor(Variable.findByName(gm, 'ProgrammationIHM').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ProgrammationIHM').name, listPredName);
 
     // PromotionSystème predecessor
     listPredName = [];
     listPredName.push('DossierSpécifications');
-    addPredecessor(Variable.findByName(gm, 'PromotionSystème').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'PromotionSystème').name, listPredName);
 
     // Tests predecessor
     listPredName = [];
     listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModélisationTraitements', 'CorrectionProgrammationTraitements');
-    addPredecessor(Variable.findByName(gm, 'Tests').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'Tests').name, listPredName);
 
     // ImplantationMachine predecessor
     listPredName = [];
     listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM');
-    addPredecessor(Variable.findByName(gm, 'ImplantationMachine').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'ImplantationMachine').name, listPredName);
 
     // PrototypeUtilisateur predecessor
     listPredName = [];
     listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');
-    addPredecessor(Variable.findByName(gm, 'PrototypeUtilisateur').getName(), listPredName);
+    addPredecessor(Variable.findByName(gameModel, 'PrototypeUtilisateur').name, listPredName);
 }
 
 /**
@@ -62,15 +73,15 @@ function addArtosPredecessor() {
  * @param {type} listPredName
  */
 function addPredecessor(descName, listPredName) {
-    var i, ii, iii, taskDescList = Variable.findByName(gm, 'tasks'),
+    var i, ii, iii, taskDescList = Variable.findByName(gameModel, 'tasks'),
         taskDesc;
 
     for (i = 0; i < taskDescList.items.size(); i++) {
         taskDesc = taskDescList.items.get(i);
-        if (taskDesc.getName() == descName) {
+        if (taskDesc.name == descName) {
             for (ii = 0; ii < listPredName.length; ii++) {
                 for (iii = 0; iii < taskDescList.items.size(); iii++) {
-                    if (listPredName[ii] == taskDescList.items.get(iii).getName()) {
+                    if (listPredName[ii] == taskDescList.items.get(iii).name) {
                         taskDesc.getPredecessors().add(taskDescList.items.get(iii));
                         break;
                     }
@@ -109,5 +120,5 @@ function addArtosOccupation() {
 }
 
 function addOccupation(name, periode) {
-    Variable.findByName(gm, name).addOccupation(self, periode, false, "");
+    Variable.findByName(gameModel, name).addOccupation(self, periode, false, "");
 }

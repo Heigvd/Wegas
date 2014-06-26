@@ -1,3 +1,24 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+importPackage(javax.naming);
+/**
+ * get the specified wegas bean.
+ * @param String name, the name of the bean
+ * @return the wanted bean or null
+ */
+function lookupBean(name) {
+    var ctx = new InitialContext();
+    return ctx.lookup('java:module/' + name);
+}
 /**
  * 
  */

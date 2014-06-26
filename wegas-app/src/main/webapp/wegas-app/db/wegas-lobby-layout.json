@@ -357,7 +357,10 @@
                         "cssClass": "wegas-tabview-fullheight"
                     }],
                 "plugins": [{
-                        "fn": "PopupListener"
+                        "fn": "PopupListener",
+                        "cfg": {
+                            "filter": ["success"]
+                        }
                     }, {
                         "fn": "Injector"
                     }]

@@ -9,11 +9,11 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-widgettoolbar', function(Y) {
+YUI.add("wegas-widgettoolbar", function(Y) {
     "use strict";
 
     var BOUNDINGBOX = "boundingBox", HOST = "host",
-            WidgetToolbar;
+        WidgetToolbar;
 
     /**
      *  @name Y.Wegas.WidgetToolbar
@@ -43,7 +43,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
             //this.afterHostEvent("render", this.render, this);
 
             this.onHostEvent("*:message", function(e) {                         // Observe success messages,
-                if (e.level === "success" && !e.timeout) {
+                if (e.level === "success") {
                     this.setStatusMessage(e.content);                           // to display in the toolbar
                     //this.messageTimer.reset();
                     e.halt(true);
@@ -69,15 +69,15 @@ YUI.add('wegas-widgettoolbar', function(Y) {
          */
         render: function() {
             var host = this.get(HOST),
-                    bb = host.get(BOUNDINGBOX);
+                bb = host.get(BOUNDINGBOX);
 
             bb.addClass("wegas-hastoolbar").prepend('<div class="wegas-toolbar"></div>');
-            host.get('contentBox').addClass("wegas-toolbar-sibling");
+            host.get("contentBox").addClass("wegas-toolbar-sibling");
 
             this.menuBar = new Y.Wegas.MenuBar({
                 children: this.get("children")
-                        //srcNode: bb.one(".wegas-toolbar-header"),
-                        //render: true
+                    //srcNode: bb.one(".wegas-toolbar-header"),
+                    //render: true
             });
             this.menuBar.addTarget(host);
             this.menuBar.render(bb.one(".wegas-toolbar"));
@@ -130,7 +130,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         /**
          * @function
          * @private
-         * @description clear message (see function 'showMessage')
+         * @description clear message (see function "showMessage")
          */
         emptyMessage: function() {
             this.getStatusNode().setContent("");
@@ -145,7 +145,7 @@ YUI.add('wegas-widgettoolbar', function(Y) {
         getStatusNode: function() {
             var statusNode = this.get("header").one(".wegas-status-message");
             if (!statusNode) {
-                statusNode = new Y.Node.create("<span class='wegas-status-message'></span>");
+                statusNode = new Y.Node.create('<span class="wegas-status-message"></span>');
                 this.get("header").append(statusNode);
             }
             return statusNode;
@@ -185,6 +185,6 @@ YUI.add('wegas-widgettoolbar', function(Y) {
             }
         }
     });
-    Y.namespace('Plugin').WidgetToolbar = WidgetToolbar;
+    Y.Plugin.WidgetToolbar = WidgetToolbar;
 
 });

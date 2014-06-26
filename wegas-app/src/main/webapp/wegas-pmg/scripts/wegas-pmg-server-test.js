@@ -1,14 +1,29 @@
-function testsimplepmg() {
-    var task1 = Variable.findByName(self.getGameModel(), 'task 1'),
-        task2 = Variable.findByName(self.getGameModel(), 'task2'),
-        jean = Variable.findByName(self.getGameModel(), 'Jean').getInstance(self),
-        yves = Variable.findByName(self.getGameModel(), 'Yves').getInstance(self),
-        resourceController = lookupBean("ResourceController"),
-        gameModelFacade = lookupBean("GameModelFacade");
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @fileoverview
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
+var task1 = Variable.findByName(self.getGameModel(), 'task 1'),
+    task2 = Variable.findByName(self.getGameModel(), 'task2'),
+    commercial1 = Variable.findByName(self.getGameModel(), 'commercial1').getInstance(self),
+    commercial2 = Variable.findByName(self.getGameModel(), 'commercial2').getInstance(self),
+    commercial3 = Variable.findByName(self.getGameModel(), 'commercial3').getInstance(self),
+    informaticien1 = Variable.findByName(self.getGameModel(), 'informaticien1').getInstance(self),
+    informaticien2 = Variable.findByName(self.getGameModel(), 'informaticien2').getInstance(self),
+    informaticien3 = Variable.findByName(self.getGameModel(), 'informaticien3').getInstance(self),
+    resourceController = lookupBean("ResourceController"),
+    gameModelFacade = lookupBean("GameModelFacade");
 
+function testsimplepmg() {
     gameModelFacade.reset(gameModel);                                           // Reset current game model
 
-    task1.getInstance(self).setProperty('bac', '750');
+    task1.getInstance(self).setProperty('bac', '1000');
     task2.getInstance(self).setProperty('bac', '1500');
 
     resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
@@ -17,9 +32,11 @@ function testsimplepmg() {
 
     resourceController.addAssignment(yves.id, task1);
     resourceController.addAssignment(yves.id, task2);
+    resourceController.addAssignment(paul.id, task1);
     resourceController.addAssignment(jean.id, task2);
 
     resourceController.addReservation(yves.id, 1);
+    resourceController.addReservation(paul.id, 1);
     resourceController.addReservation(yves.id, 2);
     resourceController.addReservation(yves.id, 3);
     resourceController.addReservation(jean.id, 2);
@@ -28,7 +45,6 @@ function testsimplepmg() {
     nextPeriod();                                                               // Avant-projet -> Plannification
     nextPeriod();                                                               // Plannification -> Execution
 }
-
 
 /**
  * Debbug function to create automatically some occupations and assignements in
