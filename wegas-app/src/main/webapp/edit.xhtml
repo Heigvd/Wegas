@@ -31,7 +31,7 @@
 
             <!-- Dev tool: style sheet reference injected directly in the game model -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
-                       var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(',')}" varStatus="status">
+                       var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
