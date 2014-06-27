@@ -627,7 +627,7 @@ function calculateProgress(activity, allActivities, currentStep) {
     stepAdvance *= getRandomFactorFromTask(taskInst);
 
     //calculate learnFactor
-    if (taskTable[taskDesc.name] > 15 && !workOnTask(employeeDesc.label, taskDesc.name)) {
+    if (taskTable[taskDesc.name] > 15 && !workOnTask(employeeDesc.name, taskDesc.name)) {
         stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (parseFloat(taskDesc.getProperty('takeInHandDuration') / 100))) / affectedEmployeesDesc.length);//learnFactor
     }
 
