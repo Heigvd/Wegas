@@ -9,22 +9,24 @@ package com.wegas.app;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
+import javax.script.ScriptException;
 import junit.framework.Assert;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -81,13 +83,20 @@ abstract public class GameModelTest {
     @After
     public void cleanGM() {
         gmFacade.remove(gm.getId());
+        gm = null;
+        player = null;
     }
 
-    protected GameModel createGameModelFromFile(String path) throws IOException {
+    protected GameModel createGameModelFromFile(String gameModelPath) throws IOException {
+        return this.createGameModelFromFile(gameModelPath, "");
+    }
+
+    protected GameModel createGameModelFromFile(String path, String injectScript) throws IOException {
         String pmg = TestHelper.readFile(path);
         GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
+        gameModel.getScriptLibrary().put("injectedScript", new GameModelContent("JavaScript", injectScript));
         System.out.println("Create game model : " + gameModel.getName());
-        gmFacade.create(gameModel);
+        gmFacade.createWithDebugGame(gameModel);
         Assert.assertNotNull(gameModel.getId()); //persisted
         return gameModel;
     }
@@ -98,5 +107,22 @@ abstract public class GameModelTest {
         } catch (NamingException ex) {
             return null;
         }
+    }
+
+    protected Object evalScript(String script) throws ScriptException {
+        return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
+    }
+
+    protected Object evalFile(String path) throws ScriptException {
+        return this.evalScript(TestHelper.readFile(path));
+    }
+
+    protected final void checkNumber(String name, double expectedValue, String errorMessage) {
+        final VariableDescriptorFacade vdf = lookup(VariableDescriptorFacade.class);
+        org.junit.Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
+    }
+
+    protected final void checkNumber(String name, double expectedValue) {
+        this.checkNumber(name, expectedValue, name);
     }
 }
