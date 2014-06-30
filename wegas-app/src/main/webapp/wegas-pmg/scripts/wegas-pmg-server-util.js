@@ -23,11 +23,15 @@ function lookupBean(name) {
  * 
  */
 Y = {
-    Array: {
-        each: function() {
-
+    Array: {}
+};
+Y.Array.each = function(array, fn, thisObj) {
+    for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
+        if (i in array) {
+            fn.call(thisObj || Y, array[i], i, array);
         }
     }
+    return Y;
 };
 Y.Array.unique = function(array, testFn) {
     var i = 0,
@@ -82,7 +86,7 @@ Y.Array.find = function(a, f, o) {
  */
 function flattenList(list, finalList) {
     var i, el;
-    finalList = (finalList) ? finalList : [];
+    finalList = finalList || [];
     for (i = 0; i < list.items.size(); i++) {
         el = list.items.get(i);
         if (el.getClass() && el.getClass().toString() == 'class com.wegas.core.persistence.variable.ListDescriptor') {

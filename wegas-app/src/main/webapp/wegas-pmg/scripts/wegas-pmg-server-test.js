@@ -32,7 +32,7 @@ function testsimplepmg() {
 
     resourceController.addAssignment(informaticien1.id, task1);
     resourceController.addAssignment(informaticien2.id, task1);
-    
+
     resourceController.addAssignment(informaticien1.id, task2);
     resourceController.addAssignment(commercial1.id, task2);
 
@@ -46,11 +46,10 @@ function testsimplepmg() {
     nextPeriod();                                                               // Avant-projet -> Plannification
     nextPeriod();                                                               // Plannification -> Execution
 }
-testsimplepmg() ;
+
 /**
  * Debbug function to create automatically some occupations and assignements in
  *  some employees.
- * @returns {String}
  */
 function tempInit() {
     var occupation, employees = flattenList(Variable.findByName(gm, 'employees')),

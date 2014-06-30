@@ -19,7 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.Serializable;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -164,7 +163,8 @@ public class ScriptFacade implements Serializable {
     }
 
     /**
-     * Inject script files specified in GameModel's property scriptFiles into engine
+     * Inject script files specified in GameModel's property scriptFiles into
+     * engine
      *
      * @param evt EngineInvocationEvent
      * @throws ScriptException
