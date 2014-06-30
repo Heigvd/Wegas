@@ -214,7 +214,6 @@ abstract public class VariableInstance extends AbstractEntity {
     public void setTeamScopeKey(Long teamScopeKey) {
         this.teamScopeKey = teamScopeKey;
     }
-    
 
     /**
      *
@@ -335,5 +334,14 @@ abstract public class VariableInstance extends AbstractEntity {
      */
     public void setGameModelScope(GameModelScope gameModelScope) {
         this.gameModelScope = gameModelScope;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getDescriptor().getName() + ")";
     }
 }
