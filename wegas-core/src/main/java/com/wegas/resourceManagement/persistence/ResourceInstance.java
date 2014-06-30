@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
+import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonManagedReference;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -268,14 +269,14 @@ public class ResourceInstance extends VariableInstance {
     /**
      * @return the active
      */
-    public Boolean getActive() {
+    public boolean getActive() {
         return this.active;
     }
 
     /**
      * @param active the active to set
      */
-    public void setActive(Boolean active) {
+    public void setActive(boolean active) {
         this.active = active;
     }
 
@@ -295,10 +296,28 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      *
+     * @return
+     */
+    @JsonIgnore
+    public String getMainSkill() {
+        return (String) this.skillsets.keySet().toArray()[0];
+    }
+
+    /**
+     *
+     * @return
+     */
+    @JsonIgnore
+    public long getMainSkillLevel() {
+        return this.skillsets.get(this.getMainSkill());
+    }
+
+    /**
+     *
      * @param key
      * @param val
      */
-    public void setSkillset(String key, Long val) {
+    public void setSkillset(String key, long val) {
         this.skillsets.put(key, val);
     }
 
@@ -307,7 +326,7 @@ public class ResourceInstance extends VariableInstance {
      * @param key
      * @return
      */
-    public Long getSkillset(String key) {
+    public long getSkillset(String key) {
         return this.skillsets.get(key);
     }
 
@@ -344,9 +363,18 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
+     *
+     * @param key
+     * @return
+     */
+    public double getPropertyD(String key) {
+        return Double.valueOf(this.properties.get(key));
+    }
+
+    /**
      * @return the moral
      */
-    public Integer getMoral() {
+    public int getMoral() {
         return this.moral;
     }
 
@@ -356,7 +384,7 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param moral the moral to set
      */
-    public void setMoral(Integer moral) {
+    public void setMoral(int moral) {
         this.moral = moral;
         this.moralHistory.add(moral);
     }
@@ -394,7 +422,7 @@ public class ResourceInstance extends VariableInstance {
     /**
      * @return the confidence
      */
-    public Integer getConfidence() {
+    public int getConfidence() {
         return this.confidence;
     }
 
@@ -404,7 +432,7 @@ public class ResourceInstance extends VariableInstance {
      *
      * @param confidence the confidence to set
      */
-    public void setConfidence(Integer confidence) {
+    public void setConfidence(int confidence) {
         this.confidence = confidence;
     }
 

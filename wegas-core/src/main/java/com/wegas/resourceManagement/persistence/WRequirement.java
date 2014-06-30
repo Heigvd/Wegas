@@ -19,11 +19,13 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @XmlRootElement
 @XmlType(name = "")                                                             // This forces to use Class's short name as type
-//@XmlAccessorType(XmlAccessType.FIELD)
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class WRequirement extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
     @Id
     @Column(name = "wrequirement_id")
     @GeneratedValue
@@ -100,14 +102,14 @@ public class WRequirement extends AbstractEntity implements Serializable {
     /**
      * @return the limit
      */
-    public Integer getLimit() {
+    public int getLimit() {
         return limit;
     }
 
     /**
      * @param limit the limit to set
      */
-    public void setLimit(Integer limit) {
+    public void setLimit(int limit) {
         this.limit = limit;
     }
 
@@ -128,14 +130,14 @@ public class WRequirement extends AbstractEntity implements Serializable {
     /**
      * @return the level
      */
-    public Integer getLevel() {
+    public int getLevel() {
         return level;
     }
 
     /**
      * @param level the level to set
      */
-    public void setLevel(Integer level) {
+    public void setLevel(int level) {
         this.level = level;
     }
 

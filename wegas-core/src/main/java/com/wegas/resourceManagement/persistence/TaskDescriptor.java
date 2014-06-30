@@ -60,9 +60,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     @ManyToMany
     @JoinTable(
             joinColumns = {
-        @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
+                @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
             inverseJoinColumns = {
-        @JoinColumn(name = "predecessors_variabledescriptor_id")})              // prevent change in the db
+                @JoinColumn(name = "predecessors_variabledescriptor_id")})              // prevent change in the db
     @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*
@@ -198,6 +198,15 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public String getProperty(String key) {
         return this.properties.get(key);
+    }
+
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public double getPropertyD(String key) {
+        return Double.valueOf(this.properties.get(key));
     }
 
     //Methods for impacts

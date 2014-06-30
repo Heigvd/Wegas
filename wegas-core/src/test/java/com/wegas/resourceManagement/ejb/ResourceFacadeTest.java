@@ -55,7 +55,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
             vif.update(resI.getId(), resI);
         }
         resI = (ResourceInstance) vif.find(resI.getId());
-        assertEquals(Integer.valueOf(ResourceInstance.HISTORYSIZE + 9), resI.getConfidence());
+        assertEquals(Integer.valueOf(ResourceInstance.HISTORYSIZE + 9).intValue(), resI.getConfidence());
         assertEquals(ResourceInstance.HISTORYSIZE, resI.getConfidenceHistory().size());
 
         // Clean

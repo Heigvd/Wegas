@@ -102,6 +102,15 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
         return this.properties.get(key);
     }
 
+    /**
+     *
+     * @param key
+     * @return
+     */
+    public double getPropertyD(String key) {
+        return Double.valueOf(this.properties.get(key));
+    }
+
     // **** Sugar for editor *** //
     /**
      *
