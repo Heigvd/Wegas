@@ -186,19 +186,21 @@ function assignRessources(currentStep) {
     var i, employee, activity, assignables,
         activities = [],
         employees = flattenList(Variable.findByName(gm, 'employees')),
-        currentPeriod = getCurrentPeriod().getValue(self) + currentStep / 10;
+        currentPeriod = getCurrentPeriod().getValue(self) + currentStep / STEPS;
 
     if (!employees) {
         return [];
     }
     for (i = 0; i < employees.length; i++) {
         employee = employees[i].getInstance(self);
-         if (isReservedToWork(employee)) {                                       // get a 'player created' occupation    
+        if (isReservedToWork(employee)) {                                       // get a 'player created' occupation    
             assignables = checkAssignments(employee, currentStep);              // get assignable tasks
             if (assignables.length > 0) {
                 activity = findLastStepCorrespondingActivity(employee,
                     assignables[0].taskDescriptor, currentPeriod);              //set corresponding past activity if it existe.
+                debug("assignRessources(): activity for " + employees[i].name + ":" + activity);
                 if (!activity) {                                                // Else create it.
+                    debug("assignRessources(): creating new activity")
                     activity = employee.createActivity(assignables[0].taskDescriptor);
                 }
                 if (selectRequirementFromActivity(activity) === null) {         // Possible d'améliorer la performance en ne créant pas d'activity. Mais nécessite de créer une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
@@ -256,11 +258,12 @@ function selectRequirementFromActivity(activity) {
  */
 function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
     var i, activity;
+    //debug("findLastStepCorrespondingActivity(" + employeeInst.descriptor.name + ")" + employeeInst.activities.size());
     for (i = 0; i < employeeInst.activities.size(); i++) {
         activity = employeeInst.activities.get(i);
-        if (activity.taskDescriptor === taskDesc                                // if the task of activity match with the given task (same task and same employee == same activity)
+        if (activity.taskDescriptor == taskDesc                                 // If the task of activity match with the given task (same task and same employee == same activity)
             && period - Math.floor(period) !== 0                                // if it s not a new period (current step !== 0)
-            && activity.time === period - 0.1) {                                // if activity was used the last step
+            && activity.time === getFloat(period - 0.1)) {                      // if activity was used the last step
             return activity;
         }
     }
@@ -318,7 +321,7 @@ function getAssignables(assignments, currentStep) {
         var taskInst = a.taskDescriptor.getInstance(self);
         if (taskInst.getPropertyD('completeness') < 100 && getPredecessorFactor(a.taskDescriptor) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20%
             if (Y.Array.find(taskInst.requirements.toArray(), function(r) {
-                 return a.resourceInstance.mainSkill == r.work;
+                return a.resourceInstance.mainSkill == r.work;
             })) {
                 return a;
             } else {
