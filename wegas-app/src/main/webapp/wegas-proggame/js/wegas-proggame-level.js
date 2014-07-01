@@ -445,7 +445,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             tab.set("selected", 1);
             tab.aceField = aceField;                                            // Set up a reference to the ace field
             tab.saveTimer = saveTimer;
-            tab.before("destroy", function () {
+            tab.before("destroy", function() {
                 this.aceField.destroy();
                 this.saveTimer.destroy();
             });
@@ -842,9 +842,10 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "direction",
                                         label: "direction",
                                         type: "select",
-                                        choices: [{value: 1, label: "up"},
+                                        choices: [
                                             {value: 2, label: "right"},
-                                            {value: 3, label: "bottom"},
+                                            {value: 1, label: "down"},
+                                            {value: 3, label: "up"},
                                             {value: 4, label: "left"}]
                                     }, {
                                         name: "collides",
@@ -874,9 +875,9 @@ YUI.add('wegas-proggame-level', function(Y) {
                                         name: "direction",
                                         label: "direction",
                                         type: "select",
-                                        choices: [{value: 1, label: "up"},
+                                        choices: [{value: 1, label: "down"},
                                             {value: 2, label: "right"},
-                                            {value: 3, label: "bottom"},
+                                            {value: 3, label: "up"},
                                             {value: 4, label: "left"}]
                                     }, {
                                         name: "collides",
