@@ -12,7 +12,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Datatable, micro = new Y.Template(),
-            JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
+            APPRENTI = "Apprenti", JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
             TEMPLATES = {
                 template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
                 object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
@@ -83,15 +83,18 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         }
     }, {
         TEXTUAL_SKILL_LEVEL: {
-            1: JUNIOR,
-            2: JUNIOR,
-            3: JUNIOR,
-            4: SENIOR,
-            5: SENIOR,
-            6: SENIOR,
-            7: EXPERT,
-            8: EXPERT,
-            9: EXPERT
+            1: APPRENTI,
+            2: APPRENTI,
+            3: APPRENTI,
+            4: JUNIOR,
+            5: JUNIOR,
+            6: JUNIOR,
+            7: SENIOR,
+            8: SENIOR,
+            9: SENIOR,
+            10: EXPERT,
+            11: EXPERT,
+            12: EXPERT
         },
         ATTRS: {
             /**
