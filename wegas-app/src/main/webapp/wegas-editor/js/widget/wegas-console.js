@@ -69,9 +69,14 @@ YUI.add('wegas-console', function(Y) {
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
-                        this.showMessage("error", "An error has occurred, please retry again", 4000);
+                        var res = e.response && e.response.results;
+                        if (res && res.exception === "com.wegas.core.exception.ScriptException") {
+                            this.showMessage("error", res.message, 4000);
+                        } else {
+                            this.showMessage("error", "An error has occurred, please retry again", 4000);
+                        }
                         this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
-                            + e.response.results.message + "</div>");
+                            + res.message + "</div>");
                     }, this)
                 }
             });

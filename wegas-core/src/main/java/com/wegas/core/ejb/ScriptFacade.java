@@ -115,12 +115,13 @@ public class ScriptFacade implements Serializable {
         }
 
         try {
+            engine.put(ScriptEngine.FILENAME, script.getContent()); //@TODO: JAVA 8 filename in scope
             return engine.eval(script.getContent());
         } catch (ScriptException ex) {
-            logger.warn("{} in\n{}", ex.getMessage(), script.getContent());
-            requestManager.addException(
-                    new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
-            throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
+//            requestManager.addException(
+//                    new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
+//            throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
+            throw new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
         }
     }
 
@@ -143,11 +144,11 @@ public class ScriptFacade implements Serializable {
         this.injectStaticScript(evt);
         for (Entry<String, GameModelContent> arg
                 : evt.getPlayer().getGameModel().getScriptLibrary().entrySet()) { // Inject the script library
+            evt.getEngine().put(ScriptEngine.FILENAME, "Server script " + arg.getKey()); //@TODO: JAVA 8 filename in scope
             try {
                 evt.getEngine().eval(arg.getValue().getContent());
             } catch (ScriptException ex) {
-                logger.warn("Error injecting script library: {} in\n{}", ex.getMessage(), arg.getValue());
-                throw new ScriptException(ex.getMessage(), arg.getValue().getContent(), ex.getLineNumber());
+                throw new com.wegas.core.exception.ScriptException("Server script " + arg.getKey(), ex.getLineNumber(), ex.getMessage());
             }
         }
 
@@ -181,10 +182,13 @@ public class ScriptFacade implements Serializable {
             files = evt.getPlayer().getGameModel().getProperties().getScriptUri().split(";");
         }
         for (String f : files) {
+            evt.getEngine().put(ScriptEngine.FILENAME, "Script file " + f); //@TODO: JAVA 8 filename in scope
             try {
                 evt.getEngine().eval(new java.io.FileReader(root + f));
             } catch (FileNotFoundException ex) {
                 logger.warn("File " + root + f + " was not found");
+            } catch (ScriptException ex) {
+                throw new com.wegas.core.exception.ScriptException(f, ex.getLineNumber(), ex.getMessage());
             }
         }
     }
