@@ -339,8 +339,9 @@
         "type": "PageLoader",
         "cssClass": "flexitests",
         "pageLoaderId": "mainarea",
-        "variable": {
-            "content": "Variable.find('currentPage')"
+        "page": {
+            "@class": "Script",
+            "content": "Variable.find(gameModel, \"currentPage\")"
         },
         "@name": "Main"
     },
