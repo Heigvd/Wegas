@@ -55,10 +55,10 @@ YUI.add("wegas-pageloader", function(Y) {
          */
         bindUI: function() {
             this.handlers.push(Wegas.Facade.VariableDescriptor.after("update", function() {// When the variable cache is update,
-                if (this.get("page.content") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
+                if (this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
-                if (this.get("variable.content") && "" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
+                if (this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
             }, this));

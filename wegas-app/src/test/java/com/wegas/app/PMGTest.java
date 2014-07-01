@@ -7,9 +7,9 @@
  */
 package com.wegas.app;
 
-import com.wegas.core.ejb.VariableDescriptorFacade;
 import java.io.IOException;
 import javax.script.ScriptException;
+import org.junit.Before;
 import org.junit.Test;
 
 /**
@@ -31,17 +31,8 @@ public class PMGTest extends GameModelTest {
 
     @Test
     public void testIndicators() throws ScriptException, IOException {
-        final VariableDescriptorFacade vdf = lookup(VariableDescriptorFacade.class);
-        /* insert script from files*/
-        String script = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-util.js");
-        String script2 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-simulation.js");
-        String script3 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-serverScript.js");
-        /* Create gameModel with scripts. Using this methods as it persists to DB */
-        gm = this.createGameModelFromFile(this.getGameModelPath(), script + "\n" + script2 + "\n" + script3);
-        player = gm.getPlayers().get(0);
 
-        gmFacade.reset(gm.getId());
-        this.evalFile(SCRIPTROOT + "wegas-pmg-server-test.js");                 //Run initialization
+        this.evalScript("testsimplepmg()");
         checkNumber("currentPhase", 2.0);                                       //Check "Execution" phase
         testIndicator(expected[0][0], expected[0][0], expected[0][0]);          //Check indicators at start.
         for (int i = 1; i < expected.length; i += 1) {                          //for each period, check indicators.
@@ -73,6 +64,18 @@ public class PMGTest extends GameModelTest {
         } catch (AssertionError ae) {
             throw new AssertionError("Period [" + period + "]:" + ae.getMessage());
         }
+    }
+
+    @Before
+    @Override
+    public void setUpGM() throws IOException {
+        /* insert script from files*/
+        final String script = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-util.js");
+        final String script2 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-simulation.js");
+        final String script3 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-serverScript.js");
+        final String script4 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-test.js");
+        gm = this.createGameModelFromFile(this.getGameModelPath(), script + "\n" + script2 + "\n" + script3 + "\n" + script4);
+        player = gm.getPlayers().get(0);
     }
 
 }
