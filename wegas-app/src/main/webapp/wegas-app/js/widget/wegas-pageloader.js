@@ -58,7 +58,7 @@ YUI.add("wegas-pageloader", function(Y) {
                 if (this.get("page.content") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
-                if (this.get("variable.content") && "" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
+                if ("" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
             }, this));

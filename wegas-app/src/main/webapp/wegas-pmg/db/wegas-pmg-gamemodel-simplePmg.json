@@ -3,7 +3,7 @@
     "pages": {},
     "name": "simple PMG",
     "description": "",
-    "createdTime": 1403629808369,
+    "createdTime": 1404220334535,
     "template": true,
     "childVariableDescriptors": [
         {
@@ -848,8 +848,8 @@
             "items": [
                 {
                     "@class": "TaskDescriptor",
-                    "name": "task 1",
-                    "label": "task 1",
+                    "name": "task1",
+                    "label": "task1",
                     "title": "",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -874,7 +874,7 @@
                                 "limit": 100,
                                 "work": "Informaticien",
                                 "level": 8,
-                                "quantity": 1,
+                                "quantity": 2,
                                 "completeness": 0,
                                 "quality": 0
                             }
@@ -899,7 +899,7 @@
                 {
                     "@class": "TaskDescriptor",
                     "name": "task2",
-                    "label": "task 2",
+                    "label": "task2",
                     "title": "",
                     "defaultInstance": {
                         "@class": "TaskInstance",
@@ -953,9 +953,178 @@
                         "competenceRatioSup": "1",
                         "coordinationRatioSup": "1"
                     },
+                    "predecessorNames": []
+                },
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task3",
+                    "label": "task3",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 2,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "500",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "randomDurationInf": "0",
+                            "bac": "0",
+                            "completeness": "0",
+                            "quality": "0",
+                            "bonusRatio": "1",
+                            "randomDurationSup": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Commercial",
+                                "level": 8,
+                                "quantity": 2,
+                                "completeness": 0,
+                                "quality": 0
+                            },
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Informaticien",
+                                "level": 8,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 3,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
                     "predecessorNames": [
-                        "task 1"
+                        "task1",
+                        "task2"
                     ]
+                },
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task4",
+                    "label": "task4",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 2,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "500",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "randomDurationInf": "0",
+                            "bac": "0",
+                            "completeness": "0",
+                            "quality": "0",
+                            "bonusRatio": "1",
+                            "randomDurationSup": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Informaticien",
+                                "level": 11,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            },
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Commercial",
+                                "level": 5,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 4,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
+                    "predecessorNames": []
+                },
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task5",
+                    "label": "task5",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 10,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "500",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "randomDurationInf": "0",
+                            "bac": "0",
+                            "completeness": "0",
+                            "quality": "0",
+                            "bonusRatio": "1",
+                            "randomDurationSup": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Commercial",
+                                "level": 8,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 5,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
+                    "predecessorNames": []
                 }
             ]
         },
@@ -1166,6 +1335,172 @@
                                 },
                                 "moral": 7,
                                 "moralHistory": [
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7
+                                ],
+                                "confidence": 0,
+                                "confidenceHistory": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        },
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "commercial4",
+                            "label": "Commercial4",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Commercial": 8
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7
+                                ],
+                                "confidence": 0,
+                                "confidenceHistory": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        },
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "commercial5",
+                            "label": "Commercial5",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Commercial": 8
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [
+                                    7,
                                     7,
                                     7,
                                     7,
@@ -1440,8 +1775,172 @@
                                     7,
                                     7,
                                     7,
-                                    8,
-                                    8,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7
+                                ],
+                                "confidence": 0,
+                                "confidenceHistory": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        },
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "informaticien4",
+                            "label": "Informaticien4",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Informaticien": 8
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7
+                                ],
+                                "confidence": 0,
+                                "confidenceHistory": [
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0,
+                                    0
+                                ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        },
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "informaticien5",
+                            "label": "Informaticien5",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Informaticien": 8
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
+                                    7,
                                     7,
                                     7,
                                     7,
@@ -1669,7 +2168,7 @@
                         "broadcastScope": "TeamScope"
                     },
                     "minValue": 1,
-                    "maxValue": 5,
+                    "maxValue": 15,
                     "defaultValue": 1
                 },
                 {
@@ -1919,10 +2418,10 @@
         "freeForAll": false,
         "pagesUri": "wegas-pmg/db/wegas-pmg-pages-simplePmg.json?",
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
-        "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js",
         "websocket": "",
+        "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js;wegas-pmg/scripts/wegas-pmg-server-test.js",
         "imageUri": "",
         "iconUri": ""
     },
-    "createdByName": "Admin "
+    "createdByName": "yannick Lagger"
 }

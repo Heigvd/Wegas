@@ -161,7 +161,8 @@ body > .wegas-pageloader, html{
 /*FORM*/
 .editor-preview .wegas-form,
 .flexitests .wegas-form{
-    position: relative; 
+    position: relative;
+    padding-bottom: 20px;
 }
 .wegas-playerview .wegas-form .wegas-toolbar {
     position: absolute;
@@ -169,8 +170,9 @@ body > .wegas-pageloader, html{
     background:none;
     box-shadow: none;
 }
-.wegas-playerview .wegas-form .wegas-hastoolbar>.wegas-toolbar-sibling {
+.wegas-playerview .wegas-form .wegas-toolbar-sibling {
     top: 0px;
+    position: relative;
 }
 .editor-preview .wegas-form .wegas-toolbar button + button,
 .flexitests .wegas-form .wegas-toolbar button + button{
@@ -178,7 +180,7 @@ body > .wegas-pageloader, html{
 }
 .editor-preview .wegas-form .wegas-toolbar button,
 .flexitests .wegas-form .wegas-toolbar button{
-    margin-left:135px;
+    margin-left:138px;
 }
 /*userVoice*/
 .uv-icon {
