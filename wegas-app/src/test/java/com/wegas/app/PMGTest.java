@@ -29,7 +29,12 @@ public class PMGTest extends GameModelTest {
     };
     private double period = 1;
 
-    @Test
+   // @Test
+    public void testSimplePMG() throws ScriptException {
+        this.evalScript("testsimplepmg()");
+    }
+
+    //   @Test
     public void testIndicators() throws ScriptException, IOException {
 
         this.evalScript("testsimplepmg()");
