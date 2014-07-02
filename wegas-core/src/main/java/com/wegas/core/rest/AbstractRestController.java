@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
  * @param <U>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
 public abstract class AbstractRestController<T extends AbstractFacade, U extends AbstractEntity> implements AbstractRestControllerI<T, U> {
 
     private static final Logger logger = LoggerFactory.getLogger(AbstractRestController.class);
@@ -46,7 +48,6 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      * @return
      */
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public Collection<U> index() {
         return getFacade().findAll();
@@ -60,7 +61,6 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      */
     @GET
     @Path("{entityId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public U get(@PathParam("entityId") Long entityId) {
         return (U) getFacade().find(entityId);
     }
@@ -71,8 +71,6 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      * @return
      */
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public U create(U entity) {
         // logger.log(Level.INFO, "POST GameModel");
@@ -88,8 +86,6 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      */
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public U update(@PathParam("entityId") Long entityId, U entity) {
         return (U) getFacade().update(entityId, entity);
@@ -103,8 +99,6 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      */
     @POST
     @Path("{entityId: [1-9][0-9]*}/Duplicate")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public U duplicate(@PathParam("entityId") Long entityId) throws IOException {
         return (U) getFacade().duplicate(entityId);
@@ -117,7 +111,6 @@ public abstract class AbstractRestController<T extends AbstractFacade, U extends
      */
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     @Override
     public U delete(@PathParam("entityId") Long entityId) {
         AbstractEntity entity = getFacade().find(entityId);

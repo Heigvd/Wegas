@@ -26,6 +26,8 @@ Y = {
     Array: {}
 };
 Y.Array.each = function(array, fn, thisObj) {
+    if (array.toArray)
+        array = array.toArray();                                                //convert list to array
     for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
         if (i in array) {
             fn.call(thisObj || Y, array[i], i, array);
@@ -69,6 +71,8 @@ Y.Array.unique = function(array, testFn) {
 };
 
 Y.Array.find = function(a, f, o) {
+    if (a.toArray)
+        a = a.toArray();                                                        //convert list to array
     for (var i = 0, l = a.length; i < l; i++) {
         if (i in a && f.call(o, a[i], i, a)) {
             return a[i];
@@ -76,6 +80,17 @@ Y.Array.find = function(a, f, o) {
     }
     return null;
 };
+Y.Array.sum = function(a, f, o) {
+    if (a.toArray)
+        a = a.toArray();                                                        //convert list to array
+    for (var i = 0, l = a.length, r = 0; i < l; i++) {
+        r += f.call(o, a[i], i, a);
+    }
+    return r;
+};
+Y.log = function(level, msg, sender) {
+    println("[" + level + "] " + msg);
+}
 /**
  * Transform a wegas List in an array.
  * If the wegas list contain other wegas list (and contain other wegas list, etc),

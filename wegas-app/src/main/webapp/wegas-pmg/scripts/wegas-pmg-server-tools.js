@@ -11,85 +11,40 @@
  */
 // Functions for addArtosPredecessor
 function addArtosPredecessor() {
-    var listPredName = [];
     // ChoixEnvironnementDéveloppement predecessor
-    listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');
-    addPredecessor(Variable.findByName(gameModel, 'DossierSpécifications').name, listPredName);
+    addPredecessor('DossierSpécifications',
+        ['ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins']);
 
     // ModélisationDonnées predecessor
-    listPredName = [];
-    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
-    addPredecessor(Variable.findByName(gameModel, 'ModélisationDonnées').name, listPredName);
+    addPredecessor('ModélisationDonnées', ['DossierSpécifications', 'PrototypeUtilisateur']);
 
     // ModélisationTraitements predecessor
-    listPredName = [];
-    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
-    addPredecessor(Variable.findByName(gameModel, 'ModélisationTraitements').name, listPredName);
+    addPredecessor('ModélisationTraitements', ['DossierSpécifications', 'PrototypeUtilisateur']);
 
     // ModélisationIHM predecessor
-    listPredName = [];
-    listPredName.push('DossierSpécifications', 'PrototypeUtilisateur');
-    addPredecessor(Variable.findByName(gameModel, 'ModélisationIHM').name, listPredName);
+    addPredecessor('ModélisationIHM', ['DossierSpécifications', 'PrototypeUtilisateur']);
 
     // ProgrammationBD predecessor
-    listPredName = [];
-    listPredName.push('ModélisationDonnées');
-    addPredecessor(Variable.findByName(gameModel, 'ProgrammationBD').name, listPredName);
+    addPredecessor('ProgrammationBD', ['ModélisationDonnées']);
 
     // ProgrammationTraitements predecessor
-    listPredName = [];
-    listPredName.push('ModélisationDonnées', 'ModélisationTraitements');
-    addPredecessor(Variable.findByName(gameModel, 'ProgrammationTraitements').name, listPredName);
+    addPredecessor('ProgrammationTraitements', ['ModélisationDonnées', 'ModélisationTraitements']);
 
     // ProgrammationIHM predecessor
-    listPredName = [];
-    listPredName.push('ModélisationIHM');
-    addPredecessor(Variable.findByName(gameModel, 'ProgrammationIHM').name, listPredName);
+    addPredecessor('ProgrammationIHM', ['ModélisationIHM']);
 
     // PromotionSystème predecessor
-    listPredName = [];
-    listPredName.push('DossierSpécifications');
-    addPredecessor(Variable.findByName(gameModel, 'PromotionSystème').name, listPredName);
+    addPredecessor('PromotionSystème', ['DossierSpécifications']);
 
     // Tests predecessor
-    listPredName = [];
-    listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModélisationTraitements', 'CorrectionProgrammationTraitements');
-    addPredecessor(Variable.findByName(gameModel, 'Tests').name, listPredName);
+    addPredecessor('Tests',
+        ['ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModélisationTraitements', 'CorrectionProgrammationTraitements']);
 
     // ImplantationMachine predecessor
-    listPredName = [];
-    listPredName.push('ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM');
-    addPredecessor(Variable.findByName(gameModel, 'ImplantationMachine').name, listPredName);
+    addPredecessor('ImplantationMachine', ['ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM']);
 
     // PrototypeUtilisateur predecessor
-    listPredName = [];
-    listPredName.push('ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins');
-    addPredecessor(Variable.findByName(gameModel, 'PrototypeUtilisateur').name, listPredName);
-}
-
-/**
- * Function to add taskPredecessor
- * @param {type} descName
- * @param {type} listPredName
- */
-function addPredecessor(descName, listPredName) {
-    var i, ii, iii, taskDescList = Variable.findByName(gameModel, 'tasks'),
-        taskDesc;
-
-    for (i = 0; i < taskDescList.items.size(); i++) {
-        taskDesc = taskDescList.items.get(i);
-        if (taskDesc.name == descName) {
-            for (ii = 0; ii < listPredName.length; ii++) {
-                for (iii = 0; iii < taskDescList.items.size(); iii++) {
-                    if (listPredName[ii] == taskDescList.items.get(iii).name) {
-                        taskDesc.getPredecessors().add(taskDescList.items.get(iii));
-                        break;
-                    }
-                }
-            }
-            break;
-        }
-    }
+    addPredecessor('PrototypeUtilisateur', ['ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins']);
 }
 
 // Functions for addArtosOccupation

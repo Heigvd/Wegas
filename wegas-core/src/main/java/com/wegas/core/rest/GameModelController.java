@@ -8,7 +8,6 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -30,7 +28,6 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @Path("GameModel")
-@Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GameModelController {
 
@@ -40,11 +37,6 @@ public class GameModelController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
 
     /**
      *
