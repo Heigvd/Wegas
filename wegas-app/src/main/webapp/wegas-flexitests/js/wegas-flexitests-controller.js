@@ -46,7 +46,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
         bindUI: function() {
             Y.Wegas.FlexitestsController.superclass.bindUI.apply(this);
             this.set("tabIndex", -1);
-            this.after("*:currentLoadingChange", function(e) {
+            this.after("currentLoadingChange", function(e) {
                 var i, noready = false;
                 for (i in e.newVal) {
                     if (e.newVal.hasOwnProperty(i)) {
