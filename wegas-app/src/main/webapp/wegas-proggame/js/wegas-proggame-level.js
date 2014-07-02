@@ -1101,28 +1101,28 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
         },
         TUTORIAL: [{
-                height: 95,
+                height: 105,
                 width: 460,
                 x: 402,
                 y: 510,
                 highlight: ".code",
                 bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code vous permet de contrôler votre avatar.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
-                height: 95,
-                width: 430,
-                x: 477,
+                height: 110,
+                width: 460,
+                x: 462,
                 y: 610,
                 highlight: ".proggame-buttons",
                 bodyContent: "<div class='proggame-tuto-arrowright'></div><div>Pour exécuter votre code, cliquez sur la flèche verte.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
-                height: 110,
+                height: 115,
                 width: 600,
                 x: 212,
                 y: 230,
                 highlight: ".proggame-lefttab",
                 bodyContent: "<div class='proggame-tuto-arrowleft'></div><div>Vous pouvez ajouter des instructions en cliquant directement dessus dans l'<b>API</b> (Application Programming Interface).<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
-                height: 105,
+                height: 115,
                 width: 340,
                 x: 256,
                 y: 87,
