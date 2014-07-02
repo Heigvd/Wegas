@@ -39,8 +39,8 @@ YUI.add('wegas-proggame-display', function(Y) {
             Crafty("*").destroy();                                              // @HACK Destructor sometimes not called !
 
             this.get("boundingBox").setStyles({
-                marginTop: (Math.floor((15 - gridW) / 2) * 32) + "px",
-                marginLeft: (Math.floor((29 - gridH) / 2) * 32) + "px"
+                marginTop: (Math.floor((15 - gridH) / 2) * 32) + "px",
+                marginLeft: (Math.floor((29 - gridW) / 2) * 32) + "px"
             });
             Crafty.init(TILESIZE * gridW, TILESIZE * gridH);                    // Init crafty
 

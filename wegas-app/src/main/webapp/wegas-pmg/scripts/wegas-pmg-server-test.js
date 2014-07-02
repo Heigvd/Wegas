@@ -14,19 +14,16 @@ var task1 = Variable.findByName(self.getGameModel(), 'task1'),
     task3 = Variable.findByName(self.getGameModel(), 'task3'),
     task4 = Variable.findByName(self.getGameModel(), 'task4'),
     task5 = Variable.findByName(self.getGameModel(), 'task5'),
-   
     commercial1 = Variable.findByName(gameModel, 'commercial1'),
     commercial2 = Variable.findByName(gameModel, 'commercial2'),
     commercial3 = Variable.findByName(gameModel, 'commercial3'),
     commercial4 = Variable.findByName(gameModel, 'commercial4'),
     commercial5 = Variable.findByName(gameModel, 'commercial5'),
-    
     informaticien1 = Variable.findByName(gameModel, 'informaticien1'),
     informaticien2 = Variable.findByName(gameModel, 'informaticien2'),
     informaticien3 = Variable.findByName(gameModel, 'informaticien3'),
     informaticien4 = Variable.findByName(gameModel, 'informaticien4'),
     informaticien5 = Variable.findByName(gameModel, 'informaticien5'),
-    
     resourceController = lookupBean("ResourceController"),
     gameModelFacade = lookupBean("GameModelFacade"),
     quality = Variable.findByName(gameModel, 'quality').getInstance(self),
@@ -41,10 +38,11 @@ function testsimplepmg() {
 function testSimplePMGNormalAssignment() {
     reset();                                                                    // Reset current game model
 
-    task1.getInstance(self).setProperty('bac', '1000');
-    task2.getInstance(self).setProperty('bac', '1500');
+    task1.getInstance(self).setProperty('bac', '1500');
+    //task2.getInstance(self).setProperty('bac', '1500');
 
-    standardPlannification();
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 2);
 
     resourceController.addAssignment(informaticien1.instance.id, task1);
     resourceController.addAssignment(informaticien2.instance.id, task1);
@@ -71,7 +69,7 @@ function assertEquals(val1, val2, msg) {
 }
 
 /**
- * Debbug function to create automatically some occupations and assignements in
+ * Debug function to create automatically some occupations and assignements in
  *  some employees.
  */
 function tempInit() {
@@ -97,16 +95,16 @@ function tempInit() {
 
     return 'is initialized';
 }
-function reset () {
+function reset() {
     removePredecessor();
     addTestPredecessor();
-    
+
     defaultTaskProperty(task1);
     defaultTaskProperty(task2);
     defaultTaskProperty(task3);
     defaultTaskProperty(task4);
     defaultTaskProperty(task5);
-    
+
     defaultEmployee(commercial1);
     defaultEmployee(commercial2);
     defaultEmployee(commercial3);
@@ -117,8 +115,8 @@ function reset () {
     defaultEmployee(informaticien3);
     defaultEmployee(informaticien4);
     defaultEmployee(informaticien5);
-    
-    gameModelFacade.reset(gameModel);  
+
+    gameModelFacade.reset(gameModel);
 }
 function standardPlannification() {
     resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
@@ -131,7 +129,7 @@ function standardPlannification() {
     resourceController.addTaskPlannification(task4.getInstance(self).id, 2);
     resourceController.addTaskPlannification(task5.getInstance(self).id, 10);
 }
-function defaultTaskProperty (task) {
+function defaultTaskProperty(task) {
     task.setProperty('competenceRatioInf', '1');
     task.setProperty('progressionOfNeeds', '0');
     task.setProperty('coordinationRatioInf', '1');
@@ -149,34 +147,12 @@ function defaultEmployee(emp) {
 }
 
 function addTestPredecessor() {
-    var listPredName = [];
-    listPredName.push('task1', 'task2');
-    addPredecessor(Variable.findByName(self.getGameModel(), 'task3').getName(), listPredName);
-}
-
-function addPredecessor(descName, listPredName) {
-    var i, ii, iii, taskDescList = Variable.findByName(self.getGameModel(), 'tasks'),
-            taskDesc;
-
-    for (i = 0; i < taskDescList.items.size(); i++) {
-        taskDesc = taskDescList.items.get(i);
-        if (taskDesc.getName() == descName) {
-            for (ii = 0; ii < listPredName.length; ii++) {
-                for (iii = 0; iii < taskDescList.items.size(); iii++) {
-                    if (listPredName[ii] == taskDescList.items.get(iii).getName()) {
-                        taskDesc.getPredecessors().add(taskDescList.items.get(iii));
-                        break;
-                    }
-                }
-            }
-            break;
-        }
-    }
+    addPredecessor('task3', ['task1', 'task2']);
 }
 
 function removePredecessor() {
     var taskDescList = Variable.findByName(self.getGameModel(), 'tasks'), i,
-            taskDesc;
+        taskDesc;
     for (i = 0; i < taskDescList.items.size(); i++) {
         taskDesc = taskDescList.items.get(i);
         taskDesc.getPredecessors().clear();

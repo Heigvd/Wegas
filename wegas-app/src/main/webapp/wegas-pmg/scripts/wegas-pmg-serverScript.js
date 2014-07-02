@@ -25,12 +25,11 @@ var gm = self.getGameModel();
 function nextPeriod() {
     var currentPhase = getCurrentPhase(),
         currentPeriod = getCurrentPeriod();
-
     //allPhaseQuestionAnswered();                                               // First Check if all questions are answered
 
     if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
         currentPhase.add(self, 1);
-        //currentPeriod.setValue(self, 1);// Why?
+        //currentPeriod.setValue(self, 1);                                      // Why?
         if (currentPhase.getValue(self) === 2) {
             Variable.findByName(gm, 'ganttPage').setValue(self, 11);
             Variable.findByName(gm, 'taskPage').setValue(self, 12);
@@ -52,14 +51,9 @@ function nextPeriod() {
  * @returns {Boolean} true if the project is ended
  */
 function checkEndOfProject() {
-    var i, task, tasks = Variable.findByName(gm, 'tasks');
-    for (i = 0; i < tasks.items.size(); i++) {
-        task = tasks.items.get(i).getInstance(self);
-        if (task.active && task.getPropertyD('completeness') < 100) {
-            return false;
-        }
-    }
-    return true;
+    return !Y.Array.find(Variable.findByName(gm, 'tasks').items, function(t) {
+        return t.getInstance(self).active && t.getInstance(self).getPropertyD('completeness') < 100;
+    });
 }
 
 /**
@@ -83,110 +77,104 @@ function allPhaseQuestionAnswered() {
     }
 }
 /**
- * This function calculate the planned value at a given time
+ * This function calculate the planned value for a given time
  * @param {Number} period
  * @returns {Number} Planned value
  */
 function calculatePlanedValue(period) {
-    var i, j, task, pv = 0,
-        tasks = Variable.findByName(gm, 'tasks'),
-        totalPv = 0;
+    return Y.Array.sum(getActiveTasks(), function(t) {
+        if (t.plannification.size() === 0) {                                    // If the user did not provide a planfication
+            return t.getPropertyD('bac');                                       // return budget at completion as it is
 
-    println("plannedvalue: " + period);
-
-    for (i = 0; i < tasks.items.size(); i++) {
-        task = tasks.items.get(i).getInstance(self);
-        if (task.active) {
-            totalPv += task.getPropertyD('bac');
-            if (task.plannification.size() === 0) {
-                pv += task.getPropertyD('bac');
-            }
-            for (j = 0; j < task.plannification.size(); j++) {
-                println("s" + task.plannification.get(j) + "*" + task.getPropertyD('bac') + "*" + (task.getPropertyD('bac') / task.plannification.size()));
-                if (parseInt(task.plannification.get(j)) < period) {
-                    pv += task.getPropertyD('bac') / task.plannification.size();
-                }
-            }
+        } else {                                                                // Otherwise
+            return Y.Array.sum(t.plannification, function(p) {                         // return a ratio of the bac and the already passed periods in plannification
+                if (parseInt(p) < period) {
+                    return t.getPropertyD('bac') / t.plannification.size();
+                } else
+                    return 0;
+            });
         }
-    }
-    println("pv" + pv);
-    return pv;
+    });
 }
 /**
  * Calculate planedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
  * history for variable the same variable and for costs, delay and quality.
  */
 function updateVariables() {
-    var i, j, task, employeesRequired,
-        ev = 0, pv = 0, ac = 0, sumProjectCompleteness = 0, activeTasks = 0,
-        tasksQuality = 0, tasksScale = 0,
-        costsJaugeValue = 100, delayJaugeValue = 100, qualityJaugeValue = 0,
-        tasks = Variable.findByName(gm, 'tasks'),
+    var i, task, employeesRequired,
+        ev = 0, ac = 0, sumProjectCompleteness = 0,
+        tasksQuality = 0, tasksScale = 0, qualityJaugeValue = 0,
         costs = Variable.findByName(gm, 'costs'),
         delay = Variable.findByName(gm, 'delay'),
         quality = Variable.findByName(gm, 'quality'),
         planedValue = Variable.findByName(gm, 'planedValue'),
         earnedValue = Variable.findByName(gm, 'earnedValue'),
         actualCost = Variable.findByName(gm, 'actualCost'),
-        exectutionPeriods = Variable.findByName(gm, 'periodPhase3');
+        tasks = getActiveTasks(),
+        pv = calculatePlanedValue(Variable.findByName(gm, 'periodPhase3').getValue(self));// pv = for each task, sum -> bac * task completeness / 100
 
-    for (i = 0; i < tasks.items.size(); i++) {
-        task = tasks.items.get(i).getInstance(self);
-        sumProjectCompleteness += parseFloat(task.getProperty('completeness'));
-        if (task.active) {                                                      //if task is active
-            activeTasks += 1;
-            ev += task.getPropertyD('bac') * task.getPropertyD('completeness') / 100;
-            //pv += parseInt(task.getProperty('bac')) * (getPlannifiedCompleteness(v) / 100);
-            //ac += parseInt(task.getProperty('wages')) + (parseInt(task.getProperty('completeness')) / 100) * parseInt(task.getProperty('fixedCosts')) + parseInt(task.getProperty('unworkedHoursCosts'));
+    debug("tasks: " + tasks + "*" + tasks.length);
+    for (i = 0; i < tasks.length; i++) {
+        task = tasks[i];
+        sumProjectCompleteness += task.getPropertyD('completeness');
+        debug("calc ev: " + task.getPropertyD('bac') + "*" + task.getPropertyD('completeness'));
+        ev += task.getPropertyD('bac') * task.getPropertyD('completeness') / 100;
+        //pv += parseInt(task.getProperty('bac')) * (getPlannifiedCompleteness(v) / 100);
+        //ac += parseInt(task.getProperty('wages')) + (parseInt(task.getProperty('completeness')) / 100) * parseInt(task.getProperty('fixedCosts')) + parseInt(task.getProperty('unworkedHoursCosts'));
 
-            employeesRequired = 0;
-            for (j = 0; j < task.requirements.size(); j++) {
-                employeesRequired += task.requirements.get(j).quantity;
-            }
-            tasksScale += task.duration * employeesRequired;
-            if (task.getPropertyD('completeness') > 0) {                        //...and started
-                ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
-                //TO check
-                tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired;
-            } else {
-                tasksQuality += (100 + task.getPropertyD('quality')) * task.duration * employeesRequired;
-            }
+        tasksScale += task.duration * Y.Array.sum(task.requirements, function(r) {
+            return r.quantity;
+        });
+
+        employeesRequired = Y.Array.sum(task.requirements, function(r) {
+            return r.quantity;
+        });
+        if (task.getPropertyD('completeness') > 0) {                        //...and started
+            debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
+            ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
+            //TO check
+            tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired;
+        } else {
+            tasksQuality += (100 + task.getPropertyD('quality')) * task.duration * employeesRequired;
         }
     }
 
-    // completness = sum of all task's completeness in %
-    Variable.findByName(gm, 'projectCompleteness').setValue(self, sumProjectCompleteness / activeTasks);
+    Variable.findByName(gm, 'projectCompleteness')
+        .setValue(self, sumProjectCompleteness / tasks.length);                 // completness = sum of all task's completeness in %
+
     //nbCompleteTasks = sumProjectCompleteness * activeTasks / (activeTasks * 100);
     //Variable.findByName(gm, 'projectCompleteness').setValue(self, nbCompleteTasks * 100 / activeTasks);
     //projectCompleteness.setValue(self, sumProjectCompleteness);
 
-    // pv = for each task, sum -> bac * task completeness / 100
-    planedValue.setValue(self, calculatePlanedValue(exectutionPeriods.getValue(self)));
-    // ev = for each task, sum -> bac * planified task completeness / 100
-    earnedValue.setValue(self, ev);
-    // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
-    //Variable.findByName(gm, 'actualCost').setValue(self, ac + parseInt(projectFixCosts.getValue(self)));
-    actualCost.setValue(self, ac);
-    //cpi = ev / ac * 100
-    Variable.findByName(gm, 'cpi').setValue(self, (ev / ac * 100));
-    //spi = ev / pv * 100
-    Variable.findByName(gm, 'spi').setValue(self, (ev / pv * 100));
+    planedValue.setValue(self, pv);
 
-    // costs = EV / AC * 100
-    if (planedValue.getValue(self) > 0) {
-        costsJaugeValue = Math.round((earnedValue.getValue(self) / actualCost.getValue(self)) * 100);
+    earnedValue.setValue(self, ev);                                             // ev = for each task, sum -> bac * planified task completeness / 100
+
+    actualCost.setValue(self, ac);                                              // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
+    //actualCost.setValue(self, ac + parseInt(projectFixCosts.getValue(self)));
+
+    println("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
+    // Costs
+    if (pv > 0) {
+        var cpi = ev / ac * 100;                                                // cpi = ev / ac * 100
+        costs.setValue(self, Math.min(Math.max(Math.round(cpi), costs.minValueD), costs.maxValueD));
+        Variable.findByName(gm, 'cpi').setValue(self, cpi);
+    } else {
+        costs.setValue(self, 100);
+        Variable.findByName(gm, 'cpi').setValue(self, 100);
     }
-    costsJaugeValue = Math.min(Math.max(costsJaugeValue, costs.minValueD), costs.maxValueD);
-    costs.setValue(self, costsJaugeValue);
 
-    // delay = EV / PV * 100
-    if (planedValue.getValue(self) > 0) {
-        delayJaugeValue = Math.round(earnedValue.getValue(self) * 100 / planedValue.getValue(self));
+    // Delay
+    if (pv > 0) {
+        var spi = ev / pv * 100;                                                // spi = ev / pv * 100
+        delay.setValue(self, Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD));
+        Variable.findByName(gm, 'spi').setValue(self, spi);
+    } else {
+        delay.setValue(self, 100);
+        Variable.findByName(gm, 'spi').setValue(self, 100);
     }
-    delayJaugeValue = Math.min(Math.max(delayJaugeValue, delay.minValueD), delay.maxValueD);
-    delay.setValue(self, delayJaugeValue);
 
-    //quality
+    // Quality
     //with weighting of task's scale = sum each task -> task quality / task scale
     if (tasksScale > 0) {
         qualityJaugeValue = (tasksQuality / tasksScale);
@@ -207,4 +195,12 @@ function updateVariables() {
     actualCost.getInstance(self).saveHistory();
     Variable.findByName(gm, 'managementApproval').getInstance(self).saveHistory();
     Variable.findByName(gm, 'userApproval').getInstance(self).saveHistory();
+}
+
+function addPredecessor(descName, listPredName) {
+    var task = Variable.findByName(gameModel, descName);
+
+    Y.Array.each(listPredName, function(predName) {
+        task.predecessors.add(Variable.findByName(gameModel, predName));
+    });
 }
