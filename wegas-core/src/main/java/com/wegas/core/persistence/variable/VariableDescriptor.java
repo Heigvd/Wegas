@@ -327,4 +327,13 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     public void setLabel(String label) {
         this.label = label;
     }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public String toString() {
+        return this.getClass().getSimpleName() + "( " + getId() + ", " + this.getName() + ")";
+    }
 }
