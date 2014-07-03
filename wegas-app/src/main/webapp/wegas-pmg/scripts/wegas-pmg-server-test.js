@@ -35,6 +35,8 @@ var task1 = Variable.findByName(self.getGameModel(), 'task1'),
 function testsimplepmg() {
     testSimplePMGNormalAssignment();
     testSimplePMGNotEnoughResources();
+    testSimplePMGTooManyResources();
+    testUnassignable();
 }
 function testSimplePMGNormalAssignment() {
     reset();                                                                    // Reset current game model
@@ -57,7 +59,10 @@ function testSimplePMGNormalAssignment() {
     nextPeriod();                                                               // Planning -> Executing
     nextPeriod();                                                               // -> Executing week 2
     nextPeriod();                                                               // -> Executing week 3
-    assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
+    assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");
+    assertEquals(100, costs.value, "testSimplePMGNormalAssignment(): task1 completness does not match");
+    assertEquals(100, delay.value, "testSimplePMGNormalAssignment(): task1 completness does not match");
+    assertEquals(100, quality.value, "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
 }
 function testMotivationFactor() {
     reset();                                                                    // Reset current game model
@@ -371,7 +376,94 @@ function testPredecessorFactor() {
     assertEquals(100, task3.instance.getProperty('quality'), "testMotivationFactor(): task3 quality does not match"); //ancien 100
 }
 function testSimplePMGNotEnoughResources() {
+    reset();                                                                    // Reset current game model
 
+    task1.getInstance(self).setProperty('bac', '1500');
+    //task2.getInstance(self).setProperty('bac', '1500');
+
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 2);
+
+    resourceController.addAssignment(informaticien1.instance.id, task1);
+
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien1.instance.id, 2);
+
+    nextPeriod();                                                               // Initiating -> Planning
+    nextPeriod();                                                               // Planning -> Executing
+    nextPeriod();                                                               // -> Executing week 2
+    nextPeriod();                                                               // -> Executing week 3
+    assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
+}
+
+function testSimplePMGTooManyResources() {
+    reset();                                                                    // Reset current game model
+
+    task1.getInstance(self).setProperty('bac', '1500');
+
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 2);
+
+    resourceController.addAssignment(informaticien1.instance.id, task1);
+    resourceController.addAssignment(informaticien2.instance.id, task1);
+    resourceController.addAssignment(informaticien3.instance.id, task1);
+
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien1.instance.id, 2);
+    resourceController.addReservation(informaticien2.instance.id, 1);
+    resourceController.addReservation(informaticien2.instance.id, 2);
+    resourceController.addReservation(informaticien3.instance.id, 1);
+    resourceController.addReservation(informaticien3.instance.id, 2);
+
+    nextPeriod();                                                               // Initiating -> Planning
+    nextPeriod();                                                               // Planning -> Executing
+    nextPeriod();                                                               // -> Executing week 2
+    nextPeriod();                                                               // -> Executing week 3
+    // assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
+}
+function testUnassignable() {
+    reset();                                                                    // Reset current game model
+
+    task1.getInstance(self).setProperty('bac', '1500');
+    //task2.getInstance(self).setProperty('bac', '1500');
+
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 2);
+
+    resourceController.addAssignment(informaticien1.instance.id, task1);
+    resourceController.addAssignment(informaticien2.instance.id, task1);
+
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien1.instance.id, 2);
+    resourceController.addReservation(informaticien2.instance.id, 1);
+    resourceController.addReservation(informaticien2.instance.id, 2);
+}
+
+function testResourceChangeWithinTask() {
+    reset();                                                                    // Reset current game model
+
+    task1.getInstance(self).setProperty('bac', '3000');
+    task2.getInstance(self).setProperty('bac', '3000');
+
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task1.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task2.getInstance(self).id, 1);
+    resourceController.addTaskPlannification(task2.getInstance(self).id, 1);
+
+    resourceController.addAssignment(commercial1.instance.id, task1);
+    resourceController.addAssignment(commercial1.instance.id, task2);
+
+    resourceController.addReservation(commercial1.instance.id, 1);
+    resourceController.addReservation(commercial2.instance.id, 2);
+    resourceController.addReservation(commercial3.instance.id, 3);
+    resourceController.addReservation(commercial4.instance.id, 4);
+
+    nextPeriod();                                                               // Initiating -> Planning
+    nextPeriod();                                                               // Planning -> Executing
+    nextPeriod();                                                               // -> Executing week 2
+    nextPeriod();                                                               // -> Executing week 3
+    nextPeriod();                                                               // -> Executing week 4
+    // assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
 }
 function assertEquals(val1, val2, msg) {
     if (val1 != val2) {

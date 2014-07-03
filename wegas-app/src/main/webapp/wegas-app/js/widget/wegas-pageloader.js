@@ -58,9 +58,14 @@ YUI.add("wegas-pageloader", function(Y) {
                 if (this.get("page.content") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
-                if ("" + this.get("variable.evaluated") !== "" + this.get(PAGEID)) {// @backwardcompatibilityand if the current page has change,
+
+                if (this.get("variable.content")                                // @backwardcompatibilityand if the current page has change,
+                    && this.get("variable.name")
+                    && this.get("variable.expr")
+                    && this.get("variable.evaluated") !== "" + this.get(PAGEID)) {
                     this.syncUI();                                              // sync the view
                 }
+
             }, this));
 
             //Wegas.Facade.Page.after("response", this.syncUI, this);
@@ -85,6 +90,7 @@ YUI.add("wegas-pageloader", function(Y) {
                 this.set(PAGEID, page.getInstance().get("value"));
             } else if (page) {                                                  // If there is a page script
                 this.set(PAGEID, +page);                                        // display it
+                
             } else if (val && val.getInstance().get("value")) {                 // @backwardcompatibility
                 this.set(PAGEID, val.getInstance().get("value"));
             } else if (this.get("defaultPageId") && !this.get(PAGEID)) {        // in case a defaultPageId is defined and no pageId is

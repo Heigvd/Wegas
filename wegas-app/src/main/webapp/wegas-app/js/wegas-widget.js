@@ -582,6 +582,7 @@ YUI.add("wegas-widget", function(Y) {
                         Y.log("Unable to read expression: " + val.expr, "error", "Wegas.Widget");
                         val.evaluated = null;
                     }
+                    
                 } else if (val.name) {                                          // @backwardcompatibility
                     val.evaluated = ds.cache.find('name', val.name);
                 } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field
@@ -591,8 +592,6 @@ YUI.add("wegas-widget", function(Y) {
                         Y.log("Unable to read expression: " + val.expr, "error", "Wegas.Widget");
                         val.evaluated = null;
                     }
-                } else if (val.id) {
-                    val.evaluated = ds.cache.findById(val.id);
                 }
             }
 
