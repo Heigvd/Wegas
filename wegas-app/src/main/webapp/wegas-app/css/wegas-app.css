@@ -54,7 +54,14 @@ input[type="submit"], input[type="reset"] {
 html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     height: 100%;
 }
-
+/* DISABLED RULES */
+[class*="-disabled"]{
+    opacity:0.8;
+}
+/* HIDDEN RULES */
+[class*="-hidden"]{
+    display: none;
+}
 /* Widget */
 /*.wegas-playerview .wegas-widget {
     overflow: hidden

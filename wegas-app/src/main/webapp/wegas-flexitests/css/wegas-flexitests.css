@@ -18,6 +18,7 @@ body > .wegas-pageloader, html{
     z-index:20 !important;
 }
 .test-page{
+    position: relative;
     outline: none;
     width: 1024px;
     height: 768px;
