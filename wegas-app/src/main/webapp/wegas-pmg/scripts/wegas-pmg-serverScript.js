@@ -153,7 +153,7 @@ function updateVariables() {
     actualCost.setValue(self, ac);                                              // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
     //actualCost.setValue(self, ac + parseInt(projectFixCosts.getValue(self)));
 
-    println("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
+    debug("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
     // Costs
     if (pv > 0) {
         var cpi = ev / ac * 100;                                                // cpi = ev / ac * 100
