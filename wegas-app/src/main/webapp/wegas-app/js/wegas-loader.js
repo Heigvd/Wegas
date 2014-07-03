@@ -683,6 +683,11 @@ YUI().use(function(Y) {
                     requires: 'wegas-pmgwidget-css',
                     ws_provides: 'OccupationColor'
                 },
+                "wegas-pmg-linefilter": {
+                    path: 'js/plugin/wegas-pmg-linefilter-min.js',
+                    requires: 'wegas-pmgwidget-css',
+                    ws_provides: ['PMGLineFilter', 'PMGLineCompleteness']
+                },
                 "wegas-pmg-activitycolor": {
                     path: 'js/plugin/wegas-pmg-activitycolor-min.js',
                     requires: 'wegas-pmgwidget-css',
