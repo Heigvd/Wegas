@@ -13,11 +13,11 @@
  */
 //Global variables
 var DEBUGMODE = true,
-        STEPS = 10,
-        MINTASKDURATION = 0.1,
-        taskTable = {},
-        STEPNAMES = ['Lundi matin', 'Lundi après-midi', 'Mardi matin', 'Mardi après-midi', 'Mercredi matin',
-    'Mercredi après-midi', 'Jeudi matin', 'Jeudi après-midi', 'Vendredi matin', 'Vendredi après-midi', 'Samedi matin'];
+    STEPS = 10,
+    MINTASKDURATION = 0.1,
+    taskTable = {},
+    STEPNAMES = ['Lundi matin', 'Lundi après-midi', 'Mardi matin', 'Mardi après-midi', 'Mercredi matin',
+        'Mercredi après-midi', 'Jeudi matin', 'Jeudi après-midi', 'Vendredi matin', 'Vendredi après-midi', 'Samedi matin'];
 
 /**
  * Divide period in steps (see global variable).
@@ -25,17 +25,17 @@ var DEBUGMODE = true,
  */
 function runSimulation() {
     var i, activeTasks = getActiveTasks();
-    
+
     debug('runSimulation()');
-    
+
     taskTable = {};
-    for (i=0; i<activeTasks.length; i++) {
+    for (i = 0; i < activeTasks.length; i++) {
         taskTable[activeTasks[i].getDescriptor().name] = {
             completeness: activeTasks[i].getPropertyD('completeness'),
             randomFactor: getRandomFactorFromTask(activeTasks[i])
         };
     }
-    
+
     for (var i = 0; i < STEPS; i++) {
         step(i);
     }
@@ -94,7 +94,7 @@ function getPlannifiedCompleteness(taskInst) {
     }
 
     var i, currentPeriod = getCurrentPeriod().getValue(self),
-            pastPeriods = 0;
+        pastPeriods = 0;
 
     for (i = 0; i < taskInst.plannification.size() && i <= currentPeriod.period; i++) {
         if (parseInt(taskInst.plannification.get(i)) > -1) {
@@ -114,8 +114,8 @@ function getPlannifiedCompleteness(taskInst) {
  */
 function getCurrentTaskDelay(taskDesc) {
     var taskInst = taskDesc.getInstance(self),
-            completeness = taskInst.getPropertyD('completeness'),
-            planifiedCompleteness = getPlannifiedCompleteness(taskInst);
+        completeness = taskInst.getPropertyD('completeness'),
+        planifiedCompleteness = getPlannifiedCompleteness(taskInst);
 
     if (completeness > 0 && taskInst.plannification.length > 0) {
         if (planifiedCompleteness <= 0) {
@@ -183,8 +183,8 @@ function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
 function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
     return activities.filter(function(a) {
         return activity.time === a.time
-                && activity.taskDescriptor === a.taskDescriptor
-                && activity.requirement === a.requirement;
+            && activity.taskDescriptor === a.taskDescriptor
+            && activity.requirement === a.requirement;
     });
 }
 
@@ -198,9 +198,9 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
 function assignRessources(currentStep) {
     debug("assignRessources(currentStep: " + currentStep + ")");
     var i, employee, activity, assignables,
-            activities = [],
-            employees = flattenList(Variable.findByName(gameModel, 'employees')),
-            currentPeriod = getCurrentPeriod().getValue(self) + currentStep / STEPS;
+        activities = [],
+        employees = flattenList(Variable.findByName(gameModel, 'employees')),
+        currentPeriod = getCurrentPeriod().getValue(self) + currentStep / STEPS;
 
     if (!employees) {
         return [];
@@ -211,7 +211,7 @@ function assignRessources(currentStep) {
             assignables = checkAssignments(employee, currentStep);              // get assignable tasks
             if (assignables.length > 0) {
                 activity = findLastStepCorrespondingActivity(employee,
-                        assignables[0].taskDescriptor, currentPeriod);              //set corresponding past activity if it existe.
+                    assignables[0].taskDescriptor, currentPeriod);              //set corresponding past activity if it existe.
                 debug("assignRessources(): activity for " + employees[i].name + ":" + activity);
                 if (!activity) {                                                // Else create it.
                     debug("assignRessources(): creating new activity")
@@ -236,14 +236,17 @@ function assignRessources(currentStep) {
  * @param {ResourceInstance} employeeInst
  */
 function removeAssignmentsFromCompleteTasks(employeeInst) {
-    var i, task;
+    var i, assignment, toRemove = [];
 
     for (i = 0; i < employeeInst.assignments.size(); i++) {
-        task = employeeInst.assignments.get(i).taskDescriptor.getInstance(self);
-        if (task.getPropertyD('completeness') >= 100) {
-            task.assignments.remove(i);
+        assignment = employeeInst.assignments.get(i);
+        if (assignment.taskDescriptor.getInstance(self).getPropertyD('completeness') >= 100) {
+            toRemove.push(assignment);
         }
     }
+    Y.Array.each(toRemove, function(a) {
+        employeeInst.assignments.remove(a);
+    });
 }
 
 /**
@@ -255,8 +258,8 @@ function removeAssignmentsFromCompleteTasks(employeeInst) {
  */
 function selectRequirementFromActivity(activity) {
     var taskInst = activity.taskDescriptor.getInstance(self),
-            work = activity.resourceInstance.mainSkill,
-            workAs = selectFirstUncompletedWork(taskInst.requirements, work);
+        work = activity.resourceInstance.mainSkill,
+        workAs = selectFirstUncompletedWork(taskInst.requirements, work);
 
     return selectRequirement(taskInst, activity.resourceInstance, workAs);
 }
@@ -275,8 +278,8 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
     for (i = 0; i < employeeInst.activities.size(); i++) {
         activity = employeeInst.activities.get(i);
         if (activity.taskDescriptor == taskDesc                                 // If the task of activity match with the given task (same task and same employee == same activity)
-                && period !== Math.floor(period)                                    // if it s not a new period (current step !== 0)
-                && activity.time === getFloat(period - 0.1)) {                      // if activity was used the last step
+            && period !== Math.floor(period)                                    // if it s not a new period (current step !== 0)
+            && activity.time === getFloat(period - 0.1)) {                      // if activity was used the last step
             return activity;
         }
     }
@@ -296,7 +299,7 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc, currentPeriod) 
     for (i = 0; i < employeeInst.activities.size(); i++) {
         activity = employeeInst.activities.get(i);
         if (activity.taskDescriptor === taskDesc   //if the task of activity match with the given task (same task and same employee == same activity)
-                && currentPeriod > activity.time) {
+            && currentPeriod > activity.time) {
             return true;
         }
     }
@@ -340,9 +343,9 @@ function getAssignables(assignments, currentStep) {
                 return a;
             } else {
                 sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + a.taskDescriptor.label,
-                        'Je suis censé travailler sur la tâche "' + a.taskDescriptor.label + '" mais je ne suis pas qualifié pour ce travail. <br/>'
-                        + ' Salutations <br/>' + a.resourceInstance.descriptor.label + '<br/> ' + a.resourceInstance.mainSkill,
-                        a.resourceInstance.descriptor.label);
+                    'Je suis censé travailler sur la tâche "' + a.taskDescriptor.label + '" mais je ne suis pas qualifié pour ce travail. <br/>'
+                    + ' Salutations <br/>' + a.resourceInstance.descriptor.label + '<br/> ' + a.resourceInstance.mainSkill,
+                    a.resourceInstance.descriptor.label);
                 assignments.remove(index);
                 //TODO add unworked hours                
             }
@@ -366,10 +369,10 @@ function checkAssignments(employeeInst, currentStep) {
         return [];
     }
     var i, taskDesc, taskInst, exist,
-            assignments = employeeInst.assignments,
-            employeeName = employeeInst.descriptor.label,
-            employeeJob = employeeInst.mainSkill,
-            nextTasks = getAssignables(assignments, currentStep);
+        assignments = employeeInst.assignments,
+        employeeName = employeeInst.descriptor.label,
+        employeeJob = employeeInst.mainSkill,
+        nextTasks = getAssignables(assignments, currentStep);
 
     for (i = 0; i < assignments.size(); i++) {
         exist = false;
@@ -378,19 +381,19 @@ function checkAssignments(employeeInst, currentStep) {
         if (taskInst.getPropertyD('completeness') >= 100) {
             if (nextTasks[0]) {
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.label,
-                        'La tâche "' + taskDesc.label + '" est terminée, je passe à la tâche ' + nextTasks[0].taskDescriptor.label + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                        employeeName);
+                    'La tâche "' + taskDesc.label + '" est terminée, je passe à la tâche ' + nextTasks[0].taskDescriptor.label + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                    employeeName);
             } else {
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.label,
-                        'La tâche "' + taskDesc.label + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                        employeeName);
+                    'La tâche "' + taskDesc.label + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                    employeeName);
             }
             assignments.remove(i);
             break;
         } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
             sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.label,
-                    'Je suis sensé travailler sur la tâche "' + taskDesc.label + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
-                    employeeName);
+                'Je suis sensé travailler sur la tâche "' + taskDesc.label + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                employeeName);
             assignments.remove(i);
             //TODO add unworked hours
             break;
@@ -417,7 +420,7 @@ function getPredecessorFactor(taskDesc) {
     });
     if (numberOfPredecessors > 0) {
         return Math.pow((predecessorsAdvancements / numberOfPredecessors) / 100,
-                taskDesc.getInstance(self).getPropertyD('predecessorsDependances'));
+            taskDesc.getInstance(self).getPropertyD('predecessorsDependances'));
     } else {
         return 1;
     }
@@ -461,7 +464,7 @@ function selectRequirement(taskInst, employee, work) {
 
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
-        d = Math.abs(employee.mainSkillLevel - req.level);
+        d = Math.abs(parseInt(employee.mainSkillLevel) - req.level);
         if (req.work == work
             && req.completeness < reqByWorks.maxLimit
             //&& req.completeness < (reqByWorks.maxLimit * totalOfPersonneInTask / reqByWorks.totalByWork)
@@ -540,9 +543,6 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
             return r.quantity;
         });
 
-    if (currentStep === 0) {
-        taskTable[taskDesc.name] = taskDesc.getInstance(self).getPropertyD('completeness');
-    }
 
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
@@ -597,14 +597,14 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
     }
 
     if (work.completeness > (work.totalByWork / totalOfEmployees) * 100) {      // Other work factor
-        debug('otherWorkFactor : ' + 0.8);
+        debug('otherWorkFactor : 0.8');
         stepAdvance *= 0.8;
     }
 
-    stepAdvance *= getRandomFactorFromTask(taskInst);                           // Random factor 
+    stepAdvance *= taskTable[taskDesc.name].randomFactor;                       // Random factor 
 
     //calculate learnFactor
-    if (taskTable[taskDesc.name] > 15 && !workOnTask(employeeDesc, taskDesc)) {
+    if (taskTable[taskDesc.name].completeness > 15 && !workOnTask(employeeDesc, taskDesc)) {
         stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (taskDesc.getPropertyD('takeInHandDuration') / 100)) / employees.length);//learnFactor
     }
 
@@ -625,7 +625,7 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
         var skillFactor = (averageSkillsetQuality >= selectedReq.level) ? 0.02 : 0.03;
 
         stepQuality = 2 + 0.03 * ((motivationXActivityRate / sumActivityRate) - 7) //Motivation quality
-                + skillFactor * (averageSkillsetQuality - selectedReq.level);       //skillset (level) quality
+            + skillFactor * (averageSkillsetQuality - selectedReq.level);       //skillset (level) quality
     }
     stepQuality = (stepQuality / 2) * 100;                                      //step Quality
     if (needProgress > 0) {
@@ -634,7 +634,6 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
 
     //set Wage (add 1/steps of the need's wage at task);
     taskInst.setProperty('wages', taskInst.getPropertyD('wages') + Math.round(((activity.resourceInstance.getPropertyD('wage') / 4) * (activity.resourceInstance.getPropertyD('activityRate') / 100)) / STEPS));
-
     if (DEBUGMODE) {
         debug('sameNeedActivity.length : ' + sameNeedActivity.length);
         debug('employeesMotivationFactor : ' + employeesMotivationFactor);
@@ -769,8 +768,8 @@ function checkEnd(activities, currentStep) {
             nextWork = selectFirstUncompletedWork(taskInst.requirements, employeeInst.mainSkill);
             if (activities[i].requirement.work != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.label + ' en partie terminée',
-                        'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeInst.mainSkill,
-                        employeeInst.descriptor.label);
+                    'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeInst.mainSkill,
+                    employeeInst.descriptor.label);
                 //sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.label + ' en partie terminée',
                 //        'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label + '. Je passe à ' + nextWork + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                 //        employeeInst.descriptor.label);
