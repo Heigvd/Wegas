@@ -25,31 +25,17 @@ public class TestHelper {
 
     private static Connection connection = null;
 
-    protected static void createIntegrationDB() {
+    protected static void resetTestDB() {
         if (connection == null) {
             try {
-                connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/template1", "postgres", null);
+                connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wegas_test", "user", "1234");
                 try (Statement st = connection.createStatement()) {
-                    st.execute("CREATE DATABASE wegas_it");
+                    st.execute("DROP SCHEMA public CASCADE;");
+                    st.execute("CREATE SCHEMA public;");
                 }
                 connection.commit();
             } catch (SQLException ex) {
                 System.out.println("Error creating database");
-            }
-        }
-    }
-
-    protected static void dropIntegrationDB() {
-        if (connection != null) {
-            try {
-                try (Statement st = connection.createStatement()) {
-                    st.execute("DROP DATABASE wegas_it");
-                }
-                connection.commit();
-                connection.close();
-                connection = null;
-            } catch (SQLException ex) {
-                System.out.println("Error dropping database");
             }
         }
     }
