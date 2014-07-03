@@ -278,6 +278,98 @@ function testRandomDurationSup() {
     nextPeriod();
     nextPeriod();
 }
+function testLearnFactor() {
+    reset();
+    
+    task5.setProperty('takeInHandDuration', '20');
+    
+    resourceController.addAssignment(commercial1.instance.id, task5);
+    resourceController.addAssignment(commercial2.instance.id, task5);
+    resourceController.addAssignment(commercial3.instance.id, task5);
+    
+    resourceController.addReservation(commercial1.instance.id, 1);
+    resourceController.addReservation(commercial2.instance.id, 2);
+    resourceController.addReservation(commercial3.instance.id, 3);
+    resourceController.addReservation(commercial3.instance.id, 4);
+    
+    nextPeriod();
+    nextPeriod();
+    nextPeriod();
+    assertEquals(10, task5.instance.getProperty('completeness'), "testMotivationFactor(): task5 completness does not match"); //ancien 10%
+    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(250, task5.instance.getProperty('wages'), "testMotivationFactor(): task5 wages does not match"); //ancien 250
+    assertEquals(100, task5.instance.getProperty('quality'), "testMotivationFactor(): task5 quality does not match"); //ancien 100
+    
+    nextPeriod();
+    assertEquals(20, task5.instance.getProperty('completeness'), "testMotivationFactor(): task5 completness does not match"); //ancien 20%
+    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(500, task5.instance.getProperty('wages'), "testMotivationFactor(): task5 wages does not match"); //ancien 500
+    assertEquals(100, task5.instance.getProperty('quality'), "testMotivationFactor(): task5 quality does not match"); //ancien 100
+    
+    nextPeriod();
+    assertEquals(28, task5.instance.getProperty('completeness'), "testMotivationFactor(): task5 completness does not match"); //ancien 28%
+    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(750, task5.instance.getProperty('wages'), "testMotivationFactor(): task5 wages does not match"); //ancien 750
+    assertEquals(100, task5.instance.getProperty('quality'), "testMotivationFactor(): task5 quality does not match"); //ancien 100
+    
+    nextPeriod();
+    assertEquals(38, task5.instance.getProperty('completeness'), "testMotivationFactor(): task5 completness does not match"); //ancien 38%
+    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(1000, task5.instance.getProperty('wages'), "testMotivationFactor(): task5 wages does not match"); //ancien 1000
+    assertEquals(100, task5.instance.getProperty('quality'), "testMotivationFactor(): task5 quality does not match"); //ancien 100
+}
+function testPredecessorFactor() {
+    var requirements;
+    
+    reset();
+    addPredecessor('task3', ['task1', 'task2']);
+    
+    task3.instance.setProperty('predecessorsDependances', '2');
+    
+    requirements = task3.instance.getRequirements();
+    requirements.get(0).quantity = 1;
+    task3.instance.setRequirements(requirements);
+    
+    //task1
+    resourceController.addAssignment(informaticien1.instance.id, task1);
+    resourceController.addAssignment(informaticien2.instance.id, task1);
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien2.instance.id, 1);
+    
+    //task2
+    resourceController.addAssignment(commercial1.instance.id, task2);
+    resourceController.addAssignment(commercial2.instance.id, task2);
+    resourceController.addAssignment(informaticien3.instance.id, task2);
+    
+    resourceController.addReservation(commercial1.instance.id, 1);
+    resourceController.addReservation(commercial2.instance.id, 1);
+    resourceController.addReservation(informaticien3.instance.id, 1);
+    
+    //task3    
+    resourceController.addAssignment(commercial3.instance.id, task3);
+    resourceController.addAssignment(informaticien4.instance.id, task3);
+    
+    resourceController.addReservation(commercial3.instance.id, 2);
+    resourceController.addReservation(informaticien4.instance.id, 2);
+    
+    nextPeriod();
+    nextPeriod();
+    nextPeriod();
+    assertEquals(50, task1.instance.getProperty('completeness'), "testMotivationFactor(): task1 completness does not match"); //ancien 50%
+    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(500, task1.instance.getProperty('wages'), "testMotivationFactor(): task1 wages does not match"); //ancien 500
+    assertEquals(100, task1.instance.getProperty('quality'), "testMotivationFactor(): task1 quality does not match"); //ancien 100
+    assertEquals(75, task2.instance.getProperty('completeness'), "testMotivationFactor(): task1 completness does not match"); //ancien 75%
+    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(750, task2.instance.getProperty('wages'), "testMotivationFactor(): task5 wages does not match"); //ancien 750
+    assertEquals(100, task2.instance.getProperty('quality'), "testMotivationFactor(): task5 quality does not match"); //ancien 100
+    
+    nextPeriod();
+    assertEquals(20, task3.instance.getProperty('completeness'), "testMotivationFactor(): task3 completness does not match"); //ancien 20%
+    assertEquals(500, task3.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(500, task3.instance.getProperty('wages'), "testMotivationFactor(): task3 wages does not match"); //ancien 500
+    assertEquals(100, task3.instance.getProperty('quality'), "testMotivationFactor(): task3 quality does not match"); //ancien 100
+}
 function testSimplePMGNotEnoughResources() {
 
 }
@@ -317,7 +409,7 @@ function tempInit() {
 }
 function reset() {
     removePredecessor();
-    addTestPredecessor();
+//    addTestPredecessor();
 
     defaultTaskProperty(task1);
     defaultTaskProperty(task2);
