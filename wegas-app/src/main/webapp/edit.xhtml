@@ -59,6 +59,8 @@
                                         cfg: {
                                             dataSource: "Pusher"
                                         }
+                                    }, {
+                                        fn: "ServerLog"
                                     }]
                             },
                             Page: {
@@ -73,10 +75,10 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
+                                    /* THIS IS NOT A COMMENT
+                                     * </ui:fragment>
+                                     */
+                                    initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
                                         fn: "JSONSchema"
@@ -153,10 +155,10 @@
                             this.set('currentTeamId', player.get("teamId"));    // Update current teamid
 
                             Y.Wegas.Facade.VariableDescriptor.set("source",
-                                    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
-                                    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
-                                    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
-                                    + "/VariableDescriptor");                   // Retrieve variable instances for the new player
+                                //this.get("base") + "rest/EditorPrivate/" + player.get("id")
+                                Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
+                                + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
+                                + "/VariableDescriptor");                   // Retrieve variable instances for the new player
 
                             var preview = Y.Widget.getByNode(".editor-preview");// Show a loading overlay in the Preview tab during the request
                             preview.showOverlay();
@@ -164,7 +166,7 @@
                         });
 
                         try {
-                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }

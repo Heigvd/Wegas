@@ -861,5 +861,6 @@ function sendMessage(subject, content, from) {
 function debug(msg) {
     if (DEBUGMODE) {
         println(msg);
+        RequestManager.sendCustomEvent("debug", msg);
     }
 }
