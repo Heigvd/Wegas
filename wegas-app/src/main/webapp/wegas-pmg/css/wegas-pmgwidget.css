@@ -175,6 +175,20 @@ tbody .past .activity {
 .yui3-datatable-table input.invalid{
     border-color: #E43737;
 }
+/* Line completeness plugin*/
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-complete,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-index,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-label,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-complete .yui3-datatable-col-Realized{
+    background-color: #E5FFE5;
+}
+.task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realized{
+    background-color: #FFFDC2;
+}
+
 /* --------------- SlidePanel css ------------------------------------*/
 .wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
     overflow:hidden;
