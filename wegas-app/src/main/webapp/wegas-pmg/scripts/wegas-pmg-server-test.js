@@ -168,7 +168,17 @@ function testMotivationFactor() {
     assertEquals(500, task1.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
     assertEquals(500, task1.instance.getProperty('wages'), "testMotivationFactor(): task1 wages does not match"); //ancien 500
 }
-
+function testremoveassign() {
+    reset();
+    resourceController.addAssignment(informaticien1.instance.id, task2);
+    resourceController.addAssignment(commercial1.instance.id, task2);
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien1.instance.id, 2);
+    resourceController.addReservation(informaticien1.instance.id, 3);
+    resourceController.addReservation(informaticien1.instance.id, 4);
+    resourceController.addReservation(commercial1.instance.id, 6);
+    doNextPeriod(8);
+}
 function testOtherWorkFactor() {
     reset();
 
@@ -579,5 +589,11 @@ function removePredecessor() {
     for (i = 0; i < taskDescList.items.size(); i++) {
         taskDesc = taskDescList.items.get(i);
         taskDesc.getPredecessors().clear();
+    }
+}
+function doNextPeriod(times) {
+    times = Math.min(Math.max(0, times), 20);
+    while (times--) {
+        nextPeriod();
     }
 }

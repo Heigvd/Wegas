@@ -1505,6 +1505,8 @@
                             "field": "description",
                             "column": 1
                         }
+                    }, {
+                        "fn": "PMGLineCompleteness"
                     }
                 ],
                 "variable": {
@@ -1616,6 +1618,8 @@
                             "field": "description",
                             "column": 1
                         }
+                    }, {
+                        "fn": "PMGLineCompleteness"
                     }
                 ]
             }
