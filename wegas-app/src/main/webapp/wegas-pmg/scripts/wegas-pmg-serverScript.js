@@ -113,11 +113,11 @@ function updateVariables() {
         tasks = getActiveTasks(),
         pv = calculatePlanedValue(Variable.findByName(gm, 'periodPhase3').getValue(self));// pv = for each task, sum -> bac * task completeness / 100
 
-    debug("tasks: " + tasks + "*" + tasks.length);
+    //debug("tasks: " + tasks + "*" + tasks.length);
     for (i = 0; i < tasks.length; i++) {
         task = tasks[i];
         sumProjectCompleteness += task.getPropertyD('completeness');
-        debug("calc ev: " + task.getPropertyD('bac') + "*" + task.getPropertyD('completeness'));
+        //debug("calc ev: " + task.getPropertyD('bac') + "*" + task.getPropertyD('completeness'));
         ev += task.getPropertyD('bac') * task.getPropertyD('completeness') / 100;
         //pv += parseInt(task.getProperty('bac')) * (getPlannifiedCompleteness(v) / 100);
         //ac += parseInt(task.getProperty('wages')) + (parseInt(task.getProperty('completeness')) / 100) * parseInt(task.getProperty('fixedCosts')) + parseInt(task.getProperty('unworkedHoursCosts'));
@@ -130,7 +130,7 @@ function updateVariables() {
             return r.quantity;
         });
         if (task.getPropertyD('completeness') > 0) {                        //...and started
-            debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
+            //debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
             ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
             //TO check
             tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired;
@@ -185,7 +185,7 @@ function updateVariables() {
     //}
     qualityJaugeValue += Variable.findByName(gm, 'qualityImpacts').getValue(self) / 2;
     qualityJaugeValue = Math.min(Math.max(qualityJaugeValue, quality.minValueD), quality.maxValueD);
-    quality.setValue(self, qualityJaugeValue);
+    quality.setValue(self, Math.round(qualityJaugeValue));
 
     costs.getInstance(self).saveHistory();
     delay.getInstance(self).saveHistory();
