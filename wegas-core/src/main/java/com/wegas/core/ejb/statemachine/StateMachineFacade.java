@@ -14,6 +14,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
+import com.wegas.core.exception.ScriptException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -32,7 +33,6 @@ import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.script.Invocable;
-import javax.script.ScriptException;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -143,7 +143,8 @@ public class StateMachineFacade implements Serializable {
                                 smi.transitionHistoryAdd(transition.getId());
                             }
                         } catch (ScriptException ex) {
-                            //maybe throw a WegasException
+                            ex.setScript("Variable " + sm.getLabel());
+                            requestManager.addException(ex);
                             //validTransition still false
                         }
 
@@ -153,6 +154,8 @@ public class StateMachineFacade implements Serializable {
                     try {
                         validTransition = (Boolean) scriptManager.eval(player, transition.getTriggerCondition());
                     } catch (ScriptException ex) {
+                        ex.setScript("Variable " + sm.getLabel());
+                        requestManager.addException(ex);
                         //validTransition still false
                     }
                 }
@@ -183,7 +186,9 @@ public class StateMachineFacade implements Serializable {
             preImpacts.addAll(impacts);
             try {
                 scriptManager.eval(player, preImpacts);
-            } catch (ScriptException | WegasException ex) {
+            } catch (ScriptException ex) {
+                ex.setScript("StateMachines impacts");
+                requestManager.addException(ex);
                 logger.warn("Script failed ", ex);
             }
             steps++;
@@ -252,10 +257,14 @@ public class StateMachineFacade implements Serializable {
             } else {
                 return; // define other language here
             }
-            if (param instanceof ScriptEventFacade.EmptyObject) {
-                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
-            } else {
-                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
+            try {
+                if (param instanceof ScriptEventFacade.EmptyObject) {
+                    ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc);
+                } else {
+                    ((Invocable) requestManager.getCurrentEngine()).invokeMethod(impactFunc, "call", impactFunc, param);
+                }
+            } catch (javax.script.ScriptException ex) {
+                throw new ScriptException(ex.getFileName(), ex.getLineNumber(), ex.getMessage());
             }
         } catch (NoSuchMethodException ex) {
             logger.debug("Event transition script failed", ex);
@@ -271,6 +280,10 @@ public class StateMachineFacade implements Serializable {
     private Boolean isNotDefined(Script script) {
         return script == null || script.getContent() == null
                 || script.getContent().equals("");
+    }
+
+    private void threatException(ScriptException ex, Transition transition) {
+
     }
 
     /**
