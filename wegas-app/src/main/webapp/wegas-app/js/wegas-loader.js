@@ -249,6 +249,10 @@ YUI().use(function(Y) {
                 'wegas-plugin': {
                     requires: ["timers"]
                 },
+                'wegas-serverlog': {
+                    path: 'js/plugin/wegas-serverlog-min.js',
+                    ws_provides: "ServerLog"
+                },
                 'wegas-userpreferences': {
                     path: 'js/plugin/wegas-userpreferences-min.js',
                     requires: ["wegas-form", "wegas-plugin"],
