@@ -68,11 +68,9 @@ function step(currentStep) {
  * @returns {Number}
  */
 function calculateTaskProgress(taskInst) {
-    var work, taskProgress = 0,
-        requirementsByWork = getRequirementsByWork(taskInst.requirements);
-    for (work in requirementsByWork) {
-        taskProgress += requirementsByWork[work].completeness;
-    }
+    var taskProgress = Y.Array.sum(taskInst.requirements, function(r) {
+        return r.completeness;
+    });
     return (taskProgress > 97) ? 100 : taskProgress;                            // >97 yes, don't frustrate the players please.
 }
 /**
@@ -143,6 +141,7 @@ function getActiveTasks() {
  * in each activities. So in the returned list, two activities can't have the same requirement.
  * @param {Array} activities  an Array of Activity
  * @returns {Array} an Array of Activity
+ * @deprecated
  */
 function getActivitiesWithEmployeeOnDifferentNeeds(activities) {
     var i, j, activitiesAsNeeds = [], wasAdded;
@@ -326,12 +325,7 @@ function getAssignables(assignments, currentStep) {
         var taskInst = a.taskDescriptor.getInstance(self);
         if (taskInst.getPropertyD('completeness') < 100
             && getPredecessorFactor(a.taskDescriptor) >= 0.2) { //if the task isn t terminated and average of predecessors advancement is upper than 20%
-
-            debug("look up: " + Y.Array.find(taskInst.requirements, function(r) {
-                return a.resourceInstance.mainSkill == r.work;
-            }) + "*" + taskInst.requirements);
             if (Y.Array.find(taskInst.requirements, function(r) {
-                debug(a.resourceInstance.mainSkill + "*" + r.work)
                 return a.resourceInstance.mainSkill == r.work;
             })) {
                 return a;
@@ -403,16 +397,15 @@ function checkAssignments(employeeInst, currentStep) {
  * @returns {Number} number between 0 and 1.
  */
 function getPredecessorFactor(taskDesc) {
-    var i, predecessorsAdvancements = 0,
-        numberOfPredecessors = 0,
-        predecessors = taskDesc.predecessors;
+    var predecessorsAdvancements = 0,
+        numberOfPredecessors = 0;
 
-    for (i = 0; i < predecessors.size(); i++) {
-        if (predecessors.get(i).getInstance(self).active) {
-            predecessorsAdvancements += predecessors.get(i).getInstance(self).getPropertyD('completeness');
+    Y.Array.each(taskDesc.predecessors, function(p) {
+        if (p.getInstance(self).active) {
+            predecessorsAdvancements += p.getInstance(self).getPropertyD('completeness');
             numberOfPredecessors += 1;
         }
-    }
+    });
     if (numberOfPredecessors > 0) {
         return Math.pow((predecessorsAdvancements / numberOfPredecessors) / 100,
             taskDesc.getInstance(self).getPropertyD('predecessorsDependances'));
@@ -429,7 +422,7 @@ function getPredecessorFactor(taskDesc) {
  * @returns {String} work
  */
 function selectFirstUncompletedWork(requirements, metier) {
-    var work, reqByWorks = getRequirementsByWork(requirements);          // get requirements merged by kind of work.
+    var work, reqByWorks = getRequirementsByWork(requirements);                 // get requirements merged by kind of work.
 
     for (work in reqByWorks) {
         if (reqByWorks[work].completeness < reqByWorks[work].maxLimit && metier == work) { //check if the maximum limit from all requirements of the current kind of work is smaller than the completeness of the current kind of work
@@ -448,24 +441,24 @@ function selectFirstUncompletedWork(requirements, metier) {
  * @param {String} workAs string which define current work type of the given employee (can be different than his job)
  * @returns {WRequirement} the selected requirement
  */
-function selectRequirement(taskInst, employeeInst, workAs) {
-    var i, req, requirements = taskInst.requirements,
-        selectedReq = null,
-        totalOfPersonneInTask = Y.Array.sum(requirements, function(r) {
-            return r.quantity;
-        }),
+function selectRequirement(taskInst, employee, work) {
+    var i, req, d, selectedReq,
+        requirements = taskInst.requirements,
+        //totalOfPersonneInTask = Y.Array.sum(requirements, function(r) {
+        //    return r.quantity;
+        //}),
         deltaLevel = 1000,
-        level = parseInt(employeeInst.mainSkillLevel),
-        reqByWorks = getRequirementsByWork(requirements);
+        reqByWorks = getRequirementsByWork(requirements)[work];
 
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
-        if (req.work == workAs
-            && req.completeness < (reqByWorks[workAs].maxLimit * totalOfPersonneInTask / reqByWorks[workAs].totalOfEmployees)) {
-            if (deltaLevel > level - req.level) {
-                deltaLevel = Math.abs(level - req.level);
-                selectedReq = req;
-            }
+        d = Math.abs(employee.mainSkillLevel - req.level);
+        if (req.work == work
+            && req.completeness < reqByWorks.maxLimit
+            //&& req.completeness < (reqByWorks.maxLimit * totalOfPersonneInTask / reqByWorks.totalByWork)
+            && deltaLevel > d) {
+            deltaLevel = d;
+            selectedReq = req;
         }
     }
     return selectedReq;
@@ -482,43 +475,27 @@ function selectRequirement(taskInst, employeeInst, workAs) {
  * @returns {Object} works
  */
 function getRequirementsByWork(requirements) {
-    var i, req, works = {}, work, needsCompletion = 0, totalOfEmployees = 0;
+    var i, req, work, works = {};
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
-        //keep an occurance of each kind of work needed
-        if (works[req.work]) {
-            work = works[req.work];
-            work.totalByWork += req.quantity;
-        } else {
-            work = works[req.work] = {
-                maxLimit: 0,
-                typesOfLevels: [],
-                totalOfEmployees: 0,
-                completeness: 0,
-                totalByWork: req.quantity,
-                dimFactorAdvancement: false
-            };
-        }
-        //keep the highest limit of all limits from each kind of work needed
-        if (work.maxLimit < req.limit) {
-            work.maxLimit = req.limit;
-        }
-        //keep all kind of levels for each kind of work needed
-        if (work.typesOfLevels.indexOf(req.level) <= -1) {
-            work.typesOfLevels.push(req.level);
-        }
-        //keep the summe of personns needed for each kind of work needed
-        totalOfEmployees += req.quantity;
-        //is needed for next calcul
-        needsCompletion += req.completeness * req.quantity;
-        work.completeness += req.completeness;
-    }
-    for (work in works) {                                                       //keep the sum of personns needed for each kind of work needed
-        works[work].totalOfEmployees = totalOfEmployees;
+        work = works[req.work] = works[req.work] || {//                         //keep an occurance of each kind of work needed
+            maxLimit: 0,
+            typesOfLevels: [],
+            completeness: 0,
+            totalByWork: 0                                                      // keep the sum of people needed for each kind of work
+        };
 
-        if (works[work].completeness > (works[work].totalByWork / totalOfEmployees) * 100) {
-            works[work].dimFactorAdvancement = true;
-        }
+        //keep the highest limit of all limits from each kind of work needed
+        work.maxLimit = Math.max(work.maxLimit, req.limit);
+        work.totalByWork += req.quantity;
+        work.completeness += req.completeness;
+
+        //keep all kind of levels for each kind of work needed
+        //if (work.typesOfLevels.indexOf(req.level) === -1) {
+        //    work.typesOfLevels.push(req.level);
+        //}
+        //is needed for next calcul
+        //needsCompletion += req.completeness * req.quantity;
     }
     return works;
 }
@@ -535,7 +512,7 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
 
     var i, employeeDesc, employeeInst, activityRate, averageSkillsetQuality,
         correctedRessources, needProgress,
-        affectedEmployeesDesc = [], stepAdvance = 1, sumActivityRate = 0,
+        employees = [], stepAdvance = 1, sumActivityRate = 0,
         employeesMotivationXActivityRate = 0,
         employeesMotivationFactor, employeesSkillsetXActivityRate = 0,
         employeeSkillsetFactor, activityCoefficientXActivityRate = 0,
@@ -546,9 +523,13 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
         reqByWorks = getRequirementsByWork(taskInst.requirements),
         selectedReq = activity.requirement,
         workAs = selectedReq.work,
+        work = reqByWorks[workAs],
         sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allActivities, activity), // @fixme should thie be here or in the next loop?
         level = parseInt(activity.resourceInstance.mainSkillLevel),
-        deltaLevel = level - selectedReq.level;
+        deltaLevel = level - selectedReq.level,
+        totalOfEmployees = Y.Array.sum(taskInst.requirements, function(r) {
+            return r.quantity;
+        });
 
     if (currentStep === 0) {
         taskTable[taskDesc.name] = taskDesc.getInstance(self).getPropertyD('completeness');
@@ -558,7 +539,7 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
     for (i = 0; i < sameNeedActivity.length; i++) {
         employeeInst = sameNeedActivity[i].resourceInstance;
         employeeDesc = employeeInst.descriptor;
-        affectedEmployeesDesc.push(employeeDesc);
+        employees.push(employeeDesc);
         activityRate = employeeInst.getPropertyD('activityRate');
         sumActivityRate += activityRate;
 
@@ -588,35 +569,34 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
     if (sumActivityRate !== 0) {
         stepAdvance *= employeesMotivationXActivityRate / sumActivityRate;      //needMotivationFactor (facteur motivation besoin)
         stepAdvance *= employeesSkillsetXActivityRate / sumActivityRate;        //needSkillsetFactor (facteur compétence besoin)
-        stepAdvance *= activityCoefficientXActivityRate / (affectedEmployeesDesc.length * 100); //activityNeedRateFactor (facteur taux activité besoin)
+        stepAdvance *= activityCoefficientXActivityRate / (employees.length * 100); //activityNeedRateFactor (facteur taux activité besoin)
     }
 
     stepAdvance *= 1 / (STEPS * (taskDesc.getInstance(self).duration));         // calculate base advance
 
     // calculate numberOfRessourcesFactor
-    if (reqByWorks[workAs].totalOfEmployees !== 0) {
-        if (affectedEmployeesDesc.length <= reqByWorks[workAs].totalOfEmployees) {
-            correctedRessources = 1 + taskDesc.getPropertyD('coordinationRatioInf') * (affectedEmployeesDesc.length / reqByWorks[workAs].totalOfEmployees - 1);
-            if (correctedRessources / affectedEmployeesDesc.length < 0.2) {
-                correctedRessources = affectedEmployeesDesc.length / 5 / reqByWorks[workAs].totalOfEmployees;
-            }
-        } else {
-            correctedRessources = 1 + taskDesc.getPropertyD('coordinationRatioSup') * (affectedEmployeesDesc.length / reqByWorks[workAs].totalOfEmployees - 1);
+    if (work.totalByWork !== 0) {
+        var cooridationfactor = (employees.length <= work.totalByWork) ?
+            taskDesc.getPropertyD('coordinationRatioInf') : taskDesc.getPropertyD('coordinationRatioSup');
+
+        correctedRessources = 1 + cooridationfactor * (employees.length / work.totalByWork - 1);
+        if (correctedRessources < 0.2) {
+            correctedRessources = employees.length / 5 / work.totalByWork;
         }
         stepAdvance *= correctedRessources;                                     //numberOfRessourcesFactor
+        debug('Facteur nb ressource besoin : ' + correctedRessources);
     }
 
-    if (reqByWorks[workAs].dimFactorAdvancement) {
+    if (work.completeness > (work.totalByWork / totalOfEmployees) * 100) {      // Other work factor
         debug('otherWorkFactor : ' + 0.8);
         stepAdvance *= 0.8;
     }
 
-    //calculate randomFactor                                                    
-    stepAdvance *= getRandomFactorFromTask(taskInst);
+    stepAdvance *= getRandomFactorFromTask(taskInst);                           // Random factor 
 
     //calculate learnFactor
     if (taskTable[taskDesc.name] > 15 && !workOnTask(employeeDesc, taskDesc)) {
-        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (taskDesc.getPropertyD('takeInHandDuration') / 100)) / affectedEmployeesDesc.length);//learnFactor
+        stepAdvance *= 1 - ((numberOfEmployeeOnNeedOnNewTask * (taskDesc.getPropertyD('takeInHandDuration') / 100)) / employees.length);//learnFactor
     }
 
     stepAdvance *= taskInst.getPropertyD('bonusRatio');                         //calculate tasks bonusRatio
@@ -625,9 +605,7 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
 
     stepAdvance *= getPredecessorFactor(taskDesc);                              //calculate predecessorFactor
 
-    stepAdvance *= 100;
-
-    stepAdvance /= affectedEmployeesDesc.length;
+    stepAdvance *= 100 / employees.length;
 
     //calculate new needCompleteness
     needProgress = selectedReq.completeness + stepAdvance;
@@ -664,9 +642,7 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
         debug('NeedSkillsetFactor : ' + employeesMotivationXActivityRate / sumActivityRate);
         debug('ActivityNeedRateFactor : ' + activityCoefficientXActivityRate / sumActivityRate);
         debug('baseAdvance : ' + 1 / (STEPS * taskDesc.getInstance(self).duration));
-        debug('numberOfRessourcesFactor : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);
-        debug('randomFactor (not same value as used !) : ' + getRandomFactorFromTask(taskInst));
-        debug('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (taskDesc.getPropertyD('takeInHandDuration') / 100)) / affectedEmployeesDesc.length)));
+        debug('learnFactor : ' + (1 - ((numberOfEmployeeOnNeedOnNewTask * (taskDesc.getPropertyD('takeInHandDuration') / 100)) / employees.length)));
         debug('taskbonusRatio : ' + taskInst.getPropertyD('bonusRatio'));
         debug('projectBonusRatio : ' + Variable.findByName(gameModel, 'bonusRatio').getValue(self));
         debug('predecessorFactor : ' + getPredecessorFactor(taskDesc)); //predecessor factor);
@@ -677,11 +653,9 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
         debug('StepQuality : ' + (selectedReq.quality * selectedReq.completeness + stepQuality * stepAdvance) / needProgress);
         debug('facteur motivation besoin : ' + employeesMotivationXActivityRate / sumActivityRate);
         debug('facteur competence besoin : ' + employeesSkillsetXActivityRate / sumActivityRate);
-        debug('nb employé affecté : ' + affectedEmployeesDesc.length);
-        debug('facteur taux activité besoin : ' + activityCoefficientXActivityRate / (affectedEmployeesDesc.length * 100));
-        debug('Ressource corrigée : ' + correctedRessources);
-        debug('emp total : ' + reqByWorks[workAs].totalOfEmployees);
-        debug('Facteur nb ressource besoin : ' + correctedRessources / reqByWorks[workAs].totalOfEmployees);
+        debug('nb employé affecté : ' + employees.length);
+        debug('facteur taux activité besoin : ' + activityCoefficientXActivityRate / (employees.length * 100));
+        debug('emp total : ' + totalOfEmployees);
         debug('task completness : ' + taskInst.getProperty('completeness'));
     }
 
@@ -696,12 +670,11 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
  * @param {TaskInstance} taskInst
  * @returns {Number} a factor between 0 and 2
  */
-function getRandomFactorFromTask(taskInst) {
-    var rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
-        randomDurationSup = taskInst.getPropertyD('randomDurationSup'),
-        randomDurationInf = taskInst.getPropertyD('randomDurationInf'),
-        duration = taskInst.duration, delta,
-        randomFactor, x = Math.random();
+function getRandomFactorFromTask(task) {
+    var delta, randomFactor, x = Math.random(),
+        rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
+        randomDurationSup = task.getPropertyD('randomDurationSup'),
+        randomDurationInf = task.getPropertyD('randomDurationInf');
 
     if (rn < 3) {
         delta = -(0.25 * x + 0.75) * randomDurationInf;
@@ -721,13 +694,13 @@ function getRandomFactorFromTask(taskInst) {
         delta = (0.25 * x + 0.75) * randomDurationSup;
     }
 
-    randomFactor = duration + delta;
+    randomFactor = task.duration + delta;
 
     if (randomFactor < MINTASKDURATION) {
         randomFactor = MINTASKDURATION;
     }
 
-    return getFloat((duration / randomFactor), 2);
+    return getFloat((task.duration / randomFactor), 2);
 }
 
 /**
@@ -814,11 +787,9 @@ function getStepName(step) {
  * @returns Boolean true if works on project
  */
 function workOnTask(employee, task) {
-    var currentPeriod = getCurrentPeriod().getValue(self),
-        previousPeriod = currentPeriod - 1;
-
     return Y.Array.find(employee.getInstance(self).activities, function(a) {
-        return a.time === previousPeriod && task.id === a.taskDescriptorId;
+        return a.time === getCurrentPeriod().getValue(self) - 1
+            && task.id === a.taskDescriptorId;
     });
 }
 
@@ -830,10 +801,10 @@ function workOnTask(employee, task) {
 function workOnProject(employeeInst) {
     var currentPeriod = getCurrentPeriod().getValue(self);
 
-    return Y.Array.find(employeeInst.activities, function(a) {        //Check if the employee a not finished activity
+    return Y.Array.find(employeeInst.activities, function(a) {                  //Check if the employee a not finished activity
         return a.taskDescriptor.getInstance(self).task.getPropertyD("completeness") < 100;
     })
-        && Y.Array.find(employeeInst.occupations, function(o) {       // Check if has an occupation for the futur
+        && Y.Array.find(employeeInst.occupations, function(o) {                 // Check if has an occupation for the futur
             return o.time >= currentPeriod;
         });
 }
