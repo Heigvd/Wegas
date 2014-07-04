@@ -216,9 +216,8 @@ function assignRessources(currentStep) {
                     debug("assignRessources(): creating new activity")
                     activity = employee.createActivity(assignables[0].taskDescriptor);
                 }
-                if (selectRequirementFromActivity(activity) === null) {         // Possible d'améliorer la performance en ne créant pas d'activity. Mais nécessite de créer une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
-                    employee.removeActivity(activity);
-                } else {
+                var req = selectRequirementFromActivity(activity);
+                if (req) {                                                      // Possible d'améliorer la performance en ne créant pas d'activity. Mais nécessite de créer une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
                     activity.setRequirement(selectRequirementFromActivity(activity));
                     activity.setTime(currentPeriod);
                     activities.push(activity);
@@ -434,7 +433,7 @@ function getPredecessorFactor(taskDesc) {
  */
 function selectFirstUncompletedWork(requirements, metier) {
     var work, reqByWorks = getRequirementsByWork(requirements);                 // get requirements merged by kind of work.
-
+    //debug("selectFirstUncompletedWork(" + requirements + ", " + metier + ")");
     for (work in reqByWorks) {
         if (reqByWorks[work].completeness < reqByWorks[work].maxLimit && metier == work) { //check if the maximum limit from all requirements of the current kind of work is smaller than the completeness of the current kind of work
             return work;
@@ -460,7 +459,7 @@ function selectRequirement(taskInst, employee, work) {
         //}),
         deltaLevel = 1000,
         reqByWorks = getRequirementsByWork(requirements)[work];
-
+    //debug("selectRequirement(" + taskInst + "," + employee + "," + ")");
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
         d = Math.abs(parseInt(employee.mainSkillLevel) - req.level);
@@ -519,7 +518,7 @@ function getRequirementsByWork(requirements) {
  * @returns {Number} a number between 0 and 100
  */
 function calculateActivityProgress(activity, allActivities, currentStep) {
-    debug("calculateActivityProgress(activity: " + activity + ", currentStep: " + currentStep + ")");
+    debug("calculateActivityProgress(activity: " + activity + ", currentStep: " + currentStep + ", employee: " + activity.resourceInstance + ")");
 
     var i, employeeDesc, employeeInst, activityRate, averageSkillsetQuality, correctedRessources,
         taskDesc = activity.taskDescriptor,
@@ -593,13 +592,13 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
     }
 
     // calculate numberOfRessourcesFactor
-    if (work.totalByWork !== 0) {
-        var cooridationfactor = (employees.length <= work.totalByWork) ?
+    if (totalOfEmployees !== 0) {
+        var cooridationfactor = (employees.length <= totalOfEmployees) ?
             taskDesc.getPropertyD("coordinationRatioInf") : taskDesc.getPropertyD("coordinationRatioSup");
 
-        correctedRessources = 1 + cooridationfactor * (employees.length / work.totalByWork - 1);
+        correctedRessources = 1 + cooridationfactor * (employees.length / totalOfEmployees - 1);
         if (correctedRessources < 0.2) {
-            correctedRessources = employees.length / 5 / work.totalByWork;
+            correctedRessources = employees.length / 5 / totalOfEmployees;
         }
         stepAdvance *= correctedRessources;                                     //numberOfRessourcesFactor
         debug("Facteur nb ressource besoin : " + correctedRessources);
