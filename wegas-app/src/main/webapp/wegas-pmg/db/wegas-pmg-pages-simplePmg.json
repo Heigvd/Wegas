@@ -966,6 +966,96 @@
                         "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                     }
                 ]
+            }, {
+                "type": "PmgSlidePanel",
+                "cssClass": "animated",
+                "title": "Designer",
+                "animation": true,
+                "children": [
+                    {
+                        "type": "PmgDatatable",
+                        "plugins": [
+                            {
+                                "fn": "ScheduleDT",
+                                "cfg": {
+                                    "columnToAdd": 24,
+                                    "variable": {
+                                        "name": "periodPhase3"
+                                    }
+                                }
+                            },
+                            {
+                                "fn": "Assignment",
+                                "cfg": {
+                                    "taskList": {
+                                        "name": "tasks"
+                                    },
+                                    "columnPosition": 5
+                                }
+                            },
+                            {
+                                "fn": "Reservation",
+                                "cfg": {
+                                }
+                            },
+                            {
+                                "fn": "OccupationColor",
+                                "cfg": {
+                                }
+                            },
+                            {
+                                "fn": "ActivityColor",
+                                "cfg": {
+                                }
+                            }
+                        ],
+                        "variable": {
+                            "name": "designer"
+                        },
+                        "columnsCfg": [
+                            {
+                                "key": "label",
+                                "label": "Name",
+                                "sortable": true,
+                                "allowHTML": true
+                            },
+                            {
+                                "name": "grade",
+                                "label": "Grade",
+                                "formatter": "skillLevel",
+                                "key": "instance.skillsets",
+                                "sortable": true,
+                                "allowHTML": true
+                            },
+                            {
+                                "name": "Wage",
+                                "label": "Wage",
+                                "key": "instance.properties.wage",
+                                "sortable": true,
+                                "allowHTML": true
+                            },
+                            {
+                                "name": "Rate",
+                                "label": "Rate",
+                                "key": "instance.properties.activityRate",
+                                "sortable": true,
+                                "allowHTML": true
+                            },
+                            {
+                                "name": "Motiv",
+                                "label": "Motiv.",
+                                "key": "instance.moral",
+                                "sortable": true,
+                                "allowHTML": true
+                            }
+                        ],
+                        "defaultSort": null
+                    },
+                    {
+                        "type": "Text",
+                        "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                    }
+                ]
             }
         ]
     },
