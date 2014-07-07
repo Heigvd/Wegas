@@ -20,6 +20,8 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.io.IOException;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -30,6 +32,7 @@ import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.apache.shiro.util.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,8 +168,8 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final ObjectMapper mapper = JacksonMapperProvider.getMapper();          // Retrieve a jackson mapper instance
         final String serialized = mapper.writerWithView(Views.Export.class).
                 writeValueAsString(oldEntity);                                  // Serialize the entity
-        final VariableDescriptor newEntity =
-                mapper.readValue(serialized, VariableDescriptor.class);         // and deserialize it
+        final VariableDescriptor newEntity
+                = mapper.readValue(serialized, VariableDescriptor.class);         // and deserialize it
 
         final DescriptorListI list = this.findParentList(oldEntity);
         this.createChild(oldEntity.getGameModel(), list, newEntity);
@@ -201,7 +204,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             vd.setName(DEFAULTVARIABLENAME);
         }
 
-        vd.setName(Helper.encodeVariableName(vd.getName()));
+        vd.setName(this.encodeVariableName(vd.getName()));
 
         int suff = 1;
         final String baseName = vd.getName();
@@ -218,6 +221,24 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
                 this.findUniqueName((VariableDescriptor) child, usedNames);
             }
         }
+    }
+
+    public String encodeVariableName(String s) {
+        s = s.replaceAll(" ", "_");
+
+        s = s.replaceAll("[ËÈÍÎ]", "e");
+        s = s.replaceAll("[˚˘]", "u");
+        s = s.replaceAll("[ÔÓ]", "i");
+        s = s.replaceAll("[‡‚]", "a");
+        s = s.replaceAll("‘", "o");
+
+        s = s.replaceAll("[»… À]", "E");
+        s = s.replaceAll("[€Ÿ]", "U");
+        s = s.replaceAll("[œŒ]", "I");
+        s = s.replaceAll("[¿¬]", "A");
+        s = s.replaceAll("‘", "O");
+
+        return s.replaceAll("[^\\w]|(^\\d)", "_$1");                                //Search for special chars or initial digit
     }
 
     /**
