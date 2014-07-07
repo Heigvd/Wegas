@@ -42,19 +42,28 @@ function testsimplepmg() {
     testMultipleWork();
     testTooManyResources();
     testNotEnoughResources();
-    testMotivationFactor();
-    testRandomDurationInf();
-    testRandomDurationSup();
+
+    testActivityFactor();
+    testBonusProjectFactor();
+    testCompetenceRatioInf();
+    testCompetenceRatioSup();
     testCoordinationRatioInf();
     testCoordinationRatioSup();
-    testCompetenceRatioSup();
-    testCompetenceRatioInf();
-    testBonusProjectFactor();
-    testActivityFactor();
-    testUnassignable();
-    testRequirementLimit();
+    testCoordinationRatioDiffLevel();
+    testCoordinationRatioInfDiffWorks();
+    testCoordinationRatioInfDiffWorks2();
+    testCoordinationRatioInfDiffWorks3();
+    testLearnFactor();
+    testMotivationFactor();
     testOtherWorkFactor();
-    //testCoordinationRatioInfDiffWorks();
+    testPredecessorFactor();
+    testRandomDurationInf();
+    testRandomDurationSup();
+    testRequirementLimit();
+    testUnassignable();
+    testremoveassign();
+
+    //testResourceChangeWithinTask();
 }
 function testNormalAssignment() {
     reset();                                                                    // Reset current game model
@@ -327,7 +336,7 @@ function testCoordinationRatioInfDiffWorks3() {
     nextPeriod();
     nextPeriod();
     nextPeriod();
-    
+
     assertEquals(71, task6.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks3(): task6 completness does not match"); //ancien 81%
     assertEquals(500, task6.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks3(): fixedCosts quality does not match"); //ancien 500
     assertEquals(1500, task6.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks3(): task6 wages does not match"); //ancien 1500
@@ -338,7 +347,7 @@ function testCoordinationRatioDiffLevel() {
     reset();
 
     task2.setProperty('coordinationRatioSup', '1.3');
-    
+
     informaticien1.instance.setSkillset("Informaticien", 12);
     informaticien2.instance.setSkillset("Informaticien", 12);
     commercial1.instance.setSkillset("Commercial", 5);

@@ -23,7 +23,8 @@ function lookupBean(name) {
  * 
  */
 Y = {
-    Array: {}
+    Array: {},
+    Object: {}
 };
 Y.Array.each = function(array, fn, thisObj) {
     if (array.toArray)
@@ -88,9 +89,18 @@ Y.Array.sum = function(a, f, o) {
     }
     return r;
 };
+Y.Object.keys = function(obj) {
+    var keys = [], key;
+
+    for (key in obj) {
+        keys.push(key);
+    }
+
+    return keys;
+};
 Y.log = function(level, msg, sender) {
     println("[" + level + "] " + msg);
-}
+};
 /**
  * Transform a wegas List in an array.
  * If the wegas list contain other wegas list (and contain other wegas list, etc),
