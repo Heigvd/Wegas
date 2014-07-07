@@ -16,7 +16,7 @@ var taskTable,
     STEPS = 10,
     MINTASKDURATION = 0.1,
     STEPNAMES = ["Lundi matin", "Lundi après-midi", "Mardi matin", "Mardi après-midi", "Mercredi matin",
-        "Mercredi après-midi", "Jeudi matin", "Jeudi après-midi", "Vendredi matin", "Vendredi après-midi", "Samedi matin"];
+    "Mercredi après-midi", "Jeudi matin", "Jeudi après-midi", "Vendredi matin", "Vendredi après-midi", "Samedi matin"];
 
 /**
  * Divide period in steps (see global variable).
@@ -538,8 +538,8 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
         level = parseInt(activity.resourceInstance.mainSkillLevel),
         deltaLevel = level - selectedReq.level,
         totalOfEmployees = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
 
     debug("baseAdvance : " + stepAdvance);
 
@@ -593,13 +593,20 @@ function calculateActivityProgress(activity, allActivities, currentStep) {
 
     // calculate numberOfRessourcesFactor
     if (totalOfEmployees !== 0) {
-        var cooridationfactor = (employees.length <= totalOfEmployees) ?
+        var cooridationfactor = (employees.length <= selectedReq.quantity) ?
             taskDesc.getPropertyD("coordinationRatioInf") : taskDesc.getPropertyD("coordinationRatioSup");
 
-        correctedRessources = 1 + cooridationfactor * (employees.length / totalOfEmployees - 1);
+        correctedRessources = 1 + cooridationfactor * (employees.length / selectedReq.quantity - 1);
         if (correctedRessources < 0.2) {
-            correctedRessources = employees.length / 5 / totalOfEmployees;
+            correctedRessources = employees.length / 5 / selectedReq.quantity;
+            debug("in : " + correctedRessources);
         }
+        var nbWork = 0, key;
+        for (key in reqByWorks) {
+            if (reqByWorks.hasOwnProperty(key))
+                nbWork++;
+        }
+        correctedRessources = correctedRessources / nbWork;
         stepAdvance *= correctedRessources;                                     //numberOfRessourcesFactor
         debug("Facteur nb ressource besoin : " + correctedRessources);
     }
@@ -807,8 +814,8 @@ function workOnProject(employeeInst) {
         return a.taskDescriptor.getInstance(self).task.getPropertyD("completeness") < 100;
     })
         && Y.Array.find(employeeInst.occupations, function(o) {                 // Check if has an occupation for the futur
-            return o.time >= currentPeriod;
-        });
+        return o.time >= currentPeriod;
+    });
 }
 
 /**

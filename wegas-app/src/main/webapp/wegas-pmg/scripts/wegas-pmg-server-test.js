@@ -17,6 +17,7 @@ var resourceController = lookupBean("ResourceController"),
     task3 = Variable.findByName(self.getGameModel(), 'task3'),
     task4 = Variable.findByName(self.getGameModel(), 'task4'),
     task5 = Variable.findByName(self.getGameModel(), 'task5'),
+    task6 = Variable.findByName(self.getGameModel(), 'task6'),
     commercial1 = Variable.findByName(gameModel, 'commercial1'),
     commercial2 = Variable.findByName(gameModel, 'commercial2'),
     commercial3 = Variable.findByName(gameModel, 'commercial3'),
@@ -27,6 +28,10 @@ var resourceController = lookupBean("ResourceController"),
     informaticien3 = Variable.findByName(gameModel, 'informaticien3'),
     informaticien4 = Variable.findByName(gameModel, 'informaticien4'),
     informaticien5 = Variable.findByName(gameModel, 'informaticien5'),
+    designer1 = Variable.findByName(gameModel, 'designer1'),
+    designer2 = Variable.findByName(gameModel, 'designer2'),
+    designer3 = Variable.findByName(gameModel, 'designer3'),
+    designer4 = Variable.findByName(gameModel, 'designer4'),
     quality = Variable.findByName(gameModel, 'quality').getInstance(self),
     costs = Variable.findByName(gameModel, 'costs').getInstance(self),
     delay = Variable.findByName(gameModel, 'delay').getInstance(self),
@@ -253,16 +258,15 @@ function testCoordinationRatioInf() {
     nextPeriod();
     nextPeriod();
     nextPeriod();
-    assertEquals(30, task1.instance.getProperty('completeness'), "testMotivationFactor(): task1 completness does not match"); //ancien 30%
-    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(1000, task1.instance.getProperty('wages'), "testMotivationFactor(): task1 wages does not match"); //ancien 1000
-    assertEquals(100, task1.instance.getProperty('quality'), "testMotivationFactor(): task1 quality does not match"); //ancien 100
+    assertEquals(30, task1.instance.getProperty('completeness'), "testCoordinationRatioInf(): task1 completness does not match"); //ancien 30%
+    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testCoordinationRatioInf(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(1000, task1.instance.getProperty('wages'), "testCoordinationRatioInf(): task1 wages does not match"); //ancien 1000
+    assertEquals(100, task1.instance.getProperty('quality'), "testCoordinationRatioInf(): task1 quality does not match"); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks() {
     reset();
 
     task2.setProperty('coordinationRatioInf', '2');
-//    task2.setProperty('coordinationRatioSup', '1.5');
 
     resourceController.addAssignment(informaticien1.instance.id, task2);
     resourceController.addAssignment(informaticien2.instance.id, task2);
@@ -274,10 +278,85 @@ function testCoordinationRatioInfDiffWorks() {
     nextPeriod();
     nextPeriod();
     nextPeriod();
-//    assertEquals(30, task1.instance.getProperty('completeness'), "testMotivationFactor(): task1 completness does not match"); //ancien 30%
-//    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
-//    assertEquals(1000, task1.instance.getProperty('wages'), "testMotivationFactor(): task1 wages does not match"); //ancien 1000
-//    assertEquals(100, task1.instance.getProperty('quality'), "testMotivationFactor(): task1 quality does not match"); //ancien 100
+    assertEquals(75, task2.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks(): task2 completness does not match"); //ancien 75%
+    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(750, task2.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks(): task2 wages does not match"); //ancien 750
+    assertEquals(100, task2.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks(): task2 quality does not match"); //ancien 100
+}
+function testCoordinationRatioInfDiffWorks2() {
+    reset();
+
+    task2.setProperty('coordinationRatioInf', '2');
+    task2.setProperty('coordinationRatioSup', '1.2');
+
+    resourceController.addAssignment(informaticien1.instance.id, task2);
+    resourceController.addAssignment(informaticien2.instance.id, task2);
+    resourceController.addAssignment(commercial1.instance.id, task2);
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien2.instance.id, 1);
+    resourceController.addReservation(commercial1.instance.id, 1);
+
+    nextPeriod();
+    nextPeriod();
+    nextPeriod();
+    assertEquals(79, task2.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks2(): task2 completness does not match"); //ancien 80%
+    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks2(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(750, task2.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks2(): task2 wages does not match"); //ancien 750
+    assertEquals(100, task2.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks2(): task2 quality does not match"); //ancien 100
+}
+//TODO Check differences (probably round problem)
+function testCoordinationRatioInfDiffWorks3() {
+    reset();
+
+    task6.setProperty('coordinationRatioInf', '1.5');
+    task6.setProperty('coordinationRatioSup', '1.2');
+
+    resourceController.addAssignment(informaticien1.instance.id, task6);
+    resourceController.addAssignment(informaticien2.instance.id, task6);
+    resourceController.addAssignment(commercial1.instance.id, task6);
+    resourceController.addAssignment(commercial2.instance.id, task6);
+    resourceController.addAssignment(designer1.instance.id, task6);
+    resourceController.addAssignment(designer2.instance.id, task6);
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien2.instance.id, 1);
+    resourceController.addReservation(commercial1.instance.id, 1);
+    resourceController.addReservation(commercial2.instance.id, 1);
+    resourceController.addReservation(designer1.instance.id, 1);
+    resourceController.addReservation(designer2.instance.id, 1);
+
+    nextPeriod();
+    nextPeriod();
+    nextPeriod();
+    
+    assertEquals(71, task6.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks3(): task6 completness does not match"); //ancien 81%
+    assertEquals(500, task6.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks3(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(1500, task6.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks3(): task6 wages does not match"); //ancien 1500
+    assertEquals(100, task6.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks3(): task6 quality does not match"); //ancien 100
+}
+//TODO Check differences (probably round problem)
+function testCoordinationRatioDiffLevel() {
+    reset();
+
+    task2.setProperty('coordinationRatioSup', '1.3');
+    
+    informaticien1.instance.setSkillset("Informaticien", 12);
+    informaticien2.instance.setSkillset("Informaticien", 12);
+    commercial1.instance.setSkillset("Commercial", 5);
+
+    resourceController.addAssignment(informaticien1.instance.id, task2);
+    resourceController.addAssignment(informaticien2.instance.id, task2);
+    resourceController.addAssignment(commercial1.instance.id, task2);
+    resourceController.addReservation(informaticien1.instance.id, 1);
+    resourceController.addReservation(informaticien2.instance.id, 1);
+    resourceController.addReservation(commercial1.instance.id, 1);
+
+    nextPeriod();
+    nextPeriod();
+    nextPeriod();
+    assertEquals(87, task2.instance.getProperty('completeness'), "testCoordinationRatioDiffLevel(): task2 completness does not match"); //ancien 84%
+    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCoordinationRatioDiffLevel(): fixedCosts quality does not match"); //ancien 500
+    assertEquals(750, task2.instance.getProperty('wages'), "testCoordinationRatioDiffLevel(): task2 wages does not match"); //ancien 750
+    assertEquals(102, task2.instance.getProperty('quality'), "testCoordinationRatioDiffLevel(): task2 quality does not match"); //ancien 101
 }
 function testCoordinationRatioSup() {
     reset();
