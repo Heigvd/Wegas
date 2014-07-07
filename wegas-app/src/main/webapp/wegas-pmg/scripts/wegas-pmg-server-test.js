@@ -651,7 +651,8 @@ function reset() {
     defaultEmployee(informaticien3);
     defaultEmployee(informaticien4);
     defaultEmployee(informaticien5);
-
+    
+    gameModelFacade.refresh(gameModel);
     gameModelFacade.reset(gameModel);
 }
 function standardPlannification() {
