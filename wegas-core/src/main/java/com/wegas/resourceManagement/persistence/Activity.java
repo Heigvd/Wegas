@@ -102,6 +102,7 @@ public class Activity extends AbstractAssignement {
     @Override
     public void merge(AbstractEntity a) {
         Activity other = (Activity) a;
+        this.setRequirement(other.getRequirement());
         this.setResourceInstance(other.getResourceInstance());
         this.setTime(other.getTime());
         this.setCompletion(other.getCompletion());
