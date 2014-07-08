@@ -5,10 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.resourceManagement.persistence;
+package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.statemachine.Transition;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
