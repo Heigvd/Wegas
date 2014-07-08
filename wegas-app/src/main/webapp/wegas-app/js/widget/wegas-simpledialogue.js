@@ -60,11 +60,10 @@ YUI.add("wegas-simpledialogue", function(Y) {
         },
         displayResponse: function(availableActions) {
             var i, responseNode = this.get(CONTENTBOX).one('.dialogue .response .responseElements');
-
+            responseNode.setContent("");
             if (!availableActions) {
                 return;
             }
-            responseNode.empty(true);
             for (i = 0; i < availableActions.length; i++) {
                 responseNode.insert('<li response_no="' + i + '">' + availableActions[i].get('actionText') + '</li>');
             }
