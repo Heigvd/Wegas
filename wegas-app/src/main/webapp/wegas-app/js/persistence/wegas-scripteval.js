@@ -69,7 +69,7 @@ YUI.add('wegas-scripteval', function(Y) {
                 };
             }
 
-            this.get("host").sendRequest(Y.mix(cfg, {
+            this.get("host").sendRequest(Y.mix(cfg || {}, {
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
