@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
@@ -10,11 +17,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
@@ -22,9 +27,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
-@XmlRootElement
-@XmlType(name = "")                                                             // This forces to use Class's short name as type
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class WRequirement extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -63,6 +65,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
      *
      */
     private Double quality = 0.0D;
+
     /**
      *
      */
@@ -239,5 +242,10 @@ public class WRequirement extends AbstractEntity implements Serializable {
                 this.setQuantity(this.getQuantity() + Math.round(value));
                 break;
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Requirement(" + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
     }
 }

@@ -98,6 +98,16 @@ Y.Object.keys = function(obj) {
 
     return keys;
 };
+Y.Object.values = function(obj) {
+    var keys = Y.Object.keys(obj),
+        i = 0,
+        len = keys.length,
+        values = [];
+    for (; i < len; ++i) {
+        values.push(obj[keys[i]]);
+    }
+    return values;
+};
 Y.log = function(level, msg, sender) {
     println("[" + level + "] " + msg);
 };

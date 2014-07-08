@@ -11,7 +11,6 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//Global variable for easy use
 var gm = self.getGameModel();
 
 /**
@@ -133,8 +132,7 @@ function updateVariables() {
         if (task.getPropertyD('completeness') > 0) {                            //...and started
             //debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
             ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
-            //TO check
-            tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired;
+            tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired; //TO check
         } else {
             tasksQuality += (100 + task.getPropertyD('quality')) * task.duration * employeesRequired;
         }

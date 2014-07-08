@@ -49,7 +49,7 @@ public class TaskInstance extends VariableInstance {
      *
      */
     @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
-    @JoinColumn(referencedColumnName = "variableinstance_id", updatable = true, insertable = true)
+    @JoinColumn(referencedColumnName = "variableinstance_id")
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
