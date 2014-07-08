@@ -13,12 +13,12 @@ YUI.add('wegas-fileexplorer', function(Y) {
     'use strict';
 
     var FileUploader, FileExplorer,
-            Wegas = Y.Wegas, JSON = Y.JSON,
-            CONTENTBOX = 'contentBox', BOUNDING_BOX = "boundingBox", LABEL = "label",
-            DEFAULTHEADERS = {
-                'Content-Type': 'application/json; charset=ISO-8859-1',
-                'Managed-Mode': false
-            }, BASEMENU = [{
+        Wegas = Y.Wegas, JSON = Y.JSON,
+        CONTENTBOX = 'contentBox', BOUNDING_BOX = "boundingBox", LABEL = "label",
+        DEFAULTHEADERS = {
+            'Content-Type': 'application/json; charset=ISO-8859-1',
+            'Managed-Mode': false
+        }, BASEMENU = [{
             label: "Upload file",
             cssClass: "wegas-icon wegas-icon-newfile",
             //tooltip: "Add a file",
@@ -182,7 +182,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             });
             this.rootNode.get(BOUNDING_BOX).delegate("drop", function(e) {
                 var i, file, node = Y.Widget.getByNode(e.currentTarget),
-                        files = e._event.dataTransfer.files;
+                    files = e._event.dataTransfer.files;
                 e.currentTarget.removeClass("fileexplorer-drag-over");
                 e.halt(true);
                 for (i = 0; i < files.length; i = i + 1) {
@@ -431,10 +431,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
 
         },
         _onDeleteFailure: function(e) {
-            var panel, current = this;
-            if (e.response.results.message.indexOf("is not empty") > -1) {
+            var panel, current = this, result = Y.JSON.parse(e.response.results);
+            if (result.message.indexOf("is not empty") > -1) {
                 panel = new Y.Wegas.Panel({
-                    content: e.response.results.message + "<br><br> Would you delete it anyway?",
+                    content: result.message + "<br><br> Would you delete it anyway?",
                     buttons: {
                         footer: [{
                                 label: "Delete",
@@ -477,7 +477,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
         },
         updateContent: function(e) {
             var node = e.cfg.node,
-                    data = e.response.results;
+                data = e.response.results;
             node.get("rightWidget").get("params").data.setAttrs({
                 description: data.description,
                 note: data.note
@@ -671,8 +671,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
         },
         formatFileSize: function(bytes) {
             var precision = 2,
-                    sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
-                    i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+                sizes = ['B', 'KB', 'MB', 'GB', 'TB'],
+                i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
             return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + sizes[i];
         }
     });
@@ -796,7 +796,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             //this.overallProgress.show();
             file.treeLeaf.set("loading", true);
             this.uploader.uploadThese([file],
-                    Wegas.app.get("dataSources").File.source + "upload" + file.treeLeaf.parentPath, {
+                Wegas.app.get("dataSources").File.source + "upload" + file.treeLeaf.parentPath, {
                 name: file.treeLeaf.get(LABEL)
             });
         }
