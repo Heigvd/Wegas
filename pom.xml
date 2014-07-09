@@ -312,6 +312,19 @@
                 <version>1.33</version>
             </dependency>
 
+	    <!-- PDF Generation -->
+	    <dependency>
+		<groupId>com.itextpdf</groupId>
+                <artifactId>itextpdf</artifactId>
+	        <version>5.5.1</version>
+	    </dependency>
+            <dependency>
+	        <groupId>org.xhtmlrenderer</groupId>
+	        <artifactId>flying-saucer-pdf</artifactId>
+		<version>9.0.6</version>
+                <type>jar</type>
+	    </dependency>
+
             <!-- Test -->
             <dependency>
                 <groupId>junit</groupId>
@@ -590,231 +603,231 @@
 
                     </check>
 
-                        <argLine>-XX:-UseSplitVerifier</argLine>
-                    </configuration>
-                </plugin>-->
-            </plugins>
-        </pluginManagement>
+			<argLine>-XX:-UseSplitVerifier</argLine>
+		    </configuration>
+		</plugin>-->
+	    </plugins>
+	</pluginManagement>
 
-        <plugins>
+	<plugins>
 
-            <!-- Compiler -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
+	    <!-- Compiler -->
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+	    </plugin>
 
-            <!-- Site -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-site-plugin</artifactId>
-                <version>3.2</version>
-                <inherited>true</inherited>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>site</phase>
-                    </execution>
-                </executions>
-                <configuration>
-                    <!--                    <locales>en,fr</locales>-->
-                    <outputDirectory>${project.build.directory}/site</outputDirectory>
-                    <skipDeploy>true</skipDeploy>
-                    <generateReports>true</generateReports>
-                    <reportPlugins combine.children="append">
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-project-info-reports-plugin</artifactId>
-                            <configuration>
-                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-                            </configuration>
-                            <reports>
-                                <report>index</report>
-                                <report>license</report>
-                                <report>project-team</report>
-                                <report>scm</report>
-                                <report>issue-tracking</report>
-                                <report>cim</report>
-                                <report>dependencies</report>
-                                <!--<report>mailing-list</report>
-                                <report>summary</report>-->
-                            </reports>
-                        </plugin>
+	    <!-- Site -->
+	    <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-site-plugin</artifactId>
+		<version>3.2</version>
+		<inherited>true</inherited>
+		<executions>
+		    <execution>
+			<goals>
+			    <goal>site</goal>
+			</goals>
+			<phase>site</phase>
+		    </execution>
+		</executions>
+		<configuration>
+		    <!--                    <locales>en,fr</locales>-->
+		    <outputDirectory>${project.build.directory}/site</outputDirectory>
+		    <skipDeploy>true</skipDeploy>
+		    <generateReports>true</generateReports>
+		    <reportPlugins combine.children="append">
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-project-info-reports-plugin</artifactId>
+			    <configuration>
+				<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+				<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+			    </configuration>
+			    <reports>
+				<report>index</report>
+				<report>license</report>
+				<report>project-team</report>
+				<report>scm</report>
+				<report>issue-tracking</report>
+				<report>cim</report>
+				<report>dependencies</report>
+				<!--<report>mailing-list</report>
+				<report>summary</report>-->
+			    </reports>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-javadoc-plugin</artifactId>
-                        </plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-jxr-plugin</artifactId>
-                        </plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-jxr-plugin</artifactId>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>jdepend-maven-plugin</artifactId>
-                            <version>2.0-beta-2</version>
-                        </plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>jdepend-maven-plugin</artifactId>
+			    <version>2.0-beta-2</version>
+			</plugin>
 
 
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>findbugs-maven-plugin</artifactId>
-                            <version>2.4.0</version>
-                            <configuration>
-                                <threshold>Normal</threshold>
-                                <effort>Min</effort>
-                            </configuration>
-                        </plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>findbugs-maven-plugin</artifactId>
+			    <version>2.4.0</version>
+			    <configuration>
+				<threshold>Normal</threshold>
+				<effort>Min</effort>
+			    </configuration>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>cobertura-maven-plugin</artifactId>
-                            <version>2.5.1</version>
-                        </plugin>
+			<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>cobertura-maven-plugin</artifactId>
+			    <version>2.5.1</version>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-checkstyle-plugin</artifactId>
-                            <version>2.9.1</version>
-                            <configuration>
-                                <configLocation>config/sun_checks.xml</configLocation>
-                            </configuration>
-                        </plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-checkstyle-plugin</artifactId>
+			    <version>2.9.1</version>
+			    <configuration>
+				<configLocation>config/sun_checks.xml</configLocation>
+			    </configuration>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-surefire-report-plugin</artifactId>
-                            <version>2.5</version>
-                        </plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-surefire-report-plugin</artifactId>
+			    <version>2.5</version>
+			</plugin>
 
-                        <plugin>
-                            <groupId>org.apache.maven.plugins</groupId>
-                            <artifactId>maven-pmd-plugin</artifactId>
-                            <version>2.7.1</version>
-                            <configuration>
-                                <rulesets>  http://pmd.sourceforge.net/rules/index.html
-                                    <ruleset>/rulesets/braces.xml</ruleset>
-                                    <ruleset>/rulesets/basic.xml</ruleset>
-                                    <ruleset>/rulesets/optimizations.xml</ruleset>
-                                    <ruleset>/rulesets/imports.xml</ruleset>
-                                    <ruleset>/rulesets/j2ee.xml</ruleset>
-                                    <ruleset>/rulesets/unusedcode.xml</ruleset>
-                                    <ruleset>/rulesets/codesize.xml</ruleset>
-                                    <ruleset>/rulesets/naming.xml</ruleset>
-                                </rulesets>
-                                <targetJdk>${jdk.version}</targetJdk>
-                            </configuration>
-                        </plugin>
+			<plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-pmd-plugin</artifactId>
+			    <version>2.7.1</version>
+			    <configuration>
+				<rulesets>  http://pmd.sourceforge.net/rules/index.html
+				    <ruleset>/rulesets/braces.xml</ruleset>
+				    <ruleset>/rulesets/basic.xml</ruleset>
+				    <ruleset>/rulesets/optimizations.xml</ruleset>
+				    <ruleset>/rulesets/imports.xml</ruleset>
+				    <ruleset>/rulesets/j2ee.xml</ruleset>
+				    <ruleset>/rulesets/unusedcode.xml</ruleset>
+				    <ruleset>/rulesets/codesize.xml</ruleset>
+				    <ruleset>/rulesets/naming.xml</ruleset>
+				</rulesets>
+				<targetJdk>${jdk.version}</targetJdk>
+			    </configuration>
+			</plugin>
 
-                        <!-- Code complexity -->
-                        <!-- @fixme removed because it is not compatible w/ java 1.7 -->
-                        <!--<plugin>
-                            <groupId>org.codehaus.mojo</groupId>
-                            <artifactId>javancss-maven-plugin</artifactId>
-                            <version>2.0-beta-2</version>
-                            <configuration>
-                                <includes>
-                                    <include>*.java</include>
-                                </includes>
-                                <linkXRef>false</linkXRef>
-                            </configuration>
-                            <dependencies>
-                                <dependency>
-                                    <groupId>javancss</groupId>
-                                    <artifactId>javancss</artifactId>
-                                    <version>29.50</version>
-                                    <scope>compile</scope>
-                                </dependency>
-                            </dependencies>
-                        </plugin>-->
+			<!-- Code complexity -->
+			<!-- @fixme removed because it is not compatible w/ java 1.7 -->
+			<!--<plugin>
+			    <groupId>org.codehaus.mojo</groupId>
+			    <artifactId>javancss-maven-plugin</artifactId>
+			    <version>2.0-beta-2</version>
+			    <configuration>
+				<includes>
+				    <include>*.java</include>
+				</includes>
+				<linkXRef>false</linkXRef>
+			    </configuration>
+			    <dependencies>
+				<dependency>
+				    <groupId>javancss</groupId>
+				    <artifactId>javancss</artifactId>
+				    <version>29.50</version>
+				    <scope>compile</scope>
+				</dependency>
+			    </dependencies>
+			</plugin>-->
 
-                    </reportPlugins>
-                </configuration>
-            </plugin>
+		    </reportPlugins>
+		</configuration>
+	    </plugin>
 
-            <!-- Site deployment on github -->
-            <plugin>
-                <groupId>com.github.github</groupId>
-                <artifactId>site-maven-plugin</artifactId>
-                <version>0.8</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <repositoryName>Wegas</repositoryName>
-                    <repositoryOwner>Heigvd</repositoryOwner>
-                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
-                    <message>${project.version} Site (${maven.build.timestamp})</message>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>gitSite</id>
-                        <goals>
-                            <goal>site</goal>
-                        </goals>
-                        <phase>none</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>wagon-maven-plugin</artifactId>
-                <version>1.0-beta-4</version>
-                <inherited>false</inherited>
-                <configuration>
-                    <serverId>${wegas.deploy.server}</serverId>
-                    <fromFile>wegas-app/target/Wegas.war</fromFile>
-                    <url>${wegas.deploy.path}</url>
-                    <toFile>${wegas.deploy.name}</toFile>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>upload-war</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>upload-single</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+	    <!-- Site deployment on github -->
+	    <plugin>
+		<groupId>com.github.github</groupId>
+		<artifactId>site-maven-plugin</artifactId>
+		<version>0.8</version>
+		<inherited>false</inherited>
+		<configuration>
+		    <repositoryName>Wegas</repositoryName>
+		    <repositoryOwner>Heigvd</repositoryOwner>
+		    <outputDirectory>${project.build.directory}/staging</outputDirectory>
+		    <message>${project.version} Site (${maven.build.timestamp})</message>
+		</configuration>
+		<executions>
+		    <execution>
+			<id>gitSite</id>
+			<goals>
+			    <goal>site</goal>
+			</goals>
+			<phase>none</phase>
+		    </execution>
+		</executions>
+	    </plugin>
+	    <plugin>
+		<groupId>org.codehaus.mojo</groupId>
+		<artifactId>wagon-maven-plugin</artifactId>
+		<version>1.0-beta-4</version>
+		<inherited>false</inherited>
+		<configuration>
+		    <serverId>${wegas.deploy.server}</serverId>
+		    <fromFile>wegas-app/target/Wegas.war</fromFile>
+		    <url>${wegas.deploy.path}</url>
+		    <toFile>${wegas.deploy.name}</toFile>
+		</configuration>
+		<executions>
+		    <execution>
+			<id>upload-war</id>
+			<phase>deploy</phase>
+			<goals>
+			    <goal>upload-single</goal>
+			</goals>
+		    </execution>
+		</executions>
+	    </plugin>
 
-        </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.5</version>
-            </extension>
-        </extensions>
+	</plugins>
+	<extensions>
+	    <extension>
+		<groupId>org.apache.maven.wagon</groupId>
+		<artifactId>wagon-ssh</artifactId>
+		<version>2.5</version>
+	    </extension>
+	</extensions>
     </build>
 
     <repositories>
-        <repository>
-            <id>maven2-repository.dev.java.net</id>
-            <name>Java.net Repository for Maven</name>
-            <url>http://maven.glassfish.org/content/groups/glassfish</url>
-            <layout>default</layout>
-        </repository>
+	<repository>
+	    <id>maven2-repository.dev.java.net</id>
+	    <name>Java.net Repository for Maven</name>
+	    <url>http://maven.glassfish.org/content/groups/glassfish</url>
+	    <layout>default</layout>
+	</repository>
 
-        <repository>
-            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
-            <id>eclipselink</id>
-            <layout>default</layout>
-            <name>Repository for library Library[eclipselink]</name>
-        </repository>
-        <repository>
-            <id>jsdoctk1</id>
-            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-        </repository>
+	<repository>
+	    <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+	    <id>eclipselink</id>
+	    <layout>default</layout>
+	    <name>Repository for library Library[eclipselink]</name>
+	</repository>
+	<repository>
+	    <id>jsdoctk1</id>
+	    <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
+	</repository>
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
-            <id>jsdoctk2</id>
-            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-        </pluginRepository>
+	<pluginRepository>
+	    <id>jsdoctk2</id>
+	    <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
+	</pluginRepository>
     </pluginRepositories>
 </project>
