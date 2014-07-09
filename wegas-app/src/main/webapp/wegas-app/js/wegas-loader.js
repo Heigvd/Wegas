@@ -249,6 +249,10 @@ YUI().use(function(Y) {
                 'wegas-plugin': {
                     requires: ["timers"]
                 },
+                'wegas-serverlog': {
+                    path: 'js/plugin/wegas-serverlog-min.js',
+                    ws_provides: "ServerLog"
+                },
                 'wegas-userpreferences': {
                     path: 'js/plugin/wegas-userpreferences-min.js',
                     requires: ["wegas-form", "wegas-plugin"],
@@ -319,6 +323,10 @@ YUI().use(function(Y) {
                     path: 'js/plugin/wegas-pdf-min.js',
                     requires: ['jspdf', 'jspdfPlugin'],
                     ws_provides: 'PDF'
+                },
+                'wegas-simpledialogue': {
+                    path: "js/widget/wegas-simpledialogue.js",
+                    ws_provides: "SimpleDialogue"
                 }
             }
         },
@@ -679,6 +687,11 @@ YUI().use(function(Y) {
                     requires: 'wegas-pmgwidget-css',
                     ws_provides: 'OccupationColor'
                 },
+                "wegas-pmg-linefilter": {
+                    path: 'js/plugin/wegas-pmg-linefilter-min.js',
+                    requires: 'wegas-pmgwidget-css',
+                    ws_provides: ['PMGLineFilter', 'PMGLineCompleteness']
+                },
                 "wegas-pmg-activitycolor": {
                     path: 'js/plugin/wegas-pmg-activitycolor-min.js',
                     requires: 'wegas-pmgwidget-css',
@@ -966,11 +979,6 @@ YUI().use(function(Y) {
                         "wegas-panel", "wegas-simpledialogue"],
                     ws_provides: 'CEPFolder'
                 },
-                /* SimpleDialogue */
-                'wegas-simpledialogue': {
-                    path: "wegas-games/wegas-simpledialogue/js/wegas-simpledialogue-main.js",
-                    ws_provides: "SimpleDialogue"
-                }
                 /* Chess */
                 //'wegas-chess': {
                 //    path: "wegas-games/wegas-chess/js/wegas-chess-min.js",

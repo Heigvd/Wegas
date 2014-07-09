@@ -41,7 +41,7 @@ public class IntegrationTest {
         //glassfishProperties.setInstanceRoot("./src/test/glassfish/domains/domain1");
         glassfishProperties.setConfigFileURI((new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString());
         //glassfishProperties.setConfigFileReadOnly(false);
-        TestHelper.createIntegrationDB();
+        TestHelper.resetTestDB();
         glassfish = GlassFishRuntime.bootstrap(bootstrapProperties).newGlassFish(glassfishProperties);
         Logger.getLogger("javax.enterprise.system.tools.deployment").setLevel(Level.OFF);
         Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
@@ -66,7 +66,6 @@ public class IntegrationTest {
     public static void tearDownClass() throws Exception {
         glassfish.getDeployer().undeploy(appName);
         glassfish.dispose();
-        TestHelper.dropIntegrationDB();
     }
 
     @Test(expected = ScriptException.class)

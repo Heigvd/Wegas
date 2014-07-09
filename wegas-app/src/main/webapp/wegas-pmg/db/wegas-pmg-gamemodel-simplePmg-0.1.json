@@ -3,7 +3,7 @@
     "pages": {},
     "name": "simple PMG",
     "description": "",
-    "createdTime": 1404489431924,
+    "createdTime": 1404220334535,
     "template": true,
     "childVariableDescriptors": [
         {
@@ -159,7 +159,61 @@
                         "@class": "GameScope",
                         "broadcastScope": "PlayerScope"
                     },
-                    "items": []
+                    "items": [
+                        {
+                            "@class": "QuestionDescriptor",
+                            "name": "Effectuer action 1 phase 1",
+                            "label": "Effectuer action 1 phase 1",
+                            "title": null,
+                            "defaultInstance": {
+                                "@class": "QuestionInstance",
+                                "replies": [],
+                                "active": true,
+                                "unread": true
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "PlayerScope"
+                            },
+                            "description": null,
+                            "allowMultipleReplies": true,
+                            "items": [
+                                {
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "Action1Reponse1",
+                                    "label": "reponse",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance",
+                                        "active": true,
+                                        "unread": true,
+                                        "currentResultIndex": 0
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "PlayerScope"
+                                    },
+                                    "results": [
+                                        {
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "<p>Tout c'est bien pass&eacute;.</p>",
+                                            "files": [],
+                                            "impact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"managementApproval\").add(self, 5)",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    ],
+                                    "description": "",
+                                    "duration": 1,
+                                    "cost": 0
+                                }
+                            ],
+                            "pictures": []
+                        }
+                    ]
                 },
                 {
                     "@class": "ListDescriptor",
@@ -175,7 +229,61 @@
                         "@class": "GameScope",
                         "broadcastScope": "PlayerScope"
                     },
-                    "items": []
+                    "items": [
+                        {
+                            "@class": "QuestionDescriptor",
+                            "name": "effectuerAction1Phase1",
+                            "label": "Effectuer action 1 phase 2",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "QuestionInstance",
+                                "replies": [],
+                                "active": true,
+                                "unread": true
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "allowMultipleReplies": true,
+                            "items": [
+                                {
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "action1Reponse1",
+                                    "label": "reponse",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance",
+                                        "active": true,
+                                        "unread": true,
+                                        "currentResultIndex": 0
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "PlayerScope"
+                                    },
+                                    "results": [
+                                        {
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "<p>Tout c'est bien pass&eacute;.</p>",
+                                            "files": [],
+                                            "impact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"managementApproval\").add(self, 5)",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    ],
+                                    "description": "",
+                                    "duration": 1,
+                                    "cost": 0
+                                }
+                            ],
+                            "pictures": []
+                        }
+                    ]
                 },
                 {
                     "@class": "ListDescriptor",
@@ -191,7 +299,61 @@
                         "@class": "GameScope",
                         "broadcastScope": "TeamScope"
                     },
-                    "items": []
+                    "items": [
+                        {
+                            "@class": "QuestionDescriptor",
+                            "name": "effectuerAction1Phase1_1",
+                            "label": "Effectuer action 1 phase 3",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "QuestionInstance",
+                                "replies": [],
+                                "active": true,
+                                "unread": true
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "allowMultipleReplies": true,
+                            "items": [
+                                {
+                                    "@class": "ChoiceDescriptor",
+                                    "name": "action1Reponse1_1",
+                                    "label": "reponse",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "ChoiceInstance",
+                                        "active": true,
+                                        "unread": true,
+                                        "currentResultIndex": 0
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "PlayerScope"
+                                    },
+                                    "results": [
+                                        {
+                                            "@class": "Result",
+                                            "name": "Normal",
+                                            "answer": "<p>Tout c'est bien pass&eacute;.</p>",
+                                            "files": [],
+                                            "impact": {
+                                                "@class": "Script",
+                                                "content": "Variable.find(gameModel, \"managementApproval\").add(self, 5)",
+                                                "language": "JavaScript"
+                                            }
+                                        }
+                                    ],
+                                    "description": "",
+                                    "duration": 1,
+                                    "cost": 0
+                                }
+                            ],
+                            "pictures": []
+                        }
+                    ]
                 }
             ]
         },
@@ -239,7 +401,93 @@
                                 "@class": "GameScope",
                                 "broadcastScope": "PlayerScope"
                             },
-                            "items": []
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "Comment faire cela?",
+                                    "label": "Ajouter ou diminuer la direction",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -272,7 +520,93 @@
                                 "@class": "GameScope",
                                 "broadcastScope": "PlayerScope"
                             },
-                            "items": []
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "commentFaireCela__2",
+                                    "label": "Ajouter ou diminuer les utilisateurs",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_2",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1_1",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
                         }
                     ]
                 },
@@ -305,7 +639,93 @@
                                 "@class": "GameScope",
                                 "broadcastScope": "PlayerScope"
                             },
-                            "items": []
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "commentFaireCela_",
+                                    "label": "Ajouter ou diminuer la direction",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_3",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1_2",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"managementApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
                         },
                         {
                             "@class": "ListDescriptor",
@@ -321,7 +741,93 @@
                                 "@class": "GameScope",
                                 "broadcastScope": "PlayerScope"
                             },
-                            "items": []
+                            "items": [
+                                {
+                                    "@class": "QuestionDescriptor",
+                                    "name": "commentFaireCela__2_1",
+                                    "label": "Ajouter ou diminuer les utilisateurs",
+                                    "title": "",
+                                    "defaultInstance": {
+                                        "@class": "QuestionInstance",
+                                        "replies": [],
+                                        "active": true,
+                                        "unread": true
+                                    },
+                                    "scope": {
+                                        "@class": "TeamScope",
+                                        "broadcastScope": "TeamScope"
+                                    },
+                                    "description": "",
+                                    "allowMultipleReplies": false,
+                                    "items": [
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_2_1",
+                                            "label": "a) Ajouter",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").add(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        },
+                                        {
+                                            "@class": "SingleResultChoiceDescriptor",
+                                            "name": "a_Reponse1_1_1_1",
+                                            "label": "b) Diminuer",
+                                            "title": "",
+                                            "defaultInstance": {
+                                                "@class": "ChoiceInstance",
+                                                "active": true,
+                                                "unread": true,
+                                                "currentResultIndex": 0
+                                            },
+                                            "scope": {
+                                                "@class": "TeamScope",
+                                                "broadcastScope": "TeamScope"
+                                            },
+                                            "results": [
+                                                {
+                                                    "@class": "Result",
+                                                    "name": "",
+                                                    "answer": "",
+                                                    "files": [],
+                                                    "impact": {
+                                                        "@class": "Script",
+                                                        "content": "Variable.find(gameModel, \"userApproval\").sub(self, 10)",
+                                                        "language": "JavaScript"
+                                                    }
+                                                }
+                                            ],
+                                            "description": "",
+                                            "duration": 1,
+                                            "cost": 0
+                                        }
+                                    ],
+                                    "pictures": []
+                                }
+                            ]
                         }
                     ]
                 }
@@ -358,9 +864,9 @@
                             "randomDurationInf": "0",
                             "bac": "0",
                             "completeness": "0",
-                            "randomDurationSup": "0",
+                            "quality": "0",
                             "bonusRatio": "1",
-                            "quality": "0"
+                            "randomDurationSup": "0"
                         },
                         "requirements": [
                             {
@@ -408,9 +914,9 @@
                             "randomDurationInf": "0",
                             "bac": "0",
                             "completeness": "0",
-                            "randomDurationSup": "0",
+                            "quality": "0",
                             "bonusRatio": "1",
-                            "quality": "0"
+                            "randomDurationSup": "0"
                         },
                         "requirements": [
                             {
@@ -467,9 +973,9 @@
                             "randomDurationInf": "0",
                             "bac": "0",
                             "completeness": "0",
-                            "randomDurationSup": "0",
+                            "quality": "0",
                             "bonusRatio": "1",
-                            "quality": "0"
+                            "randomDurationSup": "0"
                         },
                         "requirements": [
                             {
@@ -529,9 +1035,9 @@
                             "randomDurationInf": "0",
                             "bac": "0",
                             "completeness": "0",
-                            "randomDurationSup": "0",
+                            "quality": "0",
                             "bonusRatio": "1",
-                            "quality": "0"
+                            "randomDurationSup": "0"
                         },
                         "requirements": [
                             {
@@ -588,9 +1094,9 @@
                             "randomDurationInf": "0",
                             "bac": "0",
                             "completeness": "0",
-                            "randomDurationSup": "0",
+                            "quality": "0",
                             "bonusRatio": "1",
-                            "quality": "0"
+                            "randomDurationSup": "0"
                         },
                         "requirements": [
                             {
@@ -610,74 +1116,6 @@
                     },
                     "description": "",
                     "index": 5,
-                    "properties": {
-                        "competenceRatioInf": "1",
-                        "progressionOfNeeds": "0",
-                        "coordinationRatioInf": "1",
-                        "takeInHandDuration": "0",
-                        "competenceRatioSup": "1",
-                        "coordinationRatioSup": "1"
-                    },
-                    "predecessorNames": []
-                },
-                {
-                    "@class": "TaskDescriptor",
-                    "name": "task6",
-                    "label": "task6",
-                    "title": "",
-                    "defaultInstance": {
-                        "@class": "TaskInstance",
-                        "active": true,
-                        "duration": 2,
-                        "plannification": [],
-                        "properties": {
-                            "fixedCosts": "500",
-                            "predecessorsDependances": "1000",
-                            "unworkedHoursCosts": "0",
-                            "wages": "0",
-                            "randomDurationInf": "0",
-                            "bac": "0",
-                            "completeness": "0",
-                            "randomDurationSup": "0",
-                            "bonusRatio": "1",
-                            "quality": "0"
-                        },
-                        "requirements": [
-                            {
-                                "@class": "WRequirement",
-                                "limit": 100,
-                                "work": "Designer",
-                                "level": 8,
-                                "quantity": 1,
-                                "completeness": 0,
-                                "quality": 0
-                            },
-                            {
-                                "@class": "WRequirement",
-                                "limit": 100,
-                                "work": "Commercial",
-                                "level": 8,
-                                "quantity": 1,
-                                "completeness": 0,
-                                "quality": 0
-                            },
-                            {
-                                "@class": "WRequirement",
-                                "limit": 100,
-                                "work": "Informaticien",
-                                "level": 8,
-                                "quantity": 2,
-                                "completeness": 0,
-                                "quality": 0
-                            }
-                        ]
-                    },
-                    "scope": {
-                        "@class": "TeamScope",
-                        "broadcastScope": "TeamScope"
-                    },
-                    "description": "",
-                    "index": 1,
                     "properties": {
                         "competenceRatioInf": "1",
                         "progressionOfNeeds": "0",
@@ -1483,348 +1921,6 @@
                                 },
                                 "moral": 7,
                                 "moralHistory": [
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7
-                                ],
-                                "confidence": 0,
-                                "confidenceHistory": [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
-                            },
-                            "scope": {
-                                "@class": "TeamScope",
-                                "broadcastScope": "TeamScope"
-                            },
-                            "description": "",
-                            "properties": {
-                                "coef_activity": "1",
-                                "coef_moral": "1",
-                                "maxBilledUnworkedHours": "0",
-                                "planningAvailability": "false",
-                                "engagementDelay": "0"
-                            }
-                        }
-                    ]
-                },
-                {
-                    "@class": "ListDescriptor",
-                    "name": "designer",
-                    "label": "Designer",
-                    "title": null,
-                    "defaultInstance": {
-                        "@class": "ListInstance"
-                    },
-                    "scope": {
-                        "@class": "TeamScope",
-                        "broadcastScope": "TeamScope"
-                    },
-                    "items": [
-                        {
-                            "@class": "ResourceDescriptor",
-                            "name": "designer1",
-                            "label": "Designer1",
-                            "title": "",
-                            "defaultInstance": {
-                                "@class": "ResourceInstance",
-                                "assignments": [],
-                                "occupations": [],
-                                "activities": [],
-                                "active": true,
-                                "skillsets": {
-                                    "Designer": 8
-                                },
-                                "properties": {
-                                    "activityRate": "100",
-                                    "wage": "1000"
-                                },
-                                "moral": 7,
-                                "moralHistory": [
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7
-                                ],
-                                "confidence": 0,
-                                "confidenceHistory": [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
-                            },
-                            "scope": {
-                                "@class": "TeamScope",
-                                "broadcastScope": "TeamScope"
-                            },
-                            "description": "",
-                            "properties": {
-                                "coef_activity": "1",
-                                "coef_moral": "1",
-                                "maxBilledUnworkedHours": "0",
-                                "planningAvailability": "false",
-                                "engagementDelay": "0"
-                            }
-                        },
-                        {
-                            "@class": "ResourceDescriptor",
-                            "name": "designer2",
-                            "label": "Designer2",
-                            "title": "",
-                            "defaultInstance": {
-                                "@class": "ResourceInstance",
-                                "assignments": [],
-                                "occupations": [],
-                                "activities": [],
-                                "active": true,
-                                "skillsets": {
-                                    "Designer": 8
-                                },
-                                "properties": {
-                                    "activityRate": "100",
-                                    "wage": "1000"
-                                },
-                                "moral": 7,
-                                "moralHistory": [
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    8,
-                                    8,
-                                    7,
-                                    7,
-                                    7,
-                                    7
-                                ],
-                                "confidence": 0,
-                                "confidenceHistory": [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
-                            },
-                            "scope": {
-                                "@class": "TeamScope",
-                                "broadcastScope": "TeamScope"
-                            },
-                            "description": "",
-                            "properties": {
-                                "coef_activity": "1",
-                                "coef_moral": "1",
-                                "maxBilledUnworkedHours": "0",
-                                "planningAvailability": "false",
-                                "engagementDelay": "0"
-                            }
-                        },
-                        {
-                            "@class": "ResourceDescriptor",
-                            "name": "designer3",
-                            "label": "Designer3",
-                            "title": "",
-                            "defaultInstance": {
-                                "@class": "ResourceInstance",
-                                "assignments": [],
-                                "occupations": [],
-                                "activities": [],
-                                "active": true,
-                                "skillsets": {
-                                    "Designer": 8
-                                },
-                                "properties": {
-                                    "activityRate": "100",
-                                    "wage": "1000"
-                                },
-                                "moral": 7,
-                                "moralHistory": [
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7
-                                ],
-                                "confidence": 0,
-                                "confidenceHistory": [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
-                            },
-                            "scope": {
-                                "@class": "TeamScope",
-                                "broadcastScope": "TeamScope"
-                            },
-                            "description": "",
-                            "properties": {
-                                "coef_activity": "1",
-                                "coef_moral": "1",
-                                "maxBilledUnworkedHours": "0",
-                                "planningAvailability": "false",
-                                "engagementDelay": "0"
-                            }
-                        },
-                        {
-                            "@class": "ResourceDescriptor",
-                            "name": "designer4",
-                            "label": "Designer4",
-                            "title": "",
-                            "defaultInstance": {
-                                "@class": "ResourceInstance",
-                                "assignments": [],
-                                "occupations": [],
-                                "activities": [],
-                                "active": true,
-                                "skillsets": {
-                                    "Designer": 8
-                                },
-                                "properties": {
-                                    "activityRate": "100",
-                                    "wage": "1000"
-                                },
-                                "moral": 7,
-                                "moralHistory": [
-                                    7,
                                     7,
                                     7,
                                     7,

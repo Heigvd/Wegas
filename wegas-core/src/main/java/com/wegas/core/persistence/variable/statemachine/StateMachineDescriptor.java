@@ -11,7 +11,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
-import com.wegas.resourceManagement.persistence.DialogueDescriptor;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;

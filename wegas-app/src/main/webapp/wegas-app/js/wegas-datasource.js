@@ -145,7 +145,7 @@ YUI.add('wegas-datasource', function(Y) {
         abort: function(tId) {
             if (DataSource.Local.transactions[tId]) {
                 DataSource.Local.transactions[tId].abort();
-                DataSource.Local.transactions[tId] = null;                    // @hack Remove reference since YUI won't do it
+                DataSource.Local.transactions[tId] = null;                      // @hack Remove reference since YUI won't do it
             }
         }
     });
@@ -578,6 +578,9 @@ YUI.add('wegas-datasource', function(Y) {
 
             this.on("CustomEvent", function(e) {
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
+            });
+            this.on("ExceptionEvent", function(e) {
+                this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
             });
         },
         generateRequest: function(data) {

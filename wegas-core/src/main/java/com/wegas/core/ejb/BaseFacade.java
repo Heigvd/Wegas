@@ -58,6 +58,15 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      *
      * @param entity
      */
+    public void refresh(final T entity) {
+        getEntityManager().flush();
+        getEntityManager().refresh(entity);
+    }
+
+    /**
+     *
+     * @param entity
+     */
     @Override
     public void create(final T entity) {
         getEntityManager().persist(entity);

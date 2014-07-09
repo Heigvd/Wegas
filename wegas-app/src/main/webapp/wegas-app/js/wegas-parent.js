@@ -255,7 +255,7 @@ YUI.add("wegas-parent", function(Y) {
                                                             }]
                                                     }, {
                                                         type: BUTTON,
-                                                        label: "Question list",
+                                                        label: "Question folder",
                                                         plugins: [{
                                                                 fn: "AddChildWidgetAction",
                                                                 cfg: {

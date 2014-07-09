@@ -35,20 +35,20 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Assignment.class)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     @OrderColumn
     private List<Assignment> assignments = new ArrayList<>();
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Occupation.class)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Occupation> occupations = new ArrayList<>();
     /**
      *
      */
-    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true, targetEntity = Activity.class)
+    @OneToMany(mappedBy = "resourceInstance", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference
     private List<Activity> activities = new ArrayList<>();
     /**
