@@ -88,8 +88,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         },
         defineMaxGaugeValue: function() {
             var variableDescriptor = this.get("variable.evaluated"),
-                    maxVal = this.get("maxValue") || variableDescriptor ? variableDescriptor.get("maxValue") : null || this.MAXVAL,
-                    minVal = this.get("minValue") || variableDescriptor ? variableDescriptor.get("minValue") : null || 0;
+                    maxVal = this.get("maxValue") || (variableDescriptor && variableDescriptor.get("maxValue") ? variableDescriptor.get("maxValue") : this.MAXVAL),
+                    minVal = this.get("minValue") || (variableDescriptor && variableDescriptor.get("minValue") ? variableDescriptor.get("minValue") : 0);
             return maxVal - minVal;
         },
         angleTransform: function(angle) {
