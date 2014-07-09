@@ -7,10 +7,10 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
+import com.wegas.core.persistence.variable.statemachine.DialogueState;
+import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.resourceManagement.persistence.DialogueState;
-import com.wegas.resourceManagement.persistence.DialogueTransition;
 import java.io.IOException;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
