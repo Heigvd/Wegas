@@ -492,7 +492,7 @@ function calculateActivityProgress(activity, allActivities) {
             return r.quantity;
         });
     debug("baseAdvance : " + stepAdvance + ", #sameNeedActivity: " + sameNeedActivity.length);
-    
+
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
         employeeInst = sameNeedActivity[i].resourceInstance;

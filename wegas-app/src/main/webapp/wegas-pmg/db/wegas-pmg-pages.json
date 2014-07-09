@@ -236,7 +236,7 @@
                 "label": "timeCards",
                 "data": {},
                 "variable": {
-                    "content": "Variable.find('timeCards').item(currentPhase.value)"
+                    "content": "Variable.find('timeCards')"
                 },
                 "plugins": [{
                         "fn": "CSSPosition",
