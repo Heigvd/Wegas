@@ -492,6 +492,7 @@ function calculateActivityProgress(activity, allActivities) {
             return r.quantity;
         });
     debug("baseAdvance : " + stepAdvance + ", #sameNeedActivity: " + sameNeedActivity.length);
+    
     //For each need
     for (i = 0; i < sameNeedActivity.length; i++) {
         employeeInst = sameNeedActivity[i].resourceInstance;
@@ -504,7 +505,8 @@ function calculateActivityProgress(activity, allActivities) {
         //debug("employeesMotivationFactor : " + employeesMotivationFactor);
 
         //Calcul variables for skill factor
-        var deltaLevel = parseInt(activity.resourceInstance.mainSkillLevel) - requirement.level,
+
+        deltaLevel = parseInt(employeeInst.mainSkillLevel) - requirement.level,
             skillsetFactor = (deltaLevel > 0) ? taskDesc.getPropertyD("competenceRatioSup") : taskDesc.getPropertyD("competenceRatioInf");
         employeeSkillsetFactor = Math.max(0, 1 + 0.05 * skillsetFactor * deltaLevel);
         //debug("calc skillset: activityRate:" + activityRate + ", skillsetFactor: " + skillsetFactor + "deltaLevel: " + deltaLevel);
