@@ -82,6 +82,9 @@ public class Game extends NamedEntity {
     @XmlTransient
     @JsonIgnore
     private User createdBy;
+    /**
+     *
+     */
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
     @XmlTransient
     @JsonIgnore

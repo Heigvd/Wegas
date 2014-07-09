@@ -11,21 +11,23 @@
  */
 YUI.add('wegas-resourcemanagement-entities', function(Y) {
     "use strict";
+
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
-            SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
-            OBJECT = "object", HTML = "html", VALUE = "value", HASHLIST = "hashlist",
-            COMBINE = "combine", GROUP = "group", LIST = "list",
-            IDATTRDEF = {
-                type: STRING,
-                optional: true, // The id is optional for entites that have not been persisted
-                _inputex: {
-                    _type: HIDDEN
-                }
-            };
+        SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
+        HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
+        GROUP = "group", LIST = "list",
+        Wegas = Y.Wegas, persistence = Wegas.persistence,
+        IDATTRDEF = {
+            type: STRING,
+            optional: true, // The id is optional for entites that have not been persisted
+            _inputex: {
+                _type: HIDDEN
+            }
+        };
     /**
      * ResourceDescriptor mapper
      */
-    Y.Wegas.persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+    persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", persistence.VariableDescriptor, [], {
         getConfidence: function() {
             return this.getInstance().get("confidence");
         }
@@ -490,7 +492,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * ResourceInstance mapper
      */
-    Y.Wegas.persistence.ResourceInstance = Y.Base.create("ResourceInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+    persistence.ResourceInstance = Y.Base.create("ResourceInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "ResourceInstance"
@@ -578,10 +580,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * TaskDescriptor mapper
      */
-    Y.Wegas.persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", Y.Wegas.persistence.VariableDescriptor, [], {
+    persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", persistence.VariableDescriptor, [], {
         findAssociatedRessources: function(abstractAssignments) {
             var ressources, i, data = [], assignments, dict;
-            ressources = Y.Wegas.Facade.VariableDescriptor.cache.findAll("@class", "ResourceDescriptor");
+            ressources = Wegas.Facade.VariableDescriptor.cache.findAll("@class", "ResourceDescriptor");
             Y.Array.forEach(ressources, function(employee) {
                 assignments = employee.getInstance().get(abstractAssignments);
                 for (i = 0; i < assignments.length; i++) {
@@ -627,7 +629,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 "transient": true,
                 getter: function() {
                     return Y.Array.map(this.get("predecessorNames"), function(name) {
-                        return Y.Wegas.Facade.VariableDescriptor.cache.find("name", name);
+                        return Wegas.Facade.VariableDescriptor.cache.find("name", name);
                     });
                 }
             },
@@ -864,7 +866,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * TaskInstance mapper
      */
-    Y.Wegas.persistence.TaskInstance = Y.Base.create("TaskInstance", Y.Wegas.persistence.VariableInstance, [], {}, {
+    persistence.TaskInstance = Y.Base.create("TaskInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "TaskInstance"
@@ -881,8 +883,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     v.sort(function(a, b) {
                         if (a.get("work") === b.get("work")) {
                             return a.get("level") < b.get("level") ?
-                                    -1 : a.get("level") > b.get("level") ?
-                                    1 : 0;
+                                -1 : a.get("level") > b.get("level") ?
+                                1 : 0;
                         }
                         return a.get("work") < b.get("work") ? -1 : 1;
                     });
@@ -941,7 +943,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * Requirements mapper
      */
-    Y.Wegas.persistence.WRequirement = Y.Base.create("WRequirement", Y.Wegas.persistence.Entity, [], {}, {
+    persistence.WRequirement = Y.Base.create("WRequirement", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "WRequirement"
@@ -969,7 +971,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * Activity mapper
      */
-    Y.Wegas.persistence.Activity = Y.Base.create("Activity", Y.Wegas.persistence.Entity, [], {}, {
+    persistence.Activity = Y.Base.create("Activity", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Activity"
@@ -994,7 +996,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * Occupation mapper
      */
-    Y.Wegas.persistence.Occupation = Y.Base.create("Occupation", Y.Wegas.persistence.Entity, [], {}, {
+    persistence.Occupation = Y.Base.create("Occupation", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Occupation"
@@ -1013,7 +1015,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     /**
      * Assignement mapper
      */
-    Y.Wegas.persistence.Assignment = Y.Base.create("Assignment", Y.Wegas.persistence.Entity, [], {}, {
+    persistence.Assignment = Y.Base.create("Assignment", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 value: "TaskInstance"

@@ -11,7 +11,6 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-//Global variable for easy use
 var gm = self.getGameModel();
 
 /**
@@ -63,7 +62,8 @@ function allPhaseQuestionAnswered() {
     var i, question, questions;
 
     try {
-        questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self)).items.get(getCurrentPeriod().getValue(self) - 1).items;
+        questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self))
+            .items.get(getCurrentPeriod().getValue(self) - 1).items;
     } catch (e) {
         // Unable to find question list for current phase
     }
@@ -87,7 +87,7 @@ function calculatePlanedValue(period) {
             return t.getPropertyD('bac');                                       // return budget at completion as it is
 
         } else {                                                                // Otherwise
-            return Y.Array.sum(t.plannification, function(p) {                         // return a ratio of the bac and the already passed periods in plannification
+            return Y.Array.sum(t.plannification, function(p) {                  // return a ratio of the bac and the already passed periods in plannification
                 if (parseInt(p) < period) {
                     return t.getPropertyD('bac') / t.plannification.size();
                 } else
@@ -129,11 +129,10 @@ function updateVariables() {
         employeesRequired = Y.Array.sum(task.requirements, function(r) {
             return r.quantity;
         });
-        if (task.getPropertyD('completeness') > 0) {                        //...and started
+        if (task.getPropertyD('completeness') > 0) {                            //...and started
             //debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
             ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
-            //TO check
-            tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired;
+            tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired; //TO check
         } else {
             tasksQuality += (100 + task.getPropertyD('quality')) * task.duration * employeesRequired;
         }
@@ -154,6 +153,7 @@ function updateVariables() {
     //actualCost.setValue(self, ac + parseInt(projectFixCosts.getValue(self)));
 
     debug("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
+
     // Costs
     if (pv > 0) {
         var cpi = ev / ac * 100;                                                // cpi = ev / ac * 100
