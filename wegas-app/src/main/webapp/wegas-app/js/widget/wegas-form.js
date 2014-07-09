@@ -111,17 +111,21 @@ YUI.add('wegas-form', function(Y) {
             Y.mix(cfg, {
                 parentEl: this.get("contentBox"),
                 type: "group"
-            });                                                                  // Set up the form parentEl attribute, so it knows where to render
+            });                                                                 // Set up the form parentEl attribute, so it knows where to render
 
             Y.inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
                 var form = Y.inputEx(cfg);                                      // Initialize and render form
                 form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
                 form.removeClassFromState();                                    // Remove required state
                 this.set(FORM, form);
+                this.fire("formUpdate");
                 form.on("updated", function(e) {
                     this.fire("updated", e);
                 }, this);
             }, this, cfg));
+        },
+        validate: function() {
+            return this.get("form").validate();
         }
     }, {
         /** @lends Y.Wegas.Form */
