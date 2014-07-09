@@ -1,0 +1,174 @@
+/*
+ * Created on : Jul 3, 2014, 6:56:19 PM
+    Author     : maxence
+*/
+@page {
+    size: a4;
+}
+@page {
+    @bottom-center {
+        content: counter(page) "/" counter(pages);
+    }
+}
+
+div.wegas-pdf-menu {
+    /*display : none;*/
+}
+
+div.wegas-pdf-columns{
+    
+    float: left;
+}
+
+div.wegas-pdf-column{
+    float: left;
+    
+}
+
+
+div.wegas-pdf-pictures-collection {
+    display: flex;
+}
+
+div.wegas-pdf-picture {
+    display: block;   
+}
+
+div.wegas-pdf-picture img{
+    margin: 4px;
+    max-width: 150px;
+    max-height: 200px;
+}
+
+div.wegas-pdf-content {
+     margin :auto; 
+     width: 700px; 
+     position: relative; 
+    font-size : 10pt;
+}
+
+body {
+    font-size : 10pt;
+}
+
+span.wegas-pdf-title-image {
+    margin: 10px;
+    margin-top: 41px;
+    right: 10px;
+    top: 10px;
+    position: absolute;
+}
+
+img {
+    background : #ededed;
+    border : 1px solid lightgrey;
+
+}
+
+span.wegas-pdf-title {
+    display: block;
+    font-weight: bold;
+    background-color: #ddd;
+    border-bottom: 1px solid #999;
+    border-top: 1px solid #999;
+    font: 1.6em Georgia,Times,serif;
+    margin: 10px 0 0;
+    padding: 5px 0;
+    text-align: center;
+}
+
+div.wegas-pdf-text-container {
+    background-color: #e9eaee;
+    display : table;
+    border : 1px solid #353B41;
+    border-radius: 4px;
+    padding: 4px;
+    max-width: 100%;
+}
+
+div.wegas-pdf-text-container span{
+    display : inline-block;
+    padding : 0px 10px;
+    border : 1px solid #a3a3a3;
+    background: #fafafc;
+}
+
+span.wegas-pdf-variable-title {
+    font-size : 1.5em;
+    display : block;
+    padding-bottom: 5px;
+}
+
+span.wegas-pdf-variable-subtitle {
+    font-size : 1.2em;
+    display : block;
+    padding-bottom: 10px;
+    padding-top: 10px;
+}
+
+
+div.wegas-pdf-text-container span.wegas-pdf-code{
+    font-family: courier, fixed, monospace;
+    font-size: 8pt;
+}
+
+div.wegas-pdf-property {
+    font-size : 1em;
+    display : block;
+    padding-top: 0px;
+    page-break-inside: avoid;
+}
+
+span.wegas-pdf-property-key {
+    font-weight: bold;
+}
+
+.wegas-pdf-property-value-textarea p {
+    margin : 0px
+}
+
+.wegas-pdf-property-value-textarea {
+    
+    -ms-word-break: break-all;
+    word-break: break-all;
+
+ /* Non standard for webkit */
+     word-break: break-word;
+
+    -webkit-hyphens: auto;
+       -moz-hyphens: auto;
+        -ms-hyphens: auto;
+            hyphens: auto;
+}
+
+
+
+span.wegas-pdf-property-value-na {
+    font-style : italic;
+    color: #7A7A7A;
+    padding: 2px;
+}
+
+span.wegas-pdf-property-value {
+    font-style : italic;
+}
+
+div.wegas-pdf-folder {
+    margin-left: 20px;
+    display : block;
+    border: 1px solid lightgrey;
+    padding: 2px;
+    margin-top: 5px;
+}
+
+div.wegas-pdf-variable-container {
+    border : 1px solid lightgrey;
+    margin-bottom: 2px;
+    padding: 5px;
+    margin: 5px;
+}
+
+span.wegas-pdf-error {
+    color: #f00;
+    font-style: italic;
+}
