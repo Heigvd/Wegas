@@ -257,11 +257,20 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }
             this.showOverlay();
 
-            if (Y.Lang.isFunction(callback)) {
-                pageLoader.onceAfter("contentUpdated", function() {
+
+            pageLoader.onceAfter("contentUpdated", function() {
+                if (Y.Lang.isFunction(callback)) {
                     callback(this.get("pageLoader").get("widget"));
-                }, this);
-            }
+                }
+                this.treeView.some(function(item) {
+                    if (item.get("data.page") === pageId) {
+                        item.get(BOUNDING_BOX).scrollIntoView(true);
+                        return true;
+                    }
+                    return false;
+                });
+            }, this);
+
             this.get("pageLoader").set("pageId", pageId);
         },
         destructor: function() {

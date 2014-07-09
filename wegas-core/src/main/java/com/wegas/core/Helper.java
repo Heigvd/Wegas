@@ -120,10 +120,7 @@ public class Helper {
             sb.append(tmp.substring(1));
             //sb.append(tmp.substring(1).toLowerCase());
         }
-
-        Pattern pattern = Pattern.compile("[^\\w]|(^\\d)");                     //Search for special chars or initial digit
-        Matcher matcher = pattern.matcher(sb.toString());
-        return matcher.replaceAll("_$1");                                       //Replace special chars and initial digit with "_"
+        return sb.toString().replaceAll("[^\\w]|(^\\d)", "_$1");                //Replace special chars and initial digit with "_"
     }
 
     /**
@@ -245,8 +242,8 @@ public class Helper {
      */
     public static String md5Hex(String message) {
         try {
-            MessageDigest md =
-                    MessageDigest.getInstance("MD5");
+            MessageDigest md
+                    = MessageDigest.getInstance("MD5");
             return hex(md.digest(message.getBytes("CP1252")));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
         }

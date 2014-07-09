@@ -11,7 +11,6 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.dialogue.UserInput;
 import com.wegas.core.rest.util.Views;
-import com.wegas.resourceManagement.persistence.DialogueTransition;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonSubTypes;

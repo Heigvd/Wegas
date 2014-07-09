@@ -342,6 +342,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
+                    label: "Question folder",
                     classFilter: ["ListDescriptor"]
                 }
             },
