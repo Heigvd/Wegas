@@ -5,180 +5,187 @@
     <display-name>Web Game Authoring System</display-name>
     <distributable/>
     <session-config>
-        <session-timeout>30</session-timeout>
+	<session-timeout>30</session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+	<welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
     <!-- Apache Shiro Listener -->
     <!-- shiro filter must be declared before any other filter, to ensure
     security checks. -->
     <listener>
-        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+	<listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
     <filter>
-        <filter-name>ShiroFilter</filter-name>
-        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+	<filter-name>ShiroFilter</filter-name>
+	<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>ShiroFilter</filter-name>
-        <url-pattern>/*</url-pattern>
+	<filter-name>ShiroFilter</filter-name>
+	<url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <!-- JSF -->
     <context-param>
-        <param-name>javax.faces.PROJECT_STAGE</param-name>
-        <param-value>Development</param-value>
+	<param-name>javax.faces.PROJECT_STAGE</param-name>
+	<param-value>Development</param-value>
     </context-param>
     <!--<context-param>
-        <param-name>javax.faces.DEFAULT_SUFFIX</param-name>
-        <param-value>.xhtml</param-value>
+	<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+	<param-value>.xhtml</param-value>
     </context-param>-->
     <servlet>
-        <servlet-name>Faces Servlet</servlet-name>
-        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
+	<servlet-name>Faces Servlet</servlet-name>
+	<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>*.html</url-pattern>
-        <url-pattern>*.xhtml</url-pattern>
-        <!--
-        <url-pattern>/faces/*</url-pattern>
-        <url-pattern>*.jsf</url-pattern>
-        <url-pattern>*.faces</url-pattern>-->
+	<servlet-name>Faces Servlet</servlet-name>
+	<url-pattern>*.html</url-pattern>
+	<url-pattern>*.xhtml</url-pattern>
+	<!--
+	<url-pattern>/faces/*</url-pattern>
+	<url-pattern>*.jsf</url-pattern>
+	<url-pattern>*.faces</url-pattern>-->
     </servlet-mapping>
 
     <!-- REST Facade -->
     <servlet>
-        <servlet-name>Rest Facade</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
-        <init-param>
-            <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>com.wegas.core.rest.util.ViewRequestFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter;com.wegas.core.rest.util.CacheResponseFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
-            <param-value>com.wegas.core.rest.util.CacheFilterFactory</param-value>
-        </init-param>
-        <!--        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>com.wegas.core.rest.util.ViewRequestFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
-        </init-param>-->
-        <!--<init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
-            <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
-        </init-param>
-        <init-param>
-            <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
-            <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
-        </init-param>-->
-        <load-on-startup>1</load-on-startup>
+	<servlet-name>Rest Facade</servlet-name>
+	<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+	<init-param>
+	    <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
+	    <param-value>true</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+	    <param-value>com.wegas.core.rest.util.ViewRequestFilter</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+	    <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter;com.wegas.core.rest.util.CacheResponseFilter</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>com.sun.jersey.spi.container.ResourceFilters</param-name>
+	    <param-value>com.wegas.core.rest.util.CacheFilterFactory</param-value>
+	</init-param>
+	<!--        <init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+	    <param-value>com.wegas.core.rest.util.ViewRequestFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+	    <param-value>com.wegas.core.rest.util.ManagedModeResponseFilter;com.sun.jersey.api.container.filter.GZIPContentEncodingFilter</param-value>
+	</init-param>-->
+	<!--<init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+	    <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>com.sun.jersey.spi.container.ContainerResponseFilters</param-name>
+	    <param-value>com.sun.jersey.api.container.filter.LoggingFilter</param-value>
+	</init-param>-->
+	<load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Rest Facade</servlet-name>
-        <url-pattern>/rest/*</url-pattern>
+	<servlet-name>Rest Facade</servlet-name>
+	<url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
     <!-- Liquibase configuration -->
     <context-param>
-        <param-name>liquibase.changelog</param-name>
-        <param-value>META-INF/db.changelog.xml</param-value>
+	<param-name>liquibase.changelog</param-name>
+	<param-value>META-INF/db.changelog.xml</param-value>
     </context-param>
     <context-param>
-        <param-name>liquibase.datasource</param-name>
-        <param-value>jdbc/wegas_dev</param-value>
+	<param-name>liquibase.datasource</param-name>
+	<param-value>jdbc/wegas_dev</param-value>
     </context-param>
     <!--Liquibase sevlet listener to check database on start up and apply new changes if needed-->
     <listener>
-        <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
+	<listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
 
     <!--File Mime Types-->
     <mime-mapping>
-        <extension>json</extension>
-        <mime-type>application/json;charset=ISO-8859-1</mime-type>
+	<extension>json</extension>
+	<mime-type>application/json;charset=ISO-8859-1</mime-type>
     </mime-mapping>
     <mime-mapping>
-        <extension>ico</extension>
-        <mime-type>image/x-icon</mime-type>
+	<extension>ico</extension>
+	<mime-type>image/x-icon</mime-type>
     </mime-mapping>
     <mime-mapping>
-        <extension>woff</extension>
-        <mime-type>application/font-woff</mime-type>
+	<extension>woff</extension>
+	<mime-type>application/font-woff</mime-type>
     </mime-mapping>
     <mime-mapping>
-        <extension>ttf</extension>
-        <mime-type>application/x-font-ttf</mime-type>
+	<extension>ttf</extension>
+	<mime-type>application/x-font-ttf</mime-type>
     </mime-mapping>
 
     <!-- Facebook Servlet -->
     <!--<servlet>
-        <servlet-name>Facebook Servlet</servlet-name>
-        <servlet-class>com.wegas.core.security.facebook.FacebookLoginServlet</servlet-class>
-        <load-on-startup>1</load-on-startup>
+	<servlet-name>Facebook Servlet</servlet-name>
+	<servlet-class>com.wegas.core.security.facebook.FacebookLoginServlet</servlet-class>
+	<load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>Facebook Servlet</servlet-name>
-        <url-pattern>/FacebookServlet</url-pattern>
+	<servlet-name>Facebook Servlet</servlet-name>
+	<url-pattern>/FacebookServlet</url-pattern>
     </servlet-mapping>-->
 
     <!-- Atmosphere Servlet -->
     <!-- <servlet>
-        <description>AtmosphereServlet</description>
-        <servlet-name>AtmosphereServlet</servlet-name>
-        <servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
-        <init-param>
-            <param-name>org.atmosphere.useWebSocket</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>org.atmosphere.useNative</param-name>
-            <param-value>true</param-value>
-        </init-param>
-        <init-param>
-            <param-name>org.atmosphere.cpr.broadcastFilterClasses</param-name>
-            <param-value>org.atmosphere.client.JSONPTransportFilter</param-value>
-        </init-param>
-        <load-on-startup>0</load-on-startup>
+	<description>AtmosphereServlet</description>
+	<servlet-name>AtmosphereServlet</servlet-name>
+	<servlet-class>org.atmosphere.cpr.AtmosphereServlet</servlet-class>
+	<init-param>
+	    <param-name>org.atmosphere.useWebSocket</param-name>
+	    <param-value>true</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>org.atmosphere.useNative</param-name>
+	    <param-value>true</param-value>
+	</init-param>
+	<init-param>
+	    <param-name>org.atmosphere.cpr.broadcastFilterClasses</param-name>
+	    <param-value>org.atmosphere.client.JSONPTransportFilter</param-value>
+	</init-param>
+	<load-on-startup>0</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AtmosphereServlet</servlet-name>
-        <url-pattern>/atmosphere/*</url-pattern>
+	<servlet-name>AtmosphereServlet</servlet-name>
+	<url-pattern>/atmosphere/*</url-pattern>
     </servlet-mapping>-->
     <!-- Wegas Listener -->
     <!--<listener>
-        <listener-class>com.wegas.tools.RequestListener</listener-class>
+	<listener-class>com.wegas.tools.RequestListener</listener-class>
     </listener>-->
     <!--Facebook Servlet-->
     <!--
     <servlet>
-        <servlet-name>AdminServlet</servlet-name>
-        <servlet-class>com.albasim.wegas.admin.AdminServlet</servlet-class>
+	<servlet-name>AdminServlet</servlet-name>
+	<servlet-class>com.albasim.wegas.admin.AdminServlet</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AdminServlet</servlet-name>
-        <url-pattern>/admin</url-pattern>
+	<servlet-name>AdminServlet</servlet-name>
+	<url-pattern>/admin</url-pattern>
     </servlet-mapping>-->
     <!-- <filter>
-        <filter-name>FacebookUserFilter</filter-name>
-        <filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
+	<filter-name>FacebookUserFilter</filter-name>
+	<filter-class>com.albasim.session.facebook.FacebookUserFilter</filter-class>
     </filter>
     <filter-mapping>
-        <filter-name>FacebookUserFilter</filter-name>
-        <url-pattern>/facebooktest/*</url-pattern>
+	<filter-name>FacebookUserFilter</filter-name>
+	<url-pattern>/facebooktest/*</url-pattern>
     </filter-mapping>-->
+
+    <!-- Faces Custom Tags -->
+    <context-param>
+	<param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+	<param-value>/WEB-INF/wegas-taglib.xml</param-value>
+    </context-param>
+
 </web-app>

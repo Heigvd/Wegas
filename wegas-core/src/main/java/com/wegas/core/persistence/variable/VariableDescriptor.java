@@ -303,8 +303,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      * @return the defaultInstance
      */
-    public VariableInstance getDefaultInstance() {
-        return defaultInstance;
+    public T getDefaultInstance() {
+        return (T)defaultInstance;
     }
 
     /**

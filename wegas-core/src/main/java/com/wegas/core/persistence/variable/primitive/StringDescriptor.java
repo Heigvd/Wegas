@@ -56,4 +56,12 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     public void setValidationPattern(String validationPattern) {
         this.validationPattern = validationPattern;
     }
+
+    /**
+     * get default value. PDF Export Sugar
+     * @return default value
+     */
+    public String getDefaultValue(){
+	return this.getDefaultInstance().getValue();
+    }
 }

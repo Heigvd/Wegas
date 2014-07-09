@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='ISO-8859-1' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:wegas="http://www.albasim.ch/wegas/pdf" >
+
+    <h:head>
+
+        <meta charset="ISO-8859-1" />
+        <meta http-equiv="Content-Type" content="text/html" />
+        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
+        <title><ui:insert name="title">Default Title</ui:insert> - Wegas</title>
+        <meta name="description" content="" />
+        <meta name="keywords" content="" />
+        <meta name="robots" content="index, follow" />
+        <meta name="contact" content="albasim@heig-vd.ch" />
+        <meta name="audience" content="General" />
+        <meta name="distribution" content="Global" />
+        <meta name="revisit-after" content="30 days" />
+
+	<!--base href="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/" /-->
+
+        <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+
+        <meta id="customstyles" />
+
+        <link rel="stylesheet" type="text/css" href="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/css/wegas-pdf-print.css" />
+
+        <ui:insert name="head"/>
+
+    </h:head>
+
+    <h:body>
+	<wegas:GameModel value="#{editorGameController.currentGameModel}" />
+    </h:body>
+
+</html>
