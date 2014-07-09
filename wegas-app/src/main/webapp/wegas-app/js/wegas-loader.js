@@ -325,7 +325,7 @@ YUI().use(function(Y) {
                     ws_provides: 'PDF'
                 },
                 'wegas-simpledialogue': {
-                    path: "js/widget/wegas-simpledialogue-main.js",
+                    path: "js/widget/wegas-simpledialogue.js",
                     ws_provides: "SimpleDialogue"
                 }
             }

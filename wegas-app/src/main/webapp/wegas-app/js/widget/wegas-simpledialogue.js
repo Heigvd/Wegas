@@ -45,8 +45,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             state.getAvailableActions(Y.bind(this.readStateContent, this));
         },
         destructor: function() {
-            var i;
-            for (i in this.handlers) {
+            for (var i in this.handlers) {
                 this.handlers[i].detach();
             }
         },
