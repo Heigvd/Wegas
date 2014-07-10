@@ -185,7 +185,8 @@ tbody .past .activity {
 .task-execution-page .yui3-datatable-table .pmg-line-completeness-started,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-index,
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-label,
-.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realized{
+.gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realized,
+.yui3-menu-content > button.pmg-line-completeness-started{
     background-color: #FFFDC2;
 }
 
