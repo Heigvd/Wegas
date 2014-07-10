@@ -29,18 +29,33 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          * @private
          */
         initializer: function() {
-//            this.after("columnToAddChange", function(e) {
-//                this.setColumn(e.newVal, e.prevVal);
-//            })
-//            this.get("host").onceAfter("render", function() {
-//                this.set("columnToAdd", this.get("columnToAdd"));
-//            }, this);
+            this.initColumn();
 
             this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", function() {
                 Y.log("sync()", "log", "Wegas.ScheduleDT");
-                this.setTime();
-                //this.set("columnToAdd", this.get("columnToAdd"));
+                this.columnUpdate();
             }, this);
+        },
+        initColumn: function() {
+            var executionPeriods = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
+                periodPhase3 = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
+            if (periodPhase3 >= executionPeriods) {
+                this.setColumn(periodPhase3 + 1);
+                this.currentVal = periodPhase3 + 1;
+            } else {
+                this.setColumn(executionPeriods);
+                this.currentVal = executionPeriods;
+            }
+        },
+        columnUpdate: function() {
+            var executionPeriods = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
+                periodPhase3 = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
+            if (periodPhase3 >= executionPeriods) {
+                this.setColumn(periodPhase3 + 1, this.currentVal);
+                this.currentVal = periodPhase3 + 1;
+            } else {
+                this.setTime();
+            }
         },
         /**
          * @function
@@ -49,20 +64,20 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          */
         setColumn: function(newval, preval) {
             var diff = newval - (preval ? preval : 0),
-                    table = this.get("host").datatable,
-                    period = this.currentPeriod(),
-                    bindedCP = Y.bind(this.currentPeriod, this),
-                    classTime,
-                    formatter = function(o) {
-                        if (bindedCP() < o.column.time) {
-                            o.className = "futur";
-                        } else if (bindedCP() === o.column.time) {
-                            o.className = "present";
-                        } else {
-                            o.className = "past";
-                        }
-                        return "";
-                    };
+                table = this.get("host").datatable,
+                period = this.currentPeriod(),
+                bindedCP = Y.bind(this.currentPeriod, this),
+                classTime,
+                formatter = function(o) {
+                if (bindedCP() < o.column.time) {
+                    o.className = "futur";
+                } else if (bindedCP() === o.column.time) {
+                    o.className = "present";
+                } else {
+                    o.className = "past";
+                }
+                return "";
+            };
 
             while (diff) {
                 if (diff > 0) {
@@ -125,22 +140,10 @@ YUI.add('wegas-scheduledatatable', function(Y) {
          */
         destructor: function() {
             Y.log("destructor()", "log", "Wegas.ScheduleDT");
-            // this.set("columnToAdd", 0);
             this.updateHandler.detach();
         }
     }, {
         ATTRS: {
-            columnToAdd: {
-                setter: function(val) {
-                    this.setColumn(val, this.get("columnToAdd"));
-                    return val;
-                },
-                lazyAdd: false,
-                _inputex: {
-                    _type: "integer",
-                    label: "No of column"
-                }
-            },
             variable: {
                 getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {

@@ -27,16 +27,7 @@ function nextPeriod() {
 
     allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
-    if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
-        currentPhase.add(self, 1);
-        //currentPeriod.setValue(self, 1);                                      // Why?
-        if (currentPhase.getValue(self) === 2) {
-            Variable.findByName(gm, 'ganttPage').setValue(self, 11);
-            Variable.findByName(gm, 'taskPage').setValue(self, 12);
-        }
-        Event.fire("nextPhase");
-
-    } else if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
+    if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
         runSimulation();
         currentPeriod.add(self, 1);
         if (checkEndOfProject()) {                                              // If the project is over
@@ -45,6 +36,15 @@ function nextPeriod() {
         } else {
             Event.fire("nextWeek");
         }
+
+    } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
+            currentPhase.add(self, 1);
+        //currentPeriod.setValue(self, 1);                                      // Why?
+        if (currentPhase.getValue(self) === 2) {
+            Variable.findByName(gm, 'ganttPage').setValue(self, 11);
+            Variable.findByName(gm, 'taskPage').setValue(self, 12);
+        }
+        Event.fire("nextPhase");
 
     } else {                                                                    // Otherwise pass to next period
         currentPeriod.add(self, 1);
