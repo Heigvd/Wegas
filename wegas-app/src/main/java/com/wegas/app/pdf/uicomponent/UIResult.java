@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
+import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.mcq.persistence.Result;
 import java.io.IOException;
 import javax.faces.component.FacesComponent;
@@ -46,6 +47,6 @@ public class UIResult extends UIComponentBase {
 	UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, result.getName());
 	UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_IMPACT_TEXT, result.getAnswer(), false);
 	
-	UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_IMPACT_SOURCECODE, result.getImpact());
+	UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_IMPACT_SOURCECODE, result.getImpact());
     }
 }
