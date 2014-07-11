@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
+import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.State;
@@ -55,7 +56,7 @@ public class UIState extends UIComponentBase {
 	    UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueState) state).getText(), false);
 	}
 
-	UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_ON_ENTER_IMPACT, state.getOnEnterEvent());
+	UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_ON_ENTER_IMPACT, state.getOnEnterEvent());
 
 	UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
 
@@ -75,9 +76,9 @@ public class UIState extends UIComponentBase {
 	UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
 	UIHelper.printText(context, writer, transition.getClass().getSimpleName(), UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
 
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_ID, transition.getId().toString());
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, transition.getIndex().toString());
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_NEXT_STATE, transition.getNextStateId().toString());
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_ID, transition.getId());
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, transition.getIndex());
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_NEXT_STATE, transition.getNextStateId());
 
 	if (transition instanceof DialogueTransition) {
 	    UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_TEXT, ((DialogueTransition) transition).getActionText(), true);
@@ -85,7 +86,7 @@ public class UIState extends UIComponentBase {
 
 	
 	UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_CONDITION, transition.getTriggerCondition());
-	UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_IMPACT_TEXT, transition.getPreStateImpact());
+	UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_IMPACT_TEXT, transition.getPreStateImpact());
 
 	UIHelper.endDiv(writer);
     }
