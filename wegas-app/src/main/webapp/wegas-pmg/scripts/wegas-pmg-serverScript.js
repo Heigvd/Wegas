@@ -25,7 +25,7 @@ function nextPeriod() {
     var currentPhase = getCurrentPhase(),
         currentPeriod = getCurrentPeriod();
 
-    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
+//    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
     if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
         runSimulation();
@@ -199,4 +199,31 @@ function addPredecessor(descName, listPredName) {
     Y.Array.each(listPredName, function(predName) {
         Variable.findByName(gameModel, descName).predecessors.add(Variable.findByName(gameModel, predName));
     });
+}
+
+function addImpactDuration(factor, taskname, inTime, value) {
+    var factorsDesc = Variable.findByName(gm, "factors"),
+        endTim = inTime + Variable.findByName(gm, "periodPhase3").getInstance().getValue(),
+        taskId = Variable.findByName(gm, taskname).getId(),
+        val;
+
+    val = factorsDesc.getProperty(self, factor + "/" + taskId + "/" + endTim);
+    val ? val = parseFloat(val) + parseFloat(value) : val = value;
+    factorsDesc.setProperty(self, factor + "/" + taskId + "/" + endTim, val);
+
+    return factorsDesc.getInstance().getProperties();
+}
+
+function cancelEffect() {
+    var factorsDesc = Variable.findByName(gm, "factors"),
+        propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i, splitedProp,
+        time = Variable.findByName(gm, "periodPhase3").getInstance().getValue();
+    
+    for (i=0; i<propertiesKey.length; i++) {
+        splitedProp = propertiesKey[i].split("/");
+        if (time === parseInt(splitedProp[2])) {
+            Variable.find(parseInt(splitedProp[1])).addNumberAtInstanceProperty(self, splitedProp[0], factorsDesc.getProperty(self, propertiesKey[i]));
+            factorsDesc.removeProperty(self, propertiesKey[i]);
+        }
+    }
 }
