@@ -2072,7 +2072,7 @@
                         "broadcastScope": "TeamScope"
                     },
                     "minValue": 1,
-                    "maxValue": 15,
+                    "maxValue": null,
                     "defaultValue": 1
                 },
                 {
@@ -2305,6 +2305,39 @@
                     "minValue": null,
                     "maxValue": null,
                     "defaultValue": 0
+                }
+            ]
+        },
+        {
+            "@class": "ListDescriptor",
+            "name": "properties",
+            "label": "Game properties",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "executionPeriods",
+                    "label": "ExecutionPeriods",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 1
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "minValue": 1,
+                    "maxValue": null,
+                    "defaultValue": 1
                 }
             ]
         }

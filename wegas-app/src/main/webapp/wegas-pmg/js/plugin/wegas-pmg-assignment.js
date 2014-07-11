@@ -19,7 +19,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
      *  @constructor
      */
     var CONTENTBOX = "contentBox", HOST = "host",
-            Wegas = Y.Wegas, Assignment;
+        Wegas = Y.Wegas, Assignment;
 
     Assignment = Y.Base.create("wegas-pmg-assignment", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         handlers: null,
@@ -114,7 +114,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     this.menuDetails.set("align", {
                         node: this.menu.get("boundingBox"),
                         points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ?
-                                ["tr", "tl"] : ["tl", "tr"]
+                            ["tr", "tl"] : ["tl", "tr"]
                     });
                     timer = new Y.Wegas.Timer({
                         duration: "500"
@@ -147,10 +147,10 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             //you can only add a task which isn't already added.
             //you can only remove a task which is added.
             var i, tasks, items, taskDesc, label, array = [], no, taskExist,
-                    assignments = resourceDesc.getInstance().get("assignments"),
-                    taskExistence = function(item) {
-                        return taskDesc.get("id") === item.get("taskDescriptorId");
-                    };
+                assignments = resourceDesc.getInstance().get("assignments"),
+                taskExistence = function(item) {
+                    return taskDesc.get("id") === item.get("taskDescriptorId");
+                };
             if (!this.get("taskList")) {
                 return;
             }
@@ -160,7 +160,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 taskExist = false;
                 taskDesc = items[i];
                 taskExist = Y.Array.find(assignments, taskExistence);
-                if (!taskExist && taskDesc.getInstance().get("active")) {
+                if (!taskExist && taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
                     no = taskDesc.get("index");
                     label = (taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined");
                     array.push({
@@ -172,7 +172,8 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                                 taskDescriptor: taskDesc
                             },
                             resourceDesc: resourceDesc
-                        }
+                        },
+                        cssClass: taskDesc.getInstance().get("properties.completeness") > 0 ? "pmg-line-completeness-started" : ""
                     });
                 }
             }
@@ -206,19 +207,20 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
         },
         descriptionToDisplay: function(descriptor, fieldValue) {
-            var dataToDisplay, i, requirements;
-            dataToDisplay = '<div class="field" style="padding:5px 10px"><p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
+            var dataToDisplay, i, requirements, progress;
+            progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Progress:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "";
+            dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
             requirements = descriptor.getInstance().get("requirements");
             for (i = 0; i < requirements.length; i += 1) {
                 dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
-                        + " " + Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
+                    + " " + Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
             }
             dataToDisplay = dataToDisplay + "</div>";
             this.menuDetails.get(CONTENTBOX).setHTML(dataToDisplay);
         },
         syncSortable: function() {
             var i, node, dt = this.get(HOST).datatable, assignments,
-                    resourceDesc, resourceInstance, iResource, iAssign, taskDesc, assignementCell;
+                resourceDesc, resourceInstance, iResource, iAssign, taskDesc, assignementCell;
 
             //the drag and drop feature to reorganise tasks.
             for (i = 0; i < this.sortable.length; i += 1) {
