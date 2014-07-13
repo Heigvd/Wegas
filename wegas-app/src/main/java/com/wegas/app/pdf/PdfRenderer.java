@@ -37,7 +37,7 @@ import org.xml.sax.InputSource;
  *
  * @author maxence
  */
-@WebFilter(filterName = "PdfRenderer", urlPatterns = {"/pdf.html"}, dispatcherTypes = {DispatcherType.REQUEST})
+@WebFilter(filterName = "PdfRenderer", urlPatterns = {"/print.html"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class PdfRenderer implements Filter {
 
     private static final boolean debug = true;
@@ -100,17 +100,21 @@ public class PdfRenderer implements Filter {
 		StringReader contentReader = new StringReader(capContent.getContent());
 		InputSource source = new InputSource(contentReader);
 		Document xhtmlDocument = documentBuilder.parse(source);
-		
 
 		ITextRenderer renderer = new ITextRenderer();
 
-		/*NodeList elementsByTagName = xhtmlDocument.getElementsByTagName("base");
-		Node namedItem = elementsByTagName.item(0).getAttributes().getNamedItem("href");
-		String base = namedItem.getNodeValue();*/
-
-		renderer.setDocument(xhtmlDocument, null);
-		renderer.layout();
+		/* Using <base> tag breaks inner <a href="#*" /> behaviour
+		 *NodeList elementsByTagName = xhtmlDocument.getElementsByTagName("base");
+		 Node namedItem = elementsByTagName.item(0).getAttributes().getNamedItem("href");
+		 String base = namedItem.getNodeValue();
+		*/
 		
+		String baseUrl;
+		baseUrl = req.getRequestURL().toString().replaceAll(req.getServletPath(), "/");
+
+		renderer.setDocument(xhtmlDocument, baseUrl);
+		renderer.layout();
+
 		resp.setContentType("application/pdf");
 		OutputStream browserStream = resp.getOutputStream();
 

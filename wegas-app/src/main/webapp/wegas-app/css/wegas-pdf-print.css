@@ -11,8 +11,8 @@
     }
 }
 
-div.wegas-pdf-menu {
-    /*display : none;*/
+div.wegas-pdf-menu a{
+    margin-left: 4px;
 }
 
 div.wegas-pdf-columns{
@@ -55,7 +55,7 @@ span.wegas-pdf-title-image {
     margin: 10px;
     margin-top: 41px;
     right: 10px;
-    top: 10px;
+    top: 15px;
     position: absolute;
 }
 
@@ -86,11 +86,11 @@ div.wegas-pdf-text-container {
     max-width: 100%;
 }
 
-div.wegas-pdf-text-container span{
+div.wegas-pdf-text-container div{
     display : inline-block;
     padding : 0px 10px;
-    border : 1px solid #a3a3a3;
     background: #fafafc;
+    border : 1px solid #353B41;    
 }
 
 span.wegas-pdf-variable-title {
