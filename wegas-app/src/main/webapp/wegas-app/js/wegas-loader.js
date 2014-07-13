@@ -655,10 +655,6 @@ YUI().use(function(Y) {
             base: './wegas-pmg/',
             root: '/wegas-pmg/',
             modules: {
-                "wegas-inputex-var-autocomplete": {
-                    requires: 'inputex-string',
-                    ix_provides: 'wegasvarautocomplete'
-                },
                 "wegas-scheduledatatable": {
                     ws_provides: 'ScheduleDT'
                 },
