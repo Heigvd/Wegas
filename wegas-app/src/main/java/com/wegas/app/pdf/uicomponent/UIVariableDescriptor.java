@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
+import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
@@ -395,8 +396,8 @@ public class UIVariableDescriptor extends UIComponentBase {
 	UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE_DEFAULT, trigger.getDefaultInstance().getEnabled());
 	UIHelper.printProperty(context, writer, UIHelper.TEXT_ONLY_ONCE, trigger.isOneShot());
 
-	UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_CONDITION, trigger.getTriggerEvent());
-	UIHelper.printPropertyScript(context, writer, UIHelper.TEXT_IMPACT_SOURCECODE, trigger.getPostTriggerEvent());
+	UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_CONDITION, trigger.getTriggerEvent());
+	UIHelper.printPropertyImpactScript(context, writer, UIHelper.TEXT_IMPACT_SOURCECODE, trigger.getPostTriggerEvent());
     }
 
     public void encode(FacesContext context, ResponseWriter writer, StateMachineDescriptor fsm) throws IOException {

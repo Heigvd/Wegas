@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.OrderColumn;
 import org.codehaus.jackson.map.annotate.JsonView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class NumberInstance extends VariableInstance {
      */
     @ElementCollection
     @JsonView(Views.ExtendedI.class)
+    @OrderColumn
     private List<Double> history = new ArrayList<>();
 
     /**
