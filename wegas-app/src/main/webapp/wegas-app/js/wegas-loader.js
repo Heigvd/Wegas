@@ -666,13 +666,14 @@ YUI().use(function(Y) {
                     ws_provides: "PmgBreadcrumb"
                 },
                 'wegas-pmg-datatable': {
-                    /*requires:['wegas-pmg-datatable', 'datatable', 'datatable-mutable', 'datasource-arrayschema', 'gallery-treeble'],*/ //Using Treeble
                     requires: ['wegas-datatable', 'datatable', 'datatable-mutable', "template"], //Using simple datatable
                     ws_provides: "PmgDatatable"
                 },
                 'wegas-pmg-slidepanel': {
-                    requires: ['anim', 'wegas-pmgwidget-css'],
-                    ws_provides: "PmgSlidePanel"
+                    requires: ['anim', 'wegas-pmgwidget-css', "wegas-pmg-datatable", "wegas-pmg-reservation",
+                        "wegas-pmg-occupationcolor", "wegas-pmg-activitycolor", "wegas-pmg-assignment",
+                        "wegas-scheduledatatable", "wegas-text"],
+                    ws_provides: ["PmgSlidePanel", "PmgResourcesPanels"]
                 },
                 "wegas-pmg-reservation": {
                     path: 'js/plugin/wegas-pmg-reservation-min.js',

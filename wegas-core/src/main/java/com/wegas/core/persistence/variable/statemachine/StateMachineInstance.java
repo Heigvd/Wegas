@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.persistence.variable.dialogue.DialogueInstance;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +31,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @XmlRootElement
 @XmlType(name = "FSMInstance")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class),
-    @JsonSubTypes.Type(name = "DialogueInstance", value = DialogueInstance.class)
+    @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)
 })
 public class StateMachineInstance extends VariableInstance implements Serializable {
 
