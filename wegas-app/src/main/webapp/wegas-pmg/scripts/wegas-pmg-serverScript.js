@@ -25,18 +25,9 @@ function nextPeriod() {
     var currentPhase = getCurrentPhase(),
         currentPeriod = getCurrentPeriod();
 
-    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
+//    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
-    if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
-        currentPhase.add(self, 1);
-        //currentPeriod.setValue(self, 1);                                      // Why?
-        if (currentPhase.getValue(self) === 2) {
-            Variable.findByName(gm, 'ganttPage').setValue(self, 11);
-            Variable.findByName(gm, 'taskPage').setValue(self, 12);
-        }
-        Event.fire("nextPhase");
-
-    } else if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
+    if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
         runSimulation();
         currentPeriod.add(self, 1);
         if (checkEndOfProject()) {                                              // If the project is over
@@ -45,6 +36,15 @@ function nextPeriod() {
         } else {
             Event.fire("nextWeek");
         }
+
+    } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
+            currentPhase.add(self, 1);
+        //currentPeriod.setValue(self, 1);                                      // Why?
+        if (currentPhase.getValue(self) === 2) {
+            Variable.findByName(gm, 'ganttPage').setValue(self, 11);
+            Variable.findByName(gm, 'taskPage').setValue(self, 12);
+        }
+        Event.fire("nextPhase");
 
     } else {                                                                    // Otherwise pass to next period
         currentPeriod.add(self, 1);
@@ -199,4 +199,31 @@ function addPredecessor(descName, listPredName) {
     Y.Array.each(listPredName, function(predName) {
         Variable.findByName(gameModel, descName).predecessors.add(Variable.findByName(gameModel, predName));
     });
+}
+
+function addImpactDuration(factor, taskname, inTime, value) {
+    var factorsDesc = Variable.findByName(gm, "factors"),
+        endTim = inTime + Variable.findByName(gm, "periodPhase3").getInstance().getValue(),
+        taskId = Variable.findByName(gm, taskname).getId(),
+        val;
+
+    val = factorsDesc.getProperty(self, factor + "/" + taskId + "/" + endTim);
+    val ? val = parseFloat(val) + parseFloat(value) : val = value;
+    factorsDesc.setProperty(self, factor + "/" + taskId + "/" + endTim, val);
+
+    return factorsDesc.getInstance().getProperties();
+}
+
+function cancelEffect() {
+    var factorsDesc = Variable.findByName(gm, "factors"),
+        propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i, splitedProp,
+        time = Variable.findByName(gm, "periodPhase3").getInstance().getValue();
+    
+    for (i=0; i<propertiesKey.length; i++) {
+        splitedProp = propertiesKey[i].split("/");
+        if (time === parseInt(splitedProp[2])) {
+            Variable.find(parseInt(splitedProp[1])).addNumberAtInstanceProperty(self, splitedProp[0], factorsDesc.getProperty(self, propertiesKey[i]));
+            factorsDesc.removeProperty(self, propertiesKey[i]);
+        }
+    }
 }

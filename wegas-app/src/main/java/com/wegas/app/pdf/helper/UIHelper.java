@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app.pdf.uicomponent;
+package com.wegas.app.pdf.helper;
 
 import com.wegas.core.persistence.game.Script;
 import java.io.IOException;
@@ -71,6 +71,10 @@ public class UIHelper {
     public static final String TEXT_TEXT = "Text";
     public static final String TEXT_MORAL = "Moral";
     public static final String TEXT_CONFIDENCE = "Confidence";
+    public static final String TEXT_FROM = "From";
+    public static final String TEXT_DESTINATION = "To";
+    public static final String TEXT_SUBJECT = "Subject";
+    public static final String TEXT_MESSAGE = "Message";
 
     public static void startDiv(ResponseWriter wr, String cssClass) throws IOException {
 	startDiv(wr, cssClass, null);
@@ -120,6 +124,32 @@ public class UIHelper {
     }
 
     /**
+     * Print a Integer property
+     *
+     * @param ctx
+     * @param writer
+     * @param key
+     * @param value
+     * @throws IOException
+     */
+    public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Integer value) throws IOException {
+	printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
+    }
+
+    /**
+     * Print a Long property
+     *
+     * @param ctx
+     * @param writer
+     * @param key
+     * @param value
+     * @throws IOException
+     */
+    public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Long value) throws IOException {
+	printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
+    }
+
+    /**
      * Print a key/value property. Value as string
      *
      * @param ctx
@@ -155,22 +185,52 @@ public class UIHelper {
 	writer.write("\r\n");
     }
 
+    public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
+
+	/*
+	printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
+	try {
+	    if (script == null) {
+		printPropertyScript(ctx, writer, key, script);
+	    } else {
+		UIHelper.startScript(ctx, writer, key);
+		ImpactPrinter.process(ctx, writer, script.getContent());
+		UIHelper.endScript(ctx, writer);
+	    }
+	} catch (IOException ex) {
+	    // Fallback
+	    printPropertyScript(ctx, writer, key, script);
+	}*/
+	printPropertyScript(ctx, writer, key, script);
+    }
 
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
-	startDiv(writer, CSS_CLASS_PROPERTY);
-	printText(ctx, writer, key, CSS_CLASS_PROPERTY_KEY);
 	String value;
-	if (script != null){
+	if (script != null) {
 	    value = script.getContent();
 	} else {
 	    value = TEXT_NOT_AVAILABLE;
 	}
-	printTextArea(ctx, writer, value, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + CSS_CLASS_SOURCE_CODE, true);
-	endDiv(writer);
+	printPropertyScript(ctx, writer, key, value);
+    }
+
+    public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, String script) throws IOException {
+	startScript(ctx, writer, key);
+	printTextArea(ctx, writer, script, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + CSS_CLASS_SOURCE_CODE, true);
+	endScript(ctx, writer);
 	writer.write("\r\n");
     }
 
+    public static void startScript(FacesContext context, ResponseWriter writer, String key) throws IOException {
+	startDiv(writer, CSS_CLASS_PROPERTY);
+	if (key != null) {
+	    printText(context, writer, key, CSS_CLASS_PROPERTY_KEY);
+	}
+    }
 
+    public static void endScript(FacesContext context, ResponseWriter writer) throws IOException {
+	endDiv(writer);
+    }
 
     /**
      * Print text with style class
@@ -190,6 +250,7 @@ public class UIHelper {
 
 	HtmlOutputText t = new HtmlOutputText();
 	t.setStyleClass(style);
+	t.setEscape(true);
 	t.setValue(text);
 	t.encodeAll(ctx);
 	writer.write("\r\n");
@@ -214,8 +275,9 @@ public class UIHelper {
 	}
 	startDiv(writer, CSS_CLASS_TEXT_CONTAINER);
 
+	startDiv(writer, style);
+	
 	HtmlOutputText t = new HtmlOutputText();
-	t.setStyleClass(style);
 	if (!code) {
 	    t.setEscape(false);
 	}
@@ -223,6 +285,8 @@ public class UIHelper {
 	t.encodeAll(ctx);
 
 	endDiv(writer);
+	endDiv(writer);
+
 	writer.write("\r\n");
     }
 
@@ -270,4 +334,18 @@ public class UIHelper {
 	}
 	writer.write("\r\n");
     }
+
+    public static void printMessage(FacesContext context, ResponseWriter writer, 
+	                            String destination, String from, 
+				    String object, String message) throws IOException {
+
+	UIHelper.startDiv(writer, CSS_CLASS_VARIABLE_CONTAINER);
+
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, from.replaceAll("^\\s*\"|\"\\s*$", ""));
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, destination);
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, object.replaceAll("^\\s*\"|\"\\s*$", ""));
+	UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_MESSAGE, message.replaceAll("^\\s*\"|\"\\s*$", ""), false);
+	UIHelper.endDiv(writer);
+    }
+
 }

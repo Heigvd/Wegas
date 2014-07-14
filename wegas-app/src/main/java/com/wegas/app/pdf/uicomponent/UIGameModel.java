@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
+import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
