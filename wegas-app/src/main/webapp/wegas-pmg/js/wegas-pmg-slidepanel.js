@@ -11,34 +11,31 @@
 YUI.add("wegas-pmg-slidepanel", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", SlidePanel;
+    var CONTENTBOX = "contentBox", SlidePanel, Wegas = Y.Wegas;
 
-    SlidePanel = Y.Base.create("wegas-pmg-slidepanel", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
-        handlers: null,
-        list: null,
-        animation: null,
-        cleaner: null,
-        initializer: function() {
-            this.handlers = {};
-        },
+    SlidePanel = Y.Base.create("wegas-pmg-slidepanel", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
+        BOUNDING_TEMPLATE: "<div><div class='slidepanel-title' style='position:relative;'><h2></h2></div></div>",
         renderUI: function() {
-            var cb = this.get(CONTENTBOX), node, titelNode, bb = this.get("boundingBox");
-            titelNode = Y.Node.create("<div class='slidepanel-title' style='position:relative;'><h2>" + this.get('title') + "</h2></div>");
+            this.handlers = {};
 
-            bb.insertBefore(titelNode, cb);
-            bb.append("<div class='slidepanel-cleaner' style='position:relative; z-index:-1;'></div>");
+            var cb = this.get(CONTENTBOX);
 
-            cb.setStyle("position", "absolute");
-            cb.setStyle("width", "100%");
+            this.get("boundingBox").append("<div class='slidepanel-cleaner' style='position:relative; z-index:-1;'></div>")
+                .one(".slidepanel-title h2").setContent(this.get("title"));
 
-            if (this.get("animation")) {
-                this.animation = cb.plug(Y.Plugin.NodeFX, {//slide animation
+            cb.setStyles({
+                position: "absolute",
+                width: "100%"
+            });
+
+            if (this.get("animation")) {                                        // Slide animation
+                this.animation = cb.plug(Y.Plugin.NodeFX, {
                     from: {
                         height: 0
                     },
                     to: {
-                        height: function(node) { // dynamic in case of change
-                            return node.get('scrollHeight'); // get expanded height (offsetHeight may be zero)
+                        height: function(node) {                                // dynamic in case of change
+                            return node.get('scrollHeight');                    // get expanded height (offsetHeight may be zero)
                         }
                     },
                     easing: Y.Easing.easeOut,
@@ -60,31 +57,27 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             }
         },
         bindUI: function() {
-            var cb = this.get(CONTENTBOX), bb = this.get("boundingBox");
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.update = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
 
-            if (this.get('animation')) {
-                this.handlers.anim = bb.one(".slidepanel-title").on('click', function(e) {
-                    e.preventDefault();
-                    this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
-
-                    this.animation.fx.set('reverse', !this.animation.fx.get('reverse')); // toggle reverse
-                    this.animation.fx.run();
-                    this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')); // toggle reverse
-                    this.cleaner.fx.run();
-                }, this);
-            }
+            this.get("boundingBox").one(".slidepanel-title").on('click', function(e) {
+                e.preventDefault();
+                this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
+                if (this.get('animation')) {
+                    this.animation.fx.set('reverse', !this.animation.fx.get('reverse')) // toggle reverse
+                        .run();
+                    this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')) // toggle reverse
+                        .run();
+                }
+            }, this);
         },
         syncUI: function() {
-            var cb = this.get(CONTENTBOX), height;
+            var cb = this.get(CONTENTBOX);
             if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled")) {
-                height = cb.get('scrollHeight');
-                cb.ancestor().one(".slidepanel-cleaner").setStyle('height', height); //compensates the non-height of the content's absolute position.
+                cb.ancestor().one(".slidepanel-cleaner").setStyle('height', cb.get('scrollHeight')); //compensates the non-height of the content's absolute position.
             }
         },
         destructor: function() {
-            var k;
-            for (k in this.handlers) {
+            for (var k in this.handlers) {
                 this.handlers[k].detach();
             }
             if (this.get('animation')) {
@@ -92,21 +85,19 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 this.cleaner.destroy();
             }
         }
-
     }, {
         ATTRS: {
             title: {
-                value: "unnamed",
-                type: "String",
+                type: "string",
                 validator: function(s) {
                     return s === null || Y.Lang.isString(s);
                 },
                 _inputex: {
-                    label: "Titel"
+                    label: "Title"
                 }
             },
             animation: {
-                type: "Boolean",
+                type: "boolean",
                 value: true,
                 _inputex: {
                     label: "Animation"
@@ -114,6 +105,90 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             }
         }
     });
+    Wegas.PmgSlidePanel = SlidePanel;
 
-    Y.Wegas.PmgSlidePanel = SlidePanel;
+    /**
+     * Shortcut to create a slidepanel for each resource folders available.
+     */
+    Wegas.PmgResourcesPanels = Y.Base.create("wegas-pmg-resourcespanels", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
+        renderUI: function() {
+            var resourceFoldes = Wegas.Facade.Variable.cache.find("name", "employees");
+
+            this.panels = Y.Array.map(resourceFoldes.get("items"), function(vd) {
+                return new Wegas.PmgSlidePanel({
+                    title: vd.get("label"),
+                    children: [{
+                            type: "PmgDatatable",
+                            plugins: [{
+                                    fn: "ScheduleDT",
+                                    cfg: {
+                                        columnToAdd: 24,
+                                        variable: {
+                                            name: "periodPhase3"
+                                        }
+                                    }
+                                }, {
+                                    fn: "Assignment",
+                                    cfg: {
+                                        taskList: {
+                                            name: "tasks"
+                                        },
+                                        columnPosition: 5
+                                    }
+                                }, {
+                                    fn: "Reservation"
+                                }, {
+                                    fn: "OccupationColor"
+                                }, {
+                                    fn: "ActivityColor"
+                                }],
+                            variable: {
+                                name: vd.get("name")
+                            },
+                            columnsCfg: [{
+                                    key: "label",
+                                    label: "Name",
+                                    sortable: true,
+                                    allowHTML: true
+                                }, {
+                                    name: "grade",
+                                    label: "Grade",
+                                    formatter: "skillLevel",
+                                    key: "instance.skillsets",
+                                    sortable: true,
+                                    allowHTML: true
+                                }, {
+                                    name: "Wage",
+                                    label: "Monthly wages",
+                                    key: "instance.properties.wage",
+                                    sortable: true,
+                                    allowHTML: true
+                                }, {
+                                    name: "Rate",
+                                    label: "Rate",
+                                    key: "instance.properties.activityRate",
+                                    sortable: true,
+                                    allowHTML: true
+                                }, {
+                                    name: "Motiv",
+                                    label: "Motiv.",
+                                    key: "instance.moral",
+                                    sortable: true,
+                                    allowHTML: true
+                                }],
+                            defaultSort: null
+                        }, {
+                            type: "Text",
+                            content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        }]
+                }).render(this.get(CONTENTBOX));
+            }, this);
+        },
+        destructor: function() {
+            Y.Array.each(this.panels, function(p) {
+                p.destroy();
+            });
+        }
+    });
+
 });

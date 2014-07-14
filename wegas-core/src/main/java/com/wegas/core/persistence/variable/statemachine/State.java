@@ -10,7 +10,6 @@ package com.wegas.core.persistence.variable.statemachine;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.dialogue.ActiveResponse;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,7 +29,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "ActiveResponse", value = ActiveResponse.class),
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
 public class State extends AbstractEntity {

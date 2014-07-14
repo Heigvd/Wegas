@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
-import com.wegas.core.persistence.variable.dialogue.UserInput;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -26,7 +25,6 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "UserInput", value = UserInput.class),
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
 public class Transition extends AbstractEntity {
