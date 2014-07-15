@@ -38,9 +38,9 @@ function nextPeriod() {
         }
 
     } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
-            currentPhase.add(self, 1);
+        currentPhase.add(self, 1);
         //currentPeriod.setValue(self, 1);                                      // Why?
-        if (currentPhase.getValue(self) === 2) {
+        if (currentPhase.getValue(self) === 2) {                                //Execution period
             Variable.findByName(gm, 'ganttPage').setValue(self, 11);
             Variable.findByName(gm, 'taskPage').setValue(self, 12);
         }
@@ -50,7 +50,9 @@ function nextPeriod() {
         currentPeriod.add(self, 1);
         Event.fire("nextWeek");
     }
-    updateVariables();
+    if (currentPhase.getValue(self) > 1) {
+        updateVariables();
+    }
 }
 
 /**
@@ -188,7 +190,7 @@ function updateVariables() {
     costs.getInstance(self).saveHistory();
     delay.getInstance(self).saveHistory();
     quality.getInstance(self).saveHistory();
-    planedValue.getInstance(self).saveHistory();
+    //  planedValue.getInstance(self).saveHistory();
     earnedValue.getInstance(self).saveHistory();
     actualCost.getInstance(self).saveHistory();
     Variable.findByName(gm, 'managementApproval').getInstance(self).saveHistory();
@@ -200,6 +202,24 @@ function addPredecessor(descName, listPredName) {
         Variable.findByName(gameModel, descName).predecessors.add(Variable.findByName(gameModel, predName));
     });
 }
+function updateBAC(taskName, value) {
+    Variable.findByName(self.getGameModel(), taskName).getInstance(self).setProperty('bac', value);
+    planedValueHistory();
+}
+function planedValueHistory() {
+    var len = Variable.find(gameModel, "executionPeriods").getValue(self),
+        history = Variable.find(gameModel, "planedValue").getInstance(self).getHistory();
+    history.clear();
+    for (var i = 0; i < len; i++) {
+        history.add(calculatePlanedValue(i + 1));
+    }
+}
+Event.on("addTaskPlannification", function() {
+    planedValueHistory();
+});
+Event.on("removeTaskPlannification", function() {
+    planedValueHistory();
+});
 
 function addImpactDuration(factor, taskname, inTime, value) {
     var factorsDesc = Variable.findByName(gm, "factors"),
@@ -218,8 +238,8 @@ function cancelEffect() {
     var factorsDesc = Variable.findByName(gm, "factors"),
         propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i, splitedProp,
         time = Variable.findByName(gm, "periodPhase3").getInstance().getValue();
-    
-    for (i=0; i<propertiesKey.length; i++) {
+
+    for (i = 0; i < propertiesKey.length; i++) {
         splitedProp = propertiesKey[i].split("/");
         if (time === parseInt(splitedProp[2])) {
             Variable.find(parseInt(splitedProp[1])).addNumberAtInstanceProperty(self, splitedProp[0], factorsDesc.getProperty(self, propertiesKey[i]));
