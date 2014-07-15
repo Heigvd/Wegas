@@ -8,13 +8,53 @@
 /**
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-chart', function(Y) {
     var CONTENTBOX = 'contentBox', Chart;
 
     Chart = Y.Base.create("wegas-chart", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+        initializer: function() {
+            this.requestHistory = [];
+        },
         bindUI: function() {
             this.dsUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+        },
+        renderUI: function() {
+            this.get(CONTENTBOX).append("Loading ...");
+
+            this.chart = new Y.Chart({
+                type: this.get("chartType"),
+//                    render: this.get(CONTENTBOX),
+//                seriesCollection: seriesCollection,
+                // categoryType:"time",                                         // Start sur l'axe mais l'axe devient time
+                axes: {
+                    values: {
+                        minimum: this.get("minValue"),
+                        maximum: this.get("maxValue"),
+                        calculateEdgeOffset: true
+                    },
+                    category: {
+                        type: "numeric",
+                        minimum: this.get("hStart")
+//                        calculateEdgeOffset: true
+                    }
+                },
+//                legend: {
+//                    styles: {
+//                        gap: 0
+//                    },
+//                    position: this.get("legendPosition")
+//                },
+                tooltip: {
+                    markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex) {
+                        return new Y.Node.create('<div><div><p>' + valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value]) + '</p></div></div>');
+                    }
+                },
+                dataProvider: [],
+                horizontalGridlines: this.get("horizontalGridlines"),
+                verticalGridlines: this.get("verticalGridlines")
+            });
         },
         syncUI: function() {
             var vd, i, variables = this.get("variables");
@@ -39,10 +79,12 @@ YUI.add('wegas-chart', function(Y) {
                 this.chart.destroy();
             }
             this.dsUpdateHandler.detach();
-            Y.Wegas.DataSource.abort(this.historyRequestId);
+            Y.Array.each(this.requestHistory, function(item) {
+                Y.Wegas.DataSource.abort(item);
+            });
         },
         historyRequest: function(vd) {
-            this.historyRequestId = Y.Wegas.Facade.VariableDescriptor.cache.getWithView(vd.getInstance(), "Extended", {
+            this.requestHistory.push(Y.Wegas.Facade.VariableDescriptor.cache.getWithView(vd.getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(e) {
                         var entity = e.response.entity;
@@ -52,7 +94,7 @@ YUI.add('wegas-chart', function(Y) {
 
                         this.requestCounter += 1;
                         if (this.requestCounter === this.get("variables").length) {
-                            this.createChart();
+                            this.updateChart();
                         }
                     }, this),
                     failure: function(r) {
@@ -63,57 +105,55 @@ YUI.add('wegas-chart', function(Y) {
                         }
                     }
                 }
-            });
+            }));
         },
         /**
          * Creat a YUI3 Charts combospline' with values of a resource's moral and confidence historic values.
          * If any resource is given, the chart will be not created.
          * @ Param NumberDescriptor numberDescriptor, the source of chart's values
          */
-        createChart: function() {
+        updateChart: function() {
             var i, cb = this.get(CONTENTBOX),
-                    seriesCollection = [],
-                    rawSeries = [];
+                seriesCollection = [],
+                rawSeries = [], data, axis, hStep = this.get("hStep") || 1;
 
-            if (this.chart) {
-                this.chart.destroy();
-            }
-            if (this.vdList.length < 1)
+            if (this.vdList.length < 1) {
                 return;
+            }
 
             for (i = 0; i < this.vdList.length; i++) {
                 seriesCollection.push({
                     yDisplayName: this.vdList[i].label
                 });
                 rawSeries.push(this.vdList[i].get("history"));
-            }
 
-            this.chart = new Y.Chart({
-                type: this.get("chartType"),
-                seriesCollection: seriesCollection,
-                // categoryType:"time",                                         // Start sur l'axe mais l'axe devient time
-                axes: {
-                    values: {
-                        minimum: this.get("minValue"),
-                        maximum: this.get("maxValue")
-                    }
-                },
-                legend: {
+            }
+            hStep = hStep > 0 ? hStep : 1;
+
+            this.chart.set("dataProvider", this.getChartValues(this.findNumberOfValue(rawSeries), rawSeries));
+            axis = this.chart.getAxisByKey("category");
+            if (this.get("hMinEnd.evaluated")) {
+                data = axis.get("data");
+                this.chart.getAxisByKey("category").set("maximum", Math.max(data[data.length - 1], this.get("hMinEnd.evaluated").getValue(), 2/*minimum 2 points (width...)*/));
+            }
+            this.chart.getAxisByKey("category").set("styles", {
+                majorUnit: {
+                    count: (axis.get("maximum") - axis.get("minimum")) / hStep + 1
+                }
+            });
+            if (!this.chart.get("rendered")) {
+                this.chart.set("legend", {
                     styles: {
                         gap: 0
                     },
                     position: this.get("legendPosition")
-                },
-                tooltip: {
-                    markerLabelFunction: function(categoryItem, valueItem, itemIndex, series, seriesIndex) {
-                        return new Y.Node.create('<div><div><p>' + valueItem.displayName + ': ' + valueItem.axis.get("labelFunction").apply(this, [valueItem.value]) + '</p></div></div>');
-                    }
-                },
-                dataProvider: this.getChartValues(this.findNumberOfValue(rawSeries), rawSeries),
-                horizontalGridlines: this.get("horizontalGridlines"),
-                verticalGridlines: this.get("verticalGridlines")
-            });
-            this.chart.render(cb);
+                });
+                this.get(CONTENTBOX).empty();
+                this.chart.render(cb);
+                this.chart.set("seriesCollection", seriesCollection);
+            } else {
+                this.chart.syncUI();
+            }
         },
         findNumberOfValue: function(series) {
             var i, number = 0;
@@ -156,7 +196,7 @@ YUI.add('wegas-chart', function(Y) {
             }
 
             if (fitSeries[0].length === 0) {
-                for (i = 1; i < 10; i++) {
+                for (i = 1; i < 2; i++) {
                     fitSeries[0].push(i);
                 }
             }
@@ -186,6 +226,29 @@ YUI.add('wegas-chart', function(Y) {
                         label: "variable",
                         classFilter: ["NumberDescriptor"]
                     }
+                }
+            },
+            hStart: {
+                optional: true,
+                type: "number",
+                _inputex: {
+                    label: "Horizontal start value"
+                }
+            },
+            hStep: {
+                optional: true,
+                type: "number",
+                _inputex: {
+                    label: "Horizontal steps"
+                }
+            },
+            hMinEnd: {
+                optional: true,
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Minimum horizontal end value",
+                    classFilter: ["NumberDescriptor"]
                 }
             },
             minValue: {

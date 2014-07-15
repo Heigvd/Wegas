@@ -54,7 +54,7 @@
                     }]
             }, {
                 "type": "Template",
-                "custom" : "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, exec = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'executionPeriods').get('value'), phase = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'currentPhase').get('value'); if (phase != 2) {maxVal = this.value} else if (this.value >= exec) { maxVal = this.value; maxVal++} else { maxVal = exec} %><% for(var i=+this.minValue; i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
+                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, exec = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'executionPeriods').get('value'), phase = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'currentPhase').get('value'); if (phase != 2) {maxVal = this.value} else if (this.value >= exec) { maxVal = this.value; maxVal++} else { maxVal = exec} %><% for(var i=+this.minValue; i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
                 "cssClass": "pmg-period",
                 "data": {},
                 "variable": {
@@ -565,6 +565,10 @@
                         "legendPosition": "bottom",
                         "type": "Chart",
                         "verticalGridlines": true,
+                        "hStart": "1",
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
                         "variables": [
                             {
                                 "name": "actualCost",
@@ -596,6 +600,10 @@
                         "legendPosition": "bottom",
                         "type": "Chart",
                         "verticalGridlines": true,
+                        "hStart": "1",
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
                         "variables": [
                             {
                                 "name": "managementApproval",
@@ -621,6 +629,10 @@
                         "width": "90%",
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
+                        "hStart": "1",
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
                         "type": "Chart",
                         "verticalGridlines": true,
                         "variables": [
@@ -1144,6 +1156,10 @@
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
                         "verticalGridlines": true,
+                        "hStart": "1",
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
                         "variables": [
                             {
                                 "name": "actualCost",

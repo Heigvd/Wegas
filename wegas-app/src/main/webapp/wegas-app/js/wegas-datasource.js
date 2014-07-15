@@ -175,35 +175,35 @@ YUI.add('wegas-datasource', function(Y) {
             var response, data = e.data && (e.data.responseText || e.data),
                 host = this.get(HOST),
                 payload = e.details[0];
+            if (data.status !== 0) {                                                  //no abort
+                response = {
+                    results: Y.JSON.parse(data),
+                    meta: {}
+                };
+                response.data = host.data;                                          // Provides with a pointer to the datasource current content
+                payload.response = response;
+                Y.log("Response received: " + host.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
 
-            response = {
-                results: Y.JSON.parse(data),
-                meta: {}
-            };
-            response.data = host.data;                                          // Provides with a pointer to the datasource current content
-            payload.response = response;
-            Y.log("Response received: " + host.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
+                Wegas.Editable.use(payload.response.results, // Lookup dependencies
+                    Y.bind(function(payload) {
 
-            Wegas.Editable.use(payload.response.results, // Lookup dependencies
-                Y.bind(function(payload) {
+                        if (payload.cfg.initialRequest) {
+                            this.clear(false);
+                        }
 
-                    if (payload.cfg.initialRequest) {
-                        this.clear(false);
-                    }
-
-                    payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                    if (payload.serverResponse.get
-                        && payload.serverResponse.get("entities")
-                        && payload.serverResponse.get("entities").length > 0) {
-                        payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
-                        payload.response.entities = payload.serverResponse.get("entities");
-                    }
-                    if (payload.cfg.updateCache !== false) {
-                        this.onResponseRevived(payload);
-                    }
-                    host.fire("response", payload);
-                }, this, payload));
-
+                        payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
+                        if (payload.serverResponse.get
+                            && payload.serverResponse.get("entities")
+                            && payload.serverResponse.get("entities").length > 0) {
+                            payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                            payload.response.entities = payload.serverResponse.get("entities");
+                        }
+                        if (payload.cfg.updateCache !== false) {
+                            this.onResponseRevived(payload);
+                        }
+                        host.fire("response", payload);
+                    }, this, payload));
+            }
             return new Y.Do.Halt("DataSourceJSONSchema plugin halted _defDataFn");
         },
         /**
