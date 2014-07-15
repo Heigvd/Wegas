@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.ejb;
 
+import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
@@ -22,8 +23,10 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +60,11 @@ public class ResourceFacade {
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+    /**
+     *
+     */
+    @Inject
+    private ScriptEventFacade scriptEvent;
 
     /**
      *
@@ -257,6 +265,11 @@ public class ResourceFacade {
     public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().add(periode);
+        try {
+            scriptEvent.fire("addTaskPlannification");
+        } catch (NoSuchMethodException | ScriptException ex) {
+
+        }
         return ti;
     }
 
@@ -269,6 +282,11 @@ public class ResourceFacade {
     public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(periode);
+        try {
+            scriptEvent.fire("removeTaskPlannification");
+        } catch (NoSuchMethodException | ScriptException ex) {
+
+        }
         return ti;
     }
 
