@@ -11,7 +11,7 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-var gm = self.getGameModel();
+var gm = self.getGameModel(), TempImpact;
 
 /**
  * Call all necessary method to pass a period and calculate all variable.
@@ -247,3 +247,7 @@ function cancelEffect() {
         }
     }
 }
+TempImpact = {
+    addImpactDuration: addImpactDuration,
+    cancelEffect: cancelEffect
+};
