@@ -142,6 +142,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                         this.updateExpressionList(true);
                         this.updateTextarea();
                         this.toggleViewSrc(mode);
+                        this.fireUpdatedEvt();
                     }, this)
                 }
             }).render(field);
