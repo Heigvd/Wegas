@@ -35,7 +35,6 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     on: {
                         click: Y.bind(function() {
                             DATASOURCE.createPage(PageTreeview.DEFAULT_NEWPAGE, Y.bind(function(page, id) {
-                                this.get("pageLoader").set("pageId", null, {noquery: true});   //be sure to change (stuck on an inexistant page 1)
                                 this.changePage(id, Y.bind(function(id) {
                                     this.treeView.some(function() {
                                         if (+this.get("data.page") === +id) {
@@ -43,7 +42,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                                             return true;
                                         }
                                     });
-                                }, this, id));
+                                }, this, id), true);
                             }, this));
                         }, this)
                     }
@@ -235,7 +234,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         duplicatePage: function(pageId) {
             DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
-                this.changePage(id);
+                this.changePage(id, null, true);
             }, this));
         },
         cleanAllChildren: function() {
@@ -247,8 +246,11 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                 //this.treeView._items[i].removeAll();
             }
         },
-        changePage: function(pageId, callback) {
+        changePage: function(pageId, callback, force) {
             var pageLoader = this.get("pageLoader");
+            if (force) {
+                this.get("pageLoader").set("pageId", null, {noquery: true});   //be sure to change (stuck on an inexistant page 1)
+            }
             if (parseInt(pageLoader.get("pageId"), 10) === parseInt(pageId, 10)) {
                 if (Y.Lang.isFunction(callback)) {
                     callback(pageLoader.get("widget"));
