@@ -116,7 +116,7 @@ persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex 
 };
 Y.mix(persistence.TaskDescriptor.METHODS, {
     getNumberInstanceProperty: {
-        label: "Get number instance's property",
+        label: "Get instance property",
         returns: NUMBER,
         arguments: [{
                 type: HIDDEN,
@@ -134,7 +134,7 @@ Y.mix(persistence.TaskDescriptor.METHODS, {
             }]
     },
     addNumberAtInstanceProperty: {
-        label: "Add at instance's property",
+        label: "Add to instance property",
         arguments: [{
                 type: HIDDEN,
                 value: SELF
@@ -161,7 +161,7 @@ Y.mix(persistence.TaskDescriptor.METHODS, {
             }]
     },
     setInstanceProperty: {
-        label: "Set instance's property",
+        label: "Set instance property",
         arguments: [{
                 type: HIDDEN,
                 value: SELF
@@ -188,7 +188,7 @@ Y.mix(persistence.TaskDescriptor.METHODS, {
             }]
     },
     addAtRequirementVariable: {
-        label: "Add at requirements",
+        label: "Add to requirements",
         arguments: [{
                 type: HIDDEN,
                 value: SELF
@@ -224,7 +224,11 @@ Y.mix(persistence.TaskDescriptor.METHODS, {
                 type: "entityarrayfieldselect",
                 returnAttr: "id",
                 scope: "instance",
-                field: "requirements"
+                field: "requirements",
+                name: {
+                    values: ["quantity", "work", "level"],
+                    separator: " - "
+                }
             }, {
                 scriptType: STRING,
                 type: SELECT,
@@ -306,11 +310,14 @@ persistence.ResourceInstance.ATTRS.confidenceHistory = {
     }
 };
 persistence.ResourceDescriptor.METHODS = Y.Object.filter(persistence.ResourceDescriptor.METHODS, function(m, k) {
-    return ["getConfidence", "addAtConfidence", "setConfidence"].indexOf(k) === -1;
+    return !(k.match(/confidence/i)
+        || k.match(/salary/i)
+        || k.match(/experience/i)
+        || k.match(/leadership/i));
 });
 Y.mix(persistence.ResourceDescriptor.METHODS, {
     getNumberInstanceProperty: {
-        label: "Get number instance's property",
+        label: "Get instance property",
         returns: NUMBER,
         arguments: [{
                 type: HIDDEN,
@@ -326,7 +333,7 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
             }]
     },
     addNumberAtInstanceProperty: {
-        label: "Add number at instance's property",
+        label: "Add to instance property",
         arguments: [{
                 type: HIDDEN,
                 value: SELF
@@ -345,7 +352,7 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
             }]
     },
     setInstanceProperty: {
-        label: "Set instance's property",
+        label: "Set instance property",
         arguments: [{
                 type: HIDDEN,
                 value: SELF

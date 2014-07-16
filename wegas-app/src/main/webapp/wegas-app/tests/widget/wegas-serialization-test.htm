@@ -52,9 +52,15 @@
 
         <!--<script type="text/javascript" src="http://yui.yahooapis.com/3.14.1/build/yui/yui-min.js"></script>-->
         <script type="text/javascript" src="../../../lib/yui3/build/yui/yui.js"></script>
+
+        <script type="text/javascript">
+            YUI_config.Wegas = {
+                base: "../../../"
+            };
+        </script>
+
         <!--<script type="text/javascript" src="http://neyric.github.com/inputex/src/loader.js"></script>-->
         <script type="text/javascript" src="../../../lib/inputex/src/loader.js"></script>
-
         <script type="text/javascript" src="../../js/wegas-loader.js"></script>
 
         <script type="text/javascript" src="./wegas-serialization-test.js"></script>
@@ -62,7 +68,7 @@
         <script type="text/javascript">
             for (var i in YUI_config.groups) {
                 if (i.indexOf("wegas") > -1) {
-                    YUI_config.groups[i].base = "../../../" + YUI_config.groups[i].base;
+                    YUI_config.groups[i].combine = false;
                     YUI_config.groups[i].filter = "raw";// Select raw files
                 }
             }
@@ -72,7 +78,6 @@
             YUI_config.groups.libraries.base = "../../../lib/";                 // Set up libraries path
             YUI_config.groups.libraries.filter = "raw";
             //YUI_config.groups.libraries.base = "../../../../../../../wegas-resources/src/main/webapp/lib/";                 // Set up libraries path
-
 
             YUI({
                 useBrowserConsole: true
@@ -85,7 +90,6 @@
                 Y.Test.Runner.setName('Serialiation');
                 Y.Test.Runner.run();
             });
-
         </script>
     </body>
 </html>

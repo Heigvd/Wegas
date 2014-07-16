@@ -359,7 +359,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtSkillset: {
-                label: "Add to skillset",
+                label: "Add to skill level",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF

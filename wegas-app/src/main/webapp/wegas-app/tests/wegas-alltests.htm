@@ -2,7 +2,6 @@
 <!DOCTYPE html>
 <html>
     <head>
-
         <title>Wegas Test Suite</title>
 
         <style type="text/css">
@@ -15,13 +14,20 @@
             }
         </style>
     </head>
+    
     <body class="yui3-skin-sam">
 
         <script type="text/javascript" src="http://yui.yahooapis.com/3.14.1/build/yui/yui-min.js"></script>
         <!--<script type="text/javascript" src="../../lib/yui3/build/yui/yui.js"></script>-->
+
+        <script type="text/javascript">
+            YUI_config.Wegas = {
+                base: "../../"
+            };
+        </script>
+
         <script type="text/javascript" src="http://neyric.github.com/inputex/src/loader.js"></script>
         <!--<script type="text/javascript" src="../../lib/inputex/src/loader.js"></script>-->
-
         <script type="text/javascript" src="../js/wegas-loader.js"></script>
 
         <script type="text/javascript" src="../../wegas-util/tests/wegas-widgettoolbar-test.js"></script>
@@ -31,8 +37,8 @@
         <script type="text/javascript">
             for (var i in YUI_config.groups) {
                 if (i.indexOf("wegas") > -1) {
-                    YUI_config.groups[i].base = "../../" + YUI_config.groups[i].base;
-                    YUI_config.groups[i].filter = "raw";// Select raw files
+                    YUI_config.groups[i].filter = "raw";                        // Select raw files
+                    YUI_config.groups[i].combine = false;
                 }
             }
             YUI_config.groups.inputex.base = "http://neyric.github.com/inputex/src/";
@@ -44,16 +50,14 @@
             YUI({
                 //coverage: ['widgetmenu']
             }).use('test-console', 'wegas-widgettoolbar-test', 'wegas-widgetmenu-test',
-                    'wegas-serialization-test', function(Y) {
-                new Y.Test.Console({
-                    useBrowserConsole: true,
-                    verbose: true
-                }).render();
-
-                Y.Test.Runner.setName('Wegas');
-                Y.Test.Runner.run();
-            });
-
+                'wegas-serialization-test', function(Y) {
+                    new Y.Test.Console({
+                        useBrowserConsole: true,
+                        verbose: true
+                    }).render();
+                    Y.Test.Runner.setName('Wegas');
+                    Y.Test.Runner.run();
+                });
         </script>
     </body>
 </html>
