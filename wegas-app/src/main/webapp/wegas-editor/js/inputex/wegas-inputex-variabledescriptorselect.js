@@ -77,18 +77,22 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             VariableDescriptorSelect.superclass.setValue.apply(this, arguments);
             this.options.value = val;
             this.syncUI();
+            if (!this.validate()) {
+                this.empty();
+                this._fallback(this.options.raw, "Failed to validate statement");
+            }
         },
         /**
          * @function
          */
         getValue: function() {
-            if (this.currentEntityField && !this._fallbackMode && this.currentEntityField.getValue()) {
-                return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
-            } else if (this._fallbackMode) {
+            if (this._fallbackMode) {
                 return this.inputs[0].getValue() || this.options.raw;
-            } else {
-                return null;
             }
+            if (this.currentEntityField && this.currentEntityField.getValue()) {
+                return "Variable.find(gameModel, \"" + this.currentEntityField.getValue() + "\")";
+            }
+            return null;
         },
         validate: function() {
             var valid = !!this.getValue() && VariableDescriptorSelect.superclass.validate.call(this);
@@ -128,9 +132,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 if (this.options.raw) {
 
                     if (Y.Lang.isString(this.options.value)) {
-                        this._fallbackMode = true;
-                        this._renderSelectConfig(null);
-                        this.displayMessage("Unable to find variable '" + this.options.value + "'");
+//                        this._fallbackMode = true;
+//                        this._renderSelectConfig(null);
+//                        this.displayMessage("Unable to find variable '" + this.options.value + "'");
+                        this._fallback(this.options.raw, "Unable to find variable '" + this.options.value + "'");
 //                        this.setClassFromState("invalid");
                     } else {
                         this._fallback(this.options.raw, "Unable to parse field");
@@ -331,6 +336,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     label: null
                 }, cMethod));
 
+            } else if (this.options.value && this.options.value.indexOf("GLOBAL") === 0) {
+                this._fallback(this.options.raw, "Unable to find global '" + this.options.raw.split("(")[0] + "'");
             } else if (currentEntity) {
 
                 /*  while (this.getMethods(currentEntity).length === 0          // If the current entity has no methods,
@@ -396,6 +403,9 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.argsOffset = 1;
         },
         getValue: function() {
+            if (this._fallbackMode) {
+                return VariableDescriptorMethod.superclass.getValue.call(this);
+            }
             if (Y.Lang.isString(this.options.value) && Y.Object.hasKey(this.GLOBALMETHODS, this.options.value.replace("GLOBAL", ""))) {
                 var k = this.options.value.replace("GLOBAL", ""),
                     cMethod = this.GLOBALMETHODS[this.options.value.replace("GLOBAL", "")];
