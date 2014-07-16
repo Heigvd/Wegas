@@ -56,7 +56,7 @@ public class GameController extends AbstractGameController {
      *
      */
     @PostConstruct
-    public void init(){
+    public void init() {
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
@@ -66,7 +66,7 @@ public class GameController extends AbstractGameController {
         if (this.gameId != null) {                                              // If a playerId is provided, we use it
             try {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
-                        userFacade.getCurrentUser().getId());           // Try to check if current shiro user is registered to the target game
+                        userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game
 
             } catch (NoResultException e) {                                     // If we still have nothing
                 errorController.dispatch("You are not registered to this game.");
@@ -81,7 +81,7 @@ public class GameController extends AbstractGameController {
             try {
                 externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
             } catch (IOException ex) {
-                
+
             }
         }
     }
