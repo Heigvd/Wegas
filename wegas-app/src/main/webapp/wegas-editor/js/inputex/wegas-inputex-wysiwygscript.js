@@ -12,7 +12,22 @@
 YUI.add("wegas-inputex-wysiwygscript", function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx;
+    var inputEx = Y.inputEx, sortInputex = function(fields) {
+        var order = [];
+        Y.Array.each(Y.Wegas.Facade.Variable.data, function(item) {
+            if (item.flatten) {
+                Y.Array.each(item.flatten(), function(i) {
+                    order.push(i.get("name"));
+                });
+            } else {
+                order.push(item.get("name"));
+            }
+        });
+        fields.sort(function(a, b) {
+            return Y.Array.indexOf(order, a.value) - Y.Array.indexOf(order, b.value);
+        });
+        return fields;
+    };
 
     inputEx.WysiwygScript = function(options) {
         inputEx.WysiwygScript.superclass.constructor.call(this, options);
@@ -115,9 +130,20 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.sortButton = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-sort\"></span>",
                 tooltip: "Sort",
-                visible: false,
+//                visible: false,
                 on: {
-                    click: Y.bind(this.sort, this)
+                    click: Y.bind(function() {
+                        var mode = this.options.viewSrc;
+                        if (!this.validate()) {
+                            return;
+                        }
+                        this.updateTextarea();
+                        this.toggleViewSrc(false);
+                        this.updateExpressionList(true);
+                        this.updateTextarea();
+                        this.toggleViewSrc(mode);
+                        this.fireUpdatedEvt();
+                    }, this)
                 }
             }).render(field);
             this.runButton = new Y.Wegas.Button({
@@ -197,7 +223,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 inputEx.AceField.prototype.setValue.call(this, this.getValue().content); // update textatea content
             }
         },
-        updateExpressionList: function() {
+        updateExpressionList: function(sort) {
             var i, tree,
                 container = new Y.Node(this.fieldContainer),
                 fields = [];
@@ -234,6 +260,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 this.viewSrc.set("disabled", false);
                 if (this.exprList) {
                     this.exprList.destroy();
+                }
+                if (sort) {
+                    fields = sortInputex(fields);
                 }
                 this.exprList = Y.inputEx({//                                   // Render the expression as a Y.inputEx.Wegas.ListField
                     type: "listfield",

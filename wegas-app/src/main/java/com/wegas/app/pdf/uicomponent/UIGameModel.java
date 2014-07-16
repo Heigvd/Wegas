@@ -40,7 +40,7 @@ public class UIGameModel extends UIComponentBase {
 
 	ResponseWriter writer = context.getResponseWriter();
 
-	UIHelper.startDiv(writer, UIHelper.CSS_CLASS_CONTENT);
+	//UIHelper.startDiv(writer, UIHelper.CSS_CLASS_CONTENT);
 	UIHelper.startSpan(writer, UIHelper.CSS_CLASS_MAIN_TITLE);
 	writer.write("Scenario " + gm.getName());
 	UIHelper.endSpan(writer);
@@ -78,6 +78,6 @@ public class UIGameModel extends UIComponentBase {
 	    uiVd.encodeAll(context);
 	}
 
-	UIHelper.endDiv(writer);
+	//UIHelper.endDiv(writer);
     }
 }
