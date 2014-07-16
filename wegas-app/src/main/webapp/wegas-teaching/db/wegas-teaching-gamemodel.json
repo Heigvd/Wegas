@@ -3,7 +3,8 @@
     "name": "Teaching",
     "properties": {
         "cssUri": "wegas-teaching/css/wegas-teaching.css",
-        "pagesUri": "wegas-teaching/db/wegas-teaching-pages.json?"
+        "pagesUri": "wegas-teaching/db/wegas-teaching-pages.json?",
+        "clientScriptUri": "wegas-teaching/js/wegas-teaching-loader.js"
     },
     "childVariableDescriptors": [
         {

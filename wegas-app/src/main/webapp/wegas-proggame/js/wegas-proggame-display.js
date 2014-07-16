@@ -8,7 +8,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  * @author Cyril Junod <cyril.junod at gmail.com>
- * @author Francois-Xavier Aexecmoeberhard <fx@red-agent.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 /* global Crafty */
 YUI.add('wegas-proggame-display', function(Y) {
