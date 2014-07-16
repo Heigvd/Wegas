@@ -470,6 +470,7 @@
     },
     "properties": {
         "freeForAll": true,
-        "cssUri": "wegas-flexitests/css/wegas-flexitests.css"
+        "cssUri": "wegas-flexitests/css/wegas-flexitests.css",
+        "clientScriptUri": "wegas-flexitests/js/wegas-flexitests-loader.js"
     }
 }

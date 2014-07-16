@@ -3065,6 +3065,8 @@
             "content": ""
         }
     },
-    "properties": {},
+    "properties": {
+        "clientScriptUri": "wegas-leaderway/js/wegas-leaderway-loader.js"
+    },
     "createdByName": "Francois-Xavier  "
 }

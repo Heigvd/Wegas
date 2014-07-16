@@ -29,7 +29,7 @@
             <!-- CSS library for current game model is included directly in the file -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
-            <!-- Dev tool: style sheet reference injected directly in the game model -->
+            <!-- Stylesheets injected directly in the game model -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
@@ -42,6 +42,13 @@
         </ui:define>
 
         <ui:define name="body">
+
+            <!-- Client script (game model specific) -->
+            <ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
+                       var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
+                <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
+            </ui:repeat>
+
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
@@ -158,7 +165,7 @@
                                 //this.get("base") + "rest/EditorPrivate/" + player.get("id")
                                 Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
                                 + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
-                                + "/VariableDescriptor");                   // Retrieve variable instances for the new player
+                                + "/VariableDescriptor");                       // Retrieve variable instances for the new player
 
                             var preview = Y.Widget.getByNode(".editor-preview");// Show a loading overlay in the Preview tab during the request
                             preview.showOverlay();
@@ -166,7 +173,7 @@
                         });
 
                         try {
-                #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
@@ -184,8 +191,10 @@
                      */
                 });
             </script>
+
         </ui:define>
 
+        <!-- User voice -->
         <ui:define name="uservoice_trigger_position">top-right</ui:define>
         <ui:define name="uservoice_trigger_background_color">white</ui:define>
         <ui:define name="uservoice_trigger_color">#072644</ui:define>
