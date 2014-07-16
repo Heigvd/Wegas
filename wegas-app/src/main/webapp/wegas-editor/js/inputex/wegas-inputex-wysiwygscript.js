@@ -192,22 +192,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 }
             });
         },
-        sort: function(fields) {
-            var order = [];
-            Y.Array.each(Y.Wegas.Facade.Variable.data, function(item) {
-                if (item.flatten) {
-                    Y.Array.each(item.flatten(), function(i) {
-                        order.push(i.get("name"));
-                    });
-                } else {
-                    order.push(item.get("name"));
-                }
-            });
-            fields.sort(function(a, b) {
-                return Y.Array.indexOf(order, a.value) - Y.Array.indexOf(order, b.value);
-            });
-            return fields;
-        },
         /**
          *
          * @param {type} viewSrc
