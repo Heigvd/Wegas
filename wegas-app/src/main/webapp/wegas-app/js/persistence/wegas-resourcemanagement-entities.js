@@ -15,7 +15,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", NAME = "name",
         SELF = "self", BOOLEAN = "boolean", NUMBER = "number", OBJECT = "object",
         HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
-        GROUP = "group", LIST = "list",
+        GROUP = "group", LIST = "list", SELECT = "select", KEY = "key",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         PROPERTIESELEMENTTYPE = {
             type: COMBINE,
@@ -214,7 +214,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtConfidence: {
-                label: "Add at confidence",
+                label: "Add to confidence",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -242,12 +242,12 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtMoral: {
-                label: "Add at moral",
+                label: "Add to moral",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
+                        type: NUMBER,
                         value: 1
                     }]
             },
@@ -257,20 +257,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
+                        type: NUMBER,
                         value: 1
                     }]
             },
             addOccupation: {
-                label: "add occupation",
+                label: "Add occupation",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: NUMBER,
                         typeInvite: "Time",
-                        scriptType: NUMBER,
-                        value: 1
+                        scriptType: NUMBER
                     }, {
                         type: HIDDEN,
                         label: "Editable",
@@ -290,112 +289,103 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         value: SELF
                     }, {
                         type: NUMBER,
-                        value: 1
+                        typeInvite: "Time"
                     }]
             },
             getNumberInstanceProperty: {
-                label: "Get number instance's property",
+                label: "Get number instance property",
                 returns: NUMBER,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
-
                     }]
             },
             getStringInstanceProperty: {
-                label: "Get text instance's property",
+                label: "Get text instance property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
-
                     }]
             },
             addNumberAtInstanceProperty: {
-                label: "Add Number at instance's property",
+                label: "Add to instance property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
                     }, {
                         type: STRING,
-                        label: "Value",
+                        typeInvite: VALUE,
                         scriptType: STRING
-
                     }]
             },
             setInstanceProperty: {
-                label: "Set instance's property",
+                label: "Set instance property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
-
                     }, {
                         type: STRING,
-                        label: "Value",
+                        typeInvite: VALUE,
                         scriptType: STRING
-
                     }]
             },
             getSkillset: {
-                label: "Get skillset",
+                label: "Skill level",
                 returns: NUMBER,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
-                        label: "Key",
-                        scriptType: STRING
-
+                        scriptType: STRING,
+                        type: SELECT,
+                        choices: persistence.Resources.SKILLS
                     }]
             },
             addAtSkillset: {
-                label: "Add at skillset",
+                label: "Add to skillset",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
-                        label: "Key",
-                        scriptType: STRING
+                        scriptType: STRING,
+                        type: SELECT,
+                        choices: persistence.Resources.SKILLS
                     }, {
                         type: STRING,
-                        label: "Value",
+                        typeInvite: "level",
                         scriptType: STRING
-
                     }]
             },
             setSkillset: {
-                label: "Set skillset",
+                label: "Set skill level",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: STRING,
-                        label: "Key",
-                        scriptType: STRING
-
+                        scriptType: STRING,
+                        type: SELECT,
+                        choices: persistence.Resources.SKILLS
                     }, {
-                        type: STRING,
-                        label: "Value",
+                        type: NUMBER,
+                        typeInvite: "level",
                         scriptType: STRING
-
                     }]
             },
             //methods below are temporary ; only for CEP-Game
@@ -408,7 +398,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtSalary: {
-                label: "Add at salary",
+                label: "Add to salary",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -436,7 +426,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtExperience: {
-                label: "Add at experience",
+                label: "Add to experience",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -464,7 +454,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtLeadershipLevel: {
-                label: "Add at leadership level",
+                label: "Add to leadership level",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -633,8 +623,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             predecessorNames: {
                 type: ARRAY,
-                value: [],  
-                "transient": true,                                              //@fixme Shloud be enabled to allow edition
+                value: [],
+                "transient": true, //@fixme Shloud be enabled to allow edition
                 _inputex: {
                     label: "Predecessors",
                     useButtons: true
@@ -732,62 +722,57 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         }, METHODS: {
             getNumberInstanceProperty: {
-                label: "Get number instance's property",
+                label: "Get number instance property",
                 returns: NUMBER,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
                     }]
             },
             getStringInstanceProperty: {
-                label: "Get text instance's property",
+                label: "Get text instance property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
-
                     }]
             },
             setInstanceProperty: {
-                label: "Set instance's property",
+                label: "Set instance property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
-
                     }, {
                         type: STRING,
-                        label: "Value",
+                        typeInvite: VALUE,
                         scriptType: STRING
-
                     }]
             },
             addNumberAtInstanceProperty: {
-                label: "Add number at instance's property",
+                label: "Add to instance property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }, {
                         type: STRING,
-                        label: "Key",
+                        typeInvite: KEY,
                         scriptType: STRING
-
                     }, {
                         type: STRING,
-                        label: "Value",
+                        typeInvite: VALUE,
                         scriptType: STRING
-
                     }]
             },
             getDuration: {
@@ -799,7 +784,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addAtDuration: {
-                label: "Add at duration",
+                label: "Add to duration",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF

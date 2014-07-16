@@ -245,6 +245,14 @@ YUI.add('wegas-helper', function(Y) {
             }
         }
     });
+    Y.Object.filter = function(o, fn) {
+        var r = {};
+        Y.Object.each(o, function(i, k) {
+            if (fn(i, k))
+                r[k] = i;
+        });
+        return r;
+    };
     /**
      * asynchronous function queuing, chain asychronous operations
      *
