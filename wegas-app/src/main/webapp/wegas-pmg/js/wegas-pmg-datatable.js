@@ -12,16 +12,17 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", Datatable, micro = new Y.Template(),
-            APPRENTI = "Apprenti", JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
-            TEMPLATES = {
-                template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
-                object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
-                requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
-                assignedRessource: micro.compile('<% var gras=false, currentPeriode = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getInstance().get("value"); for(var i = 0; i < this.length; i+=1){ gras=false; var occupations = this[i].ressourceInstance.get("occupations"); for(var oi = 0; oi<occupations.length; oi++) { if(occupations[oi].get("time")==currentPeriode && occupations[oi].get("editable")){gras=true; break;}} for (var j in this[i].ressourceInstance.get("skillsets")){ if (gras) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
-            };
+        APPRENTICE = "Apprentice", JUNIOR = "Junior", SENIOR = "Senior", EXPERT = "Expert",
+        Wegas = Y.Wegas,
+        TEMPLATES = {
+            template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
+            object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
+            requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
+            assignedRessource: micro.compile('<% var gras=false, currentPeriode = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getInstance().get("value"); for(var i = 0; i < this.length; i+=1){ gras=false; var occupations = this[i].ressourceInstance.get("occupations"); for(var oi = 0; oi<occupations.length; oi++) { if(occupations[oi].get("time")==currentPeriode && occupations[oi].get("editable")){gras=true; break;}} for (var j in this[i].ressourceInstance.get("skillsets")){ if (gras) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
+        };
 
-    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-// *** Lifecycle Methods *** //
+    Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+        // *** Lifecycle Methods *** //
         initializer: function() {
             var i, ct = this.get("columnsCfg");
             for (i = 0; i < ct.length; i += 1) {                                //construct Datatable's columns
@@ -35,10 +36,10 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
 
             this.datatable = new Y.DataTable({//Using simple database
-                bodyView: Y.Wegas.PMGBodyView,
+                bodyView: Wegas.PMGBodyView,
                 columns: ct
-                        //recordType: PMGDatatableModel,
-                        //sortable: true
+                    //recordType: PMGDatatableModel,
+                    //sortable: true
             });
         },
         renderUI: function() {
@@ -47,7 +48,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         bindUI: function() {
             this.updateHandler =
-                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+                Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
         },
         syncUI: function() {
             Y.log("syncUI()", "log", "Wegas.Datatable");
@@ -62,12 +63,12 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         //*** Private Methods ***/
         getData: function() {
             var oneRowDatas,
-                    variables = this.get('variable.evaluated'),
-                    data = [];
+                variables = this.get('variable.evaluated'),
+                data = [];
             if (!variables) {
                 this.showMessage("error", "Could not find variable");
                 return [];
-            } else if (!variables instanceof Y.Wegas.persistence.ListDescriptor) {
+            } else if (!variables instanceof Wegas.persistence.ListDescriptor) {
                 this.showMessage("error", "Variable is not a ListDescriptor");
                 return [];
             }
@@ -83,9 +84,9 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         }
     }, {
         TEXTUAL_SKILL_LEVEL: {
-            1: APPRENTI,
-            2: APPRENTI,
-            3: APPRENTI,
+            1: APPRENTICE,
+            2: APPRENTICE,
+            3: APPRENTICE,
             4: JUNIOR,
             5: JUNIOR,
             6: JUNIOR,
@@ -102,7 +103,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
              * and if absent by evaluating the expr attribute.
              */
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect"
                 }
@@ -121,7 +122,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             objectsort: function(col) {
                 return function(a, b, dir) {
                     var aa = Y.Object.values(a.get(col.key))[0] || '',
-                            bb = Y.Object.values(b.get(col.key))[0] || '';
+                        bb = Y.Object.values(b.get(col.key))[0] || '';
                     if (typeof (aa) === "string" && typeof (bb) === "string") {// Not case sensitive
                         aa = aa.toLowerCase();
                         bb = bb.toLowerCase();
@@ -131,7 +132,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
         }
     });
-    Y.Wegas.PmgDatatable = Datatable;
+    Wegas.PmgDatatable = Datatable;
 
     Y.mix(Y.DataTable.BodyView.Formatters, {
         requieredRessources: function(o) {
@@ -142,7 +143,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         assignedRessources: function(o) {
             return function(o) {
                 var assignedRessources = o.data.descriptor.findAssociatedRessources("assignments"),
-                        data = TEMPLATES.assignedRessource(assignedRessources);
+                    data = TEMPLATES.assignedRessource(assignedRessources);
                 if (!data) {
                     data = " - ";
                 }
@@ -178,7 +179,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             return function(o) {
                 var i, ret = [];
                 for (i in o.value) {
-                    ret.push(Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[o.value[i]]);
+                    ret.push(Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[o.value[i]]);
                 }
                 return ret.join("");
             };
@@ -222,19 +223,19 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     //}, {
     //    ATTRS: {}
     //});
-    //Y.Wegas.PMGDatatableModel = PMGDatatableModel;
+    //Wegas.PMGDatatableModel = PMGDatatableModel;
 
-    Y.Wegas.PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
+    Wegas.PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
         _createRowHTML: function(model, index, columns) {
             var data = model.toJSON(),
-                    clientId = model.get('clientId'),
-                    values = {
-                        rowId: this._getRowId(clientId),
-                        clientId: clientId,
-                        rowClass: (index % 2) ? this.CLASS_ODD : this.CLASS_EVEN
-                    },
+                clientId = model.get('clientId'),
+                values = {
+                    rowId: this._getRowId(clientId),
+                    clientId: clientId,
+                    rowClass: (index % 2) ? this.CLASS_ODD : this.CLASS_EVEN
+                },
             host = this.host || this,
-                    i, len, col, token, value, formatterData;
+                i, len, col, token, value, formatterData;
             for (i = 0, len = columns.length; i < len; ++i) {
                 col = columns[i];
                 value = (col.key) ? model.get(col.key) : null; // @modified
@@ -270,9 +271,9 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         refreshCell: function(cell, model, col) {
             var content,
-                    formatterFn,
-                    formatterData,
-                    data = model.toJSON();
+                formatterFn,
+                formatterData,
+                data = model.toJSON();
             cell = this.getCell(cell);
             model || (model = this.getRecord(cell));
             col || (col = this.getColumn(cell));
@@ -285,7 +286,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     rowIndex: this._getRowIndex(cell.ancestor('tr')),
                     td: cell,
                     value: model.get(col.key)                                       // @Modified
-                            //value: data[col.key]
+                        //value: data[col.key]
                 };
                 keep = col.nodeFormatter.call("host", formatterData);
                 if (keep === false) {

@@ -1,8 +1,120 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ */
 var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
-            SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
-            SELECT = "select", VALUE = "value", KEY = "key"
-Y.Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({type: "AddEntityChildButton", label: "Resource", targetClass: "ResourceDescriptor"}, {type: "AddEntityChildButton", label: "Task", targetClass: "TaskDescriptor"});
-Y.Wegas.persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {
+    SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
+    SELECT = "select", VALUE = "value", KEY = "key", GROUP = "group",
+    persistence = Y.Wegas.persistence;
+
+/** 
+ * Set available jobs in the edit form based on the employee folder content
+ */
+persistence.Resources.SKILLS.length = 0;                                        // Remove existing skills
+Y.Array.each(Y.Wegas.Facade.Variable.cache.find("name", "employees").get("items"), function(vd) {
+    persistence.Resources.SKILLS.push({label: vd.get("label"), value: vd.get("name")});
+});
+
+persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({
+    type: "AddEntityChildButton",
+    label: "Resource",
+    targetClass: "ResourceDescriptor"
+}, {
+    type: "AddEntityChildButton",
+    label: "Task",
+    targetClass: "TaskDescriptor"
+});
+
+persistence.TaskDescriptor.ATTRS.properties._inputex = {
+    type: GROUP,
+    fields: [{
+            name: "takeInHandDuration",
+            label: "Take-in-hand duration",
+            type: NUMBER,
+            value: 0
+        }, {
+            name: "competenceRatioInf",
+            label: "Competence coeff. inf.",
+            type: NUMBER,
+            value: 1
+        }, {
+            name: "competenceRatioSup",
+            label: "Competence coeff. sup.",
+            type: NUMBER,
+            value: 1
+        }, {
+            name: "coordinationRatioInf",
+            type: NUMBER,
+            label: "Coordination coeff. inf.",
+            value: 1
+        }, {
+            name: "coordinationRatioSup",
+            label: "Coordination coeff. sup.",
+            type: NUMBER,
+            value: 1
+        }, {
+            name: "progressionOfNeeds",
+            type: HIDDEN,
+            value: 1
+        }]
+};
+
+persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {
+    type: GROUP,
+    fields: [{
+            name: "fixedCosts",
+            label: "Fixed costs",
+            type: NUMBER,
+            value: 0
+        }, {
+            name: "predecessorsDependances",
+            label: "Predecessors dependency",
+            type: NUMBER,
+            value: 1
+        }, {
+            name: "randomDurationInf",
+            label: "Random duration delta inf.",
+            type: NUMBER,
+            value: 0
+        }, {
+            name: "randomDurationSup",
+            label: "Random duration delta inf.",
+            type: NUMBER,
+            value: 0
+        }, {
+            name: "bonusRatio",
+            label: "Bonus factor",
+            type: NUMBER,
+            value: 1
+        }, {
+            name: "unworkedHoursCosts",
+            type: HIDDEN,
+            value: 0
+        }, {
+            name: "wages",
+            type: HIDDEN,
+            value: 0
+        }, {
+            name: "bac",
+            type: HIDDEN,
+            value: 0
+        }, {
+            name: "completeness",
+            value: 0,
+            type: HIDDEN
+        }, {
+            name: "quality",
+            type: HIDDEN,
+            value: 0
+        }]
+};
+persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {
     label: "Get number instance's property",
     returns: NUMBER,
     arguments: [{
@@ -21,7 +133,7 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {
                 }]
         }]
 };
-Y.Wegas.persistence.TaskDescriptor.METHODS.addNumberAtInstanceProperty = {
+persistence.TaskDescriptor.METHODS.addNumberAtInstanceProperty = {
     label: "Add at instance's property",
     arguments: [{
             type: HIDDEN,
@@ -47,10 +159,9 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.addNumberAtInstanceProperty = {
             type: STRING,
             label: VALUE,
             scriptType: STRING
-
         }]
 };
-Y.Wegas.persistence.TaskDescriptor.METHODS.setInstanceProperty = {
+persistence.TaskDescriptor.METHODS.setInstanceProperty = {
     label: "Set instance's property",
     arguments: [{
             type: HIDDEN,
@@ -76,11 +187,10 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.setInstanceProperty = {
             type: STRING,
             label: VALUE,
             scriptType: STRING
-
         }]
 };
 
-Y.Wegas.persistence.TaskDescriptor.METHODS.addAtRequirementVariable = {
+persistence.TaskDescriptor.METHODS.addAtRequirementVariable = {
     label: "Add at requirements",
     arguments: [{
             type: HIDDEN,
@@ -110,7 +220,7 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.addAtRequirementVariable = {
         }]
 };
 
-Y.Wegas.persistence.TaskDescriptor.METHODS.setRequirementVariable = {
+persistence.TaskDescriptor.METHODS.setRequirementVariable = {
     label: "set requirements",
     arguments: [{
             type: HIDDEN,
@@ -136,7 +246,71 @@ Y.Wegas.persistence.TaskDescriptor.METHODS.setRequirementVariable = {
         }]
 };
 
-Y.Wegas.persistence.ResourceDescriptor.METHODS = {
+/**
+ * Resource descriptor edition customisation
+ */
+persistence.ResourceDescriptor.ATTRS.properties._inputex = {
+    type: GROUP,
+    fields: [{
+            label: "Activity rate coeff.",
+            name: "coef_activity",
+            value: 1
+        }, {
+            label: "Motivation coeff.",
+            name: "coef_moral",
+            value: 1
+        }, {
+            label: "Maximum % of billed unworked hours",
+            name: "maxBilledUnworkedHours",
+            value: 0
+        }, {
+            label: "Engagement delay",
+            name: "engagementDelay",
+            value: 0
+        }]
+};
+persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {
+    type: GROUP,
+    fields: [{
+            name: "activityRate",
+            label: "Activity rate",
+            type: NUMBER,
+            value: 100
+        }, {
+            name: "wage",
+            label: "Monthly wages (100%)",
+            type: NUMBER,
+            value: 1000
+        }]
+};
+
+persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {
+    optional: true,
+    type: NUMBER,
+    _inputex: {
+        _type: HIDDEN
+    }
+};
+persistence.ResourceInstance.ATTRS.confidence = {
+    type: NUMBER,
+    optional: true,
+    _inputex: {
+        _type: HIDDEN
+    }
+};
+persistence.ResourceInstance.ATTRS.moralHistory = {
+    type: ARRAY,
+    _inputex: {
+        _type: HIDDEN
+    }
+};
+persistence.ResourceInstance.ATTRS.confidenceHistory = {
+    type: ARRAY,
+    _inputex: {
+        _type: HIDDEN
+    }
+};
+persistence.ResourceDescriptor.METHODS = {
     getMoral: {
         label: "Get moral",
         returns: NUMBER,
@@ -263,19 +437,7 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                 label: KEY,
                 scriptType: STRING,
                 type: SELECT,
-                choices: [ {
-                        value: "Commercial"
-                    }, {
-                        value: "Consultant IT"
-                    }, {
-                        value: "Informaticien Hardware"
-                    }, {
-                        value: "Informaticien Logiciel"
-                    }, {
-                        value: "Monteur"
-                    }, {
-                        value: "Web Designer"
-                    }]
+                choices: persistence.Resources.SKILLS
             }]
     },
     addAtSkillset: {
@@ -287,19 +449,7 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                 label: KEY,
                 scriptType: STRING,
                 type: SELECT,
-                choices: [ {
-                        value: "Commercial"
-                    }, {
-                        value: "Consultant IT"
-                    }, {
-                        value: "Informaticien Hardware"
-                    }, {
-                        value: "Informaticien Logiciel"
-                    }, {
-                        value: "Monteur"
-                    }, {
-                        value: "Web Designer"
-                    }]
+                choices: persistence.Resources.SKILLS
             }, {
                 type: STRING,
                 label: VALUE,
@@ -315,26 +465,13 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                 label: KEY,
                 scriptType: STRING,
                 type: SELECT,
-                choices: [ {
-                        value: "Commercial"
-                    }, {
-                        value: "Consultant IT"
-                    }, {
-                        value: "Informaticien Hardware"
-                    }, {
-                        value: "Informaticien Logiciel"
-                    }, {
-                        value: "Monteur"
-                    }, {
-                        value: "Web Designer"
-                    }]
+                choices: persistence.Resources.SKILLS
             }, {
                 type: STRING,
                 label: VALUE,
                 scriptType: STRING
             }]
     },
-            
     getActive: {
         label: "Is active",
         returns: BOOLEAN,
@@ -356,38 +493,5 @@ Y.Wegas.persistence.ResourceDescriptor.METHODS = {
                 type: HIDDEN,
                 value: SELF
             }]
-    }
-};
-
-Y.Wegas.persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {
-    name: NUMBER,
-    optional: true,
-    type: STRING,
-    _inputex: {
-        label: "Default confiance",
-        _type: HIDDEN
-    }
-};
-Y.Wegas.persistence.ResourceInstance.ATTRS.confidence = {
-    type: NUMBER,
-    optional: true,
-    _inputex: {
-        _type: HIDDEN
-    }
-};
-Y.Wegas.persistence.ResourceInstance.ATTRS.moralHistory = {
-    type: ARRAY,
-    _inputex: {
-        label: "Moral history",
-        _type: HIDDEN,
-        useButtons: true
-    }
-};
-Y.Wegas.persistence.ResourceInstance.ATTRS.confidenceHistory = {
-    type: ARRAY,
-    _inputex: {
-        label: "Confidence history",
-        _type: HIDDEN,
-        useButtons: true
     }
 };

@@ -705,7 +705,7 @@
             "items": [
                 {
                     "@class": "ListDescriptor",
-                    "name": "commercial",
+                    "name": "Commercial",
                     "label": "Commercial",
                     "title": null,
                     "defaultInstance": {
@@ -1129,7 +1129,7 @@
                 },
                 {
                     "@class": "ListDescriptor",
-                    "name": "informaticien",
+                    "name": "Informaticien",
                     "label": "Informaticien",
                     "title": null,
                     "defaultInstance": {
@@ -1549,7 +1549,7 @@
                 },
                 {
                     "@class": "ListDescriptor",
-                    "name": "designer",
+                    "name": "Designer",
                     "label": "Designer",
                     "title": null,
                     "defaultInstance": {
