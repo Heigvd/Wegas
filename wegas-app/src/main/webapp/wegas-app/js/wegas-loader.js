@@ -52,8 +52,7 @@ YUI().use(function(Y) {
             'wegas-app': {
                 requires: ['base', 'plugin', "array-extras", 'timers',
                     'wegas-helper', 'wegas-entity', 'wegas-datasource']
-                    // 'wegas-appcss']                                          // @fixme There is an i in css include order, this one got hardcoded in the jsp file
-
+                    // 'wegas-appcss' ]                                         // @fixme There is an i in css include order, this one got hardcoded in the jsp file
             },
             'wegas-appcss': {
                 type: 'css'
@@ -259,10 +258,6 @@ YUI().use(function(Y) {
             /** Plugins **/
             'wegas-plugin': {
                 requires: ["timers"]
-            },
-            'wegas-serverlog': {
-                path: 'js/plugin/wegas-serverlog-min.js',
-                ws_provides: "ServerLog"
             },
             'wegas-userpreferences': {
                 path: 'js/plugin/wegas-userpreferences-min.js',

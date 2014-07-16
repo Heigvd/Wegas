@@ -73,23 +73,23 @@ persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex 
             type: NUMBER,
             value: 0
         }, {
-            name: "predecessorsDependances",
-            label: "Predecessors dependency",
-            type: NUMBER,
-            value: 1
-        }, {
             name: "randomDurationInf",
             label: "Random duration delta inf.",
             type: NUMBER,
             value: 0
         }, {
             name: "randomDurationSup",
-            label: "Random duration delta inf.",
+            label: "Random duration delta sup.",
             type: NUMBER,
             value: 0
         }, {
+            name: "predecessorsDependances",
+            label: "Predecessors dependency",
+            type: NUMBER,
+            value: 1
+        }, {
             name: "bonusRatio",
-            label: "Bonus factor",
+            label: "Bonus coeff.",
             type: NUMBER,
             value: 1
         }, {
@@ -114,137 +114,132 @@ persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex 
             value: 0
         }]
 };
-persistence.TaskDescriptor.METHODS.getNumberInstanceProperty = {
-    label: "Get number instance's property",
-    returns: NUMBER,
-    arguments: [{
-            type: HIDDEN,
-            value: SELF
-        }, {
-            label: KEY,
-            scriptType: STRING,
-            type: SELECT,
-            choices: [{
-                    value: "fixedCosts"
-                }, {
-                    value: "quality"
-                }, {
-                    value: "completeness"
-                }]
-        }]
-};
-persistence.TaskDescriptor.METHODS.addNumberAtInstanceProperty = {
-    label: "Add at instance's property",
-    arguments: [{
-            type: HIDDEN,
-            value: SELF
-        }, {
-            label: KEY,
-            type: SELECT,
-            scriptType: STRING,
-            choices: [{
-                    value: "fixedCosts"
-                }, {
-                    value: "quality"
-                }, {
-                    value: "predecessorsDependances"
-                }, {
-                    value: "randomDurationSup"
-                }, {
-                    value: "randomDurationInf"
-                }, {
-                    value: "bonusRatio"
-                }]
-        }, {
-            type: STRING,
-            label: VALUE,
-            scriptType: STRING
-        }]
-};
-persistence.TaskDescriptor.METHODS.setInstanceProperty = {
-    label: "Set instance's property",
-    arguments: [{
-            type: HIDDEN,
-            value: SELF
-        }, {
-            label: KEY,
-            scriptType: STRING,
-            type: SELECT,
-            choices: [{
-                    value: "fixedCosts"
-                }, {
-                    value: "quality"
-                }, {
-                    value: "predecessorsDependances"
-                }, {
-                    value: "randomDurationSup"
-                }, {
-                    value: "randomDurationInf"
-                }, {
-                    value: "bonusRatio"
-                }]
-        }, {
-            type: STRING,
-            label: VALUE,
-            scriptType: STRING
-        }]
-};
-
-persistence.TaskDescriptor.METHODS.addAtRequirementVariable = {
-    label: "Add at requirements",
-    arguments: [{
-            type: HIDDEN,
-            value: SELF
-        }, {
-            type: "entityarrayfieldselect",
-            returnAttr: "id",
-            scope: "instance",
-            field: "requirements",
-            name: {
-                values: ["quantity", "work", "level"],
-                separator: " - "
-            }
-        }, {
-            label: KEY,
-            scriptType: STRING,
-            type: SELECT,
-            choices: [{
-                    value: "quantity"
-                }, {
-                    value: "level"
-                }]
-        }, {
-            type: STRING,
-            label: VALUE,
-            scriptType: STRING
-        }]
-};
-
-persistence.TaskDescriptor.METHODS.setRequirementVariable = {
-    label: "set requirements",
-    arguments: [{
-            type: HIDDEN,
-            value: SELF
-        }, {
-            type: "entityarrayfieldselect",
-            returnAttr: "id",
-            scope: "instance",
-            field: "requirements"
-        }, {
-            label: KEY,
-            scriptType: STRING,
-            type: SELECT,
-            choices: [{
-                    value: "quantity"
-                }, {
-                    value: "level"
-                }]
-        }, {
-            type: STRING,
-            label: VALUE,
-            scriptType: STRING
-        }]
-};
+Y.mix(persistence.TaskDescriptor.METHODS, {
+    getNumberInstanceProperty: {
+        label: "Get number instance's property",
+        returns: NUMBER,
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                scriptType: STRING,
+                type: SELECT,
+                choices: [{
+                        value: "fixedCosts"
+                    }, {
+                        value: "quality"
+                    }, {
+                        value: "completeness"
+                    }]
+            }]
+    },
+    addNumberAtInstanceProperty: {
+        label: "Add at instance's property",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                type: SELECT,
+                scriptType: STRING,
+                choices: [{
+                        value: "fixedCosts"
+                    }, {
+                        value: "quality"
+                    }, {
+                        value: "predecessorsDependances"
+                    }, {
+                        value: "randomDurationSup"
+                    }, {
+                        value: "randomDurationInf"
+                    }, {
+                        value: "bonusRatio"
+                    }]
+            }, {
+                type: STRING,
+                typeInvite: VALUE,
+                scriptType: STRING
+            }]
+    },
+    setInstanceProperty: {
+        label: "Set instance's property",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                scriptType: STRING,
+                type: SELECT,
+                choices: [{
+                        value: "fixedCosts"
+                    }, {
+                        value: "quality"
+                    }, {
+                        value: "predecessorsDependances"
+                    }, {
+                        value: "randomDurationSup"
+                    }, {
+                        value: "randomDurationInf"
+                    }, {
+                        value: "bonusRatio"
+                    }]
+            }, {
+                type: STRING,
+                typeInvite: VALUE,
+                scriptType: STRING
+            }]
+    },
+    addAtRequirementVariable: {
+        label: "Add at requirements",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                type: "entityarrayfieldselect",
+                returnAttr: "id",
+                scope: "instance",
+                field: "requirements",
+                name: {
+                    values: ["quantity", "work", "level"],
+                    separator: " - "
+                }
+            }, {
+                scriptType: STRING,
+                type: SELECT,
+                choices: [{
+                        value: "quantity"
+                    }, {
+                        value: "level"
+                    }]
+            }, {
+                type: STRING,
+                typeInvite: VALUE,
+                scriptType: STRING
+            }]
+    },
+    setRequirementVariable: {
+        label: "Set requirements",
+        arguments: [{
+                type: HIDDEN,
+                value: SELF
+            }, {
+                type: "entityarrayfieldselect",
+                returnAttr: "id",
+                scope: "instance",
+                field: "requirements"
+            }, {
+                scriptType: STRING,
+                type: SELECT,
+                choices: [{
+                        value: "quantity"
+                    }, {
+                        value: "level"
+                    }]
+            }, {
+                type: STRING,
+                typeInvite: VALUE,
+                scriptType: STRING
+            }]
+    }
+}, true);
 
 /**
  * Resource descriptor edition customisation
@@ -310,66 +305,10 @@ persistence.ResourceInstance.ATTRS.confidenceHistory = {
         _type: HIDDEN
     }
 };
-persistence.ResourceDescriptor.METHODS = {
-    getMoral: {
-        label: "Get moral",
-        returns: NUMBER,
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }]
-    },
-    addAtMoral: {
-        label: "Add at moral",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                type: STRING,
-                value: 1
-            }]
-    },
-    setMoral: {
-        label: "Set moral",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                type: STRING,
-                value: 1
-            }]
-    },
-    addOccupation: {
-        label: "add occupation",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                type: NUMBER,
-                label: "Time",
-                scriptType: NUMBER,
-                value: 1
-            }, {
-                type: BOOLEAN,
-                label: "Editable",
-                scriptType: BOOLEAN
-            }, {
-                type: "html",
-                label: "Description",
-                scriptType: STRING
-            }
-        ]
-    },
-    removeOccupationsAtTime: {
-        label: "Remove occupation",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                type: NUMBER,
-                value: 1
-            }]
-    },
+persistence.ResourceDescriptor.METHODS = Y.Object.filter(persistence.ResourceDescriptor.METHODS, function(m, k) {
+    return ["getConfidence", "addAtConfidence", "setConfidence"].indexOf(k) === -1;
+});
+Y.mix(persistence.ResourceDescriptor.METHODS, {
     getNumberInstanceProperty: {
         label: "Get number instance's property",
         returns: NUMBER,
@@ -377,7 +316,6 @@ persistence.ResourceDescriptor.METHODS = {
                 type: HIDDEN,
                 value: SELF
             }, {
-                label: KEY,
                 scriptType: STRING,
                 type: SELECT,
                 choices: [{
@@ -393,7 +331,6 @@ persistence.ResourceDescriptor.METHODS = {
                 type: HIDDEN,
                 value: SELF
             }, {
-                label: KEY,
                 scriptType: STRING,
                 type: SELECT,
                 choices: [{
@@ -403,7 +340,7 @@ persistence.ResourceDescriptor.METHODS = {
                     }]
             }, {
                 type: STRING,
-                label: VALUE,
+                typeInvite: VALUE,
                 scriptType: STRING
             }]
     },
@@ -413,7 +350,6 @@ persistence.ResourceDescriptor.METHODS = {
                 type: HIDDEN,
                 value: SELF
             }, {
-                label: KEY,
                 scriptType: STRING,
                 type: SELECT,
                 choices: [{
@@ -423,75 +359,8 @@ persistence.ResourceDescriptor.METHODS = {
                     }]
             }, {
                 type: STRING,
-                label: VALUE,
+                typeInvite: VALUE,
                 scriptType: STRING
-            }]
-    },
-    getSkillset: {
-        label: "Get skillset",
-        returns: NUMBER,
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                label: KEY,
-                scriptType: STRING,
-                type: SELECT,
-                choices: persistence.Resources.SKILLS
-            }]
-    },
-    addAtSkillset: {
-        label: "Add at skillset",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                label: KEY,
-                scriptType: STRING,
-                type: SELECT,
-                choices: persistence.Resources.SKILLS
-            }, {
-                type: STRING,
-                label: VALUE,
-                scriptType: STRING
-            }]
-    },
-    setSkillset: {
-        label: "Set skillset",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }, {
-                label: KEY,
-                scriptType: STRING,
-                type: SELECT,
-                choices: persistence.Resources.SKILLS
-            }, {
-                type: STRING,
-                label: VALUE,
-                scriptType: STRING
-            }]
-    },
-    getActive: {
-        label: "Is active",
-        returns: BOOLEAN,
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }]
-    },
-    activate: {
-        label: "Activate",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
-            }]
-    },
-    desactivate: {
-        label: "Desactivate",
-        arguments: [{
-                type: HIDDEN,
-                value: SELF
             }]
     }
-};
+}, true);
