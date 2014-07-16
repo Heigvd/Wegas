@@ -212,16 +212,25 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     if (tree.body[i].type !== "EmptyStatement") {
                         try {
                             fields = fields.concat(this.generateExpression(tree.body[i].expression));
-                            fields[i].raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, tree.body[i].expression.range);
+//                            fields[i].raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, tree.body[i].expression.range);
                         } catch (e) {
                             fields.push({
-                                raw: String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, tree.body[i].expression.range),
+                                raw: tree.body[i].range,
                                 type: this.options.expects
                             });
                         }
                     }
                 }
-
+                Y.Array.each(fields, function(item, index, array) {
+                    if (item.raw) {
+                        item.raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, item.raw);
+                    } else {
+                        array[index] = {
+                            raw: item,
+                            type: this.options.expects
+                        };
+                    }
+                }, this);
                 this.viewSrc.set("disabled", false);
                 if (this.exprList) {
                     this.exprList.destroy();
@@ -304,10 +313,12 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     return {
                                         type: this.options.expects,
                                         classFilter: this.options.classFilter,
+                                        raw: expression.range,
                                         value: (expression["arguments"][1]) ? expression["arguments"][1].value : expression["arguments"][0].value // First argument (gameModel) is optional
                                     };
                                 case "RequestManager":
                                 case "Event":
+                                default:
                                     args = [];
                                     Y.Array.each(expression["arguments"], function(i) {
                                         args.push(this.generateExpression(i));
@@ -315,6 +326,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     ret = {
                                         type: this.options.expects,
                                         classFilter: this.options.classFilter,
+                                        raw: expression.range,
                                         value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
                                         "arguments": args
                                     };
@@ -336,6 +348,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 "arguments": args
 
                             });
+                            vdSelect.raw = expression.range;
                             return [vdSelect];
                     }
                     break;
