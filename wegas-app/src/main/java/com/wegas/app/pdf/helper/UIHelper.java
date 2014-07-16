@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf.helper;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Script;
 import java.io.IOException;
 import java.util.Map;
@@ -49,6 +50,8 @@ public class UIHelper {
     public static final String CSS_CLASS_VARIABLE_SUBTITLE = "wegas-pdf-variable-subtitle";
     public static final String CSS_CLASS_VARIABLE_TITLE = "wegas-pdf-variable-title";
 
+    public static final String CSS_CLASS_INDENT_CODE = "wegas-pdf-indent-code";
+
     public static final String TEXT_ACTIVE_DEFAULT = "Active by default";
     public static final String TEXT_CONDITION = "Condition";
     public static final String TEXT_CONTENT = "Content";
@@ -76,10 +79,34 @@ public class UIHelper {
     public static final String TEXT_SUBJECT = "Subject";
     public static final String TEXT_MESSAGE = "Message";
 
+    public static String unescapeAndTrimQuotes(String st){
+	return Helper.unescape(st).replaceAll("^\\s*\"|\"\\s*$", "");
+    }
+ 
+    /**
+     * Start a div with the specigied CSS class.
+     *
+     * @see endDiv to end the div
+     *
+     * @param wr
+     * @param cssClass
+     * @throws IOException
+     */
     public static void startDiv(ResponseWriter wr, String cssClass) throws IOException {
 	startDiv(wr, cssClass, null);
     }
 
+    /**
+     * Start the specified element with specified Css Classes and id
+     *
+     * @see endElement for the closing tag
+     *
+     * @param wr
+     * @param elem
+     * @param cssClass
+     * @param id
+     * @throws IOException
+     */
     public static void startElement(ResponseWriter wr, String elem, String cssClass, String id) throws IOException {
 	wr.startElement(elem, null);
 	wr.writeAttribute("class", cssClass, null);
@@ -89,22 +116,58 @@ public class UIHelper {
 	}
     }
 
+    /**
+     * Start a DIV with specified Css Classes and id
+     *
+     * @param wr
+     * @param cssClass
+     * @param id
+     * @throws IOException
+     */
     public static void startDiv(ResponseWriter wr, String cssClass, String id) throws IOException {
 	startElement(wr, "div", cssClass, id);
     }
 
+    /**
+     * end a div
+     *
+     * @param wr
+     * @throws IOException
+     */
     public static void endDiv(ResponseWriter wr) throws IOException {
 	wr.endElement("div");
     }
 
+    /**
+     * start a span with the specified CSS classes
+     *
+     * @see endSpan
+     * @param wr
+     * @param cssClass
+     * @throws IOException
+     */
     public static void startSpan(ResponseWriter wr, String cssClass) throws IOException {
 	startSpan(wr, cssClass, null);
     }
 
+    /**
+     * Start a span with specified CSS class and id
+     *
+     * @param wr
+     * @param cssClass
+     * @param id
+     * @throws IOException
+     */
     public static void startSpan(ResponseWriter wr, String cssClass, String id) throws IOException {
 	startElement(wr, "span", cssClass, id);
     }
 
+    /**
+     * end a span
+     *
+     * @param wr
+     * @throws IOException
+     */
     public static void endSpan(ResponseWriter wr) throws IOException {
 	wr.endElement("span");
     }
@@ -185,25 +248,44 @@ public class UIHelper {
 	writer.write("\r\n");
     }
 
+    /**
+     * Pretty printer for impact
+     *
+     * @param ctx
+     * @param writer
+     * @param key
+     * @param script
+     * @throws IOException
+     */
     public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
 
-	/*
 	printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
 	try {
 	    if (script == null) {
 		printPropertyScript(ctx, writer, key, script);
 	    } else {
 		UIHelper.startScript(ctx, writer, key);
-		ImpactPrinter.process(ctx, writer, script.getContent());
+		ImpactPrinter ip = new ImpactPrinter(script.getContent());
+		ip.print(ctx, writer);
 		UIHelper.endScript(ctx, writer);
 	    }
 	} catch (IOException ex) {
 	    // Fallback
 	    printPropertyScript(ctx, writer, key, script);
-	}*/
-	printPropertyScript(ctx, writer, key, script);
+	}
+
+	//printPropertyScript(ctx, writer, key, script);
     }
 
+    /**
+     * Print a script w/o pretty printer
+     *
+     * @param ctx
+     * @param writer
+     * @param key
+     * @param script
+     * @throws IOException
+     */
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
 	String value;
 	if (script != null) {
@@ -214,6 +296,15 @@ public class UIHelper {
 	printPropertyScript(ctx, writer, key, value);
     }
 
+    /**
+     * Print a script w/o pretty printer with script as a String
+     *
+     * @param ctx
+     * @param writer
+     * @param key
+     * @param script
+     * @throws IOException
+     */
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, String script) throws IOException {
 	startScript(ctx, writer, key);
 	printTextArea(ctx, writer, script, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + CSS_CLASS_SOURCE_CODE, true);
@@ -221,6 +312,14 @@ public class UIHelper {
 	writer.write("\r\n");
     }
 
+    /**
+     * Start a script property
+     *
+     * @param context
+     * @param writer
+     * @param key
+     * @throws IOException
+     */
     public static void startScript(FacesContext context, ResponseWriter writer, String key) throws IOException {
 	startDiv(writer, CSS_CLASS_PROPERTY);
 	if (key != null) {
@@ -228,6 +327,13 @@ public class UIHelper {
 	}
     }
 
+    /**
+     * end a script property
+     *
+     * @param context
+     * @param writer
+     * @throws IOException
+     */
     public static void endScript(FacesContext context, ResponseWriter writer) throws IOException {
 	endDiv(writer);
     }
@@ -268,25 +374,62 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printTextArea(FacesContext ctx, ResponseWriter writer, String text, String style, boolean code) throws IOException {
+	startTextArea(writer);
+	printTextAreaText(ctx, writer, text, style, code);
+	endTextArea(writer);
+    }
 
+    /**
+     *
+     * PrettyPrinter for text-areas , print content
+     *
+     * @param ctx
+     * @param writer
+     * @param text
+     * @param style
+     * @param code
+     * @throws IOException
+     */
+    public static void printTextAreaText(FacesContext ctx, ResponseWriter writer, String text, String style, boolean code) throws IOException {
 	if (text == null || text.length() == 0) {
 	    text = TEXT_NOT_AVAILABLE;
 	    style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
 	}
-	startDiv(writer, CSS_CLASS_TEXT_CONTAINER);
-
-	startDiv(writer, style);
-	
 	HtmlOutputText t = new HtmlOutputText();
+	t.setStyleClass(style);
 	if (!code) {
 	    t.setEscape(false);
 	}
 	t.setValue(text);
 	t.encodeAll(ctx);
+    }
 
+    /**
+     * Start text area (i.e. a container for the text)
+     *
+     * @param writer
+     * @throws IOException
+     */
+    public static void startTextArea(ResponseWriter writer) throws IOException {
+	/*if (text == null || text.length() == 0) {
+	 text = TEXT_NOT_AVAILABLE;
+	 style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
+	 }*/
+	startDiv(writer, CSS_CLASS_TEXT_CONTAINER);
+
+	//startDiv(writer, style);
+	startDiv(writer, "");
+    }
+
+    /**
+     * end a text area container
+     *
+     * @param writer
+     * @throws IOException
+     */
+    public static void endTextArea(ResponseWriter writer) throws IOException {
 	endDiv(writer);
 	endDiv(writer);
-
 	writer.write("\r\n");
     }
 
@@ -321,7 +464,6 @@ public class UIHelper {
      * @param context
      * @param writer
      * @param properties
-     * @param title
      * @throws IOException
      */
     public static void printKeyValueMap(FacesContext context, ResponseWriter writer, Map<String, String> properties) throws IOException {
@@ -335,16 +477,29 @@ public class UIHelper {
 	writer.write("\r\n");
     }
 
-    public static void printMessage(FacesContext context, ResponseWriter writer, 
-	                            String destination, String from, 
-				    String object, String message) throws IOException {
+    /**
+     * PrettyPrinter for e-mail like messages
+     *
+     * @param context
+     * @param writer
+     * @param destination
+     * @param from
+     * @param object
+     * @param message
+     * @throws IOException
+     */
+    public static void printMessage(FacesContext context, ResponseWriter writer,
+	    String destination, String from,
+	    String object, String message) throws IOException {
+
 
 	UIHelper.startDiv(writer, CSS_CLASS_VARIABLE_CONTAINER);
 
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, from.replaceAll("^\\s*\"|\"\\s*$", ""));
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, destination);
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, object.replaceAll("^\\s*\"|\"\\s*$", ""));
-	UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_MESSAGE, message.replaceAll("^\\s*\"|\"\\s*$", ""), false);
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
+	UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(object));
+	UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_MESSAGE,  unescapeAndTrimQuotes(message), false);
+
 	UIHelper.endDiv(writer);
     }
 

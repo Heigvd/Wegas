@@ -34,7 +34,13 @@
     </h:head>
 
     <h:body>
-	<wegas:GameModel value="#{editorGameController.currentGameModel}" />
+	<a name="top" />
+	<div class="wegas-pdf-content">
+	    <wegas:GameModel value="#{editorGameController.currentGameModel}" />
+	    <div id="gotoTop">
+		<a href="#top"><img src="wegas-app/images/top.png" /></a>
+	    </div>
+	</div>
     </h:body>
 
 </html>
