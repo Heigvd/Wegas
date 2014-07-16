@@ -31,14 +31,14 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         initializer: function() {
             this.initColumn();
 
-            this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", function() {
+            this.updateHandler = Wegas.Facade.VariableDescriptor.after("update", function() {
                 Y.log("sync()", "log", "Wegas.ScheduleDT");
                 this.columnUpdate();
             }, this);
         },
         initColumn: function() {
-            var executionPeriods = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
-                periodPhase3 = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
+            var executionPeriods = Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
+                periodPhase3 = Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
             if (periodPhase3 >= executionPeriods) {
                 this.setColumn(periodPhase3 + 1);
                 this.currentVal = periodPhase3 + 1;
@@ -48,8 +48,8 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }
         },
         columnUpdate: function() {
-            var executionPeriods = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
-                periodPhase3 = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
+            var executionPeriods = Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
+                periodPhase3 = Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
             if (periodPhase3 >= executionPeriods) {
                 this.setColumn(periodPhase3 + 1, this.currentVal);
                 this.currentVal = periodPhase3 + 1;
@@ -69,15 +69,15 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 bindedCP = Y.bind(this.currentPeriod, this),
                 classTime,
                 formatter = function(o) {
-                if (bindedCP() < o.column.time) {
-                    o.className = "futur";
-                } else if (bindedCP() === o.column.time) {
-                    o.className = "present";
-                } else {
-                    o.className = "past";
-                }
-                return "";
-            };
+                    if (bindedCP() < o.column.time) {
+                        o.className = "futur";
+                    } else if (bindedCP() === o.column.time) {
+                        o.className = "present";
+                    } else {
+                        o.className = "past";
+                    }
+                    return "";
+                };
 
             while (diff) {
                 if (diff > 0) {
@@ -145,7 +145,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
     }, {
         ATTRS: {
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "Periode variable"

@@ -17,13 +17,47 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         HTML = "html", VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
         GROUP = "group", LIST = "list",
         Wegas = Y.Wegas, persistence = Wegas.persistence,
-        IDATTRDEF = {
-            type: STRING,
-            optional: true, // The id is optional for entites that have not been persisted
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
+        PROPERTIESELEMENTTYPE = {
+            type: COMBINE,
+            fields: [{
+                    name: NAME,
+                    typeInvite: NAME,
+                    size: 16
+                }, {
+                    name: VALUE,
+                    typeInvite: VALUE,
+                    size: 16
+                }]
+        },
+    IDATTRDEF = {
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
+
+    Y.namespace("Wegas.persistence.Resources");
+    /**
+     * 
+     */
+    persistence.Resources.LEVELS = [
+        {value: 1, label: "Apprentice*"},
+        {value: 2, label: "Apprentice**"},
+        {value: 3, label: "Apprentice***"},
+        {value: 4, label: "Junior*"},
+        {value: 5, label: "Junior**"},
+        {value: 6, label: "Junior***"},
+        {value: 7, label: "Senior*"},
+        {value: 8, label: "Senior**"},
+        {value: 9, label: "Senior***"},
+        {value: 10, label: "Expert*"},
+        {value: 11, label: "Expert**"},
+        {value: 12, label: "Expert***"}
+    ];
+    persistence.Resources.SKILLS = ["Consultant IT", "Commercial", "Informaticien hardware",
+        "Informaticien logiciel", "Web designer", "Monteur"];
+
     /**
      * ResourceDescriptor mapper
      */
@@ -59,18 +93,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     _type: HASHLIST,
                     useButtons: true,
-                    elementType: {
-                        type: COMBINE,
-                        required: true,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME,
-                                size: 10
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
-                    }
+                    elementType: PROPERTIESELEMENTTYPE
                 }
             },
             defaultInstance: {
@@ -90,11 +113,31 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             value: true
                         }
                     },
+                    skillsets: {
+                        _inputex: {
+                            label: "Skills",
+                            _type: HASHLIST,
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-skillset',
+                            elementType: {
+                                type: COMBINE,
+                                required: true,
+                                fields: [{
+                                        name: "work",
+                                        type: "select",
+                                        choices: persistence.Resources.SKILLS
+                                    }, {
+                                        name: "level",
+                                        type: "select",
+                                        choices: persistence.Resources.LEVELS
+                                    }]
+                            }
+                        }
+                    },
                     moral: {
                         type: NUMBER,
                         optional: false,
                         _inputex: {
-                            label: "Initial moral",
+                            label: "Motivation",
                             value: 100
                         }
                     },
@@ -119,7 +162,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     occupations: {
                         type: ARRAY,
                         _inputex: {
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-occupations',
                             label: "Vacancies",
                             _type: LIST,
                             useButtons: true,
@@ -134,7 +177,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                         value: false,
                                         type: HIDDEN
                                     }, {
-                                        name: "time"
+                                        name: "time",
+                                        typeInvite: "Period number",
+                                        type: NUMBER,
+                                        required: true
                                     }]
                             }
                         }
@@ -150,38 +196,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     properties: {
                         _inputex: {
                             label: "Default properties",
-                            _type: HASHLIST,
+                            _type: OBJECT,
                             useButtons: true,
-                            elementType: {
-                                type: COMBINE,
-                                required: true,
-                                fields: [{
-                                        name: NAME,
-                                        typeInvite: NAME,
-                                        size: 10
-                                    }, {
-                                        name: VALUE,
-                                        typeInvite: VALUE
-                                    }]
-                            }
-                        }
-                    },
-                    skillsets: {
-                        _inputex: {
-                            label: "Default skills",
-                            _type: HASHLIST,
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
-                            elementType: {
-                                type: COMBINE,
-                                required: true,
-                                fields: [{
-                                        name: NAME,
-                                        typeInvite: NAME
-                                    }, {
-                                        name: VALUE,
-                                        typeInvite: VALUE
-                                    }]
-                            }
+                            elementType: PROPERTIESELEMENTTYPE
                         }
                     }
                 }
@@ -251,15 +268,16 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         value: SELF
                     }, {
                         type: NUMBER,
-                        label: "Time",
+                        typeInvite: "Time",
                         scriptType: NUMBER,
                         value: 1
                     }, {
-                        type: BOOLEAN,
+                        type: HIDDEN,
                         label: "Editable",
+                        value: false,
                         scriptType: BOOLEAN
                     }, {
-                        type: HTML,
+                        type: HIDDEN,
                         label: "Description",
                         scriptType: STRING
                     }
@@ -512,18 +530,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 _inputex: {
                     label: "Properties",
                     _type: HASHLIST,
-                    elementType: {
-                        type: COMBINE,
-                        required: true,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME,
-                                size: 10
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
-                    }
+                    elementType: PROPERTIESELEMENTTYPE
                 }
             },
             skillsets: {
@@ -531,17 +538,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 _inputex: {
                     label: "Skills",
                     _type: HASHLIST,
-                    elementType: {
-                        type: COMBINE,
-                        required: true,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
-                    }
+                    elementType: PROPERTIESELEMENTTYPE
                 }
             },
             assignments: {
@@ -608,6 +605,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 optional: true,
                 _inputex: {
                     label: "Label",
+                    description: "Displayed to players",
                     index: -1
                 }
             },
@@ -621,8 +619,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             index: {
                 type: NUMBER,
-                format: HTML,
-                optional: true
+                optional: true,
+                index: -1
             },
             predecessors: {
                 type: ARRAY,
@@ -635,8 +633,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             predecessorNames: {
                 type: ARRAY,
-                value: [],
-                "transient": true, //@fixme Shloud be enabled to allow edition
+                value: [],  
+                "transient": true,                                              //@fixme Shloud be enabled to allow edition
                 _inputex: {
                     label: "Predecessors",
                     useButtons: true
@@ -649,17 +647,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     keyField: NAME,
                     useButtons: true,
                     valueField: VALUE,
-                    elementType: {
-                        type: COMBINE,
-                        fields: [{
-                                name: NAME,
-                                typeInvite: NAME,
-                                size: 10
-                            }, {
-                                name: VALUE,
-                                typeInvite: VALUE
-                            }]
-                    }
+                    elementType: PROPERTIESELEMENTTYPE
                 }
             },
             defaultInstance: {
@@ -679,74 +667,65 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             value: true
                         }
                     },
-                    duration: {
-                        type: NUMBER
-                    },
                     plannification: {
-                        type: ARRAY
+                        type: ARRAY,
+                        _inputex: {
+                            _type: HIDDEN
+                        }
                     },
                     requirements: {
                         type: ARRAY,
                         _inputex: {
-                            label: "Default requirements",
                             _type: LIST,
+                            label: "Requirements",
                             useButtons: true,
-                            keyField: NAME,
-                            valueField: VALUE,
                             elementType: {
                                 type: GROUP,
                                 fields: [{
                                         name: "@class",
-                                        type: HIDDEN,
-                                        value: "WRequirement"
+                                        value: "WRequirement",
+                                        type: HIDDEN
                                     }, {
-                                        label: "Work",
+                                        //label: "Job",
                                         name: "work",
-                                        typeInvite: NAME
-//                                        type: "wegasvarautocomplete",
-//                                        variableClass: "WRequirement"
-                                    }, {
-                                        label: "Limit",
-                                        name: "limit",
-                                        typeInvite: VALUE
+                                        type: "select",
+                                        choices: persistence.Resources.SKILLS
                                     }, {
                                         label: "Level",
                                         name: "level",
-                                        typeInvite: VALUE
+                                        type: "select",
+                                        choices: persistence.Resources.LEVELS
                                     }, {
-                                        label: "Number",
+                                        label: "Quantity",
                                         name: "quantity",
-                                        typeInvite: VALUE
+                                        type: NUMBER,
+                                        value: 1
                                     }, {
-                                        label: "completeness",
+                                        label: "Limit",
+                                        name: "limit",
+                                        type: NUMBER,
+                                        value: 100
+                                    }, {
                                         name: "completeness",
                                         type: HIDDEN
                                     }, {
-                                        label: "quality",
                                         name: "quality",
                                         type: HIDDEN
                                     }]
                             }
                         }
                     },
+                    duration: {
+                        type: NUMBER
+                    },
                     properties: {
                         _inputex: {
-                            label: "Default properties",
+                            label: "Instance properties",
                             _type: HASHLIST,
                             keyField: NAME,
                             valueField: VALUE,
                             useButtons: true,
-                            elementType: {
-                                type: COMBINE,
-                                fields: [{
-                                        name: NAME,
-                                        typeInvite: NAME,
-                                        size: 10
-                                    }, {
-                                        name: VALUE,
-                                        typeInvite: VALUE
-                                    }]
-                            }
+                            elementType: PROPERTIESELEMENTTYPE
                         }
                     }
                 }
@@ -890,44 +869,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     });
                     return v;
                 },
-                _inputex: {
-                    label: "requirements",
-                    _type: LIST,
-                    useButtons: true,
-                    keyField: NAME,
-                    valueField: VALUE,
-                    elementType: {
-                        type: GROUP,
-                        fields: [{
-                                name: "@class",
-                                type: HIDDEN
-                            }, {
-                                label: "Work",
-                                name: "work",
-                                typeInvite: NAME
-                            }, {
-                                label: "Limit",
-                                name: "limit",
-                                typeInvite: VALUE
-                            }, {
-                                label: "Level",
-                                name: "level",
-                                typeInvite: VALUE
-                            }, {
-                                label: "Number",
-                                name: "quantity",
-                                typeInvite: VALUE
-                            }, {
-                                label: "completeness",
-                                name: "completeness",
-                                type: HIDDEN
-                            }, {
-                                label: "quality",
-                                name: "quality",
-                                type: HIDDEN
-                            }]
-                    }
-                }
+                _inputex: Y.Wegas.persistence.TaskDescriptor.ATTRS.defaultInstance.properties.requirements._inputex
             },
             properties: {
                 _inputex: {
@@ -936,7 +878,10 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 }
             },
             plannification: {
-                type: ARRAY
+                type: ARRAY,
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         }
     });

@@ -23,6 +23,13 @@
         </ui:define>
 
         <ui:define name="body">
+            
+            <!-- Client script (game model specific) -->
+            <ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
+                       var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
+                <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
+            </ui:repeat>
+            
             <script type="text/javascript">
                 YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
@@ -129,6 +136,8 @@
                     app.render();                                               // Render app
                 });
             </script>
+
+
         </ui:define>
 
     </ui:composition>

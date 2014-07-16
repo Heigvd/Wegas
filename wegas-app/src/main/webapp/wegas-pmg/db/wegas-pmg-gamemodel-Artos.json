@@ -17618,7 +17618,8 @@
         "websocket": "",
         "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js",
         "imageUri": "wegas-pmg/images/pmg-thumb.png",
-        "iconUri": "wegas-pmg/images/pmg-icon.png"
+        "iconUri": "wegas-pmg/images/pmg-icon.png",
+        "clientScriptUri": "wegas-pmg/db/wegas-pmg-loader.js"
     },
     "createdByName": "Admin "
 }

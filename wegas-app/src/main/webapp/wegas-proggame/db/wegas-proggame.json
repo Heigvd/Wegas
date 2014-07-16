@@ -4549,7 +4549,8 @@
         "cssUri": "wegas-proggame/css/wegas-proggame.css",
         "websocket": "",
         "imageUri": "wegas-proggame/images/proggame-thumb-1.png",
-        "iconUri": "wegas-proggame/images/proggame-icon.png"
+        "iconUri": "wegas-proggame/images/proggame-icon.png",
+        "clientScriptUri": "wegas-proggame/js/wegas-proggame-loader.js"
     },
     "createdByName": "AlbaSim"
 }

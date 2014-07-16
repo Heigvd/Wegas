@@ -583,7 +583,7 @@ h2{
     border-bottom: 1px solid lightgray;
 }
 .resources-page .slidepanel-title{
-    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -111px;
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -110px;
     padding-left: 16px;
     cursor:pointer;
 }
@@ -648,3 +648,8 @@ table tbody .popup{
     font-size: 9pt;
 }
 
+
+/* Editor styles (right panel form) */ 
+.editor-resources-skillset, .editor-resources-occupations {
+    display: block !important;
+}

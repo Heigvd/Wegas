@@ -5,12 +5,10 @@
  * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-
 YUI.add('wegas-serverlog', function(Y) {
     "use strict";
     /**
