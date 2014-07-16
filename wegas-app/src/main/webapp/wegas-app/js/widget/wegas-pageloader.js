@@ -13,7 +13,7 @@ YUI.add("wegas-pageloader", function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", WIDGET = "widget", PAGEID = "pageId",
-        Wegas = Y.Wegas, PageLoader;
+        Wegas = Y.Wegas, PageLoader, pageloaderErrorMessageClass = "wegas-pageloader-error";
 
     /**
      * @name Y.Wegas.PageLoader
@@ -90,7 +90,7 @@ YUI.add("wegas-pageloader", function(Y) {
                 this.set(PAGEID, page.getInstance().get("value"));
             } else if (page) {                                                  // If there is a page script
                 this.set(PAGEID, +page);                                        // display it
-                
+
             } else if (val && val.getInstance().get("value")) {                 // @backwardcompatibility
                 this.set(PAGEID, val.getInstance().get("value"));
             } else if (this.get("defaultPageId") && !this.get(PAGEID)) {        // in case a defaultPageId is defined and no pageId is
@@ -208,7 +208,7 @@ YUI.add("wegas-pageloader", function(Y) {
                         Y.log("Destroy previous widget", "log", "Wegas.PageLoader");
                         this.set(WIDGET, null);
                         if (!widgetCfg) {
-                            this.get(CONTENTBOX).setContent("<center><i>Page [" + this._pageId + "] was not found</i></center>");
+                            this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass + "><i>Page [" + this._pageId + "] was not found</i></center>");
                             this.hideOverlay();
                             this.fire("contentUpdated");
                             return;
@@ -217,6 +217,7 @@ YUI.add("wegas-pageloader", function(Y) {
                         Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
                             try {
                                 Y.log("Rendering new widget", "log", "Wegas.PageLoader");
+                                this.get(CONTENTBOX).all("." + pageloaderErrorMessageClass).remove(true);
                                 widgetCfg.editable = true;
                                 var widget = Wegas.Widget.create(widgetCfg);    // Render the subwidget
                                 widget.render(this.get(CONTENTBOX));
@@ -224,7 +225,7 @@ YUI.add("wegas-pageloader", function(Y) {
                                 this.set(WIDGET, widget);
                             } catch (e) {
                                 this.set("widgetCfg", widgetCfg);
-                                this.get(CONTENTBOX).setContent("<center><i>Could not load sub page.</i></center>");
+                                this.get(CONTENTBOX).setContent("<center class=" + pageloaderErrorMessageClass + "><i>Could not load sub page.</i></center>");
                                 Y.log("renderUI(): Error rendering widget: " + (e.stack || e), "error", "Wegas.PageLoader");
                             } finally {
                                 this.hideOverlay();
