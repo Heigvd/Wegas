@@ -302,6 +302,9 @@ div.inputEx-description {
 .inputEx-singleLineWysiwygScript .inputEx-fieldWrapper {
     margin-bottom: 0px;
 }
+.wegas-inputex-inlinegroup div.inputEx-fieldWrapper {
+    float: left;
+}
 
 /* Original inputex listfield styles */
 .inputEx-ListField legend.inputEx-Group-legend {
