@@ -274,11 +274,51 @@ YUI.add("wegas-entity", function(Y) {
             }, {
                 type: BUTTON,
                 label: "More",
-                cssClass: "wegas-advanced-feature",
+                cssClass: "editor-moregamemodel-button",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
+                                    type: BUTTON,
+                                    label: "Print",
+                                    plugins: [{
+                                            fn: "WidgetMenu",
+                                            cfg: {
+                                                menuCfg: {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                event: "mouseenter",
+                                                children: [{
+                                                        type: BUTTON,
+                                                        label: "Html",
+                                                        plugins: [{
+                                                                fn: "OpenGameAction",
+                                                                cfg: {
+                                                                    editorUrl: "print.html?"
+                                                                }
+                                                            }]
+                                                    }, {
+                                                        type: BUTTON,
+                                                        label: "Pdf",
+                                                        plugins: [{
+                                                                fn: "OpenGameAction",
+                                                                cfg: {
+                                                                    editorUrl: "print.html?outputType=pdf&"
+                                                                }
+                                                            }]
+                                                    }]
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Export",
+                                    plugins: [{
+                                            fn: "OpenGameAction",
+                                            cfg: {
+                                                editorUrl: "rest/Export/GameModel/"
+                                            }
+                                        }]
+                                }, {
                                     type: BUTTON,
                                     label: "Permissions",
                                     cssClass: "wegas-advanced-feature",
@@ -302,41 +342,6 @@ YUI.add("wegas-entity", function(Y) {
                                                             }]
                                                     }],
                                                 tabSelector: "#rightTabView"
-                                            }
-                                        }]
-                                }, {
-                                    type: BUTTON,
-                                    label: "Print",
-                                    cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "WidgetMenu",
-                                            cfg: {
-                                                menuCfg: {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                event: "mouseenter",
-                                                children: [{
-                                                        type: BUTTON,
-                                                        label: "html",
-                                                        cssClass: "wegas-advanced-feature",
-                                                        plugins: [{
-                                                                fn: "OpenGameAction",
-                                                                cfg: {
-                                                                    editorUrl: "print.html?"
-                                                                }
-                                                            }]
-                                                    }, {
-                                                        type: BUTTON,
-                                                        label: "pdf",
-                                                        cssClass: "wegas-advanced-feature",
-                                                        plugins: [{
-                                                                fn: "OpenGameAction",
-                                                                cfg: {
-                                                                    editorUrl: "print.html?outputType=pdf&"
-                                                                }
-                                                            }]
-                                                    }
-                                                ]
                                             }
                                         }]
                                 }
