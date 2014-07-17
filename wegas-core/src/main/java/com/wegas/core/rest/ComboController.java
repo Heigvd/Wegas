@@ -9,6 +9,7 @@ package com.wegas.core.rest;
 
 import com.wegas.core.Helper;
 import com.wegas.core.rest.util.CacheManagerHolder;
+import com.wegas.core.rest.util.MediaType;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,8 +27,12 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.core.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.Request;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
+import javax.ws.rs.core.UriInfo;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.commons.io.IOUtils;
@@ -56,15 +61,6 @@ public class ComboController {
     /**
      *
      */
-    final static public String MediaTypeCss = "text/css; charset=ISO-8859-1";
-
-    /**
-     *
-     */
-    final static public String MediaTypeJs = "text/javascript; charset=ISO-8859-1";
-    /**
-     *
-     */
     @Context
     protected UriInfo uriInfo;
     /**
@@ -81,13 +77,12 @@ public class ComboController {
      * @throws IOException
      */
     @GET
-    @Produces({MediaTypeJs, MediaTypeCss})
+    @Produces({MediaType.APPLICATION_JS, MediaType.APPLICATION_JS})
     @CacheMaxAge(time = 3, unit = TimeUnit.HOURS)
     public Response index(@Context Request req) throws IOException {
         Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
 
         final int hash = this.uriInfo.getRequestUri().getQuery().hashCode();
-        // Select the content-type based on the last file extension
 
         final Element combo = cache.get(hash);
         CacheObject comboCache;
@@ -96,7 +91,7 @@ public class ComboController {
             comboCache = (CacheObject) combo.getObjectValue();
         } else { // build Cache.
             //final Set<String> files = this.uriInfo.getQueryParameters().keySet(); // Old version, removed cause query parameters where in the wrong order
-            ArrayList<String> files = new ArrayList<>();                            // New version, with parameters in the right order
+            ArrayList<String> files = new ArrayList<>();                         // New version, with parameters in the right order
             for (String parameter : this.uriInfo.getRequestUri().getQuery().split("&")) {
                 String split = parameter.split("=")[0];
                 if (split != null) {
@@ -106,7 +101,7 @@ public class ComboController {
             files.remove("v");
             files.remove("version");
             final String mediaType = (files.iterator().next().endsWith("css"))
-                    ? MediaTypeCss : MediaTypeJs;                            // Select the content-type based on the first file extension
+                    ? MediaType.TEXT_CSS : MediaType.APPLICATION_JS;            // Select the content-type based on the first file extension
             comboCache = new CacheObject(this.getCombinedFile(files, mediaType), mediaType);
             cache.put(new Element(hash, comboCache));
 
@@ -134,13 +129,13 @@ public class ComboController {
                 InputStream fis = (InputStream) servletContext.getResourceAsStream(fileName);
                 String content = IOUtils.toString(fis, Helper.getWegasProperty("encoding"));
                 //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
-                //.useDelimiter("\\A").next();                              // Use a fake delimiter to read all lines at once
+                //.useDelimiter("\\A").next();                                  // Use a fake delimiter to read all lines at once
 
-                if (mediaType.equals(MediaTypeCss)) {                       // @hack for css files, we correct the path
+                if (mediaType.equals(MediaType.TEXT_CSS)) {                     // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(\"?\'?([^:\\)\"\']+)\"?\'?\\)",
                             "url(" + servletContext.getContextPath()
-                            + dir + "$1)");              //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
+                            + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
                 acc.append(content);
             } catch (NullPointerException e) {
