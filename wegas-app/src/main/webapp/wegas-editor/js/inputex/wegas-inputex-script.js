@@ -31,6 +31,14 @@ YUI.add("wegas-inputex-script", function(Y) {
                 content: ""
             };
             inputEx.Script.superclass.setValue.call(this, val.content, sendUpdatedEvent);
+        },
+        validate: function() {
+            try {
+                window.esprima.parse(this.getValue().content);
+            } catch (e) {
+                return false;
+            }
+            return true;
         }
     });
 
