@@ -1,0 +1,1080 @@
+{
+	"label": "Actions",
+	"@class": "ListDescriptor",
+	"scope": {
+		"@class": "TeamScope",
+		"broadcastScope": "TeamScope"
+	},
+	"defaultInstance": {
+		"@class": "ListInstance"
+	},
+	"items": [
+		{
+			"label": "Initiation",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet up with engineer and sales person: tasks duration",
+					"name": "Meet up with engineer and sales person: tasks duration",
+					"editorLabel": "A01 - Rencontrer Ing. et commercial : durée tâches",
+					"description": "<p>You spend a bit of time with an engineer and a sales manager in order to estimate the duration of the different tasks necessary to carry out the project.</p><p>Time Budget: 3</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. If tasks have not been defined before",
+									"answer": "<p>You soon realize that you will not be able to estimate the duration of the tasks if they have not been defined before.</p><p>You only&nbsp;used&nbsp;one time card, however, you kind of wasted it.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. If tasks have been defined before",
+									"answer": "<p>At this stage it is still hard to estimate the duration of the tasks, but you already got some information.</p><p>- Analysis of the current situation: 2 weeks <br />- Data modeling, processing, user interface: 3 weeks<br />- Programming: 3 weeks <br />- Tests: 1 week<br />- Implementation: 2 weeks</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. If already done",
+									"answer": "<p>Tasks have already been identified.</p><p>No time Budget used.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet up with superior: extra time",
+					"name": "Meet up with superior: extra time",
+					"editorLabel": "A02B - Rencontrer supérieur : temps supplémentaire",
+					"description": "<p>You go to meet your superior and ask him to provide you with more time for the pre-project. If he accepts, your time budget would be considerably increased.</p><p>Time Budget: 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. If extra time has not yet been granted",
+									"answer": "<p>We will consider your request and give you feedback as soon as possible.&nbsp;</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. Time already granted once",
+									"answer": "<p>You were already granted extra time for this project. You will have to make it within the given time-frame.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet up with Engineer and sales person : identify tasks",
+					"name": "Meet up with Engineer and sales person : identify tasks",
+					"editorLabel": "A03B - Rencontrer Ing. et commercial: identifier tâches",
+					"description": "<p>You spend some time with an engineer and a sales manager in order to roughly list project tasks.</p><p>Time Budget : 2</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Basic answer",
+									"answer": "<p>At this stage of the project you find it still hard to completely define the tasks. Nonetheless, the meeting gave you a first idea of what tasks will to be worked on:</p><p>- Analysis of the current situation <br />- Data modeling, processing, user interface <br />- Programming <br />- Tests <br />- Implementation</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. If already done",
+									"answer": "<p>The task list has already been identified. There is nothing new since the last time.</p><p>You just wasted a time card.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet up with R&D engineer, fitter and sales person: issues",
+					"name": "Meet up with R&D engineer, fitter and sales person: issues",
+					"editorLabel": "A04B - Ing. R&D, monteur et commercial : enjeux",
+					"description": "<p>You start a brainstorming session with a R&amp;D engineer, a fitter and a sales manager in order to anticipate risks and challenges related to the project.&nbsp;</p><p>Time Budget: 3</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. After meeting management member",
+									"answer": "<p>According to the three experts, this project is very promising and relevant.<br /><br />According to the sales manager this is \"because it allows for sharpen up our image and for meeting key customer needs\" <br /><br />The fitter adds that the system \"will help to reduce unnecessary travel and thus to save time and money\". However, he is not yet convinced of the feasability of the shared knowledge functionality. <br /><br />The R&amp;D engineer believes that  the foundation of a more than promising project has been laid.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1. Before meeting management member",
+									"answer": "<p><div style=\"color: #000000; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: small; background-image: initial; background-attachment: initial; background-origin: initial; background-clip: initial; background-color: #ffffff; margin: 8px;\"><p>According to the three experts, this project is very promising and relevant.<br /><br />According to the sales manager this is \"because it allows for sharpen up our image and for meeting key customer needs\"&nbsp;<br /><br />The fitter adds that the system \"will help to reduce unnecessary travel and thus to save time and money\". However, he is not yet convinced of the feasability of the shared knowledge functionality.&nbsp;<br /><br />The R&amp;D engineer believes that the foundation of a more than promising project has been laid.</p></div></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. If already done",
+									"answer": "<p>Nothing new since last time.</p><p>You just wasted one time card.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet management: lobbying for project",
+					"name": "Meet management: lobbying for project",
+					"editorLabel": "A04B - Rencontrer direction",
+					"description": "<p>You ask for a formal meeting with the management in order to discuss on your project.</p><p>You prepare a short presentation of the projects' state of art. This will allow for making management familiar with the project and for getting their feedback.</p><p>Time Budget : 3</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": " 1. Before member meeting ? without  issue's identification",
+									"answer": "<p>\"What project are you talking about? However ...&nbsp;at the moment, we have neither time nor mood for meeting with you!\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": " 1.1 After issues, without meeting member",
+									"answer": "<p>Lacking any support of the management, at the beginning of the meeting you really had to try and convince all board members at the same time.&nbsp;</p><p>The presentation nonetheless went pretty well, after all.</p><p>A number of questions about the relevance and benefits of the project were raised, but you won over with convincing answers.&nbsp;</p><p>Management is interested and the project seem important to them, now, not least because&nbsp;diminishing the fitters' travel expenses is one of the strategic goals of the next two years to come.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": " 2.2 After meeting members, without issues, 2nd time",
+									"answer": "<p>You give a second presentation containing little new information. &nbsp;</p><p>People feel that you wasted their time, which impinges upon the image management has of you.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. After meeting members, without issues",
+									"answer": "<p>The board is interested, however, many points still seem vague to them. Namely, from their point of view, potential risks have not yet been soundly assessed.&nbsp;</p><p>You have not really convinced the management, but at least have learned that diminishing the fitters' travel expenses is one of the strategic goals for the next two years to come.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3. After meeting members, with issues",
+									"answer": "<p>The presentation went very well and you were supported by the person you had met. Several questions were asked in relation to the relevance and the interest in making this project. Your answers have been convincing. The management has a strong interest in your project, now.&nbsp;</p><p>During the meeting, you happened to also find out that a considerable reduction the fitters' travel expenses is one of the strategic goals for the next two years.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. If meeting already done",
+									"answer": "<p>\"You already presented your project. We are definitely not yet suffering from Alzheimer's ... that is, sorry, what was your name again?\"</p><p>The secretary is asked to show you the door and the way downstairs.&nbsp;</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet a member of management : address the project",
+					"name": "Meet a member of management : address the project",
+					"editorLabel": "A04B - Rencontrer un membre de la direction",
+					"description": "<p>You help your luck along with an informal meeting with a member of the management board and promote your project.</p><p>Time Budget : 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Meeting before issues",
+									"answer": "<p>You had coffee with a member of management and grasped the opportunity promote your project.</p><p>His advice: \"Hum, all this seems interesting and could have impact. Risks and opportunities, however, still seem quite unclear to me.&nbsp;Drop in again as soon as you have a clearer idea of these issues\"!</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2.Meeting after the issues",
+									"answer": "<p>During a <em>coffee and croissant break</em> with a member of management you discussed on your project.</p><p>His advice is: \"This project seems interesting. If fitters and sales managers are convinced and have addressed their issues, then you should present the project to our board!\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3.Meeting after meeting management",
+									"answer": "<p>\"Why are you bothering me again with a project you&nbsp;already presented during the management board meeting?!\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. If new meeting after issues",
+									"answer": "<p>You enjoyed a meal together. It was nice, but nothing new since last time.</p><p>You even had the feeling that, since there was nothing really new, your conversation partner was wasting his time.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Inform spouse: Night shift",
+					"name": "Inform spouse: Night shift",
+					"editorLabel": "A09B -TravSoir - Rester travailler le soir",
+					"description": "<p>You inform your spouse that you will need to work long hours until the late evening because there is so much to do on the project. This decision increases your time budget.</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "First time",
+									"answer": "<p>OK, your spouse has been notified.</p><p>Your time budget has increased by 3.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "Second time",
+									"answer": "<p>OK, your spouse has been notified.</p><p>Your time budget has increased by 3.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "Third time",
+									"answer": "<p>OK, your spouse has been notified!</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Planning",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet User Interface resources : information",
+					"name": "Meet User Interface resources : information",
+					"editorLabel": "P11 - Rencontrer ressources IHM",
+					"description": "<p>You meet with the team in charge of the <em>user interface programming</em>&nbsp;and ask for information on the task.</p><p>Time Budget: 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Answer",
+									"answer": "<p>Here's some information you got from the discussion:</p><p>It is absolutely necessary to actually assign the requested amount of people: Halving the resources would more than double the time it takes for completing the task. The respective team is used to close cooperation and autonomy in terms of the division of labor.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Already done",
+									"answer": "<p>Nothing new since the last time!</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet \"Analyses\" resources : duration assessment",
+					"name": "Meet \"Analyses\" resources : duration assessment",
+					"editorLabel": "P1B -  Rencontrer ressources \"Analyses\" : estimation durées",
+					"description": "<p>You welcome the teams responsible for the preliminary analyses (choice of the development environment, analysis of the current situation, customer's and fitters' needs' analyses, specification document).</p><p>You ask for their opinions and jointly define the prospective tasks' durations.</p><p>Time Budget : 3<br />Costs: 2000.- (projects' fixed costs)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Answer",
+									"answer": " <p>After a morning's work with the concerned resources, it appears that: </p><ul><li> The \"development environment\"  task's lasts indeed a week. </li></ul><ul><li> For the \"Analysis of the current situation\" task, a week has been considered \"a bit of a challenge...\". After discussion however, the concerned resources have engaged themselves to try and perform this task in a week.</li></ul><ul><li> For the  \"customers and repairers needs Analysis\", two weeks are considered correct. </li></ul><ul><li> The \"specification document\" should be executed in a week.</li></ul>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Already done",
+									"answer": "<p>Nothing new since last time.</p><p>You just wasted one time card.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meeting management : information about strategy",
+					"name": "Meeting management : information about strategy",
+					"editorLabel": "P2 - Rencontrer direction : information sur la stratégie",
+					"description": "<p>You meet with the management in order to obtain information on the corporate strategies.</p><p>Time Budget: 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Answer",
+									"answer": "<p>First of all, management declares that these questions should have been addressed during the pre-project phase, already.</p><p>Generally speaking, Artos aims at close ties to its customers and at meeting their needs. In addition, the management would be happy if downtimes as well as fitters' travel costs could be reduced significantly within the next two years.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Already done",
+									"answer": "<p>Management wonders why you are asking this question again.</p><p>The corporate strategy has not changed since the last time ...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Meet \"Test\" resources\" : information",
+					"name": "Meet \"Test\" resources\" : information",
+					"editorLabel": "P3 - Rencontrer ressources \"Tests\"",
+					"description": "<p>You meet the people responsible for the <em>system tests</em> and ask for information on how this task is organized.</p><p>Time Budget : 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Answer",
+									"answer": "<p>The team lets you know that assigning additional human resources to this task will not significantly reduce the time needed to complete it. Test procedures&nbsp;are a matter of accuracy, hence, working parallel to these is not advisable.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Already done",
+									"answer": "<p>Nothing happend since last time.</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Execution",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": " Bring together  \"1. Development environment choice\" team : quality",
+					"name": " Bring together  \"1. Development environment choice\" team : quality",
+					"editorLabel": "01 - R8B -  Réunir équipe \"1. Choix environnement développement\"",
+					"description": "<p>You convene a meeting of the <em>development environment choice</em> team and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget : 2 <br /> Costs: 500.- (task's fixed costs)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before beginning with the task",
+									"answer": "<p>The needs analysis has not  begun yet. Nothing really happened.&nbsp;</p><p>You just waisted a time card.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realization between 0 and 100%",
+									"answer": "<p>The check has taken half a day.</p><p>Smaller mistakes have been detected and immediately corrected.</p><p>The task's quality increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2nd time",
+									"answer": "<p>The analysis took half a day.</p><p>No further mistakes were found.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": " Bring together  \"2. Analysis of the current situation\" team: quality",
+					"name": " Bring together  \"2. Analysis of the current situation\" team: quality",
+					"editorLabel": "02 - R9B - Réunir équipe \"2. Analyse existant\"",
+					"description": "<p>You convene a meeting of the&nbsp;<em>analysis of the current situation&nbsp;team</em> and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget : 2<br /> Cost: 300.- (task's fixed costs)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before beginning with the task",
+									"answer": "<p>There is nothing to discuss on at this stage, for the task has not started yet.</p><p>You just wasted a time card.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realization between 0 and 100%",
+									"answer": "<p>The analysis took half a day.</p><p>An important mistake was detected: The system would not have been compatible with a piloting software used by one of Artos' machine types.</p><p>This mistake would not have been discovered otherwise and would not have been detected before the final tests, when it would have been a lot more difficult to correct.</p><p>The <em>analysis of the current situation</em> quality increases!</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2nd time",
+									"answer": "<p>The analysis took half a day.</p><p>No further mistakes were found.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together \"3. Needs Analysis\" team : quality",
+					"name": "Bring together \"3. Needs Analysis\" team : quality",
+					"editorLabel": "03 - R1B - Réunir équipe \"3. Analyse des besoins\"",
+					"description": "<p>You convene a meeting of the&nbsp;<em>needs analysis </em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget : 2<br />Half a day's work for the needs analysis team</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before beginning with the task",
+									"answer": "<p><p>There is nothing to discuss on at this stage, for the task has not started yet.</p><p>You just wasted a time card.</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realization between 0 and 100%",
+									"answer": "<p>The analysis took half a day.</p><p>A mistake has been detected and corrected.</p><p>Needs analysis' quality increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2nd time",
+									"answer": "<p>Analysis took half a day.</p><p>No further mistakes were found.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together \"4. specification document\" team : quality",
+					"name": "Bring together \"4. specification document\" team : quality",
+					"editorLabel": "04 - Réunir équipe \"4. Dossier de spécifications\"",
+					"description": "<p>You convene a meeting of the&nbsp;<em>specification document&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br />Cost: 500.- (task's fixed costs)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before task start",
+									"answer": "<p><p>No problems at this stage, for the task has not started yet.</p><p>You just wasted a time card.</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realized between 0 and 100%",
+									"answer": "<p>A few mistakes were detected and corrected. Their correction would very likely have taken more time if they had been discovered at a later time.</p><p>The task's quality increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2nd time",
+									"answer": "<p>No new mistakes were found!</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together \"5. Data modeling\" team : quality",
+					"name": "Bring together \"5. Data modeling\" team : quality",
+					"editorLabel": "05 - RB2 - Réunir équipe \"5. Modélisation des données\"",
+					"description": "<p>You convene a meeting of the&nbsp;<em>data modeling&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br /> 1/2 day's work for the data modeling team.</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before task start",
+									"answer": "<p>No problems at this stage, for the task has not started yet.</p><p>You just wasted a time card.</p><p>&nbsp;</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realized between 0 and 100%",
+									"answer": "<p>The analysis took half a day.</p><p>No mistakes found.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "Second time (and more)",
+									"answer": "<p>Half a day was dedicated to double-check quality. It's all ok!</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together  \"6. Processing Modeling\" team : quality",
+					"name": "Bring together  \"6. Processing Modeling\" team : quality",
+					"editorLabel": "06 - R3B - Réunir équipe  \"6. Modélisation des traitements\"",
+					"description": "<p>You convene a meeting of the&nbsp;<em>processing modeling&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br /> 1/2 day's work for the processing modeling team.</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before task start",
+									"answer": "<p>No problems at this stage, for the task has not started yet.</p><p>You just wasted a time card.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realized between 0 and 100%",
+									"answer": "<p>The analysis took half a day.</p><p>Some mistakes were discovered and already corrected. Further mistakes still need correction and will be occupying your team for roughly half a day before they be able to resume work again. &nbsp;<br /><br />The task's quality increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2nd time",
+									"answer": "<p>Analysis took half a day.</p><p>No new mistakes were found.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together team \"9. Processing Programming\" : quality",
+					"name": "Bring together team \"9. Processing Programming\" : quality",
+					"editorLabel": "09 - R4B - Réunir équipe \"7. Programmation des traitements\"",
+					"description": "<p>You convene a meeting of the <em>processing programming&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2</p><p>1/2 day's work for the  \"Processing Programming\" team</p><p>&nbsp;</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1: Before task starts",
+									"answer": "<p>No problems at this stage, for the task has not started yet.</p><p>You just wasted a time card.<br /><br /></p><p>&nbsp;</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. realized between 0 and 50% - 1st time",
+									"answer": "<p>The analysis took half a day.</p><p>A few mistakes were discovered and some of them are already corrected. The correction of the remaining mistakes&nbsp;should roughly take half a day before&nbsp;the team will be able to resume programming.</p><p>The task's quality increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2.1 realized between 0 and 50% - 2nd time",
+									"answer": "<p>No new mistakes were found at this stage of the programming.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3. realized between 50 and 100% - 1st time",
+									"answer": "<p>The analysis took half a day.</p><p>A few bugs were discovered and already fixed.</p><p>The team members say that these mistakes would not have been discovered without the quality analysis and their correction would have been quite time consuming during the final tests.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3.1 realized between 50 and 100% - 2nd time",
+									"answer": "<p>No new mistakes found at this stage of the programming.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together  \"11. System Promotion\" team : quality",
+					"name": "Bring together  \"11. System Promotion\" team : quality",
+					"editorLabel": "11 - R7B - Réunir équipe \"11. Promotion système\"",
+					"description": "<p>You convene a meeting of the&nbsp;<em>system promotion&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br />1/2 day's work for the system promotion team</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1: Before task starts",
+									"answer": "<p>No problems at this stage, for the task has not started yet.</p><p>You just wasted one time card.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1st time ? realized between 0 and 100%",
+									"answer": "<p>The check ran for half a day.</p><p>You decided on some re-adjustments concerning the divison of labor between the marketing managers and sales persons involved.</p><p>The task's quality increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2nd time",
+									"answer": "<p>The check took half a day.&nbsp;</p><p>Everything is on schedule.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together project team: brief and coordination",
+					"name": "Bring together project team: brief and coordination",
+					"editorLabel": "R5B - Réunir l'équipe projet",
+					"description": "<p>You convene a meeting of the&nbsp;<em>entire&nbsp;</em>team&nbsp;and give them&nbsp;a brief update on goals, quality issues and deadlines.<br />You end the meeting by (re)defining workloads and priorities.</p><p>Time Budget : 3<br /> Costs: 1000.- (project's fixed costs)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "#1 Basic Answer",
+									"answer": "<p>After the meeting, priorities within the different activities have been re-adjusted. A few coordination issues have been mentioned, but solved during the session.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "#2 Basic Answer",
+									"answer": "<p>The session went well. Coordinating the activities gave rise to no problems. On the other hand, it has been necessary to redefine priorities for some tasks.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "#3 Basic Answer",
+									"answer": "<p>The session was quite lively, in particular with regard to the coordination of the activities between the tasks. At the end of the session, most issues are solved.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "#4 Basic Answer",
+									"answer": "<p>All of last session's coordination issues have been solved. According to the team \"Everything is running smoothly!\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "#5 Basic Answer",
+									"answer": "<p>After discussions and re-planning, coordination is ensured for the period to come.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Bring together fitters and repairers : presentation of the work",
+					"name": "Bring together fitters and repairers : presentation of the work",
+					"editorLabel": "R6B - Réunir monteurs et réparateurs: présentation du travail",
+					"description": "<p>You convene a meeting of selected fitters and repairers, give an overview of the project&nbsp;and listen to their feedback.&nbsp;</p><p>Time budget: 2<br /> Costs: 500.- (project's fixed costs)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Before Specification",
+									"answer": "<p>You presented the state of the art of the project. The future users' feedback is:</p><p>\"It looks like we are on the right way. We're looking forward to seeing how the work in progress will work in practice\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1.2 Before Specification ? 2nd time",
+									"answer": "<p>Overall users feedback:</p><p>\"Nothing new since the last time.\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. During Specification",
+									"answer": "<p>During a discussion on the specification document a few interesting comments were made, which allowed for the amelioration of the specification document's quality.</p><p>What is more, a crucial bug was detected and fixed, which&nbsp;would have taken a lot more time if the mistake had not been discovered before the programming.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. During Specification ? 2nd time",
+									"answer": "<p>Overall feedback:</p><p>\"Not many changes since our last meeting.\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3. During modeling",
+									"answer": "<p>Globally, the users' feedback is: \"As far as we understand it everything looks all right for us\".</p><p>They have however asked questions and made comments allowing for an amelioration of the modeling.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3. During modeling ? 2nd time",
+									"answer": "<p>No news at all!</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4. During programming ? 1st time",
+									"answer": "<p>You presented the programmers work in progress.</p><p>A couple of questions were asked and some of the feedback allowed for the amelioration of specific functionalities.</p><p>Generally speaking, the users said: \"What see that programming is very likely to meet our expectations. We are keen on using this system as soon as possible\".</p><p>The quality of processing programming increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4.2. During programming ? 2nd time",
+									"answer": "<p>A few small corrections were made according to the feedback that followed your presentation.</p><p>The quality of processing programming slightly increases.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4.3. During programming ? 3rd time",
+									"answer": "<p>Nothing really new since the last time!</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "5. During Tests ? 1st time",
+									"answer": "<p>You invited some user representatives to attend the tests. The tenor of their feedback is:</p><p>\"We are really happy with the product. There is, however, a an issue with the user interface, which should be designed for one-handed use (and thus allowing for the other hand to be busy with a tool) ...\".</p><p>You consider the comment and adapt the system, which is not a great deal of work, at all.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "5.2 During Tests ? 2nd time",
+									"answer": "<p>You met again with some user representatives during the tests.</p><p>Globally their comments are: <br />\"We're happy with the product. We are looking forward to using it.\"</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Closure",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": []
+		}
+	]
+}

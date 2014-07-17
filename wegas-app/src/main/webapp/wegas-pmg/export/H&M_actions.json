@@ -1,0 +1,1401 @@
+{
+	"label": "Actions",
+	"@class": "ListDescriptor",
+	"scope": {
+		"@class": "TeamScope",
+		"broadcastScope": "TeamScope"
+	},
+	"defaultInstance": {
+		"@class": "ListInstance"
+	},
+	"items": [
+		{
+			"label": "Initiation",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer responsables : durée tâches",
+					"name": "Rencontrer responsables : durée tâches",
+					"editorLabel": "AA01 - Rencontrer responsables : durée tâches",
+					"description": "<p>Vous passez un moment avec Kjell-Olof Nilsson (resp. IT), Dan Nordstr&ouml;m (resp. Online), Jonas Guldstrand (resp. Logistique) et Sanna Lindberg (resp. RH) pour estimer la  dur&eacute;e des diff&eacute;rentes t&acirc;ches n&eacute;cessaires &agrave; la r&eacute;alisation du projet.</p><p>Co&ucirc;t : 3 cartes temps</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Si tâches pas identifiées",
+									"answer": "<p>Vous constatez rapidement que vous ne pourrez estimer les dur&eacute;es des t&acirc;ches qu'une fois celles-ci identifi&eacute;es.</p><p>Vous ne consommez qu'une carte temps, mais n'obtenez pas vraiment de r&eacute;sultat.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. Si tâches identifiées",
+									"answer": "<p>Il est &agrave; ce stade encore difficile d'estimer la dur&eacute;e des t&acirc;ches, mais voici quelques informations.</p><ul><li>Cartographie des processus : 1 semaine</li><li>Programmation interface web : 4 semaines</li><li>Int&eacute;gration au site web : 2 semaines</li><li>Appel d'offre partenariat logistique : 1 semaine</li><li>Recrutement personnel : 2 semaines</li><li>Formation personnel : 4 semaines</li></ul>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Si déjà fait.",
+									"answer": "<p>Les t&acirc;ches ont d&eacute;j&agrave; &eacute;t&eacute; identifi&eacute;es.</p><p>Pas de budget temps consomm&eacute;.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer supérieur : temps supplémentaire",
+					"name": "Rencontrer supérieur : temps supplémentaire",
+					"editorLabel": "AA05 - Rencontrer supérieur : temps supplémentaire",
+					"description": "<p>Vous allez trouver votre sup&eacute;rieur hi&eacute;rarchique et lui demandez de vous accorder du temps suppl&eacute;mentaire pour la r&eacute;alisation de l'avant-projet. S'il accepte, ceci vous permettrait d'augmenter un peu votre budget temps.</p><p>Co&ucirc;t : 1 carte temps</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Si pas encore de temps supplémentaire accordé",
+									"answer": "Nous allons y réfléchir et vous répondrons d'ici peu."
+								},
+								{
+									"@class": "Result",
+									"name": "2. Déjà accordé du temps une fois",
+									"answer": "<p>Vous avez d&eacute;j&agrave; eu du temps suppl&eacute;mentaire pour ce projet. Il faut que vous vous en sortiez avec le temps &agrave; disposition.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer développeur et commercial: identifier tâches",
+					"name": "Rencontrer développeur et commercial: identifier tâches",
+					"editorLabel": "AA04 - Rencontrer responsables : identifier tâches",
+					"description": "<p>Vous prenez du temps avec Kjell-Olof Nilsson (resp. IT), Dan Nordstr&ouml;m (resp. Online), Jonas Guldstrand (resp. Logistique) et Sanna Lindberg (resp. RH)&nbsp;pour identifier sommairement la liste des t&acirc;ches &agrave; effectuer.</p><p>Co&ucirc;t : 2 cartes temps</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Réponse de base",
+									"answer": "<p>Vous vous rendez compte qu'&agrave; ce stade du projet, il est  encore difficile de compl&egrave;tement estimer les t&acirc;ches. Vous avez toutefois obtenu une premi&egrave;re id&eacute;e de ce qui devrait &ecirc;tre r&eacute;alis&eacute;.</p><p><ul><li>Cartographie des processus</li><li>Programmation interface web</li><li>Int&eacute;gration au site web</li><li>Appel d'offre partenariat logistique</li><li>Recrutement personnel</li><li>Formation personnel</li></ul></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Si déjà effectué",
+									"answer": "<p>La liste des t&acirc;che a d&eacute;j&agrave; &eacute;t&eacute; identifi&eacute;e. Il n'y a rien de nouveau depuis la derni&egrave;re fois.</p><p>Vous ne consommez qu'un carte temps.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer direction : présentation projet",
+					"name": "Rencontrer direction : présentation projet",
+					"editorLabel": "AA02 - Rencontrer direction",
+					"description": "<p>Vous sollicitez une r&eacute;union formelle avec la direction de l'entreprise afin de parler de votre projet et de ses enjeux.</p><p>Co&ucirc;t : 3 cartes temps</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Trop tôt",
+									"answer": "<p><p>Le secr&eacute;tariat vous informe que la direction n'est pas disponible pour vous recevoir pour le moment.</p><p>Cette derni&egrave;re vous invite &agrave; la consulter une fois que vous aurez un peu progress&eacute; dans le projet.</p><p>Vous ne consommez qu'une carte temps.</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2.1 Après identification enjeux",
+									"answer": "<p>La direction valide les enjeux du projet et en fait un projet prioritaire.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2.2 Après évaluation besoins",
+									"answer": "<p>La direction valide votre premi&egrave;re analyse des besoins et vous propose  de la consulter &agrave; nouveau, si vous en voyez l'utilit&eacute;,&nbsp;quand vous  disposerez d'une analyse d&eacute;taill&eacute;e des prestations.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3.2 Après analyse prestations --> b)",
+									"answer": "<p>La direction g&eacute;n&eacute;rale insiste pour que vous pensiez syst&eacute;matiquement &agrave;  la n&eacute;cessit&eacute; de travailler avec les partenaires au bon moment.&nbsp;</p><p>&nbsp;</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Si rencontre déjà effectuée",
+									"answer": "Vous nous avez déjà présenté ce projet. On n'est pas encore frappé d'Alzheimer..."
+								},
+								{
+									"@class": "Result",
+									"name": "3.1 Après analyse prestations --> a) ou c)",
+									"answer": "<p>La direction g&eacute;n&eacute;rale vous remercie pour la proposition de prestations.</p><p>Elle valide cette proposition et vous laisse poursuivre vos travaux  pour produire un mandat de projet qu'elle se r&eacute;jouit de lire.</p><p>&nbsp;</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4. Pas le temps",
+									"answer": "<p>Le secr&eacute;tariat vous informe que la direction est occup&eacute; sur d'autres projets actuellement et n'est pas disponible pour vous recevoir pour le moment.</p><p>Cette derni&egrave;re vous invite &agrave; r&eacute;essayer ult&eacute;rieurement.</p><p>Vous ne consommez qu'une carte temps.</p><p>&nbsp;</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer un membre de la direction : parler du projet",
+					"name": "Rencontrer un membre de la direction : parler du projet",
+					"editorLabel": "AA06 - Rencontrer un membre de la direction",
+					"description": "<p>Vous provoquez une rencontre informelle avec un des membres de la direction afin de lui parler du projet.</p><p>Co&ucirc;t : 1 carte temps</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Rencontrer avant enjeux ",
+									"answer": "<p>Vous avez pris le caf&eacute; avec un des membres de la direction et en avez profit&eacute; pour lui parler du projet.</p><p>Son avis: \"hum, tout ceci me semble int&eacute;ressant et pourrait avoir un bon potentiel d'expansion. Par contre, les enjeux me semblent encore flous\"</p><p>Passez &eacute;ventuellement me voir &agrave; nouveau lorsque ceci sera plus clair.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. Rencontrer après enjeux",
+									"answer": "<p>Lors d'un caf&eacute;-croissant avec un des membres de la direction, vous avez parler de votre projet.</p><p>Son avis: \"Ce projet semble int&eacute;ressant. Et si, comme vous me le dites, les responsables Marketing, IT et Online sont convaincus des enjeux, je vous propose de venir faire une pr&eacute;sentation &agrave; la direction.\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3. Rencontrer après rencontre direction",
+									"answer": "\"Pourquoi me présentez-vous à nouveau ce projet que vous avez déjà présenté en séance de direction ? \""
+								},
+								{
+									"@class": "Result",
+									"name": "9. Si nouvelle rencontre après enjeux",
+									"answer": "<p>Vous avez pris un repas en commun. Ceci &eacute;tait sympathique, mais rien de nouveau depuis la derni&egrave;re fois.</p><p>Il vous a m&ecirc;me sembl&eacute; que comme il n'y avait rien de vraiment nouveau, votre interlocuteur a un peu eu l'impression de perdre son temps.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Informer conjoint(e) : travailler le soir",
+					"name": "Informer conjoint(e) : travailler le soir",
+					"editorLabel": "AA08 - Rester travailler le soir",
+					"description": "<p>Vous informez votre conjoint(e) que vous rester travailler quelquefois plus tard le soir car vous avez beaucoup &agrave; faire sur un projet important. Ceci vous permet d'augmenter votre budget temps.</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1ère fois",
+									"answer": "<p><p>En ordre.</p><p>Budget temps : +3</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>En ordre.</p><p>Budget temps : +3</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3ème fois",
+									"answer": "<p>...</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Planning",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer ressources IT : informations",
+					"name": "Rencontrer ressources IT : informations",
+					"editorLabel": "AP - Rencontrer ressources \"IT\"",
+					"description": "<p>Vous rencontrez les personnes qui r&eacute;aliseront la programmation de l'interface web pour obtenir des informations sur la&nbsp;r&eacute;alisation de cette t&acirc;che.</p><p>Budget temps: 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Réponse",
+									"answer": "<p>Voici quelques informations obtenues lors de la discussion : <br /> Il est absolument n&eacute;cessaire d'affecter le nombre de personnes demand&eacute;. Une diminution de moiti&eacute; des ressources fait plus que doubler le temps de r&eacute;alisation. En effet, ces personnes ont l'habitude de travailler ensemble et se r&eacute;partissent bien le travail selon leurs comp&eacute;tences.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Déjà effectué",
+									"answer": "<p>Rien de nouveau depuis la derni&egrave;re fois.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer ressources : estimation durées",
+					"name": "Rencontrer ressources : estimation durées",
+					"editorLabel": "AP -  Rencontrer ressources : estimation durées",
+					"description": "<p>Vous invitez une partie des ressources suppos&eacute;es travailler sur le projet.</p><p>Avec ces personnes, vous cherchez &agrave; affiner l'estimation de la dur&eacute;e de ces diff&eacute;rentes t&acirc;ches et demandez leur avis sur la r&eacute;alisation de ces activit&eacute;s.</p><p>Budget temps: 3<br />Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Réponse",
+									"answer": "<p>Apr&egrave;s une matin&eacute;e de travail avec les ressources concern&eacute;es, il ressort que:</p><ul><li> Pour la t&acirc;che \"Etude de march&eacute;\",&nbsp;la dur&eacute;e d'une semaine a &eacute;t&eacute; consid&eacute;r&eacute;e comme \"un peu challenge...\". Toutefois, apr&egrave;s discussion, les ressources concern&eacute;es se sont engag&eacute;es &agrave; essayer de r&eacute;aliser cette t&acirc;che en une semaine.&nbsp;</li></ul><ul><li> Pour la \"Cartographie des processus\", une semaine est consid&eacute;r&eacute;e comme correcte.</li></ul><ul><li> Le \"Dossier de sp&eacute;cification\" devrait pouvoir &ecirc;tre r&eacute;alis&eacute; en une semaine.</li></ul>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Déjà effectué",
+									"answer": "Rien de nouveau de puis la dernière fois. <br>Vous ne consommez qu'une carte temps"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer direction : information sur la stratégie",
+					"name": "Rencontrer direction : information sur la stratégie",
+					"editorLabel": "AP - Rencontrer direction : information sur la stratégie",
+					"description": "<p>Vous aller rencontrer la direction pour obtenir des informations relatives&nbsp;&agrave; la strat&eacute;gie de la soci&eacute;t&eacute;.</p><p>Co&ucirc;t : 1 carte temps</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Réponse",
+									"answer": "<p>En pr&eacute;ambule, la direction trouve que ce sont plut&ocirc;t des questions &agrave; se poser en phase d'avant-projet.</p><p>D'une mani&egrave;re g&eacute;n&eacute;rale, H&amp;M souhaite maintenir son expansion de 10% par ann&eacute;e tout en d&eacute;veloppant la proximit&eacute; avec ses clients.</p><p>D'un point de vue interne, l'alignement face &agrave; la concurrence sur les services &agrave; offrir en terme de vente en ligne est fondamentale surtout dans un pays comme les Etats-Unis. En cas de succ&egrave;s, ce projet pourra &ecirc;tre repris pour d'autres pays.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Déjà effectué",
+									"answer": "<p>La direction se demande pourquoi vous revenez avec cette question.</p><p>La strat&eacute;gie n'a pas chang&eacute; depuis la derni&egrave;re fois.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer ressources \"Logistique\" : informations",
+					"name": "Rencontrer ressources \"Logistique\" : informations",
+					"editorLabel": "AP - Rencontrer ressources \"Logistique\"",
+					"description": "<p>Vous rencontrez les personnes qui s'occuperont des parties logistiques du projet afin d'obtenir des informations sur r&eacute;alisation de cette t&acirc;che.</p><p>Budget temps: 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Réponse",
+									"answer": "<p>Les personnes responsables de la partie logistique vous informent que, l'affectation de ressources suppl&eacute;mentaires &agrave; celles demand&eacute;es ne permettra pas de diminuer de beaucoup le temps de r&eacute;alisation.</p><p>En effet, le temps des t&acirc;ches varie plus en fonction de la r&eacute;activit&eacute; des futurs potentiels partenaires qu'autre chose.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Déjà effectué",
+									"answer": "<p>Rien de nouveau depuis la derni&egrave;re fois.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Organiser un kick off",
+					"name": "Organiser un kick off",
+					"editorLabel": "AP - Kick off",
+					"description": "<p>Vous r&eacute;unissez tous les acteurs du projet afin de lancer officiellement le projet.</p><p>Budget temps : 2 cartes temps.</p><p>&nbsp;</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": null,
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "a) 1er kick off",
+									"answer": "<p><p>Le jeu en a valu la peine.</p><p>Non seulement l'&eacute;quipe de projet s'est sentie v&eacute;ritablement investie  d'une mission, mais vous avez &eacute;t&eacute; reconnu dans votre r&ocirc;le de chef de  projet.</p><p>De plus, les &eacute;changes et les questions pos&eacute;es entre les diff&eacute;rents membres pr&eacute;sents ont  permis d'identifier certains crit&egrave;res de succ&egrave;s et quelques ouvertures  qui vous feront gagner du temps.</p><p>La confiance de d&eacute;part est gagn&eacute;e.</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "b) 2ème kick off",
+									"answer": "<p><p>La direction vous a signal&eacute; qu'elle attendait surtout des  avanc&eacute;es concr&egrave;tes &agrave; ce stade. Elle vous remercie de ne pas effectuer de  2&egrave;me kick off.</p><p>Pourquoi pas une verr&eacute;e lors de la remise du mandat de projet &agrave; la direction g&eacute;n&eacute;rale ?</p></p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Rencontrer ressources \"RH\": informations",
+					"name": "Rencontrer ressources \"RH\": informations",
+					"editorLabel": "AP - Rencontrer ressources \"RH\"",
+					"description": "<p>Vous rencontrez les personnes qui s'occuperont de recruter et former le personnel afin d'obtenir des informations sur la&nbsp;r&eacute;alisation de ces t&acirc;ches.</p><p>Budget temps: 1</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Réponse",
+									"answer": "<p>Voici quelques informations obtenues lors de la discussion : <br /> Le march&eacute; de l'emploi aux Etats-Unis est plut&ocirc;t propice &agrave; notre future campagne de recrutement. Tout devrait se passer comme pr&eacute;vu. Attention toutefois &agrave; ne pas sous-estimer ses t&acirc;ches.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Déjà effectué",
+									"answer": "<p>Rien de nouveau depuis la derni&egrave;re fois.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Informer conjoint(e) : travailler le soir",
+					"name": "Informer conjoint(e) : travailler le soir",
+					"editorLabel": "AP - Rester travailler le soir",
+					"description": "<p>Vous informez votre conjoint(e) que vous rester travailler quelquefois plus tard le soir car vous avez beaucoup &agrave; faire sur un projet important. Ceci vous permet d'augmenter votre budget temps.</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1ère fois",
+									"answer": "<p><p>En ordre.</p><p>Budget temps : +3</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>En ordre.</p><p>Budget temps : +3</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3ème fois",
+									"answer": "<p>...</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Execution",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Etude de marché\" : qualité",
+					"name": "Réunir équipe \"Etude de marché\" : qualité",
+					"editorLabel": "AR01 -  Etude de marché",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Etude de march&eacute;\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2 <br /> Co&ucirc;ts: 500.- (frais fixes de la t&acirc;che)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant que la tâche ne débute",
+									"answer": "L'analyse des besoins n'a pas débuté. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "L'analyse a pris une demi-journée. <br>Des petites erreurs ont été découvertes et corrigées immédiatement. <br>La qualité de la tâche est augmentée."
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Aucune erreur n'a &eacute;t&eacute; d&eacute;couverte.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te?</p><p>vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Etude de faisabilité\" : qualité",
+					"name": "Réunir équipe \"Etude de faisabilité\" : qualité",
+					"editorLabel": "AR02 - Etude de faisabilité",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Etude de faisabilit&eacute;\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> Co&ucirc;t: 300.- (frais fixes de la t&acirc;che)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant que la tâche ne débute",
+									"answer": "<p>L'&eacute;tude de faisabilit&eacute;n'a pas encore d&eacute;but&eacute;e. Rien de particulier pour  moment.</p><p>Budget temps : 1</p><p>&nbsp;</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "<p>L'&eacute;tude&nbsp;a pris une demi-journ&eacute;e.&nbsp;</p><p>La mont&eacute;e en charge que risque de repr&eacute;senter la vente en ligne aux Etats-Unis n'avait pas &eacute;t&eacute; prise en compte.</p><p>Sans analyse de qualit&eacute;, cette erreur n'aurait pas &eacute;t&eacute; d&eacute;couverte. Elle serait apparue lors des tests finaux et aurait &eacute;t&eacute; bien plus difficile &agrave; corriger que maintenant.</p><p>Augmentation de la qualit&eacute; de l'&eacute;tude de faisabilit&eacute;.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>L'&eacute;tude a pris une demi-journ&eacute;e. <br /> Aucune erreur n'a &eacute;t&eacute; d&eacute;couverte.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Cartographie et analyse des processus\" : qualité",
+					"name": "Réunir équipe \"Cartographie et analyse des processus\" : qualité",
+					"editorLabel": "AR03 -  Cartographie des processus",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la \"Cartographie des processus\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2</p><p>1/2 journ&eacute;e de travail de l'&eacute;quipe \"Cartographie et analyse&nbsp;des processus\"</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant que la tâche ne débute",
+									"answer": "<p>La cartographie n'a pas encore d&eacute;but&eacute;. Rien de particulier pour  moment.</p><p>Budget temps : 1.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Une erreur a &eacute;t&eacute; d&eacute;couverte et corrig&eacute;e. <br /> La qualit&eacute; de l'analyse des processus en est augment&eacute;e.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "L'analyse a pris une demi-journée. <br>Aucune erreur n'a été découverte."
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Dossier de spécifications\" : qualité",
+					"name": "Réunir équipe \"Dossier de spécifications\" : qualité",
+					"editorLabel": "AR11 - Dossier de spécifications",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable du \"Dossier de sp&eacute;cifications\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br />Co&ucirc;t: 500.- (frais fixes de la t&acirc;che)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant que la tâche ne débute",
+									"answer": "<p>Le dossier de sp&eacute;cification n'a pas d&eacute;but&eacute;. Rien de particulier pour  moment.</p><p>Budget temps : 1.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "Quelques erreurs ont été découvertes et corrigées. Leur correction aurait certainement pris plus de temps si elles avaient été découvertes plus tard. <br>La qualité de la tâche est augmentée."
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "Aucune nouvelle erreur n'a été découverte."
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Programmation interface web\" : qualité",
+					"name": "Réunir équipe \"Programmation interface web\" : qualité",
+					"editorLabel": "AR22 - Programmation interface web",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la \"Programmation interface web\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"programmation interface web\"</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. avant début tâche",
+									"answer": "Rien de particulier pour le moment. La tâche n'a pas débuté.<br>Vous ne consommez qu'une carte temps."
+								},
+								{
+									"@class": "Result",
+									"name": "2. entre 0 et 50% - 1ère fois",
+									"answer": "L'analyse a pris une demi-journée. <br>Quelques erreurs ont été découvertes et corrigées sur le moment. <br>Il reste quelques erreurs à corriger. Ceci devrait prendre environ une demi journée de correction.<br>Après les corrections effectuées, l'équipe pourra continuer la programmation.<br>La qualité de la tâche est augmentée."
+								},
+								{
+									"@class": "Result",
+									"name": "2.1 entre 0 et 50% 2ème fois",
+									"answer": "Pas de nouvelles erreurs découvertes à ce stade de la programmation."
+								},
+								{
+									"@class": "Result",
+									"name": "3. entre 50 et 100% - 1ère fois",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Quelques erreurs ont &eacute;t&eacute; d&eacute;couvertes et corrig&eacute;es sur le moment.</p><p>L'&eacute;quipe a relev&eacute; que ces erreurs n'auraient pas &eacute;t&eacute; d&eacute;couvertes sans l'analyse de qualit&eacute;. Leur correction aurait &eacute;t&eacute; assez longue si elles n'avaient &eacute;t&eacute; d&eacute;couvertes que lors des tests finaux.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3.1 entre 50 et 100% - 2ème fois",
+									"answer": "Pas de nouvelles erreurs découvertes à ce stade de la programmation."
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...<span style=\"white-space: pre;\"> </span></p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Promotion système\" : qualité",
+					"name": "Réunir équipe \"Promotion système\" : qualité",
+					"editorLabel": "AR32 - Promotion système",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la promotion du syst&egrave;me et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"promotion syst&egrave;me\"</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant début tâche",
+									"answer": "Il n'y a pas de problèmes pour le moment. La tâche n'a pas encore débuté.<br>Vous ne consommez qu'une carte temps."
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "L'analyse a pris une demi-journée. <br>Quelques réajustements ont été décidés sur la manière de promouvoir le système d'une manière cordonnée entre les différents responsables marketing et commerciaux.<br>La qualité de la tâche est augmentée."
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Tout semble se d&eacute;rouler comme pr&eacute;vu.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe projet : point et coordination",
+					"name": "Réunir équipe projet : point et coordination",
+					"editorLabel": "AR00 - Réunir l'équipe projet",
+					"description": "<p>Vous r&eacute;unissez toute l'&eacute;quipe des ressources travaillant sur le projet afin de faire le point sur les objectifs, la qualit&eacute; du travail r&eacute;alis&eacute; et les d&eacute;lais. <br /> Vous terminez la r&eacute;union par la (re)d&eacute;finition du travail et des priorit&eacute;s.</p><p>Budget temps: 3<br /> Co&ucirc;t: 1000.- (frais fixes projet)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Réponse de base 1",
+									"answer": "Suite à la réunion, les priorités entre les différentes activités ont été réajustées. Quelques problèmes de coordination ont été soulevés, mais réglés durant la séance."
+								},
+								{
+									"@class": "Result",
+									"name": "Réponse de base 2",
+									"answer": "La séance s'est bien déroulée. La coordination des activités n'a soulevé aucun problème. Par contre, il a été nécessaire de redéfinir les priorités pour les livrables partiels de quelques tâches."
+								},
+								{
+									"@class": "Result",
+									"name": "Réponse de base 3",
+									"answer": "La séance a été animée, particulièrement concernant la coordination des activités entre les tâches. En fin de séance, la plupart des problèmes sont réglés."
+								},
+								{
+									"@class": "Result",
+									"name": "Réponse de base 4",
+									"answer": "Les problèmes de coordination de la dernière séance ont tous été résolus. D'après l'équipe: \"Tout roule !\""
+								},
+								{
+									"@class": "Result",
+									"name": "Réponse de base 5",
+									"answer": "Après discussions et replanification, la coordination est assurée pour la période à venir."
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Audit interne",
+					"name": "Audit interne",
+					"editorLabel": "AR00 - Audit interne",
+					"description": "<p>H&amp;M dispose d'une &eacute;quipe dynamique d'audit interne.</p><p>Vous pouvez inviter les membres de cette &eacute;quipe pour faire un &eacute;tat des lieux &agrave; chaque fois que vous le d&eacute;sirez.</p><p>Budget temps: 2<br /> Co&ucirc;ts: 1000$&nbsp;(frais fixes du projet)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant dossier spécification",
+									"answer": "<p>Vous avez pr&eacute;sent&eacute; l'&eacute;tat des travaux li&eacute;s &agrave; la phase pr&eacute;liminaire du projet. Le retour de l'audit est : <br /> \"Pour le moment, ceci semble sur le bon chemin. <br /> Nous nous r&eacute;jouissons de voir comment les choses vont concr&egrave;tement se r&eacute;aliser.\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1.2 Avant dossier spécification - 2ème fois",
+									"answer": "<p>Retour global de l'audit : <br /> \"Rien de bien nouveau depuis la derni&egrave;re fois.\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. Pendant dossier de spécification",
+									"answer": "<p>Apr&egrave;s avoir regard&eacute; le dossier de sp&eacute;cifications, quelques commentaires int&eacute;ressants ont &eacute;t&eacute; faits. Ceci a permis d'am&eacute;liorer la qualit&eacute; du dossier de sp&eacute;cifications.<br /> Ainsi, une correction a &eacute;t&eacute; effectu&eacute;e.&nbsp;<br /> Cette erreur aurait pris passablement plus de temps &agrave; corriger si elle avait &eacute;t&eacute; d&eacute;couverte en cours de r&eacute;alisation.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2.2 Pendant dossier de spécification - 2ème fois",
+									"answer": "<p>Retour global : <br /> \"Pas de grands changements depuis notre derni&egrave;re rencontre.\"</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3. Pendant \"Définition ergonomique\"",
+									"answer": "<p>Globalement, le retour de l'audit est : \"Ce que nous pouvons voir de la mod&eacute;lisation (et pour ce que nous y comprenons) nous semble correct.\"<br /> Ils ont toutefois pos&eacute;s des questions et fait quelques remarques vous permettant d'am&eacute;liorer la mod&eacute;lisation.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3.2 Pendant \"Définition ergonomique\" - 2ème fois",
+									"answer": "<p>Rien de vraiment nouveau.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4. Pendant programmation 1ère fois",
+									"answer": "<p>Vous avez pr&eacute;sent&eacute; les premiers r&eacute;sultats de la programmation. <br /> Plusieurs questions ont &eacute;t&eacute; pos&eacute;es. Quelques remarques ont permis d'am&eacute;liorer certaines fonctionnalit&eacute;s. <br /> D'une mani&egrave;re g&eacute;n&eacute;rale : <br /> \"Ce que nous pouvons voir du r&eacute;sultat de la programmation nous semble aller dans la direction de ce que nous souhaitons. Nous nous r&eacute;jouissons de pouvoir utiliser ce syst&egrave;me.\"</p><p>La qualit&eacute; de la programmation de l'interface web est augment&eacute;e.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4.2 Pendant programmation 2ème fois",
+									"answer": "<p>Suite &agrave; la pr&eacute;sentation et aux remarques faites, quelques petites corrections ont pu &ecirc;tre effectu&eacute;es. <br /> La qualit&eacute; de la programmation de l'interface web&nbsp;est quelque peu augment&eacute;e.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "4.3 Pendant programmation 3ème fois",
+									"answer": "Rien de vraiment nouveau depuis la dernière fois."
+								},
+								{
+									"@class": "Result",
+									"name": "5. Pendant Tests 1ère fois",
+									"answer": "<p>Globalement, le retour d'audit est positif.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "5.2. Pendant Tests 2ème fois",
+									"answer": "<p>Globalement, le retour d'audit est positif.&nbsp;<br /> \"Nous nous r&eacute;jouissons de l'utiliser.\"</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Appel d'offre\" : qualité",
+					"name": "Réunir équipe \"Appel d'offre\" : qualité",
+					"editorLabel": "AR25 - Appel d'offre",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'appel d'offre et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"Appel d'offre\"</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant début tâche",
+									"answer": "Il n'y a pas de problèmes pour le moment. La tâche n'a pas encore débuté.<br>Vous ne consommez qu'une carte temps."
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Quelques r&eacute;ajustements ont &eacute;t&eacute; d&eacute;cid&eacute;s sur les modalit&eacute;s du contrat type. Cela a &eacute;galement permis de coordonner et recadrer le tout.<br /> La qualit&eacute; de la t&acirc;che est augment&eacute;e.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Tout semble se d&eacute;rouler comme pr&eacute;vu.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p><p>&nbsp;</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Restructuration\" : qualité",
+					"name": "Réunir équipe \"Restructuration\" : qualité",
+					"editorLabel": "AR27 - Restructuration",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la restructuration de l'organisation et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"Restructuration de l'organisation\"</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant début tâche",
+									"answer": "Il n'y a pas de problèmes pour le moment. La tâche n'a pas encore débuté.<br>Vous ne consommez qu'une carte temps."
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Quelques r&eacute;ajustements ont &eacute;t&eacute; d&eacute;cid&eacute;s en accord avec la direction. Cela a &eacute;galement permis de coordonner et recadrer le tout.<br /> La qualit&eacute; de la t&acirc;che est augment&eacute;e.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Tout semble se d&eacute;rouler comme pr&eacute;vu.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Définition érgonomie interface web\" : qualité",
+					"name": "Réunir équipe \"Définition érgonomie interface web\" : qualité",
+					"editorLabel": "AR21 - Définition érgonomie",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la d&eacute;finition de l'&eacute;rgonomie de l'interface web et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br />Co&ucirc;t: 500.- (frais fixes de la t&acirc;che)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Pas encore débutée",
+									"answer": "<p>La d&eacute;finition n'a pas encore d&eacute;but&eacute;. Rien de particulier pour  moment.</p><p>Budget temps : 1.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2. En cours",
+									"answer": "<p>Aucune nouvelle erreur n'a &eacute;t&eacute; d&eacute;couverte.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Informer conjoint(e) : travailler le soir",
+					"name": "Informer conjoint(e) : travailler le soir",
+					"editorLabel": "AR00 - Rester travailler le soir",
+					"description": "<p>Vous informez votre conjoint(e) que vous rester travailler quelquefois plus tard le soir car vous avez beaucoup &agrave; faire sur un projet important. Ceci vous permet d'augmenter votre budget temps.</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1ère fois",
+									"answer": "<p><p>En ordre.</p><p>Budget temps : +3</p></p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>En ordre.</p><p>Budget temps : +3</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "3ème fois",
+									"answer": "<p>En ordre.</p><p>&nbsp;</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Intégration au site web\" : qualité",
+					"name": "Réunir équipe \"Intégration au site web\" : qualité",
+					"editorLabel": "AR23 - Intégration au site web",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de \"Int&eacute;gration au site web\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br />Co&ucirc;t: 500.- (frais fixes de la t&acirc;che)</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant que la tâche ne débute",
+									"answer": "<p>L'int&eacute;gration au site Web n'a pas encore d&eacute;but&eacute;. Rien de particulier pour  moment.</p><p>Budget temps : 1.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "Quelques erreurs ont été découvertes et corrigées. Leur correction aurait certainement pris plus de temps si elles avaient été découvertes plus tard. <br>La qualité de la tâche est augmentée."
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "Aucune nouvelle erreur n'a été découverte."
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Réunir équipe \"Recrutement\" : qualité",
+					"name": "Réunir équipe \"Recrutement\" : qualité",
+					"editorLabel": "AR28 - Recrutement",
+					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable du recrutement et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"Recrutement\"</p>",
+					"allowMultipleReplies": "true",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "ChoiceDescriptor",
+							"name": "Result",
+							"label": "Result",
+							"editorLabel": "Result",
+							"description": "",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "1. Avant début tâche",
+									"answer": "Il n'y a pas de problèmes pour le moment. La tâche n'a pas encore débuté.<br>Vous ne consommez qu'une carte temps."
+								},
+								{
+									"@class": "Result",
+									"name": "1ère fois - avancement entre 0 et 100%",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Quelques r&eacute;ajustements ont &eacute;t&eacute; d&eacute;cid&eacute;s sur les modalit&eacute;s des candidats type. Cela a &eacute;galement permis de coordonner et recadrer le tout.<br /> La qualit&eacute; de la t&acirc;che est augment&eacute;e.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "2ème fois",
+									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Tout semble se d&eacute;rouler comme pr&eacute;vu.</p>"
+								},
+								{
+									"@class": "Result",
+									"name": "9. Tâche finie",
+									"answer": "<p>la t&acirc;che est d&eacute;j&agrave; termin&eacute;e!! Mais o&ugrave; aviez-vous la t&ecirc;te? vous perdez en cr&eacute;dibilit&eacute; aupr&egrave;s de votre &eacute;quipe...</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Closure",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": []
+		}
+	]
+}
