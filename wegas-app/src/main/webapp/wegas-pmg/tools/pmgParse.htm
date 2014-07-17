@@ -8,14 +8,14 @@ admin_choices.name as cname, admin_choices.description as cdescription, private_
 admin_answers.name, admin_answers.description, answer_text
 FROM admin_choices,  `admin_answers` 
 WHERE admin_answers.source_id = admin_choices.id
-AND admin_answers.source_type =  'AdminChoice'  AND appearance_stage > 1
+AND admin_answers.source_type =  'AdminChoice'  AND admin_scenario_id=199
 
 SELECT admin_player_actions.id AS cid,
 admin_player_actions.name as cname, admin_player_actions.description as cdescription, private_name, appearance_stage, 
 admin_answers.name, admin_answers.description, answer_text
 FROM admin_player_actions,  `admin_answers` 
 WHERE admin_answers.source_id = admin_player_actions.id
-AND admin_answers.source_type =  'AdminPlayerAction'  AND appearance_stage > 1
+AND admin_answers.source_type =  'AdminPlayerAction'  AND admin_scenario_id=199
 
 -->
 <html>
@@ -25,16 +25,36 @@ AND admin_answers.source_type =  'AdminPlayerAction'  AND appearance_stage > 1
         <script type = "text/javascript">
             YUI().use('node', function(Y) {
                 Y.one("body").append("Action mode:<input class='actionMode' type='checkbox'></input>");
-                Y.one("body").append("<textarea placeholder='input' class='input' style='width:100%; height:200px'></textarea><button class='process'>Transform</button> stage:<input class='stage' type='text' placeholder='stage'></input><hr>");
+                Y.one("body").append("<textarea placeholder='input' class='input' style='width:100%; height:200px'></textarea><button class='process'>Transform</button> stage:<input style='width:300px' class='stage' type='text' placeholder='stagelist: Initiation,Planning,Execution,Closure'></input><hr>");
                 Y.one("body").append("List label :<input class='listName' type='text' placeholder='label'></input>");
                 Y.one("body").append("<textarea placeholder='output' class='output' style='width:100%; height:600px'></textarea>");
-                function parse(input, stage, actionMode) {
+                function parseAll(input, stageNames, actionMode) {
+                    var stages, out = [], i;
+                    if (!stageNames) {
+                        stageNames = "Initiation,Planning,Execution,Closure";
+                    }
+                    stages = stageNames.split(",");
+                    for (i in stages) {
+                        if (stages[i]) {
+                            out.push(parse(input, +i + 1, actionMode, stages[i]));
+                        }
+                    }
+                    var list = {"label": Y.one(".listName").getDOMNode().value || (actionMode ? "Actions" : "Questions"), "@class": "ListDescriptor",
+                        "scope": {"@class": "TeamScope", "broadcastScope": "TeamScope"},
+                        "defaultInstance": {"@class": "ListInstance"},
+                        "items": out
+                    };
+                    return JSON.stringify(list, null, "\t");
+                }
+                function parse(input, stage, actionMode, label) {
                     var output = [];
+
                     stage = stage > 0 ? stage : null;
+
                     if (actionMode) {
                         for (var i in input) {
                             var inp = input[i];
-                            if (stage != null && inp.appearance_stage != stage) {
+                            if (stage !== null && inp.appearance_stage !== stage) {
                                 continue;
                             }
 
@@ -82,16 +102,17 @@ AND admin_answers.source_type =  'AdminPlayerAction'  AND appearance_stage > 1
                                 out.push(output[j]);
                             }
                         }
-                        var list = {"label": Y.one(".listName").getDOMNode().value, "@class": "ListDescriptor",
+                        var list = {"label": label, "@class": "ListDescriptor",
                             "scope": {"@class": "TeamScope", "broadcastScope": "TeamScope"},
                             "defaultInstance": {"@class": "ListInstance"},
                             "items": out
                         };
-                        return JSON.stringify(list, null, "\t");
+                        return list;
+                        //  return JSON.stringify(list, null, "\t");
                     } else {
                         for (var i in input) {
                             var inp = input[i];
-                            if (stage != null && inp.appearance_stage != stage) {
+                            if (stage !== null && inp.appearance_stage !== stage) {
                                 continue;
                             }
 
@@ -139,19 +160,20 @@ AND admin_answers.source_type =  'AdminPlayerAction'  AND appearance_stage > 1
                                 out.push(output[j]);
                             }
                         }
-                        var list = {"label": Y.one(".listName").getDOMNode().value, "@class": "ListDescriptor",
+                        var list = {"label": label, "@class": "ListDescriptor",
                             "scope": {"@class": "TeamScope", "broadcastScope": "TeamScope"},
                             "defaultInstance": {"@class": "ListInstance"},
                             "items": out
                         };
-                        return JSON.stringify(list, null, "\t");
+                        return list;
+//                        return JSON.stringify(list, null, "\t");
                     }
                 }
 
                 Y.one(".process").on("click", function() {
                     try {
-                        var o = JSON.parse(Y.one(".input").getDOMNode().value);
-                        Y.one(".output").getDOMNode().value = parse(o, Y.one(".stage").getDOMNode().value, Y.one(".actionMode").getDOMNode().value);
+                        var o = JSON.parse(Y.one(".input").getDOMNode().value.replace(/\r\n|\n/g, "").replace(/\\'/g, "'").replace(/\t/g, "    "));
+                        Y.one(".output").getDOMNode().value = parseAll(o, Y.one(".stage").getDOMNode().value, Y.one(".actionMode").getDOMNode().checked);
                     } catch (e) {
                         Y.one(".output").getDOMNode().value = e.message;
                     }
