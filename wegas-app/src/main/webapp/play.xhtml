@@ -25,8 +25,8 @@
         <ui:define name="body">
             
             <!-- Client script (game model specific) -->
-            <ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
-                       var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
+            <ui:repeat rendered="#{gameController.currentGameModel.properties.clientScriptUri != ''}"
+                       var="o" value="#{gameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
                 <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
             </ui:repeat>
             
