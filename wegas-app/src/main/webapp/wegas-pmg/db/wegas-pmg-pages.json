@@ -118,7 +118,7 @@
                     }]
             }, {
                 "type": "GaugeDisplay",
-                "label": "Direction",
+                "label": "Management",
                 "maxValue": 200,
                 "variable": {
                     "name": "managementApproval"
@@ -230,12 +230,12 @@
                             }
                         }
                     }]
-            },
-            {
+            }, {
                 "cssClass": "pmg-timevariable",
                 "type": "BoxTemplate",
-                "label": "timeCards",
-                "data": {},
+                "data": {
+                    "label": "Time cards"
+                },
                 "variable": {
                     "content": "Variable.find('timeCards')"
                 },

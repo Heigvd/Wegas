@@ -8,9 +8,9 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
-    SELF = "self", BOOLEAN = "boolean", NUMBER = "number",
-    SELECT = "select", VALUE = "value", KEY = "key", GROUP = "group",
+
+var STRING = "string", HIDDEN = "hidden", ARRAY = "array", SELF = "self",
+    NUMBER = "number", SELECT = "select", VALUE = "value", GROUP = "group",
     persistence = Y.Wegas.persistence;
 
 /** 

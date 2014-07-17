@@ -55,8 +55,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         {value: 11, label: "Expert**"},
         {value: 12, label: "Expert***"}
     ];
-    persistence.Resources.SKILLS = ["Consultant IT", "Commercial", "Informaticien hardware",
-        "Informaticien logiciel", "Web designer", "Monteur"];
+    persistence.Resources.SKILLS = ["Commercial", "Informaticien", "Web designer", "Monteur"];
 
     /**
      * ResourceDescriptor mapper
@@ -383,8 +382,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: SELECT,
                         choices: persistence.Resources.SKILLS
                     }, {
-                        type: NUMBER,
-                        typeInvite: "level",
+                        type: SELECT,
+                        choices: persistence.Resources.LEVELS,
                         scriptType: STRING
                     }]
             },
@@ -669,6 +668,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             _type: LIST,
                             label: "Requirements",
                             useButtons: true,
+                            wrapperClassName: 'inputEx-fieldWrapper wegas-inputex-inlinegroup',
                             elementType: {
                                 type: GROUP,
                                 fields: [{
@@ -676,31 +676,33 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                         value: "WRequirement",
                                         type: HIDDEN
                                     }, {
-                                        //label: "Job",
                                         name: "work",
                                         type: "select",
                                         choices: persistence.Resources.SKILLS
                                     }, {
-                                        label: "Level",
                                         name: "level",
                                         type: "select",
                                         choices: persistence.Resources.LEVELS
                                     }, {
-                                        label: "Quantity",
+                                        typeInvite: "quantity",
                                         name: "quantity",
                                         type: NUMBER,
-                                        value: 1
+                                        required: true,
+                                        size: 1
                                     }, {
-                                        label: "Limit",
+                                        typeInvite: "limit",
                                         name: "limit",
-                                        type: NUMBER,
-                                        value: 100
+                                        size: 1,
+                                        required: true,
+                                        type: NUMBER
                                     }, {
                                         name: "completeness",
-                                        type: HIDDEN
+                                        type: HIDDEN,
+                                        value: 0
                                     }, {
                                         name: "quality",
-                                        type: HIDDEN
+                                        type: HIDDEN,
+                                        value: 100
                                     }]
                             }
                         }
