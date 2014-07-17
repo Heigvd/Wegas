@@ -85,7 +85,9 @@
 .yui3-skin-sam .wegas-lobby-datatable td.yui3-datatable-col-iconCSS {
     padding-right: 0;
 }
-
+.yui3-skin-sam .wegas-lobby-datatable .editor-moregamemodel-button {
+    display: none;
+}
 /* Lobby datatable: view buttons */
 .wegas-datatable-viewbuttons {
     position: absolute;

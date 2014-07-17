@@ -13,9 +13,9 @@ YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
     var Linkwidget, Plugin = Y.Plugin,
-            Action = Plugin.Action,
-            Wegas = Y.Wegas,
-            CONTENTBOX = 'contentBox';
+        Action = Plugin.Action,
+        Wegas = Y.Wegas,
+        CONTENTBOX = 'contentBox';
 
     /**
      *  @name Y.Plugin.ResetAction
@@ -76,7 +76,7 @@ YUI.add('wegas-editor-action', function(Y) {
             }
 
             var label = this.get("label") || this.get("host").get("label"),
-                    tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"), {}, this.get("wchildren")); // Forward plugin data to the target widget
+                tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"), {}, this.get("wchildren")); // Forward plugin data to the target widget
 
             tab.set("selected", this.get("selected"));
 
@@ -182,7 +182,11 @@ YUI.add('wegas-editor-action', function(Y) {
             //};
 
             if (entity instanceof Wegas.persistence.GameModel) {
-                params = "gameModelId=" + entity.get("id");
+                if (this.get("editorUrl").indexOf("?") === -1) {
+                    params = entity.get("id");                                  // Rest request
+                } else {
+                    params = "gameModelId=" + entity.get("id");
+                }
             } else if (entity instanceof Wegas.persistence.Player) {
                 params = "id=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Team) {
@@ -326,14 +330,14 @@ YUI.add('wegas-editor-action', function(Y) {
             JoinOrResumeButton.superclass.renderUI.apply(this);
 
             var entity = this.get("entity"),
-                    findInTeam = function(team) {
-                        return Y.Array.find(team.get("players"), function(p) {
-                            return p.get("userId") === Y.Wegas.Facade.User.get("currentUserId");
-                        });
-                    },
-                    findInGame = function(game) {
-                        return Y.Array.find(game.get("teams"), findInTeam);
-                    };
+                findInTeam = function(team) {
+                    return Y.Array.find(team.get("players"), function(p) {
+                        return p.get("userId") === Y.Wegas.Facade.User.get("currentUserId");
+                    });
+                },
+                findInGame = function(game) {
+                    return Y.Array.find(game.get("teams"), findInTeam);
+                };
 
             if (entity instanceof Y.Wegas.persistence.Team) { // 1st case: clicked on an team
                 if (findInTeam(entity)) {

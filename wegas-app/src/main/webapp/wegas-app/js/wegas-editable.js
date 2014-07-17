@@ -62,9 +62,9 @@ YUI.add('wegas-editable', function(Y) {
          * @return {Object} a filtered out clone
          */
         toObject: function(mask) {
-            var masker;
             mask = Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
-            masker = mask.length > 0 ? function(key, value) {
+            
+            var masker = mask.length > 0 ? function(key, value) {
                 if (Y.Array.indexOf(mask, key) !== -1) {
                     return undefined;
                 } else {
@@ -89,7 +89,6 @@ YUI.add('wegas-editable', function(Y) {
         getFormCfg: function(fieldsToIgnore) {
             var i, form, schemaMap, attrCfgs, builder;
             fieldsToIgnore = (fieldsToIgnore || []);
-            // form = forms[this.get('@class')] || forms[this.get("type")]
 
             form = form || this.constructor.EDITFORM;                           // And if no form is defined we check if there is a default one defined in the entity
 
@@ -150,8 +149,7 @@ YUI.add('wegas-editable', function(Y) {
          * @returns {unresolved}
          */
         getMethodCfgs: function(data) {
-            var menu = this.getStatic("METHODS")[0] || {
-            };
+            var menu = this.getStatic("METHODS")[0] || {};
             return menu;
         },
         /**
@@ -271,8 +269,7 @@ YUI.add('wegas-editable', function(Y) {
             if (modules.length > 0) {
                 Y.log("Loading modules:" + modules.join(), "info", "Wegas.Editable");
             }
-            modules.push(cb);
-            Y.use.apply(Y, modules);
+            Y.use(modules, cb);
         },
         /**
          * Return recursively the inputex modules from their 'type' property using (modulesByType from loader.js)
@@ -285,12 +282,8 @@ YUI.add('wegas-editable', function(Y) {
         getRawModulesFromDefinition: function(cfg) {
             var i, props, type = cfg.type || cfg["@class"],
                 module = YUI_config.Wegas.modulesByType[type],
-                modules = [],
-                pushFn = function(field) {
-                    if (field) {
-                        modules = modules.concat(Editable.getModulesFromDefinition(field));
-                    }
-                };
+                modules = [];
+
             if (Y.Lang.isArray(cfg)) {
                 return Y.Array.flatten(Y.Array.map(cfg, Editable.getModulesFromDefinition));
             }
@@ -302,7 +295,11 @@ YUI.add('wegas-editable', function(Y) {
             props = ["children", "entities", "items"];                          // Revive array attributes
             for (i = 0; i < props.length; i += 1) {
                 if (cfg[props[i]]) {                                            // Get definitions from children (for Y.WidgetParent widgets)
-                    Y.Array.each(cfg[props[i]], pushFn);
+                    Y.Array.each(cfg[props[i]], function(field) {
+                        if (field) {
+                            modules = modules.concat(Editable.getModulesFromDefinition(field));
+                        }
+                    });
                 }
             }
             if (cfg.plugins) {                                                  // Plugins must be revived in the proper way
@@ -332,11 +329,10 @@ YUI.add('wegas-editable', function(Y) {
          * @param {Object} cfg
          */
         getModulesFromDefinition: function(cfg) {
-            var modules = Editable.getRawModulesFromDefinition(cfg);
-            return Y.Object.keys(Y.Array.hash(modules));
+            return Y.Object.keys(Y.Array.hash(Editable.getRawModulesFromDefinition(cfg)));
         },
         /**
-         *  This method takes a js object and recuresively instantiate it based on
+         *  This method takes a js object and recursively instantiate it based on
          *  on their @class attribute. Target class are found in namespace
          *  Y.Wegas.persistence.
          *
@@ -346,7 +342,7 @@ YUI.add('wegas-editable', function(Y) {
          */
         revive: function(data) {
             var walk = function(value) {
-                var k, v;
+                var k;
                 if (Lang.isObject(value)) {
                     for (k in value) {
                         if (value.hasOwnProperty(k)) {
