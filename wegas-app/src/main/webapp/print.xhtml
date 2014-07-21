@@ -1,17 +1,18 @@
 <?xml version='1.0' encoding='ISO-8859-1' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml"
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:wegas="http://www.albasim.ch/wegas/pdf" >
 
+    <html>
     <h:head>
 
         <meta charset="ISO-8859-1" />
         <meta http-equiv="Content-Type" content="text/html" />
         <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
-        <title><ui:insert name="title">Default Title</ui:insert> - Wegas</title>
+        <title>#{editorGameController.currentGameModel.name} - Wegas</title>
         <meta name="description" content="" />
         <meta name="keywords" content="" />
         <meta name="robots" content="index, follow" />
@@ -20,13 +21,10 @@
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
 
-	<!--base href="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/" /-->
-
         <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
 
         <meta id="customstyles" />
 
-        <!--link rel="stylesheet" type="text/css" href="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/css/wegas-pdf-print.css" /-->
         <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print.css" />
 
         <ui:insert name="head"/>
@@ -34,13 +32,24 @@
     </h:head>
 
     <h:body>
-	<a name="top" />
-	<div class="wegas-pdf-content">
-	    <wegas:GameModel value="#{editorGameController.currentGameModel}" />
-	    <div id="gotoTop">
-		<a href="#top"><img src="wegas-app/images/top.png" /></a>
-	    </div>
-	</div>
+        <a name="top" />
+        <div class="wegas-pdf-content">
+            <div id="gotoTop">
+                <a href="#top"><img src="wegas-app/images/top.png" /></a>
+            </div>
+            <div id="menu">
+                <ui:insert name="menu"></ui:insert>
+            </div>
+            <div>
+                <wegas:GameModel 
+                    value="#{editorGameController.currentGameModel}" 
+                    player="#{editorGameController.getCurrentPlayer()}" 
+                    root="#{request.getParameter('root')}" 
+                    mode="#{request.getParameter('mode')}"
+                    />
+            </div>
+        </div>
     </h:body>
 
-</html>
+    </html>
+</ui:component>

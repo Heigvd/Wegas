@@ -5,6 +5,7 @@
 @page {
     size: a4;
 }
+
 @page {
     @bottom-center {
         content: counter(page) "/" counter(pages);
@@ -29,8 +30,8 @@ div.wegas-pdf-menu a{
 }
 
 div.wegas-pdf-columns{
-    
     float: left;
+    width: 100%;
 }
 
 div.wegas-pdf-column{
@@ -54,13 +55,13 @@ div.wegas-pdf-picture img{
 
 div.wegas-pdf-content {
      margin :auto; 
-     width: 700px; 
+     max-width: 800px; 
      position: relative; 
     font-size : 10pt;
 }
 
-body {
-    font-size : 10pt;
+div.wegas-pdf-content div{
+    float: inherit;
 }
 
 span.wegas-pdf-title-image {
@@ -156,13 +157,11 @@ span.wegas-pdf-property-key {
 
  /* Non standard for webkit */
      word-break: break-word;
-
     -webkit-hyphens: auto;
        -moz-hyphens: auto;
         -ms-hyphens: auto;
             hyphens: auto;
 }
-
 
 
 span.wegas-pdf-property-value-na {
@@ -178,17 +177,21 @@ span.wegas-pdf-property-value {
 div.wegas-pdf-folder {
     margin-left: 20px;
     display : block;
-    border: 1px solid lightgrey;
-    padding: 2px;
+    border-left: 1px dashed rgb(129, 129, 129);
+    padding: 2px 2px 7px 2px;
     margin-top: 5px;
+    background-color: rgba(250, 250, 250, 0.78);
+    border-bottom: 1px dashed rgb(129, 129, 129);
+}
+
+div.wegas-pdf-variable-container, div.wegas-pdf-message-container {
+    padding: 5px;
+    margin: 0px 5px 0px 5px;
 }
 
 div.wegas-pdf-variable-container {
-    border-bottom: 2px dotted rgb(129, 129, 129);
-    /* border-bottom-style: dotted; */
-    margin-bottom: 2px;
-    padding: 5px;
-    margin: 5px;
+    border-left: 1px dashed rgb(129, 129, 129);
+    border-bottom: 1px dashed rgb(129, 129, 129);
 }
 
 span.wegas-pdf-error {

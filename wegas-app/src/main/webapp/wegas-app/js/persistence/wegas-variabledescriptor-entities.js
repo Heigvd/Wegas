@@ -148,7 +148,39 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
-            }]
+            }, {
+                type: BUTTON,
+                label: "Print",
+                //cssClass: "wegas-advanced-feature",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            menuCfg: {
+                                points: ["tl", "tr"]
+                            },
+                            event: "mouseenter",
+                            children: [{
+                                    type: "PrintButton",
+                                    label: "html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "html for player",
+                                    mode: "player"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "pdf for player",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }
+                            ]
+                        }
+                    }]
+            }
+        ]
     });
 
 
@@ -679,7 +711,39 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
-            }]
+            }, {
+                type: BUTTON,
+                label: "Print",
+                //cssClass: "wegas-advanced-feature",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            menuCfg: {
+                                points: ["tl", "tr"]
+                            },
+                            event: "mouseenter",
+                            children: [{
+                                    type: "PrintButton",
+                                    label: "html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "html for player",
+                                    mode: "player"
+                                },{
+                                    type: "PrintButton",
+                                    label: "pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "pdf for player",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }
+                            ]
+                        }
+                    }]
+            }
+        ]
     });
     /*
      * ListInstance mapper
