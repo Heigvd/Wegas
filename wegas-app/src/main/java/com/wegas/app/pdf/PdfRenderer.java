@@ -108,7 +108,7 @@ public class PdfRenderer implements Filter {
                 renderer.setDocument(xhtmlDocument, baseUrl);
                 renderer.layout();
 
-                resp.setContentType("application/pdf; charset=ISO-8859-1");
+                resp.setContentType("application/pdf; charset=UTF-8");
                 OutputStream browserStream = resp.getOutputStream();
 
                 renderer.createPDF(browserStream);
