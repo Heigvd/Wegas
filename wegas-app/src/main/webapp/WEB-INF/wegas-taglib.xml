@@ -1,56 +1,101 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <facelet-taglib xmlns="http://java.sun.com/xml/ns/javaee" 
-               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd" 
-               version="2.0"> 
+                xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+                xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-facelettaglibrary_2_0.xsd" 
+                version="2.0"> 
     <namespace>http://www.albasim.ch/wegas/pdf</namespace>
     <tag>
-	<tag-name>VariableDescriptor</tag-name>
-	<component>
-	    <component-type>com.wegas.app.pdf.uicomponent.VariableDescriptor</component-type>
-	</component>
-	<attribute>
-	    <name>value</name>
-	    <required>true</required>
-	    <type>com.wegas.core.persistence.variable.VariableDescriptor</type>
-	</attribute>
+        <tag-name>GameModel</tag-name>
+        <component>
+            <component-type>com.wegas.app.pdf.uicomponent.GameModel</component-type>
+        </component>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.variable.GameModel</type>
+        </attribute>
+        <attribute>
+            <name>root</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
+        <attribute>
+            <name>player</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.game.Player</type>
+        </attribute>
+        <attribute>
+            <name>mode</name>
+            <required>true</required>
+            <type>java.lang.String</type>
+        </attribute>
     </tag>
     <tag>
-	<tag-name>GameModel</tag-name>
-	<component>
-	    <component-type>com.wegas.app.pdf.uicomponent.GameModel</component-type>
-	</component>
-	<attribute>
-	    <name>value</name>
-	    <required>true</required>
-	    <type>com.wegas.core.persistence.variable.GameModel</type>
-	</attribute>
+        <tag-name>VariableDescriptor</tag-name>
+        <component>
+            <component-type>com.wegas.app.pdf.uicomponent.VariableDescriptor</component-type>
+        </component>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.variable.VariableDescriptor</type>
+        </attribute>
+        <attribute>
+            <name>player</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.game.Player</type>
+        </attribute>
+        <attribute>
+            <name>editorMode</name>
+            <required>true</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
     </tag>
     <tag>
-	<tag-name>Result</tag-name>
-	<component>
-	    <component-type>com.wegas.app.pdf.uicomponent.Result</component-type>
-	</component>
-	<attribute>
-	    <name>value</name>
-	    <required>true</required>
-	    <type>com.wegas.mcq.persistence.Result</type>
-	</attribute>
+        <tag-name>Result</tag-name>
+        <component>
+            <component-type>com.wegas.app.pdf.uicomponent.Result</component-type>
+        </component>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <type>com.wegas.mcq.persistence.Result</type>
+        </attribute>
+        <attribute>
+            <name>player</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.game.Player</type>
+        </attribute>
+        <attribute>
+            <name>editorMode</name>
+            <required>true</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
     </tag>
     <tag>
-	<tag-name>State</tag-name>
-	<component>
-	    <component-type>com.wegas.app.pdf.uicomponent.State</component-type>
-	</component>
-	<attribute>
-	    <name>value</name>
-	    <required>true</required>
-	    <type>com.wegas.core.persistence.variable.statemachine.State</type>
-	</attribute>
-	<attribute>
-	    <name>stateID</name>
-	    <required>true</required>
-	    <type>java.lang.Long</type>
-	</attribute>
+        <tag-name>State</tag-name>
+        <component>
+            <component-type>com.wegas.app.pdf.uicomponent.State</component-type>
+        </component>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.variable.statemachine.State</type>
+        </attribute>
+        <attribute>
+            <name>stateID</name>
+            <required>true</required>
+            <type>java.lang.Long</type>
+        </attribute>
+        <attribute>
+            <name>player</name>
+            <required>true</required>
+            <type>com.wegas.core.persistence.game.Player</type>
+        </attribute>
+        <attribute>
+            <name>editorMode</name>
+            <required>true</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
     </tag>
 </facelet-taglib>

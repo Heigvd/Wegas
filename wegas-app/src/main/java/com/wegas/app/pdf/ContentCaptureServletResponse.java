@@ -14,8 +14,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
 /**
- *
- * @author maxence
+ * Servlet Response Wrapper used by PdfRenderer to intercept page content
+ * 
+ * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public class ContentCaptureServletResponse extends HttpServletResponseWrapper {
 

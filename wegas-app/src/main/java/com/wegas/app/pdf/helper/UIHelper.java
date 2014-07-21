@@ -18,6 +18,7 @@ import javax.faces.context.ResponseWriter;
 /**
  *
  * @author maxence
+ * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public class UIHelper {
 
@@ -32,6 +33,8 @@ public class UIHelper {
     public static final String CSS_CLASS_MAIN_TITLE = "wegas-pdf-title";
 
     public static final String CSS_CLASS_MENU = "wegas-pdf-menu";
+
+    public static final String CSS_CLASS_MESSAGE_CONTAINER = "wegas-pdf-message-container";
 
     public static final String CSS_CLASS_PICTURE = "wegas-pdf-picture";
     public static final String CSS_CLASS_PICTURES = "wegas-pdf-pictures-collection";
@@ -48,11 +51,13 @@ public class UIHelper {
 
     public static final String CSS_CLASS_VARIABLE_CONTAINER = "wegas-pdf-variable-container";
     public static final String CSS_CLASS_VARIABLE_SUBTITLE = "wegas-pdf-variable-subtitle";
+    public static final String CSS_CLASS_VARIABLE_SUBSUBTITLE = "wegas-pdf-variable-subsubtitle";
+
     public static final String CSS_CLASS_VARIABLE_TITLE = "wegas-pdf-variable-title";
 
     public static final String CSS_CLASS_INDENT_CODE = "wegas-pdf-indent-code";
 
-    public static final String TEXT_ACTIVE_DEFAULT = "Active by default";
+    public static final String TEXT_ACTIVE = "Active";
     public static final String TEXT_CONDITION = "Condition";
     public static final String TEXT_CONTENT = "Content";
     public static final String TEXT_DEFAULT_RESULT = "Default result";
@@ -78,13 +83,24 @@ public class UIHelper {
     public static final String TEXT_DESTINATION = "To";
     public static final String TEXT_SUBJECT = "Subject";
     public static final String TEXT_MESSAGE = "Message";
+    public static final String TEXT_MAIN_SKILL = "Mail Skill";
 
-    public static String unescapeAndTrimQuotes(String st){
-	return Helper.unescape(st).replaceAll("^\\s*\"|\"\\s*$", "");
+    public static String unescapeAndTrimQuotes(String st) {
+        return Helper.unescape(st).replaceAll("^\\s*\"|\"\\s*$", "");
     }
- 
+
     /**
-     * Start a div with the specigied CSS class.
+     * Start a div
+     * 
+     * @param wr
+     * @throws IOException
+     */
+    public static void startDiv(ResponseWriter wr) throws IOException{
+        startDiv(wr, null);
+    }
+
+    /**
+     * Start a div with the specified CSS class.
      *
      * @see endDiv to end the div
      *
@@ -93,7 +109,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startDiv(ResponseWriter wr, String cssClass) throws IOException {
-	startDiv(wr, cssClass, null);
+        startDiv(wr, cssClass, null);
     }
 
     /**
@@ -108,12 +124,12 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startElement(ResponseWriter wr, String elem, String cssClass, String id) throws IOException {
-	wr.startElement(elem, null);
-	wr.writeAttribute("class", cssClass, null);
+        wr.startElement(elem, null);
+        wr.writeAttribute("class", cssClass, null);
 
-	if (id != null) {
-	    wr.writeAttribute("id", id, null);
-	}
+        if (id != null) {
+            wr.writeAttribute("id", id, null);
+        }
     }
 
     /**
@@ -125,7 +141,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startDiv(ResponseWriter wr, String cssClass, String id) throws IOException {
-	startElement(wr, "div", cssClass, id);
+        startElement(wr, "div", cssClass, id);
     }
 
     /**
@@ -135,7 +151,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void endDiv(ResponseWriter wr) throws IOException {
-	wr.endElement("div");
+        wr.endElement("div");
     }
 
     /**
@@ -147,7 +163,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startSpan(ResponseWriter wr, String cssClass) throws IOException {
-	startSpan(wr, cssClass, null);
+        startSpan(wr, cssClass, null);
     }
 
     /**
@@ -159,7 +175,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startSpan(ResponseWriter wr, String cssClass, String id) throws IOException {
-	startElement(wr, "span", cssClass, id);
+        startElement(wr, "span", cssClass, id);
     }
 
     /**
@@ -169,7 +185,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void endSpan(ResponseWriter wr) throws IOException {
-	wr.endElement("span");
+        wr.endElement("span");
     }
 
     /**
@@ -182,8 +198,8 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, boolean value) throws IOException {
-	printProperty(ctx, writer, key, (value ? "Yes" : "No"));
-	writer.write("\r\n");
+        printProperty(ctx, writer, key, (value ? "Yes" : "No"));
+        writer.write("\r\n");
     }
 
     /**
@@ -196,7 +212,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Integer value) throws IOException {
-	printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
+        printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
     }
 
     /**
@@ -209,7 +225,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Long value) throws IOException {
-	printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
+        printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
     }
 
     /**
@@ -222,11 +238,11 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, String value) throws IOException {
-	startDiv(writer, CSS_CLASS_PROPERTY);
-	printText(ctx, writer, key + ": ", CSS_CLASS_PROPERTY_KEY);
-	printText(ctx, writer, value, CSS_CLASS_PROPERTY_VALUE);
-	endDiv(writer);
-	writer.write("\r\n");
+        startDiv(writer, CSS_CLASS_PROPERTY);
+        printText(ctx, writer, key + ": ", CSS_CLASS_PROPERTY_KEY);
+        printText(ctx, writer, value, CSS_CLASS_PROPERTY_VALUE);
+        endDiv(writer);
+        writer.write("\r\n");
     }
 
     /**
@@ -238,14 +254,18 @@ public class UIHelper {
      * @param key the name
      * @param value the text to print
      * @param code add a css class if the text represents a source code
+     * @param displayNA
      * @throws IOException
      */
-    public static void printPropertyTextArea(FacesContext ctx, ResponseWriter writer, String key, String value, boolean code) throws IOException {
-	startDiv(writer, CSS_CLASS_PROPERTY);
-	printText(ctx, writer, key, CSS_CLASS_PROPERTY_KEY);
-	printTextArea(ctx, writer, value, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + (code ? " " + CSS_CLASS_SOURCE_CODE : ""), code);
-	endDiv(writer);
-	writer.write("\r\n");
+    public static void printPropertyTextArea(FacesContext ctx, ResponseWriter writer, String key, String value, boolean code, boolean displayNA) throws IOException {
+        // Skip empty value for players
+        if (displayNA || (value != null && !value.isEmpty())) {
+            startDiv(writer, CSS_CLASS_PROPERTY);
+            printText(ctx, writer, key, CSS_CLASS_PROPERTY_KEY);
+            printTextArea(ctx, writer, value, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + (code ? " " + CSS_CLASS_SOURCE_CODE : ""), code);
+            endDiv(writer);
+            writer.write("\r\n");
+        }
     }
 
     /**
@@ -259,22 +279,22 @@ public class UIHelper {
      */
     public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
 
-	printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
-	try {
-	    if (script == null) {
-		printPropertyScript(ctx, writer, key, script);
-	    } else {
-		UIHelper.startScript(ctx, writer, key);
-		ImpactPrinter ip = new ImpactPrinter(script.getContent());
-		ip.print(ctx, writer);
-		UIHelper.endScript(ctx, writer);
-	    }
-	} catch (IOException ex) {
-	    // Fallback
-	    printPropertyScript(ctx, writer, key, script);
-	}
+        printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
+        try {
+            if (script == null) {
+                printPropertyScript(ctx, writer, key, script);
+            } else {
+                UIHelper.startScript(ctx, writer, key);
+                ImpactPrinter ip = new ImpactPrinter(script.getContent());
+                ip.print(ctx, writer);
+                UIHelper.endScript(ctx, writer);
+            }
+        } catch (IOException ex) {
+            // Fallback
+            printPropertyScript(ctx, writer, key, script);
+        }
 
-	//printPropertyScript(ctx, writer, key, script);
+        //printPropertyScript(ctx, writer, key, script);
     }
 
     /**
@@ -287,13 +307,13 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
-	String value;
-	if (script != null) {
-	    value = script.getContent();
-	} else {
-	    value = TEXT_NOT_AVAILABLE;
-	}
-	printPropertyScript(ctx, writer, key, value);
+        String value;
+        if (script != null) {
+            value = script.getContent();
+        } else {
+            value = TEXT_NOT_AVAILABLE;
+        }
+        printPropertyScript(ctx, writer, key, value);
     }
 
     /**
@@ -306,10 +326,10 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printPropertyScript(FacesContext ctx, ResponseWriter writer, String key, String script) throws IOException {
-	startScript(ctx, writer, key);
-	printTextArea(ctx, writer, script, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + CSS_CLASS_SOURCE_CODE, true);
-	endScript(ctx, writer);
-	writer.write("\r\n");
+        startScript(ctx, writer, key);
+        printTextArea(ctx, writer, script, CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + CSS_CLASS_SOURCE_CODE, true);
+        endScript(ctx, writer);
+        writer.write("\r\n");
     }
 
     /**
@@ -321,10 +341,10 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startScript(FacesContext context, ResponseWriter writer, String key) throws IOException {
-	startDiv(writer, CSS_CLASS_PROPERTY);
-	if (key != null) {
-	    printText(context, writer, key, CSS_CLASS_PROPERTY_KEY);
-	}
+        startDiv(writer, CSS_CLASS_PROPERTY);
+        if (key != null) {
+            printText(context, writer, key, CSS_CLASS_PROPERTY_KEY);
+        }
     }
 
     /**
@@ -335,7 +355,7 @@ public class UIHelper {
      * @throws IOException
      */
     public static void endScript(FacesContext context, ResponseWriter writer) throws IOException {
-	endDiv(writer);
+        endDiv(writer);
     }
 
     /**
@@ -349,17 +369,17 @@ public class UIHelper {
      */
     public static void printText(FacesContext ctx, ResponseWriter writer, String text, String style) throws IOException {
 
-	if (text == null || text.replace("\\s", "").length() == 0) {
-	    text = TEXT_NOT_AVAILABLE;
-	    style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
-	}
+        if (text == null || text.replace("\\s", "").length() == 0) {
+            text = TEXT_NOT_AVAILABLE;
+            style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
+        }
 
-	HtmlOutputText t = new HtmlOutputText();
-	t.setStyleClass(style);
-	t.setEscape(true);
-	t.setValue(text);
-	t.encodeAll(ctx);
-	writer.write("\r\n");
+        HtmlOutputText t = new HtmlOutputText();
+        t.setStyleClass(style);
+        t.setEscape(true);
+        t.setValue(text);
+        t.encodeAll(ctx);
+        writer.write("\r\n");
 
     }
 
@@ -374,9 +394,9 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printTextArea(FacesContext ctx, ResponseWriter writer, String text, String style, boolean code) throws IOException {
-	startTextArea(writer);
-	printTextAreaText(ctx, writer, text, style, code);
-	endTextArea(writer);
+        startTextArea(writer);
+        printTextAreaText(ctx, writer, text, style, code);
+        endTextArea(writer);
     }
 
     /**
@@ -391,17 +411,17 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printTextAreaText(FacesContext ctx, ResponseWriter writer, String text, String style, boolean code) throws IOException {
-	if (text == null || text.length() == 0) {
-	    text = TEXT_NOT_AVAILABLE;
-	    style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
-	}
-	HtmlOutputText t = new HtmlOutputText();
-	t.setStyleClass(style);
-	if (!code) {
-	    t.setEscape(false);
-	}
-	t.setValue(text);
-	t.encodeAll(ctx);
+        if (text == null || text.length() == 0) {
+            text = TEXT_NOT_AVAILABLE;
+            style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
+        }
+        HtmlOutputText t = new HtmlOutputText();
+        t.setStyleClass(style);
+        if (!code) {
+            t.setEscape(false);
+        }
+        t.setValue(text);
+        t.encodeAll(ctx);
     }
 
     /**
@@ -411,14 +431,14 @@ public class UIHelper {
      * @throws IOException
      */
     public static void startTextArea(ResponseWriter writer) throws IOException {
-	/*if (text == null || text.length() == 0) {
-	 text = TEXT_NOT_AVAILABLE;
-	 style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
-	 }*/
-	startDiv(writer, CSS_CLASS_TEXT_CONTAINER);
+        /*if (text == null || text.length() == 0) {
+         text = TEXT_NOT_AVAILABLE;
+         style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
+         }*/
+        startDiv(writer, CSS_CLASS_TEXT_CONTAINER);
 
-	//startDiv(writer, style);
-	startDiv(writer, "");
+        //startDiv(writer, style);
+        startDiv(writer, "");
     }
 
     /**
@@ -428,9 +448,9 @@ public class UIHelper {
      * @throws IOException
      */
     public static void endTextArea(ResponseWriter writer) throws IOException {
-	endDiv(writer);
-	endDiv(writer);
-	writer.write("\r\n");
+        endDiv(writer);
+        endDiv(writer);
+        writer.write("\r\n");
     }
 
     /**
@@ -444,22 +464,26 @@ public class UIHelper {
      */
     public static void printKeyValueMap(FacesContext context, ResponseWriter writer, Map<String, String> properties, String title) throws IOException {
 
-	UIHelper.printText(context, writer, title, CSS_CLASS_VARIABLE_SUBTITLE);
-	if (!properties.isEmpty()) {
-	    //writer.startElement("div", null);
-	    //writer.writeAttribute("class", CSS_CLASS_FOLDER, null);
-	    for (String key : properties.keySet()) {
-		UIHelper.printProperty(context, writer, key, properties.get(key));
-	    }
-	    //writer.endElement("div");
-	} else {
-	    printText(context, writer, "[Empty Set]", CSS_CLASS_PROPERTY_VALUE_NA + " " + CSS_CLASS_PROPERTY_VALUE);
-	}
-	writer.write("\r\n");
+        UIHelper.printText(context, writer, title, CSS_CLASS_VARIABLE_SUBTITLE);
+        if (!properties.isEmpty()) {
+            //writer.startElement("div", null);
+            //writer.writeAttribute("class", CSS_CLASS_FOLDER, null);
+            for (String key : properties.keySet()) {
+                UIHelper.printProperty(context, writer, key, properties.get(key));
+            }
+            //writer.endElement("div");
+        } else {
+            printText(context, writer, "[Empty Set]", CSS_CLASS_PROPERTY_VALUE_NA + " " + CSS_CLASS_PROPERTY_VALUE);
+        }
+        writer.write("\r\n");
     }
 
     /**
      * Print key/value map w/o title
+     *
+     * TODO TO avoid printing to much properties in player mode, shall we
+     * introduce something like prefixing propertyName with something special
+     * (e.g '$', '_' or '`') to make that property internal ?
      *
      * @param context
      * @param writer
@@ -467,14 +491,14 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printKeyValueMap(FacesContext context, ResponseWriter writer, Map<String, String> properties) throws IOException {
-	if (!properties.isEmpty()) {
-	    for (String key : properties.keySet()) {
-		UIHelper.printProperty(context, writer, key, properties.get(key));
-	    }
-	} else {
-	    printText(context, writer, "[Empty Set]", CSS_CLASS_PROPERTY_VALUE_NA + " " + CSS_CLASS_PROPERTY_VALUE);
-	}
-	writer.write("\r\n");
+        if (!properties.isEmpty()) {
+            for (String key : properties.keySet()) {
+                UIHelper.printProperty(context, writer, key, properties.get(key));
+            }
+        } else {
+            printText(context, writer, "[Empty Set]", CSS_CLASS_PROPERTY_VALUE_NA + " " + CSS_CLASS_PROPERTY_VALUE);
+        }
+        writer.write("\r\n");
     }
 
     /**
@@ -489,18 +513,17 @@ public class UIHelper {
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
-	    String destination, String from,
-	    String object, String message) throws IOException {
+            String destination, String from,
+            String object, String message) throws IOException {
 
+        UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
 
-	UIHelper.startDiv(writer, CSS_CLASS_VARIABLE_CONTAINER);
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(object));
+        UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_MESSAGE, unescapeAndTrimQuotes(message), false, true);
 
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
-	UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(object));
-	UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_MESSAGE,  unescapeAndTrimQuotes(message), false);
-
-	UIHelper.endDiv(writer);
+        UIHelper.endDiv(writer);
     }
 
 }
