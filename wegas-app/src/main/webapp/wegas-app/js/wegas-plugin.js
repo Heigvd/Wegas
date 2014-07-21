@@ -171,6 +171,56 @@ YUI.add('wegas-plugin', function(Y) {
         }
     });
     Plugin.OpenUrlAction = OpenUrlAction;
+
+    /**
+     *  @class
+     *  @name Y.Plugin.PrintActionPlugin
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var PrintActionPlugin = function() {
+        PrintActionPlugin.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(PrintActionPlugin, Action, {
+        execute: function() {
+            var outputType = this.get("outputType");
+            var root = this.get("root");
+            var gameModelId = Wegas.Facade.GameModel.get("currentGameModelId");
+            var printUrl = Wegas.app.get("base") + "print.html?gameModelId=" + gameModelId + "&outputType=" + outputType + "&root=" + root + "&mode=player";
+            window.open(printUrl);
+        }
+    }, {
+        NS: "PrintActionPlugin",
+        NAME: "PrintActionPlugin",
+        ATTRS: {
+            root: {
+                type : "string",
+                _inputex: {
+                    label: "root",
+                    required: false
+                }
+            },
+            /**
+             * Can be "html" or "pdf"
+             */
+            outputType: {
+                type: "string",
+                value: "html",
+                choices: [{
+                        value: "html",
+                        label: "HTML"
+                    }, {
+                        value: "pdf",
+                        label: "PDF"
+                    }],
+                _inputex: {
+                    label: "output type"
+                }
+            }
+        }
+    });
+    Plugin.PrintActionPlugin = PrintActionPlugin;
+
     /**
      *  @class
      *  @name Y.Plugin.OpenPageAction
