@@ -83,7 +83,7 @@ public class UIGameModel extends UIComponentBase {
         List<VariableDescriptor> vds;
 
         // unless root is specified, print header and fetch all descriptors
-        if (root == null) {
+        if (root == null || root.isEmpty()) {
             encodeGameModelHeader(context, writer, gm);
             vds = gm.getChildVariableDescriptors();
         } else {
