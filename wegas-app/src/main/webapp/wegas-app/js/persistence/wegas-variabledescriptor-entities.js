@@ -724,8 +724,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }, {
                 type: BUTTON,
                 label: "More",
-                //cssClass: "editor-moregamemodel-button",
-                cssClass: "wegas-advanced-feature",
+                cssClass: "editor-moregamemodel-button",
+                //cssClass: "wegas-advanced-feature",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
