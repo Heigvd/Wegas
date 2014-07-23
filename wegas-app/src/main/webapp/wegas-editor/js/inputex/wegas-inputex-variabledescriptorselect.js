@@ -767,4 +767,70 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     });
     inputEx.registerType("entityarrayfieldselect", EntityArrayFieldSelect);     // Register this class as "list" type
 
+    /**
+     * @name Y.inputEx.Wegas.VariableDescriptorSelect
+     * @class
+     * @constructor
+     * @extends Y.inpuEx.Group
+     * @param {Object} options InputEx definition object
+     */
+    var FlatVariableSelect = function(options) {
+        FlatVariableSelect.superclass.constructor.call(this, options);
+    };
+
+    Y.extend(FlatVariableSelect, inputEx.SelectField, {
+        /** @lends Y.Wegas.VariableDescriptorSelect# */
+        /**
+         * Setup the options.feields from the availableFields option
+         * @function
+         */
+        setOptions: function(options) {
+            FlatVariableSelect.superclass.setOptions.call(this, options);
+            this.options.className = options.className || 'wegas-inputex-variabledescriptorselect-group inputEx-Group';
+            this.toDisable = [];
+
+            if (options.classFilter) {
+                this.options.classFilter = Y.Lang.isArray(options.classFilter) ? options.classFilter : [options.classFilter];
+            }
+            var that = this;
+            function genSpaces(nb) {
+                var i, ret = "";
+                for (i = 0; i < nb; i++) {
+                    ret += "&nbsp;&nbsp;";
+                }
+                return ret;
+            }
+            function genChoices(items, level) {
+                var ret = [];
+                Y.Array.each(items, function(i) {
+                    if (i.get("@class") === "ListDescriptor") {
+                        var items = genChoices(i.get("items"), level + 1);
+                        if (items.length > 0) {
+                            ret.push({
+                                label: genSpaces(level) + i.get("label"),
+                                value: i.get("name")
+                            });
+                            that.toDisable.push(ret[ret.length - 1]);
+                            ret = ret.concat(items);
+                        }
+                    } else if (!that.options.classFilter
+                        || that.options.classFilter.indexOf(i.get("@class")) !== -1) {
+                        ret.push({
+                            label: genSpaces(level) + i.get("label"),
+                            value: i.get("name")
+                        });
+                    }
+                });
+                return ret;
+            }
+            that.options.choices = genChoices(Wegas.Facade.Variable.data, 0);
+        },
+        renderComponent: function() {
+            FlatVariableSelect.superclass.renderComponent.call(this);
+            Y.Array.each(this.toDisable, function(i) {
+                this.disableChoice(i, false);
+            }, this);
+        }
+    });
+    inputEx.registerType("flatvariableselect", FlatVariableSelect);             // Register this class as "list" type
 });

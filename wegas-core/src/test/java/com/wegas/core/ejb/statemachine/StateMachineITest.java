@@ -61,7 +61,6 @@ public class StateMachineITest extends AbstractEJBTest {
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("number");
         testNumber.setDefaultInstance(new NumberInstance(0));
-        testNumber.setScope(new TeamScope());
 
         NumberDescriptor testNumber2;
         testNumber2 = new NumberDescriptor("number2");
@@ -69,14 +68,12 @@ public class StateMachineITest extends AbstractEJBTest {
         testNumber2.setScope(new GameScope());
 
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setScope(new TeamScope());
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("number.value = " + FINAL_VALUE));
         trigger.setOneShot(Boolean.TRUE);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
-        trigger2.setScope(new TeamScope());
         trigger2.setDefaultInstance(new TriggerInstance());
         trigger2.setTriggerEvent(new Script("true"));
         trigger2.setPostTriggerEvent(new Script("number2.value += 1 "));
@@ -157,10 +154,8 @@ public class StateMachineITest extends AbstractEJBTest {
         NumberDescriptor testNumber;
         testNumber = new NumberDescriptor("numberTest");
         testNumber.setDefaultInstance(new NumberInstance(0));
-        testNumber.setScope(new TeamScope());
         descriptorFacade.create(gameModel.getId(), testNumber);
         TriggerDescriptor trigger = new TriggerDescriptor();
-        trigger.setScope(new TeamScope());
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("numberTest.value = " + FINAL_VALUE));
@@ -222,13 +217,11 @@ public class StateMachineITest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
-        number.setScope(new TeamScope());
         descriptorFacade.create(gameModel.getId(), number);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -244,7 +237,6 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
         trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);

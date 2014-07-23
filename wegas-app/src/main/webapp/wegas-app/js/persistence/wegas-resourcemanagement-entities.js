@@ -609,7 +609,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             index: {
                 type: NUMBER,
                 optional: true,
-                index: -1
+                _inputex: {
+                    index: -1
+                }
             },
             predecessors: {
                 type: ARRAY,
@@ -623,20 +625,15 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             predecessorNames: {
                 type: ARRAY,
                 value: [],
-                "transient": true, //@fixme Shloud be enabled to allow edition
                 _inputex: {
                     label: "Predecessors",
-                    useButtons: true
-                }
-            },
-            properties: {
-                _inputex: {
-                    label: "Properties",
-                    _type: HASHLIST,
-                    keyField: NAME,
                     useButtons: true,
-                    valueField: VALUE,
-                    elementType: PROPERTIESELEMENTTYPE
+                    index: -1,
+                    elementType: {
+                        required: true,
+                        type: "flatvariableselect",
+                        classFilter: "TaskDescriptor"
+                    }
                 }
             },
             defaultInstance: {
@@ -649,19 +646,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         }
                     },
                     id: IDATTRDEF,
-                    active: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: 'Active by default',
-                            value: true
-                        }
-                    },
-                    plannification: {
-                        type: ARRAY,
-                        _inputex: {
-                            _type: HIDDEN
-                        }
-                    },
                     requirements: {
                         type: ARRAY,
                         _inputex: {
@@ -710,6 +694,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     duration: {
                         type: NUMBER
                     },
+                    active: {
+                        type: BOOLEAN,
+                        _inputex: {
+                            label: 'Active by default',
+                            value: true
+                        }
+                    },
+                    plannification: {
+                        type: ARRAY,
+                        _inputex: {
+                            _type: HIDDEN
+                        }
+                    },
                     properties: {
                         _inputex: {
                             label: "Instance properties",
@@ -720,6 +717,17 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             elementType: PROPERTIESELEMENTTYPE
                         }
                     }
+                }
+            },
+            properties: {
+                _inputex: {
+                    label: "Properties",
+                    index: 2,
+                    _type: HASHLIST,
+                    keyField: NAME,
+                    useButtons: true,
+                    valueField: VALUE,
+                    elementType: PROPERTIESELEMENTTYPE
                 }
             }
         }, METHODS: {

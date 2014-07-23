@@ -49,7 +49,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // Test the descriptor
         NumberDescriptor desc1 = new NumberDescriptor(VARIABLENAME);
         desc1.setDefaultInstance(new NumberInstance(VAL1));
-        desc1.setScope(new TeamScope());
 
         NumberDescriptor desc2 = new NumberDescriptor(VARIABLENAME2);
         desc2.setDefaultInstance(new NumberInstance(VAL2));
@@ -88,7 +87,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // Test the descriptor
         StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
         stringDescriptor.setDefaultInstance(new StringInstance(VALUE1));
-        stringDescriptor.setScope(new TeamScope());
 
         StringDescriptor stringDescriptor2 = new StringDescriptor(VARIABLENAME2);
         stringDescriptor2.setDefaultInstance(new StringInstance(VALUE2));
@@ -124,7 +122,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // Test the descriptor
         BooleanDescriptor booleanDescriptor = new BooleanDescriptor(VARIABLENAME);
         booleanDescriptor.setDefaultInstance(new BooleanInstance(true));
-        booleanDescriptor.setScope(new TeamScope());
         BooleanDescriptor booleanDescriptor2 = new BooleanDescriptor(VARIABLENAME2);
         booleanDescriptor2.setDefaultInstance(new BooleanInstance(false));
         this.testVariableDescriptor(booleanDescriptor, booleanDescriptor2);
@@ -228,7 +225,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // Test the descriptor
         NumberDescriptor desc1 = new NumberDescriptor(VARIABLENAME);
         desc1.setDefaultInstance(new NumberInstance(VAL1));
-        desc1.setScope(new TeamScope());
 
         NumberDescriptor desc2 = new NumberDescriptor(VARIABLENAME2);
         desc2.setDefaultInstance(new NumberInstance(VAL2));
@@ -266,12 +262,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // 1st case: move from root to root
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME);
         vd1.setDefaultInstance(new StringInstance(VALUE1));
-        vd1.setScope(new TeamScope());
         vdf.create(gameModel.getId(), vd1);
 
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance(VALUE1));
-        vd2.setScope(new TeamScope());
         vdf.create(gameModel.getId(), vd2);
 
         vdf.move(vd1.getId(), 1);                                               // Move first item to second position
@@ -281,12 +275,10 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // 2nd case: from list to root
         ListDescriptor vd3 = new ListDescriptor(VARIABLENAME3);
         vd3.setDefaultInstance(new ListInstance());
-        vd3.setScope(new TeamScope());
         vdf.create(gameModel.getId(), vd3);
 
         StringDescriptor sub1 = new StringDescriptor(SUBNAME1);
         sub1.setDefaultInstance(new StringInstance(VALUE1));
-        sub1.setScope(new TeamScope());
         vdf.createChild(vd3.getId(), sub1);
 
         findByGameModelId = vdf.findByGameModelId(gameModel.getId());           // Refresh
@@ -317,17 +309,14 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // 1st case: move from descriptor to descriptor
         ListDescriptor list1 = new ListDescriptor(LISTNAME1);
         list1.setDefaultInstance(new ListInstance());
-        list1.setScope(new TeamScope());
         vdf.create(gameModel.getId(), list1);
 
         StringDescriptor vd1 = new StringDescriptor(VARIABLENAME1);
         vd1.setDefaultInstance(new StringInstance(VALUE1));
-        vd1.setScope(new TeamScope());
         vdf.createChild(list1.getId(), vd1);
 
         StringDescriptor vd2 = new StringDescriptor(VARIABLENAME2);
         vd2.setDefaultInstance(new StringInstance(VALUE1));
-        vd2.setScope(new TeamScope());
         vdf.createChild(list1.getId(), vd2);
         List<VariableDescriptor> childrenDescriptors = vdf.findByGameModelId(gameModel.getId());
         Assert.assertEquals(VARIABLENAME1, ((ListDescriptor) childrenDescriptors.get(0)).item(0).getName());// Check if item was successfully added
@@ -339,7 +328,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // 2nd case: from root to descriptor
         StringDescriptor vd3 = new StringDescriptor(VARIABLENAME3);
         vd3.setDefaultInstance(new StringInstance(VALUE1));
-        vd3.setScope(new TeamScope());
         vdf.create(gameModel.getId(), vd3);
 
         vdf.move(vd3.getId(), list1.getId(), 0);                                // Move first item to index 0
@@ -350,7 +338,6 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
         // 3rd case: from one descriptor to another
         ListDescriptor list2 = new ListDescriptor(LISTNAME2);
         list2.setDefaultInstance(new ListInstance());
-        list2.setScope(new TeamScope());
         vdf.create(gameModel.getId(), list2);
 
         vdf.move(vd3.getId(), list2.getId(), 0);                                // Move first item to index 0

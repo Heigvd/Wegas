@@ -12,22 +12,7 @@
 YUI.add("wegas-inputex-wysiwygscript", function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx, sortInputex = function(fields) {
-        var order = [];
-        Y.Array.each(Y.Wegas.Facade.Variable.data, function(item) {
-            if (item.flatten) {
-                Y.Array.each(item.flatten(), function(i) {
-                    order.push(i.get("name"));
-                });
-            } else {
-                order.push(item.get("name"));
-            }
-        });
-        fields.sort(function(a, b) {
-            return Y.Array.indexOf(order, a.value) - Y.Array.indexOf(order, b.value);
-        });
-        return fields;
-    };
+    var inputEx = Y.inputEx;
 
     inputEx.WysiwygScript = function(options) {
         inputEx.WysiwygScript.superclass.constructor.call(this, options);
@@ -262,7 +247,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     this.exprList.destroy();
                 }
                 if (sort) {
-                    fields = sortInputex(fields);
+                    fields = this.sortInputex(fields);
                 }
                 this.exprList = Y.inputEx({//                                   // Render the expression as a Y.inputEx.Wegas.ListField
                     type: "listfield",
@@ -293,6 +278,22 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 container.one(".msg").setContent("Unable to read impact, displaying sources");
                 return;
             }
+        },
+        sortInputex: function(fields) {
+            var order = [];
+            Y.Array.each(Y.Wegas.Facade.Variable.data, function(item) {
+                if (item.flatten) {
+                    Y.Array.each(item.flatten(), function(i) {
+                        order.push(i.get("name"));
+                    });
+                } else {
+                    order.push(item.get("name"));
+                }
+            });
+            fields.sort(function(a, b) {
+                return Y.Array.indexOf(order, a.value) - Y.Array.indexOf(order, b.value);
+            });
+            return fields;
         },
         /**
          *

@@ -59,15 +59,14 @@ public class ListUtils {
 
     /**
      * This function takes two lists and merge them.<br/> Assumptions:<br/>
-     * - An element from the new list is new if it has no
-     * <code>ID</code> or if it's <code>ID</code> is missing in the old list<br/>
-     * - 2 Abstract entities with the same
-     * <code>ID</code> have to be merged<br/>
-     * - An element from the old list has
-     * to be removed if its
-     * <code>ID</code> is missing in the new list
+     * - An element from the new list is new if it has no <code>ID</code> or if
+     * it's <code>ID</code> is missing in the old list<br/>
+     * - 2 Abstract entities with the same <code>ID</code> have to be
+     * merged<br/>
+     * - An element from the old list has to be removed if its <code>ID</code>
+     * is missing in the new list
      *
-     * @param <E> extends {@see AbstractEntity} the element type
+     * @param <E> extends (@see AbstractEntity) the element type
      * @param oldList The list containing old elements
      * @param newList The list containing new elements
      * @return A merged list
@@ -107,6 +106,43 @@ public class ListUtils {
             }
         }
         oldList.addAll(newElements);                                            //Add all new elements
+        return oldList;
+    }
+
+    /**
+     * This function takes two lists and merge them.<br/> Assumptions:<br/>
+     * - An element from the new list is new if it has no <code>ID</code> or if
+     * it's <code>ID</code> is missing in the old list<br/>
+     * - 2 Abstract entities with the same <code>ID</code> have to be
+     * merged<br/>
+     * - An element from the old list has to be removed if its <code>ID</code>
+     * is missing in the new list
+     *
+     * @param <E> extends (@see AbstractEntity) the element type
+     * @param oldList The list containing old elements
+     * @param newList The list containing new elements
+     * @return A merged list
+     */
+    public static <E extends AbstractEntity> List<E> updateList(List<E> oldList, List<E> newList) {
+        List<E> newElements = new ArrayList<>();
+
+        ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
+            @Override
+            public Long getKey(E item) {
+                return item.getId();
+            }
+        };
+        Map<Long, E> elementMap = ListUtils.listAsMap(newList, converter);      //Create a map with new list ids
+
+        for (Iterator<E> it = oldList.iterator(); it.hasNext();) {
+            E element = it.next();
+            if (elementMap.containsKey(element.getId())) {                      //old element still exists
+                elementMap.remove(element.getId());                             //remove element from map
+            } else {
+                it.remove();                                                    //else remove that old element
+            }
+        }
+        oldList.addAll(elementMap.values());                                    //Add all new elements
         return oldList;
     }
 }

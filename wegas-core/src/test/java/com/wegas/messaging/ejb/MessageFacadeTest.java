@@ -42,7 +42,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        inbox.setScope(new TeamScope());
         vdf.create(gameModel.getId(), inbox);
 
         //send a message
@@ -75,7 +74,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        inbox.setScope(new TeamScope());
         vdf.create(gameModel.getId(), inbox);
 
         //send a message
@@ -105,7 +103,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        inbox.setScope(new TeamScope());
         vdf.create(gameModel.getId(), inbox);
 
         //send a message
@@ -134,7 +131,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        inbox.setScope(new TeamScope());
         vdf.create(gameModel.getId(), inbox);
 
         //send a message
@@ -165,7 +161,6 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        inbox.setScope(new TeamScope());
         vdf.create(gameModel.getId(), inbox);
 
         // Send a message to each player
@@ -199,13 +194,11 @@ public class MessageFacadeTest extends AbstractEJBTest {
         InboxDescriptor inbox = new InboxDescriptor();
         inbox.setName("inbox");
         inbox.setDefaultInstance(new InboxInstance());
-        inbox.setScope(new TeamScope());
         vdf.create(gameModel.getId(), inbox);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
                 new Script("println(\"sending\");VariableDescriptorFacade.find(" + inbox.getId() + ").sendMessage(self, \"test\", \"test\", \"test\");"));

@@ -20,6 +20,7 @@ import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
@@ -45,7 +46,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         final ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Test history
@@ -77,14 +77,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        task.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task);
 
         resourceFacade.assign(res.getInstance(player), task);
@@ -113,14 +111,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        task.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task);
 
         // Assign resource to task
@@ -150,14 +146,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        task.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task);
 
         // Create activity between resource to task
@@ -187,14 +181,12 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Create a task
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        task.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task);
 
         // Assign activity between resource to task
@@ -224,7 +216,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Add occupation to a resource
@@ -253,7 +244,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // add occupation between to a resource
@@ -282,26 +272,22 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         ResourceDescriptor res = new ResourceDescriptor();
         res.setLabel("Paul");
         res.setDefaultInstance(new ResourceInstance());
-        res.setScope(new TeamScope());
         vdf.create(gameModel.getId(), res);
 
         // Create a task
         TaskDescriptor task1 = new TaskDescriptor();
         task1.setLabel("My task");
         task1.setDefaultInstance(new TaskInstance());
-        task1.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task1);
 
         TaskDescriptor task2 = new TaskDescriptor();
         task2.setLabel("My task");
         task2.setDefaultInstance(new TaskInstance());
-        task2.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task2);
 
         TaskDescriptor task3 = new TaskDescriptor();
         task3.setLabel("My task");
         task3.setDefaultInstance(new TaskInstance());
-        task3.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task3);
 
         // Assign resource to task
@@ -338,7 +324,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        task.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task);
 
         //assign new requirement in task
@@ -368,7 +353,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         TaskDescriptor task = new TaskDescriptor();
         task.setLabel("My task");
         task.setDefaultInstance(new TaskInstance());
-        task.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task);
 
         // Create a second task
@@ -380,17 +364,57 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         taskInstance.setRequirements(requirements);
         task2.setDefaultInstance(taskInstance);
         task2.addPredecessor(task);
-        task2.setScope(new TeamScope());
         vdf.create(gameModel.getId(), task2);
         assertEquals("engineer", ((TaskInstance) task2.getDefaultInstance()).getRequirements().get(0).getWork());
 
         // and duplicate it
-        VariableDescriptor duplicate = (TaskDescriptor) vdf.duplicate(task2.getId());
+        TaskDescriptor duplicate = (TaskDescriptor) vdf.duplicate(task2.getId());
         assertEquals("engineer", ((TaskInstance) duplicate.getDefaultInstance()).getRequirements().get(0).getWork());
-        assertEquals("My task", ((TaskDescriptor) duplicate).getPredecessor(0).getLabel());
+        assertEquals("My task", duplicate.getPredecessor(0).getLabel());
 
         // Clean
         vdf.remove(task.getId());
         vdf.remove(task2.getId());
+    }
+
+    @Test
+    public void testAddPredecessors() throws Exception {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+
+        // Create a task
+        TaskDescriptor task = new TaskDescriptor();
+        task.setLabel("My task");
+        task.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task);
+
+        // Create a second task
+        TaskDescriptor task2 = new TaskDescriptor();
+        task2.setLabel("My task2");
+        task2.setDefaultInstance(new TaskInstance());
+        task2.addPredecessor(task);
+        vdf.create(gameModel.getId(), task2);
+
+        TaskDescriptor created = (TaskDescriptor) vdf.find(task2.getId());
+        assertEquals("My task2", created.getPredecessor(0).getLabel());
+        assertEquals(1, created.getPredecessors().size());
+
+        // Create a task
+        TaskDescriptor task3 = new TaskDescriptor();
+        task3.setLabel("task3");
+        task3.setDefaultInstance(new TaskInstance());
+        vdf.create(gameModel.getId(), task3);
+
+        // and duplicate it
+        task2.setPredecessorNames(Arrays.asList("task3"));
+        TaskDescriptor updated = (TaskDescriptor) vdf.update(task2.getId(), task2);
+        assertEquals("task3", updated.getPredecessor(0).getLabel());
+        assertEquals(1, updated.getPredecessors().size());
+
+        // Clean
+        vdf.remove(task.getId());
+        vdf.remove(task2.getId());
+        vdf.remove(task3.getId());
     }
 }
