@@ -186,14 +186,13 @@ YUI.add('wegas-inbox', function(Y) {
                 }
             }, this);
 
-
-            if (this.get("autoOpenFirstMail")) {
-                if (!this.tabView.get("selection")) {                               // Select the first tab by default
-                    this.tabView.selectChild(0);
+            if (!this.tabView.get("selection")) {
+                if (this.get("autoOpenFirstMail")) {
+                    this.tabView.selectChild(0);                                // Select the first tab by default
+                } else {
+                    this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
+                    this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
                 }
-            } else {
-                this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
-                this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
             }
         },
         /**
@@ -291,7 +290,7 @@ YUI.add('wegas-inbox', function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "variable",
-                    classFilter: ["InboxDescriptor"]
+                    classFilter: "InboxDescriptor"
                 }
             },
             /**
@@ -305,7 +304,10 @@ YUI.add('wegas-inbox', function(Y) {
                     }, {
                         value: "clean",
                         label: "No headers"
-                    }]
+                    }],
+                _inputex: {
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                }
             },
             setToReadAfter: {
                 value: 0.05,
