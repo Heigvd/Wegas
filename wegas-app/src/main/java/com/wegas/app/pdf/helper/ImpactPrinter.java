@@ -7,8 +7,6 @@
  */
 package com.wegas.app.pdf.helper;
 
-import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +92,10 @@ public class ImpactPrinter {
         //instructions = script.split("(?s)[;\n](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)");
         UIHelper.startTextArea(writer);
         for (String instruction : instructions) {
-            printInstruction(context, writer, instruction);
+            // Avoid printg empty lines (i.e simple parser scrap...)
+            if (!instruction.matches("^\\s*[;]\\s*$")) {
+                printInstruction(context, writer, instruction);
+            }
         }
         UIHelper.endTextArea(writer);
     }
@@ -119,7 +120,7 @@ public class ImpactPrinter {
                 UIHelper.endDiv(writer);
             }
 
-            pattern = Pattern.compile("(VariableDescriptorFacade|Variable)\\.find\\(gameModel, \"(.*)\"\\)\\.(.*)\\(self, *(.*)\\)");
+            pattern = Pattern.compile("(VariableDescriptorFacade|Variable)\\.find\\(gameModel, \"(.*)\"\\)\\.(.*)\\(self, *(.*)\\).*;$");
 
             Matcher matcher = pattern.matcher(str);
 
@@ -136,7 +137,7 @@ public class ImpactPrinter {
                     if ("sendMessage".equals(operator)) { // e-mail like message
                         String[] args;
                         args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], args[2]);
+                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], args[2], null);
                     } else {
                         String var;
                         String op;

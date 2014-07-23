@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xml.sax.InputSource;
@@ -103,7 +102,7 @@ public class PdfRenderer implements Filter {
                 ITextRenderer renderer = new ITextRenderer();
 
                 String baseUrl;
-                baseUrl = req.getRequestURL().toString().replaceAll(req.getServletPath(), "/");
+                baseUrl = req.getRequestURL().toString().replace(req.getServletPath(), "/");
 
                 renderer.setDocument(xhtmlDocument, baseUrl);
                 renderer.layout();
@@ -112,6 +111,7 @@ public class PdfRenderer implements Filter {
                 OutputStream browserStream = resp.getOutputStream();
 
                 renderer.createPDF(browserStream);
+                renderer.finishPDF();
             } else {
                 // no specific type ? -> normal processing
 
@@ -119,8 +119,8 @@ public class PdfRenderer implements Filter {
                 chain.doFilter(request, response);
             }
         } catch (Throwable t) {
-	    problem = t;
-	    log("ERROR", t);
+            problem = t;
+            log("ERROR", t);
         }
         if (problem != null) {
             if (problem instanceof ServletException) {

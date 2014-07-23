@@ -8,6 +8,7 @@
 package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.statemachine.DialogueState;
 import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
 import com.wegas.core.persistence.variable.statemachine.State;
@@ -19,22 +20,23 @@ import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 
 /**
-*
-* Faces component that print a StateMachine/Trigger State as xHTML. <br /> <br />
-* <pre>
-* <b>Usage:</b>
-* &lt;<b>State</b> <b>value</b>="#{the State object}"
-*        <b>stateID</b>="State number"
-*        <b>player</b>="#{the player to print the state for (may be the default player)}"
-*        <b>editorMode</b>="#{boolean : toggle editor or player export mode}" /%gt;
-* 
- * editorMode: is used regardless currentUser permission (this is quite OK 
+ *
+ * Faces component that print a StateMachine/Trigger State as xHTML. <br /> <br
+ * />
+ * <pre>
+ * <b>Usage:</b>
+ * &lt;<b>State</b> <b>value</b>="#{the State object}"
+ *        <b>stateID</b>="State number"
+ *        <b>player</b>="#{the player to print the state for (may be the test player)}"
+ *        <b>editorMode</b>="#{boolean : toggle editor or player export mode}" /%gt;
+ *
+ * editorMode: is used regardless currentUser permission (this is quite OK
  *             for the time since this component is only included from a UIGameModel instance,
  *             who has already checked such a permission...)
  * </pre>
  * 
 * See WEB-INF/web.xml & WEB-INF/wegas-taglib.xml for tag and params definitions
-*
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @FacesComponent("com.wegas.app.pdf.uicomponent.State")
@@ -42,14 +44,26 @@ public class UIState extends UIComponentBase {
 
     private Boolean editorMode;
 
+    public UIState(){
+        super();
+    }
+
+    public UIState(State state, Long id, Player player, Boolean editorMode, Boolean defaultValues) {
+        this();
+        getAttributes().put("value", state);
+        getAttributes().put("stateID", id);
+        getAttributes().put("player", player);
+        getAttributes().put("editorMode", editorMode);
+        getAttributes().put("defaultValues", defaultValues);
+    }
+
     @Override
     public String getFamily() {
         return "com.wegas.app.pdf.uicomponent.State";
     }
 
     /**
-     * Print State Machine State
-     * Please use encodeAll();
+     * Print State Machine State Please use encodeAll();
      *
      * @param context
      * @throws IOException
@@ -62,6 +76,7 @@ public class UIState extends UIComponentBase {
         State state = (State) getAttributes().get("value");
         Long id = (Long) getAttributes().get("stateID");
         editorMode = (Boolean) getAttributes().get("editorMode");
+        Boolean defaultValues = (Boolean) getAttributes().get("defaultValues");
 
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         UIHelper.printText(context, writer, state.getClass().getSimpleName(), UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);

@@ -10,6 +10,7 @@ package com.wegas.app.pdf.helper;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.game.Script;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import javax.faces.component.html.HtmlOutputText;
 import javax.faces.context.FacesContext;
@@ -84,6 +85,7 @@ public class UIHelper {
     public static final String TEXT_SUBJECT = "Subject";
     public static final String TEXT_MESSAGE = "Message";
     public static final String TEXT_MAIN_SKILL = "Mail Skill";
+    public static final String TEXT_ATTACHEMENTS = "Attachements";
 
     public static String unescapeAndTrimQuotes(String st) {
         return Helper.unescape(st).replaceAll("^\\s*\"|\"\\s*$", "");
@@ -91,11 +93,11 @@ public class UIHelper {
 
     /**
      * Start a div
-     * 
+     *
      * @param wr
      * @throws IOException
      */
-    public static void startDiv(ResponseWriter wr) throws IOException{
+    public static void startDiv(ResponseWriter wr) throws IOException {
         startDiv(wr, null);
     }
 
@@ -417,9 +419,8 @@ public class UIHelper {
         }
         HtmlOutputText t = new HtmlOutputText();
         t.setStyleClass(style);
-        if (!code) {
-            t.setEscape(false);
-        }
+        // Only escape source code
+        t.setEscape(code);
         t.setValue(text);
         t.encodeAll(ctx);
     }
@@ -508,22 +509,27 @@ public class UIHelper {
      * @param writer
      * @param destination
      * @param from
-     * @param object
-     * @param message
+     * @param subject
+     * @param body
+     * @param attachements
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
-            String destination, String from,
-            String object, String message) throws IOException {
+            String destination, String from, String subject, String body,
+            List<String> attachements) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
 
         UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
         UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
-        UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(object));
-        UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_MESSAGE, unescapeAndTrimQuotes(message), false, true);
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
+
+        if (attachements != null) {
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHEMENTS, attachements.toString());
+        }
+
+        UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);// ODO do something else to not print PropertyTextArea Key than kes = " "...
 
         UIHelper.endDiv(writer);
     }
-
 }

@@ -1,12 +1,15 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd">
 
-<ui:component xmlns="http://www.w3.org/1999/xhtml"
+<html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:wegas="http://www.albasim.ch/wegas/pdf" >
 
-    <html>
+
+    <!-- TODO use h:doctype from Faces 2.2 and set root elemeent to ui:component ! -->
+    <!--h:doctype value="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd\">" /-->
+
     <h:head>
 
         <meta charset="UTF-8" />
@@ -25,20 +28,29 @@
 
         <meta id="customstyles" />
 
-        <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print.css" />
+        <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print.css" media="all" />
+        <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print-page.css" media="print" />
 
         <ui:insert name="head"/>
 
+        <script language="javascript">
+            function updateMenu() {
+                var floatingMenu = document.getElementById("floatingMenu");
+                var menu = document.getElementById("menu");
+                floatingMenu.innerHTML = menu.innerHTML;
+            }
+        </script>
     </h:head>
 
     <h:body>
         <a name="top" />
         <div class="wegas-pdf-content">
-            <div id="gotoTop">
-                <a href="#top"><img src="wegas-app/images/top.png" /></a>
-            </div>
-            <div id="menu">
-                <ui:insert name="menu"></ui:insert>
+            <div id="floatingMenuContainer">
+                <div id="gotoTop">
+                    <a href="#top"><img src="wegas-app/images/top.png" /></a>
+                </div>
+                <div id="floatingMenu">
+                </div>
             </div>
             <div>
                 <wegas:GameModel 
@@ -46,10 +58,10 @@
                     player="#{editorGameController.getCurrentPlayer()}" 
                     root="#{request.getParameter('root')}" 
                     mode="#{request.getParameter('mode')}"
+                    defaultValues="#{request.getParameter('defaultValues')}"
                     />
             </div>
         </div>
+        <script>updateMenu();</script>
     </h:body>
-
-    </html>
-</ui:component>
+</html>
