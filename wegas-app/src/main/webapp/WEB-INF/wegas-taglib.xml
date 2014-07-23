@@ -29,6 +29,11 @@
             <required>true</required>
             <type>java.lang.String</type>
         </attribute>
+        <attribute>
+            <name>defaultValues</name>
+            <required>false</required>
+            <type>java.lang.String</type>
+        </attribute>
     </tag>
     <tag>
         <tag-name>VariableDescriptor</tag-name>
@@ -50,6 +55,11 @@
             <required>true</required>
             <type>java.lang.Boolean</type>
         </attribute>
+        <attribute>
+            <name>defaultValues</name>
+            <required>true</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
     </tag>
     <tag>
         <tag-name>Result</tag-name>
@@ -68,6 +78,11 @@
         </attribute>
         <attribute>
             <name>editorMode</name>
+            <required>true</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <name>defaultValues</name>
             <required>true</required>
             <type>java.lang.Boolean</type>
         </attribute>
@@ -94,6 +109,11 @@
         </attribute>
         <attribute>
             <name>editorMode</name>
+            <required>true</required>
+            <type>java.lang.Boolean</type>
+        </attribute>
+        <attribute>
+            <name>defaultValues</name>
             <required>true</required>
             <type>java.lang.Boolean</type>
         </attribute>
