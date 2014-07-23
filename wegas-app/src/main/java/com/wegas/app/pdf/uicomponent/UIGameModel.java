@@ -25,22 +25,22 @@ import org.apache.shiro.SecurityUtils;
 
 /**
  *
- * Faces component that print a GameModel as xHTML. 
- * 
+ * Faces component that print a GameModel as xHTML.
+ *
  * *
  * <pre>
  * <b>Usage:</b>
  * &lt;<b>GameModel</b> <b>value</b>="#{the GameModel}"
- *        <b>player</b>="#{the player to print the gameModel for (may be the default player)}"
+ *        <b>player</b>="#{the player to print the gameModel for (test player means default values)}"
  *        <b>mode</b>=["editor" | "player"]
  *        <b>root</b>="a variable descriptor name (i.e scriptAlias, vd.getName()) (optional)"
  *
- * mode: indicates whether or not a full export (mode = "editor") or a player 
- *       export (mode != "editor") shall be done. Editor mode is only 
+ * mode: indicates whether or not a full export (mode = "editor") or a player
+ *       export (mode != "editor") shall be done. Editor mode is only
  *       available for users that have the 'edit' permission on the specified GameModel.
  *       If mode != "editor" or currentUser hasn't this 'edit' permission, mode is degraded to "player"
  * </pre>
- * 
+ *
  * See WEB-INF/web.xml & WEB-INF/wegas-taglib.xml for tag and params definitions
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -49,6 +49,7 @@ import org.apache.shiro.SecurityUtils;
 public class UIGameModel extends UIComponentBase {
 
     private boolean editorMode;
+    private boolean defaultValues;
 
     @Override
     public String getFamily() {
@@ -62,29 +63,34 @@ public class UIGameModel extends UIComponentBase {
         Player player = (Player) getAttributes().get("player");
         String root = (String) getAttributes().get("root");
         String modeParam = (String) getAttributes().get("mode");
+        String defVal = (String) getAttributes().get("defaultValues");
 
-        // editor mode allowed only if current user has edit permission on gamemodel
+        // editor mode and default values only allowedif current user has edit permission on gamemodel
+        defaultValues = "true".equals(defVal)
+                && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
         editorMode = "editor".equals(modeParam)
                 && SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gm.getId());
-    
+
         ResponseWriter writer = context.getResponseWriter();
 
         // Banner with GameModel name
-        UIHelper.startSpan(writer, UIHelper.CSS_CLASS_MAIN_TITLE);
-
-        String playerName = "";
-        if (player.getUser() != null){
-            playerName = " / " + player.getName();
+        String subtitle;
+        if (defaultValues) {
+            subtitle = "Default Values";
+        } else if (player.getUser() != null) {
+            subtitle = player.getName();
+        } else {
+            subtitle = "Test Team";
         }
-        
-        writer.write("Scenario " + gm.getName() + playerName);
-        UIHelper.endSpan(writer);
+
+        String title = "Scenario " + gm.getName() + " / " + subtitle;
+
+        UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_MAIN_TITLE);
 
         List<VariableDescriptor> vds;
-
-        // unless root is specified, print header and fetch all descriptors
+        
+        // unless root is specified, fetch all descriptors
         if (root == null || root.isEmpty()) {
-            encodeGameModelHeader(context, writer, gm);
             vds = gm.getChildVariableDescriptors();
         } else {
             /*
@@ -97,35 +103,36 @@ public class UIGameModel extends UIComponentBase {
             vds.add(find);
         }
 
-        for (VariableDescriptor vd : vds) {
-            UIVariableDescriptor uiVd = new UIVariableDescriptor();
-            uiVd.getAttributes().put("value", vd);
-            uiVd.getAttributes().put("player", player);
-            uiVd.getAttributes().put("editorMode", editorMode);
-            uiVd.encodeAll(context);
-        }
-    }
-
-    /**
-     * Print GameModel own properties
-     * 
-     * @param context
-     * @param writer
-     * @param gm
-     * @throws IOException 
-     */
-    private void encodeGameModelHeader(FacesContext context, ResponseWriter writer, GameModel gm) throws IOException {
         // links to subdirs
-        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_MENU);
+        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_MENU, "menu");
 
         // replace with UI:Define from ListDescriptor Encode method in UIVariableDescriptor
-        for (VariableDescriptor vd : gm.getChildVariableDescriptors()) {
+        for (VariableDescriptor vd : vds) {
             if (vd instanceof ListDescriptor) {
                 writer.write("<a href=\"#vd" + vd.getId() + "\" >" + vd.getLabel() + "</a>");
             }
         }
         UIHelper.endDiv(writer);
 
+        if (root == null || root.isEmpty()) {
+            encodeGameModelHeader(context, writer, gm);
+        }
+        
+        for (VariableDescriptor vd : vds) {
+            UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues);
+            uiVd.encodeAll(context);
+        }
+    }
+
+    /**
+     * Print GameModel own properties
+     *
+     * @param context
+     * @param writer
+     * @param gm
+     * @throws IOException
+     */
+    private void encodeGameModelHeader(FacesContext context, ResponseWriter writer, GameModel gm) throws IOException {
         UIHelper.printPropertyTextArea(context, writer, "Description", gm.getDescription(), false, editorMode);
 
         UIHelper.startSpan(writer, UIHelper.CSS_CLASS_MAIN_IMAGE);

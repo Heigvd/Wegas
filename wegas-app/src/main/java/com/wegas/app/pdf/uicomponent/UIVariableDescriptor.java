@@ -7,25 +7,30 @@
  */
 package com.wegas.app.pdf.uicomponent;
 
-import ch.qos.logback.core.joran.action.DefinePropertyAction;
-import com.sun.faces.facelets.tag.ui.DefineHandler;
 import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
+import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
+import com.wegas.messaging.persistence.InboxDescriptor;
+import com.wegas.messaging.persistence.InboxInstance;
+import com.wegas.messaging.persistence.Message;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
+import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -45,7 +50,7 @@ import javax.faces.context.ResponseWriter;
  * <pre>
  * <b>Usage:</b>
  * &lt;<b>VariableDescriptor</b> <b>value</b>="#{the varDesc object}"
- *        <b>player</b>="#{the player to print the varDesc for (may be the default player)}"
+ *        <b>player</b>="#{the player to print the varDesc for (may be the test player)}"
  *        <b>editorMode</b>="#{boolean : toggle editor or player export mode}" /%gt;
  *
  * editorMode: is used regardless currentUser permission (this is quite OK
@@ -66,8 +71,21 @@ import javax.faces.context.ResponseWriter;
 @FacesComponent("com.wegas.app.pdf.uicomponent.VariableDescriptor")
 public class UIVariableDescriptor extends UIComponentBase {
 
+    public UIVariableDescriptor() {
+        super();
+    }
+
+    public UIVariableDescriptor(VariableDescriptor vd, Player player, Boolean editorMode, Boolean defaultValue) {
+        super();
+        getAttributes().put("value", vd);
+        getAttributes().put("player", player);
+        getAttributes().put("editorMode", editorMode);
+        getAttributes().put("defaultValues", defaultValue);
+    }
+
     Player player;
     Boolean editorMode;
+    Boolean defaultValues;
 
     @Override
     public String getFamily() {
@@ -86,6 +104,7 @@ public class UIVariableDescriptor extends UIComponentBase {
         VariableDescriptor vd = (VariableDescriptor) getAttributes().get("value");
         player = (Player) getAttributes().get("player");
         editorMode = (Boolean) getAttributes().get("editorMode");
+        defaultValues = (Boolean) getAttributes().get("defaultValues");
 
         if (vd != null) {
             ResponseWriter responseWriter = context.getResponseWriter();
@@ -134,6 +153,9 @@ public class UIVariableDescriptor extends UIComponentBase {
             case "Task":
                 encode(context, writer, (TaskDescriptor) vDesc);
                 break;
+            case "Inbox":
+                encode(context, writer, (InboxDescriptor) vDesc);
+                break;
             default:
                 fallback(context, writer, vDesc);
                 break;
@@ -163,9 +185,8 @@ public class UIVariableDescriptor extends UIComponentBase {
             title = vDesc.getTitle();
         }
 
-        writer.write("<a name=\"vd" + vDesc.getId() + "\">");
+        writer.write("<a name=\"vd" + vDesc.getId() + "\" />");
         UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
-        writer.write("</a>");
 
         //UIHelper.printProperty(context, writer, "Internal Type", vDesc.getClass().getSimpleName());
         //UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, vDesc.getLabel());
@@ -228,8 +249,10 @@ public class UIVariableDescriptor extends UIComponentBase {
      */
     public void encode(FacesContext context, ResponseWriter writer, TextDescriptor obj) throws IOException {
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+        TextInstance instance = obj.getInstance(defaultValues, player);
+
         encodeBase(context, writer, obj, editorMode);
-        UIHelper.printPropertyTextArea(context, writer, "Value", obj.getValue(player), false, true);
+        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getValue(), false, true);
         UIHelper.endDiv(writer);
     }
 
@@ -242,8 +265,10 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, TaskDescriptor task) throws IOException {
+        TaskInstance instance = task.getInstance(defaultValues, player);
+
         // dont't print inactive tasks for players, but always print them for editors
-        if ((editorMode) || (task.getActive(player))) {
+        if ((editorMode) || (instance.getActive())) {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, task, editorMode);
 
@@ -251,13 +276,13 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, task.getIndex().toString());
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, task.getInstance(player).getActive());
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_DURATION, ((Double) (task.getInstance(player).getDuration())).toString());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DURATION, ((Double) (instance.getDuration())).toString());
 
             // Should hide some properties to players...
-            UIHelper.printKeyValueMap(context, writer, task.getInstance(player).getProperties());
+            UIHelper.printKeyValueMap(context, writer, instance.getProperties());
             UIHelper.printKeyValueMap(context, writer, task.getProperties());
 
             UIHelper.printText(context, writer, UIHelper.TEXT_PREDECESSORS, UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
@@ -266,7 +291,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             writer.startElement("ul", this);
             for (String p : task.getPredecessorNames()) {
                 writer.startElement("li", this);
-                writer.write(p);
+                UIHelper.printText(context, writer, p, null);
                 writer.endElement("li");
             }
             writer.endElement("ul");
@@ -280,7 +305,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             for (WRequirement req : task.getDefaultInstance().getRequirements()) {
                 String str = req.getQuantity() + "x " + req.getWork() + " lvl " + req.getLevel() + " (limit=" + req.getLimit() + ")";
                 writer.startElement("li", this);
-                writer.write(str);
+                UIHelper.printText(context, writer, str, null);
                 writer.endElement("li");
             }
             writer.endElement("ul");
@@ -302,23 +327,25 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @todo PLAYER
      */
     public void encode(FacesContext context, ResponseWriter writer, ResourceDescriptor resource) throws IOException {
+        ResourceInstance instance = resource.getInstance(defaultValues, player);
+
         // Hide inactive resources for players
-        if ((editorMode) || (resource.getInstance(player).getActive())) {
+        if ((editorMode) || (instance.getActive())) {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, resource, editorMode);
             UIHelper.printProperty(context, writer, UIHelper.TEXT_LABEL, resource.getLabel());
 
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, resource.getDescription(), false, editorMode);
 
-            if (!resource.getInstance(player).getSkillsets().isEmpty()) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, resource.getInstance(player).getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
+            if (!instance.getSkillsets().isEmpty()) {
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
             }
 
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, resource.getInstance(player).getMoral());
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_CONFIDENCE, resource.getInstance(player).getConfidence());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getMoral());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_CONFIDENCE, instance.getConfidence());
 
             if (editorMode) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, resource.getInstance(player).getActive());
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
             //TODO  should hide some to players...
@@ -367,10 +394,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             for (VariableDescriptor vd : list.getItems()) {
 
-                UIVariableDescriptor uiVd = new UIVariableDescriptor();
-                uiVd.getAttributes().put("value", vd);
-                uiVd.getAttributes().put("player", player);
-                uiVd.getAttributes().put("editorMode", editorMode);
+                UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues);
                 uiVd.encodeAll(context);
             }
             UIHelper.endDiv(writer);
@@ -387,8 +411,10 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, QuestionDescriptor question) throws IOException {
+        QuestionInstance instance = question.getInstance(defaultValues, player);
+
         // dont't print inactive questions for players, but always print them for editors
-        if ((editorMode) || (question.getInstance(player).getActive())) {
+        if ((editorMode) || (instance.getActive())) {
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, question, editorMode);
 
@@ -413,13 +439,13 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             if (editorMode) {
                 UIHelper.printProperty(context, writer, "Allow Multiple Replies", question.getAllowMultipleReplies());
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, question.getInstance(player).getActive());
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
             UIHelper.endDiv(writer); // end COLUMN
             UIHelper.endDiv(writer);
 
-            if (question.getAllowMultipleReplies() || !question.isReplied(player)) {
+            if (question.getAllowMultipleReplies() || instance.getReplies().isEmpty()) {
                 for (ChoiceDescriptor choice : question.getItems()) {
                     encode(context, writer, choice);
                 }
@@ -428,18 +454,14 @@ public class UIVariableDescriptor extends UIComponentBase {
             /*
              * Replies
              */
-            QuestionInstance qi = question.getInstance(player);
-            List<Reply> replies = qi.getReplies();
+            List<Reply> replies = instance.getReplies();
 
             if (!replies.isEmpty()) {
                 UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
-                for (Reply r : qi.getReplies()) {
+                for (Reply r : replies) {
                     UIHelper.printText(context, writer, r.getResult().getChoiceDescriptor().getLabel(), UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
 
-                    UIResult uiResult = new UIResult();
-                    uiResult.getAttributes().put("value", r.getResult());
-                    uiResult.getAttributes().put("player", player);
-                    uiResult.getAttributes().put("editorMode", editorMode);
+                    UIResult uiResult = new UIResult(r.getResult(), player, editorMode, defaultValues);
                     uiResult.encodeAll(context);
                 }
             }
@@ -456,8 +478,9 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @throws IOException
      */
     public void encode(FacesContext context, ResponseWriter writer, ChoiceDescriptor choice) throws IOException {
+        ChoiceInstance instance = choice.getInstance(defaultValues, player);
         // dont't print inactive choices for players, but always print them for editors
-        if ((editorMode) || (choice.getInstance(player).getActive())) {
+        if ((editorMode) || instance.getActive()) {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             encodeBase(context, writer, choice, editorMode);
@@ -465,15 +488,15 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, choice.getDescription(), false, editorMode);
 
             if (editorMode) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, choice.getInstance(player).getActive());
+                UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
 
                 if (choice instanceof SingleResultChoiceDescriptor == false) {
                     // Not a "single result" choice ? print the default result name
                     String resultName;
-                    if (choice.getInstance(player).getCurrentResult() == null) {
+                    if (instance.getCurrentResult() == null) {
                         resultName = UIHelper.TEXT_NOT_AVAILABLE;
                     } else {
-                        resultName = choice.getInstance(player).getCurrentResult().getName();
+                        resultName = instance.getCurrentResult().getName();
                     }
                     UIHelper.printProperty(context, writer, UIHelper.TEXT_DEFAULT_RESULT, resultName);
                 }
@@ -486,13 +509,7 @@ public class UIVariableDescriptor extends UIComponentBase {
                             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
                         }
 
-                        //QuestionInstance qi = choice.getQuestion().getInstance(player);
-                        //List<Reply> replies = qi.getReplies();
-                        UIResult uiResult = new UIResult();
-                        uiResult.getAttributes().put("value", result);
-                        uiResult.getAttributes().put("player", player);
-                        uiResult.getAttributes().put("editorMode", editorMode);
-
+                        UIResult uiResult = new UIResult(result, player, editorMode, defaultValues);
                         uiResult.encodeAll(context);
 
                         if (choice instanceof SingleResultChoiceDescriptor == false) {
@@ -548,15 +565,25 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
             for (Long id : fsm.getStates().keySet()) {
-                UIState uiState = new UIState();
-                uiState.getAttributes().put("value", fsm.getStates().get(id));
-                uiState.getAttributes().put("stateID", id);
-                uiState.getAttributes().put("player", player);
-                uiState.getAttributes().put("editorMode", editorMode);
+                UIState uiState = new UIState(fsm.getStates().get(id), id, player, editorMode, defaultValues);
                 uiState.encodeAll(context);
             }
             UIHelper.endDiv(writer);
             UIHelper.endDiv(writer);
         }
+    }
+
+    public void encode(FacesContext context, ResponseWriter writer, InboxDescriptor inbox) throws IOException {
+        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+        encodeBase(context, writer, inbox, editorMode);
+        InboxInstance instance = inbox.getInstance(defaultValues, player);
+        
+        UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, inbox.getDescription(), false, false);
+
+        for (Message msg : instance.getMessages()){
+            UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getBody(), msg.getAttachements());
+        }
+
+        UIHelper.endDiv(writer);
     }
 }
