@@ -1,0 +1,2124 @@
+{
+	"label": "Questions",
+	"@class": "ListDescriptor",
+	"scope": {
+		"@class": "TeamScope",
+		"broadcastScope": "TeamScope"
+	},
+	"defaultInstance": {
+		"@class": "ListInstance"
+	},
+	"items": [
+		{
+			"label": "Initiation",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Fitters' Needs Assessment",
+					"name": "Fitters' Needs Assessment",
+					"editorLabel": "A102B - Evaluation des besoins des monteurs",
+					"description": "<p>Do you wish to meet with the fitters in order to discuss their needs and expectations of your project?</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Meeting",
+							"label": "a) Meeting",
+							"editorLabel": "a) Meeting",
+							"description": "<p>You willingly meet with the fitters and discuss on their expectations. You receive a comprehensive list of their needs.</p><p>Time Budget: 3<br />Costs: 5000.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Generally speaking, it seems that the suggested system matches the fitters' needs. <br /> <br /> They would however be interested in having a system that gathers and organizes information on specific fitting problems experienced on specific machine types. Such a system would allow for global knowledge sharing and hence for more effective problem-solving strategies. &nbsp;<br /> <br />The proposed functionality is essential and you accept to integrate it (which will slightly increase the time needed for the development of the software). <br /> <br /> <em>Users' support increases</em>.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Brief Meeting",
+							"label": "b) Brief Meeting",
+							"editorLabel": "b) Brief Meeting",
+							"description": "<p>You meet briefly with the fitters and discuss on their expectations. They provide you with a list of information on their needs.</p><p>Time Budget: 1<br />Cost: 3000.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The fitters would be interested in having a system that gathers and centralizes information on specific fitting problems experienced on specific machine types.</p><p><br />The proposed functionality is essential and you accept to integrate it.<br /> <br /> <em>User's support increases</em>.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Refuse",
+							"label": "c) Refuse",
+							"editorLabel": "c) Refuse",
+							"description": "<p>You do not make contact with fitters.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "User Prototype Presentation",
+					"name": "User Prototype Presentation",
+					"editorLabel": "A103 - Présentation prototype utilisateurs",
+					"description": "<p>One of the engineers approaches you with a suggestion:</p><p>\"We could design a small system prototype and present it to future users.</p><p>The prototype and the specification document could be developed simultanously. I should say that this really could help to improve the quality of the feedback we get from the future user!</p><p>The prototype development would take approximately 2 weeks work for 2 people.</p><p><br />What do you think about it? \"</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You accept this suggestion and will hence have to deal with the <em>user prototype</em> design as an extra task during the planning and implementing of your project.<br /> Time budget 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The <em>user prototype</em> task was added to the project schedule.</p><p>User's support of the project has significantly improved</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You reply that you would rather not make a prototype.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK.<br /> The project will therefore be implemented without presenting any prototype to the users. Future users find out about your decision and are somewhat disappointed.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Customers' Needs Assessment",
+					"name": "Customers' Needs Assessment",
+					"editorLabel": "A110B - Evaluation des besoins des clients",
+					"description": "<p>A marketing manager informs you that it could make sense to perform an assessment of the customers' needs as well as theirrelative interest in a remote support and training system to be integrated into the machines.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Comprehensive Assessment",
+							"label": "a) Comprehensive Assessment",
+							"editorLabel": "a) Comprehensive Assessment",
+							"description": "<p>You answer that you are interested and want to perform the assessment.<br />Time budget: 3<br /> Cost: 4500.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Customers seem indeed very interested in this system. 70% declare they are ready to pay extra in order to be provided with it.<br /> <br /> Clients express a particular need in remote support functionalities for small repairs. In particular, having the opportunity to have a video conference with the Artos service stuff and an instant remote diagnosis of their machines seem very interesting to them. They expect the system to considerably diminish their machines' downtime.<br /> <br />The relevance for training modules is quite weak, not to say close to zero.&nbsp;However, customers would appreciate it if a notepad functionality could be added to the system: During a breakdown, users of the machine could then leave a message on how they solved the issue. Subsequent users could then take advantage of this experience.</p><p>This notepad function is of particular relevance for clients who work three shifts all around the clock. Indeed, the members of the individual shifts sometimes do not know each other and therefore do not always share this information.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Basic Assessment",
+							"label": "b) Basic Assessment",
+							"editorLabel": "b) Basic Assessment",
+							"description": "<p>You reply that you're interested and wish to perform an assessment. But you ask for a brief rather than an unduly extensive assessment should to be made. <br /> Time Budget : 1<br /> Costs: 2000.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Customers seem to be very interested in this system. <br /> <br />In addition, the assessment shows that a notepad functionality should be added in order to enabling users to document the breakdown times and the corresponding problem solving strategies.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Refuse",
+							"label": "c) Refuse",
+							"editorLabel": "c) Refuse",
+							"description": "<p>You answer that for this project no assessment of the customers' needs will be carried out.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>ok.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Feasibility Analyses",
+					"name": "Feasibility Analyses",
+					"editorLabel": "A112 - Analyses de faisabilité",
+					"description": "<p>Mr Dupuis, Head of R&amp;D, approaches you with the following question:</p><p>\"If we carry out feasibility analyses during the pre-project phase, then in what order would you suggest doing so?\"</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": " a) Market ? Technical ? Financial",
+							"label": " a) Market ? Technical ? Financial",
+							"editorLabel": " a) Market ? Technical ? Financial",
+							"description": "<p>You answer that you prefer to make the market feasibility analysis first, followed by the technical feasibility analysis and finally the financial feasibility analysis.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Mr Dupuis is happy with your reply and apreciates your project management skills. His support for you increases.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": " b)  Technical ? Financial ? Market",
+							"label": " b)  Technical ? Financial ? Market",
+							"editorLabel": " b)  Technical ? Financial ? Market",
+							"description": "<p>You answer that you prefer to make the technical feasibility analysis first, followed by the financial feasibility analysis and finally the market analysis.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Mr Dupuis argues that it will be rather difficult to make a financial analysis without knowing anything about the potential market.</p><p>In addition, he is wondering why you are planning to make the technical feasibility analysis, which usually is the most expensive analysis, <em>before</em>&nbsp;making the market analysis, which is a rather unexpensive way of assessing whether or not the project meets any needs.</p><p><br /> His respect for you declines.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": " c) Financial - Technical ? Market",
+							"label": " c) Financial - Technical ? Market",
+							"editorLabel": " c) Financial - Technical ? Market",
+							"description": "<p>You answer that you prefer to make the financial feasibility analysis first, followed by the technical feasibility analysis and finally the market analysis.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Mr Dupuis argues that it will be rather difficult to make a financial analysis without knowing anything about the potential market.</p><p>In addition, he is wondering why you are planning to make the technical feasibility analysis, which usually is the most expensive analysis,&nbsp;<em>before</em>&nbsp;making the market analysis, which usually is a rather unexpensive way of assessing whether or not the project meets any needs.<br /><br /> His respect for you declines.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "d) I do not know",
+							"label": "d) I do not know",
+							"editorLabel": "d) I do not know",
+							"description": "<p>You answer that you don't know!</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Mr Dupuis appreciates your honesty: \"After all, that's better than just answering anything!\"</p><p>However, you are far from having convinced him of your project management skill.</p><p>Mr Dupuis' respect for you declines ...&nbsp;</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Exchange Rate Insurance",
+					"name": "Exchange Rate Insurance",
+					"editorLabel": "A113B - Assurance taux de change",
+					"description": "<p>If the project is accepted, some reseources and components will have to be ordered abroad.</p><p>In order to protect you against unfavorable exchange rate fluctuations&nbsp;throughout the project lifespan, your banker suggests concluding an exchange rate insurance.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You accept your banker's suggestion.</p><p>Time budget: 1<br />Costs: 500.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>In case of an unfavorable exchange rate&nbsp;during the project, you can now rely on your banker. He will intervene and solve the issue.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You refuse to take out the exchange rate insurance.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Exchange rate fluctuations during the project could partially change the budget for material purchases made abroad.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Market Feasibility Study",
+					"name": "Market Feasibility Study",
+					"editorLabel": "A151 - Faisabilité de marché",
+					"description": "<p>The marketing division suggests refining the so far only rough feasibility assessment presented in the status report and, in doing so, focusing more on the profit chance related to the implementation of the prospective e-assistance system.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Conduct the Study",
+							"label": "a) Conduct the Study",
+							"editorLabel": "a) Conduct the Study",
+							"description": "<p>If you accept the suggestion, you obtain more accurate information on the system's relevance to customers as well as on the price they would be willing to pay it.</p><p>Time Budget : 3<br />Costs: 4000.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>You have carried out a survey with a sample of lead users.</p><p>It seems that this option could considerably increase sales. A surcharge of some 3'500.-  would have to be estimated.</p><p>At this price, about 250 machines  could be fitted and sold with the new option within the next 7 years.&nbsp;</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Conduct a Brief Study",
+							"label": "b) Conduct a Brief Study",
+							"editorLabel": "b) Conduct a Brief Study",
+							"description": "<p>You basically agree with the idea, however, you suggest to conduct only a brief study. You will therefore obtain general information on the market potential as well as on potential price levels and sales figures.&nbsp;</p><p>Time Budget : 2<br />Costs: 2000.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>You carried out a brief survey with a set of lead users. The survey shows that the clients' interest is stronger than the marketing division had expected before.<br /> <br /> It seems that the new system option would increase sales, however, it could justify an estimated surcharge of 2'000.- to 3'500.-</p><p>Some 150 to 300 machines could be fitted with the new system and sold at a considerably higher price within the next 7 years.<br /> <br />However, it is still appropriate to run a more accurate analysis, just to obtain more accurate figures.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Do Not Conduct any Study",
+							"label": "c) Do Not Conduct any Study",
+							"editorLabel": "c) Do Not Conduct any Study",
+							"description": "<p>You base your decisions on the first rough assessment provided by the marketing division.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Let's hope the data is sufficiently reliable yet ...</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Complementary Market Feasibility Assessment",
+					"name": "Complementary Market Feasibility Assessment",
+					"editorLabel": "A151 - Faisabilité de marché -  complément d'étude",
+					"description": "<p>You've conducted a brief market study. The Marketing Division nonetheless suggests making a complementary analysis in order to obtain full information.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Make a Complementary Analysis",
+							"label": "a) Make a Complementary Analysis",
+							"editorLabel": "a) Make a Complementary Analysis",
+							"description": "<p>If you agree with the proposal, you will obtain more extensive and more accurate information on the market potential as well as on the price the customers are willing to pay for the system.</p><p>Time Budget : 2<br />Costs: 2500.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The complementary study produced the following results:</p><p>The possible surcharge for this option is  estimated at 3'500.-.</p><p>The amount of machines sold with this new option would be around 250 within the next seven years.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Do Not Make a Complementary Analysis",
+							"label": "b) Do Not Make a Complementary Analysis",
+							"editorLabel": "b) Do Not Make a Complementary Analysis",
+							"description": "<p>You answer that you are satisfied with the brief study's results.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Technical Feasibility Study",
+					"name": "Technical Feasibility Study",
+					"editorLabel": "A152B - Faisabilité technique",
+					"description": "<p>An engineer from the R&amp;D department suggests to run a technical feasibility analysis.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Conduct the Feasibility Study",
+							"label": "a) Conduct the Feasibility Study",
+							"editorLabel": "a) Conduct the Feasibility Study",
+							"description": "<p>If you follow the advise,&nbsp;a development engineer will conduct a pre-study. He will then be able to provide you with information on the system's technical feasibility.</p><p>Time Budget : 2<br />Cost: 3000.- (project's fixed costs)</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The technical feasibility study shows that the e-assistance system is technically feasible. The system is compatible with the entire range of Artos machines except for one type of milling machines that cannot handle it yet.&nbsp;It will be necessary to consider this restriction during the planning phase, already.</p><p>This issue would have been detected during implanting on the machines in any case, however, adjustments in the plain course of the project would have resulted in higher costs and in delays.</p><p>The analysis also shows that the development costs should be projected 20% higher than initially estimated.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Do Not Conduct the Feasibility Study",
+							"label": "b) Do Not Conduct the Feasibility Study",
+							"editorLabel": "b) Do Not Conduct the Feasibility Study",
+							"description": "<p>You prefer not to conduct the study.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>You will run the project risking possible technical incompatibilities showing up not until the project is already running (or even after having finished the system).</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Repair types",
+					"name": "Repair types",
+					"editorLabel": "A153 - Types de réparation",
+					"description": "<p>You might want to discuss with the repairers in order to get more information on the different types of repair to be effected on the customers machines.&nbsp;</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Carry out inquiries ",
+							"label": "a) Carry out inquiries ",
+							"editorLabel": "a) Carry out inquiries ",
+							"description": "<p>You carry out the inquiries with all repairers. You will thus get information on the different repair types and, as some repairers previously worked for competitors, on Artos' position in the market, as well. &nbsp;&nbsp;</p><p>Time Budget : 4</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The amount of breakdowns at Artos is similar to that of the competitors, however, you find out that intervention is the most time consuming issue.</p><p>According to the repairers, the larger part of the interventions (at least 30 per year) requires an average 2 days of travel for a repair lasting only a few minutes. A lot of these \"small\" interventions could be carried out by the customers themselves if they were provided with an efficient assistance system:&nbsp;During an e-assistance enabled video conference repaires could contact the customers and take control of the user's workplace. Many breakdowns could be repaired faster and much travel be avoided.&nbsp;</p><p>Repairers are very happy that you dedicated your time to them and that their knowledge was taken into account.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Carry out a brief study",
+							"label": "b) Carry out a brief study",
+							"editorLabel": "b) Carry out a brief study",
+							"description": "<p>You carry out a brief study with selected repairers who worked for competitors before. You will thus get information on Artos' competitive environment.</p><p>Time Budget : 2</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The amount of breakdowns at Artos is similar to that of the competitors, however, you find out that intervention is the most time consuming issue.</p><p>A lot of \"small\" interventions could be carried out by the customers themselves if they were provided with an efficient assistance system.</p><p>Repairers are very happy that their knowledge was taken into account. However,&nbsp;they would have appreciated if you had been dedicating more time to them.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Do not carry out the survey",
+							"label": "c) Do not carry out the survey",
+							"editorLabel": "c) Do not carry out the survey",
+							"description": "<p>You prefer to not to make the study.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>On your way to the cafeteria you happen to meet two repairers.</p><p>The first one shouts out: <br /> \"We really wonder why you did not meet with us?! We have most relevant field information which you do not have access to!\"</p><p>The second adds: <br /> \"Do you at least know what we need? I hope you will develop a system that matches our needs and expectations!!\"</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "A free afternoon",
+					"name": "A free afternoon",
+					"editorLabel": "A154 - Un après-midi à choix",
+					"description": "<p>You have an open time-slot in your schedule this afternoon.</p><p>How do you wish to use it?</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Meet user-interface resources",
+							"label": "a) Meet user-interface resources",
+							"editorLabel": "a) Meet user-interface resources",
+							"description": "<p>You meet with the people who are responsible for the user-interface program and try and obtain information on this task.</p><p>Time Budget: 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Your discussion with the user-interface team provides you with the follwing information:&nbsp;</p><p>It is essential to accurately assign the requested workforce ... halving the resources would more than double the time it takes to complete the task! Your team members are passionate teamplayers and very much used to cooperate in terms of a self-organized divison of labour.&nbsp;</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Management: Info on deadlines",
+							"label": "b) Management: Info on deadlines",
+							"editorLabel": "b) Management: Info on deadlines",
+							"description": "<p>You try and convice the management to provide you with a rough deadline for the e-assistance project.</p><p>Time Budget: 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Struck by this question management answers: \"It is hard to define a deadline without really knowing goals, costs and benefits of your project. In any case, we should say that the project is to be carried out in less than 3 months. This is said even though it is not up to us - but rather to you - to define the deadline of your own project, isn't it?\"</p><p>Management suggests you to produce a project proposal, which you could then present to the project selection committee.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Management: Info on strategy",
+							"label": "c) Management: Info on strategy",
+							"editorLabel": "c) Management: Info on strategy",
+							"description": "<p>You try and convince a member of the management to provide you with relevant information on the corporate strategy.</p><p>Time Budget: 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>You managed to get the following information:</p><p>Generally speaking, Artos aims at close contact to the customers and accurate response to their needs. Amongst other things, it would be  good to keep machine downtimes as low as possible.</p><p>The strategy also addresses a visible reduction of the fitter's travel costs throughout the next few years.</p><p>Management appreciated your interest in strategy compliance.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "d) Take a leave",
+							"label": "d) Take a leave",
+							"editorLabel": "d) Take a leave",
+							"description": "<p>You decide to have a break.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Well-chosen! Management supports your decision for a reasonable work-life-balance.</p><p>This adds perfectly to the management's recently launched burn-out prevention program, which helps to save your company and the entire society a lot of money. &nbsp;</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Planning",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Customers' and fitters'/repairers' needs analysis",
+					"name": "Customers' and fitters'/repairers' needs analysis",
+					"editorLabel": "P101B - Analyse besoins clients et monteurs",
+					"description": "<p>An engineer claims that there is no need to include the fitters' perspective in the \"needs analysis\" task. He argues that the fitters' and repairers' needs are already well-known. This would substantially cut expenses by two person-weeks.&nbsp;</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Exclude the fitters",
+							"label": "a) Exclude the fitters",
+							"editorLabel": "a) Exclude the fitters",
+							"description": "<p>Your needs assessment is run without the fitters. You are hence saving the respective costs.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse excluding the fitters",
+							"label": "b) Refuse excluding the fitters",
+							"editorLabel": "b) Refuse excluding the fitters",
+							"description": "<p>You refuse this suggestion and keep the current variant.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The fitters and repairers are glad to know you realize the relevance of their participation in the project. <br />Their support increases.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Development environment training",
+					"name": "Development environment training",
+					"editorLabel": "P102B - Séminaire environnement développement",
+					"description": "<p>A collaborator responsible for choosing the development environment happened to hear of a training on new developing environments, which will take place in Zurich next week. He asks you whether or not he may participate in it.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept participation in the training",
+							"label": "a) Accept participation in the training",
+							"editorLabel": "a) Accept participation in the training",
+							"description": "<p>You accept!&nbsp;</p><p>Your team member's participation in the seminary will raise fixed costs  of the \"development environment assessment\" task by 1000.- (the firm is going to pay the wages, but training-related expenses must be covered by the project budget).</p><p>The duration of the respective task will not diminish significantly, but its quality is likely to noticeably increase.</p><p>Time budget: 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK, your team member will take part in the training.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse participation in the training",
+							"label": "b) Refuse participation in the training",
+							"editorLabel": "b) Refuse participation in the training",
+							"description": "<p>You state that the training is basically a good idea, however, your budget does not allow for extra expenses.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Video-conference and remote control testing",
+					"name": "Video-conference and remote control testing",
+					"editorLabel": "P103B - Visio-conférence et prise de contrôle à distance",
+					"description": "<p>An engineer suggests to integrate a 'video-conference' function, which provides Artos repairmen with instant contact to customers as well as with remote control of downtime workstations.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Introduce the new functionality",
+							"label": "a) Introduce the new functionality",
+							"editorLabel": "a) Introduce the new functionality",
+							"description": "<p>You accept the suggestion.</p><p>The e-assistance tool will integrate the \"video-conference\" and \"remote control testing \" functionalities.</p><p>This will increase the duration of the \"processing programming\" task by a week.</p><p><br /> Time budget: 2</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The support of both management and the users increases. The system's quality is improved, as well.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse to introduce the new functionality",
+							"label": "b) Refuse to introduce the new functionality",
+							"editorLabel": "b) Refuse to introduce the new functionality",
+							"description": "<p>You prefer to not to introduce this functionality!</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK. The parties involved will be informed on your choice.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Processing programming",
+					"name": "Processing programming",
+					"editorLabel": "P104 - Programmation des traitements",
+					"description": "<p>You are informed on the fact that processing programming could be sourced out to a team of developers from Artos-Asia.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Do not source out the task",
+							"label": "a) Do not source out the task",
+							"editorLabel": "a) Do not source out the task",
+							"description": "<p>You choose to follow the original plan.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK, the original plan is followed.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Source out a smaller part",
+							"label": "b) Source out a smaller part",
+							"editorLabel": "b) Source out a smaller part",
+							"description": "<p>You decide to source out a smaller part of the processing programming. The time needed to complete the task does not change, however, it will be done at the price of a junior software computer specialist less.</p><p>The cost for subcontracting will add up to the task's fixed costs (3000.-).</p><p>Experience has shown that if subcontracting enables saving money, it sometimes negatively impacts quality.</p><p>Time Budget : 2</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The modifications are performed.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Source out a larger part",
+							"label": "c) Source out a larger part",
+							"editorLabel": "c) Source out a larger part",
+							"description": "<p>You decide to source out a larger part of the processing programming sto Artos-Asia.</p><p>You hence save one week on the task as well as one junior and one senior software computer specialist.</p><p>Subcontracting costs will be added to the fixed costs (13'000.-).</p><p><br />Experience has shown that subcontracting saves money, however, it sometimes also negativly impacts quality.</p><p>Time Budget : 3</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The changes are performed.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "New promotion strategy",
+					"name": "New promotion strategy",
+					"editorLabel": "P105 - Type de promotion du système",
+					"description": "<p>You are presented two new ways of promoting the system.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Do not change your plans",
+							"label": "a) Do not change your plans",
+							"editorLabel": "a) Do not change your plans",
+							"description": "<p>You choose to follow the original plan.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) First variant: increase resources",
+							"label": "b) First variant: increase resources",
+							"editorLabel": "b) First variant: increase resources",
+							"description": "<p>You opt for assigning extra resources, i.e. for adding two senior sales persons and one sales expert. <br /> It will take one week less to complete the task without any impact on quality.</p><p>Time Budget: 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The new variant is implemented.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Second variant: resource reduction",
+							"label": "c) Second variant: resource reduction",
+							"editorLabel": "c) Second variant: resource reduction",
+							"description": "<p>You opt for diminishing resources, i.e. for a deduction of one junior sales person as well as two senior sales persons.</p><p>Remaining resources would then need one extra week to complete the task, which also could (however not necessarily)&nbsp;have a slight impact on quality.</p><p>Time Budget: 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Making the task shall take one extra week, with less resources. A slight decrease in quality is likely.</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Execution",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": [
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Said: \"Activity report writing\" project",
+					"name": "Said: \"Activity report writing\" project",
+					"editorLabel": "R104B- Yves - projet \"réd. rapp. activité\"",
+					"description": "<p>Said is firmly asked to support the 'activity report' team as of this week for the next 3 weeks. <br /><br />If management's support of your project is good and you need Said during this time, you can negotiate that he works only 50% on the activity report and can still go on working 50% on the project.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Make Said available for 50% only",
+							"label": "a) Make Said available for 50% only",
+							"editorLabel": "a) Make Said available for 50% only",
+							"description": "<p>You suggest making Said available for only 50% and keeping him on the project at 50%.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK. Your request shall be sent to management.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Make Said available for 100%",
+							"label": "b) Make Said available for 100%",
+							"editorLabel": "b) Make Said available for 100%",
+							"description": "<p>You agree with the fact that Said is not available for the next 3 weeks.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "\"Training module\" functionality",
+					"name": "\"Training module\" functionality",
+					"editorLabel": "R102B - Module formation",
+					"description": "<p>The project team suggests adding a new functionality that integrates a small training video on typical operations on the machines.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You accept integrating this new functionality.</p><p>Time Budget : 1 <br />Time for the \"Processing Programming\" task will increase by half a week.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK, your changes were taken into account.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You do not introduce this functionality.</p><p>Costs: 0</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "\"Plan Annotation\" functionality",
+					"name": "\"Plan Annotation\" functionality",
+					"editorLabel": "R103B - Annotation plans",
+					"description": "<p>The project team suggests adding a new functionality that enables annotating plans. This would allow users and fitters to document a breakdown or a problem.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You accept integrating this new functionality.<br />Time  Budget: 1 <br /> \"Processing programming\" Task: half a week increase.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK, your changes are taken into account.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You don't introduce this functionality.</p><p><br />Costs: 0</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "User interface enhancement proposal",
+					"name": "User interface enhancement proposal",
+					"editorLabel": "R101B - Proposition d'amélioration IHM",
+					"description": "<p>One of the fitters heard about the project and dropped in to see state of the arts.</p><p>He suggests improving the system by adding another functionality:&nbsp;</p><p>\"It would be interesting to being able to browse through the plans with the XR5 system. It's a lot more pleasant. I've met the User-Interface programmers and they have told me that this is possible.&nbsp;In my opinion, it seems that as an impact this would increase programming costs by 1000 with no impact on time\".&nbsp;</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>This option seems very interesting, indeed. You choose to integrate it into the system.</p><p>Time Budget : 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Users' support increases considerably.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Accept partially",
+							"label": "b) Accept partially",
+							"editorLabel": "b) Accept partially",
+							"description": "<p>This option seems very interesting, indeed. You choose to integrate it into the system in a slightly less ergonomic form.</p><p>Time Budget : 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Users' support increases considerably.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Ask for some time to think",
+							"label": "c) Ask for some time to think",
+							"editorLabel": "c) Ask for some time to think",
+							"description": "<p>You ask for some time to think it over and promise to answer within a week.</p><p>You send the programmers an email asking for their advice and the usefulness and impact of this change.</p><p>Time Budget : 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK. <br /> The fitter involved is slightly disappointed.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "d) Refuse",
+							"label": "d) Refuse",
+							"editorLabel": "d) Refuse",
+							"description": "<p>You refuse to implement this new functionality.</p><p>Cost: 0</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK.<br />The fitter involved is slightly disappointed.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "XR5 browsing system",
+					"name": "XR5 browsing system",
+					"editorLabel": "R101B - Système de navigation XR5",
+					"description": "<p>After having thought about it, you inform the fitters and the User-Interface team on your decision on the proposed XR5 system.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>This option seems interesting, indeed. You choose to integrate it into the system.</p><p>Time Budget : 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Users' support increases considerably.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Accept partially",
+							"label": "b) Accept partially",
+							"editorLabel": "b) Accept partially",
+							"description": "<p>This option seems interesting, indeed. You choose to integrate it into the system, but in a slightly less ergonomic manner.</p><p>Time Budget : 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Users' support increases considerably.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Refuse",
+							"label": "c) Refuse",
+							"editorLabel": "c) Refuse",
+							"description": "<p>You refuse to implement this new functionality.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK.<br />The fitter involved is a little bit disappointed.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Ayla needed on strategic project",
+					"name": "Ayla needed on strategic project",
+					"editorLabel": "R105B - Valérie autre projet",
+					"description": "<p>A strategic project needs Ayla (web designer) at 50% for 3 weeks, as from the following week. <br /> You can try to refuse this decision if management's support is very good.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You make Ayla available.&nbsp;</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Ayla shall thus be assigned to the strategic project at 50. Her available activity rate is thus diminishes to 50%.<br />Management thanks you for freeing up her time.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You inform management that Ayla is necessary on the project and thus do not free up her time.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "User Interface Specifications",
+					"name": "User Interface Specifications",
+					"editorLabel": "R109B - Spécifications IHM",
+					"description": "<p>A software computer specialist suggests that you reassess the User Interface specifications. It seems indeed that the latter is \"over-sized\" and that it is well possible to get along with a simpler interface.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Downgrade specifications",
+							"label": "a) Downgrade specifications",
+							"editorLabel": "a) Downgrade specifications",
+							"description": "<p>You follow the software specialist's counsel and downgrade the User Interface specifications.  This allows for halving the time for the User Interface programming and thus to diminish the wages.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK, specifications are revised this way and the time it takes for the task has been consequently revised.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Keep current specifications",
+							"label": "b) Keep current specifications",
+							"editorLabel": "b) Keep current specifications",
+							"description": "<p>You prefer keeping the current specifications.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Web design training",
+					"name": "Web design training",
+					"editorLabel": "R110B - Formation web design",
+					"description": "<p>Karim (web designer) wants to participate in a one week's training starting next week. <br />Salary costs should be covered by the firm. Training costs should partially be covered by the project.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Agree",
+							"label": "a) Agree",
+							"editorLabel": "a) Agree",
+							"description": "<p>You encourage Karim to particiapte in the training. Karim will therefore be unavailable for a week. After his return, he will have changed from a&nbsp;junior to senior web designer. <br />Costs: training participation 800.- (added to the project's fixed costs).</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You explain to Karim that it is unfortunately not possible to attend this training. It may however be possible at a later point of time when things get calmer.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Yvonne ? assigned to another project",
+					"name": "Yvonne ? assigned to another project",
+					"editorLabel": "R106B - Yvonne - affectée autre projet",
+					"description": "<p>A parallel project needs Yvonne (software specialist) for two weeks, starting next week.</p><p>If management's support of your project is weak, you take the risk of even worsening things if you refuse.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You prefer to cooperate (or you do not need Yvonne for the moment) and accept the assignment.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>The manager of the other project is thankful for your collaboration.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>You ask for this resource to be kept!</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Management and the other project's manager have been notified about your decision.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Overtime machine implanting",
+					"name": "Overtime machine implanting",
+					"editorLabel": "R108B - H. supp. Implantation machine",
+					"description": "<p>You have the possibility to order overtime in order to accelerate the implementation of the new system.&nbsp;</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Order Overtime",
+							"label": "a) Order Overtime",
+							"editorLabel": "a) Order Overtime",
+							"description": "<p>You inform the team to work overtime.</p><p>Overtime hours will be paid at a better rate and hence will increase the task's cost by about 20%. At the same time, completion time will be reduced by 20%.</p><p>Time Budget : 1</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK, the team has been notified.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Do Not Order Overtime",
+							"label": "b) Do Not Order Overtime",
+							"editorLabel": "b) Do Not Order Overtime",
+							"description": "<p>You prefer completing the task without ordering overtime.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Armine needs a break",
+					"name": "Armine needs a break",
+					"editorLabel": "R112B - Noémie besoin Break",
+					"description": "<p>Armine (software specialist) confesses:&nbsp;\"I'd really need a break. I have not had holidays for about two years and my sister really needs my help&nbsp;now. I definitely need to take one week off!\"</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You answer Armine: \"OK, take a week off and come back in better condition the week after\"</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Accept (Under Some Conditions)",
+							"label": "b) Accept (Under Some Conditions)",
+							"editorLabel": "b) Accept (Under Some Conditions)",
+							"description": "<p>You answer Armine: \"OK, to take some time off this week, but just come in on Monday to pass the necessary information on to the person who will undertake your tasks\".</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK. Armine will not be available for a week but at least drop in next Monday to pass relevant information on to her replacement.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Refuse",
+							"label": "c) Refuse",
+							"editorLabel": "c) Refuse",
+							"description": "<p>You answer: \"This really isn't the right moment. We do need you on this project. You may however take some time off as soon as we'll have made progress with this project.\"</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Implementation date?",
+					"name": "Implementation date?",
+					"editorLabel": "R111B - Date mise en oeuvre",
+					"description": "<p>The fitters are looking forward to seeing the implementation of the new remote assistance system and ask you:<br /> \"Will we be able to use the system in two weeks?\"</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Possible",
+							"label": "a) Possible",
+							"editorLabel": "a) Possible",
+							"description": "<p>You answer the system will be implemented within the next 2 weeks.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) A bit of patience",
+							"label": "b) A bit of patience",
+							"editorLabel": "b) A bit of patience",
+							"description": "<p>You answer that you will be needing another 3 to 4 weeks.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) A lot of patience",
+							"label": "c) A lot of patience",
+							"editorLabel": "c) A lot of patience",
+							"description": "<p>You answer that development is not an easy task and that it will take several weeks before the system can be implemented.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "d) No answer",
+							"label": "d) No answer",
+							"editorLabel": "d) No answer",
+							"description": "<p>You would rather prefer not to answer for the moment.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "Urs ? New computer",
+					"name": "Urs ? New computer",
+					"editorLabel": "R107B - Urs - nouvel ordinateur",
+					"description": "<p>Urs (software specialist) asks you:<br />\"For the project  it would be great to have a new computer. Mine is a little old and tired\".</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>An additional&nbsp;2000,- is charged to the project.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>Message from Urs: \"Thank you! Work flows much better with this new computer\"<br />Effect: motivation increase</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Refuse",
+							"label": "b) Refuse",
+							"editorLabel": "b) Refuse",
+							"description": "<p>No new costs will be assigned to the project. Urs will continue working on his old machine.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK. Urs will be informed.</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "End of project date?",
+					"name": "End of project date?",
+					"editorLabel": "R114B - Date fin du projet",
+					"description": "<p>Management asks you:<br />\"According to your schedule, the project should almost be completed. May we expect the implementation of the new system for next week?\"</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) OK, next week",
+							"label": "a) OK, next week",
+							"editorLabel": "a) OK, next week",
+							"description": "<p>You answer that the system should be working next week.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Another two weeks",
+							"label": "b) Another two weeks",
+							"editorLabel": "b) Another two weeks",
+							"description": "<p>You answer that you will be needing another two weeks.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Another 3 weeks minimum",
+							"label": "c) Another 3 weeks minimum",
+							"editorLabel": "c) Another 3 weeks minimum",
+							"description": "<p>You answer that the development is not an easy task and that it will take another three weeks to implement the system.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK.</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "d) No answer",
+							"label": "d) No answer",
+							"editorLabel": "d) No answer",
+							"description": "<p>You prefer to not to answer for the moment.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				},
+				{
+					"@class": "QuestionDescriptor",
+					"label": "A customer visits",
+					"name": "A customer visits",
+					"editorLabel": "R115B - Visite d'un client",
+					"description": "<p>This week a marketing manager has invited key customers for guided tours of the company as well as for a gala party. The tours will be done in groups. There will be three different groups on three different days.</p><p>He asks you whether it would be possible to pass through your department and whether you could give a presentation of the remote assistance project.</p>",
+					"allowMultipleReplies": "false",
+					"defaultInstance": {
+						"@class": "QuestionInstance"
+					},
+					"scope": {
+						"@class": "TeamScope"
+					},
+					"items": [
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "a) Accept",
+							"label": "a) Accept",
+							"editorLabel": "a) Accept",
+							"description": "<p>You answer  \"Willingly!\" <br />... and start preparing your department for the tours.</p><p>Costs:<br /> 6 time cards<br />Work perturbed during three half-days.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "b) Accept for a visit",
+							"label": "b) Accept for a visit",
+							"editorLabel": "b) Accept for a visit",
+							"description": "<p>You answer  \"We are currently quite busy, but we should find some time to welcome one group.</p><p>Costs:<br />3 time cards<br />Work is perturbed for half a day.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						},
+						{
+							"@class": "SingleResultChoiceDescriptor",
+							"name": "c) Refuse",
+							"label": "c) Refuse",
+							"editorLabel": "c) Refuse",
+							"description": "<p>You answer that you are very sorry for not having any time for the tours.</p><p>No costs.</p>",
+							"defaultInstance": {
+								"@class": "ChoiceInstance"
+							},
+							"scope": {
+								"@class": "TeamScope"
+							},
+							"results": [
+								{
+									"@class": "Result",
+									"name": "Default",
+									"answer": "<p>OK</p>"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		{
+			"label": "Closure",
+			"@class": "ListDescriptor",
+			"scope": {
+				"@class": "TeamScope",
+				"broadcastScope": "TeamScope"
+			},
+			"defaultInstance": {
+				"@class": "ListInstance"
+			},
+			"items": []
+		}
+	]
+}

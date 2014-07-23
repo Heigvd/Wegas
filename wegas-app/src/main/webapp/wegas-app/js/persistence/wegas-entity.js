@@ -289,24 +289,23 @@ YUI.add("wegas-entity", function(Y) {
                                                 },
                                                 event: "mouseenter",
                                                 children: [{
-                                                        type: BUTTON,
-                                                        label: "Html",
-                                                        plugins: [{
-                                                                fn: "OpenGameAction",
-                                                                cfg: {
-                                                                    editorUrl: "print.html?"
-                                                                }
-                                                            }]
+                                                        type: "PrintButton",
+                                                        label: "Html"
                                                     }, {
-                                                        type: BUTTON,
+                                                        type: "PrintButton",
+                                                        label: "Html for player",
+                                                        mode: "player"
+                                                    }, {
+                                                        type: "PrintButton",
                                                         label: "Pdf",
-                                                        plugins: [{
-                                                                fn: "OpenGameAction",
-                                                                cfg: {
-                                                                    editorUrl: "print.html?outputType=pdf&"
-                                                                }
-                                                            }]
-                                                    }]
+                                                        outputType: "pdf"
+                                                    }, {
+                                                        type: "PrintButton",
+                                                        label: "Pdf for player",
+                                                        outputType: "pdf",
+                                                        mode: "player"
+                                                    }
+                                                ]
                                             }
                                         }]
                                 }, {
@@ -599,8 +598,40 @@ YUI.add("wegas-entity", function(Y) {
                                     targetClass: "Team",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
+                                    type: BUTTON,
+                                    label: "Print",
+                                    //cssClass: "wegas-advanced-feature",
+                                    plugins: [{
+                                            fn: "WidgetMenu",
+                                            cfg: {
+                                                menuCfg: {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                event: "mouseenter",
+                                                children: [{
+                                                        type: "PrintButton",
+                                                        label: "html"
+                                                    }, {
+                                                        type: "PrintButton",
+                                                        label: "html for player",
+                                                        mode: "player"
+                                                    }, {
+                                                        type: "PrintButton",
+                                                        label: "pdf",
+                                                        outputType: "pdf"
+                                                    }, {
+                                                        type: "PrintButton",
+                                                        label: "pdf for player",
+                                                        outputType: "pdf",
+                                                        mode: "player"
+                                                    }
+                                                ]
+                                            }
+                                        }]
+                                }, {
                                     type: "Linkwidget"
-                                }]
+                                }
+                            ]
                         }
                     }]
             }

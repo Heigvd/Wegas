@@ -96,6 +96,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         },
         validate: function() {
             var valid = !!this.getValue() && VariableDescriptorSelect.superclass.validate.call(this);
+            try {
+                window.esprima.parse(this.getValue());
+            } catch (e) {
+                valid = false;
+            }
             if (!valid) {
                 this.options.showMsg = true;
             }
@@ -706,17 +711,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (!this.currentEntity) {
                 (new Y.Node(this.fieldset)).append("<div><em>No variable created</em></div>");
             }
-        },
-        DISABLEDgenChoices: function(entity, items) {
-            var choices = [];
-
-            if (items && items.length > 0) {                                    // If required, push separator
-                choices.push({
-                    value: "----------"
-                });
-            }
-
-            return choices.concat(VariableDescriptorGetter.superclass.genChoices.apply(this, arguments));
         }
     });
     inputEx.registerType("getter", VariableDescriptorGetter);
