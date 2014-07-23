@@ -40,13 +40,11 @@ public class ScriptFacadeTest extends AbstractEJBTest {
 
         final NumberDescriptor numberDescriptor = new NumberDescriptor("inttest");
         numberDescriptor.setDefaultInstance(new NumberInstance(1));
-        numberDescriptor.setScope(new TeamScope());
         vdf.create(gameModel.getId(), numberDescriptor);
 
         // Create a dummy descriptor
         final StringDescriptor stringDescriptor = new StringDescriptor(VARIABLENAME);
         stringDescriptor.setDefaultInstance(new StringInstance(VALUE));
-        stringDescriptor.setScope(new TeamScope());
         vdf.create(gameModel.getId(), stringDescriptor);
 
         // Eval a dummy script

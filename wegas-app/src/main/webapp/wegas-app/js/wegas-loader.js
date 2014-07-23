@@ -469,7 +469,7 @@ YUI().use(function(Y) {
                     'wegas-inputex-url',
                     "wegas-inputex-rte", // for mail attachements in script
                     'esprima'],
-                ix_provides: ['script', 'variableselect']
+                ix_provides: ['script', 'variableselect', 'flatvariableselect']
             },
             'wegas-inputex-url': {
                 path: 'js/inputex/wegas-inputex-url-min.js',

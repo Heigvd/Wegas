@@ -39,17 +39,14 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         final NumberDescriptor myNumber = new NumberDescriptor();              // Create a number descriptor
         myNumber.setName("mynumber");
         myNumber.setDefaultInstance(new NumberInstance(0));
-        myNumber.setScope(new TeamScope());
         vdf.create(gameModel.getId(), myNumber);
 
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
-        question.setScope(new TeamScope());
         vdf.create(gameModel.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setScope(new TeamScope());
         choice.setName("testChoice");
         Result r = new Result("1st result");
         r.setImpact(new Script("mynumber.value = 10"));
@@ -74,12 +71,10 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
-        question.setScope(new TeamScope());
         vdf.create(gameModel.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setScope(new TeamScope());
         Result r = new Result(REPLYNAME1);                                      // w/ 2 replies
         choice.addResult(r);
         Result r2 = new Result(REPLYNAME2);
@@ -113,12 +108,10 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
-        question.setScope(new TeamScope());
         vdf.create(gameModel.getId(), question);
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
-        choice.setScope(new TeamScope());
         Result r = new Result(REPLYNAME1);                                      // w/ 2 replies
         choice.addResult(r);
         Result r2 = new Result(REPLYNAME2);

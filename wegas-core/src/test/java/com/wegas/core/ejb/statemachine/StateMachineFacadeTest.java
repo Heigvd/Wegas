@@ -57,13 +57,11 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(0));
-        number.setScope(new TeamScope());
         vdf.create(gameModel.getId(), number);
 
         // Create a trigger
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("testnumber.value >= 0.9"));
         trigger.setPostTriggerEvent(new Script("testnumber.value = 2;"));
         vdf.create(gameModel.getId(), trigger);
@@ -105,13 +103,11 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
         NumberDescriptor number = new NumberDescriptor();
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(INITIALVALUE));
-        number.setScope(new TeamScope());
         vdf.create(gameModel.getId(), number);
 
         // Create a resource
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
-        trigger.setScope(new TeamScope());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
                 new Script("VariableDescriptorFacade.find(" + number.getId() + ").setValue(self, " + FINALVALUE + " )"));

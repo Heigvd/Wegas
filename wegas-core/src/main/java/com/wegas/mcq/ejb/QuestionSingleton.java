@@ -55,10 +55,6 @@ public class QuestionSingleton {
         QuestionDescriptor questionDescriptor = choice.getQuestion();
         QuestionInstance questionInstance = questionDescriptor.getInstance(player);
 
-        System.out.println("Test222 " + questionInstance.getReplies().size()
-                + "*" + questionInstance.getId()
-                + "*" + this.findReplyCount(questionInstance.getId())
-                + "*" + questionInstance.getReplies().size());
         if (!questionDescriptor.getAllowMultipleReplies()
                 && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
             //if (!questionDescriptor.getAllowMultipleReplies()
@@ -70,7 +66,7 @@ public class QuestionSingleton {
         reply.setStartTime(startTime);
         reply.setResult(choice.getInstance(player).getResult());
         questionInstance.addReply(reply);
-//        em.persist(reply);
+        //em.persist(reply);
         em.flush();
         em.refresh(reply);
         return reply;

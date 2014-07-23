@@ -51,8 +51,14 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     @EJB
     private ScriptFacade scriptManager;
+    /**
+     * 
+     */
     @EJB
     QuestionSingleton questionSingleton;
+    /**
+     * 
+     */
     @Inject
     private ScriptEventFacade scriptEvent;
 
@@ -74,7 +80,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
                 defaultInstance.setCurrentResult(cr);
             }
         }
-
     }
 
     /**

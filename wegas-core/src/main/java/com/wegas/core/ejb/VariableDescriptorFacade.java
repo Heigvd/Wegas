@@ -20,8 +20,6 @@ import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
 import java.io.IOException;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -32,7 +30,6 @@ import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.apache.shiro.util.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,6 +55,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      */
     @EJB
     private GameModelFacade gameModelFacade;
+    /**
+     *
+     */
     @Inject
     private Event<DescriptorRevivedEvent> descriptorRevivedEvent;
 
@@ -75,6 +75,19 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     @Override
     public void create(final VariableDescriptor variableDescriptor) {
         throw new WegasException("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public VariableDescriptor update(final Long entityId, final VariableDescriptor entity) {
+        final VariableDescriptor vd = this.find(entityId);
+        entity.setGameModel(vd.getGameModel());
+        this.revive(entity);
+        vd.merge(entity);
+        return vd;
     }
 
     /**

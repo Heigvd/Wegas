@@ -116,12 +116,6 @@ YUI.add('wegas-editable', function(Y) {
                     }
                 });
                 form = builder.schemaToInputEx(schemaMap.Entity);
-
-                form.fields.sort(function(a, b) {
-                    var a = a.index || 0;
-                    b = b.index || 0;
-                    return a - b;
-                });
             }
             return form || [];
         },

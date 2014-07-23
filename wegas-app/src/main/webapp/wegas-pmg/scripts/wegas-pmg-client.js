@@ -33,6 +33,7 @@ persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({
 
 persistence.TaskDescriptor.ATTRS.properties._inputex = {
     type: GROUP,
+    index: 2,
     fields: [{
             name: "takeInHandDuration",
             label: "Take-in-hand duration",
@@ -67,6 +68,7 @@ persistence.TaskDescriptor.ATTRS.properties._inputex = {
 
 persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {
     type: GROUP,
+    index: 10,
     fields: [{
             name: "fixedCosts",
             label: "Fixed costs",

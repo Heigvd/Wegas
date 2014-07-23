@@ -62,7 +62,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
             joinColumns = {
                 @JoinColumn(name = "taskdescriptor_variabledescriptor_id")},
             inverseJoinColumns = {
-                @JoinColumn(name = "predecessors_variabledescriptor_id")})              // prevent change in the db
+                @JoinColumn(name = "predecessors_variabledescriptor_id")})      // prevent change in the db
     @JsonIgnore
     private List<TaskDescriptor> predecessors = new ArrayList<>();
     /*
@@ -88,7 +88,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         TaskDescriptor other = (TaskDescriptor) a;
         this.setDescription(other.getDescription());
         this.setIndex(other.getIndex());
-        this.predecessors = ListUtils.mergeLists(this.predecessors, other.getPredecessors());
+        this.predecessors = ListUtils.updateList(this.predecessors, other.getPredecessors());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
     }
@@ -356,9 +356,9 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param p
-     * @return 
+     * @return
      */
-    public Boolean getActive(Player p) {
+    public boolean getActive(Player p) {
         TaskInstance instance = this.getInstance(p);
         return instance.getActive();
     }
