@@ -232,7 +232,91 @@ YUI.add('wegas-editor-action', function(Y) {
     });
     Plugin.OpenGameAction = OpenGameAction;
 
+
+    /**
+     *  @name Y.Plugin.PrintAction
+     *  @extends Y.Plugin.OpenUrlAction
+     *  @class print the current entity
+     *  @constructor
+     */
+    var PrintAction = function() {
+        PrintAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(PrintAction, Plugin.OpenUrlAction, {
+        /** @lends Y.Plugin.PrintAction# */
+
+        /**
+         * @function
+         * @private
+         */
+        execute: function() {
+            var params, entity = this.get("entity");
+
+            if (entity instanceof Wegas.persistence.GameModel) {
+                params = "gameModelId=" + entity.get("id");
+            } else if (entity instanceof Wegas.persistence.Game) {
+                params = "gameId=" + entity.get("id");
+            } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
+                params = "gameModelId=" + Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "&root=" + entity.get("name");
+            } else {
+                // @ TODO ERROR
+            }
+            this.set("url", this.get("editorUrl") + params + "&outputType=" + this.get("outputType") + "&mode=" + this.get("mode"));
+
+            PrintAction.superclass.execute.call(this);
+        }
+    }, {
+        /** @lends Y.Wegas.PrintAction */
+        NS: "wegas",
+        NAME: "PrintAction",
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>editorUrl: url of the print page <i>default: print.html?</i></li>
+         *    <li>outputType: either html or pdf, incorrect values means html<i>default & fallback: html</i></li>
+         *    <li>mode: player or editor. editor is only to users who can edit the specified entity <i>default & fallback : player</i> </li>
+         *    <li>entity: the game, gamemodel or variabledescriptor entity that will be printed</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
+        ATTRS: {
+            editorUrl: {
+                value: 'print.html?'
+            },
+            outputType: {
+                value: 'html'
+            },
+            mode: {
+                value: 'editor'
+            },
+            entity: {}
+        }
+    });
+    Plugin.PrintAction = PrintAction;
+
     // *** Buttons *** //
+    /**
+     * @name Y.Wegas.PrintButton
+     * @extends Y.Wegas.Button
+     * @class Shortcut to create a Button with an PrintAction plugin
+     * @constructor
+     */
+    Wegas.PrintButton = Y.Base.create("button", Wegas.Button, [], {
+        /** @lends Y.Wegas.PrintButton# */
+
+        /**
+         * @function
+         * @private
+         */
+        initializer: function(cfg) {
+            this.plug(PrintAction, cfg);
+        }
+    });
+
+
+
     /**
      * @name Y.Wegas.OpenTabButton
      * @extends Y.Wegas.Button

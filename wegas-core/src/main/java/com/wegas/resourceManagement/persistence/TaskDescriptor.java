@@ -356,10 +356,11 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param p
+     * @return 
      */
-    public void getActive(Player p) {
+    public Boolean getActive(Player p) {
         TaskInstance instance = this.getInstance(p);
-        instance.getActive();
+        return instance.getActive();
     }
 
     /**

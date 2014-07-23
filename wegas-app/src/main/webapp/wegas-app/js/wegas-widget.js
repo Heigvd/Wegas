@@ -438,9 +438,15 @@ YUI.add("wegas-widget", function(Y) {
                                                 type: BUTTON,
                                                 label: "Impact variables",
                                                 data: "ExecuteScriptAction"
-                                            }]
+                                            }, {
+                                                type: BUTTON,
+                                                label: "Print Variables",
+                                                data: "PrintActionPlugin"
+                                            }
+                                        ]
                                     }
                                 }]
+
                         }, {
                             type: BUTTON,
                             label: "Styles",
@@ -582,7 +588,7 @@ YUI.add("wegas-widget", function(Y) {
                         Y.log("Unable to read expression: " + val.content, "error", "Wegas.Widget");
                         val.evaluated = null;
                     }
-                    
+
                 } else if (val.name) {                                          // @backwardcompatibility
                     val.evaluated = ds.cache.find('name', val.name);
                 } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field

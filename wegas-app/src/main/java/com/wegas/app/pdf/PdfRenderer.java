@@ -28,19 +28,19 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xml.sax.InputSource;
 
 /**
  *
- * @author maxence
+ * Filter that capture Servlet response and transform its content into PDF
+ *
+ * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @WebFilter(filterName = "PdfRenderer", urlPatterns = {"/print.html"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class PdfRenderer implements Filter {
 
-    private static final boolean debug = true;
+    private static final boolean debug = false;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
@@ -50,13 +50,13 @@ public class PdfRenderer implements Filter {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-	try {
-	    this.filterConfig = config;
-	    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-	    documentBuilder = factory.newDocumentBuilder();
-	} catch (ParserConfigurationException e) {
-	    throw new ServletException(e);
-	}
+        try {
+            this.filterConfig = config;
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            documentBuilder = factory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            throw new ServletException(e);
+        }
     }
 
     public PdfRenderer() {
@@ -73,80 +73,64 @@ public class PdfRenderer implements Filter {
      */
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
-	    FilterChain chain)
-	    throws IOException, ServletException {
+            FilterChain chain)
+            throws IOException, ServletException {
 
-	if (debug) {
-	    log("PdfRenderer:doFilter()");
-	}
+        if (debug) {
+            log("PdfRenderer:doFilter()");
+        }
 
-	Throwable problem = null;
-	try {
+        Throwable problem = null;
+        try {
 
-	    HttpServletRequest req = (HttpServletRequest) request;
-	    HttpServletResponse resp = (HttpServletResponse) response;
+            HttpServletRequest req = (HttpServletRequest) request;
+            HttpServletResponse resp = (HttpServletResponse) response;
 
-	    String renderType = req.getParameter("outputType");
-	    req.setCharacterEncoding("ISO-8859-1");
+            String renderType = req.getParameter("outputType");
 
-	    if (renderType != null && renderType.equals("pdf")) {
-		// specific type ? capture response 
-		ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
+            if (renderType != null && renderType.equals("pdf")) {
+                // specific type ? capture response 
+                ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
 
-		chain.doFilter(req, capContent);
-		/*
-		 * convert xhtml from String to XML Document 
-		 */
-		StringReader contentReader = new StringReader(capContent.getContent());
-		InputSource source = new InputSource(contentReader);
-		Document xhtmlDocument = documentBuilder.parse(source);
+                chain.doFilter(req, capContent);
+                /*
+                 * convert xhtml from String to XML Document 
+                 */
+                StringReader contentReader = new StringReader(capContent.getContent());
+                InputSource source = new InputSource(contentReader);
+                Document xhtmlDocument = documentBuilder.parse(source);
 
-		ITextRenderer renderer = new ITextRenderer();
+                ITextRenderer renderer = new ITextRenderer();
 
-		/* Using <base> tag breaks inner <a href="#*" /> behaviour
-		 *NodeList elementsByTagName = xhtmlDocument.getElementsByTagName("base");
-		 Node namedItem = elementsByTagName.item(0).getAttributes().getNamedItem("href");
-		 String base = namedItem.getNodeValue();
-		*/
-		
-		String baseUrl;
-		baseUrl = req.getRequestURL().toString().replaceAll(req.getServletPath(), "/");
+                String baseUrl;
+                baseUrl = req.getRequestURL().toString().replaceAll(req.getServletPath(), "/");
 
-		renderer.setDocument(xhtmlDocument, baseUrl);
-		renderer.layout();
+                renderer.setDocument(xhtmlDocument, baseUrl);
+                renderer.layout();
 
-		resp.setContentType("application/pdf");
-		OutputStream browserStream = resp.getOutputStream();
+                resp.setContentType("application/pdf; charset=UTF-8");
+                OutputStream browserStream = resp.getOutputStream();
 
-		renderer.createPDF(browserStream);
-	    } else {
-		// no specific type ? -> normal processing
+                renderer.createPDF(browserStream);
+            } else {
+                // no specific type ? -> normal processing
 
-		log("PdfRenderer:Normal output");
-		chain.doFilter(request, response);
-	    }
-	} catch (Throwable t) {
-	    // If an exception is thrown somewhere down the filter chain,
-	    // we still want to execute our after processing, and then
-	    // rethrow the problem after that.
+                log("PdfRenderer:Normal output", null);
+                chain.doFilter(request, response);
+            }
+        } catch (Throwable t) {
 	    problem = t;
-	    t.printStackTrace();
-
-	    log("ERROR");
-
-	}
-
-	// If there was a problem, we want to rethrow it if it is
-	// a known type, otherwise log it.
-	if (problem != null) {
-	    if (problem instanceof ServletException) {
-		throw (ServletException) problem;
-	    }
-	    if (problem instanceof IOException) {
-		throw (IOException) problem;
-	    }
-	    sendProcessingError(problem, response);
-	}
+	    log("ERROR", t);
+        }
+        if (problem != null) {
+            if (problem instanceof ServletException) {
+                throw (ServletException) problem;
+            }
+            if (problem instanceof IOException) {
+                throw (IOException) problem;
+            }
+            sendProcessingError(problem, response);
+        }
     }
 
     /**
@@ -155,7 +139,7 @@ public class PdfRenderer implements Filter {
      * @return
      */
     public FilterConfig getFilterConfig() {
-	return (this.filterConfig);
+        return (this.filterConfig);
     }
 
     /**
@@ -164,7 +148,7 @@ public class PdfRenderer implements Filter {
      * @param filterConfig The filter configuration object
      */
     public void setFilterConfig(FilterConfig filterConfig) {
-	this.filterConfig = filterConfig;
+        this.filterConfig = filterConfig;
     }
 
     /**
@@ -181,61 +165,69 @@ public class PdfRenderer implements Filter {
      */
     @Override
     public String toString() {
-	if (filterConfig == null) {
-	    return ("PdfRenderer()");
-	}
-	StringBuffer sb = new StringBuffer("PdfRenderer(");
-	sb.append(filterConfig);
-	sb.append(")");
-	return (sb.toString());
+        if (filterConfig == null) {
+            return ("PdfRenderer()");
+        }
+        StringBuffer sb = new StringBuffer("PdfRenderer(");
+        sb.append(filterConfig);
+        sb.append(")");
+        return (sb.toString());
     }
 
     private void sendProcessingError(Throwable t, ServletResponse response) {
-	String stackTrace = getStackTrace(t);
+        String stackTrace = getStackTrace(t);
 
-	if (stackTrace != null && !stackTrace.equals("")) {
-	    try {
-		response.setContentType("text/html");
-		PrintStream ps = new PrintStream(response.getOutputStream());
-		PrintWriter pw = new PrintWriter(ps);
-		pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
+        if (stackTrace != null && !stackTrace.equals("")) {
+            try {
+                response.setContentType("text/html");
+                PrintStream ps = new PrintStream(response.getOutputStream());
+                PrintWriter pw = new PrintWriter(ps);
+                pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
-		// PENDING! Localize this for next official release
-		pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
-		pw.print(stackTrace);
-		pw.print("</pre></body>\n</html>"); //NOI18N
-		pw.close();
-		ps.close();
-		response.getOutputStream().close();
-	    } catch (Exception ex) {
-	    }
-	} else {
-	    try {
-		PrintStream ps = new PrintStream(response.getOutputStream());
-		t.printStackTrace(ps);
-		ps.close();
-		response.getOutputStream().close();
-	    } catch (Exception ex) {
-	    }
-	}
+                // PENDING! Localize this for next official release
+                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                pw.print(stackTrace);
+                pw.print("</pre></body>\n</html>"); //NOI18N
+                pw.close();
+                ps.close();
+                response.getOutputStream().close();
+            } catch (Exception ex) {
+            }
+        } else {
+            try {
+                PrintStream ps = new PrintStream(response.getOutputStream());
+                t.printStackTrace(ps);
+                ps.close();
+                response.getOutputStream().close();
+            } catch (Exception ex) {
+            }
+        }
     }
 
     public static String getStackTrace(Throwable t) {
-	String stackTrace = null;
-	try {
-	    StringWriter sw = new StringWriter();
-	    PrintWriter pw = new PrintWriter(sw);
-	    t.printStackTrace(pw);
-	    pw.close();
-	    sw.close();
-	    stackTrace = sw.getBuffer().toString();
-	} catch (Exception ex) {
-	}
-	return stackTrace;
+        String stackTrace = null;
+        try {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            t.printStackTrace(pw);
+            pw.close();
+            sw.close();
+            stackTrace = sw.getBuffer().toString();
+        } catch (Exception ex) {
+        }
+        return stackTrace;
     }
 
     public void log(String msg) {
-	filterConfig.getServletContext().log(msg);
+        log(msg, null);
+    }
+
+    public void log(String msg, Throwable t) {
+        if (t != null) {
+            filterConfig.getServletContext().log(msg, t);
+        } else {
+            filterConfig.getServletContext().log(msg);
+        }
     }
 
 }
