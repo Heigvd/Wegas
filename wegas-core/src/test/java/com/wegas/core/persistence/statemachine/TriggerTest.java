@@ -98,6 +98,7 @@ public class TriggerTest {
         this.triggerDescriptor.setOneShot(false);
         //  this.triggerDescriptor.setId(4L);
         this.triggerDescriptor.buildStateMachine();
+        this.triggerDescriptor.setScope(new TeamScope());
         TriggerDescriptor newTrigger = new TriggerDescriptor();
         newTrigger.setDefaultInstance(this.trigger);
         // newTrigger.setId(5L);
