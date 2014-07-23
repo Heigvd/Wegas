@@ -261,7 +261,10 @@ YUI.add('wegas-editor-action', function(Y) {
             } else {
                 // @ TODO ERROR
             }
-            this.set("url", this.get("editorUrl") + params + "&outputType=" + this.get("outputType") + "&mode=" + this.get("mode"));
+            this.set("url", this.get("editorUrl") + params 
+                + "&outputType=" + this.get("outputType") 
+                + "&mode=" + this.get("mode") 
+                + "&defaultValues=" + this.get("defaultValues"));
 
             PrintAction.superclass.execute.call(this);
         }
@@ -290,6 +293,9 @@ YUI.add('wegas-editor-action', function(Y) {
             },
             mode: {
                 value: 'editor'
+            },
+            defaultValues: {
+                value: 'true'
             },
             entity: {}
         }
