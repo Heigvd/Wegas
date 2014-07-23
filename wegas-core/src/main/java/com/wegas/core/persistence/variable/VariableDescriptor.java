@@ -204,6 +204,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * 
+     * @param defaultInstance
+     * @param player
+     * @return
+     */
+    @XmlTransient
+    public T getInstance(Boolean defaultInstance, Player player) {
+        if (defaultInstance) {
+            return this.getDefaultInstance();
+        } else {
+            return this.getInstance(player);
+        }
+    }
+
+    /**
      *
      * @return
      */
@@ -304,7 +319,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @return the defaultInstance
      */
     public T getDefaultInstance() {
-        return (T)defaultInstance;
+        return (T) defaultInstance;
     }
 
     /**
