@@ -6,6 +6,7 @@
  * Licensed under the MIT License
  */
 /**
+ * @deprecated not implemented...
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
