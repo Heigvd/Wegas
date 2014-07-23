@@ -14,38 +14,44 @@
 }
 
 @font-face {  
-    src: url("/Wegas/wegas-app/fonts/DejaVuSansMono.ttf");
+    //src: url("/wegas-app/fonts/DejaVuSansMono.ttf");
     -fs-pdf-font-embed: embed;  
+    src: url("http://dev.albasim.ch/wegas-app/fonts/DejaVuSansMono.ttf");
     -fs-pdf-font-encoding: Identity-H;
 }
 
 @font-face {  
-    src: url("/Wegas/wegas-app/fonts/DejaVuSansMono-Bold.ttf");
+    //src: url("/wegas-app/fonts/DejaVuSansMono-Bold.ttf");
     -fs-pdf-font-embed: embed;  
+    src: url("http://dev.albasim.ch/wegas-app/fonts/DejaVuSansMono-Bold.ttf");
     -fs-pdf-font-encoding: Identity-H;
 }
 
 @font-face {  
-    src: url("/Wegas/wegas-app/fonts/DejaVuSansMono-Oblique.ttf");
+    //src: url("/wegas-app/fonts/DejaVuSansMono-Oblique.ttf");
     -fs-pdf-font-embed: embed;  
+    src: url("http://dev.albasim.ch/wegas-app/fonts/DejaVuSansMono-Oblique.ttf");
     -fs-pdf-font-encoding: Identity-H;
 }
 
 @font-face {  
-    src: url("/Wegas/wegas-app/fonts/DejaVuSans.ttf");
+    //src: url("/wegas-app/fonts/DejaVuSans.ttf");
     -fs-pdf-font-embed: embed;  
+    src: url("http://dev.albasim.ch/wegas-app/fonts/DejaVuSans.ttf");
     -fs-pdf-font-encoding: Identity-H;
 }  
 
 @font-face {  
-    src: url("/Wegas/wegas-app/fonts/DejaVuSans-Bold.ttf");
+    //src: url("/wegas-app/fonts/DejaVuSans-Bold.ttf");
     -fs-pdf-font-embed: embed;  
+    src: url("http://dev.albasim.ch/wegas-app/fonts/DejaVuSans-Bold.ttf");
     -fs-pdf-font-encoding: Identity-H;
 }  
 
 @font-face {  
-    src: url("/Wegas/wegas-app/fonts/DejaVuSans-Oblique.ttf");
+    //src: url("/wegas-app/fonts/DejaVuSans-Oblique.ttf");
     -fs-pdf-font-embed: embed;  
+    src: url("http://dev.albasim.ch/wegas-app/fonts/DejaVuSans-Oblique.ttf");
     -fs-pdf-font-encoding: Identity-H;
 }  
 
