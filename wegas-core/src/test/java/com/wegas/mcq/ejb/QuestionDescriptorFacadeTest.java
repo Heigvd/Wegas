@@ -14,7 +14,6 @@ import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
-import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.mcq.persistence.*;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
@@ -82,7 +81,8 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); // And the default reply is the second
         vdf.createChild(question.getId(), choice);
 
-        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultId(r2.getId());// Sset the default reply to the second one
+        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultIndex(-1);
+        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultId(r2.getId());// Set the default reply to the second one
         choice = (ChoiceDescriptor) vdf.update(choice.getId(), choice);
 
         gameModelFacade.reset(gameModel.getId());                               // Restart to propagate default instance value change

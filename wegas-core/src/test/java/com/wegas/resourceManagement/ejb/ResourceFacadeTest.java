@@ -11,8 +11,6 @@ import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
-import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
@@ -379,7 +377,6 @@ public class ResourceFacadeTest extends AbstractEJBTest {
 
     @Test
     public void testAddPredecessors() throws Exception {
-
         // Lookup Ejb's
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
@@ -397,7 +394,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), task2);
 
         TaskDescriptor created = (TaskDescriptor) vdf.find(task2.getId());
-        assertEquals("My task2", created.getPredecessor(0).getLabel());
+        assertEquals("My task", created.getPredecessor(0).getLabel());
         assertEquals(1, created.getPredecessors().size());
 
         // Create a task
@@ -407,6 +404,7 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), task3);
 
         // and duplicate it
+        task2.getPredecessors().clear();
         task2.setPredecessorNames(Arrays.asList("task3"));
         TaskDescriptor updated = (TaskDescriptor) vdf.update(task2.getId(), task2);
         assertEquals("task3", updated.getPredecessor(0).getLabel());
