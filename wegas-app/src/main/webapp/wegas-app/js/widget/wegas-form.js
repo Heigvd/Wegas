@@ -12,7 +12,7 @@
 YUI.add('wegas-form', function(Y) {
     "use strict";
 
-    var FORM = "form", inputEx = Y.inputEx, lang = Y.Lang, Wegas = Y.Wegas, Form;
+    var FORM = "form", inputEx = Y.inputEx, Wegas = Y.Wegas, Form;
 
     /**
      * @name Y.Wegas.Form
@@ -113,8 +113,8 @@ YUI.add('wegas-form', function(Y) {
                 type: "group"
             });                                                                 // Set up the form parentEl attribute, so it knows where to render
 
-            Y.inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
-                var form = Y.inputEx(cfg);                                      // Initialize and render form
+            inputEx.use(val, Y.bind(function(cfg) {                           // Load form dependencies
+                var form = inputEx(cfg);                                      // Initialize and render form
                 form.setValue(this.get("values"), false);                       // Sync form with "values" ATTR
                 form.removeClassFromState();                                    // Remove required state
                 this.set(FORM, form);
@@ -185,7 +185,7 @@ YUI.add('wegas-form', function(Y) {
                     index: 8,
                     _type: "group",
                     legend: "Fields",
-                    fields: Y.inputEx.Group.groupOptions
+                    fields: inputEx.Group.groupOptions
                 }
             },
             buttons: {
@@ -211,103 +211,7 @@ YUI.add('wegas-form', function(Y) {
         data: "SaveObjectAction"
     });
 
-    /**
-     *  @hack So we can easily change classs on inputex fields
-     */
-    inputEx.Field.prototype.addClassName = function(className) {
-        Y.one(this.divEl).addClass(className);
-    };
-    inputEx.Field.prototype.removeClassName = function(className) {
-        Y.one(this.divEl).removeClass(className);
-    };
-    inputEx.Field.prototype.removeClassFromState = function() {
-        Y.one(this.divEl).all(".inputEx-invalid .inputEx-message").setContent("");
-        Y.one(this.divEl).all(".inputEx-invalid").removeClass("inputEx-invalid");
-    };
-
-    Y.inputEx.Group.groupOptions.splice(0, 4);
-    Y.inputEx.Group.groupOptions[0].label = null;
-    Y.inputEx.Group.groupOptions[0].useButtons = true;
-
-    /*
-     * @hack Automatically add the "optional" message when necessary
-     */
-    inputEx.StringField.prototype.setOptions = function(options) {
-        inputEx.StringField.superclass.setOptions.call(this, options);
-
-        this.options.regexp = options.regexp;
-        this.options.size = options.size;
-        this.options.maxLength = options.maxLength;
-        this.options.minLength = options.minLength;
-        this.options.typeInvite = options.typeInvite;
-        if (this.options.typeInvite === undefined) {
-            this.options.typeInvite = !this.options.required ? "optional" : "required";// @Modified
-        }
-
-        this.options.readonly = options.readonly;
-        this.options.autocomplete = lang.isUndefined(options.autocomplete) ?
-            inputEx.browserAutocomplete :
-            (options.autocomplete === false || options.autocomplete === "off") ? false : true;
-        this.options.trim = (options.trim === true) ? true : false;
-    };
-
-    /** 
-     * Modified to allow changes on the fly
-     */
-    inputEx.StringField.prototype.initEvents = function() {
-        //Y.on("change", this.onChange, this.el, this);
-        Y.on("valueChange", this.onChange, this.el, this);                      // @Modified
-
-        if (Y.UA.ie > 0) { // refer to inputEx-95
-            var field = this.el;
-            Y.on("key", function(e) {
-                field.blur();
-                field.focus();
-            }, this.el, 'down:13', this);
-        }
-
-        Y.on("focus", this.onFocus, this.el, this);
-        Y.on("blur", this.onBlur, this.el, this);
-        Y.on("keypress", this.onKeyPress, this.el, this);
-        Y.on("keyup", this.onKeyUp, this.el, this);
-    };
-    /**
-     * @hack do not fire event as typeInvite should not be considered.
-     */
-    inputEx.StringField.prototype.onChange = function(e) {
-        if (e.prevVal === this.options.typeInvite) {                            // @Modified start
-            e.prevVal = "";
-        }
-        if (e.newVal === this.options.typeInvite) {
-            e.newVal = "";
-        }
-        if (e.newVal !== e.prevVal) {                                           // @Modified end (include)
-            this.fireUpdatedEvt();
-        }
-    };
-    /**
-     * @hack Let inputex also get requirement from selectfields, lists
-     */
-    inputEx.getRawModulesFromDefinition = function(inputexDef) {
-        var type = inputexDef.type || 'string',
-            module = YUI_config.groups.inputex.modulesByType[type],
-            modules = [module || type],
-            //set fields if they exist
-            fields = inputexDef.fields
-            //else see if we have elementType for lists - if neither then we end up with null
-            || inputexDef.availableFields || [];
-
-        if (inputexDef.elementType) {
-            fields.push(inputexDef.elementType);
-        }
-
-        // recursive for group,forms,list,combine, etc...
-        Y.Array.each(fields, function(field) {
-            modules = modules.concat(this.getModulesFromDefinition(field));
-        }, this);
-
-        // TODO: inplaceedit  editorField
-        return modules;
-    };
-
+    inputEx.Group.groupOptions.splice(0, 4);
+    inputEx.Group.groupOptions[0].label = null;
+    inputEx.Group.groupOptions[0].useButtons = true;
 });
