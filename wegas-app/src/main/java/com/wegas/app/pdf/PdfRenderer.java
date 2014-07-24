@@ -31,6 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xml.sax.InputSource;
@@ -43,6 +45,8 @@ import org.xml.sax.InputSource;
  */
 @WebFilter(filterName = "PdfRenderer", urlPatterns = {"/print.html"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class PdfRenderer implements Filter {
+
+    private static final Logger logger = LoggerFactory.getLogger(PdfRenderer.class);
 
     private static final boolean debug = true;
 
@@ -234,9 +238,9 @@ public class PdfRenderer implements Filter {
 
     public void log(String msg, Throwable t) {
         if (t != null) {
-            filterConfig.getServletContext().log(msg, t);
+            logger.info(msg, t);
         } else {
-            filterConfig.getServletContext().log(msg);
+            logger.info(msg);
         }
     }
 
