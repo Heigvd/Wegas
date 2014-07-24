@@ -31,8 +31,8 @@ public class ImpactPrinter {
      * @param script the script to print
      */
     public ImpactPrinter(String script) {
-        // Replace all new line by a semicolon 
-        this.script = script.replaceAll("\r\n|\n|\r", ";");
+        // Replace all new line by a semicolon  and ensure there is a ";" at the end
+        this.script = script.replaceAll("\r\n|\n|\r", ";") + ";";
     }
 
     /**
