@@ -13,6 +13,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -110,6 +111,7 @@ public class PdfRenderer implements Filter {
 
                 if (debug) {
                     printEnv();
+                    log("Default charset: " + Charset.defaultCharset());
                     log("Input encoding: " + xhtmlDocument.getInputEncoding());
                 }
 
@@ -252,14 +254,16 @@ public class PdfRenderer implements Filter {
 
         Collections.sort(keys);
 
+        String output = "";
+
         for (String k : keys) {
             String v = env.get(k);
             if (v != null) {
-                log(String.format("%s = \"%s\"", k, env.get(k)));
+                output += (String.format("%s = \"%s%n", k, env.get(k)));
             } else {
-                log(String.format("%s is not set", k));
+                output += (String.format("%s is not set%n", k));
             }
         }
+        log(output);
     }
-
 }
