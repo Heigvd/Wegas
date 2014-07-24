@@ -12,7 +12,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 var taskTable, currentPeriod,
-    DEBUGMODE = true,
+    DEBUGMODE = false,
     STEPS = 10,
     MINTASKDURATION = 0.1,
     STEPNAMES = ["Lundi matin", "Lundi après-midi", "Mardi matin", "Mardi après-midi", "Mercredi matin",
