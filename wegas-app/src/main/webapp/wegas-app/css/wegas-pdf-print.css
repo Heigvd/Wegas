@@ -161,15 +161,10 @@ div.wegas-pdf-text-container {
 }
 
 div.wegas-pdf-text-container div{
-    display : inline-block;
+    display : block;
     padding : 0px 10px;
     background: #fafafc;
     /* border : 1px solid #353B41; */    
-}
-
-
-div.wegas-pdf-text-container div span.code{
-    display: grid;
 }
 
 span.wegas-pdf-variable-title {
