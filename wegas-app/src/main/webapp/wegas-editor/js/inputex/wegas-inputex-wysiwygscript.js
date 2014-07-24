@@ -115,7 +115,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.sortButton = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-sort\"></span>",
                 tooltip: "Sort",
-//                visible: false,
                 on: {
                     click: Y.bind(function() {
                         var mode = this.options.viewSrc;
@@ -172,8 +171,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     success: Y.bind(function() {
                         Y.Widget.getByNode(this.divEl).showMessageBis("success", "Impact executed successfully.");
                     }, this),
-                    failure: Y.bind(function() {
-                        Y.Widget.getByNode(this.divEl).showMessageBis("success", "Impact executed successfully.");
+                    failure: Y.bind(function(e) {
+                        Y.Widget.getByNode(this.divEl).showMessageBis("error", "Error executing impact: <br /><br />"
+                            + (e.response.results.exception || e.response));
                     }, this)
                 }
             });
