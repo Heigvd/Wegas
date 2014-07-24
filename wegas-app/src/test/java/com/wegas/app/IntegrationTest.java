@@ -52,7 +52,7 @@ public class IntegrationTest {
         // deployer.deploy(war);
         ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR,
                 new File("./target/embed-war/"));
-        archive.addClassPath(new File("./target/classes/"));                  // target/classes directory contains complied servlets
+        archive.addClassPath(new File("./target/classes/"));                    // target/classes directory contains complied servlets
         archive.addClassPath(new File("../wegas-core/target/classes"));         // wegas-core dependency
         //archive.addClassPath(new File("../wegas-core/target/wegas-core_1.0-SNAPSHOT.jar"));// wegas-core dependency
         //archive.addMetadata(new File("./src/main/webapp/WEB-INF", "web.xml"));// resources/sun-web.xml is the WEB-INF/sun-web.xml
