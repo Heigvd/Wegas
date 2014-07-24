@@ -10,9 +10,13 @@ package com.wegas.core;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -351,4 +355,28 @@ public class Helper {
 	return sb.toString();
     }
 
+
+    /**
+     * print ENV variables to log
+     */
+    public static void logEnv() {
+        Map<String, String> env = System.getenv();
+
+        Set<String> keySet = env.keySet();
+        List<String> keys = new ArrayList<>(keySet);
+
+        Collections.sort(keys);
+
+        String output = "";
+
+        for (String k : keys) {
+            String v = env.get(k);
+            if (v != null) {
+                output += (String.format("%s = \"%s%n", k, env.get(k)));
+            } else {
+                output += (String.format("%s is not set%n", k));
+            }
+        }
+        logger.info(output);
+    }
 }
