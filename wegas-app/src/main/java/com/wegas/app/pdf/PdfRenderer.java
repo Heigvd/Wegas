@@ -13,6 +13,11 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -39,7 +44,7 @@ import org.xml.sax.InputSource;
 @WebFilter(filterName = "PdfRenderer", urlPatterns = {"/print.html"}, dispatcherTypes = {DispatcherType.REQUEST})
 public class PdfRenderer implements Filter {
 
-    private static final boolean debug = false;
+    private static final boolean debug = true;
 
     // The filter configuration object we are associated with.  If
     // this value is null, this filter instance is not currently
@@ -98,6 +103,11 @@ public class PdfRenderer implements Filter {
                 StringReader contentReader = new StringReader(capContent.getContent());
                 InputSource source = new InputSource(contentReader);
                 Document xhtmlDocument = documentBuilder.parse(source);
+
+                if (debug) {
+                    printEnv();
+                    log("Input encoding: " + xhtmlDocument.getInputEncoding());
+                }
 
                 ITextRenderer renderer = new ITextRenderer();
 
@@ -227,6 +237,24 @@ public class PdfRenderer implements Filter {
             filterConfig.getServletContext().log(msg, t);
         } else {
             filterConfig.getServletContext().log(msg);
+        }
+    }
+
+    public void printEnv() {
+        Map<String, String> env = System.getenv();
+
+        Set<String> keySet = env.keySet();
+        List<String> keys = new ArrayList<>(keySet);
+
+        Collections.sort(keys);
+
+        for (String k : keys) {
+            String v = env.get(k);
+            if (v != null) {
+                log(String.format("%s = \"%s\"", k, env.get(k)));
+            } else {
+                log(String.format("%s is not set", k));
+            }
         }
     }
 
