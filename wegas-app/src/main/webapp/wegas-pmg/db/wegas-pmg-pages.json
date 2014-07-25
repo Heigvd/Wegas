@@ -751,6 +751,22 @@
                         }
                     }
                 ]
+            }, {
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('tasks')"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ]
             }
         ]
     },
@@ -811,10 +827,35 @@
             }
         ]
     },
+
     "5": {
         "@name": "Resources",
-        "type": "PmgResourcesPanels",
-        "cssClass": "resources-page"
+        "type": "List",
+        "direction": "vertical",
+        "children": [
+            {
+                "type": "PmgResourcesPanels",
+                "cssClass": "resources-page"
+            },
+            {
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('employees')"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ],
+                "data": {}
+            }
+        ]
     },
     "6": {
         "@name": "Actions",
@@ -832,6 +873,24 @@
                 "variable": {
                     "content": "Variable.find('actions').item(currentPhase.value)"
                 }
+            }, {
+                "label": "",
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('actions').item(currentPhase.value)"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ],
+                "data": {}
             }
         ]
     },
@@ -850,6 +909,24 @@
                 "variable": {
                     "content": "Variable.find('questions').item(currentPhase.value).item(currentPeriod.items[currentPhase.value].value - 1)"
                 }
+            }, {
+                "label": "",
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('questions').item(currentPhase.value).item(currentPeriod.items[currentPhase.value].value - 1)"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ],
+                "data": {}
             }
         ]
     },
@@ -868,6 +945,24 @@
                 "variable": {
                     "name": "inbox"
                 }
+
+            }, {
+                "label": "",
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('inbox')"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ]
             }
         ]
     },
@@ -886,6 +981,23 @@
                 "variable": {
                     "name": "inbox"
                 }
+            }, {
+                "label": "",
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('inbox')"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ]
             }
         ]
     },
@@ -1088,6 +1200,24 @@
                         "fn": "PMGLineCompleteness"
                     }
                 ]
+            }, {
+                "label": "",
+                "type": "Button",
+                "cssClass": "wegas-icon-pdf",
+                "plugins": [
+                    {
+                        "fn": "PrintActionPlugin",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "root": {
+                                "@class": "Script",
+                                "content": "Variable.find('tasks')"
+                            },
+                            "outputType": "html"
+                        }
+                    }
+                ]
+
             }
         ]
     },
