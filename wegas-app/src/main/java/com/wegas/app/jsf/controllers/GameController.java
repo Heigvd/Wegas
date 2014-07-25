@@ -36,6 +36,12 @@ public class GameController extends AbstractGameController {
      */
     @ManagedProperty("#{param.gameId}")
     private Long gameId;
+
+    /**
+     *
+     */
+    @ManagedProperty("#{param.gameModelId}")
+    private Long gameModelId;
     /**
      *
      */
@@ -74,6 +80,16 @@ public class GameController extends AbstractGameController {
             }
         }
 
+        if (this.gameModelId != null) {
+            try {
+                // Select any player in the first game of the game model
+                currentPlayer = playerFacade.findByGameModelId(gameModelId);
+            } catch (NoResultException e) {
+                errorController.dispatch("Model " + gameModelId + " has no players.");
+
+            }
+        }
+
         if (currentPlayer == null) {                                            // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
@@ -98,5 +114,13 @@ public class GameController extends AbstractGameController {
      */
     public void setGameId(Long gameId) {
         this.gameId = gameId;
+    }
+
+    public Long getGameModelId() {
+        return gameModelId;
+    }
+
+    public void setGameModelId(Long gameModelId) {
+        this.gameModelId = gameModelId;
     }
 }
