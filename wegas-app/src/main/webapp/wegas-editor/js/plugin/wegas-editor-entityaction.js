@@ -188,7 +188,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             });
             tab.form.detach("updated");
             tab.form.on("updated", function(e) {
-                Plugin.EditEntityAction.showFormMessage("success", "Change not saved");
+                Plugin.EditEntityAction.showFormMessage("success", "Changes not saved");
             });
 
             //tab.form.detach("cancel");
