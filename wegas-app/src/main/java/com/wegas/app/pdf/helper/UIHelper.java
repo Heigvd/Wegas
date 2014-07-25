@@ -23,40 +23,43 @@ import javax.faces.context.ResponseWriter;
  */
 public class UIHelper {
 
-    public static final String CSS_CLASS_COLUMN = "wegas-pdf-column";
-    public static final String CSS_CLASS_COLUMNS = "wegas-pdf-columns";
 
-    public static final String CSS_CLASS_CONTENT = "wegas-pdf-content";
-    public static final String CSS_CLASS_ERROR = "wegas-pdf-error";
-    public static final String CSS_CLASS_FOLDER = "wegas-pdf-folder";
+    public static final String CSS_CLASS_PREFIX = "wegas-pdf-";
+    
+    public static final String CSS_CLASS_COLUMN = CSS_CLASS_PREFIX + "column";
+    public static final String CSS_CLASS_COLUMNS = CSS_CLASS_PREFIX + "columns";
 
-    public static final String CSS_CLASS_MAIN_IMAGE = "wegas-pdf-title-image";
-    public static final String CSS_CLASS_MAIN_TITLE = "wegas-pdf-title";
+    public static final String CSS_CLASS_CONTENT = CSS_CLASS_PREFIX + "content";
+    public static final String CSS_CLASS_ERROR = CSS_CLASS_PREFIX + "error";
+    public static final String CSS_CLASS_FOLDER = CSS_CLASS_PREFIX + "folder";
 
-    public static final String CSS_CLASS_MENU = "wegas-pdf-menu";
+    public static final String CSS_CLASS_MAIN_IMAGE = CSS_CLASS_PREFIX + "title-image";
+    public static final String CSS_CLASS_MAIN_TITLE = CSS_CLASS_PREFIX + "title";
 
-    public static final String CSS_CLASS_MESSAGE_CONTAINER = "wegas-pdf-message-container";
+    public static final String CSS_CLASS_MENU = CSS_CLASS_PREFIX + "menu";
 
-    public static final String CSS_CLASS_PICTURE = "wegas-pdf-picture";
-    public static final String CSS_CLASS_PICTURES = "wegas-pdf-pictures-collection";
+    public static final String CSS_CLASS_MESSAGE_CONTAINER = CSS_CLASS_PREFIX + "message-container";
 
-    public static final String CSS_CLASS_PROPERTY = "wegas-pdf-property";
-    public static final String CSS_CLASS_PROPERTY_KEY = "wegas-pdf-property-key";
-    public static final String CSS_CLASS_PROPERTY_VALUE = "wegas-pdf-property-value";
-    public static final String CSS_CLASS_PROPERTY_VALUE_NA = "wegas-pdf-property-value-na";
-    public static final String CSS_CLASS_PROPERTY_VALUE_TEXTAREA = "wegas-pdf-property-value-textarea";
+    public static final String CSS_CLASS_PICTURE = CSS_CLASS_PREFIX + "picture";
+    public static final String CSS_CLASS_PICTURES = CSS_CLASS_PREFIX + "pictures-collection";
 
-    public static final String CSS_CLASS_SOURCE_CODE = "wegas-pdf-code";
+    public static final String CSS_CLASS_PROPERTY = CSS_CLASS_PREFIX + "property";
+    public static final String CSS_CLASS_PROPERTY_KEY = CSS_CLASS_PREFIX + "property-key";
+    public static final String CSS_CLASS_PROPERTY_VALUE = CSS_CLASS_PREFIX + "property-value";
+    public static final String CSS_CLASS_PROPERTY_VALUE_NA = CSS_CLASS_PREFIX + "property-value-na";
+    public static final String CSS_CLASS_PROPERTY_VALUE_TEXTAREA = CSS_CLASS_PREFIX + "property-value-textarea";
 
-    public static final String CSS_CLASS_TEXT_CONTAINER = "wegas-pdf-text-container";
+    public static final String CSS_CLASS_SOURCE_CODE = CSS_CLASS_PREFIX + "code";
 
-    public static final String CSS_CLASS_VARIABLE_CONTAINER = "wegas-pdf-variable-container";
-    public static final String CSS_CLASS_VARIABLE_SUBTITLE = "wegas-pdf-variable-subtitle";
-    public static final String CSS_CLASS_VARIABLE_SUBSUBTITLE = "wegas-pdf-variable-subsubtitle";
+    public static final String CSS_CLASS_TEXT_CONTAINER = CSS_CLASS_PREFIX + "text-container";
 
-    public static final String CSS_CLASS_VARIABLE_TITLE = "wegas-pdf-variable-title";
+    public static final String CSS_CLASS_VARIABLE_CONTAINER = CSS_CLASS_PREFIX + "variable-container";
+    public static final String CSS_CLASS_VARIABLE_SUBTITLE = CSS_CLASS_PREFIX + "variable-subtitle";
+    public static final String CSS_CLASS_VARIABLE_SUBSUBTITLE = CSS_CLASS_PREFIX + "variable-subsubtitle";
 
-    public static final String CSS_CLASS_INDENT_CODE = "wegas-pdf-indent-code";
+    public static final String CSS_CLASS_VARIABLE_TITLE = CSS_CLASS_PREFIX + "variable-title";
+
+    public static final String CSS_CLASS_INDENT_CODE = CSS_CLASS_PREFIX + "indent-code";
 
     public static final String TEXT_ACTIVE = "Active";
     public static final String TEXT_CONDITION = "Condition";
@@ -67,7 +70,7 @@ public class UIHelper {
     public static final String TEXT_DURATION = "Duration";
     public static final String TEXT_ID = "ID";
     public static final String TEXT_IMPACT_SOURCECODE = "Impact";
-    public static final String TEXT_IMPACT_TEXT = "Impact text";
+    public static final String TEXT_IMPACT_TEXT = "Result";
     public static final String TEXT_INDEX = "Index";
     public static final String TEXT_LABEL = "Label";
     public static final String TEXT_NAME = "Name";
@@ -86,6 +89,11 @@ public class UIHelper {
     public static final String TEXT_MESSAGE = "Message";
     public static final String TEXT_MAIN_SKILL = "Mail Skill";
     public static final String TEXT_ATTACHEMENTS = "Attachements";
+    
+    public static final String TEXT_MIN_VALUE = "Max Value";
+    public static final String TEXT_MAX_VALUE = "Min Value";
+    public static final String TEXT_VALUE = "Value";
+
 
     public static String unescapeAndTrimQuotes(String st) {
         return Helper.unescape(st).replaceAll("^\\s*\"|\"\\s*$", "");
@@ -205,7 +213,7 @@ public class UIHelper {
     }
 
     /**
-     * Print a Integer property
+     * Print a Object property
      *
      * @param ctx
      * @param writer
@@ -213,20 +221,7 @@ public class UIHelper {
      * @param value
      * @throws IOException
      */
-    public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Integer value) throws IOException {
-        printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
-    }
-
-    /**
-     * Print a Long property
-     *
-     * @param ctx
-     * @param writer
-     * @param key
-     * @param value
-     * @throws IOException
-     */
-    public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Long value) throws IOException {
+    public static void printProperty(FacesContext ctx, ResponseWriter writer, String key, Object value) throws IOException {
         printProperty(ctx, writer, key, (value == null ? TEXT_NOT_AVAILABLE : value.toString()));
     }
 
@@ -281,7 +276,7 @@ public class UIHelper {
      */
     public static void printPropertyImpactScript(FacesContext ctx, ResponseWriter writer, String key, Script script) throws IOException {
 
-        printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
+        //printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
         try {
             if (script == null) {
                 printPropertyScript(ctx, writer, key, script);
@@ -371,7 +366,8 @@ public class UIHelper {
      */
     public static void printText(FacesContext ctx, ResponseWriter writer, String text, String style) throws IOException {
 
-        if (text == null || text.replace("\\s", "").length() == 0) {
+        //if (text == null || text.replace("\\s", "").length() == 0) {
+        if (text == null){
             text = TEXT_NOT_AVAILABLE;
             style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
         }
