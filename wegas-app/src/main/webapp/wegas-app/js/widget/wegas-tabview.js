@@ -71,7 +71,6 @@ YUI.add('wegas-tabview', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.TabView# */
-
         /**
          * Prefix css. Static
          */
