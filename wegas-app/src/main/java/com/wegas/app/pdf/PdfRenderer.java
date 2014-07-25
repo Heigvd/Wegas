@@ -7,6 +7,7 @@
  */
 package com.wegas.app.pdf;
 
+import com.wegas.core.Helper;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
@@ -14,11 +15,6 @@ import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -35,6 +31,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 import org.xml.sax.InputSource;
 
@@ -107,12 +104,14 @@ public class PdfRenderer implements Filter {
                  */
                 StringReader contentReader = new StringReader(capContent.getContent());
                 InputSource source = new InputSource(contentReader);
+
                 Document xhtmlDocument = documentBuilder.parse(source);
 
                 if (debug) {
-                    printEnv();
+                    Helper.logEnv();
+                    Element utf8Test = xhtmlDocument.getElementById("testUTF8");
+                    log("UTF-8 P test" + utf8Test.getTextContent());
                     log("Default charset: " + Charset.defaultCharset());
-                    log("Input encoding: " + xhtmlDocument.getInputEncoding());
                 }
 
                 ITextRenderer renderer = new ITextRenderer();
@@ -244,26 +243,5 @@ public class PdfRenderer implements Filter {
         } else {
             logger.info(msg);
         }
-    }
-
-    public void printEnv() {
-        Map<String, String> env = System.getenv();
-
-        Set<String> keySet = env.keySet();
-        List<String> keys = new ArrayList<>(keySet);
-
-        Collections.sort(keys);
-
-        String output = "";
-
-        for (String k : keys) {
-            String v = env.get(k);
-            if (v != null) {
-                output += (String.format("%s = \"%s%n", k, env.get(k)));
-            } else {
-                output += (String.format("%s is not set%n", k));
-            }
-        }
-        log(output);
     }
 }
