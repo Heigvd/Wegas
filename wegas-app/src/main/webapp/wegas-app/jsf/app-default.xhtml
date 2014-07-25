@@ -40,15 +40,15 @@
                             if (window.Rollbar) {
                                 window.Rollbar.error(msg, e);                   // Send Rollbar event
                             }
-                            if (window.console)
+                            if (window.console) {
                                 console.error("Wegas.App", msg, e, src);        // Log in console
-
+                            }
                             // Y.log(msg /*+ ( ( e.stack ) ? e.stack : e )*/, "error", '');// YUI log
 
                             return !#{requestController.debugMode()};           // Returning true from this function will stop the Error from being thrown.
                         },
                         //filter: "raw",
-                        //filters: {yui: "raw", loader: 'debug'}, // Like filter, but can be set for each module
+                        //filters: {yui: "raw", loader: 'debug'},               // Like filter, but can be set for each module
                         //loadOptional: true,
                         Wegas: {
                             base: "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}",
@@ -81,7 +81,6 @@
                         var ix = YUI_config.groups.inputex;
                         ix.base = YUI_config.Wegas.base + "/lib/inputex/src/";
                         ix.root = "/lib/inputex/src/";
-                        ix.filter = "raw";
                         ix.comboBase = YUI_config.Wegas.comboBase;
                         ix.combine = #{!requestController.debugMode()};
                 </script>
