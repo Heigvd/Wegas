@@ -12,9 +12,7 @@
 YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
-    var Linkwidget, Plugin = Y.Plugin,
-        Action = Plugin.Action,
-        Wegas = Y.Wegas,
+    var Linkwidget, Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
         CONTENTBOX = 'contentBox';
 
     /**
@@ -28,7 +26,6 @@ YUI.add('wegas-editor-action', function(Y) {
     };
     Y.extend(ResetAction, Action, {
         /** @lends Y.Plugin.ResetAction# */
-
         /**
          * @function
          * @private
@@ -63,32 +60,27 @@ YUI.add('wegas-editor-action', function(Y) {
     };
     Y.extend(OpenTabAction, Action, {
         /** @lends Y.Plugin.OpenTabAction# */
-
         /**
          * @function
          * @private
          */
         execute: function() {
             if (this.get("emptyTab")) {
-                //if (this.get("tabSelector") === "#rightTabView") {
-                //        && !Wegas.TabView.findTab(label)) {
                 Y.Widget.getByNode("#rightTabView").destroyAll();
             }
 
             var label = this.get("label") || this.get("host").get("label"),
-                tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"), {}, this.get("wchildren")); // Forward plugin data to the target widget
+                tab = Wegas.TabView.findTabAndLoadWidget(label, this.get("tabSelector"),
+                    this.get("tabCfg"), this.get("wchildren"));                 // Forward plugin data to the target widget
 
             tab.set("selected", this.get("selected"));
 
-            if (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") { // @hack
+            if (this.get("emptyTab") || this.get("tabSelector") !== "#rightTabView") {// @hack
                 tab.set("selected", 2);
             }
 
-            //if (this.get("tabSelector") !== "#rightTabView") {                          // @hack
             tab.plug(Y.Plugin.Removeable);
-            //}
         }
-
     }, {
         /** @lends Y.Plugin.OpenTabAction */
 
@@ -118,6 +110,9 @@ YUI.add('wegas-editor-action', function(Y) {
             },
             wchildren: {
                 value: []
+            },
+            tabCfg: {
+                value: {}
             }
         }
     });
@@ -142,14 +137,16 @@ YUI.add('wegas-editor-action', function(Y) {
     Plugin.OpenTabActionThi = function() {
         Plugin.OpenTabActionThi.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(Plugin.OpenTabActionThi, Plugin.OpenTabAction, {}, {
+    Y.extend(Plugin.OpenTabActionThi, Plugin.OpenTabActionSec, {}, {
         NS: "OpenTabActionThi",
-        NAME: "OpenTabActionThi",
-        ATTRS: {
-            selected: {
-                value: 0
-            }
-        }
+        NAME: "OpenTabActionThi"
+    });
+    Plugin.OpenTabActionFou = function() {
+        Plugin.OpenTabActionFou.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(Plugin.OpenTabActionFou, Plugin.OpenTabActionSec, {}, {
+        NS: "OpenTabActionFou",
+        NAME: "OpenTabActionFou"
     });
 
     /**
@@ -261,9 +258,9 @@ YUI.add('wegas-editor-action', function(Y) {
             } else {
                 // @ TODO ERROR
             }
-            this.set("url", this.get("editorUrl") + params 
-                + "&outputType=" + this.get("outputType") 
-                + "&mode=" + this.get("mode") 
+            this.set("url", this.get("editorUrl") + params
+                + "&outputType=" + this.get("outputType")
+                + "&mode=" + this.get("mode")
                 + "&defaultValues=" + this.get("defaultValues"));
 
             PrintAction.superclass.execute.call(this);

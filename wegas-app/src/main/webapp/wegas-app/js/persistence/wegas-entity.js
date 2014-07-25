@@ -253,6 +253,28 @@ YUI.add("wegas-entity", function(Y) {
                                     roleList: ["Administrator", "Scenarist"]
                                 }]
                         }
+                    }, {
+                        fn: "OpenTabActionThi",
+                        cfg: {
+                            label: "Group rights",
+                            tabSelector: "#rightTabView",
+                            tabCfg: {
+                                cssClass: "wegas-advanced-feature"
+                            },
+                            wchildren: [{
+                                    type: "RolePermissionList",
+                                    permsList: [{
+                                            label: "Edit",
+                                            value: "GameModel:View,Edit,Delete,Duplicate,Instantiate"
+                                        }, {
+                                            name: "Create scenario",
+                                            value: "GameModel:Duplicate"
+                                        }, {
+                                            name: "Create game",
+                                            value: "GameModel:Instantiate"
+                                        }]
+                                }]
+                        }
                     }]
             }, {
                 type: BUTTON,
@@ -317,34 +339,7 @@ YUI.add("wegas-entity", function(Y) {
                                                 editorUrl: "rest/Export/GameModel/"
                                             }
                                         }]
-                                }, {
-                                    type: BUTTON,
-                                    label: "Permissions",
-                                    cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "OpenTabAction",
-                                            cfg: {
-                                                emptyTab: true,
-                                                wchildren: [{
-                                                        type: "RolePermissionList",
-                                                        permsList: [{
-                                                                name: "GameModel:View"
-                                                            }, {
-                                                                name: "GameModel:Edit",
-                                                                value: "GameModel:View,Edit,Delete"
-                                                            }, {
-                                                                name: "GameModel:Duplicate",
-                                                                value: "GameModel:Duplicate"
-                                                            }, {
-                                                                name: "GameModel:Instantiate",
-                                                                value: "GameModel:Instantiate"
-                                                            }]
-                                                    }],
-                                                tabSelector: "#rightTabView"
-                                            }
-                                        }]
-                                }
-                            ]
+                                }]
                         }
                     }]
             }]
@@ -544,6 +539,22 @@ YUI.add("wegas-entity", function(Y) {
                                         }]
                                 }]
                         }
+                    }, {
+                        fn: "OpenTabActionFou",
+                        cfg: {
+                            label: "Group rights",
+                            tabSelector: "#rightTabView",
+                            tabCfg: {
+                                cssClass: "wegas-advanced-feature"
+                            },
+                            wchildren: [{
+                                    type: "RolePermissionList",
+                                    permsList: [{
+                                            name: "Admin",
+                                            value: "Game:View,Edit"
+                                        }]
+                                }]
+                        }
                     }]
             }, {
                 type: BUTTON,
@@ -565,33 +576,9 @@ YUI.add("wegas-entity", function(Y) {
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: BUTTON,
-                                    label: "Create a model based on this game",
-                                    disabled: true
-                                }, {
                                     type: "JoinOrResumeButton",
                                     label: "Join",
                                     cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: BUTTON,
-                                    label: "Permissions",
-                                    cssClass: "editor-shareGame-button wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "OpenTabAction",
-                                            cfg: {
-                                                emptyTab: true,
-                                                wchildren: [{
-                                                        type: "RolePermissionList",
-                                                        permsList: [{
-                                                                name: "Game:View"
-                                                            }, {
-                                                                name: "Game:Edit",
-                                                                value: "Game:Edit,View"
-                                                            }]
-                                                    }],
-                                                tabSelector: "#rightTabView"
-                                            }
-                                        }]
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Add team",
@@ -628,6 +615,10 @@ YUI.add("wegas-entity", function(Y) {
                                                 ]
                                             }
                                         }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Create a scenario based on this game",
+                                    disabled: true
                                 }, {
                                     type: "Linkwidget"
                                 }

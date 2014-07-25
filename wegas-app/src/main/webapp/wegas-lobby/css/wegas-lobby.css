@@ -13,9 +13,6 @@
 .yui3-skin-sam #centerTabView .yui3-tab {
     max-width: 130px;
 }
-/*.yui3-skin-sam #gameModelsTab .yui3-tab-label {
-    margin-left: 0.5em;
-}*/
 #rightTabView .yui3-tab-remove {
     display: none;
 }
@@ -175,18 +172,17 @@
 }
 
 /* Permissions */
-.role-permissions .inputEx-fieldWrapper{
+.role-permissions .inputEx-fieldWrapper {
     float: left;
-    width: 91px;
 }
-.role-permissions .inputEx-fieldWrapper:first-child{
+.role-permissions .inputEx-fieldWrapper:first-child {
     margin-left: 0px
 }
 .inputEx-fieldWrapper .roleBox {
     margin-left: 25px;
     margin-top: 5px;
 }
-.eachPermissions{
+.eachPermissions {
     margin-left: 5px;
 }
 .eachPermissions:first-child{
