@@ -12,8 +12,7 @@
 YUI.add('wegas-fileexplorer', function(Y) {
     'use strict';
 
-    var FileUploader, FileExplorer,
-        Wegas = Y.Wegas, JSON = Y.JSON,
+    var FileUploader, FileExplorer, Wegas = Y.Wegas, JSON = Y.JSON,
         CONTENTBOX = 'contentBox', BOUNDING_BOX = "boundingBox", LABEL = "label",
         DEFAULTHEADERS = {
             'Content-Type': 'application/json; charset=ISO-8859-1',
@@ -288,10 +287,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 node = this.createNode(e.data);
                 if (node) {
                     e.file.treeLeaf.get("parent").add(node);
-                    this.showMessageBis("success", JSON.parse(e.data).name + ": upload successfull");
+                    this.showMessageBis("success", JSON.parse(e.data).name + " successfully uploaded");
                 } else {
                     e.file.progressBar.set("color", "red");
-                    this.showMessageBis("error", JSON.parse(e.data).name + ": upload failed");
+                    this.showMessageBis("error", "Erro uploading \"" + JSON.parse(e.data).name + "\"");
                 }
                 try {
                     e.file.treeLeaf.destroy();
@@ -377,7 +376,6 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 case 'add file':
                     // Directly show the file panel directly (comment to force the user to click on the browse button)
                     this.uploader.openFileSelectDialog();
-
                     this.addFile(node, true);
                     break;
 
@@ -400,8 +398,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     break;
 
                 case 'edit':
-                    file = params.data;
-                    Y.Plugin.EditEntityAction.showEditForm(file, Y.bind(this.editContent, this, node));
+                    Y.Plugin.EditEntityAction.showEditForm(params.data, Y.bind(this.editContent, this, node));
                     break;
 
                 case 'delete':
@@ -417,7 +414,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                     node: node
                                 },
                                 on: {
-                                    success: this.removeNode,
+                                    success: Y.bind(this.removeNode, this),
                                     failure: Y.bind(this._onDeleteFailure, this)
                                 }
                             });
@@ -431,9 +428,9 @@ YUI.add('wegas-fileexplorer', function(Y) {
 
         },
         _onDeleteFailure: function(e) {
-            var panel, current = this, result = Y.JSON.parse(e.response.results);
+            var current = this, result = Y.JSON.parse(e.response.results);
             if (result.message.indexOf("is not empty") > -1) {
-                panel = new Y.Wegas.Panel({
+                new Wegas.Panel({
                     content: result.message + "<br><br> Would you delete it anyway?",
                     buttons: {
                         footer: [{
@@ -443,8 +440,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                         request: "force/delete" + e.cfg.node.path,
                                         cfg: e.cfg,
                                         on: {
-                                            success: current.removeNode,
-                                            failure: current.onRequestFailure
+                                            success: Y.bind(current.removeNode, current),
+                                            failure: Y.bind(current.onRequestFailure, current)
                                         }
                                     });
                                     this.exit();
@@ -486,12 +483,11 @@ YUI.add('wegas-fileexplorer', function(Y) {
             Y.Plugin.EditEntityAction.hideEditFormOverlay();
         },
         onListRequestSuccess: function(callback, e) {
-            var i;
             if (this.editNode) {
                 this.editNode.set("rightWidget", null);
             }
             e.cfg.node.destroyAll();
-            for (i = 0; i < e.response.results.length; i += 1) {
+            for (var i = 0; i < e.response.results.length; i += 1) {
                 e.cfg.node.add(this.createNode(e.response.results[i]));
             }
             e.cfg.node.set("loading", false);
@@ -549,6 +545,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
             } else {
                 conf = {
                     label: data.name /*+ " [" + data.mimeType + "]"*/,
+                    iconCSS: "wegas-icon-" + data.mimeType.replace("/", '-') + " wegas-icon-file",
+                    data: data,
                     rightWidget: new Wegas.WegasMenu({
                         items: [{
                                 cssClass: "wegas-icon wegas-icon-edit",
@@ -568,9 +566,6 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     })
                 };
 
-                conf.iconCSS = "wegas-icon-" + data.mimeType.replace("/", '-') + " wegas-icon-file";
-                conf.data = data;
-
                 //if(data.mimeType.indexOf("image") > -1){
                 // conf.iconCSS += " image-icon";
                 //conf.label = data.name;
@@ -583,6 +578,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             return childNode;
         },
         removeNode: function(event) {
+            this.showMessageBis("success", "Item deleted");
             event.cfg.node.destroy();
         },
         refresh: function(node) {
@@ -754,16 +750,14 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.uploader.destroy();
         },
         addFile: function(file) {
-            var uploadDescriptor, progressDiv, detailDiv;
-
             if (!(new RegExp("^(\\w|\\.| |-|_)+$").test(file.get("name")))) {
-                throw new Error(file.get("name") + ": invalid name. Letters, numbers, whitespace or \".-_\" only");
+                throw new Error("Invalid name: " + file.get("name") + ". Letters, numbers, whitespace or \".-_\" only");
             } else if (file.get("size") > MAX_FILE_SIZE) {
-                throw new Error(file.get("name") + "[" + FileExplorer.formatFileSize(file.get("size")) + "] is too big. Max file size :" + FileExplorer.formatFileSize(MAX_FILE_SIZE))
+                throw new Error(file.get("name") + " (" + FileExplorer.formatFileSize(file.get("size")) + ") is too big. Max file size :" + FileExplorer.formatFileSize(MAX_FILE_SIZE))
             }
-            uploadDescriptor = new Y.Node.create("<div/>");
-            progressDiv = new Y.Node.create("<div/>");
-            detailDiv = new Y.Node.create("<div/>");
+            var uploadDescriptor = new Y.Node.create("<div/>"),
+                progressDiv = new Y.Node.create("<div/>"),
+                detailDiv = new Y.Node.create("<div/>");
             file.treeLeaf.set("rightWidget", new Wegas.ProgressBar({
                 percent: 0,
                 width: "100px",
