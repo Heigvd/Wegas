@@ -660,7 +660,7 @@ function getCurrentPeriod() {
     var currentPhase = getCurrentPhase().getValue(self),
         periods = Variable.findByName(gameModel, "currentPeriod");
     if (periods !== null && currentPhase !== null) {
-        return periods.items.get(currentPhase);
+        return periods.items.get(currentPhase - 1);
     }
     return null;
 }

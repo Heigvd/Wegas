@@ -65,7 +65,6 @@ YUI.add("wegas-pageloader", function(Y) {
                     && this.get("variable.evaluated") !== "" + this.get(PAGEID)) {
                     this.syncUI();                                              // sync the view
                 }
-
             }, this));
 
             //Wegas.Facade.Page.after("response", this.syncUI, this);

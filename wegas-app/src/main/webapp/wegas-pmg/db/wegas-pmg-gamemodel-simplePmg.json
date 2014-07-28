@@ -30,13 +30,13 @@
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "history": [],
-                "value": 0
+                "value": 1
             },
             "scope": {
                 "@class": "TeamScope",
                 "broadcastScope": "PlayerScope"
             },
-            "minValue": 0,
+            "minValue": 1,
             "maxValue": 4,
             "defaultValue": 0
         },
