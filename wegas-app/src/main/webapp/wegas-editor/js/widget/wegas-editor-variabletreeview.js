@@ -44,7 +44,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 var entity = e.dragWidget.get("data.entity"),
                     dropEntity = e.dropWidget.get("data.entity");
 
-                Wegas.Facade.VariableDescriptor.cache.move(entity, dropEntity, e.index);// call facade method
+                Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index);// call facade method
             });
         },
         //
@@ -321,7 +321,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 node.destroyAll();
                 node.set("loading", true);
 
-                Wegas.Facade.VariableDescriptor.sendRequest({
+                Wegas.Facade.Variable.sendRequest({
                     request: "/" + id + "?view=Editor"
                 });
             }

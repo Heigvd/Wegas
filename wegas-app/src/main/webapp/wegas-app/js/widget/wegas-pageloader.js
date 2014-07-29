@@ -54,7 +54,7 @@ YUI.add("wegas-pageloader", function(Y) {
          * When an exception in fire, stop loading page, show error message.
          */
         bindUI: function() {
-            this.handlers.push(Wegas.Facade.VariableDescriptor.after("update", function() {// When the variable cache is update,
+            this.handlers.push(Wegas.Facade.Variable.after("update", function() {// When the variable cache is update,
                 if (this.get("page.content") && "" + this.get("page.evaluated") !== "" + this.get(PAGEID)) {// and if the current page has change,
                     this.syncUI();                                              // sync the view
                 }
@@ -65,7 +65,6 @@ YUI.add("wegas-pageloader", function(Y) {
                     && this.get("variable.evaluated") !== "" + this.get(PAGEID)) {
                     this.syncUI();                                              // sync the view
                 }
-
             }, this));
 
             //Wegas.Facade.Page.after("response", this.syncUI, this);

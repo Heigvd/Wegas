@@ -33,7 +33,7 @@ YUI.add('wegas-console', function(Y) {
         },
         executeScript: function(scriptEntity) {
             this.showOverlay();
-            Y.Wegas.Facade.VariableDescriptor.script.run(scriptEntity, {
+            Y.Wegas.Facade.Variable.script.run(scriptEntity, {
                 on: {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
@@ -50,7 +50,7 @@ YUI.add('wegas-console', function(Y) {
         },
         multiExecuteScript: function(multiPlayerScript) {
             this.showOverlay();
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+            Y.Wegas.Facade.Variable.sendRequest({
                 request: "/Script/Multirun",
                 cfg: {
                     method: "POST",

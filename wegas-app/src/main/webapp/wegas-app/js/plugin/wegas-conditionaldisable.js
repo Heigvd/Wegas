@@ -19,7 +19,7 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             this.handlers = [];
             this.onceAfterHostEvent("render", function() {
                 this.conditionEval();
-                this.handlers.push(Wegas.Facade.VariableDescriptor.after("update", this.conditionEval, this));
+                this.handlers.push(Wegas.Facade.Variable.after("update", this.conditionEval, this));
             });
         },
         destructor: function() {
@@ -29,8 +29,8 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             }
         },
         conditionEval: function() {
-            if (Wegas.Facade.VariableDescriptor.script) {
-                Wegas.Facade.VariableDescriptor.script.eval(this.get("condition"), Y.bind(function(e) {
+            if (Wegas.Facade.Variable.script) {
+                Wegas.Facade.Variable.script.eval(this.get("condition"), Y.bind(function(e) {
                     var attr = this.get("attribute"),
                         result = e.response.entity;
                     if (attr === "cssClass") {
