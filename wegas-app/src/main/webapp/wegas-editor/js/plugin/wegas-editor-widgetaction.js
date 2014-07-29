@@ -69,6 +69,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
 
                     switch (i.label) { // @hack add icons to some buttons
                         case "Delete":
+                        case "Copy":
                         case "Edit":
                             i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                             break;

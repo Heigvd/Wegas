@@ -60,10 +60,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         var target = this.treeView.find(function(item) {        // scroll to it in the treeview
                             return item.get("data.entity") && item.get("data.entity").get("id") === e.entity.get("id");
                         });
-
-                        if (target && !Wegas.Helper.isElementVisible(target.get(CONTENTBOX))) {
-                            target.get(CONTENTBOX).scrollIntoView(false);
-                        }
+                        
+                        target && Wegas.Helper.scrollIntoViewIfNot(target.get(CONTENTBOX), false);
                     });
                 }, this);
                 if (request) {
