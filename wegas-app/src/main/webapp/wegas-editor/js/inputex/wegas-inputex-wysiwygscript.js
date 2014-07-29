@@ -166,7 +166,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             inputEx.WysiwygScript.superclass.destroy.call(this);
         },
         eval: function() {
-            Y.Wegas.Facade.VariableDescriptor.script.remoteEval(this.getValue(), {
+            Y.Wegas.Facade.Variable.script.remoteEval(this.getValue(), {
                 on: {
                     success: Y.bind(function() {
                         Y.Widget.getByNode(this.divEl).showMessageBis("success", "Impact executed successfully.");

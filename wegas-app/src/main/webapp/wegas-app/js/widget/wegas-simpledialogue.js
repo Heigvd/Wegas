@@ -20,7 +20,7 @@ YUI.add("wegas-simpledialogue", function(Y) {
             this.handlers = {};
         },
         bindUI: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
 
             this.get(CONTENTBOX).delegate('click', function(e) {
                 var no = parseInt(e.currentTarget.getAttribute("response_no"));

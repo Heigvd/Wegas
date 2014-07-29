@@ -78,31 +78,31 @@ YUI.add('wegas-serialization-test', function(Y) {
             };
 
             // Create VariableDescriptorFacade mock
-            Wegas.Facade.VariableDescriptor = Mock();
-            Wegas.Facade.VariableDescriptor.cache = Mock();
-            Mock.expect(Y.Wegas.Facade.VariableDescriptor.cache, {
+            Wegas.Facade.Variable = Mock();
+            Wegas.Facade.Variable.cache = Mock();
+            Mock.expect(Y.Wegas.Facade.Variable.cache, {
                 method: "find",
                 args: [Mock.Value.String, Mock.Value.Any],
                 run: function() {                                               // Return a fake handler
                     return null;
                 }
             });
-            Mock.expect(Y.Wegas.Facade.VariableDescriptor.cache, {
+            Mock.expect(Y.Wegas.Facade.Variable.cache, {
                 method: "findById",
                 args: [Mock.Value.Any],
                 run: function() {                                               // Return a fake handler
                     return null;
                 }
             });
-            Y.Wegas.Facade.VariableDescriptor.script = Mock();
-            Mock.expect(Y.Wegas.Facade.VariableDescriptor.script, {
+            Y.Wegas.Facade.Variable.script = Mock();
+            Mock.expect(Y.Wegas.Facade.Variable.script, {
                 method: "eval",
                 args: [Mock.Value.String],
                 run: function() {                                               // Return a fake handler
                     return null;
                 }
             });
-            Mock.expect(Y.Wegas.Facade.VariableDescriptor.script, {
+            Mock.expect(Y.Wegas.Facade.Variable.script, {
                 method: "localEval",
                 args: [Mock.Value.String],
                 run: function() {                                               // Return a fake handler
@@ -110,12 +110,12 @@ YUI.add('wegas-serialization-test', function(Y) {
                 }
             });
 
-            Y.Wegas.Facade.VariableDescriptor.after = function() {
+            Y.Wegas.Facade.Variable.after = function() {
                 return new Y.Event.Handle();
             };
-            Y.Wegas.Facade.VariableDescriptor.sendRequest = function() {
+            Y.Wegas.Facade.Variable.sendRequest = function() {
             };
-//            Mock.expect(Y.Wegas.Facade.VariableDescriptor, {
+//            Mock.expect(Y.Wegas.Facade.Variable, {
 //                method: "sendRequest",
 //                //args: [Mock.Value.String, Mock.Value.Object, Mock.Value.Any]
 //            });

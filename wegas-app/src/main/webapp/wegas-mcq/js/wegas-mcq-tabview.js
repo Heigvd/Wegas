@@ -34,9 +34,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
          */
         initializer: function() {
             /**
-             * datasource from Y.Wegas.Facade.VariableDescriptor
+             * datasource from Y.Wegas.Facade.Variable
              */
-            this.dataSource = Y.Wegas.Facade.VariableDescriptor;
+            this.dataSource = Y.Wegas.Facade.Variable;
             this.tabView = new Y.TabView();
             /**
              * TabView widget used to display question/choices and corresponding reply
@@ -184,7 +184,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (e.newVal && e.newVal.cQuestion
                     && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
-                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
+                Y.Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
                     on: {
                         success: Y.bind(function(tab, e) {
                             var question = e.response.entity;
