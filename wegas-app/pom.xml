@@ -4,15 +4,15 @@
 
     <parent>
         <groupId>com.wegas</groupId>
-        <version>1.0-SNAPSHOT</version>
-        <artifactId>wegas-project</artifactId>
+        <artifactId>wegas-project-gl4</artifactId>
+        <version>1.0-SNAPSHOT-gl4</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.wegas</groupId>
-    <artifactId>wegas-app</artifactId>
+    <artifactId>wegas-app-gl4</artifactId>
     <packaging>war</packaging>
-    <name>wegas-app</name>
+    <name>wegas-app-gl4</name>
 
     <profiles>
         <profile>
@@ -25,15 +25,6 @@
                         <configuration>
                             <warName>Wegas</warName>
                             <failOnMissingWebXml>false</failOnMissingWebXml>
-                            <archive>
-                            <!--<manifest>
-                                <addClasspath>true</addClasspath>
-                                <classpathPrefix>lib</classpathPrefix>
-                            </manifest>-->
-                            <!--<manifestEntries>
-                                <Class-Path>file:/${basedir}/../wegas-core/target/wegas-core.jar</Class-Path>
-                            </manifestEntries>-->
-                            </archive>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -48,21 +39,14 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
                         <configuration>
-                        <!--remove not min js-->
-                            <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                             <overlays>
                                 <overlay>
                                     <id>wegaslibs</id>
                                     <groupId>com.wegas</groupId>
-                                    <artifactId>wegas-resources</artifactId>
+                                    <artifactId>wegas-resources-gl4</artifactId>
                                     <type>war</type>
                                     <includes>
                                         <include>lib/**</include>
-                                        <!--<include>lib/**/*-min.js</include>
-                                        <include>lib/**/*_*.js</include>
-                                        <include>lib/**/*.css</include>
-                                        <include>lib/**/*.gif</include>
-                                        <include>lib/**/*.png</include>-->
                                     </includes>
                                     <excludes>
                                         <exclude>lib/yui3/**</exclude>
@@ -75,12 +59,13 @@
             </build>
         </profile>
     </profiles>
+
     <dependencies>
 
         <!-- Project dependencies -->
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wegas-resources</artifactId>
+            <artifactId>wegas-resources-gl4</artifactId>
             <version>1.0</version>
             <type>war</type>
             <optional>true</optional>
@@ -88,8 +73,8 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>wegas-core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <artifactId>wegas-core-gl4</artifactId>
+            <version>1.0-SNAPSHOT-gl4</version>
         </dependency>
 
         <!-- log4j -->
@@ -97,44 +82,12 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
-        <!-- logging redirect -->
-<!--        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jul-to-slf4j</artifactId>
-        </dependency>-->
         <!--slf4j implementation-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
         </dependency>
         
-        <!-- Jersey -->
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <artifactId>jersey-multipart</artifactId>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <scope>provided</scope>
-        </dependency>
-
-        <!-- Apache Shiro Dependencies -->
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shiro</groupId>
-            <artifactId>shiro-web</artifactId>
-        </dependency>
-
         <!-- cdi -->
         <dependency>
             <groupId>javax.enterprise</groupId>
@@ -149,11 +102,21 @@
         </dependency>
 
         <dependency>
-            <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
-            <scope>provided</scope>
+            <groupId>com.itextpdf</groupId>
+            <artifactId>itextpdf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.xhtmlrenderer</groupId>
+            <artifactId>flying-saucer-pdf</artifactId>
+            <type>jar</type>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.glassfish.main.extras</groupId>
+            <artifactId>glassfish-embedded-web</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <!-- Postgresql Driver -->
         <dependency>
@@ -178,15 +141,6 @@
             <artifactId>jwebunit-htmlunit-plugin</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>com.itextpdf</groupId>
-            <artifactId>itextpdf</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.xhtmlrenderer</groupId>
-            <artifactId>flying-saucer-pdf</artifactId>
-            <type>jar</type>
-        </dependency>
     </dependencies>
 
     <build>
@@ -201,7 +155,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${war.plugin.version}</version>
                 <configuration>
-                        <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
+                    <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                     <packagingExcludes>
                         wegas-leaderway/images/employees sources/**,
                         wegas-leaderway/images/employees/**,
@@ -213,15 +167,10 @@
                         <overlay>
                             <id>wegaslibs</id>
                             <groupId>com.wegas</groupId>
-                            <artifactId>wegas-resources</artifactId>
+                            <artifactId>wegas-resources-gl4</artifactId>
                             <type>war</type>
                             <includes>
                                 <include>lib/**</include>
-                                <!--<include>lib/**/*-min.js</include>
-                                    <include>lib/**/*_*.js</include>
-                                    <include>lib/**/*.css</include>
-                                    <include>lib/**/*.gif</include>
-                                    <include>lib/**/*.png</include>-->
                             </includes>
                         </overlay>
                     </overlays>
@@ -265,41 +214,6 @@
             </plugin>
 
             <!-- Dependencies -->
-            <!--<plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <version>2.4</version>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/${project.build.finalName}/WEB-INF/lib</outputDirectory>
-                            <silent>true</silent>
-
-                            <artifactItems>
-              Jackrabbit connector
-                                <artifactItem>
-                                    <groupId>org.apache.jackrabbit</groupId>
-                                    <artifactId>jackrabbit-jca</artifactId>
-                                    <version>2.4.2</version>
-                                    <type>rar</type>
-                                </artifactItem>
-
-                                <artifactItem>
-                                    <groupId>javax</groupId>
-                                    <artifactId>javaee-endorsed-api</artifactId>
-                                    <version>6.0</version>
-                                    <type>jar</type>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>-->
 
             <!-- Tests -->
             <plugin>
@@ -307,7 +221,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
 
-              <!-- YUI JS Compression Plugin -->
+            <!-- YUI JS Compression Plugin -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
                 <artifactId>yuicompressor-maven-plugin</artifactId>
@@ -322,7 +236,7 @@
                     </execution>
                 </executions>
             </plugin>
-             <!-- Copy classes to test classes directory, for ejbcontainer to use -->
+            <!-- Copy classes to test classes directory, for ejbcontainer to use -->
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -368,38 +282,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <!--<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                   <formats>
-                        <format>xml</format>
-                        <format>html</format>
-                    </formats>
-                    <check>
-                        <haltOnFailure>false</haltOnFailure>
-                        <branchRate>85</branchRate>
-                        <lineRate>85</lineRate>
-                        <totalBranchRate>85</totalBranchRate>
-                        <totalLineRate>85</totalLineRate>
-                        <packageLineRate>85</packageLineRate>
-                        <packageBranchRate>85</packageBranchRate>
-
-                    </check>
-
-                    <argLine>-XX:-UseSplitVerifier</argLine>
-                </configuration>
-            </plugin>-->
-
         </plugins>
     </build>
 </project>

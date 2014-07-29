@@ -2,31 +2,20 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>wegas-project</artifactId>
+        <artifactId>wegas-project-gl4</artifactId>
         <groupId>com.wegas</groupId>
-        <version>1.0-SNAPSHOT</version>
+    <version>1.0-SNAPSHOT-gl4</version>
     </parent>
 
     <groupId>com.wegas</groupId>
-    <artifactId>wegas-core</artifactId>
+    <artifactId>wegas-core-gl4</artifactId>
     <packaging>jar</packaging>
-    <name>wegas-core</name>
+    <name>wegas-core-gl4</name>
 
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <!-- Jersey -->
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <artifactId>jersey-multipart</artifactId>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Apache Shiro Dependencies -->
@@ -70,7 +59,7 @@
 
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
+            <artifactId>glassfish-embedded-web</artifactId>
             <scope>provided</scope>
             <!-- Compile scope is usefull to test JPQL queries-->
 <!--            <scope>compile</scope>-->
@@ -181,38 +170,6 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
             </plugin>
-
-            <!--<plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.3</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>clean</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                   <formats>
-                        <format>xml</format>
-                        <format>html</format>
-                    </formats>
-                    <check>
-                        <haltOnFailure>false</haltOnFailure>
-                        <branchRate>85</branchRate>
-                        <lineRate>85</lineRate>
-                        <totalBranchRate>85</totalBranchRate>
-                        <totalLineRate>85</totalLineRate>
-                        <packageLineRate>85</packageLineRate>
-                        <packageBranchRate>85</packageBranchRate>
-
-                    </check>
-
-                    <argLine>-XX:-UseSplitVerifier</argLine>
-                </configuration>
-            </plugin>-->
-
         </plugins>
     </build>
 

@@ -44,4 +44,16 @@
         </properties>
     </action>
 
+    <action>
+        <actionName>CUSTOM-clean build skip-test</actionName>
+        <displayName>clean build -skip-test</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>install</goal>
+        </goals>
+        <properties>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+
 </actions>

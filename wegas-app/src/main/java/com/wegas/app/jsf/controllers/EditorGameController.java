@@ -68,7 +68,7 @@ public class EditorGameController extends AbstractGameController {
      * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
             currentPlayer = playerFacade.find(this.getPlayerId());
