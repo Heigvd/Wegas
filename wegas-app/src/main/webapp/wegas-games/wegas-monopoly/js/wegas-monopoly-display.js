@@ -17,7 +17,7 @@ YUI.add("wegas-monopoly-display", function(Y) {
         },
         bindUI: function() {
             this.handlers.push(
-                Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
+                Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
         renderUI: function() {
             var i;
@@ -28,7 +28,7 @@ YUI.add("wegas-monopoly-display", function(Y) {
             // next button
             this.next = this.get("parent").item(2);
             // state
-            this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");
+            this.state = Y.Wegas.Facade.Variable.cache.find("name", "state").getInstance().get("value");
 
             // create box
             for (i = 1; i <= 40; i++) {
@@ -36,7 +36,7 @@ YUI.add("wegas-monopoly-display", function(Y) {
             }
         },
         syncUI: function() {
-            var i, descriptor = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position"),
+            var i, descriptor = Y.Wegas.Facade.Variable.cache.find("name", "position"),
                 game, team, t, ret = [];
 
             if (descriptor.get("scope") instanceof Y.Wegas.persistence.TeamScope) { //@fixme when game scope works
@@ -58,7 +58,7 @@ YUI.add("wegas-monopoly-display", function(Y) {
             this.removePions();
             this.doDraw(ret);
             this.checkCurrentPlayer();
-            this.state = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "state").getInstance().get("value");
+            this.state = Y.Wegas.Facade.Variable.cache.find("name", "state").getInstance().get("value");
             this.checkState();
         },
         doDraw: function(data) {
@@ -79,15 +79,15 @@ YUI.add("wegas-monopoly-display", function(Y) {
 
             this.dice.rollButton.enable();
 
-            position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value");
+            position = Y.Wegas.Facade.Variable.cache.find("name", "position").getInstance().get("value");
             position = value + position;
             if (this.position > 40) {
                 this.position -= 40;
             }
-            Y.Wegas.Facade.VariableDescriptor.script.run("position.value =" + position + ";");
+            Y.Wegas.Facade.Variable.script.run("position.value =" + position + ";");
         },
         checkCurrentPlayer: function() {
-            var turn = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "turnOf"),
+            var turn = Y.Wegas.Facade.Variable.cache.find("name", "turnOf"),
                 id;
             if (turn.get("scope") instanceof Y.Wegas.persistence.GameModelScope) { //@fixme when gameScope works
                 id = Y.Wegas.Facade.Game.cache.getCurrentTeam().get("id");
@@ -104,7 +104,7 @@ YUI.add("wegas-monopoly-display", function(Y) {
             }
         },
         setCurrentPlayer: function(id) {
-            Y.Wegas.Facade.VariableDescriptor.script.run("turnOf.value =" + id + ";");
+            Y.Wegas.Facade.Variable.script.run("turnOf.value =" + id + ";");
         },
         payPlayer: function() {
             // TODO
@@ -129,8 +129,8 @@ YUI.add("wegas-monopoly-display", function(Y) {
             }
         },
         checkPropertyBuyable: function() {
-            var position = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "position").getInstance().get("value"),
-                boxValue = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "boxValue").getAttrs().items;
+            var position = Y.Wegas.Facade.Variable.cache.find("name", "position").getInstance().get("value"),
+                boxValue = Y.Wegas.Facade.Variable.cache.find("name", "boxValue").getAttrs().items;
             position--;
             if (boxValue[position].getInstance().get("properties").playerId != "" ||
                 boxValue[position].getInstance().get("properties").playerId == "notBuyable") {
@@ -141,7 +141,7 @@ YUI.add("wegas-monopoly-display", function(Y) {
         },
         setState: function(newState) {
             this.state = newState;
-            Y.Wegas.Facade.VariableDescriptor.script.run("state.value ='" + this.state + "';", {
+            Y.Wegas.Facade.Variable.script.run("state.value ='" + this.state + "';", {
                 on: {
                     success: Y.bind(function(e) {
                         this.checkState();

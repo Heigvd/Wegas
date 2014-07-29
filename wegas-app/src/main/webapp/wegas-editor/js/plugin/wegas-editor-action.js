@@ -34,7 +34,7 @@ YUI.add('wegas-editor-action', function(Y) {
             //if (confirm("This will restart for every player. Are you sure?")) {
             var host = this.get("host");
             host.showOverlay();
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: '/Reset/',
                 on: {
                     success: Y.bind(host.hideOverlay, host),
@@ -309,7 +309,6 @@ YUI.add('wegas-editor-action', function(Y) {
      */
     Wegas.PrintButton = Y.Base.create("button", Wegas.Button, [], {
         /** @lends Y.Wegas.PrintButton# */
-
         /**
          * @function
          * @private
@@ -318,8 +317,39 @@ YUI.add('wegas-editor-action', function(Y) {
             this.plug(PrintAction, cfg);
         }
     });
-
-
+    Wegas.MultiPrintButton = Y.Base.create("button", Wegas.Button, [], {
+        /** @lends Y.Wegas.PrintButton# */
+        /**
+         * @function
+         * @private
+         */
+        initializer: function(cfg) {
+            this.plug(Plugin.WidgetMenu, {
+                menuCfg: {
+                    points: ["tl", "tr"]
+                },
+                event: "mouseenter",
+                children: [{
+                        type: "PrintButton",
+                        label: "Html"
+                    }, {
+                        type: "PrintButton",
+                        label: "Html for player",
+                        mode: "player"
+                    }, {
+                        type: "PrintButton",
+                        label: "Pdf",
+                        outputType: "pdf"
+                    }, {
+                        type: "PrintButton",
+                        label: "Pdf for player",
+                        outputType: "pdf",
+                        mode: "player"
+                    }
+                ]
+            });
+        }
+    });
 
     /**
      * @name Y.Wegas.OpenTabButton

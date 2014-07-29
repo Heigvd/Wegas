@@ -12,16 +12,14 @@
 .yui3-treeview-content {
     padding: 2px 5px;
 }
-
-.yui3-treeview :focus{
+.yui3-treeview:focus {
     outline:none;
 }
 .yui3-treenode-content{
     margin-left: 20px;
     font-style: italic;
 }
-
-.yui3-treenode-content-toggle{
+.yui3-treenode-content-toggle {
     display: inline-block;
     width: 14px;
     height: 14px;
@@ -35,10 +33,11 @@
     background-position: 0px -74px;
 }
 .yui3-treenode-content-icon,
-.yui3-treeleaf-content-icon{
+.yui3-treeleaf-content-icon {
     display:inline-block;
     width:21px;
     height: 18px;
+    margin-top: -5px;
 }
 .yui3-treeleaf-content-icon {
     margin: -4px 0 -6px;
@@ -51,20 +50,17 @@
 .yui3-treenode-collapsed .yui3-treenode-default-icon {
     background-position: 0px -1468px;
 }
-
 .yui3-treenode-loading > div > .yui3-treenode-content-icon,
 .yui3-treenode-loading > div > .yui3-treeleaf-content-icon{
     background-image: url(../../wegas-app/images/loading-small.gif) !important;
     background-repeat: no-repeat !important;
     background-position: bottom left !important;
 }
-
 .yui3-treeleaf-default-icon {
     background-image: url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -1290px;
     text-decoration: none;
 }
-
 .yui3-treenode-collapsed ul > li > .content-header,
 .yui3-treenode-collapsed ul > li > div > .content-header{
     max-height: 0px !important;
@@ -73,12 +69,11 @@
     overflow: hidden;
     *display:none;
 }
-
 .yui3-treenode-content-rightwidget,
 .yui3-treeleaf-content-rightwidget{
     position: absolute;
     right:5px;
-    top: 2px;
+    top: 0;
 }
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header {
@@ -119,7 +114,6 @@
         -ms-transition: opacity 0.1s linear 0.05s;
         -webkit-transition: opacity 0.1s linear 0.05s;*/
 }
-
 .yui3-treenode-content-label,
 .yui3-treeleaf-content-label{
     display:inline-block;
@@ -133,12 +127,9 @@
 .yui3-treeview [contenteditable="true"]{
     display: inline-block;
     min-width: 40px;
-    border: 1px solid grey;
-    padding: 1px 10px;
-    box-shadow: 1px 1px 3px black inset;
+    cursor: text !important;
 }
 .yui3-treeview [contenteditable="true"]:focus{
-    box-shadow: 0px 0px 0px black inset;
 }
 
 /* EFFECT */
@@ -181,16 +172,13 @@
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
 }
-
 .yui3-treeview-content .filter-sub-match > .content-header{
     max-height: 50px;
     padding: 2px 27px 2px 2px;
     opacity: .6;
 }
-
 .yui3-treeview-content .filter-match > .content-header,
 .yui3-treeview-content .filter-match > div > .content-header{
-    padding: 2px 27px 2px 2px;
     opacity: 1;
 }
 .yui3-treeview-content .filter-no-match > .content-header,

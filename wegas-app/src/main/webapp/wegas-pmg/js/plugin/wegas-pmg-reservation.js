@@ -39,7 +39,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
             }, "tbody .present, tbody .futur", this);
         },
         checkCache: function(descriptorId, periode) {
-            var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("id", descriptorId),
+            var vd = Y.Wegas.Facade.Variable.cache.find("id", descriptorId),
                     i, abstractAssignement, type = this.get("type"), data;
 
             for (i = 0; i < vd.getInstance().get(type).length; i++) {
@@ -75,7 +75,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
             };
         },
         add: function(ressourceId, data) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/ResourceDescriptor/AbstractAssign/" + ressourceId,
                 cfg: {
                     method: "POST",
@@ -84,7 +84,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
             });
         },
         remove: function(abstractAssignementId, type) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/ResourceDescriptor/AbstractRemove/" + abstractAssignementId + "/" + type,
                 cfg: {
                     method: "DELETE"

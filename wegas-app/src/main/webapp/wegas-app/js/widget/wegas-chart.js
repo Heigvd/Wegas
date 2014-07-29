@@ -18,7 +18,7 @@ YUI.add('wegas-chart', function(Y) {
             this.requestHistory = [];
         },
         bindUI: function() {
-            this.dsUpdateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.dsUpdateHandler = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
         renderUI: function() {
             this.get(CONTENTBOX).append("Loading ...");
@@ -62,7 +62,7 @@ YUI.add('wegas-chart', function(Y) {
             this.requestCounter = 0;
 
             for (i = 0; i < variables.length; i++) {
-                vd = Y.Wegas.Facade.VariableDescriptor.cache.find("name", variables[i].name);
+                vd = Y.Wegas.Facade.Variable.cache.find("name", variables[i].name);
                 if (!vd) {
                     this.showMessage("error", "Variable " + variables[i].name + " not found");
                     return;
@@ -84,7 +84,7 @@ YUI.add('wegas-chart', function(Y) {
             });
         },
         historyRequest: function(vd) {
-            this.requestHistory.push(Y.Wegas.Facade.VariableDescriptor.cache.getWithView(vd.getInstance(), "Extended", {
+            this.requestHistory.push(Y.Wegas.Facade.Variable.cache.getWithView(vd.getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(e) {
                         var entity = e.response.entity;

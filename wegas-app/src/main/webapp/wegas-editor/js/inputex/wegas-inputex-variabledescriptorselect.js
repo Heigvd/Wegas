@@ -111,8 +111,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          */
         syncUI: function() {
             var entityStack = [],
-                //rootEntities = Wegas.Facade.VariableDescriptor.cache.findAll(),
-                currentEntity = Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) /* || rootEntities[0]*/;
+                //rootEntities = Wegas.Facade.Variable.cache.findAll(),
+                currentEntity = Wegas.Facade.Variable.cache.find('name', this.options.value) /* || rootEntities[0]*/;
             this.empty();
             this._fallbackMode = false;
             if (currentEntity) {
@@ -162,7 +162,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         _renderSelectConfig: function(currentEntity) {
             var ret = [],
                 entity = (currentEntity ? currentEntity.parentDescriptor : null) || null,
-                items = entity ? entity.get("items") : Wegas.Facade.VariableDescriptor.cache.findAll();
+                items = entity ? entity.get("items") : Wegas.Facade.Variable.cache.findAll();
             ret.push(this.generateSelectConfig(entity, currentEntity, items));
             Y.Array.each(ret, this.addField, this);
         },
@@ -196,7 +196,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 return;
             }
 
-            var entity = Wegas.Facade.VariableDescriptor.cache.find('name', fieldValue);
+            var entity = Wegas.Facade.Variable.cache.find('name', fieldValue);
             if (entity) { //An entity was found, it is the new current entity
                 // if (Y.Lang.isNumber(fieldValue)) {
                 this.options.value = fieldValue;
@@ -323,8 +323,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         },
         syncUI: function() {
             var args, methods, cMethod,
-                //rootEntities = Wegas.Facade.VariableDescriptor.cache.findAll(),
-                currentEntity = Wegas.Facade.VariableDescriptor.cache.find('name', this.options.value) /*|| rootEntities[0]*/;
+                //rootEntities = Wegas.Facade.Variable.cache.findAll(),
+                currentEntity = Wegas.Facade.Variable.cache.find('name', this.options.value) /*|| rootEntities[0]*/;
 
             if (this.isGlobalMethod()) {
                 //VariableDescriptorSelect.prototype.syncUI.apply(this, arguments);
@@ -455,7 +455,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             if (!fieldValue) {
                 return;
             }
-            var entity = Wegas.Facade.VariableDescriptor.cache.find('name', fieldValue);
+            var entity = Wegas.Facade.Variable.cache.find('name', fieldValue);
             if (this.isGlobalMethod(fieldValue)) {
                 this.options.value = fieldValue;
                 this.options["arguments"] = null;

@@ -79,7 +79,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             cb.delegate("click", function(e) {                                  // Show the available menu options on cell click
                 var questionId = e.target.ancestor("tr").getAttribute("data-questionid"),
                         startTime = +e.target.ancestor("td").getAttribute("data-startTime"),
-                        question = Y.Wegas.Facade.VariableDescriptor.cache.findById(questionId);
+                        question = Y.Wegas.Facade.Variable.cache.findById(questionId);
 
                 this.menu.destroyAll();
                 this.menu.add(this.genMenuItems(question, startTime));          // Populate the menu
@@ -99,14 +99,14 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             cb.delegate("click", this.hideDetails, ".schedule-icon-close", this);// Hide the question details on close icon click
 
             this.handlers.response = // If data changes, refresh
-                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+                    Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
         /**
          *
          */
         syncUI: function() {
             var cb = this.get(CONTENTBOX).one(".schedule-questions"),
-                    evidences = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences");
+                    evidences = Y.Wegas.Facade.Variable.cache.find('name', "evidences");
 
             if (!this.get("timeVariable")) {
                 cb.setContent("Unable to find time variable.");
@@ -119,7 +119,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
 
             this.syncSchedule();
 
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(evidences, "Extended", {// Retrieve the question/choice description from the server
+            Y.Wegas.Facade.Variable.cache.getWithView(evidences, "Extended", {// Retrieve the question/choice description from the server
                 on: {
                     success: Y.bind(function(e) {
                         ScheduleDisplay.EXTENDEDQUESTIONS = e.response.entity;
@@ -151,7 +151,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         syncSchedule: function() {
             var perPeriodLoad = [], cIndex, choiceDescriptor, choiceInstance,
                     questionInstance, reply, i, j, k, question, cols, replies, names,
-                    questionsVarDesc = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten(),
+                    questionsVarDesc = Y.Wegas.Facade.Variable.cache.find('name', "evidences").flatten(),
                     questionInstances = [],
                     period = this.get("timeVariable"),
                     maxValue = period.get("maxValue"),
@@ -313,7 +313,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
                 return;
             }
             var i, k, reply, status, replyData, cb = this.get(CONTENTBOX),
-                    question = Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentQuestionId),
+                    question = Y.Wegas.Facade.Variable.cache.findById(this.currentQuestionId),
                     questionInstance = question.getInstance(), topValue, maxWidth,
                     extendedQuestion = ScheduleDisplay.EXTENDEDQUESTIONS.find(this.currentQuestionId);
             this.data.length = 0;
@@ -402,7 +402,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var replyId = e.target.ancestor(".icon").getAttribute("data-replyid");
 
             this.showOverlay();
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+            Y.Wegas.Facade.Variable.sendRequest({
                 request: "/QuestionDescriptor/CancelReply/" + replyId + "/Player/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
                 on: {failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -416,7 +416,7 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
             var data = e.target.get("data");
 
             this.showOverlay();
-            Y.Wegas.Facade.VariableDescriptor.sendRequest({
+            Y.Wegas.Facade.Variable.sendRequest({
                 request: "/QuestionDescriptor/SelectChoice/" + data.choice.get("id")
                         + "/Player/" + Y.Wegas.Facade.Game.get('currentPlayerId') + "/StartTime/" + data.startTime + "/",
                 on: {failure: Y.bind(function(e) {
@@ -470,12 +470,12 @@ YUI.add('wegas-crimesim-scheduledisplay', function(Y) {
         ATTRS: {
             timeVariable: {
                 getter: function() {
-                    return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "period");
+                    return Y.Wegas.Facade.Variable.cache.find("name", "period");
                 }
             },
             resourceVariable: {
                 getter: function() {
-                    return Y.Wegas.Facade.VariableDescriptor.cache.find("name", "humanResources");
+                    return Y.Wegas.Facade.Variable.cache.find("name", "humanResources");
                 }
             }
 

@@ -35,7 +35,7 @@ YUI.add('wegas-cep-folder', function(Y) {
         syncUI: function() {
             Folder.superclass.syncUI.apply(this);
             if (this.panel) {
-                if (!Y.Wegas.Facade.VariableDescriptor.cache.findById(this.currentDialogue.get("id")).getInstance().get("enabled")) {
+                if (!Y.Wegas.Facade.Variable.cache.findById(this.currentDialogue.get("id")).getInstance().get("enabled")) {
                     this.panel.destroy();
                     this.panel = null;
                 }
@@ -75,7 +75,7 @@ YUI.add('wegas-cep-folder', function(Y) {
             this.panel = panel;
         },
         findDialogue: function(name) {
-            var vd = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "dialogues");
+            var vd = Y.Wegas.Facade.Variable.cache.find("name", "dialogues");
 
             if (!vd) {
                 return false;

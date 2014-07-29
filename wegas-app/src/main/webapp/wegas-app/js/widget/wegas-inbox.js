@@ -76,7 +76,7 @@ YUI.add('wegas-inbox', function(Y) {
          * Plug a toolbar widget (and add the delete button at this toolbar).
          */
         initializer: function() {
-            this.dataSource = Wegas.Facade.VariableDescriptor;
+            this.dataSource = Wegas.Facade.Variable;
             this.handlers = {};
             this.jsTranslator = new Wegas.Translator();
         },
@@ -138,7 +138,7 @@ YUI.add('wegas-inbox', function(Y) {
                 });
                 return;
             }
-            Wegas.Facade.VariableDescriptor.cache.getWithView(inboxDescriptor.getInstance(), "Extended", {
+            Wegas.Facade.Variable.cache.getWithView(inboxDescriptor.getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(e) {
                         this.updateTabView(e.response.entity.get("messages"));

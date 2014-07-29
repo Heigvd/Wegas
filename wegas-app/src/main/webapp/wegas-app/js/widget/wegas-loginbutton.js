@@ -37,8 +37,8 @@ YUI.add("wegas-loginbutton", function(Y) {
         bindUI: function() {
             this.handlers = {};
             this.handlers.userUpdate = Wegas.Facade.User.after("update", this.syncUI, this);
-            if (Wegas.Facade.VariableDescriptor)
-                this.handlers.variableUpdate = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            if (Wegas.Facade.Variable)
+                this.handlers.variableUpdate = Wegas.Facade.Variable.after("update", this.syncUI, this);
 
             if (this.menu) {                                                    // Don't add the plugin if it already exist.
                 return;

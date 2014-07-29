@@ -340,7 +340,7 @@ YUI.add('wegas-plugin', function(Y) {
             var host = this.get(HOST);
             if (!host.get("disabled")) {
                 host.showOverlay();
-                Wegas.Facade.VariableDescriptor.script.remoteEval(this.get("onClick"), {
+                Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
                     on: {
                         success: Y.bind(host.hideOverlay, host),
                         failure: Y.bind(host.defaultFailureHandler, host)
@@ -387,7 +387,7 @@ YUI.add('wegas-plugin', function(Y) {
                 script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
-            Wegas.Facade.VariableDescriptor.script.run(script, {
+            Wegas.Facade.Variable.script.run(script, {
                 on: {
                     success: function(r) {
                         if (overlayGuest) {

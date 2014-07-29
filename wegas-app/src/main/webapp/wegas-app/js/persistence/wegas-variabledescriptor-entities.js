@@ -19,7 +19,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
         IDATTRDEF = {
             type: STRING,
-            optional: true, // The id is optional for entites that have not been persisted
+            optional: true, //                                                  // The id is optional for entites that have not been persisted
             _inputex: {
                 _type: HIDDEN
             }
@@ -810,7 +810,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }, {
                         type: STRING,
                         label: "Subject",
-                        scriptType: STRING
+                        scriptType: STRING,
+                        required: true
                     }, {
                         type: HTML,
                         label: "Body",
@@ -906,14 +907,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             if (this.get("content") === "") {                                   // empty scripts resolve to true
                 this.fire("evaluated", true);
             }
-            if (Wegas.Facade.VariableDescriptor.script["eval"]) {
+            if (Wegas.Facade.Variable.script["eval"]) {
                 if (this._result) {
                     this.fire("evaluated", this._result);
                     return;
                 }
                 if (!this._inProgress) {
                     this._inProgress = true;
-                    Wegas.Facade.VariableDescriptor.script["eval"](this.get("content"), {
+                    Wegas.Facade.Variable.script["eval"](this.get("content"), {
                         success: Y.bind(function(result) {
                             if (result === true) {
                                 this._result = true;

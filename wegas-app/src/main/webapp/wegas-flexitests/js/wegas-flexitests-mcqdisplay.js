@@ -116,7 +116,7 @@ YUI.add("wegas-flexitests-mcqdisplay", function(Y) {
         save: function(el) {
             var id = el.index;
             delete el.index;
-            Y.Wegas.Facade.VariableDescriptor.script.run("store(" + this.get("variable.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');", {
+            Y.Wegas.Facade.Variable.script.run("store(" + this.get("variable.evaluated").get("name") + ",'" + id + "','" + Y.JSON.stringify(el) + "');", {
                 on: {
                     failure: Y.bind(function(e) {
                         Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsMCQ");

@@ -29,11 +29,11 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             cb.append(node);
         },
         bindUI: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.update = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
         syncUI: function() {
             var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
-                    varDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("variable"));
+                varDesc = Y.Wegas.Facade.Variable.cache.find("name", this.get("variable"));
             if (locations.length === 0 || !varDesc) {
                 return;
             }
@@ -44,11 +44,11 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             if (typeof varValue === "string") {
                 for (i = 0; i < locations.length; i++) {
                     if (locations[i] === varValue)
-                        cb.one(".pmg-breadcrumb .element_" + i).addClass("current");
+                        cb.one(".pmg-breadcrumb .element_" + (i + 1)).addClass("current");
                     if (locations[i] < varValue)
-                        cb.one(".pmg-breadcrumb .element_" + i).addClass("previous");
+                        cb.one(".pmg-breadcrumb .element_" + (i + 1)).addClass("previous");
                     if (locations[i] > varValue)
-                        cb.one(".pmg-breadcrumb .element_" + i).addClass("next");
+                        cb.one(".pmg-breadcrumb .element_" + (i + 1)).addClass("next");
                 }
             }
             else if (typeof varValue === "number") {

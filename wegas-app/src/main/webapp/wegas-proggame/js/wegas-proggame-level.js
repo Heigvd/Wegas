@@ -183,13 +183,13 @@ YUI.add('wegas-proggame-level', function(Y) {
                     this.fire("gameWon");                                       // trigger open page plugin
                 }, false);
             }, ".proggame-levelend-nextlevel", this);
-            //this.handlers.response = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this); // If data changes, refresh
+            //this.handlers.response = Wegas.Facade.Variable.after("update", this.syncUI, this); // If data changes, refresh
         },
         syncUI: function() {
             this.display.syncUI();                                              // Sync the canvas
             this.syncFrontUI();                                                 // Sync the on screen display
 
-            this.disableBreakpoint = Wegas.Facade.VariableDescriptor.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"");
+            this.disableBreakpoint = Wegas.Facade.Variable.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"debugger\") != \"true\"");
         },
         destructor: function() {
             ProgGameLevel.main = this.mainEditorTab.aceField.getValue();        // Save the actual edtion field to a static var
@@ -267,7 +267,7 @@ YUI.add('wegas-proggame-level', function(Y) {
         },
         sendRunRequest: function(code, interpreterCfg) {
             interpreterCfg = interpreterCfg || {};
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/ProgGame/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
@@ -420,7 +420,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             if (retry) {
                 content += 'Variable.find(gameModel, "currentLevel").setValue(self, ' + this.get("root").get("@pageId") + ')';
             }
-            Wegas.Facade.VariableDescriptor.script.run(content, {
+            Wegas.Facade.Variable.script.run(content, {
                 on: {
                     success: Y.bind(fn, this)
                 }
@@ -459,7 +459,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             if (_file) {                                                        // If there is a file (i.e. not in the main tab)
                 saveTimer.on("timeOut", function() {                            // Every time save teim time outs,
                     _file.set("body", aceField.getValue());
-                    Wegas.Facade.VariableDescriptor.sendRequest({//             // Save the file
+                    Wegas.Facade.Variable.sendRequest({//             // Save the file
                         request: "/Inbox/Message/" + _file.get(ID),
                         cfg: {
                             updateCache: false,
@@ -557,7 +557,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 }
             });
 
-            if (Wegas.Facade.VariableDescriptor.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") === \"true\"")) {
+            if (Wegas.Facade.Variable.script.localEval("Variable.find(gameModel, \"inventory\").getProperty(self, \"fileLibrary\") === \"true\"")) {
                 packages.indlude = ProgGameLevel.API.include;
             }
 
@@ -606,7 +606,7 @@ YUI.add('wegas-proggame-level', function(Y) {
                 if (tab) {                                                      // If the file is already opened,
                     tab.set("selected", 1);                                     // display it.
                 } else {                                                        // Otherwise,
-                    Wegas.Facade.VariableDescriptor.sendRequest({//             // retrieve the file content from the server
+                    Wegas.Facade.Variable.sendRequest({//             // retrieve the file content from the server
                         request: "/Inbox/Message/" + e.file.get(ID) + "?view=Extended",
                         cfg: {
                             updateCache: false

@@ -37,7 +37,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
             }, "tbody .present, tbody .futur", this);
         },
         checkCache: function(descriptorId, periode) {
-            var vd = Wegas.Facade.VariableDescriptor.cache.find("id", descriptorId),
+            var vd = Wegas.Facade.Variable.cache.find("id", descriptorId),
                     i, planPeriode;
 
             for (i = 0; i < vd.getInstance().get("plannification").length; i++) {
@@ -52,7 +52,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
             this.request(vd.getInstance().get("id"), periode, "POST");
         },
         request: function(taskInstanceId, periode, method) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/ResourceDescriptor/Plannification/" + taskInstanceId + "/" + periode,
                 cfg: {
                     method: method

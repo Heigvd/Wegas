@@ -49,7 +49,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             }
         },
         findTaskActivities: function() {
-            var employees, resourDesc = Wegas.Facade.VariableDescriptor.cache.find("name", "employees"),
+            var employees, resourDesc = Wegas.Facade.Variable.cache.find("name", "employees"),
                     i, ii, iii, taskIndex, work, activities, dt = this.get("host").datatable,
                     taskActivities = [];
             if (!resourDesc) {
