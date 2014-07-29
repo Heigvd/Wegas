@@ -108,7 +108,7 @@ YUI.add('wegas-inbox-list', function(Y) {
             cb.setContent("");                                                  // Update the view
 
             if (entities.length === 0) {
-                cb.setHTML("<center><em>No news</em></center>");            // Empty content box
+                cb.setHTML("<center><em>Empty</em></center>");                  // Empty message
             }
             Y.Array.each(entities, function(entity) {                           // For each message,
                 cb.append(this.TEMPLATES[this.get("template")](entity));        // render content
