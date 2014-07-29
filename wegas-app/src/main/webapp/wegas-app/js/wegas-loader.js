@@ -325,11 +325,6 @@ YUI().use(function(Y) {
                 path: 'js/plugin/datatableCSV-min.js',
                 ws_provides: "DatatableCSV"
             },
-            "wegas-pdf": {
-                path: 'js/plugin/wegas-pdf-min.js',
-                requires: ['jspdf', 'jspdfPlugin'],
-                ws_provides: 'PDF'
-            },
             'wegas-simpledialogue': {
                 path: "js/widget/wegas-simpledialogue.js",
                 ws_provides: "SimpleDialogue"
