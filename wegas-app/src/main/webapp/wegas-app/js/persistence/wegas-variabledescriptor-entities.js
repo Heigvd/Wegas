@@ -810,7 +810,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }, {
                         type: STRING,
                         label: "Subject",
-                        scriptType: STRING
+                        scriptType: STRING,
+                        required: true
                     }, {
                         type: HTML,
                         label: "Body",
