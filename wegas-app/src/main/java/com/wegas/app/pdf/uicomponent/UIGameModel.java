@@ -45,6 +45,15 @@ import org.apache.shiro.SecurityUtils;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
+
+
+/*
+ * 
+ * Faces 2.2 @FacesComponent(value="com.wegas.app.pdf.uicomponent.GameModel", 
+ *                           createTag = true, tagName = "GameModel",
+ *                           namespace ="http://www.albasim.ch/wegas/pdf")
+ * But still missing attributes definitions....
+ */
 @FacesComponent("com.wegas.app.pdf.uicomponent.GameModel")
 public class UIGameModel extends UIComponentBase {
 

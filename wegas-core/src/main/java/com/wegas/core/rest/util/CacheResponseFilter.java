@@ -7,20 +7,18 @@
  */
 package com.wegas.core.rest.util;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.container.ContainerResponse;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
-import com.sun.jersey.spi.container.ResourceFilter;
+import java.io.IOException;
 import java.util.List;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.core.HttpHeaders;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class CacheResponseFilter implements ResourceFilter, ContainerResponseFilter {
-
+public class CacheResponseFilter implements ContainerResponseFilter {
     /**
      *
      */
@@ -45,38 +43,15 @@ public class CacheResponseFilter implements ResourceFilter, ContainerResponseFil
 
     /**
      *
-     * @return
-     */
-    @Override
-    public ContainerRequestFilter getRequestFilter() {
-        return null;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public ContainerResponseFilter getResponseFilter() {
-        return this;
-    }
-
-    /**
-     *
      * @param request
      * @param response
-     * @return
      */
     @Override
-    public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
-        List<Object> cc = response.getHttpHeaders().get(HttpHeaders.CACHE_CONTROL);
-        if (cc != null && cc.size() > 0) {
-            /* CC set */
-            return response;
+    public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
+        List<Object> cc = response.getHeaders().get(HttpHeaders.CACHE_CONTROL);
+        if (cc == null || cc.isEmpty()) {
+            response.getHeaders().putSingle(HttpHeaders.CACHE_CONTROL, headers);
         }
-
-        response.getHttpHeaders().putSingle(HttpHeaders.CACHE_CONTROL, headers);
-        return response;
     }
 
 }

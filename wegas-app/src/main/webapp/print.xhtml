@@ -1,68 +1,70 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://java.sun.com/jsf/facelets"
-      xmlns:h="http://java.sun.com/jsf/html"
-      xmlns:wegas="http://www.albasim.ch/wegas/pdf" >
+<ui:component xmlns="http://www.w3.org/1999/xhtml"
+              xmlns:ui="http://java.sun.com/jsf/facelets"
+              xmlns:h="http://java.sun.com/jsf/html"
+              xmlns:wegas="http://www.albasim.ch/wegas/pdf" >
 
 
-    <!-- TODO use h:doctype from Faces 2.2 and set root elemeent to ui:component ! -->
-    <!--h:doctype value="<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd\">" /-->
+    <h:doctype public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
+               rootElement="html" 
+               system="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd "/>
+    <html>
+        <h:head>
 
-    <h:head>
+            <meta charset="UTF-8" />
+            <meta http-equiv="Content-Type" content="text/html" />
+            <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
+            <title>#{gameController.currentGameModel.name} - Wegas</title>
+            <meta name="description" content="" />
+            <meta name="keywords" content="" />
+            <meta name="robots" content="index, follow" />
+            <meta name="contact" content="albasim@heig-vd.ch" />
+            <meta name="audience" content="General" />
+            <meta name="distribution" content="Global" />
+            <meta name="revisit-after" content="30 days" />
 
-        <meta charset="UTF-8" />
-        <meta http-equiv="Content-Type" content="text/html" />
-        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
-        <title>#{gameController.currentGameModel.name} - Wegas</title>
-        <meta name="description" content="" />
-        <meta name="keywords" content="" />
-        <meta name="robots" content="index, follow" />
-        <meta name="contact" content="albasim@heig-vd.ch" />
-        <meta name="audience" content="General" />
-        <meta name="distribution" content="Global" />
-        <meta name="revisit-after" content="30 days" />
+            <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
 
-        <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+            <meta id="customstyles" />
 
-        <meta id="customstyles" />
+            <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print.css" media="all" />
+            <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print-page.css" media="print" />
 
-        <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print.css" media="all" />
-        <link rel="stylesheet" type="text/css" href="wegas-app/css/wegas-pdf-print-page.css" media="print" />
+            <ui:insert name="head"/>
 
-        <ui:insert name="head"/>
+            <script language="javascript">
+                function updateMenu() {
+                    var floatingMenu = document.getElementById("floatingMenu");
+                    var menu = document.getElementById("menu");
+                    floatingMenu.innerHTML = menu.innerHTML;
+                }
+            </script>
+        </h:head>
 
-        <script language="javascript">
-            function updateMenu() {
-                var floatingMenu = document.getElementById("floatingMenu");
-                var menu = document.getElementById("menu");
-                floatingMenu.innerHTML = menu.innerHTML;
-            }
-        </script>
-    </h:head>
-
-    <h:body>
-        <a name="top" />
-        <div class="wegas-pdf-content">
-            <div id="floatingMenuContainer">
-                <div id="gotoTop">
-                    <a href="#top"><img src="wegas-app/images/top.png" /></a>
+        <h:body>
+            <a name="top" />
+            <div class="wegas-pdf-content">
+                <div id="floatingMenuContainer">
+                    <div id="gotoTop">
+                        <a href="#top"><img src="wegas-app/images/top.png" /></a>
+                    </div>
+                    <div id="floatingMenu">
+                    </div>
                 </div>
-                <div id="floatingMenu">
+                <div>
+                    <wegas:GameModel 
+                        value="#{gameController.currentGameModel}" 
+                        player="#{gameController.getCurrentPlayer()}" 
+                        root="#{request.getParameter('root')}" 
+                        mode="#{request.getParameter('mode')}"
+                        defaultValues="#{request.getParameter('defaultValues')}"
+                        />
                 </div>
             </div>
-            <div>
-                <wegas:GameModel 
-                    value="#{gameController.currentGameModel}" 
-                    player="#{gameController.getCurrentPlayer()}" 
-                    root="#{request.getParameter('root')}" 
-                    mode="#{request.getParameter('mode')}"
-                    defaultValues="#{request.getParameter('defaultValues')}"
-                    />
-            </div>
-        </div>
-        <script>updateMenu();</script>
-        <p style="display: none;" id="testUTF8">[Вегас: Паутина Игра Авторская Система]</p>
-    </h:body>
-</html>
+            <script>updateMenu();</script>
+            <p style="display: none;" id="testUTF8">[Вегас: Паутина Игра Авторская Система]</p>
+        </h:body>
+    </html>
+</ui:component>

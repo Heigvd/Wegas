@@ -7,20 +7,25 @@
  */
 package com.wegas.core.rest.util;
 
-import com.sun.jersey.spi.container.*;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.event.client.EntityUpdatedEvent;
+import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.event.client.ClientEvent;
+import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.exception.ExceptionWrapper;
-import com.wegas.core.ejb.WebsocketFacade;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.naming.NamingException;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerResponseContext;
+import javax.ws.rs.container.ContainerResponseFilter;
+import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import org.apache.http.HttpStatus;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +34,8 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class ManagedModeResponseFilter implements ContainerResponseFilter, ResourceFilter {
+@Provider
+public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
 
@@ -42,15 +48,15 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
      * @return
      */
     @Override
-    public ContainerResponse filter(ContainerRequest request, ContainerResponse response) {
+    public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
         RequestFacade rmf = RequestFacade.lookup();
 
         //rmf.commit();
 
-        if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
+        if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))
                 && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
             ServerResponse serverResponse = new ServerResponse();
-
+            
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
 
@@ -59,6 +65,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
                 entities.add(response.getEntity());
                 serverResponse.setEntities(entities);
             }
+            response.setStatus(HttpStatus.SC_OK);
             response.setEntity(serverResponse);
 
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
@@ -75,26 +82,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
 
             serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());// Push events stored in RequestManager
         }
-
-        return response;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public ContainerRequestFilter getRequestFilter() {
-        return null;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public ContainerResponseFilter getResponseFilter() {
-        return this;
     }
 
     @XmlRootElement

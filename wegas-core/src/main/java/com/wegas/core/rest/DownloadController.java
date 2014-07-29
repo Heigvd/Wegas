@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest;
 
-import com.sun.jersey.multipart.FormDataParam;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
@@ -20,6 +19,7 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 
 /**
  *

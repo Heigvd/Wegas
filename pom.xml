@@ -2,13 +2,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <name>wegas-project</name>
+    <name>wegas-project-gl4</name>
     <description>Wegas (Web Game Authoring System) is an engine for web-based multiplayer games.</description>
     <url>http://wegas.albasim.ch</url>
 
     <groupId>com.wegas</groupId>
-    <artifactId>wegas-project</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <artifactId>wegas-project-gl4</artifactId>
+    <version>1.0-SNAPSHOT-gl4</version>
     <packaging>pom</packaging>
     <modules>
         <module>wegas-core</module>
@@ -84,9 +84,9 @@
 
         <shiro.version>1.2.1</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
-        <jersey.version>1.11</jersey.version>
+        <jersey.version>2.0</jersey.version>
         <jdk.version>1.7</jdk.version>
-        <glassfish.version>3.1.2</glassfish.version>
+        <glassfish.version>4.0</glassfish.version>
         <cdi.version>1.0</cdi.version>
         <slf4j.version>1.6.1</slf4j.version>
         <weld.version>1.1.0.Final</weld.version>
@@ -95,7 +95,7 @@
         <jar.plugin.version>2.3.1</jar.plugin.version>
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
-        <netbeans.hint.j2eeVersion>1.6</netbeans.hint.j2eeVersion>
+        <netbeans.hint.j2eeVersion>1.7</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.license>wegas</netbeans.hint.license>
 
@@ -157,62 +157,6 @@
                 <scope>compile</scope>
             </dependency>
 
-            <!-- Jersey -->
-            <dependency>
-                <groupId>com.sun.jersey</groupId>
-                <artifactId>jersey-json</artifactId>
-                <version>1.11</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jersey-core</artifactId>
-                        <groupId>com.sun.jersey</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jaxb-impl</artifactId>
-                        <groupId>com.sun.xml.bind</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jettison</artifactId>
-                        <groupId>org.codehaus.jettison</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-mapper-asl</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-jaxrs</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-core-asl</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <artifactId>jackson-xc</artifactId>
-                        <groupId>org.codehaus.jackson</groupId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
-            <dependency>
-                <groupId>com.sun.jersey.contribs</groupId>
-                <artifactId>jersey-multipart</artifactId>
-                <version>1.11</version>
-                <scope>provided</scope>
-
-                <exclusions>
-                    <exclusion>
-                        <artifactId>jersey-core</artifactId>
-                        <groupId>com.sun.jersey</groupId>
-                    </exclusion>
-                    <exclusion>
-                        <groupId>org.jvnet</groupId>
-                        <artifactId>mimepull</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
-
             <!-- Apache Shiro Dependencies -->
             <dependency>
                 <groupId>org.apache.shiro</groupId>
@@ -261,8 +205,8 @@
             <!-- Embedded glassfish -->
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
-                <artifactId>glassfish-embedded-all</artifactId>
-                <version>3.1.2.2</version>
+                <artifactId>glassfish-embedded-web</artifactId>
+                <version>${glassfish.version}</version>
                 <scope>provided</scope>
             </dependency>
 
