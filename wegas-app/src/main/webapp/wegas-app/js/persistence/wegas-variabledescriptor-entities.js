@@ -150,43 +150,41 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: "DeleteEntityButton"
             }, {
                 type: BUTTON,
-                label: "More",
-                cssClass: "editor-moregamemodel-button",
+                label: "Export",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: BUTTON,
-                                    label: "Print",
-                                    //cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "WidgetMenu",
-                                            cfg: {
-                                                menuCfg: {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                event: "mouseenter",
-                                                children: [{
-                                                        type: "PrintButton",
-                                                        label: "html"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "html for player",
-                                                        mode: "player"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf",
-                                                        outputType: "pdf"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf for player",
-                                                        outputType: "pdf",
-                                                        mode: "player"
-                                                    }
-                                                ]
-                                            }
-                                        }]
+                                    type: "PrintButton",
+                                    label: "Html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Html (Players document)",
+                                    mode: "player"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf (Players document)",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }, {
+                                    type: "OpenEntityButton",
+                                    label: "Json",
+                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
                                 }]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "More",
+                cssClass: "wegas-advanced-feature",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: []
                         }
                     }]
             }
@@ -722,44 +720,41 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: "DeleteEntityButton"
             }, {
                 type: BUTTON,
-                label: "More",
-                cssClass: "editor-moregamemodel-button",
-                //cssClass: "wegas-advanced-feature",
+                label: "Export",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: BUTTON,
-                                    label: "Print",
-                                    //cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "WidgetMenu",
-                                            cfg: {
-                                                menuCfg: {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                event: "mouseenter",
-                                                children: [{
-                                                        type: "PrintButton",
-                                                        label: "html"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "html for player",
-                                                        mode: "player"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf",
-                                                        outputType: "pdf"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf for player",
-                                                        outputType: "pdf",
-                                                        mode: "player"
-                                                    }
-                                                ]
-                                            }
-                                        }]
+                                    type: "PrintButton",
+                                    label: "Html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Html (Players document)",
+                                    mode: "player"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf (Players document)",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }, {
+                                    type: "OpenEntityButton",
+                                    label: "Json",
+                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
                                 }]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "More",
+                cssClass: "wegas-advanced-feature",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: []
                         }
                     }]
             }
