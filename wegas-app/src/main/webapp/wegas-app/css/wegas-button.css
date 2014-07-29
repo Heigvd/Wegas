@@ -151,3 +151,8 @@
 .yui3-skin-sam .wegas-icon-movedown {
     background: transparent url(../..//lib/inputex/src/inputex-list/assets/skins/sam/bullet_arrow_down.png) no-repeat scroll 0px 1px !important;
 }
+.wegas-icon-pdf {
+    background: transparent url(../images/oxygen-pdf-icon.png) no-repeat scroll 0px 1px !important;
+    width: 48px;
+    height: 48px;
+}

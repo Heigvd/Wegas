@@ -252,9 +252,10 @@ YUI.add('wegas-editor-action', function(Y) {
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Game) {
-                params = "gameId=" + entity.get("id");
+                params = "gameModelId=" + entity.get("gameModelId");
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                params = "gameModelId=" + Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id") + "&root=" + entity.get("name");
+                params = "id=" + Y.Wegas.Facade.Game.get("currentPlayerId");
+                params += "&root=" + entity.get("name");
             } else {
                 // @ TODO ERROR
             }

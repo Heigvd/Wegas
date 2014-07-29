@@ -11,6 +11,9 @@ import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
+import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
@@ -156,6 +159,9 @@ public class UIVariableDescriptor extends UIComponentBase {
             case "Inbox":
                 encode(context, writer, (InboxDescriptor) vDesc);
                 break;
+            case "Number":
+                encode(context, writer, (NumberDescriptor) vDesc);
+                break;
             default:
                 fallback(context, writer, vDesc);
                 break;
@@ -179,19 +185,21 @@ public class UIVariableDescriptor extends UIComponentBase {
          * Some entity have a specific label to be displayed for players (called
          * title) if any, use it rather than std label
          */
-        if (editorMode || vDesc.getTitle() == null || vDesc.getTitle().isEmpty()) {
+        if (editorMode || vDesc.getTitle() == null /* || vDesc.getTitle().isEmpty() */) {
             title = vDesc.getLabel();
         } else {
             title = vDesc.getTitle();
         }
 
+        String type = vDesc.getClass().getSimpleName();
+
         writer.write("<a name=\"vd" + vDesc.getId() + "\" />");
-        UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE);
+        UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_TITLE
+                + " " + UIHelper.CSS_CLASS_PREFIX + type.toLowerCase());
 
         //UIHelper.printProperty(context, writer, "Internal Type", vDesc.getClass().getSimpleName());
         //UIHelper.printProperty(context, writer, UIHelper.TEXT_NAME, vDesc.getLabel());
         if (editorMode) {
-            String type = vDesc.getClass().getSimpleName().replace("^Descriptor", "");
             UIHelper.printProperty(context, writer, "Type", type);
             UIHelper.printProperty(context, writer, "ScriptAlias", vDesc.getName());
 
@@ -212,16 +220,30 @@ public class UIVariableDescriptor extends UIComponentBase {
      * @throws IOException
      */
     public void fallback(FacesContext context, ResponseWriter writer, VariableDescriptor vDesc) throws IOException {
-        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
-        encodeBase(context, writer, vDesc, editorMode);
+        // Never show to players 
+        if (editorMode) {
+            VariableInstance instance = vDesc.getInstance(defaultValues, player);
 
-        for (Method m : vDesc.getClass().getDeclaredMethods()) {
+            UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+            encodeBase(context, writer, vDesc, editorMode);
+            UIHelper.printText(context, writer, "Fallback", UIHelper.CSS_CLASS_ERROR);
+
+            printMethods(context, writer, "Descriptor", vDesc);
+            printMethods(context, writer, "Instance", instance);
+
+            UIHelper.endDiv(writer);
+        }
+    }
+
+    private static void printMethods(FacesContext context, ResponseWriter writer, String title, Object o) throws IOException {
+        UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
+        for (Method m : o.getClass().getDeclaredMethods()) {
             // Only care about non-XmlTransient getter 
             if (m.getName().matches("^get.*")
                     && m.getParameterTypes().length == 0
                     && m.getAnnotation(javax.xml.bind.annotation.XmlTransient.class) == null) {
                 try {
-                    Object invoke = m.invoke(vDesc);
+                    Object invoke = m.invoke(o);
                     String name, value;
                     name = m.getName().replaceFirst("get", "");
                     value = "N/A";
@@ -230,13 +252,10 @@ public class UIVariableDescriptor extends UIComponentBase {
                     }
                     UIHelper.printProperty(context, writer, name, value);
                 } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                    //Logger.getLogger(VariableDescriptor.class.getName()).log(Level.SEVERE, null, ex);
-                    //writer.write("ERROR " + ex.toString() + "<br />");
-                    //writer.write(ex.getMessage());
                 }
             }
         }
-        UIHelper.endDiv(writer);
+
     }
 
     /**
@@ -289,10 +308,16 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
             writer.startElement("ul", this);
-            for (String p : task.getPredecessorNames()) {
+            if (task.getPredecessorNames().isEmpty()) {
                 writer.startElement("li", this);
-                UIHelper.printText(context, writer, p, null);
+                UIHelper.printText(context, writer, "[NONE]", UIHelper.CSS_CLASS_PROPERTY_VALUE_NA);
                 writer.endElement("li");
+            } else {
+                for (String p : task.getPredecessorNames()) {
+                    writer.startElement("li", this);
+                    UIHelper.printText(context, writer, p, null);
+                    writer.endElement("li");
+                }
             }
             writer.endElement("ul");
 
@@ -443,7 +468,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             }
 
             UIHelper.endDiv(writer); // end COLUMN
-            UIHelper.endDiv(writer);
+            UIHelper.endDiv(writer); // end COLUMNS
 
             if (question.getAllowMultipleReplies() || instance.getReplies().isEmpty()) {
                 for (ChoiceDescriptor choice : question.getItems()) {
@@ -460,7 +485,6 @@ public class UIVariableDescriptor extends UIComponentBase {
                 UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
                 for (Reply r : replies) {
                     UIHelper.printText(context, writer, r.getResult().getChoiceDescriptor().getLabel(), UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
-
                     UIResult uiResult = new UIResult(r.getResult(), player, editorMode, defaultValues);
                     uiResult.encodeAll(context);
                 }
@@ -493,8 +517,10 @@ public class UIVariableDescriptor extends UIComponentBase {
                 if (choice instanceof SingleResultChoiceDescriptor == false) {
                     // Not a "single result" choice ? print the default result name
                     String resultName;
-                    if (instance.getCurrentResult() == null) {
+                    if (choice.getResults() == null || choice.getResults().isEmpty()) {
                         resultName = UIHelper.TEXT_NOT_AVAILABLE;
+                    } else if (instance.getCurrentResult() == null) {
+                        resultName = choice.getResults().get(0).getName();
                     } else {
                         resultName = instance.getCurrentResult().getName();
                     }
@@ -573,16 +599,47 @@ public class UIVariableDescriptor extends UIComponentBase {
         }
     }
 
+    /**
+     *
+     * Print inboxes
+     *
+     * @param context
+     * @param writer
+     * @param inbox
+     * @throws IOException
+     */
     public void encode(FacesContext context, ResponseWriter writer, InboxDescriptor inbox) throws IOException {
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         encodeBase(context, writer, inbox, editorMode);
         InboxInstance instance = inbox.getInstance(defaultValues, player);
-        
+
         UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, inbox.getDescription(), false, false);
 
-        for (Message msg : instance.getMessages()){
+        for (Message msg : instance.getMessages()) {
             UIHelper.printMessage(context, writer, "", msg.getFrom(), msg.getSubject(), msg.getBody(), msg.getAttachements());
         }
+
+        UIHelper.endDiv(writer);
+    }
+
+    /**
+     * Print Number
+     *
+     * @param context
+     * @param writer
+     * @param nd
+     * @throws IOException
+     */
+    public void encode(FacesContext context, ResponseWriter writer, NumberDescriptor nd) throws IOException {
+        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+        encodeBase(context, writer, nd, editorMode);
+        NumberInstance ni = nd.getInstance(defaultValues, player);
+
+        if (editorMode) {
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_MIN_VALUE, nd.getMinValue());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_MAX_VALUE, nd.getMaxValue());
+        }
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_VALUE, ni.getValue());
 
         UIHelper.endDiv(writer);
     }
