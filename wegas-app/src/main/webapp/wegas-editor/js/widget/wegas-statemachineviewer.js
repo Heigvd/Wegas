@@ -80,7 +80,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             var key, cb = this.get(CONTENT_BOX),
                 availableStates = this.get("availableStates");
 
-            //this.events.push(Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
+            //this.events.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
 
             cb.on("mousedown", function() {
                 this.one(".scrollable").addClass("mousedown");
@@ -281,11 +281,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     this._saveWaiting = false;
                     entity = Y.JSON.parse(Y.JSON.stringify(entity));
                     if (entity.id) {
-                        Wegas.Facade.VariableDescriptor.cache.put(entity, {
+                        Wegas.Facade.Variable.cache.put(entity, {
                             on: DEFAULTCB
                         });
                     } else {
-                        Wegas.Facade.VariableDescriptor.cache.post(entity, {
+                        Wegas.Facade.Variable.cache.post(entity, {
                             on: DEFAULTCB
                         });
                     }
@@ -322,7 +322,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 return;
             }
             this.get(BOUNDING_BOX).all(".currentState").removeClass("currentState");
-            currentStateNode = this.nodes[Wegas.Facade.VariableDescriptor.cache.findById(sm.get("id")).getInstance().get("currentStateId")];// Need to lookup in cache because current enttity doesn't have instances
+            currentStateNode = this.nodes[Wegas.Facade.Variable.cache.findById(sm.get("id")).getInstance().get("currentStateId")];// Need to lookup in cache because current enttity doesn't have instances
             if (currentStateNode) {
                 currentStateNode.get(BOUNDING_BOX).addClass("currentState");
             }

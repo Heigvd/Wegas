@@ -290,7 +290,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             dataSource: {
                 getter: function(val) {
                     if (!val) {
-                        return Wegas.Facade.VariableDescriptor;
+                        return Wegas.Facade.Variable;
                     }
                     if (Lang.isString(val)) {
                         return Wegas.Facade[val];
