@@ -22,6 +22,7 @@ import org.apache.shiro.SecurityUtils;
 import org.codehaus.jackson.JsonNode;
 import org.codehaus.jackson.node.ObjectNode;
 import org.codehaus.jettison.json.JSONException;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -162,20 +163,33 @@ public class PageController {
     }
 
     /**
-     * Create a new page. page'id is generated
+     * Create a new page. page'id is generated. Page has no name
      *
      * @param gameModelId The GameModel's ID
      * @param content A JSONObject
-     * @param name String optional page name
      * @return The stored page
      * @throws RepositoryException
      * @throws IOException
      * @throws WegasException
      */
     @PUT
-    public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content, String name)
+    public Response createPage(@PathParam("gameModelId") String gameModelId, JsonNode content)
             throws RepositoryException, IOException, WegasException {
+        return createPage(gameModelId, content, null);
+    }
 
+    /**
+     * Creata a page from JsonNode with the specified name
+     * 
+     * @param gameModelId
+     * @param content
+     * @param name
+     * @return 
+     * @throws javax.jcr.RepositoryException 
+     * @throws java.io.IOException 
+     */
+    private Response createPage(String gameModelId, JsonNode content, String name)
+            throws RepositoryException, IOException, WegasException {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         try (final Pages pages = new Pages(gameModelId)) {
             if (name == null || name.equals("")) {
