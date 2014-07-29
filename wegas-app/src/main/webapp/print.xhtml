@@ -15,7 +15,7 @@
         <meta charset="UTF-8" />
         <meta http-equiv="Content-Type" content="text/html" />
         <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
-        <title>#{editorGameController.currentGameModel.name} - Wegas</title>
+        <title>#{gameController.currentGameModel.name} - Wegas</title>
         <meta name="description" content="" />
         <meta name="keywords" content="" />
         <meta name="robots" content="index, follow" />
@@ -54,8 +54,8 @@
             </div>
             <div>
                 <wegas:GameModel 
-                    value="#{editorGameController.currentGameModel}" 
-                    player="#{editorGameController.getCurrentPlayer()}" 
+                    value="#{gameController.currentGameModel}" 
+                    player="#{gameController.getCurrentPlayer()}" 
                     root="#{request.getParameter('root')}" 
                     mode="#{request.getParameter('mode')}"
                     defaultValues="#{request.getParameter('defaultValues')}"
@@ -63,6 +63,6 @@
             </div>
         </div>
         <script>updateMenu();</script>
-        <p style="display: none;" id="testUTF8">Some UTF-8 content [вегас]</p>
+        <p style="display: none;" id="testUTF8">[Вегас: Паутина Игра Авторская Система]</p>
     </h:body>
 </html>

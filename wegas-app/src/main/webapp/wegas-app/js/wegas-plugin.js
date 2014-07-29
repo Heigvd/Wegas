@@ -184,9 +184,10 @@ YUI.add('wegas-plugin', function(Y) {
     Y.extend(PrintActionPlugin, Action, {
         execute: function() {
             var outputType = this.get("outputType");
-            var root = this.get("root");
-            var gameModelId = Wegas.Facade.GameModel.get("currentGameModelId");
-            var printUrl = Wegas.app.get("base") + "print.html?gameModelId=" + gameModelId + "&outputType=" + outputType + "&root=" + root + "&mode=player";
+            //var gameModelId = Wegas.Facade.GameModel.get("currentGameModelId");
+            var playerId = Y.Wegas.Facade.Game.get("currentPlayerId");
+            var root = this.get("root.evaluated").get('name');
+            var printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
             window.open(printUrl);
         }
     }, {
@@ -194,10 +195,15 @@ YUI.add('wegas-plugin', function(Y) {
         NAME: "PrintActionPlugin",
         ATTRS: {
             root: {
-                type : "string",
+                /**
+                 * The target variable, returned either based on the name attribute,
+                 * and if absent by evaluating the expr attribute.
+                 */
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
-                    label: "root",
-                    required: false
+                    _type: "variableselect",
+                    label: "Variable"/*,
+                    classFilter: ["ListDescriptor"]*/
                 }
             },
             /**

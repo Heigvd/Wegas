@@ -11,6 +11,7 @@ import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.Reply;
 import com.wegas.mcq.persistence.Result;
+import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import java.io.IOException;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
@@ -76,7 +77,8 @@ public class UIResult extends UIComponentBase {
         Boolean editorMode = (Boolean) getAttributes().get("editorMode");
         Boolean defaultValues = (Boolean) getAttributes().get("defaultValues");
 
-        if (editorMode) {
+        // SingleResultChoice's result never has a name
+        if (editorMode && result.getChoiceDescriptor() instanceof SingleResultChoiceDescriptor == false) {
             UIHelper.printText(context, writer, result.getName(), UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
         }
 

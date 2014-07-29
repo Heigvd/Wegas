@@ -173,6 +173,11 @@ span.wegas-pdf-variable-title {
     padding-bottom: 5px;
 }
 
+span.wegas-pdf-listdescriptor {
+    //font-size : 1.5em;
+    font-weight: bold;
+}
+
 span.wegas-pdf-variable-subtitle {
     font-size : 1.2em;
     display : block;
