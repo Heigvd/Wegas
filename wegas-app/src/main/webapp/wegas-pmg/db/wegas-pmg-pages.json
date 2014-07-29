@@ -879,12 +879,12 @@
         "children": [
             {
                 "type": "Text",
-                "content": "<div class='title'><h2>Questions and actions history</h2></div><div class='title'><h2>Details</h2></div>"
+                "content": "<div class='title'><h2>History</h2></div><div class='title'><h2>Details</h2></div>"
             },
             {
                 "type": "InboxDisplay",
                 "variable": {
-                    "name": "inbox"
+                    "name": "history"
                 }
             }
         ]
@@ -1121,7 +1121,7 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "padding": "20px"
+                                "padding": "2%"
                             }
                         }
                     }, {
@@ -1138,7 +1138,20 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "width": "50%"
+                                "width": "46%%"
+                            }
+                        }
+                    }]
+            }, {
+                "type": "Text",
+                "content": "<div class='title'><h2>News</h2></div></div>",
+                "plugins": [{
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "21px",
+                                "left": "50%"
                             }
                         }
                     }]
@@ -1152,7 +1165,7 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "0px",
+                                "top": "50px",
                                 "right": "0px"
                             }
                         }

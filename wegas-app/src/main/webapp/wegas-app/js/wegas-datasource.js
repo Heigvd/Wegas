@@ -192,11 +192,11 @@ YUI.add('wegas-datasource', function(Y) {
                         }
 
                         payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
-                        if (payload.serverResponse.get
-                            && payload.serverResponse.get("entities")
-                            && payload.serverResponse.get("entities").length > 0) {
-                            payload.response.entity = payload.serverResponse.get("entities")[0];// Shortcut, useful if there is only one instance
+                        if (payload.serverResponse.get && payload.serverResponse.get("entities")) {
                             payload.response.entities = payload.serverResponse.get("entities");
+                            if (payload.response.entities.length > 0) {
+                                payload.response.entity = payload.response.entities[0];// Shortcut, useful if there is only one instance
+                            }
                         }
                         if (payload.cfg.updateCache !== false) {
                             this.onResponseRevived(payload);
@@ -1311,7 +1311,7 @@ YUI.add('wegas-datasource', function(Y) {
     }, {
         NS: "jsonschema"
     });
-    
+
     /**
      * 
      */
