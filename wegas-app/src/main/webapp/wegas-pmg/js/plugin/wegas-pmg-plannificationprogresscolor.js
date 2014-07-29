@@ -43,7 +43,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                     properties;
 
             for (i = 0; i < dt.data._items.length; i++) {
-                taskDesc = Wegas.Facade.VariableDescriptor.cache.find("id", dt.getRecord(i).get("id"));
+                taskDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
                 if (parseInt(properties.completeness) < 100) {

@@ -55,7 +55,39 @@
     background: none;
 }
 .yui3-skin-sam .wegas-inbox-invite {
-     text-align: center;
-     font-style: italic;
-     padding-top: 30px;
+    text-align: center;
+    font-style: italic;
+    padding-top: 30px;
+}
+/* Inbox List */
+.wegas-inbox-list .msg {
+    padding: 0.8em 20px;
+}
+.wegas-inbox-list .msg-subject {
+    font-weight: bolder;
+}
+.wegas-inbox-list .msg-body {
+    max-height: 10000px;
+    overflow: hidden;
+    -webkit-transition: max-height 0.8s;
+    -moz-transition: max-height 0.8s;
+    transition: max-height 0.8s;
+}
+.wegas-inbox-list .msg-toggled:hover {
+    cursor:pointer;
+    background: #f0f0f0;
+}
+.wegas-inbox-list .msg-toggled .msg-body {
+    max-height: 100px;
+}
+.wegas-inbox-list a.msg-showmore {
+    display: none;
+    font-size: 0.9em;
+    text-decoration: none;
+    color: gray;
+    text-align: center;
+    padding: 0.3em 0 0 0;
+}
+.wegas-inbox-list .msg-toggled a.msg-showmore {
+    display: block;
 }

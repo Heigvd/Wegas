@@ -104,9 +104,9 @@ YUI.add("wegas-teaching-main", function(Y) {
             this.arrowEditor.show();
         },
         createArrow: function(x1, y1, x2, y2, id) {
-            //var arrowInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "arrow" + id);
+            //var arrowInstance = Y.Wegas.Facade.Variable.cache.find("name", "arrow" + id);
             //var val = arrowInstance.getInstance().get("value");
-            var arrowInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "fleche" + id).getInstance(),
+            var arrowInstance = Y.Wegas.Facade.Variable.cache.find("name", "fleche" + id).getInstance(),
                 val = arrowInstance.get("properties").value,
                 text = arrowInstance.get("properties").text,
                 color = this.getColorByVal(val),
@@ -172,10 +172,10 @@ YUI.add("wegas-teaching-main", function(Y) {
             return label;
         },
         createRectangle: function(x, y, id, label) {
-            //var rectangles = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "rectangles").getAttrs().items;
+            //var rectangles = Y.Wegas.Facade.Variable.cache.find("name", "rectangles").getAttrs().items;
             //var val = rectangles[id].getInstance().get("value");
             var cb = this.get("contentBox"),
-                rectangleInstance = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "rectangle" + (id + 1)),
+                rectangleInstance = Y.Wegas.Facade.Variable.cache.find("name", "rectangle" + (id + 1)),
                 val = rectangleInstance.getInstance().get("value");
             var ereg = /(.*)\|\|\|/i, // the label is the first part of the string separated with a "|||"
                 label = (val.match(ereg, "$1") && val.match(ereg, "$1")[1]) || label,
@@ -192,7 +192,7 @@ YUI.add("wegas-teaching-main", function(Y) {
             rectangle.on('click', this.showRectangleEditor, this, rectangle);
         },
         saveCurrentArrow: function() {
-            Y.Wegas.Facade.VariableDescriptor.script.run(
+            Y.Wegas.Facade.Variable.script.run(
                 "fleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
                 "fleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');");
         },
@@ -200,7 +200,7 @@ YUI.add("wegas-teaching-main", function(Y) {
             this.saveRectangle(this.currentRectangle);
         },
         saveRectangle: function(rectangle) {
-            Y.Wegas.Facade.VariableDescriptor.script.run("rectangle" + (rectangle.get("id") + 1) + ".value='" + String(rectangle.get("label")).replace(/'/g, '&#39;') + "|||" + String(rectangle.get("description")).replace(/'/g, '&#39;') + "';");
+            Y.Wegas.Facade.Variable.script.run("rectangle" + (rectangle.get("id") + 1) + ".value='" + String(rectangle.get("label")).replace(/'/g, '&#39;') + "|||" + String(rectangle.get("description")).replace(/'/g, '&#39;') + "';");
         },
         initArrowEditor: function() {
             this.arrowEditor = new Y.Panel({

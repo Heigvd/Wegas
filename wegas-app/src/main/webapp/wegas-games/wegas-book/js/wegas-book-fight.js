@@ -22,8 +22,8 @@ YUI.add("wegas-book-fight", function(Y) {
         failure: null,
         alternative: null,
         doFight: function(e) {
-            var combatSkill = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "combatSkill"),
-                stamina = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "stamina").
+            var combatSkill = Y.Wegas.Facade.Variable.cache.find("name", "combatSkill"),
+                stamina = Y.Wegas.Facade.Variable.cache.find("name", "stamina").
                 getInstance().get("value"),
                 damageGiven, damageTaken, handicap,
                 diceValue = e.target.result;
@@ -77,7 +77,7 @@ YUI.add("wegas-book-fight", function(Y) {
             if (typeof stamina !== "number")
                 return;
             
-            Y.Wegas.Facade.VariableDescriptor.script.run("stamina.value =" + stamina + ";");
+            Y.Wegas.Facade.Variable.script.run("stamina.value =" + stamina + ";");
         },
         doBattleResult: function(success) {
             var cb = this.get(CONTENTBOX);

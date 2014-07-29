@@ -166,7 +166,7 @@ YUI().use(function(Y) {
             },
             'wegas-loginbutton': {
                 path: 'js/widget/wegas-loginbutton-min.js',
-                requires: ['wegas-button', 'wegas-widgetmenu', 'wegas-team'],
+                requires: ['wegas-button', 'wegas-widgetmenu'],
                 ws_provides: 'LoginButton'
             },
             'wegas-chat': {
@@ -217,6 +217,11 @@ YUI().use(function(Y) {
             },
             'wegas-inboxcss': {
                 type: 'css'
+            },
+            'wegas-inbox-list': {
+                path: 'js/widget/wegas-inbox-list-min.js',
+                requires:  ["template-micro", 'wegas-inboxcss'],
+                ws_provides: 'InboxList'
             },
             'wegas-form': {
                 path: 'js/widget/wegas-form-min.js',

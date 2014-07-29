@@ -9,10 +9,12 @@ package com.wegas.messaging.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.messaging.ejb.MessageFacade;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.messaging.persistence.Message;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -25,6 +27,7 @@ import org.apache.shiro.authz.UnauthorizedException;
  */
 @Stateless
 @Path("GameModel/{gameModelId : [1-9][0-9]*}/VariableDescriptor/Inbox/")
+@Produces(MediaType.APPLICATION_JSON)
 public class InboxDescriptorController {
 
     /**
@@ -45,12 +48,26 @@ public class InboxDescriptorController {
 
     /**
      *
+     * @param instanceId
+     * @return
+     */
+    @GET
+    @Path("{instanceId : [1-9][0-9]*}/Message")
+    public List<Message> findAll(@PathParam("instanceId") Long instanceId) {
+
+        InboxInstance inbox = (InboxInstance) variableInstanceFacade.find(instanceId);
+        checkPermissions(inbox);
+
+        return inbox.getMessages();
+    }
+
+    /**
+     *
      * @param messageId
      * @return
      */
     @GET
     @Path("Message/{messageId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public Message find(@PathParam("messageId") Long messageId) {
 
         Message m = messageFacade.find(messageId);
@@ -67,11 +84,10 @@ public class InboxDescriptorController {
      */
     @PUT
     @Path("Message/{messageId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public InboxInstance editMessage(@PathParam("messageId") Long messageId,
             Message message) {
-        Message update = messageFacade.update(messageId, message);
 
+        Message update = messageFacade.update(messageId, message);
         checkPermissions(update);
 
         return update.getInboxInstance();
@@ -84,10 +100,9 @@ public class InboxDescriptorController {
      */
     @PUT
     @Path("Message/Read/{messageId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public InboxInstance readMessage(@PathParam("messageId") Long messageId) {
-        Message update = messageFacade.find(messageId);
 
+        Message update = messageFacade.find(messageId);
         checkPermissions(update);
 
         update.setUnread(false);
@@ -101,25 +116,36 @@ public class InboxDescriptorController {
      */
     @DELETE
     @Path("Message/{messageId : [1-9][0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public InboxInstance deleteMessage(@PathParam("messageId") Long messageId) {
-        Message m = messageFacade.find(messageId);
 
+        Message m = messageFacade.find(messageId);
         checkPermissions(m);
 
         messageFacade.remove(m);
         return m.getInboxInstance();
     }
 
-    private void checkPermissions(Message m) {
-        if (!SecurityHelper.isPermitted(variableInstanceFacade.findGame(m.getInboxInstance()), "Edit")) {
+    /**
+     *
+     * @param instance
+     */
+    private void checkPermissions(VariableInstance instance) {
+        if (!SecurityHelper.isPermitted(variableInstanceFacade.findGame(instance), "Edit")) {
             try {
-                Long playerId = playerFacade.findCurrentPlayer(variableInstanceFacade.findGame(m.getInboxInstance())).getId();
+                playerFacade.findCurrentPlayer(variableInstanceFacade.findGame(instance)).getId();
                 //System.out.println(playerId + " playerid readMessage");
 
             } catch (Exception e) {
                 throw new UnauthorizedException();
             }
         }
+    }
+
+    /**
+     *
+     * @param m
+     */
+    private void checkPermissions(Message m) {
+        checkPermissions(m.getInboxInstance());
     }
 }

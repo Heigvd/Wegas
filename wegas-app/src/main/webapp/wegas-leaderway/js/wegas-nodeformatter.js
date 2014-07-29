@@ -141,7 +141,7 @@ YUI.add('wegas-nodeformatter', function(Y) {
             return node;
         },
         makeNodeLongText: function(cb, variable, value, className) {
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(variable, "Extended", {// Retrieve the object from the server in Export view
+            Y.Wegas.Facade.Variable.cache.getWithView(variable, "Extended", {// Retrieve the object from the server in Export view
                 on: Y.Wegas.superbind({
                     success: function(e) {
                         cb.one("." + className).setContent(e.response.entity.get(value) || "No " + value);

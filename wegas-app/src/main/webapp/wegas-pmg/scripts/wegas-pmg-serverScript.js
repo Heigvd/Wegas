@@ -27,9 +27,9 @@ function nextPeriod() {
     
     Variable.find(gm, "currentTime").add(self, 1);
 
-//    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
+//    allPhaseQuestionAnswered();                                               // First Check if all questions are answered
 
-    if (currentPhase.getValue(self) === 2) {                             // If current phase is the 'realisation' phase
+    if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
         runSimulation();
         currentPeriod.add(self, 1);
         if (checkEndOfProject()) {                                              // If the project is over
@@ -39,10 +39,10 @@ function nextPeriod() {
             Event.fire("nextWeek");
         }
 
-    } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {             // If end of phase
+    } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {      // If end of phase
         currentPhase.add(self, 1);
         //currentPeriod.setValue(self, 1);                                      // Why?
-        if (currentPhase.getValue(self) === 2) {                                //Execution period
+        if (currentPhase.getValue(self) === 3) {                                // Execution period
             Variable.findByName(gm, 'ganttPage').setValue(self, 11);
             Variable.findByName(gm, 'taskPage').setValue(self, 12);
         }
@@ -74,7 +74,7 @@ function allPhaseQuestionAnswered() {
     var i, question, questions;
 
     try {
-        questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self))
+        questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self) - 1)
             .items.get(getCurrentPeriod().getValue(self) - 1).items;
     } catch (e) {
         // Unable to find question list for current phase

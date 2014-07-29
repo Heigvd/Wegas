@@ -32,10 +32,10 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
             }).render(this.get(CONTENTBOX).one(".buttons"));                     // Render add file button
         },
         bindUI: function() {
-            this.handlers.sync = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.sync = Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
         syncUI: function() {
-            Wegas.Facade.VariableDescriptor.cache.getWithView(this.get('variable.evaluated').getInstance(), "Extended", {
+            Wegas.Facade.Variable.cache.getWithView(this.get('variable.evaluated').getInstance(), "Extended", {
                 on: {
                     success: Y.bind(function(e) {
                         if (this.get("destroyed"))
@@ -89,7 +89,7 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
             return panel;
         },
         addFile: function(fileName) {
-            Wegas.Facade.VariableDescriptor.script.run("Variable.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);", {
+            Wegas.Facade.Variable.script.run("Variable.find(gameModel, 'files').sendMessage(self, '', '" + fileName + ".js', '', []);", {
                 on: {
                     success: Y.bind(function(e) {
                         this.fire("openFile", {file: e.response.entity});
