@@ -18,7 +18,7 @@ YUI.add("wegas-entity", function(Y) {
         Base = Y.Base, Entity,
         IDATTRDEF = {
             type: STRING,
-            optional: true, // The id is optional for entites that have not been persisted
+            optional: true, //                                                  // The id is optional for entites that have not been persisted
             _inputex: {
                 _type: HIDDEN
             }

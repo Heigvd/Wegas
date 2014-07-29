@@ -529,7 +529,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: ARRAY,
                 _inputex: {
                     _type: "list",
-                    useButtons: true,
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
@@ -821,7 +820,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: "list",
                         label: "",
                         scriptType: STRING,
-                        useButtons: true,
                         /*sortable: true*/
                         elementType: {
                             type: "wegasurl",

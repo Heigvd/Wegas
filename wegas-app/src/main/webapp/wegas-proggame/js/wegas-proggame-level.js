@@ -786,14 +786,12 @@ YUI.add('wegas-proggame-level', function(Y) {
                 ],
                 validator: Y.Lang.isArray,
                 _inputex: {
-                    _type: "proggamemap",
-                    useButtons: true
+                    _type: "proggamemap"
                 }
             },
             objects: {
                 type: ARRAY,
                 _inputex: {
-                    useButtons: true,
                     sortable: true,
                     elementType: {
                         type: "contextgroup",
@@ -974,10 +972,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             },
             api: {
                 type: ARRAY,
-                value: [],
-                _inputex: {
-                    useButtons: true
-                }
+                value: []
             },
             winningCondition: {
                 type: STRING,
@@ -1031,10 +1026,7 @@ YUI.add('wegas-proggame-level', function(Y) {
             }
             //arguments: {
             //    type: ARRAY,
-            //    value: [],
-            //    _inputex: {
-            //        useButtons: true
-            //    }
+            //    value: []
             //}
         },
         API: {

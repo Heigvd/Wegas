@@ -11,9 +11,9 @@
  */
 YUI.add('wegas-team', function(Y) {
     "use strict";
-    
+
     var CONTENTBOX = "contentBox", Wegas = Y.Wegas, Team;
-    
+
     /**
      * @name Y.Wegas.Team
      * @extends Y.Widget
@@ -36,7 +36,7 @@ YUI.add('wegas-team', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                    game = this.getTargetGame();
+                game = this.getTargetGame();
 
             this.saveButton = new Y.Button({//                                  // Render the button
                 label: "Join game",
@@ -143,8 +143,8 @@ YUI.add('wegas-team', function(Y) {
 
     var JoinTeam = Y.Base.create("wegas-jointeam", Wegas.Team, [Y.WidgetChild, Wegas.Widget], {
         CONTENT_TEMPLATE: "<div><div class=\"wegas-gameinformation\"></div>"
-                + "<div class=\"teamselection\"></div>"
-                + "</div>",
+            + "<div class=\"teamselection\"></div>"
+            + "</div>",
         destructor: function() {
             EditTeam.superclass.destructor.apply(this);
             if (this.teamField) {
@@ -154,20 +154,20 @@ YUI.add('wegas-team', function(Y) {
         },
         onGameRetrieved: function(e) {
             var emptyChoices, choices,
-                    cb = this.get(CONTENTBOX),
-                    teamSelectionNode = cb.one(".teamselection"),
-                    entity = this.getTargetEntity(),
-                    game = this.getTargetGame(),
-                    teams = game.get("teams"),
-                    gameModel = e.response.entity.get("gameModel"),
-                    teamName = (entity instanceof Wegas.persistence.Team) ? entity.get("name")
-                    : game.get("name") + "-" + (game.get("teams").length);
+                cb = this.get(CONTENTBOX),
+                teamSelectionNode = cb.one(".teamselection"),
+                entity = this.getTargetEntity(),
+                game = this.getTargetGame(),
+                teams = game.get("teams"),
+                gameModel = e.response.entity.get("gameModel"),
+                teamName = (entity instanceof Wegas.persistence.Team) ? entity.get("name")
+                : game.get("name") + "-" + (game.get("teams").length);
 
             cb.one(".wegas-gameinformation").append(Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
 
             var showTeamSelection = false,
-                    showTeamCreation = false,
-                    showTeamEdition = false;                                    // Default case, free for all games
+                showTeamCreation = false,
+                showTeamEdition = false;                                    // Default case, free for all games
 
             if (entity instanceof Wegas.persistence.Team) {                   // If target entity is a team
                 if (gameModel.get("properties.freeForAll")) {                   // If game is free for all (no team)
@@ -176,10 +176,10 @@ YUI.add('wegas-team', function(Y) {
                     showTeamEdition = true;                                     // display team composition edition
                 } else {
                     this.showMessageBis("error",
-                            "This team has already been created. You can contact it's members so they can join you in.");
+                        "This team has already been created. You can contact it's members so they can join you in.");
                 }
             } else if (entity instanceof Wegas.persistence.Game && // If target entity is a game
-                    !(gameModel && gameModel.get("properties.freeForAll"))) {   // and its game is not free for all (uses teams)
+                !(gameModel && gameModel.get("properties.freeForAll"))) {   // and its game is not free for all (uses teams)
                 showTeamCreation = true;
             }
             if (showTeamCreation || showTeamEdition) {
@@ -235,15 +235,15 @@ YUI.add('wegas-team', function(Y) {
                     entity: entity
                 });
                 this.teamEdition.addExistingAccount(
-                        Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
+                    Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
 
             this.saveButton.set("visible", true);
         },
         onSaveButtonClick: function() {
             var entity = this.getTargetEntity(),
-                    selectedField = (this.teamField) ? this.teamField.getSelected() : null,
-                    name = (selectedField) ? selectedField.getValue() : null;
+                selectedField = (this.teamField) ? this.teamField.getSelected() : null,
+                name = (selectedField) ? selectedField.getValue() : null;
 
             if (this.showTeamEdition || this.showTeamCreation) {
                 if (!this.teamEdition.playersField.validate()) {
@@ -318,8 +318,8 @@ YUI.add('wegas-team', function(Y) {
             Y.fire("gameJoined", {
                 gameId: e.response.entity.get("id"),
                 game: e.response.entity
-                        //gameId: this.getTargetGame().get("id"),
-                        //game: this.getTargetGame()
+                    //gameId: this.getTargetGame().get("id"),
+                    //game: this.getTargetGame()
             });
             this.hideOverlay();
 
@@ -356,8 +356,8 @@ YUI.add('wegas-team', function(Y) {
 
     var EditTeam = Y.Base.create("wegas-editteam", Wegas.Team, [Y.WidgetChild, Wegas.Widget], {
         CONTENT_TEMPLATE: "<div>"
-                + "<div class=\"teamselection\"></div>"
-                + "</div>",
+            + "<div class=\"teamselection\"></div>"
+            + "</div>",
         renderUI: function() {
             EditTeam.superclass.renderUI.apply(this);
             this.saveButton.set("visible", true);
@@ -365,9 +365,9 @@ YUI.add('wegas-team', function(Y) {
         },
         onGameRetrieved: function(e) {
             var cb = this.get(CONTENTBOX),
-                    entity = this.getTargetEntity(),
-                    teamId = this.get("teamId"),
-                    teamSelectionNode = cb.one(".teamselection");
+                entity = this.getTargetEntity(),
+                teamId = this.get("teamId"),
+                teamSelectionNode = cb.one(".teamselection");
 
 //            if (e) cb.one(".wegas-gameinformation").append(Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
             teamSelectionNode.append("<br /><div class=\"title\">Edit your team</div>");
@@ -439,9 +439,9 @@ YUI.add('wegas-team', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                    entity = this.get("entity"),
-                    game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
-                    : entity;
+                entity = this.get("entity"),
+                game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
+                : entity;
 
             cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
 
@@ -451,8 +451,8 @@ YUI.add('wegas-team', function(Y) {
                         var game = e.response.entity;
                         cb.one(".title").setHTML("" + game.get("gameModelName") + " <br />" + game.get("name")); // Add title
                         cb.one(".description").setHTML(game.get("description"))
-                                //|| "<em><center>No description available</em></center>")
-                                .removeClass("wegas-loading-div");
+                            //|| "<em><center>No description available</em></center>")
+                            .removeClass("wegas-loading-div");
                     }, this)
                 }
             });
@@ -466,67 +466,66 @@ YUI.add('wegas-team', function(Y) {
 
     var TeamFormList = Y.Base.create("wegas-teamformlist", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class=\"header yui3-g\">"
-                + "<div class=\"yui3-u\">First name</div>"
-                + "<div class=\"yui3-u\">Last name</div>"
-                + "<div class=\"yui3-u\">Email</div>"
-                + "<div class=\"yui3-u\">Password</div></div>"
+            + "<div class=\"yui3-u\">First name</div>"
+            + "<div class=\"yui3-u\">Last name</div>"
+            + "<div class=\"yui3-u\">Email</div>"
+            + "<div class=\"yui3-u\">Password</div></div>"
 
-                + "<div class=\"uneditable-players\"></div></div>",
+            + "<div class=\"uneditable-players\"></div></div>",
         renderUI: function() {
             var cb = this.get("contentBox"), gameId = Y.Widget.getByNode(this._parentNode).getTargetGame().get("id"),
-                    resultTemplate = "{highlighted} <p class='email'>{email}</p>",
-                    autoCompleteCfg = {
-                        type: "autocomplete",
-                        autoComp: {
-                            minQueryLength: 2,
-                            maxResults: 30,
-                            resultFormatter: function(query, results) {
-                                return Y.Array.map(results, function(result) {
-                                    return Y.Lang.sub(resultTemplate, {
-                                        email: result.raw.email,
-                                        highlighted: result.highlighted
-                                    });
+                resultTemplate = "{highlighted} <p class='email'>{email}</p>",
+                autoCompleteCfg = {
+                    type: "autocomplete",
+                    autoComp: {
+                        minQueryLength: 2,
+                        maxResults: 30,
+                        resultFormatter: function(query, results) {
+                            return Y.Array.map(results, function(result) {
+                                return Y.Lang.sub(resultTemplate, {
+                                    email: result.raw.email,
+                                    highlighted: result.highlighted
                                 });
-                            },
-                            resultHighlighter: function(query, results) {
-                                return Y.Array.map(results, function(result) {
-                                    return Y.Highlight.all(result.raw.firstname + " " + result.raw.lastname, query);
-                                });
-                            },
-                            source: Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}/" + gameId,
-                            enableCache: true,
-                            resultListLocator: Y.bind(function(responses) {
-                                var i;
-                                Y.Array.each(this.otherAccounts, function(account) {
-                                    for (i = 0; i < responses.length; i += 1) {
-                                        if (account.id === responses[i].id) {
-                                            responses.splice(i, 1);
-                                            break;
-                                        }
+                            });
+                        },
+                        resultHighlighter: function(query, results) {
+                            return Y.Array.map(results, function(result) {
+                                return Y.Highlight.all(result.raw.firstname + " " + result.raw.lastname, query);
+                            });
+                        },
+                        source: Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}/" + gameId,
+                        enableCache: true,
+                        resultListLocator: Y.bind(function(responses) {
+                            var i;
+                            Y.Array.each(this.otherAccounts, function(account) {
+                                for (i = 0; i < responses.length; i += 1) {
+                                    if (account.id === responses[i].id) {
+                                        responses.splice(i, 1);
+                                        break;
                                     }
-                                });
-                                Y.Array.each(this.playersField.subFields, function(user) {
-                                    for (i = 0; i < responses.length; i += 1) {
-                                        if (user.getValue().email === responses[i].email) {
-                                            responses.splice(i, 1);
-                                            break;
-                                        }
+                                }
+                            });
+                            Y.Array.each(this.playersField.subFields, function(user) {
+                                for (i = 0; i < responses.length; i += 1) {
+                                    if (user.getValue().email === responses[i].email) {
+                                        responses.splice(i, 1);
+                                        break;
                                     }
-                                });
-                                return responses;
-                            }, this),
-                            align: {
-                                node: '.inputEx-AutoComplete',
-                                points: ['tl', 'bl']
-                            }
+                                }
+                            });
+                            return responses;
+                        }, this),
+                        align: {
+                            node: '.inputEx-AutoComplete',
+                            points: ['tl', 'bl']
                         }
-                    };
+                    }
+                };
 
             this.otherAccounts = [];
 
             this.playersField = new Y.inputEx.ListField({//                     // Render team edition
                 parentEl: cb,
-                useButtons: true,
                 elementType: {
                     type: "group",
                     fields: [{
@@ -605,16 +604,16 @@ YUI.add('wegas-team', function(Y) {
         },
         addExistingAccount: function(account) {
             var cb = this.get("contentBox"),
-                    firstname = (account instanceof Wegas.persistence.GuestJpaAccount) ? account.getPublicName() :
-                    account.get("firstname");
+                firstname = (account instanceof Wegas.persistence.GuestJpaAccount) ? account.getPublicName() :
+                account.get("firstname");
 
             this.otherAccounts.push(account.toObject());
 
             cb.one(".uneditable-players").append("<div class=\"yui3-g\">"
-                    + "<div class=\"yui3-u\">" + (firstname || account.get("name")) + "</div>"
-                    + "<div class=\"yui3-u\">" + (account.get("lastname") || "") + "</div>"
-                    + "<div class=\"yui3-u\">*****</div>"
-                    + "<div class=\"yui3-u\">*****</div></div>");
+                + "<div class=\"yui3-u\">" + (firstname || account.get("name")) + "</div>"
+                + "<div class=\"yui3-u\">" + (account.get("lastname") || "") + "</div>"
+                + "<div class=\"yui3-u\">*****</div>"
+                + "<div class=\"yui3-u\">*****</div></div>");
         },
         getAccounts: function() {
             return Y.Array.map(this.playersField.getValue().concat(this.otherAccounts), function(i) {
