@@ -24,6 +24,8 @@ var gm = self.getGameModel(), TempImpact;
 function nextPeriod() {
     var currentPhase = getCurrentPhase(),
         currentPeriod = getCurrentPeriod();
+    
+    Variable.find(gm, "currentTime").add(self, 1);
 
 //    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
@@ -221,28 +223,29 @@ Event.on("removeTaskPlannification", function() {
     planedValueHistory();
 });
 
-function addImpactDuration(factor, taskname, inTime, value) {
+function addImpactDuration(name, method, arguments, inTime) {
     var factorsDesc = Variable.findByName(gm, "factors"),
-        endTim = inTime + Variable.findByName(gm, "periodPhase3").getInstance().getValue(),
-        taskId = Variable.findByName(gm, taskname).getId(),
-        val;
-
-    val = factorsDesc.getProperty(self, factor + "/" + taskId + "/" + endTim);
-    val ? val = parseFloat(val) + parseFloat(value) : val = value;
-    factorsDesc.setProperty(self, factor + "/" + taskId + "/" + endTim, val);
-
-    return factorsDesc.getInstance().getProperties();
+        currentTime = Variable.findByName(gm, "currentTime").getInstance().getValue(),
+        endTim = inTime + currentTime,
+        object = {
+            n: name,
+            m: method,
+            a: arguments,
+            t: endTim
+        };
+    factorsDesc.setProperty(self, Date.now(), JSON.stringify(object));
 }
 
 function cancelEffect() {
     var factorsDesc = Variable.findByName(gm, "factors"),
-        propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i, splitedProp,
-        time = Variable.findByName(gm, "periodPhase3").getInstance().getValue();
-
+        propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i,
+        currentTime = Variable.findByName(gm, "currentTime").getInstance().getValue(), object,
+        args;
     for (i = 0; i < propertiesKey.length; i++) {
-        splitedProp = propertiesKey[i].split("/");
-        if (time === parseInt(splitedProp[2])) {
-            Variable.find(parseInt(splitedProp[1])).addNumberAtInstanceProperty(self, splitedProp[0], factorsDesc.getProperty(self, propertiesKey[i]));
+        object = JSON.parse(factorsDesc.getProperty(self, propertiesKey[i]));
+        args = JSON.stringify(object.a).substr(1, JSON.stringify(object.a).length-2);
+        if (currentTime === object.t) {
+            eval("Variable.find(gm, '"+object.n+"')."+object.m+"(self, "+args+")");
             factorsDesc.removeProperty(self, propertiesKey[i]);
         }
     }
