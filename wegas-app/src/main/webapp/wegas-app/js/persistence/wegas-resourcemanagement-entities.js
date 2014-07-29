@@ -91,7 +91,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     label: "Properties",
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     _type: HASHLIST,
-                    useButtons: true,
+
                     elementType: PROPERTIESELEMENTTYPE
                 }
             },
@@ -164,7 +164,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-occupations',
                             label: "Vacancies",
                             _type: LIST,
-                            useButtons: true,
                             elementType: {
                                 type: GROUP,
                                 fields: [{
@@ -196,7 +195,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         _inputex: {
                             label: "Default properties",
                             _type: OBJECT,
-                            useButtons: true,
+
                             elementType: PROPERTIESELEMENTTYPE
                         }
                     }
@@ -549,16 +548,14 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 type: ARRAY,
                 _inputex: {
                     label: "Moral history",
-                    _type: LIST,
-                    useButtons: true
+                    _type: LIST
                 }
             },
             confidenceHistory: {
                 type: ARRAY,
                 _inputex: {
                     label: "Confidence history",
-                    _type: LIST,
-                    useButtons: true
+                    _type: LIST
                 }
             }
         }
@@ -627,7 +624,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: [],
                 _inputex: {
                     label: "Predecessors",
-                    useButtons: true,
+
                     index: -1,
                     elementType: {
                         required: true,
@@ -651,7 +648,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         _inputex: {
                             _type: LIST,
                             label: "Requirements",
-                            useButtons: true,
+
                             wrapperClassName: 'inputEx-fieldWrapper wegas-inputex-inlinegroup',
                             elementType: {
                                 type: GROUP,
@@ -713,7 +710,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             _type: HASHLIST,
                             keyField: NAME,
                             valueField: VALUE,
-                            useButtons: true,
+
                             elementType: PROPERTIESELEMENTTYPE
                         }
                     }
@@ -725,7 +722,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     index: 2,
                     _type: HASHLIST,
                     keyField: NAME,
-                    useButtons: true,
+
                     valueField: VALUE,
                     elementType: PROPERTIESELEMENTTYPE
                 }

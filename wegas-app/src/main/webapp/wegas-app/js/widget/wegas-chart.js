@@ -220,7 +220,6 @@ YUI.add('wegas-chart', function(Y) {
             variables: {
                 _inputex: {
                     _type: "list",
-                    useButtons: true,
                     elementType: {
                         type: "variableselect",
                         label: "variable",

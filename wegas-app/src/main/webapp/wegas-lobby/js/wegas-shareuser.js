@@ -48,8 +48,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     fields: permissions,
                     className: "permission-group"
                 },
-                parentEl: el.one(".wegas-userlist"),
-                useButtons: true
+                parentEl: el.one(".wegas-userlist")
             });
 
             this.userList.currentWidget = this;

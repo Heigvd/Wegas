@@ -73,14 +73,14 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 },
                 strokeColor: 'RGBA(0, 0, 0, 0)',
                 percentColors: cfg.percentColors || [[0.0, "RGBA(0, 0, 0, 0)"]]
-                        //colorStart: cfg.colorStart || '#0981A9',              // Colors, don't work with this new version of gauge library
-                        //colorStop: cfg.colorStop || '#000000',
-                        // lines: cfg.lines || 1,                               // The number of lines to draw //don't work with this new version of gauge library
-                        //generateGradient: cfg.generateGradient || false       // don't work with this new version of gauge library
+                    //colorStart: cfg.colorStart || '#0981A9',              // Colors, don't work with this new version of gauge library
+                    //colorStop: cfg.colorStop || '#000000',
+                    // lines: cfg.lines || 1,                               // The number of lines to draw //don't work with this new version of gauge library
+                    //generateGradient: cfg.generateGradient || false       // don't work with this new version of gauge library
             };
             opts.pointer.length = opts.pointer.pointerlength;
             this.gauge = new Gauge(this.get("contentBox").one(".gauge").
-                    getDOMNode());                                              // create the  gauge!conso
+                getDOMNode());                                              // create the  gauge!conso
             this.gauge.setOptions(opts);
             this.gauge.maxValue = this.defineMaxGaugeValue();
             this.gauge.animationSpeed = 1;                                     // set animation speed (32 is default value)
@@ -88,8 +88,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         },
         defineMaxGaugeValue: function() {
             var variableDescriptor = this.get("variable.evaluated"),
-                    maxVal = this.get("maxValue") || (variableDescriptor && variableDescriptor.get("maxValue") ? variableDescriptor.get("maxValue") : this.MAXVAL),
-                    minVal = this.get("minValue") || (variableDescriptor && variableDescriptor.get("minValue") ? variableDescriptor.get("minValue") : 0);
+                maxVal = this.get("maxValue") || (variableDescriptor && variableDescriptor.get("maxValue") ? variableDescriptor.get("maxValue") : this.MAXVAL),
+                minVal = this.get("minValue") || (variableDescriptor && variableDescriptor.get("minValue") ? variableDescriptor.get("minValue") : 0);
             return maxVal - minVal;
         },
         angleTransform: function(angle) {
@@ -125,7 +125,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          */
         syncUI: function() {
             var maxVal, minVal, value, label,
-                    variableDescriptor = this.get("variable.evaluated");
+                variableDescriptor = this.get("variable.evaluated");
             if (!variableDescriptor) {
                 this.get("boundingBox").setHTML("<i>Unable to find variable</i>");
                 Y.log("Unable to find variable descriptor", "error", "Y.Wegas.GaugeDisplay");
@@ -162,7 +162,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
 
             this.get(CONTENTBOX).one(".label").setContent(label);
             this.get(CONTENTBOX).one(".percent").
-                    setContent(value);
+                setContent(value);
             this.gauge.animationSpeed = 32;
         },
         getEditorLabel: function() {
@@ -174,11 +174,11 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         },
         backgroundPercent: function() {
             var canvas = this.get("contentBox").one(".background-percent").getDOMNode(),
-                    cfg = this.get("cfg"), i, size,
-                    startAngle = (1 + this.gauge.options.angle) * Math.PI,
-                    endAngle = (2 - this.gauge.options.angle) * Math.PI,
-                    r = endAngle - startAngle,
-                    p = cfg.backgroundPercentColors;
+                cfg = this.get("cfg"), i, size,
+                startAngle = (1 + this.gauge.options.angle) * Math.PI,
+                endAngle = (2 - this.gauge.options.angle) * Math.PI,
+                r = endAngle - startAngle,
+                p = cfg.backgroundPercentColors;
 
             if (canvas.getContext) {
                 this.ctx = canvas.getContext('2d');
@@ -199,8 +199,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
         },
         color: function(color, startAngle, endAngle) {
             var x = this.gauge.canvas.width / 2,
-                    y = this.gauge.canvas.height * (1 - this.gauge.paddingBottom),
-                    radius = this.gauge.radius;
+                y = this.gauge.canvas.height * (1 - this.gauge.paddingBottom),
+                radius = this.gauge.radius;
 
             this.ctx.beginPath();
             this.ctx.strokeStyle = color;
@@ -286,7 +286,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 _inputex: {
                     _type: "wegasobject",
                     label: "Configuration",
-                    useButtons: true,
 //                    wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     elementType: {
                         type: "wegaskeyvalue",
@@ -302,7 +301,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                                 label: "background colors",
                                 name: "backgroundPercentColors",
                                 type: "list",
-                                useButtons: true,
                                 elementType: {
                                     type: "combine",
                                     fields: [
@@ -315,7 +313,6 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                                 name: "percentColors",
                                 label: "percent colors",
                                 type: "list",
-                                useButtons: true,
                                 elementType: {
                                     type: "combine",
                                     fields: [

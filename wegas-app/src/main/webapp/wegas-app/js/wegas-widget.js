@@ -413,7 +413,6 @@ YUI.add("wegas-widget", function(Y) {
                 "transient": false,
                 _inputex: {
                     index: 10,
-                    useButtons: true,
                     _type: "pluginlist",
                     legend: "Plugins",
                     items: [{
@@ -591,6 +590,7 @@ YUI.add("wegas-widget", function(Y) {
 
                 } else if (val.name) {                                          // @backwardcompatibility
                     val.evaluated = ds.cache.find('name', val.name);
+
                 } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field
                     try {
                         val.evaluated = ds.cache.findById(ds.script.localEval(val.expr));
@@ -687,13 +687,11 @@ YUI.add("wegas-widget", function(Y) {
         try {
             Y.Widget.prototype.renderer.call(this, arguments);
         } catch (e) {
-            //throw e;
             this.get("boundingBox").setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
-            try {
-                Y.error("Failed to render " + this.getType() + ": " + e.message || "", e, this.constructor.NAME);
-            } catch (ex) {
-                //do crash parent widget in debug mode
-            }
+
+            Y.log("error", "Failed to render " + this.getType() + ": " + (e.message || ""), this.constructor.NAME);
+            //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode
+            //throw e;
         }
     };
 });
