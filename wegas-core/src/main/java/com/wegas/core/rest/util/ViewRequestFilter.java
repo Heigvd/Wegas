@@ -7,14 +7,15 @@
  */
 package com.wegas.core.rest.util;
 
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.ContainerRequestFilter;
-import com.sun.jersey.spi.container.ContainerResponseFilter;
-import com.sun.jersey.spi.container.ResourceFilter;
 import com.wegas.core.ejb.RequestFacade;
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Locale;
+import javax.ws.rs.container.ContainerRequestContext;
+import javax.ws.rs.container.ContainerRequestFilter;
+import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter {
+/* ResourceFilter -> DynamicFeature */
+//public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter {
+@Provider
+@PreMatching
+public class ViewRequestFilter implements ContainerRequestFilter {
 
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
@@ -39,27 +44,27 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
      * @return
      */
     @Override
-    public ContainerRequest filter(ContainerRequest cr) {
+    public void filter(ContainerRequestContext cr) throws IOException {
         RequestFacade rmf = RequestFacade.lookup();
-
+        logger.error("VIEW FILTER");
+        
         // Handle language parameter
-        if (cr.getHeaderValue("lang") != null
-                && !cr.getHeaderValue("lang").isEmpty()) {
-            rmf.setLocale(new Locale(cr.getHeaderValue("lang")));
-        } else if (cr.getHeaderValue("Accept-Language") != null && !cr.getHeaderValue("Accept-Language").isEmpty()) {
-            rmf.setLocale(new Locale(cr.getHeaderValue("Accept-Language")));
+        if (cr.getHeaderString("lang") != null
+                && !cr.getHeaderString("lang").isEmpty()) {
+            rmf.setLocale(new Locale(cr.getHeaderString("lang")));
+        } else if (cr.getHeaderString("Accept-Language") != null && !cr.getHeaderString("Accept-Language").isEmpty()) {
+            rmf.setLocale(new Locale(cr.getHeaderString("Accept-Language")));
         } else {
             rmf.setLocale(Locale.getDefault());
         }
 
-        String newUri = cr.getRequestUri().toString();
-        String firstPathSeg = cr.getPathSegments().get(0).getPath();
+        String newUri = cr.getUriInfo().getRequestUri().toASCIIString();
+        String firstPathSeg = cr.getUriInfo().getPathSegments().get(0).getPath();
 
         switch (firstPathSeg) {
-
             case "Private":
             case "EditorPrivate":
-                String id = cr.getPathSegments().get(1).getPath();
+                String id = cr.getUriInfo().getPathSegments().get(1).getPath();
                 rmf.setView(this.stringToView(firstPathSeg));
                 rmf.setPlayer(Long.valueOf(id));
                 newUri = newUri.replace(firstPathSeg + "/" + id + "/", "");
@@ -80,17 +85,18 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
                 break;
         }
 
+        logger.error("final  URI: " + newUri);
+
         try {
-            cr.setUris(cr.getBaseUri(), new URI(newUri));
+            cr.setRequestUri(new URI(newUri));
         } catch (URISyntaxException ex) {
             logger.error(null, ex);
         }
 
-        if (cr.getQueryParameters().get("view") != null) {                      // If the view is given through a query parameter
-            rmf.setView(this.stringToView(cr.getQueryParameters().get("view").get(0)));
+        if (cr.getUriInfo().getQueryParameters().get("view") != null) {
+            // If the view is given through a query parameter
+            rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
         }
-
-        return cr;
     }
 
     /**
@@ -125,23 +131,5 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             default:
                 return Views.Public.class;
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public ContainerRequestFilter getRequestFilter() {
-        return this;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    public ContainerResponseFilter getResponseFilter() {
-        return null;
     }
 }

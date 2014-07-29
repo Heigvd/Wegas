@@ -7,8 +7,8 @@
  */
 package com.wegas.core.rest;
 
-import com.sun.jersey.multipart.FormDataBodyPart;
-import com.sun.jersey.multipart.FormDataParam;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.jcr.content.*;
@@ -92,7 +92,7 @@ public class FileController {
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, WegasException {
-
+            
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
