@@ -57,7 +57,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             }
         },
         bindUI: function() {
-            this.handlers.update = Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.handlers.update = Wegas.Facade.Variable.after("update", this.syncUI, this);
 
             this.get("boundingBox").one(".slidepanel-title").on('click', function(e) {
                 e.preventDefault();

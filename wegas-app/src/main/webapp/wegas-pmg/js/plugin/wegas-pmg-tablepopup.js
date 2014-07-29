@@ -49,7 +49,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                     dt = this.get("host").datatable;
                     field = this.get("field");
                     record = dt.getRecord(e.target);
-                    descriptor = Wegas.Facade.VariableDescriptor.cache.find("id", record.get("id"));
+                    descriptor = Wegas.Facade.Variable.cache.find("id", record.get("id"));
 
                     this.menuDetails.attachTo(e.target);
 
@@ -66,7 +66,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
             }
         },
         request: function(descriptor) {
-            Wegas.Facade.VariableDescriptor.cache.getWithView(descriptor, "Extended", {// Retrieve the object from the server in Export view
+            Wegas.Facade.Variable.cache.getWithView(descriptor, "Extended", {// Retrieve the object from the server in Export view
                 on: Wegas.superbind({
                     success: function(e) {
                         var field = this.get("field");

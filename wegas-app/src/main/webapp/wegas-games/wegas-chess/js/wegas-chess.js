@@ -33,7 +33,7 @@ YUI.add("wegas-chess", function(Y) {
             var cb = this.get(CONTENTBOX),
                     bb = this.get("boundingBox");
 
-            this.updateHandler = Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+            this.updateHandler = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
 
             bb.delegate("click", function(e) {                                  // Piece selection: display available move for selected
                 if (e.target === this.currentTarget) {                          // Unselect piece if we click for a second time on it
@@ -63,7 +63,7 @@ YUI.add("wegas-chess", function(Y) {
                     script += "destroy(\"" + colidee.name + "\");";             // destroy it
                 }
 
-                Y.Wegas.Facade.VariableDescriptor.script.run(script);
+                Y.Wegas.Facade.Variable.script.run(script);
             }, ".chess-move", this);
         },
         /**
@@ -79,7 +79,7 @@ YUI.add("wegas-chess", function(Y) {
                     pieces = this.getPieces(),
                     treated = [],
                     allPiecesNodes = cb.all(".chess-piece"),
-                    currentTurn = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "currentTurn").getInstance().get("value"),
+                    currentTurn = Y.Wegas.Facade.Variable.cache.find("name", "currentTurn").getInstance().get("value"),
                     statusNode = bb.one(".chess-status"),
                     currentGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                     players = currentGame.get("teams")[0].get("players"),
@@ -140,7 +140,7 @@ YUI.add("wegas-chess", function(Y) {
          */
         getPieces: function() {
             var i, j,
-                    pieces = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "pieces"),
+                    pieces = Y.Wegas.Facade.Variable.cache.find("name", "pieces"),
                     cPlayerPieces,
                     currentGame = Y.Wegas.Facade.Game.cache.getCurrentGame(),
                     players = currentGame.get("teams")[0].get("players"),

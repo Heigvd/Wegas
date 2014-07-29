@@ -82,7 +82,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
             return true;
         },
         request: function(taskDescriptor) {
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",

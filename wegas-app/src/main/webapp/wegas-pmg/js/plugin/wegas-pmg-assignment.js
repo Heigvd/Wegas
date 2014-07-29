@@ -45,7 +45,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
         },
         bind: function() {
-            this.handlers.update = Y.Wegas.Facade.VariableDescriptor.after("update", this.sync, this);
+            this.handlers.update = Y.Wegas.Facade.Variable.after("update", this.sync, this);
 
             this.handlers.createMenu = this.get(HOST).datatable.delegate('click', function(e) {            // fill the "add" menu on click
                 this.createMenu(e, true);
@@ -58,7 +58,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
             this.handlers.remove = this.get(HOST).datatable.delegate('click', function(e) {
                 var node = e.target.getDOMNode().parentElement;
-                Wegas.Facade.VariableDescriptor.sendRequest({
+                Wegas.Facade.Variable.sendRequest({
                     request: "/ResourceDescriptor/RemoveAssignment/" + node.getAttribute("assignmentid"),
                     cfg: {
                         method: "DELETE"
@@ -95,7 +95,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         createMenu: function(e) {
             var i, tasks, resources, resourceDesc, resourceId;
             resourceId = this.get(HOST).datatable.getRecord(e.target).get("id");
-            resources = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get(HOST).get('variable'));
+            resources = Y.Wegas.Facade.Variable.cache.find("name", this.get(HOST).get('variable'));
             for (i = 0; i < resources.get('items').length; i += 1) {
                 if (resources.get('items')[i].get('id') === resourceId) {
                     resourceDesc = resources.get('items')[i];
@@ -154,7 +154,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             if (!this.get("taskList")) {
                 return;
             }
-            tasks = Y.Wegas.Facade.VariableDescriptor.cache.find("name", this.get("taskList"));
+            tasks = Y.Wegas.Facade.Variable.cache.find("name", this.get("taskList"));
             items = tasks.get('items');
             for (i = 0; i < items.length; i += 1) {
                 taskExist = false;
@@ -181,7 +181,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         },
         onTaskMenuClick: function(e) {
             var data = e.target.get("data");
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
                 cfg: {
                     method: "POST",
@@ -194,7 +194,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 this.descriptionToDisplay(taskDescriptor, taskDescriptor.get("description"));
                 return;
             }
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
+            Y.Wegas.Facade.Variable.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
                 on: Y.Wegas.superbind({
                     success: function(e) {
                         taskDescriptor.set("description", e.response.entity.get("description"));
@@ -229,12 +229,12 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
             // get assignments
             for (iResource = 0; iResource < dt.data._items.length; iResource += 1) {
-                resourceDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", dt.data._items[iResource].get("id"));
+                resourceDesc = Y.Wegas.Facade.Variable.cache.find("id", dt.data._items[iResource].get("id"));
                 resourceInstance = resourceDesc.getInstance();
                 assignments = resourceInstance.get("assignments");
                 node = "<div class='tasks'>";
                 for (iAssign = 0; iAssign < assignments.length; iAssign += 1) {
-                    taskDesc = Y.Wegas.Facade.VariableDescriptor.cache.find("id", assignments[iAssign].get("taskDescriptorId"));
+                    taskDesc = Y.Wegas.Facade.Variable.cache.find("id", assignments[iAssign].get("taskDescriptorId"));
                     node = node + "<em class='task' assignmentid=" + assignments[iAssign].get("id") + "><span class='remove' style='display:none'></span><span>" + taskDesc.get("index") + "</span></em>";
                 }
                 node = node + "</div>";
@@ -253,7 +253,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         },
         setPosition: function(e) {
             var node = e.currentTarget.get("currentNode"), i = node.get("parentNode").get("children").indexOf(node);
-            Wegas.Facade.VariableDescriptor.sendRequest({
+            Wegas.Facade.Variable.sendRequest({
                 request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + i,
                 cfg: {
                     method: "POST"

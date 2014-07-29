@@ -227,7 +227,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             this.ongoing = true;
         },
         runEndScript: function() {
-            Y.Wegas.Facade.VariableDescriptor.script.run(this.get("endImpact"), {
+            Y.Wegas.Facade.Variable.script.run(this.get("endImpact"), {
                 on: {
                     failure: Y.bind(function(e) {
                         Y.log("error", "Failed to store data", "Y.Wegas.FlexitestsController");

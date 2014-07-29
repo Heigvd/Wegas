@@ -416,7 +416,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
                     + "/Do/" + transition.get(ID);
                 try {
-                    Wegas.Facade.VariableDescriptor.sendRequest({
+                    Wegas.Facade.Variable.sendRequest({
                         request: request,
                         on: callbacks
                     });

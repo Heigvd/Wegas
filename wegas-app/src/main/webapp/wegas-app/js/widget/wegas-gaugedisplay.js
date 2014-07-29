@@ -106,8 +106,8 @@ YUI.add('wegas-gaugedisplay', function(Y) {
          * When VariableDescriptorFacade is updated, do sync.
          */
         bindUI: function() {
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this));
-            this.handlers.push(Y.Wegas.Facade.VariableDescriptor.on("sourceChange", function() {
+            this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.handlers.push(Y.Wegas.Facade.Variable.on("sourceChange", function() {
                 this.gauge.animationSpeed = 1;
             }, this));
             this.after('disabledChange', this.syncUI, this);

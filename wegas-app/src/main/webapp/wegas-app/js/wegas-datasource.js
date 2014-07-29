@@ -723,8 +723,6 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
             });
-            // Now a hack to order cache and not need a full db refresh
-            // Y.Wegas.Facade.VariableDescriptor
         }
     });
     Plugin.VariableDescriptorCache = VariableDescriptorCache;

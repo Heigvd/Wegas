@@ -31,14 +31,14 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         initializer: function() {
             this.initColumn();
 
-            this.updateHandler = Wegas.Facade.VariableDescriptor.after("update", function() {
+            this.updateHandler = Wegas.Facade.Variable.after("update", function() {
                 Y.log("sync()", "log", "Wegas.ScheduleDT");
                 this.columnUpdate();
             }, this);
         },
         initColumn: function() {
-            var executionPeriods = Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
-                periodPhase3 = Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
+            var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
+                periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
             if (periodPhase3 >= executionPeriods) {
                 this.setColumn(periodPhase3 + 1);
                 this.currentVal = periodPhase3 + 1;
@@ -48,8 +48,8 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }
         },
         columnUpdate: function() {
-            var executionPeriods = Wegas.Facade.VariableDescriptor.cache.find("name", "executionPeriods").getValue(),
-                periodPhase3 = Wegas.Facade.VariableDescriptor.cache.find("name", "periodPhase3").getValue();
+            var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
+                periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
             if (periodPhase3 >= executionPeriods) {
                 this.setColumn(periodPhase3 + 1, this.currentVal);
                 this.currentVal = periodPhase3 + 1;

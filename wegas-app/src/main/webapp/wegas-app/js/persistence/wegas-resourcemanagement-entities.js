@@ -569,7 +569,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     persistence.TaskDescriptor = Y.Base.create("TaskDescriptor", persistence.VariableDescriptor, [], {
         findAssociatedRessources: function(abstractAssignments) {
             var ressources, i, data = [], assignments, dict;
-            ressources = Wegas.Facade.VariableDescriptor.cache.findAll("@class", "ResourceDescriptor");
+            ressources = Wegas.Facade.Variable.cache.findAll("@class", "ResourceDescriptor");
             Y.Array.forEach(ressources, function(employee) {
                 assignments = employee.getInstance().get(abstractAssignments);
                 for (i = 0; i < assignments.length; i++) {
@@ -618,7 +618,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 "transient": true,
                 getter: function() {
                     return Y.Array.map(this.get("predecessorNames"), function(name) {
-                        return Wegas.Facade.VariableDescriptor.cache.find("name", name);
+                        return Wegas.Facade.Variable.cache.find("name", name);
                     });
                 }
             },

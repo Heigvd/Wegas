@@ -43,7 +43,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         },
         bindUI: function() {
             this.handlers.update = // If data changes, refresh
-                    Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this);
+                    Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
             this.handlers.openRow = this.datatable.datasource.after('response', this.highlightNewEvidences, this);
         },
         destructor: function() {
@@ -59,7 +59,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         syncUI: function() {
             this.unreadEvidences.length = 0;
             this.requestedAnswers = 0;
-            if (Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences")) {
+            if (Y.Wegas.Facade.Variable.cache.find('name', "evidences")) {
                 //this.syncAnswers(this.genData()); //and continue sync
                 this.datatable.syncUI(this.genData());
                 this.highlightNewEvidences();
@@ -74,8 +74,8 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
 //                return;
 //            }
 //            for (i = 0; i < data.length; i++) {
-//                reply = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[i].choiceDescriptorId);
-//                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(reply, "Editor", {// Retrieve the result answer from the server
+//                reply = Y.Wegas.Facade.Variable.cache.findById(data[i].choiceDescriptorId);
+//                Y.Wegas.Facade.Variable.cache.getWithView(reply, "Editor", {// Retrieve the result answer from the server
 //                    cfg: {
 //                        updateCache: false
 //                    },
@@ -83,7 +83,7 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
 //                        success: Y.bind(function(data, position, e) {
 //                            var i, j, k, reply = e.serverResponse.get("entities")[0],
 //                                    questionInstance, instanceReply, found = false,
-//                            questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten();
+//                            questions = Y.Wegas.Facade.Variable.cache.find('name', "evidences").flatten();
 //                            //find corresponding reply;
 //                            for (i = 0; i < questions.length; i = i + 1) {
 //                                questionInstance = questions[i].getInstance();
@@ -164,10 +164,10 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
         },
         genData: function() {
             var i, j, k, questionInstance, reply, replyData, status,
-                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten(),
+                    questions = Y.Wegas.Facade.Variable.cache.find('name', "evidences").flatten(),
                     data = [],
                     responsesByStartTime = {},
-                    period = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "period"),
+                    period = Y.Wegas.Facade.Variable.cache.find('name', "period"),
                     periodInstance = period.getInstance(),
                     currentTime = periodInstance.get("value") - period.get("minValue");
 
@@ -227,14 +227,14 @@ YUI.add('wegas-crimesim-resultsdisplay', function(Y) {
          */
         setUnread: function() {
             var i, j, questionInstance, reply,
-                    questions = Y.Wegas.Facade.VariableDescriptor.cache.find('name', "evidences").flatten();
+                    questions = Y.Wegas.Facade.Variable.cache.find('name', "evidences").flatten();
             for (i = 0; i < questions.length; i = i + 1) {
                 questionInstance = questions[i].getInstance();
                 for (j = 0; j < questionInstance.get("replies").length; j = j + 1) {
                     reply = questionInstance.get("replies")[j];
                     if (reply.get("unread")) {
                         reply.set("unread", false);
-                        Y.Wegas.Facade.VariableDescriptor.sendRequest({
+                        Y.Wegas.Facade.Variable.sendRequest({
                             request: "/QuestionDescriptor/Reply/" + reply.get("id"),
                             cfg: {
                                 method: "PUT",

@@ -30,12 +30,12 @@ Y.use("wegas-button", "wegas-mcq-tabview", "wegas-layout-list", function() {
                 width: "99%"
             });
             this.handlers = {
-                update: Y.Wegas.Facade.VariableDescriptor.after("update", this.syncUI, this)
+                update: Y.Wegas.Facade.Variable.after("update", this.syncUI, this)
             };
         },
         syncUI: function() {
             var i, resource, hasQuestions,
-                    team = Y.Wegas.Facade.VariableDescriptor.cache.find("name", "personnes").get("items");
+                    team = Y.Wegas.Facade.Variable.cache.find("name", "personnes").get("items");
 
             this.buttons.destroyAll();
 
@@ -110,7 +110,7 @@ Y.use("wegas-button", "wegas-mcq-tabview", "wegas-layout-list", function() {
                     });
 
             panelNode.all(".urba-descr").remove(true);
-            Y.Wegas.Facade.VariableDescriptor.cache.getWithView(resource, "Extended", {// Retrieve the reply description from the server
+            Y.Wegas.Facade.Variable.cache.getWithView(resource, "Extended", {// Retrieve the reply description from the server
                 on: {
                     success: Y.bind(function(e) {
                         panelNode.prepend("<div class='urba-descr'><h3>" + e.response.entity.get("label") + "</h3>"

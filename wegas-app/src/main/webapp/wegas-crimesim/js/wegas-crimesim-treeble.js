@@ -155,12 +155,12 @@ YUI.add('wegas-crimesim-treeble', function(Y) {
             if (!data[position]) {
                 return;
             }
-            choice = Y.Wegas.Facade.VariableDescriptor.cache.findById(data[position].choiceDescriptorId);
+            choice = Y.Wegas.Facade.Variable.cache.findById(data[position].choiceDescriptorId);
             if (!choice) {
                 data[position].kiddies[0].evidence = this.translator.getRB().No_description;
                 this.treebleTwistdown(data);
             } else {
-                Y.Wegas.Facade.VariableDescriptor.cache.getWithView(choice, "Extended", {// Retrieve the reply description from the server
+                Y.Wegas.Facade.Variable.cache.getWithView(choice, "Extended", {// Retrieve the reply description from the server
                     cfg: {
                         updateCache: false
                     },
