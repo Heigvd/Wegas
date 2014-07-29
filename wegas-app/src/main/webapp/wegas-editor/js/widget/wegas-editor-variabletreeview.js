@@ -72,6 +72,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'StringDescriptor':
                 case 'TextDescriptor':
                 case 'NumberDescriptor':
+                case 'BooleanDescriptor':
                 case 'InboxDescriptor':
                 case 'TriggerDescriptor':
                 case 'FSMDescriptor':
