@@ -18,12 +18,12 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         HTML = "html",
         Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
         IDATTRDEF = {
-            type: STRING,
-            optional: true, // The id is optional for entites that have not been persisted
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
+        type: STRING,
+        optional: true, // The id is optional for entites that have not been persisted
+        _inputex: {
+            _type: HIDDEN
+        }
+    };
 
     /**
      * VariableDescriptor mapper
@@ -555,18 +555,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         flatten: function() {
             var acc = [],
                 doFlatten = function(items) {
-                    var i, it;
-                    for (i = 0; i < items.length; i += 1) {
-                        it = items[i];
-                        if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
-                            acc.push(it);
-                        } else if (it instanceof persistence.ListDescriptor) {
-                            doFlatten(it.get(ITEMS));
-                        } else {
-                            acc.push(it);
-                        }
+                var i, it;
+                for (i = 0; i < items.length; i += 1) {
+                    it = items[i];
+                    if (persistence.QuestionDescriptor && it instanceof persistence.QuestionDescriptor) {
+                        acc.push(it);
+                    } else if (it instanceof persistence.ListDescriptor) {
+                        doFlatten(it.get(ITEMS));
+                    } else {
+                        acc.push(it);
                     }
-                };
+                }
+            };
             doFlatten(this.get(ITEMS));
             return acc;
 
@@ -577,15 +577,15 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         depthFirstSearch: function(id) {
             var needle,
                 filterFn = function(it) {
-                    if (it.get("id") === +id) {
-                        needle = it;
-                        return false;
-                    } else if (it instanceof persistence.ListDescriptor) {
-                        return Y.Array.every(it.get(ITEMS), filterFn);
-                    } else {
-                        return true;
-                    }
-                };
+                if (it.get("id") === +id) {
+                    needle = it;
+                    return false;
+                } else if (it instanceof persistence.ListDescriptor) {
+                    return Y.Array.every(it.get(ITEMS), filterFn);
+                } else {
+                    return true;
+                }
+            };
             Y.Array.every(this.get(ITEMS), filterFn);
             return needle;
         },
@@ -709,6 +709,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     type: "AddEntityChildButton",
                                     label: "Resource",
                                     targetClass: "ResourceDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Boolean",
+                                    targetClass: "BooleanDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }]
                         }
@@ -981,6 +986,86 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             name: {
                 type: STRING,
                 optional: true
+            }
+        }
+    });
+    /**
+     * BooleanDescriptor mapper
+     */
+    persistence.BooleanDescriptor = Base.create("BooleanDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
+        ATTRS: {
+            "@class": {
+                value: "BooleanDescriptor"
+            },
+            value: {
+                "transient": true,
+                getter: function() {
+                    if (this.getInstance()) {
+                        return this.getInstance().get("value");
+                    } else {
+                        return null;
+                    }
+                }
+            },
+            defaultValue: {
+                type: BOOLEAN,
+                value: false,
+                "transient": true
+            },
+            defaultInstance: {
+                properties: {
+                    "@class": {
+                        type: BOOLEAN,
+                        _inputex: {
+                            value: "BooleanInstance",
+                            _type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    value: {
+                        type: BOOLEAN,
+                        _inputex: {
+                            label: "Default value"
+                        }
+                    }
+
+                }
+            }
+        },
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            setValue: {
+                label: "set",
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: BOOLEAN,
+                        required: true
+                    }]
+            },
+            getValue: {
+                label: VALUE,
+                returns: BOOLEAN,
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            }
+        }
+    });
+    /**
+     * BooleanInstance mapper
+     */
+    persistence.BooleanInstance = Base.create("BooleanInstance", persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "BooleanInstance"
+            },
+            value: {
+                type: BOOLEAN
             }
         }
     });
