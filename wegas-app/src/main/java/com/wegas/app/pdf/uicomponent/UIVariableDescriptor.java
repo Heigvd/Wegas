@@ -12,6 +12,8 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
+import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
@@ -161,6 +163,9 @@ public class UIVariableDescriptor extends UIComponentBase {
                 break;
             case "Number":
                 encode(context, writer, (NumberDescriptor) vDesc);
+                break;
+            case "Boolean":
+                encode(context, writer, (BooleanDescriptor) vDesc);
                 break;
             default:
                 fallback(context, writer, vDesc);
@@ -641,6 +646,23 @@ public class UIVariableDescriptor extends UIComponentBase {
         }
         UIHelper.printProperty(context, writer, UIHelper.TEXT_VALUE, ni.getValue());
 
+        UIHelper.endDiv(writer);
+    }
+
+
+    /**
+     * Print Boolean
+     *
+     * @param context
+     * @param writer
+     * @param nd
+     * @throws IOException
+     */
+    public void encode(FacesContext context, ResponseWriter writer, BooleanDescriptor bd) throws IOException {
+        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+        encodeBase(context, writer, bd, editorMode);
+        BooleanInstance bi = bd.getInstance(defaultValues, player);
+        UIHelper.printProperty(context, writer, UIHelper.TEXT_VALUE, bi.getValue());
         UIHelper.endDiv(writer);
     }
 }
