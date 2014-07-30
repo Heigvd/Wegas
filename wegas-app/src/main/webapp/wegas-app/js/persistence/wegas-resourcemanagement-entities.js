@@ -91,7 +91,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     label: "Properties",
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature',
                     _type: HASHLIST,
-
                     elementType: PROPERTIESELEMENTTYPE
                 }
             },
@@ -195,7 +194,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         _inputex: {
                             label: "Default properties",
                             _type: OBJECT,
-
                             elementType: PROPERTIESELEMENTTYPE
                         }
                     }
@@ -567,7 +565,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         findAssociatedRessources: function(abstractAssignments) {
             var ressources, i, data = [], assignments, dict;
             ressources = Wegas.Facade.Variable.cache.findAll("@class", "ResourceDescriptor");
-            Y.Array.forEach(ressources, function(employee) {
+            Y.Array.each(ressources, function(employee) {
                 assignments = employee.getInstance().get(abstractAssignments);
                 for (i = 0; i < assignments.length; i++) {
                     dict = {};
@@ -624,7 +622,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 value: [],
                 _inputex: {
                     label: "Predecessors",
-
                     index: -1,
                     elementType: {
                         required: true,
@@ -648,7 +645,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         _inputex: {
                             _type: LIST,
                             label: "Requirements",
-
                             wrapperClassName: 'inputEx-fieldWrapper wegas-inputex-inlinegroup',
                             elementType: {
                                 type: GROUP,
@@ -710,7 +706,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             _type: HASHLIST,
                             keyField: NAME,
                             valueField: VALUE,
-
                             elementType: PROPERTIESELEMENTTYPE
                         }
                     }
@@ -722,7 +717,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     index: 2,
                     _type: HASHLIST,
                     keyField: NAME,
-
                     valueField: VALUE,
                     elementType: PROPERTIESELEMENTTYPE
                 }
