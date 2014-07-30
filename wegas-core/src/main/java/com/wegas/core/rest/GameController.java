@@ -40,7 +40,7 @@ import org.apache.shiro.SecurityUtils;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{/?}Game/")
+@Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class GameController {
