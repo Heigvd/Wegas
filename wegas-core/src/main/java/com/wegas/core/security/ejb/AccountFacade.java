@@ -229,9 +229,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     public ArrayList<AbstractAccount> findByTeam(Team team) {
         ArrayList<AbstractAccount> result = new ArrayList<>();
         for (Player player : team.getPlayers()) {
-            if (player.getUser() == null)
-            result.add(player.getUser().getMainAccount());                      // Test players dont have a user, we do not return anything since the target widget would not know what to do with it
-        }
+            if (player.getUser() == null) {
+                result.add(player.getUser().getMainAccount());                      // Test players dont have a user, we do not return anything since the target widget would not know what to do with it
+            }
         }
         return result;
     }
