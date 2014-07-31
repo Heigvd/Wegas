@@ -17,7 +17,7 @@
         <meta name="audience" content="General" />
         <meta name="distribution" content="Global" />
         <meta name="revisit-after" content="30 days" />
-        <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon.ico" />
+        <link rel="icon" type="image/ico" href="#{request.contextPath}/favicon#{request.requestURL.indexOf('localhost') >= 0 ?'_local' : ''}.ico" />
 
         <!-- YUI -->
         <ui:fragment rendered="#{wegasConfig.useYUICDN}">
