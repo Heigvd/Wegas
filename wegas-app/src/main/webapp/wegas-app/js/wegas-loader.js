@@ -85,7 +85,7 @@ YUI().use(function(Y) {
             },
             'wegas-variabledescriptor-entities': {
                 path: 'js/persistence/wegas-variabledescriptor-entities-min.js',
-                requires: 'wegas-entity',
+                requires: ['wegas-entity', "treeview-filter"],
                 ws_provides: ['NumberDescriptor', 'TextDescriptor']
             },
             'wegas-statemachine-entities': {

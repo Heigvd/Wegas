@@ -89,7 +89,7 @@ YUI.add("treeview-filter", function(Y) {
                 value: ""
             },
             emptyMsg: {
-                value: "Nothing matches filter's criteria",
+                value: "There are no records that match your search",
                 validator: Y.Lang.isString
             }
         }
