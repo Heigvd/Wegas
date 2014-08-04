@@ -51,8 +51,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
 
-            this.plug(Plugin.SearchDT);                                         // Add search support
             this.plug(Plugin.ViewsDT);                                          // Add views support (grid, list, datatable)
+            this.plug(Plugin.SearchDT);                                         // Add search support
         },
         /**
          * @function
@@ -513,15 +513,12 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             var host = this.get(HOST);
 
             if (host.toolbar) {
-                host.toolbar.get('header').append("<div class='wegas-datatable-search'><input /></div>")
+                host.toolbar.get('header').append("<div class='wegas-filter-input wegas-datatable-search'><input placeholder='Search...' /></div>")
                     .one(".wegas-datatable-search input").on("valueChange", function(e) {
                     this.filterValue = e.newVal;
-                    host.table.set('strings.emptyMessage', "<em><center><br /><br />Nothing matches your search</center></em>");
+                    host.table.set('strings.emptyMessage', "<em><center><br /><br />There are no records that match your search</center></em>");
                     this.applyFilters();
                 }, this);
-//                host.table.after('sort', function(e) {
-//                    this.data.sort(e.field, e.desc, e.sorter);
-//                }, this);
             }
         },
         sync: function() {
@@ -532,11 +529,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         applyFilters: function() {
             var filter = this.filterValue;
-            // Update the records in the table's Recordset with the results of
-            // filtering the full data set by a substring search in all fields
-            this.get(HOST).table.set('data', this.data.filter(function(item) {
+            this.get(HOST).table.set('data', this.data.filter(function(item) {  // Update the records in the table's Recordset with the results of
                 return Y.Object.values(item.toJSON()).join('|')
-                    .toLowerCase().indexOf(filter) > -1;
+                    .toLowerCase().indexOf(filter) > -1;                        // filtering the full data set by a substring search in all fields
             }));
         }
     }, {

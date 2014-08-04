@@ -89,6 +89,7 @@
 .wegas-lobby-datatable .wegas-toolbar .yui3-buttongroup {
     display: inline-block;
     float: right;
+    margin-left: 5px;
 }
 .wegas-datatable-viewbuttons .yui3-button {
     padding: .4em 0.4em 0.3em 0.6em;
@@ -228,12 +229,4 @@
 }
 .yui3-skin-sam .wegas-datatable-table .yui3-datatable-col-menu .yui3-button{
     padding: 0 1px 0 2px;
-}
-
-/* Search plugin */
-.wegas-datatable-search {
-    display: inline;
-    padding-top: 1px;
-    float: right;
-    padding-left: 5px;
 }

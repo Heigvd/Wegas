@@ -421,6 +421,16 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     background-position: 0 -590px;
 }
 
+/* Search input */
+.wegas-filter-input {    
+    display: inline-block;
+    float: right;
+    padding-left: 19px;
+    background: transparent url(../../wegas-editor/images/search.png) 0px 4px no-repeat;
+    background: transparent url(http://orbi.ulg.ac.be/img/com/search.png) 0px 6px no-repeat;
+    padding-top: 1px;
+}
+
 /** Uservoice widget */
 .yui3-skin-sam .uv-icon {
     right: 0;
@@ -433,3 +443,4 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     width: 24px;
     height: 27px;
 }
+
