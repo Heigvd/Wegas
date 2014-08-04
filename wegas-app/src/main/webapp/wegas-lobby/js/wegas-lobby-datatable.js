@@ -531,7 +531,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             var filter = this.filterValue;
             this.get(HOST).table.set('data', this.data.filter(function(item) {  // Update the records in the table's Recordset with the results of
                 return Y.Object.values(item.toJSON()).join('|')
-                    .toLowerCase().indexOf(filter) > -1;                        // filtering the full data set by a substring search in all fields
+                    .search("/" + filter + "/i") > -1;                          // filtering the full data set by a substring search in all fields
             }));
         }
     }, {
