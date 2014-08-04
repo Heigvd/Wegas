@@ -295,16 +295,41 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc) {
 }
 
 /**
- * Check if the given resource have an occupation where time correspond to the current time.
- * If its true, the employee is reserved (and the function return true)
+ * Check is the given resource will work on the project for the current period
+ * 
+ *  in automatic mode:
+ *      the resource will always works unless it's unavailable (i.e. current occupation not editable)
+ *  in manual mode:
+ *      the resource must have an editable occupation for the current time (i.e has been reseved by the player)
+ *  
  * @param {RessourceInstance} employeeInst
  * @returns {Boolean} is reserved
  */
 function isReservedToWork(employeeInst) {
-    return Y.Array.find(employeeInst.occupations, function(o) {
-        return o.time === currentPeriod
-            && o.editable;                                                      // Illness, etc. occupations are not editable
-    });
+    var autoDesc;
+
+    try {
+        autoDesc = Variable.findByName(gm, "automatic");
+    } catch (e) {
+        autoDesc = false;
+    }
+
+    // The boolean doesn't exists or its value is false => Manual
+    if (!autoDesc || ! autoDesc.getValue(self)) {
+        // the resource must be reserved.
+        // it means that an editable occupation must exists for the current time
+        return Y.Array.find(employeeInst.occupations, function(o) {
+            return o.time === currentPeriod
+                && o.editable;
+        });
+    } else { // automatic
+        // The resource is alwayse reserved unless
+        // it has an uneditable occupation for the current period
+        return !Y.Array.find(employeeInst.occupations, function(o) {
+            return o.time === currentPeriod
+                && !o.editable; // Illness, etc. occupations are not editable
+        });
+    }
 }
 
 /**
