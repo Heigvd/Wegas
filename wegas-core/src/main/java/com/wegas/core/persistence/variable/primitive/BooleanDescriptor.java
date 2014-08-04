@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 import org.slf4j.Logger;
@@ -34,5 +35,23 @@ public class BooleanDescriptor extends VariableDescriptor<BooleanInstance> {
      */
     public BooleanDescriptor(String name) {
         this.name = name;
+    }
+
+
+    /*
+     * SUGAR
+     */
+
+    /**
+     *
+     * @param p
+     * @return
+     */
+    public boolean getValue(Player p) {
+        return this.getInstance(p).getValue();
+    }
+
+    public void setValue(Player p, boolean v){
+        this.getInstance(p).setValue(v);
     }
 }
