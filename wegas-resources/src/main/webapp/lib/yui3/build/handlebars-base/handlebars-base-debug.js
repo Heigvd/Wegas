@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('handlebars-base', function (Y, NAME) {
 
 /*!
@@ -453,4 +460,4 @@ Handlebars.revive = Handlebars.template;
 Y.namespace('Template').Handlebars = Handlebars;
 
 
-}, '@VERSION@', {"requires": []});
+}, '3.17.2', {"requires": []});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('async-queue', function (Y, NAME) {
 
 /**
@@ -243,7 +250,7 @@ Y.extend(Queue, Y.EventTarget, {
 
         if (!callback) {
             /**
-             * Event fired after the last queued callback is executed.
+             * Event fired when there is no remaining callback in the running queue. Also fired after stop().
              * @event complete
              */
             this.fire('complete');
@@ -398,6 +405,12 @@ Y.extend(Queue, Y.EventTarget, {
         // currenty running needs to call run() one more time for the 'complete'
         // event to be fired.
 
+        // if stop is called from outside a callback, we need to explicitely call
+        // run() once again to fire the 'complete' event.
+        if (!this._executing) {
+            this.run();
+        }
+
         return this;
     },
 
@@ -545,4 +558,4 @@ Y.extend(Queue, Y.EventTarget, {
 
 
 
-}, '@VERSION@', {"requires": ["event-custom"]});
+}, '3.17.2', {"requires": ["event-custom"]});

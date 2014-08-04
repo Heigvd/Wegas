@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('axis', function (Y, NAME) {
 
 /**
@@ -448,7 +455,7 @@ RightAxisLayout.prototype = {
      * @method drawTick
      * @param {Path} path reference to the path `Path` element in which to draw the tick.
      * @param {Object} pt Point on the axis in which the tick will intersect.
-     * @param {Object) tickStyle Hash of properties to apply to the tick.
+     * @param {Object} tickStyle Hash of properties to apply to the tick.
      * @protected
      */
     drawTick: function(path, pt, tickStyles)
@@ -3170,4 +3177,4 @@ Y.Axis = Y.Base.create("axis", Y.Widget, [Y.AxisBase], {
 Y.AxisType = Y.Base.create("baseAxis", Y.Axis, [], {});
 
 
-}, '@VERSION@', {"requires": ["dom", "widget", "widget-position", "widget-stack", "graphics", "axis-base"]});
+}, '3.17.2', {"requires": ["dom", "widget", "widget-position", "widget-stack", "graphics", "axis-base"]});

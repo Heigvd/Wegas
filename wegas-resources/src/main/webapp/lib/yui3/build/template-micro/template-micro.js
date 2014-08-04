@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('template-micro', function (Y, NAME) {
 
 /*jshint expr:true */
@@ -246,4 +253,4 @@ Micro.revive = function (precompiled) {
 };
 
 
-}, '@VERSION@', {"requires": ["escape"]});
+}, '3.17.2', {"requires": ["escape"]});

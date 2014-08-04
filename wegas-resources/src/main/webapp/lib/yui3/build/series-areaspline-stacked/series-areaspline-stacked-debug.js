@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-areaspline-stacked', function (Y, NAME) {
 
 /**
@@ -47,4 +54,4 @@ Y.StackedAreaSplineSeries = Y.Base.create("stackedAreaSplineSeries", Y.AreaSerie
 
 
 
-}, '@VERSION@', {"requires": ["series-stacked", "series-areaspline"]});
+}, '3.17.2', {"requires": ["series-stacked", "series-areaspline"]});

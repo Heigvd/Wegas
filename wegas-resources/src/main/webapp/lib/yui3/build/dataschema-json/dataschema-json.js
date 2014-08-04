@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dataschema-json', function (Y, NAME) {
 
 /**
@@ -436,4 +443,4 @@ SchemaJSON = {
 Y.DataSchema.JSON = Y.mix(SchemaJSON, Base);
 
 
-}, '@VERSION@', {"requires": ["dataschema-base", "json"]});
+}, '3.17.2', {"requires": ["dataschema-base", "json"]});

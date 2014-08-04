@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-line', function (Y, NAME) {
 
 /**
@@ -110,4 +117,4 @@ Y.LineSeries = Y.Base.create("lineSeries", Y.CartesianSeries, [Y.Lines], {
 
 
 
-}, '@VERSION@', {"requires": ["series-cartesian", "series-line-util"]});
+}, '3.17.2', {"requires": ["series-cartesian", "series-line-util"]});

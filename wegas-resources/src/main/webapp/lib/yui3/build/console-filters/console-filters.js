@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('console-filters', function (Y, NAME) {
 
 /**
@@ -720,4 +727,4 @@ Y.namespace('Plugin').ConsoleFilters = Y.extend(ConsoleFilters, Y.Plugin.Base,
 });
 
 
-}, '@VERSION@', {"requires": ["plugin", "console"], "skinnable": true});
+}, '3.17.2', {"requires": ["plugin", "console"], "skinnable": true});

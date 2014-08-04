@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('widget-child', function (Y, NAME) {
 
 /**
@@ -374,4 +381,4 @@ Child.prototype = {
 Y.WidgetChild = Child;
 
 
-}, '@VERSION@', {"requires": ["base-build", "widget"]});
+}, '3.17.2', {"requires": ["base-build", "widget"]});

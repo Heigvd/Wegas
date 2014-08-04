@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dial', function (Y, NAME) {
 
 /**
@@ -272,7 +279,7 @@ YUI.add('dial', function (Y, NAME) {
      * template that will contain the Dial's label.
      *
      * @property LABEL_TEMPLATE
-     * @type {HTML}
+     * @type {String}
      * @default &lt;div class="[...-label]">&lt;span id="" class="[...-label-string]">{label}&lt;/span>&lt;span class="[...-value-string]">&lt;/span>&lt;/div>
      * @protected
      */
@@ -284,7 +291,7 @@ YUI.add('dial', function (Y, NAME) {
 		 * template that will contain the Dial's background ring.
 		 *
 		 * @property RING_TEMPLATE
-		 * @type {HTML}
+		 * @type {String}
 		 * @default &lt;div class="[...-ring]">&lt;div class="[...-northMark]">&lt;/div>&lt;/div>
 		 * @protected
 		 */
@@ -294,7 +301,7 @@ YUI.add('dial', function (Y, NAME) {
 		 * template that will contain the Dial's current angle marker.
 		 *
 		 * @property MARKER_TEMPLATE
-		 * @type {HTML}
+		 * @type {String}
 		 * @default &lt;div class="[...-marker] [...-marker-hidden]">&lt;div class="[...-markerUser]">&lt;/div>&lt;/div>
 		 * @protected
 		 */
@@ -304,7 +311,7 @@ YUI.add('dial', function (Y, NAME) {
 		 * template that will contain the Dial's center button.
 		 *
 		 * @property CENTER_BUTTON_TEMPLATE
-		 * @type {HTML}
+		 * @type {String}
 		 * @default &lt;div class="[...-centerButton]">&lt;div class="[...-resetString]">' + Y.Lang.sub('{resetStr}', Dial.ATTRS.strings.value) + '&lt;/div>&lt;/div>
 		 * @protected
 		 */
@@ -314,7 +321,7 @@ YUI.add('dial', function (Y, NAME) {
 		 * template that will contain the Dial's handle.
 		 *
 		 * @property HANDLE_TEMPLATE
-		 * @type {HTML}
+		 * @type {String}
 		 * @default &lt;div class="[...-handle]">&lt;div class="[...-handleUser]" aria-labelledby="" aria-valuetext="" aria-valuemax="" aria-valuemin="" aria-valuenow="" role="slider"  tabindex="0">&lt;/div>&lt;/div>';// title="{tooltipHandle}"
 		 * @protected
 		 */
@@ -1002,7 +1009,7 @@ YUI.add('dial', function (Y, NAME) {
          * sets the visible UI label HTML string
          *
          * @method _setLabelString
-         * @param str {HTML}
+         * @param str {String}
          * @protected
          * @deprecated Use DialObjName.set('strings',{'label':'My new label'});   before DialObjName.render();
 
@@ -1015,7 +1022,7 @@ YUI.add('dial', function (Y, NAME) {
          * sets the visible UI label HTML string
          *
          * @method _setResetString
-         * @param str {HTML}
+         * @param str {String}
          * @protected
          * @deprecated Use DialObjName.set('strings',{'resetStr':'My new reset string'});   before DialObjName.render();
          */
@@ -1029,7 +1036,7 @@ YUI.add('dial', function (Y, NAME) {
          * sets the tooltip HTML string in the Dial's handle
          *
          * @method _setTooltipString
-         * @param str {HTML}
+         * @param str {String}
          * @protected
          * @deprecated Use DialObjName.set('strings',{'tooltipHandle':'My new tooltip'});   before DialObjName.render();
          */
@@ -1308,7 +1315,7 @@ YUI.add('dial', function (Y, NAME) {
     Y.Dial = Dial;
 
 
-}, '@VERSION@', {
+}, '3.17.2', {
     "requires": [
         "widget",
         "dd-drag",

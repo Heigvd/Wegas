@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('attribute-observable', function (Y, NAME) {
 
     /*For log lines*/
@@ -234,4 +241,4 @@ YUI.add('attribute-observable', function (Y, NAME) {
     Y.AttributeEvents = AttributeObservable;
 
 
-}, '@VERSION@', {"requires": ["event-custom"]});
+}, '3.17.2', {"requires": ["event-custom"]});

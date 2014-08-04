@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('json-parse-shim', function (Y, NAME) {
 
 /**
@@ -180,4 +187,4 @@ Y.JSON.parse = function (s,reviver) {
 Y.JSON.parse.isShim = true;
 
 
-}, '@VERSION@', {"requires": ["json-parse"]});
+}, '3.17.2', {"requires": ["json-parse"]});

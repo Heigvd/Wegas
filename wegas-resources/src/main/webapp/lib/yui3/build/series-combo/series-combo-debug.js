@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-combo', function (Y, NAME) {
 
 /**
@@ -280,4 +287,4 @@ Y.ComboSeries = Y.Base.create("comboSeries", Y.CartesianSeries, [Y.Fills, Y.Line
 
 
 
-}, '@VERSION@', {"requires": ["series-cartesian", "series-line-util", "series-plot-util", "series-fill-util"]});
+}, '3.17.2', {"requires": ["series-cartesian", "series-line-util", "series-plot-util", "series-fill-util"]});

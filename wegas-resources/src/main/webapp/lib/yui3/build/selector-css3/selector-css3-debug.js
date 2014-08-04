@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('selector-css3', function (Y, NAME) {
 
 /**
@@ -149,4 +156,4 @@ Y.Selector.combinators['~'] = {
 };
 
 
-}, '@VERSION@', {"requires": ["selector-native", "selector-css2"]});
+}, '3.17.2', {"requires": ["selector-native", "selector-css2"]});

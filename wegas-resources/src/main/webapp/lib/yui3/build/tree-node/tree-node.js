@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('tree-node', function (Y, NAME) {
 
 /*jshint expr:true, onevar:false */
@@ -552,4 +559,4 @@ TreeNode.prototype = {
 Y.namespace('Tree').Node = TreeNode;
 
 
-}, '@VERSION@');
+}, '3.17.2');

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('editor-lists', function (Y, NAME) {
 
 
@@ -83,7 +90,7 @@ YUI.add('editor-lists', function (Y, NAME) {
     }, {
         /**
         * The non element placeholder, used for positioning the cursor and filling empty items
-        * @property REMOVE
+        * @property NON
         * @static
         */
         NON: '<span class="yui-non">&nbsp;</span>',
@@ -124,4 +131,4 @@ YUI.add('editor-lists', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["editor-base"]});
+}, '3.17.2', {"requires": ["editor-base"]});

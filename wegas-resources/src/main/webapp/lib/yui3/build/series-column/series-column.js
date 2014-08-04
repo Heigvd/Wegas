@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-column', function (Y, NAME) {
 
 /**
@@ -157,4 +164,4 @@ Y.ColumnSeries = Y.Base.create("columnSeries", Y.MarkerSeries, [Y.Histogram], {
 });
 
 
-}, '@VERSION@', {"requires": ["series-marker", "series-histogram-base"]});
+}, '3.17.2', {"requires": ["series-marker", "series-histogram-base"]});

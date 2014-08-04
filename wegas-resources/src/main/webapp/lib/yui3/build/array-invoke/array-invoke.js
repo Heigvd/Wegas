@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('array-invoke', function (Y, NAME) {
 
 /**
@@ -37,4 +44,4 @@ Y.Array.invoke = function(items, name) {
 };
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.17.2', {"requires": ["yui-base"]});

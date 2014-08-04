@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-curve-util', function (Y, NAME) {
 
 /**
@@ -132,4 +139,4 @@ CurveUtil.prototype = {
 Y.CurveUtil = CurveUtil;
 
 
-}, '@VERSION@');
+}, '3.17.2');

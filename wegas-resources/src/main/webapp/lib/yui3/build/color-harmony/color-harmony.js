@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('color-harmony', function (Y, NAME) {
 
 /**
@@ -565,4 +572,4 @@ var HSL = 'hsl',
 Y.Color = Y.mix(Y.Color, Harmony);
 
 
-}, '@VERSION@', {"requires": ["color-hsl"]});
+}, '3.17.2', {"requires": ["color-hsl"]});

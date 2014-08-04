@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('io-form', function (Y, NAME) {
 
 /**
@@ -126,4 +133,4 @@ Y.mix(Y.IO.prototype, {
 }, true);
 
 
-}, '@VERSION@', {"requires": ["io-base", "node-base"]});
+}, '3.17.2', {"requires": ["io-base", "node-base"]});
