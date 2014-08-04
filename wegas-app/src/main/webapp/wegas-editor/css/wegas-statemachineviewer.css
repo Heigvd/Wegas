@@ -57,7 +57,7 @@
     border-color: #4372C4;
 }
 .yui3-wegas-state:hover, .jsPlumb_dragged{
-    z-index:7;    
+    z-index:7;
     background: #f4f4f4;
 }
 .yui3-wegas-state-text,
@@ -160,8 +160,8 @@
     /*background-color:rgba(255, 115, 115, 0.7);*/
 }
 .wegas-statemachineviewer-legend {
-    position: absolute;   
-    bottom: 1em;    
+    position: absolute;
+    bottom: 1em;
     left: .5em;
 }
 .wegas-statemachineviewer-legend > div {
@@ -171,9 +171,9 @@
     margin-bottom: 5px;
 }
 .wegas-statemachineviewer-legend .legend-currentState {
-    width: 25px;
+    width: 24px;
     height: 13px;
-    margin-left: 1px;  
+    margin-left: 2px;
 }
 .wegas-statemachineviewer-legend div:after {
     position: absolute;
@@ -185,11 +185,11 @@
     color: darkgray;
 }
 .wegas-statemachineviewer-legend .legend-currentState:after {
-    content: "Initial state";
+    content: "Current state";
     top: 21px;
 }
 .wegas-statemachineviewer-legend .legend-initial-state:after {
-    content: "Current state";
+    content: "Initial state";
 }
 
 ._jsPlumb_connector{

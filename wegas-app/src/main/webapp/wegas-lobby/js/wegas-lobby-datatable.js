@@ -488,8 +488,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             }
         },
         destructor: function() {
-            this.buttonGroup.destroy();
-            this.viewHandler.detach();
+            this.buttonGroup && this.buttonGroup.destroy();
+            this.viewHandler && this.viewHandler.detach();
         }
     }, {
         NS: "views"
