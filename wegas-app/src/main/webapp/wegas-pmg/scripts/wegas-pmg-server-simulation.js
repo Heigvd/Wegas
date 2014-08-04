@@ -332,7 +332,7 @@ function isReservedToWork(employeeInst) {
         return false;
     }
 
-    if (!automatedReservation()()){
+    if (!automatedReservation()){
         // the resource must be reserved.
         // it means that an "editable" occupation must exists for the current time
         return Y.Array.find(employeeInst.occupations, function(o) {
