@@ -38,9 +38,9 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this.treeView.plug(Plugin.TreeViewFilter, {
                 testFn: function(searchVal) {
                     var e = this.get("data.entity");
-                    return !(e instanceof Wegas.persistence.VariableDescriptor)
-                        || searchVal === ""
-                        || Y.Object.values(e.toJSON()).join('|').search("/" + searchVal + "/i") > -1;
+                    searchVal = searchVal.trim();
+                    return searchVal === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
+//                            && this.get("label").toLowerCase().indexOf(Y.Lang.trim(searchVal).toLowerCase()) > -1; )
                 }
             });
             this.treeView.plug(Plugin.TreeViewSortable, {

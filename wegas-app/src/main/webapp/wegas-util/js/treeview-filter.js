@@ -29,8 +29,7 @@ YUI.add("treeview-filter", function(Y) {
             });
         },
         filter: function(item, match) {
-            var matches = false;
-
+            var matches = false, subMatch = false;
 
             if (item instanceof Y.TreeView) {
                 matches = false;
@@ -43,20 +42,26 @@ YUI.add("treeview-filter", function(Y) {
             }
             if (item.each) {
                 item.each(function(node) {
-                    this.filter(node, match);
+                    subMatch = this.filter(node, match) || subMatch;
                 }, this);
             }
+            item.get("boundingBox").removeClass("filter-match").removeClass("filter-no-match").removeClass("filter-sub-match");
             if (matches) {
-                item.get("boundingBox").addClass("filter-match").removeClass("filter-no-match").removeClass("filter-sub-match");
-            } else if (item.get("boundingBox").one(".filter-match")) {
-                item.get("boundingBox").addClass("filter-sub-match").removeClass("filter-no-match").removeClass("filter-match");
-                if (item.expand) {
+                item.get("boundingBox").addClass("filter-match");
+//                if (!subMatch && match && item.collapse) {
+//                    item.collapse(false);
+//                }
+            }
+            if (subMatch) {
+                item.get("boundingBox").addClass("filter-sub-match");
+                if (match && item.expand) {
                     item.expand(false);
                 }
-            } else {
-                item.get("boundingBox").addClass("filter-no-match").removeClass("filter-match").removeClass("filter-sub-match");
             }
-            return matches;
+            if (!matches && !subMatch) {
+                item.get("boundingBox").addClass("filter-no-match");
+            }
+            return matches || subMatch;
 
         },
         doFilter: function(item, match) {
