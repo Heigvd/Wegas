@@ -75,10 +75,6 @@
     font-size: 0;
     padding: 0 3px 0 5px;
 }
-.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-col-menu .yui3-button:hover {
-    /*background: none;*/
-    /*border: 1px solid gray;*/
-}
 .yui3-skin-sam .wegas-lobby-datatable tr:hover .yui3-datatable-col-menu .yui3-button {
     visibility: visible;
 }
@@ -88,19 +84,19 @@
 .yui3-skin-sam .wegas-lobby-datatable .editor-moregamemodel-button {
     display: none;
 }
+
 /* Lobby datatable: view buttons */
-.wegas-datatable-viewbuttons {
-    position: absolute;
-    top: .5em;
-    right: .5em
+.wegas-lobby-datatable .wegas-toolbar .yui3-buttongroup {
+    display: inline-block;
+    float: right;
 }
 .wegas-datatable-viewbuttons .yui3-button {
     padding: .4em 0.4em 0.3em 0.6em;
     margin-right: 0em !important;  
     padding: 0.3em 0.3em .3em 0.5em !important;
 }
-.yui3-button.button-gridview,
-.yui3-button.button-listview {
+.yui3-button.button-grid,
+.yui3-button.button-list {
     margin-right: 0;
 }
 
@@ -232,4 +228,12 @@
 }
 .yui3-skin-sam .wegas-datatable-table .yui3-datatable-col-menu .yui3-button{
     padding: 0 1px 0 2px;
+}
+
+/* Search plugin */
+.wegas-datatable-search {
+    display: inline;
+    padding-top: 1px;
+    float: right;
+    padding-left: 5px;
 }

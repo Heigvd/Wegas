@@ -27,7 +27,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
     GameDataTable = Y.Base.create("wegas-lobby-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Private fields *** //
-
         /**
          * @function
          * @private
@@ -44,40 +43,16 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 });
             });
             cfg = Y.mix(cfg, {//                                                // Add cfg default values
-                //data: data,
                 width: "100%"
             });
-            this.dataTable = new Y.DataTable(cfg);                              // Render datatable
-            this.dataTable.render(this.get(CONTENTBOX));
-            this.dataTable.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "<br /><br /><br /></center></em>");
+            this.table = new Y.DataTable(cfg);                                  // Render datatable
+            this.table.render(this.get(CONTENTBOX));
+            this.table.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
 
-            this.get(CONTENTBOX).addClass("yui3-skin-wegas")
-                .addClass("wegas-datatable-list");
+            this.get(CONTENTBOX).addClass("yui3-skin-wegas");
 
-            if (this.toolbar) {
-                this.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons'>"
-                    + "<button class='yui3-button button-gridview'><span class='wegas-icon wegas-icon-gridview'></span></button>"
-                    + "<button class='yui3-button button-listview yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
-                    + "<button class='yui3-button button-tableview'><span class='wegas-icon wegas-icon-tableview'></span></button>"
-                    + "</div>");
-                this.buttonGroupCB = new Y.ButtonGroup({
-                    srcNode: this.toolbar.get('header').one(".wegas-datatable-viewbuttons"),
-                    type: 'radio',
-                    on: {
-                        selectionChange: Y.bind(function(e) {
-                            var button = e.target.getSelectedButtons()[0];
-                            Y.all(".wegas-datatable-viewbuttons > button").removeClass("yui3-button-selected");
-                            Y.all(".wegas-datatable-viewbuttons > ." + button.getAttribute("class").split(" ").join(".")).addClass("yui3-button-selected");
-                            Y.fire("viewChange", {button: button});
-                        }, this)
-                    }
-                }).render();
-                this.viewHandler = Y.on("viewChange", function(e) {             // Global handler so any button fired will trigger view change
-                    this.get(CONTENTBOX).toggleClass("wegas-datatable-grid", e.button.hasClass("button-gridview"))
-                        .toggleClass("wegas-datatable-list", e.button.hasClass("button-listview"))
-                        .toggleClass("wegas-datatable-table", e.button.hasClass("button-tableview"));
-                }, this);
-            }
+            this.plug(Plugin.SearchDT);                                         // Add search support
+            this.plug(Plugin.ViewsDT);                                          // Add views support (grid, list, datatable)
         },
         /**
          * @function
@@ -108,14 +83,13 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             var data = this.genData(this.get(DATASOURCE).cache.findAll());
 
-            this.dataTable.set("data", data);
+            this.table.set("data", data);
             this.hideOverlay();
         },
         destructor: function() {
-            this.dataTable.destroy();
+            this.table.destroy();
             this.updateHandler.detach();
             this.failureHandler.detach();
-            this.viewHandler && this.viewHandler.detach();
         },
         // *** Private Methods *** //
         /**
@@ -255,7 +229,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     Plugin.RequestDT = Y.Base.create("RequestDT", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
-                var host = this.get("host");
+                var host = this.get(HOST);
                 host.showOverlay();
                 host.get(DATASOURCE).sendRequest({
                     request: "/" + Wegas.Facade.User.get("currentUserId")
@@ -299,7 +273,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.currentSelection = -1;                                         // Remember currently selected id
 
             this.afterHostEvent(RENDER, function() {
-                var dt = this.get(HOST).dataTable;
+                var dt = this.get(HOST).table;
 
                 dt.addAttr("selectedRow", {value: null});
                 dt.delegate('click', function(e) {
@@ -313,9 +287,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 this.addedHandler = this.get(HOST).get(DATASOURCE).after("added", function(e) {// When an entity is created
                     this.currentSelection = e.entity.get("id");                 // view it in the table
                     Y.later(20, this, function() {
-                        this.get("host").dataTable.get("data").each(function(r) {
+                        this.get(HOST).table.get("data").each(function(r) {
                             if (this.currentSelection === r.get("entity").get("id")) {
-                                this.get("host").dataTable.getRow(r).scrollIntoView();
+                                this.get(HOST).table.getRow(r).scrollIntoView();
                                 //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                             }
                         }, this);
@@ -324,9 +298,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             });
 
             this.doAfter("syncUI", function() {
-                this.get("host").dataTable.get("data").each(function(r) {
+                this.get(HOST).table.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
-                        this.get("host").dataTable.getRow(r).addClass("wegas-datatable-selected");
+                        this.get(HOST).table.getRow(r).addClass("wegas-datatable-selected");
                         //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                     }
                 }, this);
@@ -339,7 +313,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             var host = this.get(HOST), button,
                 tr = e.newVal, // the Node for the TR clicked ...
                 //last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
-                rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
+                rec = host.table.getRecord(tr), // the current Record for the clicked TR
                 menuItems = this.get("children"),
                 entity = rec.get("entity"),
                 data = {
@@ -387,7 +361,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     Plugin.EditorDTMouseOverMenu = Y.Base.create("admin-mouseovermenu", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
-                this.get(HOST).dataTable.addColumn({
+                this.get(HOST).table.addColumn({
                     key: "menu",
                     label: " ",
                     sortable: false,
@@ -400,7 +374,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 return;
             }
             var host = this.get(HOST),
-                rec = host.dataTable.getRecord(e.currentTarget), // the current Record for the clicked TR
+                rec = host.table.getRecord(e.currentTarget), // the current Record for the clicked TR
                 menuItems = this.get("children"),
                 entity = rec.get("entity"),
                 data = {
@@ -446,8 +420,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     //    initializer: function() {
     //        this.afterHostEvent(RENDER, function() {
     //            var host = this.get(HOST);
-    //            host.dataTable.delegate('click', function(e) {
-    //                var rec = host.dataTable.getRecord(e.currentTarget),
+    //            host.table.delegate('click', function(e) {
+    //                var rec = host.table.getRecord(e.currentTarget),
     //                        entity = rec.get("entity"),
     //                        url = this.get("url");
     //
@@ -475,13 +449,106 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     //    }
     //});
 
+
+    /**
+     * @class Open a menu on right click, containing the admin edition field
+     * @constructor
+     */
+    Plugin.ViewsDT = Y.Base.create("viewsdt", Plugin.Base, [], {
+        initializer: function() {
+            this.onHostEvent("render", this.render);
+        },
+        render: function() {
+            var host = this.get(HOST);
+
+            if (host.toolbar) {
+                host.get(CONTENTBOX).addClass("wegas-datatable-list");
+                host.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons'>"
+                    + "<button class='yui3-button button-grid'><span class='wegas-icon wegas-icon-gridview'></span></button>"
+                    + "<button class='yui3-button button-list yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
+                    + "<button class='yui3-button button-table'><span class='wegas-icon wegas-icon-tableview'></span></button>"
+                    + "</div>");
+                this.buttonGroup = new Y.ButtonGroup({
+                    srcNode: host.toolbar.get('header').one(".wegas-datatable-viewbuttons"),
+                    type: 'radio',
+                    on: {
+                        selectionChange: Y.bind(function(e) {
+                            var button = e.target.getSelectedButtons()[0];
+                            Y.all(".wegas-datatable-viewbuttons > button").removeClass("yui3-button-selected");
+                            Y.all(".wegas-datatable-viewbuttons > ." + button.getAttribute("class").split(" ").join(".")).addClass("yui3-button-selected");
+                            Y.fire("viewChange", {button: button});
+                        })
+                    }
+                }).render();
+                this.viewHandler = Y.on("viewChange", function(e) {             // Global handler so any button fired will trigger view change
+                    host.get(CONTENTBOX).toggleClass("wegas-datatable-grid", e.button.hasClass("button-grid"))
+                        .toggleClass("wegas-datatable-list", e.button.hasClass("button-list"))
+                        .toggleClass("wegas-datatable-table", e.button.hasClass("button-table"));
+                });
+            }
+        },
+        destructor: function() {
+            this.buttonGroup.destroy();
+            this.viewHandler.detach();
+        }
+    }, {
+        NS: "views"
+    });
+
+    /**
+     * @class Open a menu on right click, containing the admin edition field
+     * @constructor
+     */
+    Plugin.SearchDT = Y.Base.create("searchdatatable", Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent("render", this.render);
+            this.doAfter("syncUI", this.sync);
+            this.data = new Y.ModelList();
+            this.filterValue = "";
+        },
+        destructor: function() {
+            this.data.destroy();
+        },
+        render: function() {
+            var host = this.get(HOST);
+
+            if (host.toolbar) {
+                host.toolbar.get('header').append("<div class='wegas-datatable-search'><input /></div>")
+                    .one(".wegas-datatable-search input").on("valueChange", function(e) {
+                    this.filterValue = e.newVal;
+                    host.table.set('strings.emptyMessage', "<em><center><br /><br />Nothing matches your search</center></em>");
+                    this.applyFilters();
+                }, this);
+//                host.table.after('sort', function(e) {
+//                    this.data.sort(e.field, e.desc, e.sorter);
+//                }, this);
+            }
+        },
+        sync: function() {
+            var host = this.get(HOST);
+            this.data.reset();
+            this.data.add(host.table.get("data"));
+            this.applyFilters();
+        },
+        applyFilters: function() {
+            var filter = this.filterValue;
+            // Update the records in the table's Recordset with the results of
+            // filtering the full data set by a substring search in all fields
+            this.get(HOST).table.set('data', this.data.filter(function(item) {
+                return Y.Object.values(item.toJSON()).join('|')
+                    .toLowerCase().indexOf(filter) > -1;
+            }));
+        }
+    }, {
+        NS: "filter"
+    });
     /**
      * @class Open a menu on right click, containing the admin edition field
      * @constructor
      */
     Plugin.EditorDTContextMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.onHostEvent("contextmenu", this.onTreeViewClick, this);
+            this.onHostEvent("contextmenu", this.onTreeViewClick);
 
             this.menu = new Wegas.Menu();
             this.menu.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.get(HOST).fire, this.get(HOST));
@@ -491,7 +558,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         onTreeViewClick: function(e) {
             var host = this.get(HOST),
                 tr = e.domEvent.target.ancestor("tr"), // the Node for the TR clicked ...
-                rec = host.dataTable.getRecord(tr), // the current Record for the clicked TR
+                rec = host.table.getRecord(tr), // the current Record for the clicked TR
                 menuItems = this.get("children"),
                 entity = rec.get("entity"),
                 data = {
@@ -536,7 +603,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     });
 
     /** 
-     * Shortcut to create public game treeview 
+     * Shortcut to create public game treeview
      */
     Wegas.PublicGameDataTable = Y.Base.create("wegas-lobby-datatable", GameDataTable, [], {
         renderUI: function() {
