@@ -38,6 +38,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
     };
 
     Y.namespace("Wegas.persistence.Resources");
+
     /**
      * 
      */
