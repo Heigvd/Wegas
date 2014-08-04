@@ -19,7 +19,9 @@ YUI.add('wegas-pmg-reservation', function(Y) {
      *  @constructor
      */
     var Wegas = Y.Wegas,
-            Reservation;
+        Reservation,
+        autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
+        autoReservation = autoDesc && autoDesc.getInstance().get("value");
 
     Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Reservation */
@@ -30,17 +32,19 @@ YUI.add('wegas-pmg-reservation', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").datatable.delegate("click", function(e, a) {
-                var dt = this.get("host").datatable,
+            if (!autoReservation) {
+                this.get("host").datatable.delegate("click", function(e, a) {
+                    var dt = this.get("host").datatable,
                         id = dt.getRecord(e.target).get("id"),
                         columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
 
-                this.checkCache(id, columnsCfg.time);
-            }, "tbody .present, tbody .futur", this);
+                    this.checkCache(id, columnsCfg.time);
+                }, "tbody .present, tbody .futur", this);
+            }
         },
         checkCache: function(descriptorId, periode) {
             var vd = Y.Wegas.Facade.Variable.cache.find("id", descriptorId),
-                    i, abstractAssignement, type = this.get("type"), data;
+                i, abstractAssignement, type = this.get("type"), data;
 
             for (i = 0; i < vd.getInstance().get(type).length; i++) {
                 abstractAssignement = vd.getInstance().get(type)[i];

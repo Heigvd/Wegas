@@ -10,6 +10,7 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 var taskTable, currentPeriod,
     DEBUGMODE = false,
@@ -186,6 +187,7 @@ function assignRessources(currentStep) {
         activities = [],
         employees = flattenList(Variable.findByName(gameModel, "employees")),
         period = currentPeriod + currentStep / STEPS;
+    
     if (!employees) {
         return [];
     }
@@ -295,36 +297,51 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc) {
 }
 
 /**
- * Check is the given resource will work on the project for the current period
+ * Return the automatic planning setting 
+ * Such a setting is given by the "autoReservation" bln variable
+ */
+function automatedReservation() {
+    var autoDesc;
+
+    try {
+        autoDesc = Variable.findByName(gm, "autoReservation");
+    } catch (e) {
+        autoDesc = false;
+    }
+
+    // Automatic means the descriptor exists and its value is TRUE
+    return autoDesc && autoDesc.getValue(self);
+}
+
+/**
+ * Check if the given resource will work on the project for the current period
  * 
  *  in automatic mode:
- *      the resource will always works unless it's unavailable (i.e. current occupation not editable)
+ *      the resource will always work unless it's unavailable (i.e. current occupation not editable)
  *  in manual mode:
  *      the resource must have an editable occupation for the current time (i.e has been reseved by the player)
+ *  
+ *  In all case, the resource must be active
  *  
  * @param {RessourceInstance} employeeInst
  * @returns {Boolean} is reserved
  */
 function isReservedToWork(employeeInst) {
-    var autoDesc;
-
-    try {
-        autoDesc = Variable.findByName(gm, "automatic");
-    } catch (e) {
-        autoDesc = false;
+    // Inactive resource never work
+    if (!employeeInst.getActive()){
+        return false;
     }
 
-    // The boolean doesn't exists or its value is false => Manual
-    if (!autoDesc || ! autoDesc.getValue(self)) {
+    if (!automatedReservation()){
         // the resource must be reserved.
-        // it means that an editable occupation must exists for the current time
+        // it means that an "editable" occupation must exists for the current time
         return Y.Array.find(employeeInst.occupations, function(o) {
             return o.time === currentPeriod
                 && o.editable;
         });
     } else { // automatic
-        // The resource is alwayse reserved unless
-        // it has an uneditable occupation for the current period
+        // The resource is always reserved unless
+        // it has an "uneditable" occupation for the current period
         return !Y.Array.find(employeeInst.occupations, function(o) {
             return o.time === currentPeriod
                 && !o.editable; // Illness, etc. occupations are not editable

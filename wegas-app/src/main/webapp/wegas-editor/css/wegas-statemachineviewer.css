@@ -115,6 +115,8 @@
     background:url(../../wegas-app/images/wegas-app-sprite.png);
     background-position: 0px -772px;
     background-repeat: no-repeat;
+    float: right;
+    padding-right: 3px;
 }
 .state-edit{
     display: inline-block;
@@ -126,7 +128,7 @@
 }
 .state-initial{
     display: inline-block;
-    background: url(../../wegas-app/images/wegas-app-sprite.png) 0 -368px;
+    background: url(../../wegas-app/images/wegas-app-sprite.png) 0 -367px;
     width: 16px;
     height: 16px;
 }
@@ -142,24 +144,60 @@
     display:none;
     border:1px solid orangered;
 }
+.legend-initial-state,
 .initial-state {
-    /*border-color:black;*/
     border-style:double;
     border-width:5px;
 }
-.wegas-statemachineviewer .currentState{
+.initial-state .state-initial {
+    display: none;
+}
+.wegas-statemachineviewer .legend-currentState,
+.wegas-statemachineviewer .currentState {
     background-color:rgba(255, 170, 0, 0.7);
 }
-.wegas-statemachineviewer .unusedState{
+.wegas-statemachineviewer .unusedState {
     /*background-color:rgba(255, 115, 115, 0.7);*/
 }
+.wegas-statemachineviewer-legend {
+    position: absolute;   
+    bottom: 1em;    
+    left: .5em;
+}
+.wegas-statemachineviewer-legend > div {
+    width: 18px;
+    height: 8px;
+    border-radius: 7px;
+    margin-bottom: 5px;
+}
+.wegas-statemachineviewer-legend .legend-currentState {
+    width: 25px;
+    height: 13px;
+    margin-left: 1px;  
+}
+.wegas-statemachineviewer-legend div:after {
+    position: absolute;
+    top: 1px;
+    display: block;
+    left: 31px;
+    width: 90px;
+    font-size: .9em;
+    color: darkgray;
+}
+.wegas-statemachineviewer-legend .legend-currentState:after {
+    content: "Initial state";
+    top: 21px;
+}
+.wegas-statemachineviewer-legend .legend-initial-state:after {
+    content: "Current state";
+}
+
 ._jsPlumb_connector{
     z-index:1;
 }
 ._jsPlumb_endpoint{
     z-index: 8;
 }
-
 ._jsPlumb_drag_select {
     -webkit-touch-callout: none;
     -webkit-user-select: none;

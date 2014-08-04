@@ -8,10 +8,12 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
 import org.codehaus.jackson.annotate.JsonIgnore;
+import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -26,7 +28,9 @@ public class Assignment extends AbstractAssignement {
      */
     @Id
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "taskdescriptor_id", nullable = false)
     @XmlTransient
