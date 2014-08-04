@@ -28,6 +28,7 @@ public class Activity extends AbstractAssignement {
      */
     @Id
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
