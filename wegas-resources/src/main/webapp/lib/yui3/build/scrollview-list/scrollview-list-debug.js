@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('scrollview-list', function (Y, NAME) {
 
 /**
@@ -127,4 +134,4 @@ Y.namespace("Plugin").ScrollViewList = Y.extend(ListPlugin, Y.Plugin.Base, {
 
 
 
-}, '@VERSION@', {"requires": ["plugin", "classnamemanager"], "skinnable": true});
+}, '3.17.2', {"requires": ["plugin", "classnamemanager"], "skinnable": true});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('yql', function (Y, NAME) {
 
 /**
@@ -165,4 +172,4 @@ Y.YQL = function (sql, callback, params, opts) {
 };
 
 
-}, '@VERSION@', {"requires": ["oop"]});
+}, '3.17.2', {"requires": ["oop"]});

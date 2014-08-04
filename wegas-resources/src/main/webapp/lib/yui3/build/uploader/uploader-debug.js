@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('uploader', function (Y, NAME) {
 
 /**
@@ -50,4 +57,4 @@ else {
 }
 
 
-}, '@VERSION@', {"requires": ["uploader-html5", "uploader-flash"]});
+}, '3.17.2', {"requires": ["uploader-html5", "uploader-flash"]});

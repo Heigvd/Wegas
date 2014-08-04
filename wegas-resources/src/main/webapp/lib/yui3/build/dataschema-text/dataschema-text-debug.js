@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dataschema-text', function (Y, NAME) {
 
 /**
@@ -180,4 +187,4 @@ var Lang = Y.Lang,
 Y.DataSchema.Text = Y.mix(SchemaText, Y.DataSchema.Base);
 
 
-}, '@VERSION@', {"requires": ["dataschema-base"]});
+}, '3.17.2', {"requires": ["dataschema-base"]});

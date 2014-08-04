@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-foot', function (Y, NAME) {
 
 /**
@@ -18,7 +25,7 @@ Y.namespace('DataTable').FooterView = Y.Base.create('tableFooter', Y.View, [], {
     HTML templates used to create the `<tfoot>` containing the table footers.
 
     @property TFOOT_TEMPLATE
-    @type {HTML}
+    @type {String}
     @default '<tfoot class="{className}"/>'
     @since 3.11.0
     **/
@@ -109,4 +116,4 @@ Y.namespace('DataTable').FooterView = Y.Base.create('tableFooter', Y.View, [], {
 });
 
 
-}, '@VERSION@', {"requires": ["datatable-core", "view"]});
+}, '3.17.2', {"requires": ["datatable-core", "view"]});

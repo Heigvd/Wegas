@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datasource-polling', function (Y, NAME) {
 
 /**
@@ -90,4 +97,4 @@ Pollable.prototype = {
 Y.augment(Y.DataSource.Local, Pollable);
 
 
-}, '@VERSION@', {"requires": ["datasource-local"]});
+}, '3.17.2', {"requires": ["datasource-local"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-sort', function (Y, NAME) {
 
 /**
@@ -222,7 +229,7 @@ Y.mix(Sortable.prototype, {
     columns.
 
     @property SORTABLE_HEADER_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<div class="{className}" tabindex="0"><span class="{indicatorClass}"></span></div>'
     @since 3.5.0
     **/
@@ -976,4 +983,4 @@ attribute for that.
 Y.Base.mix(Y.DataTable, [Sortable]);
 
 
-}, '@VERSION@', {"requires": ["datatable-base"], "lang": ["en", "fr", "es", "hu"], "skinnable": true});
+}, '3.17.2', {"requires": ["datatable-base"], "lang": ["en", "fr", "es", "hu"], "skinnable": true});

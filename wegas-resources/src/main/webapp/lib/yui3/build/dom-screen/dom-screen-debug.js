@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dom-screen', function (Y, NAME) {
 
 (function(Y) {
@@ -608,4 +615,4 @@ Y.mix(DOM, {
 })(Y);
 
 
-}, '@VERSION@', {"requires": ["dom-base", "dom-style"]});
+}, '3.17.2', {"requires": ["dom-base", "dom-style"]});

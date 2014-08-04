@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datasource-get', function (Y, NAME) {
 
 /**
@@ -24,7 +31,7 @@ Y.DataSource.Get = Y.extend(DSGet, Y.DataSource.Local, {
      * response is received asynchronously.
      *
      * @method _defRequestFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -210,4 +217,4 @@ Y.DataSource.Get = Y.extend(DSGet, Y.DataSource.Local, {
 YUI.namespace("Env.DataSource.callbacks");
 
 
-}, '@VERSION@', {"requires": ["datasource-local", "get"]});
+}, '3.17.2', {"requires": ["datasource-local", "get"]});

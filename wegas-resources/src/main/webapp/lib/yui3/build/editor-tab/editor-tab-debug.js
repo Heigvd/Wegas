@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('editor-tab', function (Y, NAME) {
 
 
@@ -66,4 +73,4 @@ YUI.add('editor-tab', function (Y, NAME) {
     Y.Plugin.EditorTab = EditorTab;
 
 
-}, '@VERSION@', {"requires": ["editor-base"]});
+}, '3.17.2', {"requires": ["editor-base"]});

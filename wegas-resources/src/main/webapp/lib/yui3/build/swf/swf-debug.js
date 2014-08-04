@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('swf', function (Y, NAME) {
 
 /**
@@ -203,4 +210,4 @@ Y.augment(SWF, Y.EventTarget);
 Y.SWF = SWF;
 
 
-}, '@VERSION@', {"requires": ["event-custom", "node", "swfdetect", "escape"]});
+}, '3.17.2', {"requires": ["event-custom", "node", "swfdetect", "escape"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('attribute-base', function (Y, NAME) {
 
     /**
@@ -107,4 +114,4 @@ YUI.add('attribute-base', function (Y, NAME) {
     Y.Attribute = Attribute;
 
 
-}, '@VERSION@', {"requires": ["attribute-core", "attribute-observable", "attribute-extras"]});
+}, '3.17.2', {"requires": ["attribute-core", "attribute-observable", "attribute-extras"]});

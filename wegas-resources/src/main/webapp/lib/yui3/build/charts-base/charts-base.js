@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('charts-base', function (Y, NAME) {
 
 /**
@@ -2188,7 +2195,7 @@ ChartBase.prototype = {
      *  @param {Number} index The index of the item within its series.
      *  @param {Array} seriesArray Array of series instances for each value item.
      *  @param {Number} seriesIndex The index of the series in the `seriesCollection`.
-     *  @return {String | HTML}
+     *  @return {HTMLElement}
      * @private
      */
     _planarLabelFunction: function(categoryAxis, valueItems, index, seriesArray)
@@ -2256,7 +2263,7 @@ ChartBase.prototype = {
      *      <dt>key</dt><dd>The key for the series.</dd>
      *      <dt>value</dt><dd>The value for the series item.</dd>
      *  </dl>
-     * @return {String | HTML}
+     * @return {HTMLElement}
      * @private
      */
     _tooltipLabelFunction: function(categoryItem, valueItem)
@@ -4937,7 +4944,7 @@ Y.PieChart = Y.Base.create("pieChart", Y.Widget, [Y.ChartBase], {
      *  </dl>
      * @param {Number} itemIndex The index of the item within the series.
      * @param {CartesianSeries} series The `PieSeries` instance of the item.
-     * @return {HTML}
+     * @return {HTMLElement}
      * @private
      */
     _tooltipLabelFunction: function(categoryItem, valueItem, itemIndex, series)
@@ -5151,7 +5158,7 @@ function Chart(cfg)
 Y.Chart = Chart;
 
 
-}, '@VERSION@', {
+}, '3.17.2', {
     "requires": [
         "dom",
         "event-mouseenter",

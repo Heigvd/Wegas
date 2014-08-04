@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-hover', function (Y, NAME) {
 
 /**
@@ -67,4 +74,4 @@ conf.detachDelegate = conf.detach;
 Y.Event.define("hover", conf);
 
 
-}, '@VERSION@', {"requires": ["event-mouseenter"]});
+}, '3.17.2', {"requires": ["event-mouseenter"]});

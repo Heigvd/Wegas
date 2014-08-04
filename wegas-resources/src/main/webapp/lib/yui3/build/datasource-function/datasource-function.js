@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datasource-function', function (Y, NAME) {
 
 /**
@@ -65,7 +72,7 @@ Y.extend(DSFn, Y.DataSource.Local, {
      * event with the function results (synchronously).
      *
      * @method _defRequestFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -103,4 +110,4 @@ Y.extend(DSFn, Y.DataSource.Local, {
 Y.DataSource.Function = DSFn;
 
 
-}, '@VERSION@', {"requires": ["datasource-local"]});
+}, '3.17.2', {"requires": ["datasource-local"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-pie', function (Y, NAME) {
 
 /**
@@ -721,4 +728,4 @@ Y.PieSeries = Y.Base.create("pieSeries", Y.SeriesBase, [Y.Plots], {
 });
 
 
-}, '@VERSION@', {"requires": ["series-base", "series-plot-util"]});
+}, '3.17.2', {"requires": ["series-base", "series-plot-util"]});

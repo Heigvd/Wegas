@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-message', function (Y, NAME) {
 
 /**
@@ -49,7 +56,7 @@ Y.mix(Message.prototype, {
     Template used to generate the node that will be used to report messages.
 
     @property MESSAGE_TEMPLATE
-    @type {HTML}
+    @type {String}
     @default <tbody class="{className}"><td class="{contentClass}" colspan="{colspan}"></td></tbody>
     @since 3.5.0
     **/
@@ -287,4 +294,4 @@ if (Y.Lang.isFunction(Y.DataTable)) {
 }
 
 
-}, '@VERSION@', {"requires": ["datatable-base"], "lang": ["en", "fr", "es", "hu", "it"], "skinnable": true});
+}, '3.17.2', {"requires": ["datatable-base"], "lang": ["en", "fr", "es", "hu", "it"], "skinnable": true});

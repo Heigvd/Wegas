@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-line-stacked', function (Y, NAME) {
 
 /**
@@ -46,4 +53,4 @@ Y.StackedLineSeries = Y.Base.create("stackedLineSeries", Y.LineSeries, [Y.Stacki
 });
 
 
-}, '@VERSION@', {"requires": ["series-stacked", "series-line"]});
+}, '3.17.2', {"requires": ["series-stacked", "series-line"]});

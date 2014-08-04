@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('tree-labelable', function (Y, NAME) {
 
 /*jshint expr:true, onevar:false */
@@ -76,4 +83,4 @@ NodeLabelable.prototype = {
 Y.Tree.Node.Labelable = NodeLabelable;
 
 
-}, '@VERSION@', {"requires": ["tree"]});
+}, '3.17.2', {"requires": ["tree"]});

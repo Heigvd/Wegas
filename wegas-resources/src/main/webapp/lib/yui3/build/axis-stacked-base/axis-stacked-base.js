@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('axis-stacked-base', function (Y, NAME) {
 
 /**
@@ -130,4 +137,4 @@ Y.StackedImpl = StackedImpl;
 Y.StackedAxisBase = Y.Base.create("stackedAxisBase", Y.NumericAxisBase, [Y.StackedImpl]);
 
 
-}, '@VERSION@', {"requires": ["axis-numeric-base"]});
+}, '3.17.2', {"requires": ["axis-numeric-base"]});
