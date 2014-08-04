@@ -38,9 +38,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this.treeView.plug(Plugin.TreeViewFilter, {
                 testFn: function(searchVal) {
                     var e = this.get("data.entity");
-                    return !(e instanceof Wegas.persistence.VariableDescriptor)
-                        || searchVal === ""
-                        || Y.Object.values(e.toJSON()).join('|').toLowerCase().indexOf(searchVal) > -1;
+                    searchVal = searchVal.trim();
+                    return searchVal === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(searchVal)).test(Y.Object.values(e.toJSON()).join('|'));
 //                            && this.get("label").toLowerCase().indexOf(Y.Lang.trim(searchVal).toLowerCase()) > -1; )
                 }
             });
@@ -117,7 +116,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         tooltip: tooltip,
                         collapsed: collapsed,
                         selected: selected,
-                        children:  this.genTreeViewElements(entity.get("items")),
+                        children: this.genTreeViewElements(entity.get("items")),
                         data: {
                             entity: entity
                         },
