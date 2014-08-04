@@ -59,6 +59,7 @@ function step(currentStep) {
     Y.Array.each(getActivitiesWithEmployeeOnDifferentNeeds(activities), function(a) {// Calculate progress for each activity
         calculateActivityProgress(a, activities);
     });
+
     Y.Array.each(getTasksByActivities(activities), function(t) {                // Get each modified task and calculate is new quality and completeness
         var oCompleteness = t.getProperty("completeness");
         t.setProperty("completeness", Math.round(calculateTaskProgress(t)));
@@ -73,13 +74,18 @@ function step(currentStep) {
  * @returns {Number}
  */
 function calculateTaskProgress(taskInst) {
-    var //reqByWorks = getRequirementsByWork(taskInst.requirements),
-        nbWork = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        }),
-        taskProgress = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.completeness * r.quantity;
-        }) / nbWork;
+    var nbWork = Y.Array.sum(taskInst.requirements, function(r) {
+        return r.quantity;
+    }),
+        reqByWork = getRequirementsByWork(taskInst.requirements),
+        taskProgress = 0,
+        work;
+
+    for (work in reqByWork) {
+        taskProgress += reqByWork[work].completeness * reqByWork[work].totalByWork;
+    }
+
+    taskProgress = taskProgress / nbWork;
     return (taskProgress > 97) ? 100 : taskProgress;                            // > 97 yes, don't frustrate the players please.
 }
 /**
@@ -182,12 +188,12 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
  * @returns {Array} an Array of Activity
  */
 function assignRessources(currentStep) {
-    //debug("assignRessources(currentStep: " + currentStep + ", currentPeriod: " + currentPeriod + ")");
+    debug("assignRessources(currentStep: " + currentStep + ", currentPeriod: " + currentPeriod + ")");
     var i, employee, activity, assignables,
         activities = [],
         employees = flattenList(Variable.findByName(gameModel, "employees")),
         period = currentPeriod + currentStep / STEPS;
-    
+
     if (!employees) {
         return [];
     }
@@ -198,9 +204,9 @@ function assignRessources(currentStep) {
             if (assignables.length > 0) {
                 activity = findLastStepCorrespondingActivity(employee,
                     assignables[0].taskDescriptor, period);                     //set corresponding past activity if it existe.
-                //debug("assignRessources(): Existing activity for " + employees[i].name + ":" + activity);
+                debug("assignRessources(): Existing activity for " + employees[i].name + ": " + activity);
                 if (!activity) {                                                // Else create it.
-                    //debug("assignRessources(): Creating new activity");
+                    debug("assignRessources(): Creating new activity");
                     activity = employee.createActivity(assignables[0].taskDescriptor);
                 }
                 var req = selectRequirementFromActivity(activity);
@@ -251,7 +257,7 @@ function selectRequirementFromActivity(activity) {
             return r.quantity;
         });
 
-    //debug("selectRequirement(" + taskInst + "," + activity.resourceInstance + ", workAs: " + workAs + ", mainSkill: " + activity.resourceInstance.mainSkill + ")");
+    debug("selectRequirement(" + taskInst + "," + activity.resourceInstance + ", workAs: " + workAs + ", mainSkill: " + activity.resourceInstance.mainSkill + ")");
     for (i = 0; i < taskInst.requirements.size(); i++) {
         req = taskInst.requirements.get(i);
         d = Math.abs(parseInt(activity.resourceInstance.mainSkillLevel) - req.level);
@@ -273,9 +279,9 @@ function selectRequirementFromActivity(activity) {
  * @returns {Activity} activity
  */
 function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
-    //debug("findLastStepCorrespondingActivity(" + employeeInst.descriptor.name + ")" + employeeInst.activities.size());
+    debug("findLastStepCorrespondingActivity(" + employeeInst.descriptor.name + ")" + employeeInst.activities.size());
     return Y.Array.find(employeeInst.activities, function(activity) {
-        return activity.taskDescriptor == taskDesc                              // If the task of activity match with the given task (same task and same employee == same activity)
+        return activity.taskDescriptor === taskDesc                              // If the task of activity match with the given task (same task and same employee == same activity)
             && period !== Math.floor(period)                                    // if it s not a new period (current step !== 0)
             && activity.time === getFloat(period - 0.1);                        // if activity was used the last step
     });
@@ -328,11 +334,11 @@ function automatedReservation() {
  */
 function isReservedToWork(employeeInst) {
     // Inactive resource never work
-    if (!employeeInst.getActive()){
+    if (!employeeInst.getActive()) {
         return false;
     }
 
-    if (!automatedReservation()){
+    if (!automatedReservation()) {
         // the resource must be reserved.
         // it means that an "editable" occupation must exists for the current time
         return Y.Array.find(employeeInst.occupations, function(o) {
@@ -417,7 +423,7 @@ function checkAssignments(employeeInst, currentStep) {
             break;
         } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
             sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.label,
-                'Je suis sensé travailler sur la tâche "' + taskDesc.label + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/>'
+                'Je suis sensé travailler sur la tâche "' + taskDesc.label + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituelles. <br/>'
                 + ' Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                 employeeName);
             assignments.remove(i);
@@ -459,7 +465,7 @@ function getPredecessorFactor(taskDesc) {
  * @returns {String} work
  */
 function selectFirstUncompletedWork(requirements, metier) {
-    //debug("selectFirstUncompletedWork(" + requirements + ", " + metier + ")");
+    debug("selectFirstUncompletedWork(" + requirements + ", " + metier + ")");
     var work, reqByWorks = getRequirementsByWork(requirements), //              // get requirements merged by kind of work.
         totalOfPersonneInTask = Y.Array.sum(requirements, function(r) {
             return r.quantity;
@@ -486,7 +492,8 @@ function getRequirementsByWork(requirements) {
     var i, req, work, works = {};
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
-        work = works[req.work] = works[req.work] || {//                         //keep an occurance of each kind of work needed
+        //keep an occurance of each kind of work needed
+        work = works[req.work] = works[req.work] || {
             maxLimit: 0,
             typesOfLevels: [],
             completeness: 0,
@@ -725,7 +732,7 @@ function getFloat(number, numberOfDigit) {
  * @param {Number} currentStep
  */
 function checkEnd(activities, currentStep) {
-    var i, employeeInst, taskInst, taskDesc, employeeName, nextWork;
+    var i, employeeInst, taskInst, taskDesc, nextWork;
     for (i = 0; i < activities.length; i++) {
         taskDesc = activities[i].taskDescriptor;
         taskInst = taskDesc.getInstance(self);
@@ -737,7 +744,7 @@ function checkEnd(activities, currentStep) {
             if (activities[i].requirement.work != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.label + ' en partie terminée',
                     'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label
-                    + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeInst.mainSkill,
+                    + '. <br/> Salutations <br/>' + employeeInst.descriptor.label + '<br/> ' + employeeInst.mainSkill,
                     employeeInst.descriptor.label);
                 //sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.label + ' en partie terminée',
                 //        'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label + '. Je passe à ' + nextWork 
