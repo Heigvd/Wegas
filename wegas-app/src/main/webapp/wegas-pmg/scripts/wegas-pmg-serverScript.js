@@ -35,6 +35,7 @@ function nextPeriod() {
         if (checkEndOfProject()) {                                              // If the project is over
             currentPhase.add(self, 1);
             Event.fire("nextPhase");
+            Event.fire("nextWeek");
         } else {
             Event.fire("nextWeek");
         }
@@ -47,7 +48,8 @@ function nextPeriod() {
             Variable.findByName(gm, 'taskPage').setValue(self, 12);
         }
         Event.fire("nextPhase");
-
+        Event.fire("nextWeek");
+        
     } else {                                                                    // Otherwise pass to next period
         currentPeriod.add(self, 1);
         Event.fire("nextWeek");
