@@ -21,36 +21,33 @@ YUI.add('wegas-sharerole', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                    e = this.get("entity"),
-                    //gameModel = (e instanceof Y.Wegas.persistence.Game) ? Y.Wegas.Facade.GameModel.cache.findById(e.get("gameModelId")) : e,
-                    visibilityChoices = [
-                        //{value: 'Private', label: 'Only people in the list can join'},
-                        {value: 'Link', label: 'Anyone with the link can join'},
-                        {value: 'Public', label: 'Everybody can join'}
-                    ];
-
+                e = this.get("entity");
+            
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
-                    : "g" + e.get("id");
+                : "g" + e.get("id");
 
             this.visibility = new Y.inputEx.SelectField({
                 label: 'Accessibility',
-                choices: visibilityChoices,
+                choices: [
+                    //{value: 'Private', label: 'Only people in the list can join'},
+                    {value: 'Link', label: 'Anyone with the link can join'},
+                    {value: 'Public', label: 'Everybody can join'}
+                ],
                 parentEl: cb
             });
-            (new Y.Node(this.visibility.divEl)).addClass("wegas-advanced-feature");// @fixme
+            Y.one(this.visibility.divEl).addClass("wegas-advanced-feature");    // @Hack Hide this field, not available for regular users
+            //this.requestPermissions();                                        // and do not request permissions
 
             this.link = new Y.inputEx.StringField({
                 wrapperClassName: "inputEx-fieldWrapper wegas-link",
                 parentEl: cb,
                 description: '' +
-                        "Players directly join the game by using the <b>link</b>.<br />"
-                        + "The url can be used by an unlimited number of players.",
+                    "Players directly join the game by using the <b>link</b>.<br />"
+                    + "The url can be used by an unlimited number of players.",
                 value: Y.Wegas.app.get("base") + "game.html?token=" + this.get("entity").get("token")
             });
 
             this.syncLinkVisibility();
-            this.requestPermissions();
-
 
             this.set("visible", false);                                         // @HACK Visibility depends on a node in the parent's tree 
             Y.on("available", function(e, n) {
@@ -102,9 +99,9 @@ YUI.add('wegas-sharerole', function(Y) {
                     success: Y.bind(function(e) {
                         Y.Array.each(e.response.results.entities, function(role) {
                             if (role.get('val').name === this.get('role')) {
-                                Y.Array.forEach(role.get('val').permissions, function(resultPerm) {
+                                Y.Array.each(role.get('val').permissions, function(resultPerm) {
                                     var splitedPerm = resultPerm.split(":");
-                                    Y.Array.forEach(this.get('permsList'), function(permFromList) {
+                                    Y.Array.each(this.get('permsList'), function(permFromList) {
                                         if (splitedPerm[0] + ":" + splitedPerm[1] === permFromList.value) {
                                             this.visibility.setValue(permFromList.name, false);
                                             this.syncLinkVisibility();
