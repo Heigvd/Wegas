@@ -39,7 +39,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 testFn: function(searchVal) {
                     var e = this.get("data.entity");
                     searchVal = searchVal.trim();
-                    return searchVal === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(searchVal)).test(Y.Object.values(e.toJSON()).join('|'));
+                    return searchVal === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 //                            && this.get("label").toLowerCase().indexOf(Y.Lang.trim(searchVal).toLowerCase()) > -1; )
                 }
             });
