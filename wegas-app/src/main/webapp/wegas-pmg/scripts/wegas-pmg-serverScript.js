@@ -27,7 +27,7 @@ function nextPeriod() {
     
     Variable.find(gm, "currentTime").add(self, 1);
 
-//    allPhaseQuestionAnswered();                                               // First Check if all questions are answered
+    allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
 
     if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
         runSimulation();
@@ -73,8 +73,12 @@ function checkEndOfProject() {
  * Check if all questions from a phase are answered
  */
 function allPhaseQuestionAnswered() {
-    var i, question, questions;
-
+    var i, question, questions, forceQuestion = Variable.findByName(gm, "forceQuestionReplies").getValue(self);
+    
+    if (!forceQuestion) {
+        return;
+    }
+    
     try {
         questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self) - 1)
             .items.get(getCurrentPeriod().getValue(self) - 1).items;
