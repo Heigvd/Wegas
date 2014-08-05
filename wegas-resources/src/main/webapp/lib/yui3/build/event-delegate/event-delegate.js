@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-delegate', function (Y, NAME) {
 
 /**
@@ -344,4 +351,4 @@ delegate._applyFilter = function (filter, args, ce) {
 Y.delegate = Y.Event.delegate = delegate;
 
 
-}, '@VERSION@', {"requires": ["node-base"]});
+}, '3.17.2', {"requires": ["node-base"]});

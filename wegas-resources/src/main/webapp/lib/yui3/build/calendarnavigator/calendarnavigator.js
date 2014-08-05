@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('calendarnavigator', function (Y, NAME) {
 
 /**
@@ -95,9 +102,7 @@ CalendarNavigator.CALENDARNAV_STRINGS = {
     * @static
     */
 CalendarNavigator.PREV_MONTH_CONTROL_TEMPLATE = '<a class="yui3-u {prev_month_class}" role="button" aria-label="{prev_month_arialabel}" ' +
-                                                    'tabindex="{control_tabindex}">' +
-                                                    "<span>&lt;</span>" +
-                                                '</a>';
+                                                    'tabindex="{control_tabindex}" />';
    /**
     * The template for the calendar navigator next month control.
     * @property NEXT_MONTH_CONTROL_TEMPLATE
@@ -107,9 +112,7 @@ CalendarNavigator.PREV_MONTH_CONTROL_TEMPLATE = '<a class="yui3-u {prev_month_cl
     * @static
     */
 CalendarNavigator.NEXT_MONTH_CONTROL_TEMPLATE = '<a class="yui3-u {next_month_class}" role="button" aria-label="{next_month_arialabel}" ' +
-                                                    'tabindex="{control_tabindex}">' +
-                                                    "<span>&gt;</span>" +
-                                                '</a>';
+                                                    'tabindex="{control_tabindex}" />';
 
 
 Y.extend(CalendarNavigator, Y.Plugin.Base, {
@@ -298,4 +301,4 @@ Y.extend(CalendarNavigator, Y.Plugin.Base, {
 Y.namespace("Plugin").CalendarNavigator = CalendarNavigator;
 
 
-}, '@VERSION@', {"requires": ["plugin", "classnamemanager", "datatype-date", "node"], "skinnable": true});
+}, '3.17.2', {"requires": ["plugin", "classnamemanager", "datatype-date", "node"], "skinnable": true});

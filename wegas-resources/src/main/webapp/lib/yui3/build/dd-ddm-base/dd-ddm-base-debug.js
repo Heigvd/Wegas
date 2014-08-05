@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dd-ddm-base', function (Y, NAME) {
 
 
@@ -81,7 +88,7 @@ YUI.add('dd-ddm-base', function (Y, NAME) {
         * Handler for dragMode attribute setter.
         * @private
         * @method _setDragMode
-        * @param String/Number The Number value or the String for the DragMode to default all future drag instances to.
+        * @param {String|Number} mode The Number value or the String for the DragMode to default all future drag instances to.
         * @return Number The Mode to be set
         */
         _setDragMode: function(mode) {
@@ -209,7 +216,6 @@ YUI.add('dd-ddm-base', function (Y, NAME) {
         /**
         * Method will forcefully stop a drag operation. For example calling this from inside an ESC keypress handler will stop this drag.
         * @method stopDrag
-        * @return {Self}
         * @chainable
         */
         stopDrag: function() {
@@ -230,7 +236,7 @@ YUI.add('dd-ddm-base', function (Y, NAME) {
         * Internal listener for the mousemove on Document. Checks if the shim is in place to only call _move once per mouse move
         * @private
         * @method _docMove
-        * @param {Event.Facade} ev The Dom mousemove Event
+        * @param {EventFacade} ev The Dom mousemove Event
         */
         _docMove: function(ev) {
             if (!this._shimming) {
@@ -241,7 +247,7 @@ YUI.add('dd-ddm-base', function (Y, NAME) {
         * Internal listener for the mousemove DOM event to pass to the Drag's move method.
         * @private
         * @method _move
-        * @param {Event.Facade} ev The Dom mousemove Event
+        * @param {EventFacade} ev The Dom mousemove Event
         */
         _move: function(ev) {
             if (this.activeDrag) {
@@ -372,4 +378,4 @@ YUI.add('dd-ddm-base', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["node", "base", "yui-throttle", "classnamemanager"]});
+}, '3.17.2', {"requires": ["node", "base", "yui-throttle", "classnamemanager"]});

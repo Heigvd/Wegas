@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('calendar', function (Y, NAME) {
 
 /**
@@ -607,4 +614,4 @@ Y.Calendar = Y.extend(Calendar, Y.CalendarBase, {
 });
 
 
-}, '@VERSION@', {"requires": ["calendar-base", "calendarnavigator"], "skinnable": true});
+}, '3.17.2', {"requires": ["calendar-base", "calendarnavigator"], "skinnable": true});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('matrix', function (Y, NAME) {
 
 /**
@@ -306,7 +313,7 @@ var MatrixUtil = {
          * Breaks up a 2d transform matrix into a series of transform operations.
          *
          * @method decompose
-         * @param {Array} 3x3 matrix array
+         * @param {Array} matrix A 3x3 multidimensional array
          * @return Array
          */
         decompose: function(matrix)
@@ -929,4 +936,4 @@ Matrix.prototype = {
 Y.Matrix = Matrix;
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.17.2', {"requires": ["yui-base"]});

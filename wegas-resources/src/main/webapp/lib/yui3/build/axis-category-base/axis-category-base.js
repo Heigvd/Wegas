@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('axis-category-base', function (Y, NAME) {
 
 /**
@@ -26,6 +33,18 @@ function CategoryImpl()
 CategoryImpl.NAME = "categoryImpl";
 
 CategoryImpl.ATTRS = {
+    /**
+     * Pattern used by the `labelFunction` to format a label. The default `labelFunction` values for
+     * `CategoryAxis` and `CategoryAxisBase` do not accept a format object. This value can be used by
+     * a custom method.
+     *
+     * @attribute labelFormat
+     * @type Object
+     */
+    labelFormat: {
+        value: null
+    },
+
     /**
      * Determines whether and offset is automatically calculated for the edges of the axis.
      *
@@ -170,7 +189,7 @@ CategoryImpl.prototype = {
      * @method _getCoordFromValue
      * @param {Number} min The minimum for the axis.
      * @param {Number} max The maximum for the axis.
-     * @param {length} length The distance that the axis spans.
+     * @param {Number} length The distance that the axis spans.
      * @param {Number} dataValue A value used to ascertain the coordinate.
      * @param {Number} offset Value in which to offset the coordinates.
      * @param {Boolean} reverse Indicates whether the coordinates should start from
@@ -232,4 +251,4 @@ Y.CategoryImpl = CategoryImpl;
 Y.CategoryAxisBase = Y.Base.create("categoryAxisBase", Y.AxisBase, [Y.CategoryImpl]);
 
 
-}, '@VERSION@', {"requires": ["axis-base"]});
+}, '3.17.2', {"requires": ["axis-base"]});

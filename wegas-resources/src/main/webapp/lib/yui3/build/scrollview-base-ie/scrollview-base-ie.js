@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('scrollview-base-ie', function (Y, NAME) {
 
 /**
@@ -52,4 +59,4 @@ Y.mix(Y.ScrollView.prototype, {
 }, true);
 
 
-}, '@VERSION@', {"requires": ["scrollview-base"]});
+}, '3.17.2', {"requires": ["scrollview-base"]});

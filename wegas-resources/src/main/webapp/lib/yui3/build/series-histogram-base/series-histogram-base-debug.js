@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-histogram-base', function (Y, NAME) {
 
 /**
@@ -242,4 +249,4 @@ Histogram.prototype = {
 Y.Histogram = Histogram;
 
 
-}, '@VERSION@', {"requires": ["series-cartesian", "series-plot-util"]});
+}, '3.17.2', {"requires": ["series-cartesian", "series-plot-util"]});

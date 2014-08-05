@@ -28,6 +28,12 @@
                             },
                             Game: {
                                 source: "rest/GameModel/Game",
+                                plugins: [{
+                                        fn: "GameCache"
+                                    }]
+                            },
+                            PublicGames: {
+                                source: "rest/Extended/PublicGames",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "GameCache"

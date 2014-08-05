@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-cartesian', function (Y, NAME) {
 
 /**
@@ -572,8 +579,14 @@ Y.CartesianSeries = Y.Base.create("cartesianSeries", Y.SeriesBase, [], {
             {
                 this._yDataUpdateHandle.detach();
             }
-            this._xAxisChangeHandle.detach();
-            this._yAxisChangeHandle.detach();
+            if(this._xAxisChangeHandle)
+            {
+                this._xAxisChangeHandle.detach();
+            }
+            if(this._yAxisChangeHandle)
+            {
+                this._yAxisChangeHandle.detach();
+            }
         }
     }
         /**
@@ -938,4 +951,4 @@ Y.CartesianSeries = Y.Base.create("cartesianSeries", Y.SeriesBase, [], {
 });
 
 
-}, '@VERSION@', {"requires": ["series-base"]});
+}, '3.17.2', {"requires": ["series-base"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('lazy-model-list', function (Y, NAME) {
 
 /**
@@ -515,4 +522,4 @@ Y.LazyModelList = Y.Base.create('lazyModelList', Y.ModelList, [], {
 });
 
 
-}, '@VERSION@', {"requires": ["model-list"]});
+}, '3.17.2', {"requires": ["model-list"]});

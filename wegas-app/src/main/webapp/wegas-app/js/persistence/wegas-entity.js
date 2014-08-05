@@ -319,7 +319,7 @@ YUI.add("wegas-entity", function(Y) {
                                 }, {
                                     type: "OpenEntityButton",
                                     url: "rest/Export/GameModel/{id}",
-                                    label: "Export"
+                                    label: "Json"
                                 }]
                         }
                     }]
@@ -543,6 +543,9 @@ YUI.add("wegas-entity", function(Y) {
                                     permsList: [{
                                             name: "Admin",
                                             value: "Game:View,Edit"
+                                        }, {
+                                            name: "Play",
+                                            value: "Game:View"
                                         }]
                                 }]
                         }

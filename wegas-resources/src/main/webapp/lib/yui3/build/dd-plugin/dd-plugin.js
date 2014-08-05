@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dd-plugin', function (Y, NAME) {
 
 
@@ -197,4 +204,4 @@ YUI.add('dd-plugin', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"optional": ["dd-constrain", "dd-proxy"], "requires": ["dd-drag"]});
+}, '3.17.2', {"optional": ["dd-constrain", "dd-proxy"], "requires": ["dd-drag"]});

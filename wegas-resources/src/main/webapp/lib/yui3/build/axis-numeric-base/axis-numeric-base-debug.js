@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('axis-numeric-base', function (Y, NAME) {
 
 /**
@@ -650,7 +657,7 @@ NumericImpl.prototype = {
      * @method _getCoordFromValue
      * @param {Number} min The minimum for the axis.
      * @param {Number} max The maximum for the axis.
-     * @param {length} length The distance that the axis spans.
+     * @param {Number} length The distance that the axis spans.
      * @param {Number} dataValue A value used to ascertain the coordinate.
      * @param {Number} offset Value in which to offset the coordinates.
      * @param {Boolean} reverse Indicates whether the coordinates should start from
@@ -718,4 +725,4 @@ Y.NumericImpl = NumericImpl;
 Y.NumericAxisBase = Y.Base.create("numericAxisBase", Y.AxisBase, [Y.NumericImpl]);
 
 
-}, '@VERSION@', {"requires": ["axis-base"]});
+}, '3.17.2', {"requires": ["axis-base"]});

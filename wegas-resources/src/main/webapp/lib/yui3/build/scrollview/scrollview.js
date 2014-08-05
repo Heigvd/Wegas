@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('scrollview', function (Y, NAME) {
 
 /**
@@ -18,4 +25,4 @@ YUI.add('scrollview', function (Y, NAME) {
 Y.Base.plug(Y.ScrollView, Y.Plugin.ScrollViewScrollbars);
 
 
-}, '@VERSION@', {"requires": ["scrollview-base", "scrollview-scrollbars"]});
+}, '3.17.2', {"requires": ["scrollview-base", "scrollview-scrollbars"]});

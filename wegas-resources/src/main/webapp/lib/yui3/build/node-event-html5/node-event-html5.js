@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('node-event-html5', function (Y, NAME) {
 
 /**
@@ -49,4 +56,4 @@ Y.mix(Y.Node.DOM_EVENTS, {
 });
 
 
-}, '@VERSION@', {"requires": ["node-base"]});
+}, '3.17.2', {"requires": ["node-base"]});

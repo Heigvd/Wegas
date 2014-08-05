@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('resize-plugin', function (Y, NAME) {
 
 /**
@@ -205,4 +212,4 @@ var ResizePlugin = function(config) {
         Y.Plugin.Resize = ResizePlugin;
 
 
-}, '@VERSION@', {"requires": ["resize-base", "plugin"], "optional": ["resize-constrain"]});
+}, '3.17.2', {"requires": ["resize-base", "plugin"], "optional": ["resize-constrain"]});

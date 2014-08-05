@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-areaspline', function (Y, NAME) {
 
 /**
@@ -60,4 +67,4 @@ Y.AreaSplineSeries = Y.Base.create("areaSplineSeries", Y.AreaSeries, [Y.CurveUti
 
 
 
-}, '@VERSION@', {"requires": ["series-area", "series-curve-util"]});
+}, '3.17.2', {"requires": ["series-area", "series-curve-util"]});

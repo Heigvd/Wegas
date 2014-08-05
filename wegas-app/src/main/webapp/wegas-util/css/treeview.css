@@ -172,9 +172,13 @@
 .yui3-treenode-collapsed>ul:empty::before{
     content: "";
 }
-.yui3-treeview-content .filter-sub-match > .content-header{
-    max-height: 50px;
-    padding: 2px 27px 2px 2px;
+/** FILTER **/
+.yui3-treeview-content .filter-sub-match > .content-header,
+.yui3-treeview-content .filter-match .filter-no-match > .content-header,
+.yui3-treeview-content .filter-match .filter-no-match > div > .content-header{
+    /*    max-height: 50px;
+        padding: 2px 27px 2px 2px;*/
+    max-height: none;
     opacity: .6;
 }
 .yui3-treeview-content .filter-match > .content-header,

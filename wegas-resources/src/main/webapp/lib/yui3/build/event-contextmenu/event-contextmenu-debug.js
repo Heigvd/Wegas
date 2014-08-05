@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-contextmenu', function (Y, NAME) {
 
 /**
@@ -189,4 +196,4 @@ conf.detachDelegate = conf.detach;
 Event.define("contextmenu", conf, true);
 
 
-}, '@VERSION@', {"requires": ["event-synthetic", "dom-screen"]});
+}, '3.17.2', {"requires": ["event-synthetic", "dom-screen"]});

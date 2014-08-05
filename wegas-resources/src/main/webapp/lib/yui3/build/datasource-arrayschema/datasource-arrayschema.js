@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datasource-arrayschema', function (Y, NAME) {
 
 /**
@@ -103,4 +110,4 @@ Y.extend(DataSourceArraySchema, Y.Plugin.Base, {
 Y.namespace('Plugin').DataSourceArraySchema = DataSourceArraySchema;
 
 
-}, '@VERSION@', {"requires": ["datasource-local", "plugin", "dataschema-array"]});
+}, '3.17.2', {"requires": ["datasource-local", "plugin", "dataschema-array"]});

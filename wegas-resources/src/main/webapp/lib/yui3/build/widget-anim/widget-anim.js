@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('widget-anim', function (Y, NAME) {
 
 /**
@@ -254,4 +261,4 @@ Y.extend(WidgetAnim, Y.Plugin.Base, {
 Y.namespace("Plugin").WidgetAnim = WidgetAnim;
 
 
-}, '@VERSION@', {"requires": ["anim-base", "plugin", "widget"]});
+}, '3.17.2', {"requires": ["anim-base", "plugin", "widget"]});
