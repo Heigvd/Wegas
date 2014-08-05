@@ -45,9 +45,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             cfg = Y.mix(cfg, {//                                                // Add cfg default values
                 width: "100%"
             });
-            this.table = new Y.DataTable(cfg);                                  // Render datatable
-            this.table.render(this.get(CONTENTBOX));
-            this.table.set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
+            this.table = new Y.DataTable(cfg)                                   // Render datatable
+                .render(this.get(CONTENTBOX))
+                .set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
 
@@ -528,10 +528,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.applyFilters();
         },
         applyFilters: function() {
-            var filter = this.filterValue;
+            var filter = Y.Lang.trim(this.filterValue);
             this.get(HOST).table.set('data', this.data.filter(function(item) {  // Update the records in the table's Recordset with the results of
                 return filter === ""
-                    || Y.Object.values(item.toJSON()).join('|').search("/" + filter + "/i") > -1;// filtering the full data set by a substring search in all fields
+                    || new RegExp(filter, "i").test(Y.Object.values(item.toJSON()).join('|'));// filtering the full data set by a substring search in all fields
             }));
         }
     }, {
