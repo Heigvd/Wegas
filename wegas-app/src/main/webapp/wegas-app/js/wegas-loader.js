@@ -561,6 +561,10 @@ YUI().use(function(Y) {
                 path: "js/plugin/wegas-preview-fullscreen-min.js",
                 ws_provides: "PreviewFullScreen"
             },
+            'wegas-pageeditor-fullwidthtab': {
+                path: "js/plugin/wegas-pageeditor-fullwidthtab-min.js",
+                ws_provides: "PageeditorFullWidthTab"
+            },
             "wegas-console": {
                 path: "js/widget/wegas-console-min.js",
                 requires: "wegas-inputex-ace",
