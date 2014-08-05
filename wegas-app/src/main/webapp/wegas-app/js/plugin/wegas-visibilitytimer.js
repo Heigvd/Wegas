@@ -12,7 +12,7 @@
 YUI.add("wegas-visibilitytimer", function(Y) {
     "use strict";
     var HIDDENNODECSSCLASS = "timed-hidden-node",
-            visibilityPlugin;
+        visibilityPlugin;
 
     visibilityPlugin = function() {
         visibilityPlugin.superclass.constructor.apply(this, arguments);
