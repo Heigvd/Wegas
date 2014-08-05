@@ -975,6 +975,7 @@
             },
             {
                 "type": "InboxDisplay",
+                "template": "clean",
                 "variable": {
                     "name": "history"
                 }
