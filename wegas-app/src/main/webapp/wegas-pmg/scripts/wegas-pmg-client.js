@@ -372,3 +372,21 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
             }]
     }
 }, true);
+
+// Load game Properties page
+var centerTab = Y.Widget.getByNode("#centerTabView");
+if (centerTab) {
+    Y.use('wegas-pageeditor-fullwidthtab', function(Y) {
+        centerTab.add({
+            label: "Properties",
+            children: [{
+                    type: "PageLoader",
+                    pageLoaderId: "properties",
+                    defaultPageId: 16
+                }]
+//            plugins: [{
+//                    fn: "PageeditorFullWidthTab"
+//                }]
+        });
+    });
+}

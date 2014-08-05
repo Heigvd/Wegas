@@ -2365,11 +2365,53 @@
                     },
                     "scope": {
                         "@class": "GameScope",
-                        "broadcastScope": "TeamScope"
+                        "broadcastScope": "GameScope"
                     },
                     "minValue": 1,
                     "maxValue": null,
                     "defaultValue": 1
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "autoReservation",
+                    "label": "Auto reservation",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    }
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "forceQuestionReplies",
+                    "label": "Force question replies",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    }
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "evm",
+                    "label": "EVM",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    }
                 }
             ]
         }
