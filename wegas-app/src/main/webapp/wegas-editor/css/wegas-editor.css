@@ -429,6 +429,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     background: transparent url(../../wegas-editor/images/search.png) 0px 5px no-repeat;
     padding-top: 1px;
 }
+.wegas-filter-input input {
+    border: 1px solid #ededed;
+    padding: 3px;
+}
 
 /** Uservoice widget */
 .yui3-skin-sam .uv-icon {

@@ -2427,9 +2427,10 @@
     },
     "properties": {
         "freeForAll": false,
-        "pagesUri": "wegas-pmg/db/wegas-pmg-pages-simplePmg.json?",
+        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json?",
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
         "websocket": "",
+        "clientScriptUri": "wegas-pmg/js/wegas-pmg-loader.js",
         "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js;wegas-pmg/scripts/wegas-pmg-server-test.js",
         "imageUri": "",
         "iconUri": ""
