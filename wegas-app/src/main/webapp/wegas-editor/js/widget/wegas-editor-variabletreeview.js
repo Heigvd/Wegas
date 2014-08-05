@@ -39,10 +39,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 testFn: function(searchVal) {
                     var e = this.get("data.entity");
                     searchVal = searchVal.trim();
-                    return searchVal === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
-//                            && this.get("label").toLowerCase().indexOf(Y.Lang.trim(searchVal).toLowerCase()) > -1; )
+                    return searchVal === ""
+                        || (e instanceof Wegas.persistence.VariableDescriptor)
+                        && (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
                 }
             });
+
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
                         nodeClass: "wegas-editor-questionitem",
@@ -56,7 +58,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 var entity = e.dragWidget.get("data.entity"),
                     dropEntity = e.dropWidget.get("data.entity");
 
-                Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index);// call facade method
+                Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index);  // call facade method
             });
         },
         //
@@ -96,7 +98,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         type: 'TreeNode',
                         label: text,
                         tooltip: tooltip,
-                        children: this.genScopeTreeViewElements(entity),
+                        children: (!collapsed) ? this.genScopeTreeViewElements(entity) : [],
                         //children: (els.length >= 1) ? els : null, //no children now, loaded on expands
                         //children: null, //no children now, loaded on expands
                         data: {
@@ -130,7 +132,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         tooltip: tooltip,
                         collapsed: collapsed,
                         selected: selected,
-                        children: this.genTreeViewElements(entity.get("items")),
+                        //children: this.genTreeViewElements(entity.get("items")),
+                        children: (!collapsed) ? this.genTreeViewElements(entity.get("items")) : [],
                         data: {
                             entity: entity
                         },
@@ -320,10 +323,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 id = entity.get(ID);
 
             if (entity instanceof Wegas.persistence.ListDescriptor) {
-                //if (node.size() > 0) {
-                //    return;
-                //}
-                //node.add(this.get("host").genTreeViewElements(entity.get("items")));
+                if (node.size() > 0) {
+                    return;
+                }
+                node.add(this.get("host").genTreeViewElements(entity.get("items")));
             } else if (entity instanceof Wegas.persistence.VariableDescriptor
                 && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
 
