@@ -141,9 +141,6 @@
     z-index:3;
 }
 .wegas-fileexplorer > .wegas-toolbar .treeview-search{
-    margin: 1px 4px;
-    vertical-align: top;
-    padding: 2px;
 }
 .wegas-fileexplorer-content > .fileexplorer-footer{
     position: absolute;

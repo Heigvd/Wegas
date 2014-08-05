@@ -21,7 +21,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         //InitialState modification
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
-        CONTENT_TEMPLATE: "<div><div class='scrollable'><div class='sm-zoom'></div></div></div>",
+        CONTENT_TEMPLATE: "<div>"
+            + "<div class='wegas-statemachineviewer-legend'><div class='legend-initial-state'></div><div class='legend-currentState'></div></div>"
+            + "<div class='scrollable'><div class='sm-zoom'></div></div></div>",
         /**
          * 
          */
@@ -80,7 +82,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             var key, cb = this.get(CONTENT_BOX),
                 availableStates = this.get("availableStates");
 
-            //this.events.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.events.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
 
             cb.on("mousedown", function() {
                 this.one(".scrollable").addClass("mousedown");
@@ -130,9 +132,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.scrollView.set("scrollY", 0);
             }, this);
         },
+        syncUI: function() {
+            this.highlightCurrentState();
+        },
         destructor: function() {
-            var i;
-            for (i in this.events) {
+            for (var i in this.events) {
                 try {
                     this.events[i].detach();
                 } catch (e) {

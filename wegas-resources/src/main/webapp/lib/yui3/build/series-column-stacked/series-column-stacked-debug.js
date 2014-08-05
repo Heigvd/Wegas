@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-column-stacked', function (Y, NAME) {
 
 /**
@@ -348,4 +355,4 @@ Y.StackedColumnSeries = Y.Base.create("stackedColumnSeries", Y.ColumnSeries, [Y.
 
 
 
-}, '@VERSION@', {"requires": ["series-stacked", "series-column"]});
+}, '3.17.2', {"requires": ["series-stacked", "series-column"]});

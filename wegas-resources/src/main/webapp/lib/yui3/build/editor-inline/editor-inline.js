@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('editor-inline', function (Y, NAME) {
 
 /**
@@ -28,4 +35,4 @@ Y.extend(InlineEditor, Y.EditorBase, {
 
 Y.InlineEditor = InlineEditor;
 
-}, '@VERSION@', {"requires": ["editor-base", "content-editable"]});
+}, '3.17.2', {"requires": ["editor-base", "content-editable"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('intl', function (Y, NAME) {
 
 var _mods = {},
@@ -147,4 +154,4 @@ Y.augment(Y.Intl, Y.EventTarget);
 Y.Intl.publish("intl:langChange", {emitFacade:true});
 
 
-}, '@VERSION@', {"requires": ["intl-base", "event-custom"]});
+}, '3.17.2', {"requires": ["intl-base", "event-custom"]});

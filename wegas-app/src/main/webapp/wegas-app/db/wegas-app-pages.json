@@ -4,10 +4,8 @@
     },
     "UserPreferences": {
         "type": "Form",
-        "plugins": [
-            {
+        "plugins": [{
                 "fn": "UserPreferences"
-            }
-        ]
+            }]
     }
 }

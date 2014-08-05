@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('highlight-accentfold', function (Y, NAME) {
 
 /**
@@ -141,4 +148,4 @@ Highlight = Y.mix(Y.Highlight, {
 });
 
 
-}, '@VERSION@', {"requires": ["highlight-base", "text-accentfold"]});
+}, '3.17.2', {"requires": ["highlight-base", "text-accentfold"]});

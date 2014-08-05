@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('editor-para-base', function (Y, NAME) {
 
 
@@ -129,4 +136,4 @@ YUI.add('editor-para-base', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["editor-base"]});
+}, '3.17.2', {"requires": ["editor-base"]});

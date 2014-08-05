@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-spline', function (Y, NAME) {
 
 /**
@@ -79,4 +86,4 @@ Y.SplineSeries = Y.Base.create("splineSeries",  Y.LineSeries, [Y.CurveUtil, Y.Li
 
 
 
-}, '@VERSION@', {"requires": ["series-line", "series-curve-util"]});
+}, '3.17.2', {"requires": ["series-line", "series-curve-util"]});

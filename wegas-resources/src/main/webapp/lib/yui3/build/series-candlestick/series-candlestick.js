@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-candlestick', function (Y, NAME) {
 
 /**
@@ -311,4 +318,4 @@ Y.extend(CandlestickSeries, Y.RangeSeries, {
 Y.CandlestickSeries = CandlestickSeries;
 
 
-}, '@VERSION@', {"requires": ["series-range"]});
+}, '3.17.2', {"requires": ["series-range"]});

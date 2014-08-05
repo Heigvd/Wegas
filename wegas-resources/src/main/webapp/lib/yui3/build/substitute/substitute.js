@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('substitute', function (Y, NAME) {
 
 /**
@@ -167,4 +174,4 @@ to `Y.dump(...)`, e.g. "{someObject 2}".  See the
 
 
 
-}, '@VERSION@', {"requires": ["yui-base"], "optional": ["dump"]});
+}, '3.17.2', {"requires": ["yui-base"], "optional": ["dump"]});

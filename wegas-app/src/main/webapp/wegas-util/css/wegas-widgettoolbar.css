@@ -31,6 +31,7 @@
     position: relative;
     overflow: hidden;
     padding: 0.5em;
+    word-wrap: none;
 }
 .wegas-toolbar-panel {
     overflow: hidden;

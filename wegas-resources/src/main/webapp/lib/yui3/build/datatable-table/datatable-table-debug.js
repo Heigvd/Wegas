@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-table', function (Y, NAME) {
 
 /**
@@ -33,21 +40,21 @@ Y.namespace('DataTable').TableView = Y.Base.create('table', Y.View, [], {
     attribute is set.
 
     @property CAPTION_TEMPLATE
-    @type {HTML}
-    @default '<caption class="{className}"/>'
+    @type {String}
+    @default '<caption class="{className}"></caption>'
     @since 3.6.0
     **/
-    CAPTION_TEMPLATE: '<caption class="{className}"/>',
+    CAPTION_TEMPLATE: '<caption class="{className}"></caption>',
 
     /**
     The HTML template used to create the table Node.
 
     @property TABLE_TEMPLATE
-    @type {HTML}
-    @default '<table cellspacing="0" class="{className}"/>'
+    @type {String}
+    @default '<table cellspacing="0" class="{className}"></table>'
     @since 3.6.0
     **/
-    TABLE_TEMPLATE  : '<table cellspacing="0" class="{className}"/>',
+    TABLE_TEMPLATE  : '<table cellspacing="0" class="{className}"></table>',
 
     /**
     The object or instance of the class assigned to `bodyView` that is
@@ -499,7 +506,6 @@ Y.namespace('DataTable').TableView = Y.Base.create('table', Y.View, [], {
     Creates the UI in the configured `container`.
 
     @method render
-    @return {TableView}
     @chainable
     **/
     render: function () {
@@ -524,7 +530,7 @@ Y.namespace('DataTable').TableView = Y.Base.create('table', Y.View, [], {
     value.  Empty values result in the caption being removed.
 
     @method _uiSetCaption
-    @param {HTML} htmlContent The content to populate the table caption
+    @param {String} htmlContent The content to populate the table caption
     @protected
     @since 3.5.0
     **/
@@ -753,4 +759,4 @@ Y.namespace('DataTable').TableView = Y.Base.create('table', Y.View, [], {
 
 
 
-}, '@VERSION@', {"requires": ["datatable-core", "datatable-head", "datatable-body", "view", "classnamemanager"]});
+}, '3.17.2', {"requires": ["datatable-core", "datatable-head", "datatable-body", "view", "classnamemanager"]});

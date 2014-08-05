@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('exec-command', function (Y, NAME) {
 
 
@@ -169,13 +176,13 @@ YUI.add('exec-command', function (Y, NAME) {
             },
             /**
             * Static object literal of execCommand overrides
-            * @property COMMANDS
+            * @class Plugin.ExecCommand.COMMANDS
             * @static
             */
             COMMANDS: {
                 /**
                 * Wraps the content with a new element of type (tag)
-                * @method COMMANDS.wrap
+                * @method wrap
                 * @static
                 * @param {String} cmd The command executed: wrap
                 * @param {String} tag The tag to wrap the selection with
@@ -187,7 +194,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Inserts the provided HTML at the cursor, should be a single element.
-                * @method COMMANDS.inserthtml
+                * @method inserthtml
                 * @static
                 * @param {String} cmd The command executed: inserthtml
                 * @param {String} html The html to insert
@@ -203,7 +210,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Inserts the provided HTML at the cursor, and focuses the cursor afterwards.
-                * @method COMMANDS.insertandfocus
+                * @method insertandfocus
                 * @static
                 * @param {String} cmd The command executed: insertandfocus
                 * @param {String} html The html to insert
@@ -223,7 +230,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Inserts a BR at the current cursor position
-                * @method COMMANDS.insertbr
+                * @method insertbr
                 * @static
                 * @param {String} cmd The command executed: insertbr
                 */
@@ -271,7 +278,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Inserts an image at the cursor position
-                * @method COMMANDS.insertimage
+                * @method insertimage
                 * @static
                 * @param {String} cmd The command executed: insertimage
                 * @param {String} img The url of the image to be inserted
@@ -282,7 +289,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Add a class to all of the elements in the selection
-                * @method COMMANDS.addclass
+                * @method addclass
                 * @static
                 * @param {String} cmd The command executed: addclass
                 * @param {String} cls The className to add
@@ -294,7 +301,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Remove a class from all of the elements in the selection
-                * @method COMMANDS.removeclass
+                * @method removeclass
                 * @static
                 * @param {String} cmd The command executed: removeclass
                 * @param {String} cls The className to remove
@@ -306,7 +313,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Adds a forecolor to the current selection, or creates a new element and applies it
-                * @method COMMANDS.forecolor
+                * @method forecolor
                 * @static
                 * @param {String} cmd The command executed: forecolor
                 * @param {String} val The color value to apply
@@ -338,7 +345,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Adds a background color to the current selection, or creates a new element and applies it
-                * @method COMMANDS.backcolor
+                * @method backcolor
                 * @static
                 * @param {String} cmd The command executed: backcolor
                 * @param {String} val The color value to apply
@@ -374,7 +381,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Sugar method, calles backcolor
-                * @method COMMANDS.hilitecolor
+                * @method hilitecolor
                 * @static
                 * @param {String} cmd The command executed: backcolor
                 * @param {String} val The color value to apply
@@ -385,7 +392,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Adds a font name to the current selection, or creates a new element and applies it
-                * @method COMMANDS.fontname2
+                * @method fontname2
                 * @deprecated
                 * @static
                 * @param {String} cmd The command executed: fontname
@@ -405,7 +412,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Adds a fontsize to the current selection, or creates a new element and applies it
-                * @method COMMANDS.fontsize2
+                * @method fontsize2
                 * @deprecated
                 * @static
                 * @param {String} cmd The command executed: fontsize
@@ -435,8 +442,8 @@ YUI.add('exec-command', function (Y, NAME) {
                     }
                 },
                 /**
-                * Overload for COMMANDS.list
-                * @method COMMANDS.insertorderedlist
+                * Overload for list
+                * @method insertorderedlist
                 * @static
                 * @param {String} cmd The command executed: list, ul
                 */
@@ -444,8 +451,8 @@ YUI.add('exec-command', function (Y, NAME) {
                     this.command('list', 'ul');
                 },
                 /**
-                * Overload for COMMANDS.list
-                * @method COMMANDS.insertunorderedlist
+                * Overload for list
+                * @method insertunorderedlist
                 * @static
                 * @param {String} cmd The command executed: list, ol
                 */
@@ -454,7 +461,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Noramlizes lists creation/destruction for IE. All others pass through to native calls
-                * @method COMMANDS.list
+                * @method list
                 * @static
                 * @param {String} cmd The command executed: list (not used)
                 * @param {String} tag The tag to deal with
@@ -528,7 +535,7 @@ YUI.add('exec-command', function (Y, NAME) {
                             if (html.indexOf('<br>') > -1) {
                                 html = html.split(/<br>/i);
                             } else {
-                                tmp = inst.Node.create(html),
+                                tmp = inst.Node.create(html);
                                 ps = tmp ? tmp.all('p') : null;
 
                                 if (ps && ps.size()) {
@@ -638,7 +645,7 @@ YUI.add('exec-command', function (Y, NAME) {
                 },
                 /**
                 * Noramlizes alignment for Webkit Browsers
-                * @method COMMANDS.justify
+                * @method justify
                 * @static
                 * @param {String} cmd The command executed: justify (not used)
                 * @param {String} val The actual command from the justify{center,all,left,right} stubs
@@ -663,32 +670,32 @@ YUI.add('exec-command', function (Y, NAME) {
                     }
                 },
                 /**
-                * Override method for COMMANDS.justify
-                * @method COMMANDS.justifycenter
+                * Override method for justify
+                * @method justifycenter
                 * @static
                 */
                 justifycenter: function() {
                     this.command('justify', 'justifycenter');
                 },
                 /**
-                * Override method for COMMANDS.justify
-                * @method COMMANDS.justifyleft
+                * Override method for justify
+                * @method justifyleft
                 * @static
                 */
                 justifyleft: function() {
                     this.command('justify', 'justifyleft');
                 },
                 /**
-                * Override method for COMMANDS.justify
-                * @method COMMANDS.justifyright
+                * Override method for justify
+                * @method justifyright
                 * @static
                 */
                 justifyright: function() {
                     this.command('justify', 'justifyright');
                 },
                 /**
-                * Override method for COMMANDS.justify
-                * @method COMMANDS.justifyfull
+                * Override method for justify
+                * @method justifyfull
                 * @static
                 */
                 justifyfull: function() {
@@ -714,4 +721,4 @@ YUI.add('exec-command', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["frame"]});
+}, '3.17.2', {"requires": ["frame"]});

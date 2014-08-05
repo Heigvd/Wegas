@@ -28,6 +28,7 @@ public class Occupation extends AbstractAssignement {
      */
     @Id
     @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
     /**
      *
@@ -47,11 +48,13 @@ public class Occupation extends AbstractAssignement {
     private String description = "";
     /**
      *
-     */
+     
     @ManyToOne(optional = true)
     @JoinColumn(name = "taskdescriptor_id", nullable = true)
     @XmlTransient
     private TaskDescriptor taskDescriptor;
+    */
+    
     /**
      *
      */
@@ -85,7 +88,7 @@ public class Occupation extends AbstractAssignement {
         this.setDescription(other.getDescription());
         this.setTime(other.getTime());
         this.setEditable(other.getEditable());
-        this.setTaskDescriptor(other.getTaskDescriptor());
+        //this.setTaskDescriptor(other.getTaskDescriptor());
     }
 
     @PostPersist
@@ -115,7 +118,7 @@ public class Occupation extends AbstractAssignement {
     }
 
     /**
-     * @return the MCQDescriptor
+     * @return the ResourceInstance
      */
     @XmlTransient
     @JsonBackReference
@@ -134,7 +137,8 @@ public class Occupation extends AbstractAssignement {
     /**
      *
      * @return
-     */
+     
+    @XmlTransient
     public Long getTaskDescriptorId() {
         if (this.taskDescriptor != null) {
             return this.taskDescriptor.getId();
@@ -142,21 +146,22 @@ public class Occupation extends AbstractAssignement {
             return null;
         }
     }
+    */
 
     /**
      * @return the taskInstance
-     */
+     
     @XmlTransient
     public TaskDescriptor getTaskDescriptor() {
         return taskDescriptor;
-    }
+    }*/
 
     /**
      * @param taskDescriptor
-     */
+     
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
-    }
+    }*/
 
     /**
      * @return the editable

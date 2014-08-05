@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-base', function (Y, NAME) {
 
 /*
@@ -51,7 +58,7 @@ if (YUI.Env.DOMReady) {
  * @class DOMEventFacade
  * @param ev {Event} the DOM event
  * @param currentTarget {HTMLElement} the element the listener was attached to
- * @param wrapper {Event.Custom} the custom event wrapper for this DOM event
+ * @param wrapper {CustomEvent} the custom event wrapper for this DOM event
  */
 
     var ua = Y.UA,
@@ -198,7 +205,9 @@ Y.extend(DOMEventFacade, Object, {
     preventDefault: function(returnValue) {
         var e = this._event;
         e.preventDefault();
-        e.returnValue = returnValue || false;
+        if (returnValue) {
+            e.returnValue = returnValue;
+        }
         this._wrapper.prevented = 1;
         this.prevented = 1;
     },
@@ -222,7 +231,7 @@ Y.DOMEventFacade = DOMEventFacade;
     /**
      * The native event
      * @property _event
-     * @type {Native DOM Event}
+     * @type {DOMEvent}
      * @private
      */
 
@@ -462,7 +471,7 @@ Event = function() {
      * Custom event wrappers for DOM events.  Key is
      * 'event:' + Element uid stamp + event type
      * @property _wrappers
-     * @type Y.Event.Custom
+     * @type CustomEvent
      * @static
      * @private
      */
@@ -580,7 +589,6 @@ Event._interval = setInterval(Event._poll, Event.POLL_INTERVAL);
         onAvailable: function(id, fn, p_obj, p_override, checkContent, compat) {
 
             var a = Y.Array(id), i, availHandle;
-
 
             for (i=0; i<a.length; i=i+1) {
                 _avail.push({
@@ -750,7 +758,6 @@ Event._interval = setInterval(Event._poll, Event.POLL_INTERVAL);
             }
 
             if (!fn || !fn.call) {
-// throw new TypeError(type + " attach call failed, callback undefined");
                 return false;
             }
 
@@ -1251,7 +1258,7 @@ Event._interval = setInterval(Event._poll, Event.POLL_INTERVAL);
          * @param {HTMLElement} el      the element to bind the handler to
          * @param {string}      type   the type of event handler
          * @param {function}    fn      the callback to invoke
-         * @param {boolen}      capture capture or bubble phase
+         * @param {Boolean}      capture capture or bubble phase
          * @static
          * @private
          */
@@ -1264,7 +1271,7 @@ Event._interval = setInterval(Event._poll, Event.POLL_INTERVAL);
          * @param {HTMLElement} el      the element to bind the handler to
          * @param {string}      type   the type of event handler
          * @param {function}    fn      the callback to invoke
-         * @param {boolen}      capture capture or bubble phase
+         * @param {Boolean}      capture capture or bubble phase
          * @static
          * @private
          */
@@ -1360,4 +1367,4 @@ Y.Env.evt.plugins.contentready = {
 };
 
 
-}, '@VERSION@', {"requires": ["event-custom-base"]});
+}, '3.17.2', {"requires": ["event-custom-base"]});

@@ -53,7 +53,7 @@
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
                         dataSources: {
-                            VariableDescriptor: {
+                            Variable: {
                                 source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",

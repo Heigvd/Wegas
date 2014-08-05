@@ -41,6 +41,17 @@ public class PublicGameController {
      * @return
      */
     @GET
+    @Path("PublicGames")
+    public Collection<Game> publicGames() {
+        return gameFacade.findPublicGamesByRole("Public");// Find public games
+    }
+
+    /**
+     *
+     * @param userId
+     * @return
+     */
+    @GET
     @Path("PublicGames/{userId : [1-9][0-9]*}")
     public Collection<Game> publicGame(@PathParam("userId") final Long userId) {
         final Collection<Game> ret = new ArrayList<>();

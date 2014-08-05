@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datasource-local', function (Y, NAME) {
 
 /**
@@ -133,7 +140,7 @@ Y.extend(DSLocal, Y.Base, {
          * Fired when a data request is received.
          *
          * @event request
-         * @param e {Event.Facade} Event Facade with the following properties:
+         * @param e {EventFacade} Event Facade with the following properties:
          * <dl>
          * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
          * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -151,7 +158,7 @@ Y.extend(DSLocal, Y.Base, {
          * Fired when raw data is received.
          *
          * @event data
-         * @param e {Event.Facade} Event Facade with the following properties:
+         * @param e {EventFacade} Event Facade with the following properties:
          * <dl>
          * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
          * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -175,7 +182,7 @@ Y.extend(DSLocal, Y.Base, {
          * Fired when response is returned.
          *
          * @event response
-         * @param e {Event.Facade} Event Facade with the following properties:
+         * @param e {EventFacade} Event Facade with the following properties:
          * <dl>
          * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
          * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -209,7 +216,7 @@ Y.extend(DSLocal, Y.Base, {
          * Fired when an error is encountered.
          *
          * @event error
-         * @param e {Event.Facade} Event Facade with the following properties:
+         * @param e {EventFacade} Event Facade with the following properties:
          * <dl>
          * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
          * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -245,7 +252,7 @@ Y.extend(DSLocal, Y.Base, {
      * subclasses to achieve more complex behavior such as accessing remote data.
      *
      * @method _defRequestFn
-     * @param e {Event.Facade} Event Facadewith the following properties:
+     * @param e {EventFacade} Event Facadewith the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -279,7 +286,7 @@ Y.extend(DSLocal, Y.Base, {
      * Normalizes raw data into a response that includes results and meta properties.
      *
      * @method _defDataFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -314,7 +321,7 @@ Y.extend(DSLocal, Y.Base, {
      * Sends data as a normalized response to callback.
      *
      * @method _defResponseFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -395,4 +402,4 @@ Y.extend(DSLocal, Y.Base, {
 Y.namespace("DataSource").Local = DSLocal;
 
 
-}, '@VERSION@', {"requires": ["base"]});
+}, '3.17.2', {"requires": ["base"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-formatters', function (Y, NAME) {
 
 /**
@@ -559,4 +566,4 @@ and autocomplete-based editors, where the order of the items in the dropdown mat
 @for DataTable.Column
  */
 
-}, '@VERSION@', {"requires": ["datatable-body", "datatype-number-format", "datatype-date-format", "escape"]});
+}, '3.17.2', {"requires": ["datatable-body", "datatype-number-format", "datatype-date-format", "escape"]});

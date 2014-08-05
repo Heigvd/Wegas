@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('node-screen', function (Y, NAME) {
 
 /**
@@ -13,42 +20,42 @@ Y.each([
      * Returns the inner width of the viewport (exludes scrollbar).
      * @config winWidth
      * @for Node
-     * @type {Int}
+     * @type {Number}
      */
     'winWidth',
 
     /**
      * Returns the inner height of the viewport (exludes scrollbar).
      * @config winHeight
-     * @type {Int}
+     * @type {Number}
      */
     'winHeight',
 
     /**
      * Document width
      * @config docWidth
-     * @type {Int}
+     * @type {Number}
      */
     'docWidth',
 
     /**
      * Document height
      * @config docHeight
-     * @type {Int}
+     * @type {Number}
      */
     'docHeight',
 
     /**
      * Pixel distance the page has been scrolled horizontally
      * @config docScrollX
-     * @type {Int}
+     * @type {Number}
      */
     'docScrollX',
 
     /**
      * Pixel distance the page has been scrolled vertically
      * @config docScrollY
-     * @type {Int}
+     * @type {Number}
      */
     'docScrollY'
     ],
@@ -122,14 +129,14 @@ Y.Node.importMethod(Y.DOM, [
 /**
  * Gets the current position of the node in page coordinates.
  * @method getX
- * @return {Int} The X position of the node
+ * @return {Number} The X position of the node
 */
     'getX',
 
 /**
  * Set the position of the node in page coordinates, regardless of how the node is positioned.
  * @method setX
- * @param {Int} x X value for new position (coordinates are page-based)
+ * @param {Number} x X value for new position (coordinates are page-based)
  * @chainable
  */
     'setX',
@@ -137,14 +144,14 @@ Y.Node.importMethod(Y.DOM, [
 /**
  * Gets the current position of the node in page coordinates.
  * @method getY
- * @return {Int} The Y position of the node
+ * @return {Number} The Y position of the node
 */
     'getY',
 
 /**
  * Set the position of the node in page coordinates, regardless of how the node is positioned.
  * @method setY
- * @param {Int} y Y value for new position (coordinates are page-based)
+ * @param {Number} y Y value for new position (coordinates are page-based)
  * @chainable
  */
     'setY',
@@ -219,7 +226,7 @@ Y.Node.prototype.intersect = function(node2, altRegion) {
 };
 
 /**
- * Determines whether or not the node is within the giving region.
+ * Determines whether or not the node is within the given region.
  * @method inRegion
  * @param {Node|Object} node2 The node or region to compare with.
  * @param {Boolean} all Whether or not all of the node must be in the region.
@@ -235,4 +242,4 @@ Y.Node.prototype.inRegion = function(node2, all, altRegion) {
 };
 
 
-}, '@VERSION@', {"requires": ["dom-screen", "node-base"]});
+}, '3.17.2', {"requires": ["dom-screen", "node-base"]});

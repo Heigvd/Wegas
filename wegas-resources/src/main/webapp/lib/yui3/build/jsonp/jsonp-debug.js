@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('jsonp', function (Y, NAME) {
 
 var isFunction = Y.Lang.isFunction;
@@ -253,4 +260,4 @@ if (!YUI.Env.JSONP) {
 }
 
 
-}, '@VERSION@', {"requires": ["get", "oop"]});
+}, '3.17.2', {"requires": ["get", "oop"]});

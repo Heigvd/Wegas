@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-fill-util', function (Y, NAME) {
 
 /**
@@ -514,4 +521,4 @@ Y.augment(Fills, Y.Attribute);
 Y.Fills = Fills;
 
 
-}, '@VERSION@');
+}, '3.17.2');

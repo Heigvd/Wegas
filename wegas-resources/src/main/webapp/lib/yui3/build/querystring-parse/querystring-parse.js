@@ -1,3 +1,10 @@
+/*
+YUI 3.17.2 (build 9c3c78e)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('querystring-parse', function (Y, NAME) {
 
 /**
@@ -159,4 +166,4 @@ QueryString.unescape = function (s) {
 
 
 
-}, '@VERSION@', {"requires": ["yui-base", "array-extras"]});
+}, '3.17.2', {"requires": ["yui-base", "array-extras"]});
