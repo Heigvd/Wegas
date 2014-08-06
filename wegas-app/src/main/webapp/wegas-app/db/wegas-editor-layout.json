@@ -90,40 +90,7 @@
                         "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
                     }]
             }, {
-                "type": "LoginButton",
-                "cssClass": "editor-login-button",
-                "labelIsUser": true,
-                "plugins": [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "Button",
-                                    "label": "Preferences",
-                                    "plugins": [{
-                                            "fn": "OpenTabAction",
-                                            "cfg": {
-                                                "wchildren": [{
-                                                        "type": "Form",
-                                                        "plugins": [{
-                                                                "fn": "UserPreferences"
-                                                            }]
-                                                    }]
-                                            }
-                                        }]
-                                }, {
-                                    "type": "Button",
-                                    "label": "Logout",
-                                    "plugins": [{
-                                            "fn": "OpenUrlAction",
-                                            "cfg": {
-                                                "url": "logout",
-                                                "target": "self"
-                                            }
-                                        }
-                                    ]
-                                }]
-                        }
-                    }]
+                "type": "UserLoginButton"
             }]
     },
     "left": {
