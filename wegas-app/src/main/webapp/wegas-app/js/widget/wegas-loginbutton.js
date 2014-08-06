@@ -12,7 +12,7 @@
 YUI.add("wegas-loginbutton", function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, LoginButton;
+    var Wegas = Y.Wegas, UserLoginButton, LoginButton;
 
     /**
      * @name Y.Wegas.LoginButton
@@ -40,11 +40,21 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (Wegas.Facade.Variable)
                 this.handlers.variableUpdate = Wegas.Facade.Variable.after("update", this.syncUI, this);
 
-            if (this.menu) {                                                    // Don't add the plugin if it already exist.
-                return;
+            if (!this.menu) {                                                    // Don't add the plugin if it already exist.
+                this.plug(Y.Plugin.WidgetMenu);
             }
+            this.menu.add([{
+                    type: "Button",
+                    label: "Preferences",
+                    plugins: [{
+                            fn: "OpenPageAction",
+                            cfg: {
+                                subpageId: "UserPreferences",
+                                targetPageLoaderId: this.get("targetPageLoader")
+                            }
+                        }]
+                }]);
 
-            this.plug(Y.Plugin.WidgetMenu);
             if (!Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
                 this.menu.add({
                     type: "Button",
@@ -58,18 +68,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                         }]
                 });
             }
-
             this.menu.add([{
-                    type: "Button",
-                    label: "Preferences",
-                    plugins: [{
-                            fn: "OpenPageAction",
-                            cfg: {
-                                subpageId: "UserPreferences",
-                                targetPageLoaderId: this.get("targetPageLoader")
-                            }
-                        }]
-                }, {
                     type: "Button",
                     label: "Logout",
                     plugins: [{
@@ -93,7 +92,6 @@ YUI.add("wegas-loginbutton", function(Y) {
             var cUser = Wegas.Facade.User.get("currentUser"),
                 cPlayer = Wegas.Facade.Game.cache.getCurrentPlayer(),
                 cTeam = Wegas.Facade.Game.cache.getCurrentTeam(),
-                name = cUser.get("name") || "undefined",
                 mainAccount = cUser.getMainAccount(),
                 gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
@@ -103,17 +101,12 @@ YUI.add("wegas-loginbutton", function(Y) {
 
             if (this.get("forcedLabel")) {
                 this.set("label", this.get("forcedLabel"));
-            } else if (!this.get('labelIsUser') && cPlayer) {
+            } else {
                 if (cTeam && !(gameModel && gameModel.get("properties.freeForAll"))) {
                     this.set("label", cTeam.get("name") + " : " + cPlayer.get("name"));
                 } else {
-                    this.set("label", cPlayer.get("name") || name);
+                    this.set("label", cPlayer.get("name") || "Undefined");
                 }
-            } else {
-                if (mainAccount) {
-                    name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
-                }
-                this.set("label", name);
             }
         },
         destructor: function() {
@@ -151,15 +144,6 @@ YUI.add("wegas-loginbutton", function(Y) {
                 "transient": true
             },
             /**
-             * Select what kind of label you want (user/team  or team/player)
-             */
-            labelIsUser: {
-                value: false,
-                validator: function(b) {
-                    return (b === 'true' || b === true);
-                }
-            },
-            /**
              * targetPageLoader: Zone to display the page which contains widget userPreferences
              */
             targetPageLoader: {
@@ -174,4 +158,107 @@ YUI.add("wegas-loginbutton", function(Y) {
         }
     });
     Wegas.LoginButton = LoginButton;
+
+
+    /**
+     * @name Y.Wegas.LoginButton
+     * @extends Y.Wegas.Button
+     * @class  Button with a defined behavior.
+     * @constructor
+     * @description Button with special label and menu with two
+     * options : set user preferences or logout
+     */
+    UserLoginButton = Y.Base.create("wegas-login", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+        /** @lends Y.Wegas.LoginButton# */
+
+        // *** Lifecycle Methods *** //
+        /**
+         * @function
+         * @private
+         * @description bind function to events.
+         * Call widget parent to execute its proper bind function.
+         * When UserFacade is updated, do syncUI
+         * Add plugin menu with 2 options : open page "user preferences" and logout
+         */
+        bindUI: function() {
+            this.handlers = {};
+            this.handlers.userUpdate = Wegas.Facade.User.after("update", this.syncUI, this);
+            if (Wegas.Facade.Variable)
+                this.handlers.variableUpdate = Wegas.Facade.Variable.after("update", this.syncUI, this);
+
+            if (this.menu) {                                                    // Don't add the plugin if it already exists
+                return;
+            }
+
+            this.plug(Y.Plugin.WidgetMenu);
+
+            this.menu.add([{
+                    "type": "Button",
+                    "label": "Preferences",
+                    "plugins": [{
+                            "fn": "OpenTabAction",
+                            "cfg": {
+                                "wchildren": [{
+                                        "type": "Form",
+                                        "plugins": [{
+                                                "fn": "UserPreferences"
+                                            }]
+                                    }]
+                            }
+                        }]
+                }, {
+                    type: "Button",
+                    label: "Logout",
+                    plugins: [{
+                            fn: "OpenUrlAction",
+                            cfg: {
+                                url: "logout",
+                                target: "self"
+                            }
+                        }]
+                }]);
+        },
+        /**
+         * @function
+         * @private
+         * @description Call widget parent to execute its proper sync function.
+         * Set label of this button with team and/or player name.
+         */
+        syncUI: function() {
+            Wegas.LoginButton.superclass.syncUI.apply(this, arguments);
+
+            var cUser = Wegas.Facade.User.get("currentUser"),
+                name = cUser.get("name") || "undefined",
+                mainAccount = cUser.getMainAccount();
+
+            if (mainAccount) {
+                name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
+            } 
+            this.set("label", name);
+        },
+        destructor: function() {
+            for (var k in this.handlers) {
+                this.handlers[k].detach();
+            }
+        }
+    }, {
+        /** @lends Y.Wegas.LoginButton */
+        /**
+         * @field
+         * @static
+         * @description
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>labelIsUser: Select what kind of label you want (user/team  or team/player)</li>
+         *    <li>preferencePageId: Id of the the page which contains widget userPreferences</li>
+         *    <li>targetPageLoader: Zone to display the page which contains widget userPreferences</li>
+         * </ul>
+         */
+        ATTRS: {
+            label: {
+                "transient": true
+            }
+        }
+    });
+    Wegas.UserLoginButton = UserLoginButton;
 });

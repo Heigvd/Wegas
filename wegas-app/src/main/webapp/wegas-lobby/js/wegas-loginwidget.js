@@ -108,7 +108,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                                 + '</a>';
                             break
                         case "virtualpatient":
-                            add = +'| <a href="#" class="wegas-light-gallery" >Screenshots'
+                            add = '| <a href="#" class="wegas-light-gallery" >Screenshots'
                                 + '<img data-src="wegas-lobby/images/wegas-virtualpatient-1.png" style="display:none">'
                                 + '<img data-src="wegas-lobby/images/wegas-virtualpatient-2.png" style="display:none">'
                                 + '<img data-src="wegas-lobby/images/wegas-virtualpatient-3.png" style="display:none">'
@@ -134,7 +134,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         + add
                         + "</span></span>"
                         + '<span class="image"><span class="image-offset">'
-                        + '<img src="' + (g.get("properties.image") || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
+                        + '<img src="' + (g.get("properties.imageUri") || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
                 });
                 content.push('</ul></div>');
                 cb.one(".main.left").setContent(content.join(""));

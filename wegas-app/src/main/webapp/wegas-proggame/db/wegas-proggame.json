@@ -1265,7 +1265,6 @@
                             }
                         }
                     ],
-                    "labelIsUser": false,
                     "preferencePageId": 1000,
                     "targetPageLoader": "maindisplayarea"
                 },

@@ -3,7 +3,7 @@
     "type": "ResizableLayout",
     "top": {
         "children": [{
-                "type": "Button",
+                "type": "Text",
                 "cssClass": "wegas-logo"
             }, {
                 "type": "Button",
@@ -62,38 +62,7 @@
                         }
                     }]
             }, {
-                "type": "LoginButton",
-                "cssClass": "menu-loginbutton",
-                "plugins": [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "Button",
-                                    "label": "Preferences",
-                                    "plugins": [{
-                                            "fn": "OpenTabAction",
-                                            "cfg": {
-                                                "wchildren": [{
-                                                        "type": "Form",
-                                                        "plugins": [{
-                                                                "fn": "UserPreferences"
-                                                            }]
-                                                    }]
-                                            }
-                                        }]
-                                }, {
-                                    "type": "Button",
-                                    "label": "Logout",
-                                    "plugins": [{
-                                            "fn": "OpenUrlAction",
-                                            "cfg": {
-                                                "url": "logout",
-                                                "target": "self"
-                                            }
-                                        }]
-                                }]
-                        }
-                    }]
+                "type": "UserLoginButton"
             }]
     },
     "center": {
