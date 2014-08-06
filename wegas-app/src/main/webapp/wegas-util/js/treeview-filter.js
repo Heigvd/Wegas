@@ -14,6 +14,7 @@ YUI.add("treeview-filter", function(Y) {
 
     var TreeViewFilter = Y.Base.create("treeview-filter", Y.Plugin.Base, [], {
         initializer: function() {
+            this.timer = null;
             if (!(this.get("host") instanceof Y.TreeView)) {
                 Y.log("TreeView filter host must be a TreeView", "warn", "TreeViewFilter");
                 return;
@@ -25,7 +26,13 @@ YUI.add("treeview-filter", function(Y) {
             });
 
             this.afterHostEvent(["*:addChild", "render"], function(e) {
-                this.doFilter(this.get("host"), this.get("searchVal"));
+                //delay as addChild may occure often
+                if (this.timer && this.timer.cancel) {
+                    this.timer.cancel();
+                }
+                this.timer = Y.later(20, this, function() {
+                    this.doFilter(this.get("host"), this.get("searchVal"));
+                }, this);
             });
         },
         filter: function(item, match) {
@@ -34,10 +41,10 @@ YUI.add("treeview-filter", function(Y) {
             if (item instanceof Y.TreeView) {
                 matches = false;
             } else {
-                try {
-                    matches = this.get("testFn").call(item, match) === true;
-                } catch (e) {
-                }
+//                try {
+                matches = this.get("testFn").call(item, match) === true;
+//                } catch (e) {
+//                }
 
             }
             if (item.each) {
@@ -72,6 +79,9 @@ YUI.add("treeview-filter", function(Y) {
             }
         },
         destructor: function() {
+            if (this.timer && this.timer.cancel) {
+                this.timer.cancel();
+            }
             this.get("host").get("contentBox").all(".filter-empty").remove(true);
         }
 
