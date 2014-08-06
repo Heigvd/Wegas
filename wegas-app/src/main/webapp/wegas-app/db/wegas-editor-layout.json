@@ -4,8 +4,7 @@
         "height": 25,
         "children": [{
                 "type": "Button",
-                "content": "",
-                "cssClass": "wegas-title",
+                "cssClass": "wegas-logo",
                 "tooltip": "Back to lobby",
                 "plugins": [{
                         "fn": "OpenUrlAction",
@@ -14,6 +13,9 @@
                             "target": "_self"
                         }
                     }]
+            }, {
+                "type": "Text",
+                "cssClass": "wegas-title"
             }, {
                 "type": "Button",
                 "label": "Libraries",

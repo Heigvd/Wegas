@@ -3,8 +3,8 @@
     "type": "ResizableLayout",
     "top": {
         "children": [{
-                "type": "Text",
-                "cssClass": "wegas-title"
+                "type": "Button",
+                "cssClass": "wegas-logo"
             }, {
                 "type": "Button",
                 "label": "Admin",
