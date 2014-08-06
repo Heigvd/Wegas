@@ -37,18 +37,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     display: inline-block;
 }
 
-/* Wegas title (logo) */
-.yui3-skin-sam .wegas-title  {
-    font-weight: bolder;
-    font-size: 22px;
-    line-height: 1.3em;
-    color: #6E6E6E;
-    padding: 8px 6px 6px 93px;
-    height: 30px;
-    text-shadow: 1px 0 1px black, 0 1px 1px black;
-    background: url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat 8px 6px;
-}
-
 /* wegas-tabview-fullheight class makes a tab fill the whole height av1ailable */
 .yui3-skin-sam .wegas-tabview-fullheight,
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content {
@@ -318,6 +306,24 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
     top: 42px;
 }
+/* Wegas logo */ 
+.yui3-skin-sam .yui3-button.wegas-logo,
+.yui3-skin-sam .yui3-button.wegas-logo:hover  {
+    background: -2px -2px url(../../wegas-app/images/wegas-logoicon-35.png) no-repeat;
+    height: 32px;
+    width: 32px;
+    margin: 6px 5px;
+}
+/* Wegas title */
+.yui3-skin-sam .wegas-title  {
+    font-weight: bolder;
+    font-size: 22px;
+    line-height: 1.3em;
+    text-shadow: 1px 1px 1px black, 1px 1px 1px black;
+    color: white;
+    margin-right: 30px;
+    margin-top: 6px;
+}
 
 /* Player link menu */
 .yui3-menu-content .wegas-playerlink-buttons {
@@ -440,10 +446,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     top: 11px !important;
     width: 23px;
     opacity: 1;                   
-    z-index: 0;
+    /*z-index: 0;*/
 }
 .yui3-skin-sam .uv-icon svg {
     width: 24px;
     height: 27px;
 }
-
