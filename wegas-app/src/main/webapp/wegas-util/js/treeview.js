@@ -269,7 +269,6 @@ YUI.add("treeview", function(Y) {
          * @function
          */
         initializer: function() {
-            this.handlers = [];
             this.publish("toggleClick", {
                 bubbles: false,
                 broadcast: false,
@@ -311,17 +310,17 @@ YUI.add("treeview", function(Y) {
         bindUI: function() {
             var bb = this.get(BOUNDING_BOX);
 
-            this.handlers.push(bb.one(".yui3-treenode-content-toggle").on("click", function(e) {
+            bb.one(".yui3-treenode-content-toggle").on("click", function(e) {
                 e.stopPropagation();
                 this.fire("toggleClick", {
                     node: this
                 });
-            }, this));
-            this.handlers.push(bb.one("." + this.getClassName(CONTENT, "header")).before("dblclick", function(e) {
+            }, this);
+            bb.one("." + this.getClassName(CONTENT, "header")).before("dblclick", function(e) {
                 e.halt(true);
                 this.toggleTree();
-            }, this));
-            this.handlers.push(bb.one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
+            }, this);
+            bb.one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
                 var node = e.target;
                 e.stopPropagation();
                 if (node.hasClass(this.getClassName(CONTENT, "icon"))) {
@@ -338,7 +337,7 @@ YUI.add("treeview", function(Y) {
                     node: this,
                     domEvent: e
                 });
-            }, this));
+            }, this);
             bb.on("click", function(e) {
                 e.stopPropagation();
             });
@@ -397,9 +396,6 @@ YUI.add("treeview", function(Y) {
          */
         destructor: function() {
             this.blur();                                                        //remove a focused node generates some errors
-            Y.Array.each(this.handlers, function(item) {
-                item.detach();
-            });
             if (this.get("rightWidget")) {
                 this.get("rightWidget").destroy();
             }
@@ -621,7 +617,6 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         initializer: function() {
-            this.handlers = [];
             this.publish("iconClick", {
                 bubbles: true
             });
@@ -639,7 +634,7 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.handlers.push(this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
+            this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
                 e.stopImmediatePropagation();
                 if (e.target.hasClass(this.getClassName(CONTENT, "icon"))) {
                     this.fire("iconClick", {
@@ -655,11 +650,11 @@ YUI.add("treeview", function(Y) {
                     node: this,
                     domEvent: e
                 });
-            }, this));
+            }, this);
             //one line, prevent special chars
-            this.handlers.push(this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "label")).on("blur", function(e) {
+            this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "label")).on("blur", function(e) {
                 e.target.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
-            }, this));
+            }, this);
         },
         /**
          * Lifecycle method, sync attributes
@@ -684,9 +679,6 @@ YUI.add("treeview", function(Y) {
          */
         destructor: function() {
             this.blur();                                                        //remove a focused node generates some errors
-            Y.Array.each(this.handlers, function(item) {
-                item.detach();
-            });
             this.set(SELECTED, 0);
             if (this.get("rightWidget") && this.get("rightWidget").destroy) {
                 try {

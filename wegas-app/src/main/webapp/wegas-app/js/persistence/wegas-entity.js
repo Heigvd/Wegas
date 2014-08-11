@@ -259,7 +259,7 @@ YUI.add("wegas-entity", function(Y) {
                             label: "Group rights",
                             tabSelector: "#rightTabView",
                             tabCfg: {
-                                cssClass: "wegas-advanced-feature"
+                                cssClass: "wegas-rolerights-tab"
                             },
                             wchildren: [{
                                     type: "RolePermissionList",
@@ -536,7 +536,7 @@ YUI.add("wegas-entity", function(Y) {
                             label: "Group rights",
                             tabSelector: "#rightTabView",
                             tabCfg: {
-                                cssClass: "wegas-advanced-feature"
+                                cssClass: "wegas-rolerights-tab"
                             },
                             wchildren: [{
                                     type: "RolePermissionList",
