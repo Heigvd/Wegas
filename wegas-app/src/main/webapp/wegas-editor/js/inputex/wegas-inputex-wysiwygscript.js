@@ -41,7 +41,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 }
                 return {
                     "@class": "Script",
-                    //language: "JavaScript",
                     content: ct
                 };
             } else {
@@ -218,7 +217,6 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 fields = [];
             container.one(".msg").setContent("");                               // Reset layout
 
-            try { // Generate the syntaxic tree using esprima    
                 tree = window.esprima.parse(inputEx.WysiwygScript.superclass.getValue.call(this).content, {
                     raw: true,
                     range: true
@@ -227,7 +225,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     if (tree.body[i].type !== "EmptyStatement") {
                         try {
                             fields = fields.concat(this.generateExpression(tree.body[i].expression));
-//                            fields[i].raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, tree.body[i].expression.range);
+                            // fields[i].raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, tree.body[i].expression.range);
                         } catch (e) {
                             fields.push({
                                 raw: tree.body[i].range,

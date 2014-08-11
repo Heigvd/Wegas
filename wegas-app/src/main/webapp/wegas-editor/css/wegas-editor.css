@@ -30,11 +30,14 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-advanced-feature {
     font-style: italic;
 }
-.editor-administrator-button {
+.editor-administrator-button,
+.wegas-rolerights-tab {
     display: none;
 }
-.wegas-role-administrator .editor-administrator-button {                        /* Only members of administrator group can see admin button */
+.wegas-role-administrator .editor-administrator-button,
+.wegas-role-administrator .wegas-rolerights-tab {                               /* Only members of administrator group can see admin button */
     display: inline-block;
+    font-style: italic;
 }
 
 /* wegas-tabview-fullheight class makes a tab fill the whole height av1ailable */
