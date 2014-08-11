@@ -11,40 +11,29 @@
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css" />
         </ui:define>
 
+        <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
+        
         <ui:define name="editorFooter">
         Y.Wegas.app.after("render", function(e) {
             var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
-            Y.one(".wegas-title").setContent("&lt;div class=\"title\">" + g.get("name") + "&lt;/div>"
-                + "&lt;div class=\"gametitle\">" + g.get("gameModelName") + "&lt;/div>");
             
-            Y.all("#leftTabView .yui3-tab-panel").hide();           
-            
+            Y.one(".wegas-title").setContent("&lt;div>" + g.get("name") + "&lt;/div>"
+                + "&lt;div class='subtitle'>" + g.get("gameModelName") + "&lt;/dvi>");// Update the title
+                
             Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
-                var tab = Y.Widget.getByNode("#leftTabView").add({              // Add player selection tab
-                    label: "Players",
-                    cssClass: "wegas-tabview-fullheight",
-                    children: [{
-                            type: "TeamTreeView",
-                            dataSource: "Game",
-                            plugins: [{
-                                    fn: "WidgetToolbar"
-                                }]
-                        }]
-                }, 0).item(0);
-                tab.set("selected", 2);
-                Y.all("#leftTabView .yui3-tab-panel").show();
+                var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
                 
                 if (!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
-                    tab.witem(0).treeView.plug(Y.Plugin.TeamSelection);
+                    playersTree.treeView.plug(Y.Plugin.TeamSelection);
                 }
                 
-                for (i = 0; i &lt; tab.witem(0).treeView.size(); i += 1) {
-                    if (tab.witem(0).treeView.item(i).get("data").entity.get("players") &amp;&amp; !tab.witem(0).treeView.item(i).get("data").entity.get("players").length) {
-                            tab.witem(0).treeView.item(i).get("boundingBox").addClass("noPlayer");
+                for (i = 0; i &lt; playersTree.treeView.size(); i += 1) {
+                    if (playersTree.treeView.item(i).get("data").entity.get("players") &amp;&amp; !playersTree.treeView.item(i).get("data").entity.get("players").length) {
+                            playersTree.treeView.item(i).get("boundingBox").addClass("noPlayer");
                     }
                 }
                 
-                tab.witem(0).on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
+                playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
                     var entity = e.target.get("data.entity"),
                             player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
                     
@@ -57,29 +46,60 @@
                     if (e.currentTarget.treeView.treeviewselect){
                         return
                     }
-
                     Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
                 });
-                
-                Y.Widget.getByNode("#centerTabView").add({                      // Add impact tab
-                    label: "Impact",
-                    children: [{
-                            type: "WysiwygConsole",
-                            cssClass: "wegas-console"
-                        }]
-                });
-                
-                //var button = Y.Widget.getByNode(".wegas-layout-hd").add({}).item(0)
-                var button = new Y.ToggleButton({
-                    label: "Enable edition"
-                });
-                button.get("boundingBox").addClass("wegas-advanced-feature");
-                button.render();       
-                var menuEl = Y.one(".wegas-layout-hd");
-                menuEl.insertBefore(button.get("boundingBox"), menuEl.one(".wegas-widgetmenu-hassubmenu"));
+                                
+                var body = Y.one("body"),
+                    button = new Y.Wegas.ToggleButton({
+                        label: "Enable edition",
+                        cssClass: "wegas-advanced-feature"
+                    }).render();
+
+                body.addClass("wegas-hostmode");
+
+                button.get("boundingBox").addClass("host-switchmode");
                 button.after("pressedChange", function(e) {
-                    Y.one("body").toggleClass("wegas-editmode", e.newVal);
-                    //this.get("boundingBox").swap(this.swapNode);
+                    body.addClass("wegas-loading-after");
+
+                    Y.Wegas.Facade.Page.cache.clear();
+                    Y.Wegas.Facade.Page.set("initialFullRequest",
+                        e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
+
+                    app.widget.destroy();                                   // Destroy the current view
+                    Y.Wegas.Facade.Page.once("response", function(e) {      // When page data source response arrives,
+                        var widgetCfg = e.response.results;
+                        Y.Wegas.use(widgetCfg, Y.bind(function() {
+                            app.widget = Y.Wegas.Widget.create(Y.clone(widgetCfg)).render();// Instantiate the root widget and render it
+                            this.fire("render");                            // Fire a render event for some eventual post processing
+
+                            body.toggleClass("wegas-hostmode")
+                                .toggleClass("wegas-editmode")
+                                .removeClass("wegas-loading-after");
+                        }, this));
+                    }, this);
+                    Y.Wegas.Facade.Page.sendInitialRequest();
+                });
+                
+                // Handle player change event
+                Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
+                    var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
+                        preview = Y.Widget.getByNode(".editor-preview");
+
+                    this.set('currentTeamId', player.get("teamId"));        // Update current teamid
+
+                    preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
+
+                    Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
+                        Y.Wegas.Facade.Variable.fire("update");
+                        preview.hideOverlay();
+                    });
+
+                    //Y.Wegas.Facade.Variable.set("source",                   // Version 2: Only current player data are loaded, need to update the datasource
+                    //    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
+                    //    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
+                    //    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
+                    //    + "/VariableDescriptor");                         // Retrieve variable instances for the new player
+                    //Y.Wegas.Facade.Variable.once("response", preview.hideOverlay, preview);
                 });
             });            
         });

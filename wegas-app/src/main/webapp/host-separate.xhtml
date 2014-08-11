@@ -5,29 +5,27 @@
 
     <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
-        <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
+        <ui:define name="title">#{editorGameController.currentGame.name}</ui:define>
 
         <ui:define name="head">
 
-            <!-- Page styles -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css" />
 
-            <!-- CSS library from current game model style library -->
+            <!-- CSS library for current game model is included directly in the file -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
-            <!-- Stylesheets from current game model cssUri property -->
+            <!-- Stylesheets injected directly in the game model -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
-            <ui:insert name="editorHeader"/>
-
         </ui:define>
 
         <ui:define name="body">
 
-            <!-- Client script (game model specific) -->
+            <!-- Client script for current game model -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
                 <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
@@ -38,8 +36,8 @@
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
@@ -66,12 +64,10 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                            
-                                initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-editor-layout.json</ui:insert>',
-                                //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
+                                    /* THIS IS NOT A COMMENT
+                                     * </ui:fragment>
+                                     */
+                                    initialFullRequest: 'wegas-app/db/wegas-host-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
                                         fn: "JSONSchema"
@@ -137,27 +133,93 @@
                         }
                     });
 
-                    app.after("render", function() {                            // When the page is rendered
-                        var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
-                        Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
+                    app.render();                                               // Render app
 
+                    app.after("render", function() {                            // When the page is rendered
+                        var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                        Y.one(".wegas-title").setContent("&lt;div>" + g.get("name") + "&lt;/div>"
+                            + "&lt;div class='subtitle'>" + g.get("gameModelName") + "&lt;/dvi>");// Update the title
+
+                        var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
+
+                        if (!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
+                            playersTree.treeView.plug(Y.Plugin.TeamSelection);
+                        }
+
+                        playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
+                            var entity = e.target.get("data.entity"),
+                                player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
+
+                            if (!player) {
+                                this.showMessageBis("info", "This team is empty", 4000);
+                            } else if (!e.currentTarget.treeView.treeviewselect) {//Check if click is with multiselect plugin (impact page)
+                                Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
+                            }
+                        });
+
+                        // Run game model specific scripts
                         try {
-                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                            #{editorGameController.getClientScripts()}
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }
                     });
 
-                    app.render();                                               // Render app
+                    // Add button to switch to editor/host mode
+                    app.once("render", function() {                             // When the page is rendered
+                        var body = Y.one("body"),
+                            button = new Y.Wegas.ToggleButton({
+                                label: "Enable edition",
+                                cssClass: "wegas-advanced-feature"
+                            }).render();
 
-                    /**
-                     * THIS IS NOT A COMMENT !!!
-                     * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
-                     */
-                    ////<ui:insert name="editorFooter" />////                   // Footer script (for host.html)
-                    /**
-                     * END THIS IS NOT A COMMENT !!!
-                     */
+                        body.addClass("wegas-hostmode");
+
+                        button.get("boundingBox").addClass("host-switchmode");
+                        button.after("pressedChange", function(e) {
+                            body.addClass("wegas-loading-after");
+
+                            Y.Wegas.Facade.Page.cache.clear();
+                            Y.Wegas.Facade.Page.set("initialFullRequest",
+                                e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
+
+                            app.widget.destroy();                               // Destroy the current view
+                            Y.Wegas.Facade.Page.once("response", function(e) {  // When page data source response arrives,
+                                var widgetCfg = e.response.results;
+                                Y.Wegas.use(widgetCfg, Y.bind(function() {
+                                    app.widget = Y.Wegas.Widget.create(Y.clone(widgetCfg)).render();// Instantiate the root widget and render it
+                                    this.fire("render");                        // Fire a render event for some eventual post processing
+
+                                    body.toggleClass("wegas-hostmode")
+                                        .toggleClass("wegas-editmode")
+                                        .removeClass("wegas-loading-after");
+                                }, this));
+                            }, this);
+                            Y.Wegas.Facade.Page.sendInitialRequest();
+                        });
+                    });
+
+                    // Handle player change event
+                    Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
+                        var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
+                            preview = Y.Widget.getByNode(".editor-preview");
+
+                        this.set('currentTeamId', player.get("teamId"));        // Update current teamid
+
+                        preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
+
+                        Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
+                            Y.Wegas.Facade.Variable.fire("update");
+                            preview.hideOverlay();
+                        });
+
+                        //Y.Wegas.Facade.Variable.set("source",                   // Version 2: Only current player data are loaded, need to update the datasource
+                        //    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
+                        //    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
+                        //    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
+                        //    + "/VariableDescriptor");                         // Retrieve variable instances for the new player
+                        //Y.Wegas.Facade.Variable.once("response", preview.hideOverlay, preview);
+                    });
                 });
             </script>
 
