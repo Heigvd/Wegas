@@ -38,6 +38,7 @@ public class AbstractEmbeddedGlassfishTest {
     protected static Context context;
 
     protected static GameModelFacade gmFacade;
+    protected static UserFacade userFacade;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -70,6 +71,11 @@ public class AbstractEmbeddedGlassfishTest {
 
             setBaseUrl("http://localhost:5454/Wegas");
 
+            context = AbstractEmbeddedGlassfishTest.getContext();
+
+            userFacade = lookup(UserFacade.class);
+
+            userFacade.guestLogin();
             gmFacade = lookup(GameModelFacade.class);
         } catch (Exception e) {
             if (glassfish != null) {
@@ -79,15 +85,19 @@ public class AbstractEmbeddedGlassfishTest {
         }
     }
 
-    protected User guestLogin(){
-        return lookup(UserFacade.class).guestLogin();
-    }
-
     private static Context getContext() throws NamingException {
-        if (context == null){
-            context = new InitialContext();
-        }
-        return context;
+        Properties props = new Properties();
+        props.setProperty("java.naming.factory.initial",
+                "com.sun.enterprise.naming.SerialInitContextFactory");
+        props.setProperty("java.naming.factory.url.pkgs",
+                "com.sun.enterprise.naming");
+        props.setProperty("java.naming.factory.state",
+                "com.sun.corba.ee.impl.presentation.rmi.JNDIStateFactoryImpl");
+        // props.setProperty("org.omg.CORBA.ORBInitialHost", "localhost");
+        // props.setProperty("org.omg.CORBA.ORBInitialPort", "3700");
+
+        // return new InitialContext(props);
+        return new InitialContext();
     }
 
     @AfterClass
@@ -99,7 +109,7 @@ public class AbstractEmbeddedGlassfishTest {
     protected static <T> T lookup(Class<T> the_class) {
         T lookup = null;
         try {
-            lookup = (T) getContext().lookup("java:global/Wegas/" + the_class.getSimpleName());
+            lookup = (T) context.lookup("java:global/Wegas/" + the_class.getSimpleName());
             return lookup;
         } catch (NamingException ex) {
             Logger.getLogger(AbstractEmbeddedGlassfishTest.class.getName()).log(Level.SEVERE, "LOOKUP FAILED: " + the_class.getSimpleName(), ex);

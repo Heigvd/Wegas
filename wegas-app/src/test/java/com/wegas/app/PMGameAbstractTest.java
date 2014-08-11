@@ -51,7 +51,7 @@ abstract public class PMGameAbstractTest extends AbstractEmbeddedGlassfishTest {
         final String script4 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-test-util.js");
         final String script5 = TestHelper.readFile(SCRIPTROOT + getScriptTestPath());
 
-        guestLogin();
+        //guestLogin();
         gm = this.createGameModelFromFile(this.getGameModelPath(), script + "\n" + script2 + "\n" + script3 + "\n" + script4 + "\n" + script5);
         player = gm.getPlayers().get(0);
     }
