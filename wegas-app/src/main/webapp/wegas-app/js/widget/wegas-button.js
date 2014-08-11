@@ -14,7 +14,7 @@ YUI.add("wegas-button", function(Y) {
 
     var CONTENTBOX = 'contentBox',
         BOUNDINGBOX = 'boundingBox',
-        Wegas = Y.Wegas, Button;
+        Wegas = Y.Wegas, Button, ToggleButton;
 
     /**
      * @name Y.Wegas.Button
@@ -290,21 +290,5 @@ YUI.add("wegas-button", function(Y) {
         }
     });
 
-    Wegas.NewDescriptorButton = Y.Base.create("button", Wegas.Button, [], {
-        /** @lends Y.Wegas.NewDescriptorButton# */
-        /**
-         * @function
-         * @private
-         * @param cfg
-         */
-        initializer: function() {
-            this.plug(Y.Plugin.WidgetMenu, {
-                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function(o) {
-                    return Y.mix({
-                        type: "NewEntityButton"
-                    }, o);
-                })
-            });
-        }
-    });
+    Wegas.ToggleButton = Y.Base.create("button", Y.ToggleButton, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {}, {});
 });

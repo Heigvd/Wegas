@@ -783,4 +783,22 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         NS: "toolbarmenu"
     });
     Y.Plugin.EntityEditMenu = EntityEditMenu;
+
+    Wegas.NewDescriptorButton = Y.Base.create("button", Wegas.Button, [], {
+        /** @lends Y.Wegas.NewDescriptorButton# */
+        /**
+         * @function
+         * @private
+         * @param cfg
+         */
+        initializer: function() {
+            this.plug(Y.Plugin.WidgetMenu, {
+                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function(o) {
+                    return Y.mix({
+                        type: "NewEntityButton"
+                    }, o);
+                })
+            });
+        }
+    });
 });

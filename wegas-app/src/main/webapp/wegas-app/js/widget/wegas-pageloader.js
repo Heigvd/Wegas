@@ -105,9 +105,7 @@ YUI.add("wegas-pageloader", function(Y) {
          * remove instance kept in PageLoader.pageLoaderInstances.
          */
         destructor: function() {
-            if (this.get(WIDGET)) {
-                this.get(WIDGET).destroy();
-            }
+            this.get(WIDGET) && this.get(WIDGET).destroy();
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });

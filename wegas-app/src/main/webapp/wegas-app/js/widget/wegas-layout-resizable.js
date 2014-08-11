@@ -20,16 +20,16 @@ YUI.add('wegas-layout-resizable', function(Y) {
      * @constructor
      * @description Show/hide a page with a slid (tween) effect
      */
-    var ResizableLayout = Y.Base.create("wegas-layout-resizable", Y.Widget, [Y.Wegas.Widget, Y.WidgetChild], {
+    var ResizableLayout = Y.Base.create("wegas-layout-resizable", Y.Widget, [Y.Wegas.Widget, Y.Wegas.Editable, Y.WidgetChild], {
         CONTENT_TEMPLATE: '<div>'
-                + '<div class="wegas-layout-hd"></div>'
-                + '<div class="wegas-layout-bd"><div>'
-                + '<div class="wegas-layout-left"></div>'
-                + '<div class="wegas-layout-center"></div>'
-                + '<div class="wegas-layout-right"></div>'
-                + '</div></div>'
-                + '<div class="wegas-layout-ft"></div>'
-                + '</div>',
+            + '<div class="wegas-layout-hd"></div>'
+            + '<div class="wegas-layout-bd"><div>'
+            + '<div class="wegas-layout-left"></div>'
+            + '<div class="wegas-layout-center"></div>'
+            + '<div class="wegas-layout-right"></div>'
+            + '</div></div>'
+            + '<div class="wegas-layout-ft"></div>'
+            + '</div>',
         /** @lends Y.Wegas.ResizableLayout# */
 
         // *** Private fields *** //
@@ -42,6 +42,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
         initializer: function() {
             this.handlers = [];
             this.anims = {};
+            this.widgets = [];
         },
         /**
          * @function
@@ -88,9 +89,12 @@ YUI.add('wegas-layout-resizable', function(Y) {
             if (this.resizeRight) {
                 this.resizeRight.destroy();
             }
-            for (var i in this.handlers) {
-                this.handlers[i].detach();
-            }
+            Y.Array.each(this.widgets, function(w) {
+                w.destroy();
+            });
+            Y.Object.each(this.handlers, function(h) {
+                h.detach();
+            });
         },
         // ** Private Methods ** //
         /**
@@ -185,8 +189,8 @@ YUI.add('wegas-layout-resizable', function(Y) {
          */
         renderPosition: function(position) {
             var i, cWidget,
-                    target = this.getPosition(position),
-                    cfg = this.get(position);
+                target = this.getPosition(position),
+                cfg = this.get(position);
 
             if (cfg) {                                                          // If there is a provided configuration
                 if (position === "left") {
@@ -218,6 +222,7 @@ YUI.add('wegas-layout-resizable', function(Y) {
                     cWidget = Y.Wegas.Widget.create(cfg.children[i]);
                     // cWidget.after("render", this.syncUI, this );
                     cWidget.render(target);
+                    this.widgets.push(cWidget);
                 }
             } else {
                 target.setStyle("width", "0");

@@ -9,35 +9,19 @@
 
         <ui:define name="head">
 
+            <!-- Page styles -->
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
 
-            <style type="text/css">
-                .yui3-skin-sam .yui3-button.wegas-title,
-                .yui3-skin-sam .yui3-button.wegas-title:hover  {
-                    font-weight: 900;
-                    font-size: 22px;
-                    line-height: 1.5em;
-                    color: white;
-                    background: -2px -2px url(wegas-app/images/wegas-logoicon-35.png) no-repeat;
-                    padding: 0px 25px 0 40px;
-                    margin: 8px 6px 4px 10px;
-                    height: 32px;
-                    text-shadow: 1px 0 1px black, 0 1px 1px black;
-                }
-            </style>
-
-            <!-- CSS library for current game model is included directly in the file -->
+            <!-- CSS library from current game model style library -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
-            <!-- Stylesheets injected directly in the game model -->
+            <!-- Stylesheets from current game model cssUri property -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
             <ui:insert name="editorHeader"/>
-
-            <!--<meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />-->
 
         </ui:define>
 
