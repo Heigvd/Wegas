@@ -88,6 +88,17 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     min-height: 80px;
 }
 
+/* Wegas loading (a different way of displaying a loading, as a :after element */
+.wegas-loading-after:after {
+    content: "";
+    background: rgba(255,255,255,0.8) url(../../wegas-app/images/loading.gif) center center no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
 /* */
 .wegas-smallmessage {
     padding: 20px;

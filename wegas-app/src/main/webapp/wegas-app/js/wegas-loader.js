@@ -164,7 +164,7 @@ YUI().use(function(Y) {
             "wegas-loginbutton": {
                 path: "js/widget/wegas-loginbutton-min.js",
                 requires: ["wegas-button", "wegas-widgetmenu"],
-                ws_provides: "LoginButton"
+                ws_provides: ["LoginButton", "UserLoginButton"]
             },
             "wegas-chat": {
                 path: "js/widget/wegas-chat-min.js",
@@ -515,7 +515,7 @@ YUI().use(function(Y) {
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key"],
-                ws_provides: ["OpenTabAction", "Linkwidget"]
+                ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
@@ -577,8 +577,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-treeview": {
                 path: "js/widget/wegas-editor-treeview-min.js",
-                requires: ["wegas-widget", "treeview", "treeview-filter",
-                    "wegas-widgetmenu", "wegas-editor-treeviewcss"],
+                requires: ["treeview", "wegas-widget", "wegas-widgetmenu", "wegas-editor-treeviewcss"],
                 ws_provides: ["EditorTreeView", "TeamTreeView"]
             },
             "wegas-editor-treeviewcss": {
@@ -586,7 +585,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-variabletreeview": {
                 path: "js/widget/wegas-editor-variabletreeview-min.js",
-                requires: ["wegas-editor-treeview", "treeview-sortable"],
+                requires: ["wegas-editor-treeview", "treeview-sortable", "treeview-filter"],
                 ws_provides: "VariableTreeView"
             },
             "wegas-editor-pagetreeview": {
@@ -620,6 +619,11 @@ YUI().use(function(Y) {
             },
             "gallery-colorpickercss": {
                 type: CSS
+            },
+            "wegas-dashboard": {
+                path: "js/widget/wegas-dashboard-min.js",
+                requires: ["datatable"],
+                wprovides: "Dashboard"
             }
         }
     });
