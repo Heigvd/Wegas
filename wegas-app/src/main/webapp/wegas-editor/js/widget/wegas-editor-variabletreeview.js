@@ -41,7 +41,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     searchVal = searchVal.trim();
                     return searchVal === ""
                         || (e instanceof Wegas.persistence.VariableDescriptor)
-                        && (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
+                        && (new RegExp(searchVal, "i")).test(e.get("name") + "|" + e.get("title") + "|" + e.get("label"));
+                    //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
                 }
             });
 
