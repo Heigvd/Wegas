@@ -56,8 +56,8 @@ function loadGameModelFacade() {
 function reset() {
     debug("Reset...");
     loadGameModelFacade();
-    gameModelFacade.refresh(gameModel);
-    gameModelFacade.reset(gameModel);
+    //gameModelFacade.refresh(gameModel);
+    //gameModelFacade.reset(gameModel);
 }
 
 function breakpoint(msg){
