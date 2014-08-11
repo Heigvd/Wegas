@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1521,4 +1521,4 @@ Y.Console = Y.extend(Console, Y.Widget,
 });
 
 
-}, '3.17.2', {"requires": ["yui-log", "widget"], "skinnable": true, "lang": ["en", "es", "hu", "it", "ja"]});
+}, '3.16.0', {"requires": ["yui-log", "widget"], "skinnable": true, "lang": ["en", "es", "hu", "it", "ja"]});

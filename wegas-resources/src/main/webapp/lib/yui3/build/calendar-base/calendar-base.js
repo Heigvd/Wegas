@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -418,7 +418,7 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
      * @private
      */
     _addDateToSelection : function (oDate, index) {
-        oDate = this._normalizeTime(oDate);
+        oDate.setHours(12);
 
         if (this._canBeSelected(oDate)) {
 
@@ -1690,7 +1690,7 @@ Y.CalendarBase = Y.extend( CalendarBase, Y.Widget, {
 });
 
 
-}, '3.17.2', {
+}, '3.16.0', {
     "requires": [
         "widget",
         "datatype-date",

@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -275,7 +275,7 @@ LocalSync.prototype = {
 
         LocalSync._data[hash.id] = hash;
         if (this.storage) {
-            this.storage.setItem(hash.id, Y.JSON.stringify(hash));
+            this.storage.setItem(hash.id, hash);
         }
 
         LocalSync._store[this.root].push(hash.id);
@@ -364,4 +364,4 @@ LocalSync.prototype = {
 Y.namespace('ModelSync').Local = LocalSync;
 
 
-}, '3.17.2', {"requires": ["model", "json-stringify"]});
+}, '3.16.0', {"requires": ["model", "json-stringify"]});

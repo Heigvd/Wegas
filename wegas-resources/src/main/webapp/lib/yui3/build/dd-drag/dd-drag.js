@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -764,9 +764,7 @@ YUI.add('dd-drag', function (Y, NAME) {
         * @param {EventFacade} ev  The Event
         */
         _handleMouseDownEvent: function(ev) {
-            if (this.validClick(ev)) {
-                ev.preventDefault();
-            }
+            ev.preventDefault();
             this.fire(EV_MOUSE_DOWN, { ev: ev });
         },
         /**
@@ -1271,4 +1269,4 @@ YUI.add('dd-drag', function (Y, NAME) {
 
 
 
-}, '3.17.2', {"requires": ["dd-ddm-base"]});
+}, '3.16.0', {"requires": ["dd-ddm-base"]});

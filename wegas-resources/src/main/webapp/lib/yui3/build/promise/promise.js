@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -129,7 +129,7 @@ Y.mix(Promise.prototype, {
         });
     },
 
-    /**
+    /*
     A shorthand for `promise.then(undefined, callback)`.
 
     Returns a new promise and the error callback gets the same treatment as in
@@ -141,7 +141,7 @@ Y.mix(Promise.prototype, {
                         rejected
     @return {Promise} A new promise modified by the behavior of the error
                         callback
-    **/
+    */
     'catch': function (errback) {
         return this.then(undefined, errback);
     },
@@ -219,7 +219,7 @@ Promise.isPromise = function (obj) {
     return typeof then === 'function';
 };
 
-/**
+/*
 Ensures that a certain value is a promise. If it is not a promise, it wraps it
 in one.
 
@@ -232,7 +232,7 @@ This means that `PromiseSubclass.resolve()` will always return instances of
 @param {Any} Any object that may or may not be a promise
 @return {Promise}
 @static
-**/
+*/
 Promise.resolve = function (value) {
     return Promise.isPromise(value) && value.constructor === this ? value :
         /*jshint newcap: false */
@@ -242,7 +242,7 @@ Promise.resolve = function (value) {
         });
 };
 
-/**
+/*
 A shorthand for creating a rejected promise.
 
 @method reject
@@ -250,7 +250,7 @@ A shorthand for creating a rejected promise.
     Object
 @return {Promise} A rejected promise
 @static
-**/
+*/
 Promise.reject = function (reason) {
     /*jshint newcap: false */
     return new this(function (resolve, reject) {
@@ -259,7 +259,7 @@ Promise.reject = function (reason) {
     });
 };
 
-/**
+/*
 Returns a promise that is resolved or rejected when all values are resolved or
 any is rejected. This is useful for waiting for the resolution of multiple
 promises, such as reading multiple files in Node.js or making multiple XHR
@@ -269,7 +269,7 @@ requests in the browser.
 @param {Any[]} values An array of any kind of values, promises or not. If a value is not
 @return [Promise] A promise for an array of all the fulfillment values
 @static
-**/
+*/
 Promise.all = function (values) {
     var Promise = this;
     return new Promise(function (resolve, reject) {
@@ -305,7 +305,7 @@ Promise.all = function (values) {
     });
 };
 
-/**
+/*
 Returns a promise that is resolved or rejected when any of values is either
 resolved or rejected. Can be used for providing early feedback in the UI
 while other operations are still pending.
@@ -314,7 +314,7 @@ while other operations are still pending.
 @param {Any[]} values An array of values or promises
 @return {Promise}
 @static
-**/
+*/
 Promise.race = function (values) {
     var Promise = this;
     return new Promise(function (resolve, reject) {
@@ -624,4 +624,4 @@ Y.batch = function () {
 };
 
 
-}, '3.17.2', {"requires": ["timers"]});
+}, '3.16.0', {"requires": ["timers"]});

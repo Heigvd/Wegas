@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -1647,4 +1647,4 @@ Y.each(Y.Resize.prototype.ALL_HANDLES, function(handle) {
 });
 
 
-}, '3.17.2', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});
+}, '3.16.0', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});

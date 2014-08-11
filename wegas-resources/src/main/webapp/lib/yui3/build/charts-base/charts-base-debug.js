@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -5158,7 +5158,7 @@ function Chart(cfg)
 Y.Chart = Chart;
 
 
-}, '3.17.2', {
+}, '3.16.0', {
     "requires": [
         "dom",
         "event-mouseenter",
