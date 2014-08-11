@@ -60,7 +60,9 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
         },
         addColor: function(cell, editable) {
             if (editable) {
-                cell.setContent("<span class='editable'></span>");
+                if (!this.get("autoReservation")) {
+                    cell.setContent("<span class='editable'></span>");
+                }
             } else {
                 cell.setContent("<span class='notEditable'></span>");
             }
@@ -69,17 +71,28 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
             var i, ii, cell, host = this.get("host"),
                 dt = host.datatable,
                 currentPeriod = host.schedule.currentPeriod();
-            for (i = 0; i < dt.data.size(); i++) {
-                for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
-                    cell = host.schedule.getCell(i, currentPeriod + ii);
-                    if (cell) {
-                        cell.setContent("<span class='engagementDelay'></span>");
-                        cell.getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
+            if (!this.get("autoReservation")) {           // No engagemet delay in automated reservation mode
+                for (i = 0; i < dt.data.size(); i++) {
+                    for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
+                        cell = host.schedule.getCell(i, currentPeriod + ii);
+                        if (cell) {
+                            cell.setContent("<span class='engagementDelay'></span>");
+                            cell.getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
+                        }
                     }
                 }
             }
         }
     }, {
+        ATTRS: {
+            autoReservation: {
+                type: "boolean",
+                value: false,
+                _inputex: {
+                    label: "Automated reservation"
+                }
+            }
+        },
         NS: "occupationcolor",
         NAME: "OccupationColor"
     });
