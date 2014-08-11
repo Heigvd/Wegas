@@ -1019,7 +1019,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     value: {
                         type: BOOLEAN,
                         _inputex: {
-                            label: "Default value"
+                            label: "Default value",
+                            _type: "select",
+                            choices: [true, false]
                         }
                     }
 
@@ -1036,8 +1038,9 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: HIDDEN,
                         value: SELF
                     }, {
-                        type: BOOLEAN,
-                        required: true
+                        type: "select",
+                        required: true,
+                        choices: [true, false]
                     }]
             },
             getValue: {
