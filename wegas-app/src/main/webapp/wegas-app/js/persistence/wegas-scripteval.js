@@ -88,7 +88,7 @@ YUI.add('wegas-scripteval', function(Y) {
          * @param {String} script The script to eval localy
          * @return {Any} value locally evaluated
          */
-        localEval: function(script) {
+        localEval: function(script, player) {
             if (Y.Lang.isObject(script)) {                                      // Normalize script argument
                 script = script.content;
             }
@@ -96,6 +96,7 @@ YUI.add('wegas-scripteval', function(Y) {
             if (!this.upToDate) {                                               //Only compute if new value
                 this._buildContext();
             }
+            this.context.self = player || Wegas.Facade.Game.cache.getCurrentPlayer();
             if (script.indexOf("return ") === -1) {
                 script = "return " + script;
             }

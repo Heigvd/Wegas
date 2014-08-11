@@ -60,7 +60,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         var target = this.treeView.find(function(item) {        // scroll to it in the treeview
                             return item.get("data.entity") && item.get("data.entity").get("id") === e.entity.get("id");
                         });
-                        
                         target && Wegas.Helper.scrollIntoViewIfNot(target.get(CONTENTBOX), false);
                     });
                 }, this);
@@ -80,11 +79,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
                 this.get(CONTENTBOX).append("Unable to find datasource");
                 return;
             }
-
             this.treeView.destroyAll();
             this.treeView.add(this.getNodes());
             this.treeView.syncUI();
-
             this.hideOverlay();
         },
         destructor: function() {

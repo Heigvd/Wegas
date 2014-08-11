@@ -11,21 +11,21 @@
 */
 
 /** Align center tabview labels to the left */
-.wegas-stdmode #centerTabView > div > .yui3-tabview-list {
+.wegas-hostmode #centerTabView > div > .yui3-tabview-list {
     left: 0px;
     right: 0px;
     position: fixed;
 }
-.wegas-stdmode #leftTabView .yui3-tabview-list {
+.wegas-hostmode #leftTabView .yui3-tabview-list {
     display: none;
 }
-.wegas-stdmode .wegas-layout-resizable .yui3-resize-handle {
-    background: #ededed;
+.wegas-hostmode .wegas-layout-resizable .yui3-resize-handle {
+    background: white;
     margin-top: 38px;
 }
 
 /** Hide all advanced feature while in std mode */
-.wegas-stdmode .editor-variables,
+/*.wegas-stdmode .editor-variables,
 .wegas-stdmode .editor-pages,
 .wegas-stdmode .editor-scenarist-button,
 .wegas-stdmode .editor-restart-button,
@@ -37,22 +37,24 @@
 .wegas-editmode .editor-pages,
 .wegas-editmode .editor-scenarist-button,
 .wegas-editmode .editor-preview .wegas-pageeditor-editbutton {
-    /*.wegas-editmode .editor-restart-button { */ 
+    .wegas-editmode .editor-restart-button {  
     display: inline-block;
-}
+}*/
 
 .wegas-editor-treeview-tablehd {
     display: none;
 }
 
 /* Header toggle button */
-.yui3-skin-sam .wegas-layout-hd .yui3-togglebutton {
+.yui3-skin-sam .host-switchmode {
     margin-right: 10px;
     padding: 3px 10px 3px 10px;
     background: transparent;
     color: white;
-    border: 1px solid white;
     line-height: 0.5em; 
+    position: absolute;
+    top: 12px;
+    right: 133px;
 }
 .yui3-skin-sam .wegas-layout-hd .yui3-togglebutton.yui3-button-selected {
     background: white;
@@ -109,18 +111,27 @@
 }
 
 /* Page title styles */
-.yui3-skin-sam .wegas-title   {
-    padding-top: 0 !important;
-    margin-top: 3px !important;
-    font-size: 1.4em !important;
-    line-height: 1em !important;
-    margin-bottom: 0px !important;
-    height: 36px !important;
+/*.yui3-skin-sam .yui3-button.wegas-title,
+.yui3-skin-sam .yui3-button.wegas-title:hover  {
+    font-weight: 900;
+    font-size: 22px;
+    line-height: 1.5em;
+    color: white;
+    background: -2px -2px url(wegas-app/images/wegas-logoicon-35.png) no-repeat;
+    padding: 0px 25px 0 40px;
+    margin: 8px 6px 4px 10px;
+    height: 32px;
+    text-shadow: 1px 0 1px black, 0 1px 1px black;
+}*/
+.yui3-skin-sam .wegas-title {
+    margin-top: 4px;
+    font-size: 1.4em;
+    line-height: 1em;
 }
-.yui3-skin-sam .wegas-title > div  {
-    text-align:left;
+.yui3-skin-sam .wegas-title div {
+    /*text-align:left;*/
 }
-.yui3-skin-sam .wegas-title > .gametitle  {
+.yui3-skin-sam .wegas-title div.subtitle  {
     color: #e0e0e0;
     font-style: italic;
     font-size: 0.7em;
