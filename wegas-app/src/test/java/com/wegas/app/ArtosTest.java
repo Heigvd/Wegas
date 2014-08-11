@@ -12,22 +12,23 @@ import org.junit.Test;
 
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Maxence Laurent <maxence.laurent at gmail.com>
  */
-public class PMGTest extends PMGameAbstractTest {
+public class ArtosTest extends PMGameAbstractTest {
 
     @Test
-    public void testSimplePMG() throws ScriptException {
-        this.evalScript("testsimplepmg()");
+    public void testArtos() throws ScriptException {
+        this.evalScript("testArtos()");
     }
 
     @Override
     protected String getGameModelPath() {
-        return "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-simplePmg.json";
+        return "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-Artos.json";
     }
 
     @Override
     protected String getScriptTestPath() {
-        return "wegas-pmg-server-test-simplepmg.js";
+        return "wegas-pmg-server-test-artos.js";
     }
+
 }
