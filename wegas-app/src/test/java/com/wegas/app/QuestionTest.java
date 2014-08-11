@@ -33,7 +33,6 @@ public class QuestionTest extends AbstractEmbeddedGlassfishTest {
     
     @Before
     public void setUpGM() throws IOException, GlassFishException {
-        guestLogin();
         gm = this.createGameModelFromFile(this.getGameModelPath());
         player = gm.getPlayers().get(0);
     }
