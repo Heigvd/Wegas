@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -249,4 +249,4 @@ Histogram.prototype = {
 Y.Histogram = Histogram;
 
 
-}, '3.17.2', {"requires": ["series-cartesian", "series-plot-util"]});
+}, '3.16.0', {"requires": ["series-cartesian", "series-plot-util"]});

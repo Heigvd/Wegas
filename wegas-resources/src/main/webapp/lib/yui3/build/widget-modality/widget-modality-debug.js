@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -570,4 +570,4 @@ var WIDGET       = 'widget',
 
 
 
-}, '3.17.2', {"requires": ["base-build", "event-outside", "widget"], "skinnable": true});
+}, '3.16.0', {"requires": ["base-build", "event-outside", "widget"], "skinnable": true});

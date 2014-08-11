@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -312,16 +312,8 @@ YUI.add('editor-para', function (Y, NAME) {
 
             //We only expect injected BR behavior when last Node is text
             node = node.get('previousSibling');
-            if (node.get('nodeType') !== Node.TEXT_NODE) {
-                return;
-            }
-
-            offset = node.get('length');
-
-            // the cursor's position is strictly
-            // at the offset when this bug occurs
-            if (sel.getEditorOffset() === offset) {
-                sel.selectNode(node, true, offset);
+            if (node.get('nodeType') === Node.TEXT_NODE) {
+                sel.selectNode(node, true, node.get('length'));
             }
         },
 
@@ -359,4 +351,4 @@ YUI.add('editor-para', function (Y, NAME) {
     Y.Plugin.EditorPara = EditorPara;
 
 
-}, '3.17.2', {"requires": ["editor-para-base"]});
+}, '3.16.0', {"requires": ["editor-para-base"]});

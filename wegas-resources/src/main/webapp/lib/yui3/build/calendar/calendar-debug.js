@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -614,4 +614,4 @@ Y.Calendar = Y.extend(Calendar, Y.CalendarBase, {
 });
 
 
-}, '3.17.2', {"requires": ["calendar-base", "calendarnavigator"], "skinnable": true});
+}, '3.16.0', {"requires": ["calendar-base", "calendarnavigator"], "skinnable": true});

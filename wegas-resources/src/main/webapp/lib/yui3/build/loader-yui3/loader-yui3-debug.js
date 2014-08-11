@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -38,8 +38,7 @@ Y.mix(YUI.Env[Y.version].modules, {
     "anim-base": {
         "requires": [
             "base-base",
-            "node-style",
-            "color-base"
+            "node-style"
         ]
     },
     "anim-color": {
@@ -1264,7 +1263,8 @@ Y.mix(YUI.Env[Y.version].modules, {
     },
     "dom-style": {
         "requires": [
-            "dom-base"
+            "dom-base",
+            "color-base"
         ]
     },
     "dom-style-ie": {
@@ -1299,8 +1299,7 @@ Y.mix(YUI.Env[Y.version].modules, {
             "trigger": "dom-style"
         },
         "requires": [
-            "dom-style",
-            "color-base"
+            "dom-style"
         ]
     },
     "dump": {
@@ -1615,8 +1614,7 @@ Y.mix(YUI.Env[Y.version].modules, {
             "trigger": "graphics"
         },
         "requires": [
-            "graphics",
-            "color-base"
+            "graphics"
         ]
     },
     "graphics-canvas-default": {
@@ -1679,8 +1677,7 @@ Y.mix(YUI.Env[Y.version].modules, {
             "trigger": "graphics"
         },
         "requires": [
-            "graphics",
-            "color-base"
+            "graphics"
         ]
     },
     "graphics-vml-default": {
@@ -2986,7 +2983,7 @@ Y.mix(YUI.Env[Y.version].modules, {
         ]
     }
 });
-YUI.Env[Y.version].md5 = '45357bb11eddf7fd0a89c0b756599df2';
+YUI.Env[Y.version].md5 = 'e61397b06e7b9d3e4298ee7a7a4ea6a1';
 
 
 }, '@VERSION@', {"requires": ["loader-base"]});

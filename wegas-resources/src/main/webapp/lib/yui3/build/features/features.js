@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -72,7 +72,7 @@ Y.mix(Y.namespace('Features'), {
         return (result.length) ? result.join(';') : '';
     },
     /**
-    * Run a specific test and return a Boolean response.
+    * Run a sepecific test and return a Boolean response.
     *
     *   ```
     *   Y.Features.test("load", "1");
@@ -409,4 +409,4 @@ add('load', '22', {
     "ua": "winjs"
 });
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});

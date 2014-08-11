@@ -1,5 +1,5 @@
 /*
-YUI 3.17.2 (build 9c3c78e)
+YUI 3.16.0 (build 76f0e08)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -163,7 +163,7 @@ available.
 (function() {
 
     var proto, prop,
-        VERSION = '3.17.2',
+        VERSION = '3.16.0',
         PERIOD = '.',
         BASE = 'http://yui.yahooapis.com/',
         /*
@@ -608,15 +608,15 @@ with any configuration info required for the module.
 @param {String} version Module version number. This is currently used only for
     informational purposes, and is not used internally by YUI.
 
-@param {Object} [details] Module config.
-    @param {Array} [details.requires] Array of other module names that must be
+@param {Object} [config] Module config.
+    @param {Array} [config.requires] Array of other module names that must be
         attached before this module can be attached.
-    @param {Array} [details.optional] Array of optional module names that should
+    @param {Array} [config.optional] Array of optional module names that should
         be attached before this module is attached if they've already been
         loaded. If the `loadOptional` YUI option is `true`, optional modules
         that have not yet been loaded will be loaded just as if they were hard
         requirements.
-    @param {Array} [details.use] Array of module names that are included within
+    @param {Array} [config.use] Array of module names that are included within
         or otherwise provided by this module, and which should be attached
         automatically when this module is attached. This makes it possible to
         create "virtual rollup" modules that simply attach a collection of other
@@ -744,18 +744,6 @@ with any configuration info required for the module.
                             Y.Env._missed.splice(j, 1);
                         }
                     }
-
-                    // Optional dependencies normally work by modifying the
-                    // dependency list of a module. If the dependency's test
-                    // passes it is added to the list. If not, it's not loaded.
-                    // This following check ensures that optional dependencies
-                    // are not attached when they were already loaded into the
-                    // page (when bundling for example)
-                    if (loader && !loader._canBeAttached(name)) {
-                        Y.log('Failed to attach module ' + name, 'warn', 'yui');
-                        return true;
-                    }
-
                     /*
                         If it's a temp module, we need to redo it's requirements if it's already loaded
                         since it may have been loaded by another instance and it's dependencies might
@@ -3818,13 +3806,6 @@ YUI.Env.parseUA = function(subUA) {
          */
         silk: 0,
         /**
-         * Detects Ubuntu version
-         * @property ubuntu
-         * @type float
-         * @static
-         */
-        ubuntu: 0,
-        /**
          * Detects Kindle Silk Acceleration
          * @property accel
          * @type Boolean
@@ -4022,25 +4003,6 @@ YUI.Env.parseUA = function(subUA) {
             }
         }
 
-        m = ua.match(/Ubuntu\ (\d+\.\d+)/);
-        if (m && m[1]) {
-
-            o.os = 'linux';
-            o.ubuntu = numberify(m[1]);
-
-            m = ua.match(/\ WebKit\/([^\s]*)/);
-            if (m && m[1]) {
-                o.webkit = numberify(m[1]);
-            }
-            m = ua.match(/\ Chromium\/([^\s]*)/);
-            if (m && m[1]) {
-                o.chrome = numberify(m[1]);
-            }
-            if (/ Mobile$/.test(ua)) {
-                o.mobile = 'Ubuntu';
-            }
-        }
-
         if (!o.webkit) { // not webkit
 // @todo check Opera/8.01 (J2ME/MIDP; Opera Mini/2.0.4509/1316; fi; U; ssr)
             if (/Opera/.test(ua)) {
@@ -4211,7 +4173,7 @@ YUI.Env.aliases = {
 };
 
 
-}, '3.17.2', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
+}, '3.16.0', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
 YUI.add('get', function (Y, NAME) {
 
 /*jslint boss:true, expr:true, laxbreak: true */
@@ -5503,7 +5465,7 @@ Transaction.prototype = {
 };
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});
 YUI.add('features', function (Y, NAME) {
 
 var feature_tests = {};
@@ -5571,7 +5533,7 @@ Y.mix(Y.namespace('Features'), {
         return (result.length) ? result.join(';') : '';
     },
     /**
-    * Run a specific test and return a Boolean response.
+    * Run a sepecific test and return a Boolean response.
     *
     *   ```
     *   Y.Features.test("load", "1");
@@ -5909,7 +5871,7 @@ add('load', '22', {
     "ua": "winjs"
 });
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});
 YUI.add('intl-base', function (Y, NAME) {
 
 /**
@@ -5997,7 +5959,7 @@ Y.mix(Y.namespace('Intl'), {
 });
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});
 YUI.add('yui-log', function (Y, NAME) {
 
 /**
@@ -6122,7 +6084,7 @@ INSTANCE.message = function() {
 };
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});
 YUI.add('yui-later', function (Y, NAME) {
 
 /**
@@ -6200,5 +6162,5 @@ Y.Lang.later = Y.later;
 
 
 
-}, '3.17.2', {"requires": ["yui-base"]});
-YUI.add('yui', function (Y, NAME) {}, '3.17.2', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
+}, '3.16.0', {"requires": ["yui-base"]});
+YUI.add('yui', function (Y, NAME) {}, '3.16.0', {"use": ["get", "features", "intl-base", "yui-log", "yui-later"]});
