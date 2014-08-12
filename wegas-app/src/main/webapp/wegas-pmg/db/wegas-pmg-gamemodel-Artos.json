@@ -17628,6 +17628,21 @@
                         "@class": "GameScope",
                         "broadcastScope": "GameScope"
                     }
+                },
+                {
+                    "@class": "StringDescriptor",
+                    "name": "timeUnit",
+                    "label": "Time unit",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "value": "week"
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    },
+                    "validationPattern": null
                 }
             ]
         }

@@ -78,7 +78,7 @@ function plan(task) {
     debug ("Plan task " + task);
     loadResourceController();
     for (var i = 1; i < arguments.length; i++) {
-        resourceController.addTaskPlannification(task.instance.id, arguments[i]);
+        resourceController.addTaskPlannification(self.id ,task.instance.id, arguments[i]);
     }
     debug ("Plan task: DONE");
 }
