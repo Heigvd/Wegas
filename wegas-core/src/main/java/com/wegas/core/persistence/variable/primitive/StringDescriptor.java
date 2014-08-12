@@ -8,9 +8,11 @@
 package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,14 +70,21 @@ public class StringDescriptor extends VariableDescriptor<StringInstance> {
     public void setValidationPattern(String validationPattern) {
 	this.validationPattern = validationPattern;
     }
-
     /**
-     * get default value. PDF Export Sugar
-     *
-     * @return default value
+     * 
+     * @param p
+     * @return 
      */
-    @Transient
-    public String getDefaultValue() {
-	return this.getDefaultInstance().getValue();
+    public String getValue(Player p) {
+        return this.getInstance(p).getValue();
+    }
+    
+    /**
+     *
+     * @param p
+     * @param value
+     */
+    public void setValue(Player p, String value) {
+        this.getInstance(p).setValue(value);
     }
 }
