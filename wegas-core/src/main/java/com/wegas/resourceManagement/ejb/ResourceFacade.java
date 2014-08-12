@@ -7,10 +7,12 @@
  */
 package com.wegas.resourceManagement.ejb;
 
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
@@ -50,6 +52,11 @@ public class ResourceFacade {
      */
     public ResourceFacade() {
     }
+    /**
+     *
+     */
+    @EJB
+    private PlayerFacade playerFacade;
     /**
      *
      */
@@ -257,20 +264,32 @@ public class ResourceFacade {
     }
 
     /**
-     *
+     * 
+     * @param player
      * @param taskInstanceId
-     * @param periode
-     * @return
+     * @param period
+     * @return 
      */
-    public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
+    public TaskInstance addTaskPlannification(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
-        ti.getPlannification().add(periode);
+        ti.getPlannification().add(period);
         try {
-            scriptEvent.fire("addTaskPlannification");
+            scriptEvent.fire(player, "addTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
 
         }
         return ti;
+    }
+    
+    /**
+     * 
+     * @param playerId
+     * @param taskInstanceId
+     * @param period
+     * @return 
+     */
+    public TaskInstance addTaskPlannification(Long playerId, Long taskInstanceId, Integer period) {
+        return addTaskPlannification(playerFacade.find(playerId), taskInstanceId, period);
     }
 
     /**
@@ -279,15 +298,26 @@ public class ResourceFacade {
      * @param periode
      * @return
      */
-    public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
+    public TaskInstance removePlannification(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
-        ti.getPlannification().remove(periode);
+        ti.getPlannification().remove(period);
         try {
-            scriptEvent.fire("removeTaskPlannification");
+            scriptEvent.fire(player, "removeTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
 
         }
         return ti;
+    }
+    
+    /**
+     * 
+     * @param playerId
+     * @param taskInstanceId
+     * @param period
+     * @return 
+     */
+    public TaskInstance removePlannification(Long playerId, Long taskInstanceId, Integer period) {
+        return this.removePlannification(playerFacade.find(playerId), taskInstanceId, period);
     }
 
     /**
