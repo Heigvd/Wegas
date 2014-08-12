@@ -12,7 +12,8 @@
 YUI.add("wegas-inputex-wysiwygscript", function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx;
+    var inputEx = Y.inputEx,
+        Parser;
 
     inputEx.WysiwygScript = function(options) {
         inputEx.WysiwygScript.superclass.constructor.call(this, options);
@@ -37,16 +38,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             if (!this.options.viewSrc) {
                 var ct = "";
                 if (this.exprList.getArray().length > 0) {
-                    ct = this.exprList.getArray().join((this.options.expects === "condition") ? " && " : ";\n");
+                    ct = Parser.join(this.exprList.getArray(), this.options.expects);
+                    //  this.exprList.getArray().join((this.options.expects === "condition") ? " && " : ";\n");
                 }
                 return {
                     "@class": "Script",
                     //language: "JavaScript",
                     content: ct
                 };
-            } else {
-                return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments);
             }
+            return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments);
         },
         /**
          *
@@ -58,7 +59,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 };
             }
             inputEx.WysiwygScript.superclass.setValue.call(this, val, sendUpdated);
-            this.updateExpressionList();
+            if (!this.options.viewSrc) {
+                this.updateExpressionList();
+            }
         },
         validate: function() {
             var val = this.getValue();
@@ -151,14 +154,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 //this.setClassFromState();
             }, this);                                                           // Whenever the value is updated, we synchronize the UI
 
-            this.updateExpressionList();                                        // Synchronize the wysiwig list      
+//            this.updateExpressionList();                                        // Synchronize the wysiwig list      
             this.toggleViewSrc(this.options.viewSrc);                           // Set the default mode (wysiwyg or source)
         },
         /**
          *
          */
         destroy: function() {
-            this.exprList.destroy();
+            if (this.exprList) {
+                this.exprList.destroy();
+            }
             this.viewSrc.destroy();
             this.addButton.destroy();
             this.runButton.destroy();
@@ -195,10 +200,12 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.viewSrc.set("selected", viewSrc ? 1 : 0);
             this.el.toggleView(viewSrc);
             this.addButton.set("disabled", viewSrc);
-            if (viewSrc) {
-                this.exprList.hide();
-            } else {
-                this.exprList.show();
+            if (this.exprList && this.exprList.hide) {
+                if (viewSrc) {
+                    this.exprList.hide();
+                } else {
+                    this.exprList.show();
+                }
             }
         },
         updateTypeInvite: function() {
@@ -209,43 +216,17 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          */
         updateTextarea: function() {
             if (!this.options.viewSrc) {                                        // If current mode is wysiwyg
-                inputEx.AceField.prototype.setValue.call(this, this.getValue().content); // update textatea content
+                inputEx.AceField.prototype.setValue.call(this, this.getValue().content); // update textarea content
             }
         },
         updateExpressionList: function(sort) {
-            var i, tree,
-                container = new Y.Node(this.fieldContainer),
-                fields = [];
+            var container = new Y.Node(this.fieldContainer),
+                fields;
             container.one(".msg").setContent("");                               // Reset layout
 
-            try { // Generate the syntaxic tree using esprima    
-                tree = window.esprima.parse(inputEx.WysiwygScript.superclass.getValue.call(this).content, {
-                    raw: true,
-                    range: true
-                });
-                for (i = 0; i < tree.body.length; i = i + 1) {
-                    if (tree.body[i].type !== "EmptyStatement") {
-                        try {
-                            fields = fields.concat(this.generateExpression(tree.body[i].expression));
-//                            fields[i].raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, tree.body[i].expression.range);
-                        } catch (e) {
-                            fields.push({
-                                raw: tree.body[i].range,
-                                type: this.options.expects
-                            });
-                        }
-                    }
-                }
-                Y.Array.each(fields, function(item, index, array) {
-                    if (item.raw) {
-                        item.raw = String.prototype.substring.apply(inputEx.WysiwygScript.superclass.getValue.call(this).content, item.raw);
-                    } else {
-                        array[index] = {
-                            raw: item,
-                            type: this.options.expects
-                        };
-                    }
-                }, this);
+            try { // Generate the syntactic tree using esprima 
+                fields = Parser.parse(inputEx.WysiwygScript.superclass.getValue.call(this).content, this.options);
+
                 this.viewSrc.set("disabled", false);
                 if (this.exprList) {
                     this.exprList.destroy();
@@ -298,100 +279,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 return Y.Array.indexOf(order, a.value) - Y.Array.indexOf(order, b.value);
             });
             return fields;
-        },
-        /**
-         *
-         */
-        generateExpression: function(expression) {
-            var args, vdSelect, ret;
-            //Y.log("generateExpression(" + expression.type + ")");
-            switch (expression.type) {
-
-                case "Identifier":
-                    return expression.name;
-                case "Literal":
-                    return expression.value;
-                case "UnaryExpression":
-                    return expression.operator + this.generateExpression(expression.argument);
-                case "ObjectExpression":
-                    args = {};
-                    Y.Array.each(expression.properties, function(i) {
-                        args[i.key.value] = this.generateExpression(i.value);
-                    }, this);
-                    return args;
-                case "ArrayExpression":
-                    args = [];
-                    Y.Array.each(expression.elements, function(i) {
-                        args.push(this.generateExpression(i));
-                    }, this);
-                    return args;
-                case "BinaryExpression":
-                    vdSelect = this.generateExpression(expression.left)[0];
-                    args = [];
-                    vdSelect.type = "condition";
-                    vdSelect.operator = expression.operator;
-                    vdSelect.rightValue = this.generateExpression(expression.right);
-                    return [vdSelect];
-                case "LogicalExpression":
-                    if (expression.operator === "&&") {
-                        return this.generateExpression(expression.left).
-                            concat(this.generateExpression(expression.right));
-                    }
-                    break;
-                case "CallExpression":
-                    switch (expression.callee.object.type) {
-                        case "Identifier":
-                            switch (expression.callee.object.name) {
-                                case "Variable":
-                                case "VariableDescriptorFacade":                // @backwardcompatibility
-                                    return {
-                                        type: this.options.expects,
-                                        classFilter: this.options.classFilter,
-                                        raw: expression.range,
-                                        value: (expression["arguments"][1]) ? expression["arguments"][1].value : expression["arguments"][0].value // First argument (gameModel) is optional
-                                    };
-                                case "RequestManager":
-                                case "Event":
-                                default:
-                                    args = [];
-                                    Y.Array.each(expression["arguments"], function(i) {
-                                        args.push(this.generateExpression(i));
-                                    }, this);
-                                    ret = {
-                                        type: this.options.expects,
-                                        classFilter: this.options.classFilter,
-                                        raw: expression.range,
-                                        value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
-                                        "arguments": args
-                                    };
-                                    if (expression.callee.property.name === "fired") {
-                                        return [ret];
-                                    } else {
-                                        return ret;
-                                    }
-                            }
-                            break;
-                        default:
-                            vdSelect = this.generateExpression(expression.callee.object);
-                            args = [];
-                            Y.Array.each(expression["arguments"], function(i) {
-                                args.push(this.generateExpression(i));
-                            }, this);
-                            Y.mix(vdSelect, {
-                                method: expression.callee.property.name,
-                                "arguments": args
-
-                            });
-                            vdSelect.raw = expression.range;
-                            return [vdSelect];
-                    }
-                    break;
-            }
-            throw new Error("Unable to parse expression.");
         }
     });
     inputEx.registerType("script", inputEx.WysiwygScript);                      // Register this class as "script" type
-
     /**
      *
      */
@@ -415,4 +305,229 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         }
     });
     inputEx.registerType("variableselect", inputEx.SingleLineWysiwygScript);    // Register this class as "variableselect"
+    /**
+     * Singleton with parser's logic
+     */
+    Parser = (function() {
+        var eparse = window.esprima.parse, Syntax = window.esprima.Syntax;
+        return{
+            /**
+             * Transform a script into an array of json configuration for inputex.
+             * @param {String} content the script to parse
+             * @param {Object} options used to configure return values
+             * @returns {Array} configuration to pass to wysiwyg inputex.
+             */
+            parse: function(content, options) {
+                var tree, i, fields = [];
+                tree = eparse(content, {
+                    raw: true,
+                    range: true
+                });
+                for (i = 0; i < tree.body.length; i = i + 1) {
+                    switch (tree.body[i].type) {
+                        case Syntax.EmptyStatement:                                  /** STATEMENT **/
+                            break;
+                        case Syntax.ExpressionStatement:
+                            fields = fields.concat(Parser.generateExpression(tree.body[i].expression, options));
+                            break;
+                        case Syntax.BlockStatement:
+                        case Syntax.IfStatement:
+                        case Syntax.WithStatement:
+                        case Syntax.SwitchStatement:
+                        case Syntax.ThrowStatement:
+                        case Syntax.TryStatement:
+                        case Syntax.WhileStatement:
+                        case Syntax.DoWhileStatement:
+                        case Syntax.ForStatement:
+                        case Syntax.ForInStatement:
+                        case Syntax.ForOfStatement:
+                        case Syntax.LabeledStatement:
+                        case Syntax.DebuggerStatement:
+                            fields.push({
+                                raw: tree.body[i].range,
+                                type: options.expects
+                            });
+                            break;
+                        case Syntax.FunctionDeclaration:                             /** DECLARATION **/
+                        case Syntax.VariableDeclaration:
+                            fields.push({
+                                raw: tree.body[i].range,
+                                type: options.expects
+                            });
+                            break;
+                        default:
+                            fields.push({
+                                raw: tree.body[i].range,
+                                type: options.expects
+                            });
+                    }
+                }
+                Y.Array.each(fields, function(item) {
+                    item.raw = String.prototype.substring.apply(content, item.raw);
+                }, this);
+                return fields;
+            },
+            /**
+             * Used to generate an expression's config
+             * Not meant to be used directly
+             * @see Parser.parse
+             * @param {Object} expression expression to parse, Esprima's output
+             * @param {Object} options used to configure return values
+             * @returns {_L12.Parser.generateExpression.Anonym$15|_L12.Parser.generateExpression.Anonym$19|_L12.Parser.generateExpression.Anonym$16|Array}
+             */
+            generateExpression: function(expression, options) {
+                var args, vdSelect;
+                try {
+                    //Y.log("generateExpression(" + expression.type + ")");
+                    switch (expression.type) {
+                        case Syntax.Identifier:
+                            return expression.name;
+                        case Syntax.Literal:
+                            return expression.value;
+                        case Syntax.UnaryExpression:
+                            return expression.operator + Parser.generateExpression(expression.argument, options);
+                        case Syntax.ObjectExpression:
+                            args = {};
+                            Y.Array.each(expression.properties, function(i) {
+                                args[i.key.value] = Parser.generateExpression(i.value, options);
+                            }, this);
+                            return args;
+                        case Syntax.ArrayExpression:
+                            args = [];
+                            Y.Array.each(expression.elements, function(i) {
+                                args.push(Parser.generateExpression(i, options));
+                            }, this);
+                            return args;
+                        case Syntax.BinaryExpression:
+                            vdSelect = Parser.generateExpression(expression.left, options)[0];
+                            args = [];
+                            vdSelect.type = "condition";
+                            vdSelect.raw = expression.range;
+                            vdSelect.operator = expression.operator;
+                            vdSelect.rightValue = Parser.generateExpression(expression.right, options);
+                            return [vdSelect];
+                        case Syntax.LogicalExpression:
+                            if (expression.operator === "&&") {
+                                return Parser.generateExpression(expression.left, options).
+                                    concat(Parser.generateExpression(expression.right, options));
+                            }
+                            break;
+                        case Syntax.CallExpression:
+                            if (expression.callee.type === Syntax.Identifier) { //global function call ie "myFn()"
+                                args = [];
+                                Y.Array.each(expression["arguments"], function(i) {
+                                    args.push(Parser.generateExpression(i, options));
+                                }, this);
+                                return [{
+                                        type: options.expects,
+                                        classFilter: options.classFilter,
+                                        raw: expression.range,
+                                        value: "GLOBAL" + expression.callee.name,
+                                        "arguments": args
+                                    }];
+                            }
+                            switch (expression.callee.object.type) {
+                                case Syntax.Identifier:
+                                    switch (expression.callee.object.name) {
+                                        case "Variable":
+                                        case "VariableDescriptorFacade":                // @backwardcompatibility
+                                            //Assume function is "find"
+                                            return [{
+                                                    type: options.expects,
+                                                    classFilter: options.classFilter,
+                                                    raw: expression.range,
+                                                    value: (expression["arguments"][1]) ? expression["arguments"][1].value : expression["arguments"][0].value // First argument (gameModel) is optional
+                                                }];
+//                                        case "RequestManager":
+//                                        case "Event":
+                                        default:
+                                            args = [];
+                                            Y.Array.each(expression["arguments"], function(i) {
+                                                args.push(Parser.generateExpression(i, options));
+                                            }, this);
+                                            return [{
+                                                    type: options.expects,
+                                                    classFilter: options.classFilter,
+                                                    raw: expression.range,
+                                                    value: "GLOBAL" + expression.callee.object.name + "." + expression.callee.property.name,
+                                                    "arguments": args
+                                                }];
+                                    }
+                                default:
+                                    vdSelect = Parser.generateExpression(expression.callee.object, options);
+                                    args = [];
+                                    Y.Array.each(expression["arguments"], function(i) {
+                                        args.push(Parser.generateExpression(i, options));
+                                    }, this);
+                                    Y.mix(vdSelect[0], {
+                                        method: expression.callee.property.name,
+                                        "arguments": args
+                                    });
+                                    vdSelect[0].raw = expression.range;
+                                    return vdSelect;
+                            }
+                    }
+                } catch (e) {
+                    return {
+                        raw: expression.range,
+                        type: options.expects
+                    };
+                }
+            },
+            join: function(scripts, joinType) {
+                var i, j, tree, next, script = "", tmp,
+                    write = function(script, type, nextScript) {
+                        var ret = "";
+                        switch (type) {
+                            case Syntax.EmptyStatement:                                  /** STATEMENT **/
+                                return false; //Skip it
+                            case Syntax.ExpressionStatement:
+                                next = nextScript ? eparse(scripts[i + 1]).body[0].type : null;
+                                if (joinType === "condition" && next === Syntax.ExpressionStatement) { //Join 2 conditional expression
+                                    ret += script.replace(/;*\s*$/, " && ");
+                                } else {
+                                    ret += script.replace(/;*\s*$/, ";\n");
+                                }
+                                break;
+                            case Syntax.BlockStatement:
+                            case Syntax.IfStatement:
+                            case Syntax.WithStatement:
+                            case Syntax.SwitchStatement:
+                            case Syntax.ThrowStatement:
+                            case Syntax.TryStatement:
+                            case Syntax.WhileStatement:
+                            case Syntax.DoWhileStatement:
+                            case Syntax.ForStatement:
+                            case Syntax.ForInStatement:
+                            case Syntax.ForOfStatement:
+                            case Syntax.LabeledStatement:
+                            case Syntax.DebuggerStatement:
+
+                            case Syntax.FunctionDeclaration:                             /** DECLARATION **/
+                                ret += scripts[i] + "\n";
+                                break;
+                            case Syntax.VariableDeclaration:
+                                ret += scripts[i].replace(/;*\s*$/, ";\n");
+                                break;
+                        }
+                        return ret;
+                    };
+
+                for (i = 0; i < scripts.length; i += 1) {
+                    if (scripts[i]) {
+                        tree = eparse(scripts[i]);
+                        if (tree.body.length) {
+                            tmp = false;
+                            j = tree.body.length;
+                            while (j-- && !tmp) {
+                                tmp = write(scripts[i], tree.body[j].type, scripts[i + 1]);
+                            }
+                            script += tmp;
+                        }
+                    }
+                }
+                return script;
+            }
+        };
+    }());
 });
