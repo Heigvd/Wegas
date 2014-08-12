@@ -413,11 +413,25 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             }
                             break;
                         case Syntax.CallExpression:
+                            if (expression.callee.type === Syntax.Identifier) { //global function call ie "myFn()"
+                                args = [];
+                                Y.Array.each(expression["arguments"], function(i) {
+                                    args.push(Parser.generateExpression(i, options));
+                                }, this);
+                                return [{
+                                        type: options.expects,
+                                        classFilter: options.classFilter,
+                                        raw: expression.range,
+                                        value: "GLOBAL" + expression.callee.name,
+                                        "arguments": args
+                                    }];
+                            }
                             switch (expression.callee.object.type) {
                                 case Syntax.Identifier:
                                     switch (expression.callee.object.name) {
                                         case "Variable":
                                         case "VariableDescriptorFacade":                // @backwardcompatibility
+                                            //Assume function is "find"
                                             return [{
                                                     type: options.expects,
                                                     classFilter: options.classFilter,
