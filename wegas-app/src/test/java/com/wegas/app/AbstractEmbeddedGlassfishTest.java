@@ -8,8 +8,9 @@
 package com.wegas.app;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.rest.ScriptController;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
 import java.io.File;
 import java.util.Properties;
 import java.util.logging.Level;
@@ -30,7 +31,7 @@ import org.junit.BeforeClass;
  *
  * @author Maxence Laurent <maxence.laurent> <gmail> <com>
  */
-public class AbstractEmbeddedGlassfishTest {
+public abstract class AbstractEmbeddedGlassfishTest extends AbstractTest {
 
     private static GlassFish glassfish;
     private static String appName;
@@ -66,8 +67,12 @@ public class AbstractEmbeddedGlassfishTest {
             glassfish.start();
 
             File war = new File("./target/Wegas.war");
-
             appName = glassfish.getDeployer().deploy(war, "--contextroot=Wegas");
+            //ScatteredArchive archive = new ScatteredArchive("Wegas", 
+            //        ScatteredArchive.Type.WAR,
+            //        new File("./target/embed-war/"));
+            //archive.addClassPath(new File("./target/classes/"));                    // target/classes directory contains complied servlets
+            //archive.addClassPath(new File("../wegas-core/target/classes"));         // wegas-core dependency
 
             setBaseUrl("http://localhost:5454/Wegas");
 
@@ -117,4 +122,13 @@ public class AbstractEmbeddedGlassfishTest {
         return lookup;
     }
 
+    @Override
+    protected ScriptController getScriptController() {
+        return lookup(ScriptController.class);
+    }
+
+    @Override
+    protected VariableDescriptorFacade getVariableDescriptorFacade() {
+        return lookup(VariableDescriptorFacade.class);
+    }
 }
