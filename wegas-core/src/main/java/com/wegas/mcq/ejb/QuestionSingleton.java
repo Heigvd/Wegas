@@ -48,8 +48,7 @@ public class QuestionSingleton {
      * @return
      * @throws WegasException
      */
-    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
-    public Reply createReply(Long choiceId, Player player, Long startTime) throws WegasException {
+    public Reply createReplyUntransactionnal(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
 
         QuestionDescriptor questionDescriptor = choice.getQuestion();
@@ -70,5 +69,10 @@ public class QuestionSingleton {
         em.flush();
         em.refresh(reply);
         return reply;
+    }
+
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
+    public Reply createReply(Long choiceId, Player player, Long startTime) throws WegasException {
+        return createReplyUntransactionnal(choiceId, player, startTime);
     }
 }
