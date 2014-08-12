@@ -17,12 +17,12 @@ YUI.add('wegas-scheduledatatable', function(Y) {
 
     /**
      *  @class Add column to datatable
-     *  @name Y.Plugin.scheduleDT
+     *  @name Y.Plugin.ScheduleDT
      *  @extends Y.Plugin.Base
      *  @constructor
      */
     ScheduleDT = Y.Base.create("wegas-scheduledatatable", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
-        /** @lends Y.Plugin.CSSStyles */
+        /** @lends Y.Plugin.ScheduleDT */
 
         /**
          * Lifecycle methods
