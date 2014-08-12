@@ -444,7 +444,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     //    NAME: "EditorDTLink",
     //    ATTRS: {
     //        url: {
-    //            value: "play.html?"
+    //            value: "game-play.html?"
     //        }
     //    }
     //});
