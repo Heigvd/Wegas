@@ -95,8 +95,7 @@ public class ScriptEventFacade {
      * @throws NoSuchMethodException
      */
     public void fire(Player player, String eventName) throws ScriptException, NoSuchMethodException {
-        this.eventsFired.put(eventName, new EmptyObject());
-        this.doFire(player, eventName, null);
+        this.fire(player, eventName, null);
     }
 
     /**
@@ -107,8 +106,7 @@ public class ScriptEventFacade {
      * @throws NoSuchMethodException
      */
     public void fire(String eventName, Object param) throws ScriptException, NoSuchMethodException {
-        this.eventsFired.put(eventName, param);
-        this.doFire(requestManager.getPlayer(), eventName, param);
+        this.fire(requestManager.getPlayer(), eventName, param);
     }
 
     /**
@@ -118,8 +116,7 @@ public class ScriptEventFacade {
      * @throws NoSuchMethodException
      */
     public void fire(String eventName) throws ScriptException, NoSuchMethodException {
-        this.eventsFired.put(eventName, new EmptyObject());
-        this.doFire(requestManager.getPlayer(), eventName, null);
+        this.fire(eventName, null);
     }
 
     private void doFire(Player player, String eventName, Object params) throws ScriptException, NoSuchMethodException {
