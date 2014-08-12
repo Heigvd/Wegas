@@ -156,9 +156,9 @@ function testGameVersion1() {
     
     //breakpoint("pre reset");
 
-    // DO NEVER CALL RESET 
-    // reset();  DO NEVER CALL RESET                                            // NEVER CALL RESET()
-    // DO NEVER CALL RESET 
+    // NEVER CALL RESET 
+    // reset();  NEVER CALL RESET                                            // NEVER CALL RESET()
+    // NEVER CALL RESET 
 
     printDuration("reset", start);
     
@@ -174,12 +174,14 @@ function testGameVersion1() {
 
     breakpoint("pre select 1");
     
-    selectChoice(a01);
+    //NEVER CALL selectChoice
+    //selectChoice(a01);
     
     breakpoint("pre select 2");
     
     // Choice1
-    selectChoice(a102b_a);
+    // NEVER CALL selectChoice
+    //selectChoice(a102b_a);
     
     printDuration("END", start);
 }
