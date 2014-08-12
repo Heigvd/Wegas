@@ -71,7 +71,7 @@ public class SingleLobbyController implements Serializable {
                 try {
                     playerFacade.findCurrentPlayer(currentGame);
                     try {
-                        externalContext.dispatch("play.xhtml?gameId=" + currentGame.getId());// display game page
+                        externalContext.dispatch("game-play.xhtml?gameId=" + currentGame.getId());// display game page
                     } catch (IOException ex) {
                     }
                 } catch (PersistenceException e) {
@@ -90,7 +90,7 @@ public class SingleLobbyController implements Serializable {
                 //                externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // not allowed
                 //            }
                 //        }
-                //        externalContext.dispatch("play.xhtml?gameId=" + currentTeam.getGame().getId());// display game page
+                //        externalContext.dispatch("game-play.xhtml?gameId=" + currentTeam.getGame().getId());// display game page
                 //    } else {
                 //        externalContext.dispatch("/wegas-app/view/error/accessdenied.xhtml"); // no game
                 //    }

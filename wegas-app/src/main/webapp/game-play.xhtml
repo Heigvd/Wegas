@@ -9,10 +9,10 @@
 
         <ui:define name="head">
 
-            <!-- In player mode, CSS library for current game model is included directly in the file header -->
+            <!-- Stylesheets from current game model style library -->
             <style type="text/css">#{gameController.styleSheets}</style>
 
-            <!-- Dev tool: stylesheets reference injected directly in the game model -->
+            <!-- Stylesheets from current game model cssUri property -->
             <ui:repeat rendered="#{gameController.currentGameModel.properties.cssUri != ''}"
                        var="o" value="#{gameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
