@@ -112,9 +112,10 @@ public class ResourceController {
      * @return
      */
     @POST
-    @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
-    public TaskInstance addTaskPlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
-        return resourceFacade.addTaskPlannification(taskInstanceId, periode);
+    @Path("Player/{playerId : [1-9][0-9]*}/Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
+    public TaskInstance addTaskPlannification(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
+            @PathParam("periode") Integer periode) {
+        return resourceFacade.addTaskPlannification(playerId, taskInstanceId, periode);
     }
 
     /**
@@ -124,8 +125,9 @@ public class ResourceController {
      * @return
      */
     @DELETE
-    @Path("Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
-    public TaskInstance removePlannification(@PathParam("taskInstanceId") Long taskInstanceId, @PathParam("periode") Integer periode) {
-        return resourceFacade.removePlannification(taskInstanceId, periode);
+    @Path("Player/{playerId : [1-9][0-9]*}/Plannification/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
+    public TaskInstance removePlannification(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
+            @PathParam("periode") Integer periode) {
+        return resourceFacade.removePlannification(playerId, taskInstanceId, periode);
     }
 }

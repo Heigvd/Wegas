@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.ejb;
 
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
@@ -50,6 +51,11 @@ public class ResourceFacade {
      */
     public ResourceFacade() {
     }
+    /**
+     *
+     */
+    @EJB
+    private PlayerFacade playerFacade;
     /**
      *
      */
@@ -262,11 +268,11 @@ public class ResourceFacade {
      * @param periode
      * @return
      */
-    public TaskInstance addTaskPlannification(Long taskInstanceId, Integer periode) {
+    public TaskInstance addTaskPlannification(Long playerId, Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().add(periode);
         try {
-            scriptEvent.fire("addTaskPlannification");
+            scriptEvent.fire(playerFacade.find(playerId), "addTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
 
         }
@@ -279,11 +285,11 @@ public class ResourceFacade {
      * @param periode
      * @return
      */
-    public TaskInstance removePlannification(Long taskInstanceId, Integer periode) {
+    public TaskInstance removePlannification(Long playerId, Long taskInstanceId, Integer periode) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(periode);
         try {
-            scriptEvent.fire("removeTaskPlannification");
+            scriptEvent.fire(playerFacade.find(playerId), "removeTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
 
         }
