@@ -19,9 +19,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
      *  @constructor
      */
     var Wegas = Y.Wegas,
-        Reservation,
-        autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
-        autoReservation = autoDesc && autoDesc.getInstance().get("value");
+        Reservation;
 
     Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Reservation */
@@ -32,7 +30,6 @@ YUI.add('wegas-pmg-reservation', function(Y) {
          * @private
          */
         initializer: function() {
-            if (!autoReservation) {
                 this.get("host").datatable.delegate("click", function(e, a) {
                     var dt = this.get("host").datatable,
                         id = dt.getRecord(e.target).get("id"),
@@ -40,7 +37,6 @@ YUI.add('wegas-pmg-reservation', function(Y) {
 
                     this.checkCache(id, columnsCfg.time);
                 }, "tbody .present, tbody .futur", this);
-            }
         },
         checkCache: function(descriptorId, periode) {
             var vd = Y.Wegas.Facade.Variable.cache.find("id", descriptorId),

@@ -115,17 +115,23 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             var resourceFoldes = Wegas.Facade.Variable.cache.find("name", "employees");
 
             this.panels = Y.Array.map(resourceFoldes.get("items"), function(vd) {
+                var autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
+                    autoReserve = autoDesc && autoDesc.getInstance().get("value"); 
+
+
                 return new Wegas.PmgSlidePanel({
+                    
                     title: vd.get("label"),
                     children: [{
                             type: "PmgDatatable",
                             plugins: [{
                                     fn: "ScheduleDT",
                                     cfg: {
-                                        columnToAdd: 24,
+                                        //columnToAdd: 24,
                                         variable: {
                                             name: "periodPhase3"
-                                        }
+                                        }, 
+                                        autoReservation: autoReserve
                                     }
                                 }, {
                                     fn: "Assignment",
@@ -138,7 +144,10 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                 }, {
                                     fn: "Reservation"
                                 }, {
-                                    fn: "OccupationColor"
+                                    fn: "OccupationColor",
+                                    cfg: {
+                                        autoReservation: autoReserve
+                                    }
                                 }, {
                                     fn: "ActivityColor"
                                 }],
