@@ -99,6 +99,31 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     right: 0;
     z-index: 1000;
 }
+
+/** App loading */
+.wegas-loading-app {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -40px;
+    background: white url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+}
+.wegas-loading-app > div {
+    width: auto;
+    height: 2px;
+    background-color: #ededed;
+    margin-top: 37px;
+    margin-left: 9px;
+    margin-right: 1px;
+}
+.wegas-loading-app > div > div {
+    height: 100%;
+    width: 0%;
+    background-color: #072644;
+}
 /* */
 .wegas-smallmessage {
     padding: 20px;

@@ -57,15 +57,25 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         render: function() {
-            var ds, dsClass, widgetCfg,
+
+            // Add loading animation (done without YUI cause node module is not available yet)
+            document.body.innerHTML += "<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>";
+
+            var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), //                       // Data sources cfg objects
+
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() {                                        // When a response to initial requests is received
                     requestCounter -= 1;
+                    document.getElementsByClassName("wegas-loading-app-current")[0].setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
+
                     if (requestCounter === 0) {                                 // If all initial request are completed,
-                        this.widget = Wegas.Widget.create(widgetCfg)            // instantiate the root widget
-                            .render();                                          // and render it
-                        this.fire("render");                                    // fire a render event for some eventual post processing
+                        Y.later(10, this, function() {                          // let the loading div update
+                            this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
+                                .render();                                      // and render it
+                            this.fire("render");
+                            document.getElementsByClassName("wegas-loading-app")[0].remove();
+                        });                                  // fire a render event for some eventual post processing
                     }
                 };
 
@@ -93,6 +103,7 @@ YUI.add('wegas-app', function(Y) {
                     widgetCfg = e.response.results;                             // store the result for later use
                     Wegas.use(widgetCfg, Y.bind(onRequest, this));              // Optim: Load pages dependencies as soon as the data is received
                 }, this);
+                totalRequests = requestCounter;
             }, this));
 
             // Post render events
