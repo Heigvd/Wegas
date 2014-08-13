@@ -31,10 +31,25 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             VariableTreeView.superclass.renderUI.apply(this);                   // Render treeview
             this.plug(Plugin.EditorTVDefaultMenuClick);                         // Open edit tab on left click
 
+            var timer = new Y.Wegas.Timer({duration: 100});
+
             this.toolbar.get('header').append("<div class='wegas-filter-input'><input size='15' placeholder='Search...'/></div>")
                 .one(".wegas-filter-input input").on("valueChange", function(e) {
-                this.treeView.filter.set("searchVal", e.newVal);
+                if (e.prevVal === "") {
+                    this.savedState = this.treeView.saveState();
+                }
+                this.searchVal = e.newVal;
+                if (e.newVal === "") {
+                    this.treeView.applyState(this.savedState);
+                    timer.timeOut();
+                } else {
+                    timer.reset();
+                }
             }, this);
+            timer.on("timeOut", function() {
+                this.treeView.filter.set("searchVal", this.searchVal);
+            }, this);
+
             this.treeView.plug(Plugin.TreeViewFilter, {
                 testFn: function(searchVal) {
                     var e = this.get("data.entity");
