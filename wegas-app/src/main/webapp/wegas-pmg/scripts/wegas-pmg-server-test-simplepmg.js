@@ -421,8 +421,8 @@ function testCompetenceRatioSup() {
 
     assign(informaticien1, task2);
     assign(commercial1, task2);
-    resourceController.addReservation(informaticien1.instance.id, 1);
-    resourceController.addReservation(commercial1.instance.id, 1);
+    reserve(informaticien1, 1);
+    reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Execution week 2
     assertEquals(60, task2.instance.getProperty('completeness'), "testCompetenceRatioSup(): task2 completness does not match"); //ancien 60%
@@ -468,10 +468,10 @@ function testLearnFactor() {
     assign(commercial2, task5);
     assign(commercial3, task5);
 
-    resourceController.addReservation(commercial1.instance.id, 1);
-    resourceController.addReservation(commercial2.instance.id, 2);
-    resourceController.addReservation(commercial3.instance.id, 3);
-    resourceController.addReservation(commercial3.instance.id, 4);
+    reserve(commercial1, 1);
+    reserve(commercial2, 2);
+    reserve(commercial3, 3);
+    reserve(commercial3, 4);
 
     doNextPeriod(3);                                                            // -> Execution week 2
     assertEquals(10, task5.instance.getProperty('completeness'), "testLearnFactor(): task5 completness does not match"); //ancien 10%
@@ -531,24 +531,24 @@ function testPredecessorFactor() {
     //task1
     assign(informaticien1, task1);
     assign(informaticien2, task1);
-    resourceController.addReservation(informaticien1.instance.id, 1);
-    resourceController.addReservation(informaticien2.instance.id, 1);
+    reserve(informaticien1, 1);
+    reserve(informaticien2, 1);
 
     //task2
     assign(commercial1, task2);
     assign(commercial2, task2);
     assign(informaticien3, task2);
 
-    resourceController.addReservation(commercial1.instance.id, 1);
-    resourceController.addReservation(commercial2.instance.id, 1);
-    resourceController.addReservation(informaticien3.instance.id, 1);
+    reserve(commercial1, 1);
+    reserve(commercial2, 1);
+    reserve(informaticien3, 1);
 
     //task3    
     assign(commercial3, task3);
     assign(informaticien4, task3);
 
-    resourceController.addReservation(commercial3.instance.id, 2);
-    resourceController.addReservation(informaticien4.instance.id, 2);
+    reserve(commercial3, 2);
+    reserve(informaticien4, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
     assertEquals(50, task1.instance.getProperty('completeness'), "testPredecessorFactor(): task1 completness does not match"); //ancien 50%
@@ -598,10 +598,10 @@ function testResourceChangeWithinTask() {
     assign(commercial1, task1);
     assign(commercial1, task2);
 
-    resourceController.addReservation(commercial1.instance.id, 1);
-    resourceController.addReservation(commercial2.instance.id, 2);
-    resourceController.addReservation(commercial3.instance.id, 3);
-    resourceController.addReservation(commercial4.instance.id, 4);
+    reserve(commercial1, 1);
+    reserve(commercial2, 2);
+    reserve(commercial3, 3);
+    reserve(commercial4, 4);
 
     doNextPeriod(5);                                                            // -> Executing week 4
     // assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
