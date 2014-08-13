@@ -1922,6 +1922,22 @@
             "description": null
         },
         {
+            "@class": "InboxDescriptor",
+            "name": "history",
+            "label": "History",
+            "title": null,
+            "defaultInstance": {
+                "@class": "InboxInstance",
+                "messages": [],
+                "unreadCount": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "PlayerScope"
+            },
+            "description": null
+        },
+        {
             "@class": "ListDescriptor",
             "name": "timeCards",
             "label": "time cards",
@@ -2097,8 +2113,8 @@
         },
         {
             "@class": "ListDescriptor",
-            "name": "pageUtilities",
-            "label": "page utilities",
+            "name": "Private",
+            "label": "Private",
             "title": null,
             "defaultInstance": {
                 "@class": "ListInstance"
@@ -2305,8 +2321,24 @@
                     "minValue": null,
                     "maxValue": null,
                     "defaultValue": 0
-                }
-            ]
+                }, {
+                    "@class": "NumberDescriptor",
+                    "name": "currentTime",
+                    "label": "Current time",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "PlayerScope"
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0
+                }]
         },
         {
             "@class": "ListDescriptor",

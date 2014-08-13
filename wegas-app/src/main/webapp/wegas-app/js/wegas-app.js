@@ -86,7 +86,7 @@ YUI.add('wegas-app', function(Y) {
                     this.dataSources[name] = ds;                                // Push to data source list
                 }, this);
 
-                this.dataSources.Variable = this.dataSources.VariableDescriptor;// @hack
+                this.dataSources.VariableDescriptor = this.dataSources.Variable;// @backward compatibility
 
                 requestCounter += 1;
                 this.dataSources.Page.once("response", function(e) {            // When page data source response arrives,

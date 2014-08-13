@@ -25,7 +25,7 @@ YUI.addGroup("wegas-pmg", {
             ws_provides: "PmgBreadcrumb"
         },
         'wegas-pmg-datatable': {
-            requires: ['wegas-datatable', 'datatable', 'datatable-mutable', "template"], //Using simple datatable
+            requires: ['datatable', 'datatable-mutable', "template"],
             ws_provides: "PmgDatatable"
         },
         'wegas-pmg-slidepanel': {

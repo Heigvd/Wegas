@@ -36,7 +36,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         sendInitialRequest: function(cfg) {
-            if (!Y.Lang.isUndefined(this.get("initialRequest"))) {               // Use this condition to allow empty strings (e.g. ")
+            if (!Y.Lang.isUndefined(this.get("initialRequest"))) {              // Use this condition to allow empty strings (e.g. ")
                 return this.sendRequest(Y.mix(cfg || {}, {
                     request: this.get("initialRequest"),
                     cfg: {
@@ -175,12 +175,12 @@ YUI.add('wegas-datasource', function(Y) {
             var response, data = e.data && (e.data.responseText || e.data),
                 host = this.get(HOST),
                 payload = e.details[0];
-            if (data.status !== 0) {                                                  //no abort
+            if (data.status !== 0) {                                            // no abort
                 response = {
                     results: Y.JSON.parse(data),
                     meta: {}
                 };
-                response.data = host.data;                                          // Provides with a pointer to the datasource current content
+                response.data = host.data;                                      // Provides with a pointer to the datasource current content
                 payload.response = response;
                 Y.log("Response received: " + host.get('source')/* + e.cfg.request*/, "log", "Wegas.DataSource");
 
@@ -232,7 +232,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             } else {
                 if (response.get("entities")) {
-                    for (i = 0; i < response.get("entities").length; i += 1) {   // Update the cache with the Entites in the reply body
+                    for (i = 0; i < response.get("entities").length; i += 1) {  // Update the cache with the Entites in the reply body
                         entity = response.get("entities")[i];
                         if (Lang.isObject(entity)) {
                             this.updated = this.updateCache(e.cfg.method, entity, !e.cfg.initialRequest) || this.updated;
@@ -289,7 +289,7 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                     break;
             }
-            this.addToCache(entity, updateEvent);                                            // In case we still have not found anything
+            this.addToCache(entity, updateEvent);                               // In case we still have not found anything
             return true;
         },
         /**
@@ -338,7 +338,7 @@ YUI.add('wegas-datasource', function(Y) {
                 var ret = [],
                     doFind = function(stack) {
                         return Y.Array.find(stack, function(item, index, array) {
-                            if (this.testEntity(item, key, needle)) {                   // We check the current element if it's a match
+                            if (this.testEntity(item, key, needle)) {           // We check the current element if it's a match
                                 ret.push(item);
                             }
                             this.walkEntity(item, doFind);
@@ -566,7 +566,7 @@ YUI.add('wegas-datasource', function(Y) {
              */
             this.on("EntityUpdatedEvent", function(e) {
                 var i, entities = e.serverEvent.get("updatedEntities");
-                for (i = 0; i < entities.length; i += 1) {  // Update the cache with the entites contained in the reply
+                for (i = 0; i < entities.length; i += 1) {                      // Update the cache with the entites contained in the reply
                     this.updated = this.updateCache(POST, entities[i]) || this.updated;
                 }
 
@@ -663,7 +663,7 @@ YUI.add('wegas-datasource', function(Y) {
         findParentDescriptor: function(entity) {
             var ret, doFind = function(stack) {
                 return Y.Array.find(stack, function(item) {
-                    if (item.get(ID) === entity.get(ID)) {                  // We check the current element if it's a match
+                    if (item.get(ID) === entity.get(ID)) {                      // We check the current element if it's a match
                         return true;
                     }
                     if (this.walkEntity(item, doFind)) {
@@ -686,7 +686,7 @@ YUI.add('wegas-datasource', function(Y) {
                 tArray;
 
             tArray = (oParentEntity) ?
-                oParentEntity.get(ITEMS) : this.getCache();               // Remove the item from it's existing position in the cache
+                oParentEntity.get(ITEMS) : this.getCache();                     // Remove the item from it's existing position in the cache
 
             Y.log("Moving cache object from position " + Y.Array.indexOf(tArray, entity) + " to position " + index, "log", "Wegas.VariableTreeView");
 
@@ -699,7 +699,7 @@ YUI.add('wegas-datasource', function(Y) {
                 parentEntity.get(ITEMS) : this.getCache();
             tArray.splice(index, 0, entity);                                    // Place the entity at the new position
 
-            if (parentEntity) {                                                   // Dropped on a list descriptor
+            if (parentEntity) {                                                 // Dropped on a list descriptor
                 parentEntity.set(ITEMS, tArray);
                 entity.parentDescriptor = parentEntity;
                 request = "/" + entity.get(ID) + "/Move/" + parentEntity.get(ID) + "/" + index;

@@ -15,7 +15,7 @@
     height: 100%;
 }
 .wegas-absolutelayout-content:empty:before{
-    content: "This element is empty. Click on 'Edit page'  and add new elements.";
+    content: "This page is empty. Click on 'Edit' to add new elements.";
     display: block;
     font-style: italic;
     padding-top: 50px;

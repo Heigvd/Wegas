@@ -33,7 +33,6 @@ YUI.add('wegas-object-entities', function(Y) {
                 _inputex: {
                     label: "Descriptor properties",
                     _type: HASHLIST,
-                    useButtons: true,
                     keyField: NAME,
                     valueField: VALUE,
                     elementType: {
@@ -64,7 +63,6 @@ YUI.add('wegas-object-entities', function(Y) {
                             label: "Default properties",
                             _type: HASHLIST,
                             keyField: NAME,
-                            useButtons: true,
                             valueField: VALUE,
                             elementType: {
                                 type: COMBINE,
@@ -139,7 +137,6 @@ YUI.add('wegas-object-entities', function(Y) {
                     label: "Properties",
                     _type: HASHLIST,
                     keyField: NAME,
-                    useButtons: true,
                     valueField: VALUE,
                     elementType: {
                         type: COMBINE,

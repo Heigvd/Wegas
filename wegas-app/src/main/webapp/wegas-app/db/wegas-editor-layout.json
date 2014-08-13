@@ -136,7 +136,7 @@
                         "cssClass": "editor-variables",
                         "children": [{
                                 "type": "VariableTreeView",
-                                "dataSource": "VariableDescriptor",
+                                "dataSource": "Variable",
                                 "plugins": [{
                                         "fn": "EditorTVNodeLoader"
                                     }, {

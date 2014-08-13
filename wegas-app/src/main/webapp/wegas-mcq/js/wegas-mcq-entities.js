@@ -95,7 +95,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }
                 },
                 _inputex: {
-                    useButtons: true,
                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature'
                 }
             }
@@ -463,8 +462,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             },
                             _inputex: {
                                 _type: HIDDEN,
-                                value: [],
-                                useButtons: true
+                                value: []
                             }
                         }
                     }
@@ -549,7 +547,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 }
             },
             impact: {
-                optional:true,
+                optional: true,
                 _inputex: {
                     _type: SCRIPT,
                     label: "Impact"
@@ -575,8 +573,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 },
                 _inputex: {
                     _type: HIDDEN,
-                    value: [],
-                    useButtons: true
+                    value: []
                 }
             }
         },

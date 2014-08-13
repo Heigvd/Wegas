@@ -55,7 +55,7 @@
                     }]
             }, {
                 "type": "Template",
-                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, exec = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'executionPeriods').get('value'), phase = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'currentPhase').get('value'); if (phase != 3) {maxVal = this.value} else if (this.value >= exec) { maxVal = this.value; maxVal++} else { maxVal = exec} %><% for(var i=+this.minValue; i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
+                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'), phase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').get('value'); if (phase != 3) {maxVal = this.value} else if (this.value >= exec) { maxVal = this.value; maxVal++} else { maxVal = exec} %><% for(var i=+this.minValue; i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
                 "cssClass": "pmg-period",
                 "data": {},
                 "variable": {
@@ -561,7 +561,7 @@
                     {
                         "type": "Template",
                         "data": {},
-                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.VariableDescriptor.cache.find('name', 'projectFixedCosts').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= unworked %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
+                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= unworked %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
                         "variable": {
                             "name": "tasks"
                         }
@@ -827,7 +827,6 @@
             }
         ]
     },
-
     "5": {
         "@name": "Resources",
         "type": "List",
@@ -884,7 +883,7 @@
                             "targetEvent": "click",
                             "root": {
                                 "@class": "Script",
-                                "content": "Variable.find('actions').item(currentPhase.value)"
+                                "content": "Variable.find('actions').item(currentPhase.value -1)"
                             },
                             "outputType": "html"
                         }
@@ -913,19 +912,17 @@
                 "label": "",
                 "type": "Button",
                 "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
+                "plugins": [{
                         "fn": "PrintActionPlugin",
                         "cfg": {
                             "targetEvent": "click",
                             "root": {
                                 "@class": "Script",
-                                "content": "Variable.find('questions').item(currentPhase.value).item(currentPeriod.items[currentPhase.value].value - 1)"
+                                "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
                             },
                             "outputType": "html"
                         }
-                    }
-                ],
+                    }],
                 "data": {}
             }
         ]

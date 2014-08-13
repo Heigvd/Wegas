@@ -141,10 +141,6 @@ YUI.add('wegas-serialization-test', function(Y) {
         /**
          *
          */
-        'should instantiate and serialize default widget from an io request': function() {
-            this.log("Default pages");
-            this.assertJsonCfg(YUI_config.groups.wegas.base + "db/wegas-default-pages.json");
-        },
         'should instantiate and serialize crimesim widgets cfg': function() {
             this.log("Crimesim pages");
             this.assertJsonCfg(YUI_config.groups.wegas.base + "../wegas-crimesim/db/wegas-crimesim-pages.json");

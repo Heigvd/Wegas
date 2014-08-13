@@ -80,7 +80,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             var key, cb = this.get(CONTENT_BOX),
                 availableStates = this.get("availableStates");
 
-            //this.events.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
+            this.events.push(Wegas.Facade.Variable.after("update", this.syncUI, this));
 
             cb.on("mousedown", function() {
                 this.one(".scrollable").addClass("mousedown");
@@ -130,9 +130,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.scrollView.set("scrollY", 0);
             }, this);
         },
+        syncUI: function() {
+            this.highlightCurrentState();
+        },
         destructor: function() {
-            var i;
-            for (i in this.events) {
+            for (var i in this.events) {
                 try {
                     this.events[i].detach();
                 } catch (e) {
