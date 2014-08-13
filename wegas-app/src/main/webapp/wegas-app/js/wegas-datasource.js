@@ -1342,7 +1342,7 @@ YUI.add('wegas-datasource', function(Y) {
             var tab = Y.Widget.getByNode("#centerTabView").get("selection");
 
             Y.Array.each(logs, function(l) {
-                tab.showMessage("error", "Server error " + l.type + ": " + l.val);
+                tab.showMessageBis(l.type, "Server error: " + (l.val.message || l.val));
             });
 
             var cur;
