@@ -39,10 +39,19 @@ public class QuestionController {
      */
     @EJB
     private QuestionDescriptorFacade questionDescriptorFacade;
+    /**
+     *
+     */
     @EJB
     private RequestFacade requestFacade;
+    /**
+     *
+     */
     @EJB
     private UserFacade userFacade;
+    /**
+     *
+     */
     @EJB
     private PlayerFacade playerFacade;
 
@@ -98,7 +107,6 @@ public class QuestionController {
      */
     @GET
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
-    @Produces(MediaType.APPLICATION_JSON)
     public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId,
@@ -124,7 +132,6 @@ public class QuestionController {
     public Reply update(@PathParam("entityId") Long replyId, Reply reply) {
 
         //SecurityUtils.getSubject().checkPermission("Game:Edit:g" + VariableInstanceFacade.findGame(entityId).getId());
-
         return questionDescriptorFacade.updateReply(replyId, reply);
     }
 

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('oop', function (Y, NAME) {
 
 /**
@@ -429,4 +436,4 @@ Y.rbind = function(f, c) {
 };
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});

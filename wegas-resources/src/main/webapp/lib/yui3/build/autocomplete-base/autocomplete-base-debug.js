@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('autocomplete-base', function (Y, NAME) {
 
 /**
@@ -1543,7 +1550,7 @@ AutoCompleteBase.UI_SRC = (Y.Widget && Y.Widget.UI_SRC) || 'ui';
 Y.AutoCompleteBase = AutoCompleteBase;
 
 
-}, '@VERSION@', {
+}, '3.16.0', {
     "optional": [
         "autocomplete-sources"
     ],

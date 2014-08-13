@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('slider-base', function (Y, NAME) {
 
 /**
@@ -488,7 +495,7 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
     /**
      * Dispatches the <code>slideEnd</code> event.
      *
-     * @method _onDragEnd
+     * @method _afterDragEnd
      * @param e {Event} the <code>drag:end</code> event from the thumb
      * @protected
      */
@@ -759,4 +766,4 @@ Y.SliderBase = Y.extend( SliderBase, Y.Widget, {
 });
 
 
-}, '@VERSION@', {"requires": ["widget", "dd-constrain", "event-key"], "skinnable": true});
+}, '3.16.0', {"requires": ["widget", "dd-constrain", "event-key"], "skinnable": true});

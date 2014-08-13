@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatype-number-format', function (Y, NAME) {
 
 /**
@@ -31,18 +38,18 @@ Y.mix(Y.namespace("Number"), {
      * @param data {Number} Number.
      * @param config {Object} (Optional) Optional configuration values:
      *  <dl>
-     *   <dt>prefix {HTML}</dd>
+     *   <dt>prefix {String}</dd>
      *   <dd>String prepended before each number, like a currency designator "$"</dd>
      *   <dt>decimalPlaces {Number}</dd>
      *   <dd>Number of decimal places to round. Must be a number 0 to 20.</dd>
-     *   <dt>decimalSeparator {HTML}</dd>
+     *   <dt>decimalSeparator {String}</dd>
      *   <dd>Decimal separator</dd>
-     *   <dt>thousandsSeparator {HTML}</dd>
+     *   <dt>thousandsSeparator {String}</dd>
      *   <dd>Thousands separator</dd>
-     *   <dt>suffix {HTML}</dd>
+     *   <dt>suffix {String}</dd>
      *   <dd>String appended after each number, like " items" (note the space)</dd>
      *  </dl>
-     * @return {HTML} Formatted number for display. Note, the following values
+     * @return {String} Formatted number for display. Note, the following values
      * return as "": null, undefined, NaN, "".
      */
     format: function(data, config) {
@@ -106,4 +113,4 @@ Y.namespace("DataType");
 Y.DataType.Number = Y.Number;
 
 
-}, '@VERSION@');
+}, '3.16.0');

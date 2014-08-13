@@ -66,7 +66,13 @@ YUI.add("wegas-inputex-list", function(Y) {
          *
          */
         destroy: function() {
+            var i, length, field;
             this.addButton.destroy();
+
+            for (i = 0, length = this.inputs.length; i < length; i++) {
+                this._purgeField(this.inputs[i]);
+
+            }
             ListField.superclass.destroy.call(this);
         },
         /**
@@ -78,30 +84,35 @@ YUI.add("wegas-inputex-list", function(Y) {
         },
         renderField: function(fieldOptions) {
             var fieldInstance = ListField.superclass.renderField.call(this, fieldOptions);
-
-            new Y.Wegas.Button({//                                              // Render remove line button
-                label: '<span class="wegas-icon wegas-icon-remove"></span>',
-                cssClass: "wegas-removebutton",
-                on: {
-                    click: Y.bind(this.onRemove, this, fieldInstance)
-                }
-            }).render(fieldInstance.divEl);
-
+            fieldInstance._handlers = [];
+            fieldInstance._handlers.push(
+                new Y.Wegas.Button({//                                              // Render remove line button
+                    label: '<span class="wegas-icon wegas-icon-remove"></span>',
+                    cssClass: "wegas-removebutton",
+                    on: {
+                        click: Y.bind(this.onRemove, this, fieldInstance)
+                    }
+                }).render(fieldInstance.divEl)
+                );
             if (this.options.sortable) {                                        // Render move up/down buttons
-                new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-moveup"></span>',
-                    cssClass: "wegas-moveupbutton",
-                    on: {
-                        click: Y.bind(this.move, this, fieldInstance, -1)
-                    }
-                }).render(fieldInstance.divEl);
-                new Y.Wegas.Button({
-                    label: '<span class="wegas-icon wegas-icon-movedown"></span>',
-                    cssClass: "wegas-movedownbutton",
-                    on: {
-                        click: Y.bind(this.move, this, fieldInstance, 1)
-                    }
-                }).render(fieldInstance.divEl);
+                fieldInstance._handlers.push(
+                    new Y.Wegas.Button({
+                        label: '<span class="wegas-icon wegas-icon-moveup"></span>',
+                        cssClass: "wegas-moveupbutton",
+                        on: {
+                            click: Y.bind(this.move, this, fieldInstance, -1)
+                        }
+                    }).render(fieldInstance.divEl)
+                    );
+                fieldInstance._handlers.push(
+                    new Y.Wegas.Button({
+                        label: '<span class="wegas-icon wegas-icon-movedown"></span>',
+                        cssClass: "wegas-movedownbutton",
+                        on: {
+                            click: Y.bind(this.move, this, fieldInstance, 1)
+                        }
+                    }).render(fieldInstance.divEl)
+                    );
             }
             return fieldInstance;
         },
@@ -139,6 +150,16 @@ YUI.add("wegas-inputex-list", function(Y) {
         onAdd: function(e) {
             this.addField(Y.Lang.isString(this.options.addType) ? {type: this.options.addType} : this.options.addType);
             this.fireUpdatedEvt();
+        },
+        _purgeField: function(field) {
+            var i;
+            for (i = 0; i < field._handlers.length; i++) {
+                if (field._handlers[i].destroy) {
+                    field._handlers[i].destroy();
+                } else if (field._handlers[i].detach) {
+                    field._handlers[i].detach();
+                }
+            }
         },
         /**
          * Override to disable

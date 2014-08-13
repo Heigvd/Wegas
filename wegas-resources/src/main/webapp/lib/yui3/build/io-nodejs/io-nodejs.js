@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('io-nodejs', function (Y, NAME) {
 
 /*global Y: false, Buffer: false, clearInterval: false, clearTimeout: false, console: false, exports: false, global: false, module: false, process: false, querystring: false, require: false, setInterval: false, setTimeout: false, __filename: false, __dirname: false */
@@ -153,4 +160,4 @@ YUI.add('io-nodejs', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["io-base"]});
+}, '3.16.0', {"requires": ["io-base"]});

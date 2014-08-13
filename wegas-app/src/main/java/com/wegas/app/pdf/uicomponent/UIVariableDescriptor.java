@@ -17,6 +17,8 @@ import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringDescriptor;
+import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextDescriptor;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.statemachine.DialogueDescriptor;
@@ -274,6 +276,23 @@ public class UIVariableDescriptor extends UIComponentBase {
     public void encode(FacesContext context, ResponseWriter writer, TextDescriptor obj) throws IOException {
         UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
         TextInstance instance = obj.getInstance(defaultValues, player);
+
+        encodeBase(context, writer, obj, editorMode);
+        UIHelper.printPropertyTextArea(context, writer, "Value", instance.getValue(), false, true);
+        UIHelper.endDiv(writer);
+    }
+
+    /**
+     * Specific output for TextDescriptor
+     *
+     * @param context
+     * @param writer
+     * @param obj
+     * @throws IOException
+     */
+    public void encode(FacesContext context, ResponseWriter writer, StringDescriptor obj) throws IOException {
+        UIHelper.startDiv(writer, UIHelper.CSS_CLASS_VARIABLE_CONTAINER);
+        StringInstance instance = obj.getInstance(defaultValues, player);
 
         encodeBase(context, writer, obj, editorMode);
         UIHelper.printPropertyTextArea(context, writer, "Value", instance.getValue(), false, true);

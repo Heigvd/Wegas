@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-base', function (Y, NAME) {
 
 /**
@@ -405,4 +412,4 @@ Y.SeriesBase = Y.Base.create("seriesBase", Y.Base, [Y.Renderer], {
 });
 
 
-}, '@VERSION@', {"requires": ["graphics", "axis-base"]});
+}, '3.16.0', {"requires": ["graphics", "axis-base"]});

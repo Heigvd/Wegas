@@ -9,35 +9,19 @@
 
         <ui:define name="head">
 
+            <!-- Page styles -->
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
 
-            <style type="text/css">
-                .yui3-skin-sam .yui3-button.wegas-title,
-                .yui3-skin-sam .yui3-button.wegas-title:hover  {
-                    font-weight: 900;
-                    font-size: 22px;
-                    line-height: 1.5em;
-                    color: white;
-                    background: -2px -2px url(wegas-app/images/wegas-logoicon-35.png) no-repeat;
-                    padding: 0px 25px 0 40px;
-                    margin: 8px 6px 4px 10px;
-                    height: 32px;
-                    text-shadow: 1px 0 1px black, 0 1px 1px black;
-                }
-            </style>
-
-            <!-- CSS library for current game model is included directly in the file -->
+            <!-- Stylesheets from current game model style library -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
-            <!-- Stylesheets injected directly in the game model -->
+            <!-- Stylesheets from current game model cssUri property -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
             <ui:insert name="editorHeader"/>
-
-            <!--<meta name="google-translate-customization" content="#editorGameController.currentGameModel.getProperty('googleTranslateId')" />-->
 
         </ui:define>
 
@@ -54,8 +38,8 @@
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
-                                source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                //source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
+                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
                                 initialRequest: "",
                                 plugins: [{
                                         fn: "VariableDescriptorCache"
@@ -82,10 +66,12 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
-                                    initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
+                                /* THIS IS NOT A COMMENT
+                                 * </ui:fragment>
+                                 */
+                            
+                                initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-editor-layout.json</ui:insert>',
+                                //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
                                         fn: "JSONSchema"
@@ -127,7 +113,6 @@
                             },
                             Role: {
                                 source: "rest/Role",
-                                //initialRequest: "",
                                 plugins: [{
                                         fn: "WegasCache"
                                     }]
@@ -152,35 +137,6 @@
                         }
                     });
 
-                    app.after("render", function() {                            // When the page is rendered
-                        var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
-                        Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
-
-                        Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
-                            var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer();
-
-                            this.set('currentTeamId', player.get("teamId"));    // Update current teamid
-
-                            Y.Wegas.Facade.VariableDescriptor.set("source",
-                                //this.get("base") + "rest/EditorPrivate/" + player.get("id")
-                                Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
-                                + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
-                                + "/VariableDescriptor");                       // Retrieve variable instances for the new player
-
-                            var preview = Y.Widget.getByNode(".editor-preview");// Show a loading overlay in the Preview tab during the request
-                            preview.showOverlay();
-                            Y.Wegas.Facade.VariableDescriptor.once("response", preview.hideOverlay, preview);
-                        });
-
-                        try {
-                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
-                        } catch (e) {
-                            Y.log("Error running client scripts.", "error");
-                        }
-                    });
-
-                    app.render();                                               // Render app
-
                     /**
                      * THIS IS NOT A COMMENT !!!
                      * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
@@ -189,6 +145,19 @@
                     /**
                      * END THIS IS NOT A COMMENT !!!
                      */
+                     
+                    app.on("render", function() {                               // When the page is rendered
+                        var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
+                        Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
+
+                        try {
+                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                        } catch (e) {
+                            Y.log("Error running client scripts.", "error");
+                        }
+                    });
+                    
+                    app.render();                                               // Render app
                 });
             </script>
 

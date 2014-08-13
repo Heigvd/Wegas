@@ -298,7 +298,7 @@ YUI.add('wegas-tabview', function(Y) {
          */
         load: function(cfg, callback) {
             this.showOverlay();
-            Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {            // Load the subpage dependencies
+            Wegas.Widget.use(cfg, Y.bind(function(cfg, callback) {              // Load the subpage dependencies
                 this.hideOverlay();
                 var widgets = this.add(cfg);                                    // Render the subpage
                 if (callback) {
@@ -313,7 +313,7 @@ YUI.add('wegas-tabview', function(Y) {
          * to the tab
          */
         _renderChildren: function() {
-            var renderTo = this._childrenContainer || this.get("panelNode").one("div");    // @modified
+            var renderTo = this._childrenContainer || this.get("panelNode").one("div");// @modified
 
             this._childrenContainer = renderTo;
 
@@ -584,7 +584,6 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "removetab"
     });
     Plugin.RemoveTab = RemoveTab;
-
 
     /**
      * Plugin that resizes the tabview's button if required

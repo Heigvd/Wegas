@@ -179,12 +179,14 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                 //EditEntityAction.form.saveButton.set("disabled", true);
             });
 
-            tab.form.detach("destroy");
+            tab.detach("destroy");
             tab.on("destroy", function() {                                      // and destroy callback             
                 if (cancelCallback) {
                     cancelCallback(EditEntityAction.currentEntity);
                 }
                 EditEntityAction.currentEntity = null;
+                EditEntityAction.form = null;
+                EditEntityAction.tab = null;
             });
             tab.form.detach("updated");
             tab.form.on("updated", function(e) {
@@ -783,4 +785,22 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         NS: "toolbarmenu"
     });
     Y.Plugin.EntityEditMenu = EntityEditMenu;
+
+    Wegas.NewDescriptorButton = Y.Base.create("button", Wegas.Button, [], {
+        /** @lends Y.Wegas.NewDescriptorButton# */
+        /**
+         * @function
+         * @private
+         * @param cfg
+         */
+        initializer: function() {
+            this.plug(Y.Plugin.WidgetMenu, {
+                children: Y.Array.map(Wegas.persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children, function(o) {
+                    return Y.mix({
+                        type: "NewEntityButton"
+                    }, o);
+                })
+            });
+        }
+    });
 });

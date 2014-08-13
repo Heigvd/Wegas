@@ -9,12 +9,14 @@ package com.wegas.core.security.guest;
 
 import com.wegas.core.security.jparealm.*;
 import com.wegas.core.Helper;
+import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
+import javax.persistence.NoResultException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -53,17 +55,25 @@ public class GuestRealm extends AuthorizingRealm {
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         try {
-            Role role = roleFacade().findByName("Public");
+            Role role;
+            try {
+                role = roleFacade().findByName("Public");
+            } catch (NamingException ex) {
+                logger.error("Unable to find RoleFacade EJB", ex);
+                return null;
+            } catch (PersistenceException ex) {
+                role = null;
+            }
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
+
             info.addRole("Public");
-            for (Permission p : role.getPermissions()) {
-                JpaRealm.addPermissions(info, p);
+            if (role != null) {
+                for (Permission p : role.getPermissions()) {
+                    JpaRealm.addPermissions(info, p);
+                }
             }
             return info;
         } catch (EJBException e) {
-            return null;
-        } catch (NamingException ex) {
-            logger.error("Unable to find RoleFacade EJB", ex);
             return null;
         }
     }
@@ -78,8 +88,7 @@ public class GuestRealm extends AuthorizingRealm {
 
     /**
      *
-     * @return
-     * @throws NamingException
+     * @return @throws NamingException
      */
     public RoleFacade roleFacade() throws NamingException {
         return Helper.lookupBy(RoleFacade.class);

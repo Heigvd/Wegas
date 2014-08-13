@@ -92,7 +92,7 @@ YUI.add('form-rte', function(Y) {
                     autoresize_min_height: 35,
                     autoresize_max_height: 500,
                     content_css: [
-                        // "http://yui.yahooapis.com/combo?3.14.1/build/cssreset/cssreset-min.css&amp;3.14.1/build/cssfonts/cssfonts-min.css&amp;3.14.1/build/cssgrids/cssgrids-min.css",
+                        // "http://yui.yahooapis.com/combo?3.16.0/build/cssreset/cssreset-min.css&amp;3.16.0/build/cssfonts/cssfonts-min.css&amp;3.16.0/build/cssgrids/cssgrids-min.css",
                         // Y.Wegas.app.get("base") + "wegas-app/css/wegas-app-min.css"
                         //Y.Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
                     ],

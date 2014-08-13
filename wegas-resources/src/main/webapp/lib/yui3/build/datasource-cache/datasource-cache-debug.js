@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datasource-cache', function (Y, NAME) {
 
 /**
@@ -56,7 +63,7 @@ DataSourceCacheExtension.prototype = {
      * First look for cached response, then send request to live data.
      *
      * @method _beforeDefRequestFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -85,7 +92,7 @@ DataSourceCacheExtension.prototype = {
      * Adds data to cache before returning data.
      *
      * @method _beforeDefResponseFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>tId (Number)</dt> <dd>Unique transaction ID.</dd>
      * <dt>request (Object)</dt> <dd>The request.</dd>
@@ -163,4 +170,4 @@ Y.mix(DataSourceCache, {
 Y.namespace("Plugin").DataSourceCache = DataSourceCache;
 
 
-}, '@VERSION@', {"requires": ["datasource-local", "plugin", "cache-base"]});
+}, '3.16.0', {"requires": ["datasource-local", "plugin", "cache-base"]});

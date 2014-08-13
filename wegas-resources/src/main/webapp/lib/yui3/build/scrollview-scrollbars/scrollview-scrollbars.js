@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('scrollview-scrollbars', function (Y, NAME) {
 
 /**
@@ -186,7 +193,7 @@ Y.namespace("Plugin").ScrollViewScrollbars = Y.extend(ScrollbarsPlugin, Y.Plugin
      * Handler for the scrollEnd event fired by the host. Default implementation flashes the scrollbar
      *
      * @method _hostScrollEnd
-     * @param {Event.Facade} e The event facade.
+     * @param {EventFacade} e The event facade.
      * @protected
      */
     _hostScrollEnd : function() {
@@ -560,4 +567,4 @@ Y.namespace("Plugin").ScrollViewScrollbars = Y.extend(ScrollbarsPlugin, Y.Plugin
 });
 
 
-}, '@VERSION@', {"requires": ["classnamemanager", "transition", "plugin"], "skinnable": true});
+}, '3.16.0', {"requires": ["classnamemanager", "transition", "plugin"], "skinnable": true});

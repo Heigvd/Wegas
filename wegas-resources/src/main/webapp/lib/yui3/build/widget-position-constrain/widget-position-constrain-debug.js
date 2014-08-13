@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('widget-position-constrain', function (Y, NAME) {
 
 /**
@@ -292,7 +299,7 @@ PositionConstrain.prototype = {
      * Updates the UI if enabling constraints, and sets up the xyChange event listeners
      * to constrain whenever the widget is moved. Disabling constraints removes the listeners.
      *
-     * @method enable or disable constraints listeners
+     * @method _enableConstraints
      * @private
      * @param {boolean} enable Enable or disable constraints
      */
@@ -345,4 +352,4 @@ PositionConstrain.prototype = {
 Y.WidgetPositionConstrain = PositionConstrain;
 
 
-}, '@VERSION@', {"requires": ["widget-position"]});
+}, '3.16.0', {"requires": ["widget-position"]});

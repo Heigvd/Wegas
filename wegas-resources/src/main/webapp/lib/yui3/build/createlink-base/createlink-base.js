@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('createlink-base', function (Y, NAME) {
 
 
@@ -37,8 +44,8 @@ YUI.add('createlink-base', function (Y, NAME) {
     Y.mix(Y.Plugin.ExecCommand.COMMANDS, {
         /**
         * Override for the createlink method from the <a href="Plugin.CreateLinkBase.html">CreateLinkBase</a> plugin.
-        * @for ExecCommand
-        * @method COMMANDS.createlink
+        * @for Plugin.ExecCommand.COMMANDS
+        * @method createlink
         * @static
         * @param {String} cmd The command executed: createlink
         * @return {Node} Node instance of the item touched by this command.
@@ -82,4 +89,4 @@ YUI.add('createlink-base', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["editor-base"]});
+}, '3.16.0', {"requires": ["editor-base"]});

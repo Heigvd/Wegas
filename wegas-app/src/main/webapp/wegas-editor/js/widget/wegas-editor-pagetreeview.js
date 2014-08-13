@@ -249,7 +249,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         changePage: function(pageId, callback, force) {
             var pageLoader = this.get("pageLoader");
             if (force) {
-                this.get("pageLoader").set("pageId", null, {noquery: true});   //be sure to change (stuck on an inexistant page 1)
+                pageLoader.set("pageId", null, {noquery: true});   //be sure to change (stuck on an inexistant page 1)
             }
             if (parseInt(pageLoader.get("pageId"), 10) === parseInt(pageId, 10)) {
                 if (Y.Lang.isFunction(callback)) {

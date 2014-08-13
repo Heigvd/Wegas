@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-scroll', function (Y, NAME) {
 
 /**
@@ -103,7 +110,7 @@ Y.mix(Scrollable.prototype, {
                 target = this.getRow(id);
             } else if (isString(id)) {
                 target = this._tbodyNode.one('#' + id);
-            } else if (id instanceof Y.Node &&
+            } else if (id._node &&
                     // TODO: ancestor(yScrollNode, xScrollNode)
                     id.ancestor('.yui3-datatable') === this.get('boundingBox')) {
                 target = id;
@@ -126,7 +133,7 @@ Y.mix(Scrollable.prototype, {
     the table is horizontally scrolling.
 
     @property _CAPTION_TABLE_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<table class="{className}" role="presentation"></table>'
     @protected
     @since 3.5.0
@@ -138,7 +145,7 @@ Y.mix(Scrollable.prototype, {
     synchronize fixed header column widths.
 
     @property _SCROLL_LINER_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<div class="{className}"></div>'
     @protected
     @since 3.5.0
@@ -149,7 +156,7 @@ Y.mix(Scrollable.prototype, {
     Template for the virtual scrollbar needed in "y" and "xy" scrolling setups.
 
     @property _SCROLLBAR_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<div class="{className}"><div></div></div>'
     @protected
     @since 3.5.0
@@ -161,7 +168,7 @@ Y.mix(Scrollable.prototype, {
     horizontally scrolling.
 
     @property _X_SCROLLER_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<div class="{className}"></div>'
     @protected
     @since 3.5.0
@@ -173,7 +180,7 @@ Y.mix(Scrollable.prototype, {
     vertically scrolling tables.
 
     @property _Y_SCROLL_HEADER_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<table cellspacing="0" role="presentation" aria-hidden="true" class="{className}"></table>'
     @protected
     @since 3.5.0
@@ -185,7 +192,7 @@ Y.mix(Scrollable.prototype, {
     vertically scrolling.
 
     @property _Y_SCROLLER_TEMPLATE
-    @type {HTML}
+    @type {String}
     @value '<div class="{className}"><div class="{scrollerClassName}"></div></div>'
     @protected
     @since 3.5.0
@@ -738,7 +745,7 @@ Y.mix(Scrollable.prototype, {
     case.  All other values are invalid.
 
     @method _setScrollable
-    @param {String|Boolea} val Incoming value for the `scrollable` attribute
+    @param {String|Boolean} val Incoming value for the `scrollable` attribute
     @return {String}
     @protected
     @since 3.5.0
@@ -1383,4 +1390,4 @@ Y.mix(Scrollable.prototype, {
 Y.Base.mix(Y.DataTable, [Scrollable]);
 
 
-}, '@VERSION@', {"requires": ["datatable-base", "datatable-column-widths", "dom-screen"], "skinnable": true});
+}, '3.16.0', {"requires": ["datatable-base", "datatable-column-widths", "dom-screen"], "skinnable": true});

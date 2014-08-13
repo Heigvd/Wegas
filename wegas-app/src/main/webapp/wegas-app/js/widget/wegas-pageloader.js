@@ -59,9 +59,9 @@ YUI.add("wegas-pageloader", function(Y) {
                     this.syncUI();                                              // sync the view
                 }
 
-                if (this.get("variable.content")                                // @backwardcompatibilityand if the current page has change,
-                    && this.get("variable.name")
-                    && this.get("variable.expr")
+                if ((this.get("variable.content")                               // @backwardcompatibilityand if the current page has change,
+                    || this.get("variable.name")
+                    || this.get("variable.expr"))
                     && this.get("variable.evaluated") !== "" + this.get(PAGEID)) {
                     this.syncUI();                                              // sync the view
                 }
@@ -105,9 +105,7 @@ YUI.add("wegas-pageloader", function(Y) {
          * remove instance kept in PageLoader.pageLoaderInstances.
          */
         destructor: function() {
-            if (this.get(WIDGET)) {
-                this.get(WIDGET).destroy();
-            }
+            this.get(WIDGET) && this.get(WIDGET).destroy();
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });

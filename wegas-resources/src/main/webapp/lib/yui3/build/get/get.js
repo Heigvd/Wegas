@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('get', function (Y, NAME) {
 
 /*jslint boss:true, expr:true, laxbreak: true */
@@ -746,12 +753,13 @@ This object comes from the options passed to `Get.css()`, `Get.js()`, or
 **/
 
 /**
-Array of errors that have occurred during this transaction, if any.
+Array of errors that have occurred during this transaction, if any. Each error
+object has the following properties:
+`errors.error`: Error message.
+`errors.request`: Request object related to the error.
 
 @since 3.5.0
 @property {Object[]} errors
-@property {String} errors.error Error message.
-@property {Object} errors.request Request object related to the error.
 **/
 
 /**

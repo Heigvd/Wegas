@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatype-xml-parse', function (Y, NAME) {
 
 /**
@@ -14,18 +21,18 @@ Y.mix(Y.namespace("XML"), {
      *
      * @method parse
      * @param data {String} Data to convert.
-     * @return {XMLDoc} XML Document.
+     * @return {XMLDocument} XML Document.
      */
     parse: function(data) {
         var xmlDoc = null, win;
         if (typeof data === "string") {
             win = Y.config.win;
-            if (win.DOMParser !== undefined) {
-                xmlDoc = new DOMParser().parseFromString(data, "text/xml");            
-            } else if (win.ActiveXObject !== undefined) {
+            if (win.ActiveXObject !== undefined) {
                 xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
                 xmlDoc.async = false;
                 xmlDoc.loadXML(data);            
+            } else if (win.DOMParser !== undefined) {
+                xmlDoc = new DOMParser().parseFromString(data, "text/xml");            
             } else if (win.Windows !== undefined) {
                 xmlDoc = new Windows.Data.Xml.Dom.XmlDocument();
                 xmlDoc.loadXml(data);            
@@ -46,4 +53,4 @@ Y.namespace("DataType");
 Y.DataType.XML = Y.XML;
 
 
-}, '@VERSION@');
+}, '3.16.0');

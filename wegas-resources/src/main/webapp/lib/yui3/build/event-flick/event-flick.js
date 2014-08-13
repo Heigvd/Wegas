@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-flick', function (Y, NAME) {
 
 /**
@@ -268,4 +275,4 @@ Y.Event.define('flick', {
 });
 
 
-}, '@VERSION@', {"requires": ["node-base", "event-touch", "event-synthetic"]});
+}, '3.16.0', {"requires": ["node-base", "event-touch", "event-synthetic"]});

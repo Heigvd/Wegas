@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('history-html5', function (Y, NAME) {
 
 /**
@@ -186,4 +193,4 @@ if (useHistoryHTML5 === true || (useHistoryHTML5 !== false &&
 }
 
 
-}, '@VERSION@', {"optional": ["json"], "requires": ["event-base", "history-base", "node-base"]});
+}, '3.16.0', {"optional": ["json"], "requires": ["event-base", "history-base", "node-base"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('arraysort', function (Y, NAME) {
 
 /*jshint expr:true, onevar:false */
@@ -178,4 +185,4 @@ var ArraySort = Y.ArraySort = {
 };
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});

@@ -212,7 +212,6 @@ YUI.add('wegas-editable', function(Y) {
                 self = self.superclass.constructor;
             }
             return false;
-
         }
     });
     Y.mix(Editable, {

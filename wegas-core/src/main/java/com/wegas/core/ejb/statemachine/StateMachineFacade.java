@@ -209,7 +209,7 @@ public class StateMachineFacade implements Serializable {
      */
     private Boolean eventTransition(Player player, Transition transition, StateMachineInstance smi) throws ScriptException {
         String script = transition.getTriggerCondition().getContent();
-        Pattern pattern = Pattern.compile("Event\\.fired\\((['\"])(\\w+)\\1\\)");
+        Pattern pattern = Pattern.compile("Event\\.fired\\((['\"])([ ]*\\S+([ ]|\\S)*)\\1\\)");
         Matcher matcher = pattern.matcher(script);
         String event;
         if (matcher.find()) {

@@ -21,7 +21,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         //InitialState modification
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
-        CONTENT_TEMPLATE: "<div><div class='scrollable'><div class='sm-zoom'></div></div></div>",
+        CONTENT_TEMPLATE: "<div>"
+            + "<div class='wegas-statemachineviewer-legend'><div class='legend-initial-state'></div><div class='legend-currentState'></div></div>"
+            + "<div class='scrollable'><div class='sm-zoom'></div></div></div>",
         /**
          * 
          */

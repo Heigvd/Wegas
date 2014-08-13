@@ -21,7 +21,11 @@
 .wegas-role-teacher #gameModelsTab {
     display: inline-block;
 }
-
+.yui3-skin-sam .wegas-logo  {
+    padding: 8px 6px 6px 93px;
+    height: 30px;
+    background: url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat 8px 6px;
+}
 /** Edit game form */
 .wegas-lobby-editgame  .wegas-form-content {
     padding-bottom: 0px !important;

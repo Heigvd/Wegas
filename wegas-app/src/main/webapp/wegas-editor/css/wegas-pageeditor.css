@@ -202,6 +202,9 @@ body > .wegas-pageloader {
 .yui3-skin-sam .wegas-icon-fullscreen{
     background-position: 0 -1394px;
 }
+.wegas-pageeditor-editbutton {
+    margin-left: 0.5em;
+}
 /** Icons **/
 .wegas-page-editor .yui3-treenode-content-icon,
 .wegas-page-editor .yui3-treeleaf-content-icon {

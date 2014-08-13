@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dd-constrain', function (Y, NAME) {
 
 
@@ -559,4 +566,4 @@ YUI.add('dd-constrain', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["dd-drag"]});
+}, '3.16.0', {"requires": ["dd-drag"]});

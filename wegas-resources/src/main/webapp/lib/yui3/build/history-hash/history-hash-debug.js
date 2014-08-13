@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('history-hash', function (Y, NAME) {
 
 /**
@@ -472,4 +479,4 @@ if (useHistoryHTML5 === false || (!Y.History && useHistoryHTML5 !== true &&
 }
 
 
-}, '@VERSION@', {"requires": ["event-synthetic", "history-base", "yui-later"]});
+}, '3.16.0', {"requires": ["event-synthetic", "history-base", "yui-later"]});

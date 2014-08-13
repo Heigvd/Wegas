@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('app-content', function (Y, NAME) {
 
 /**
@@ -110,6 +117,7 @@ AppContent.prototype = {
 
       @param {View} callback.view A reference to the new `activeView`.
 
+    @chainable
     @since 3.7.0
     @see App.showView()
     **/
@@ -231,4 +239,4 @@ Y.App.Content = AppContent;
 Y.Base.mix(Y.App, [AppContent]);
 
 
-}, '@VERSION@', {"requires": ["app-base", "pjax-content"]});
+}, '3.16.0', {"requires": ["app-base", "pjax-content"]});

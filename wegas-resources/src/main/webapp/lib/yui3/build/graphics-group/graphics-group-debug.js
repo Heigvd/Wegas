@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('graphics-group', function (Y, NAME) {
 
 /**
@@ -307,4 +314,4 @@ EllipseGroup.ATTRS = Y.ShapeGroup.ATTRS;
 Y.EllipseGroup = EllipseGroup;
 
 
-}, '@VERSION@', {"requires": ["graphics"]});
+}, '3.16.0', {"requires": ["graphics"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('model-sync-rest', function (Y, NAME) {
 
 /**
@@ -716,7 +723,7 @@ RESTSync.prototype = {
     @method _onSyncIOStart
     @param {String} txId The `Y.io` transaction id.
     @param {Object} details Extra details carried through from `sync()`:
-      @param {String} detials.action The sync action performed.
+      @param {String} details.action The sync action performed.
       @param {Function} [details.callback] The function to call after syncing.
       @param {String} details.url The URL of the requested resource.
     @protected
@@ -730,4 +737,4 @@ RESTSync.prototype = {
 Y.namespace('ModelSync').REST = RESTSync;
 
 
-}, '@VERSION@', {"requires": ["model", "io-base", "json-stringify"]});
+}, '3.16.0', {"requires": ["model", "io-base", "json-stringify"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('datatable-column-widths', function (Y, NAME) {
 
 /**
@@ -121,7 +128,7 @@ Y.mix(ColumnWidths.prototype, {
     The HTML template used to create the table's `<col>`s.
 
     @property COL_TEMPLATE
-    @type {HTML}
+    @type {String}
     @default '<col/>'
     @since 3.5.0
     **/
@@ -131,7 +138,7 @@ Y.mix(ColumnWidths.prototype, {
     The HTML template used to create the table's `<colgroup>`.
 
     @property COLGROUP_TEMPLATE
-    @type {HTML}
+    @type {String}
     @default '<colgroup/>'
     @since 3.5.0
     **/
@@ -320,4 +327,4 @@ for an example of how to do this.
  */
 
 
-}, '@VERSION@', {"requires": ["datatable-base"]});
+}, '3.16.0', {"requires": ["datatable-base"]});

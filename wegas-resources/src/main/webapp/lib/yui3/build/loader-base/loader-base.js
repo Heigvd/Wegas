@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('loader-base', function (Y, NAME) {
 
 /**
@@ -11,7 +18,7 @@ YUI.add('loader-base', function (Y, NAME) {
         BUILD = '/build/',
         ROOT = VERSION + '/',
         CDN_BASE = Y.Env.base,
-        GALLERY_VERSION = 'gallery-2013.12.12-21-06',
+        GALLERY_VERSION = 'gallery-2014.04.02-20-01',
         TNT = '2in3',
         TNT_VERSION = '4',
         YUI2_VERSION = '2.9.0',
@@ -188,6 +195,19 @@ Y.Env.meta = META;
         });
         var out = loader.resolve(true);
 
+ * If the Loader needs to be patched before it is used for the first time, it
+ * should be done through the `doBeforeLoader` hook. Simply make the patch
+ * available via configuration before YUI is loaded:
+
+        YUI_config = YUI_config || {};
+        YUI_config.doBeforeLoader = function (config) {
+            var resolve = this.context.Loader.prototype.resolve;
+            this.context.Loader.prototype.resolve = function () {
+                // do something here
+                return resolve.apply(this, arguments);
+            };
+        };
+
  * @constructor
  * @class Loader
  * @param {Object} config an optional set of configuration options.
@@ -207,13 +227,13 @@ Y.Env.meta = META;
  * @param {Object} config.context Execution context for all callbacks
  * @param {Function} config.onSuccess Callback for the 'success' event
  * @param {Function} config.onFailure Callback for the 'failure' event
- * @param {Function} config.onCSS Callback for the 'CSSComplete' event.  When loading YUI components with CSS the CSS is loaded first, then the script.  This provides a moment you can tie into to improve the presentation of the page while the script is loading.
  * @param {Function} config.onTimeout Callback for the 'timeout' event
  * @param {Function} config.onProgress Callback executed each time a script or css file is loaded
  * @param {Object} config.modules A list of module definitions.  See <a href="#method_addModule">Loader.addModule</a> for the supported module metadata
  * @param {Object} config.groups A list of group definitions.  Each group can contain specific definitions for `base`, `comboBase`, `combine`, and accepts a list of `modules`.
  * @param {String} config.2in3 The version of the YUI 2 in 3 wrapper to use.  The intrinsic support for YUI 2 modules in YUI 3 relies on versions of the YUI 2 components inside YUI 3 module wrappers.  These wrappers change over time to accomodate the issues that arise from running YUI 2 in a YUI 3 sandbox.
  * @param {String} config.yui2 When using the 2in3 project, you can select the version of YUI 2 to use.  Valid values are `2.2.2`, `2.3.1`, `2.4.1`, `2.5.2`, `2.6.0`, `2.7.0`, `2.8.0`, `2.8.1` and `2.9.0` [default] -- plus all versions of YUI 2 going forward.
+ * @param {Function} config.doBeforeLoader An optional hook that allows for the patching of the loader instance. The `Y` instance is available as `this.context` and the only argument to the function is the Loader configuration object.
  */
 Y.Loader = function(o) {
 
@@ -248,16 +268,6 @@ Y.Loader = function(o) {
     // self.onFailure = null;
 
     /**
-     * Callback for the 'CSSComplete' event.  When loading YUI components
-     * with CSS the CSS is loaded first, then the script.  This provides
-     * a moment you can tie into to improve the presentation of the page
-     * while the script is loading.
-     * @method onCSS
-     * @type function
-     */
-    // self.onCSS = null;
-
-    /**
      * Callback executed each time a script or css file is loaded
      * @method onProgress
      * @type function
@@ -277,6 +287,11 @@ Y.Loader = function(o) {
      * @default {YUI} the YUI instance
      */
     self.context = Y;
+
+    // Hook that allows the patching of loader
+    if (o.doBeforeLoader) {
+        o.doBeforeLoader.apply(self, arguments);
+    }
 
     /**
      * Data that is passed to all callbacks
@@ -472,10 +487,8 @@ Y.Loader = function(o) {
     self.patterns = {};
 
     /**
-     * The library metadata
-     * @property moduleInfo
+     * Internal loader instance metadata. Use accessor `getModuleInfo()` instead.
      */
-    // self.moduleInfo = Y.merge(Y.Env.meta.moduleInfo);
     self.moduleInfo = {};
 
     self.groups = Y.merge(Y.Env.meta.groups);
@@ -522,7 +535,7 @@ Y.Loader = function(o) {
     self.config = o;
     self._internal = true;
 
-    self._populateCache();
+    self._populateConditionsCache();
 
     /**
      * Set when beginning to compute the dependency tree.
@@ -630,39 +643,106 @@ Y.Loader = function(o) {
 
 Y.Loader.prototype = {
     /**
-    * Checks the cache for modules and conditions, if they do not exist
-    * process the default metadata and populate the local moduleInfo hash.
-    * @method _populateCache
-    * @private
+    * Gets the module info from the local moduleInfo hash, or from the
+    * default metadata and populate the local moduleInfo hash.
+    * @method getModuleInfo
+    * @param {string} name of the module
+    * @public
     */
-    _populateCache: function() {
-        var self = this,
-            defaults = META.modules,
-            cache = GLOBAL_ENV._renderedMods,
-            i;
+    getModuleInfo: function(name) {
 
-        if (cache && !self.ignoreRegistered) {
-            for (i in cache) {
-                if (cache.hasOwnProperty(i)) {
-                    self.moduleInfo[i] = Y.merge(cache[i]);
-                }
-            }
+        var m = this.moduleInfo[name],
+            rawMetaModules, globalRenderedMods, internal, v;
 
-            cache = GLOBAL_ENV._conditions;
-            for (i in cache) {
-                if (cache.hasOwnProperty(i)) {
-                    self.conditions[i] = Y.merge(cache[i]);
-                }
-            }
-
-        } else {
-            for (i in defaults) {
-                if (defaults.hasOwnProperty(i)) {
-                    self.addModule(defaults[i], i);
-                }
-            }
+        if (m) {
+            return m;
         }
 
+        rawMetaModules = META.modules;
+        globalRenderedMods = GLOBAL_ENV._renderedMods;
+        internal = this._internal;
+
+        /*
+        The logic here is:
+
+        - if the `moduleInfo[name]` is avilable,
+          then short circuit
+        - otherwise, if the module is in the globalCache (cross Y instance),
+          then port it from the global registry into `moduleInfo[name]`
+        - otherwise, if the module has raw metadata (from meta modules)
+          then add it to the global registry and to `moduleInfo[name]`
+
+        */
+        if (globalRenderedMods && globalRenderedMods.hasOwnProperty(name) && !this.ignoreRegistered) {
+            this.moduleInfo[name] = Y.merge(globalRenderedMods[name]);
+        } else {
+            if (rawMetaModules.hasOwnProperty(name)) {
+                this._internal = true; // making sure that modules from raw data are marked as internal
+                v = this.addModule(rawMetaModules[name], name);
+                // Inspect the page for the CSS module and mark it as loaded.
+                if (v && v.type === CSS) {
+                    if (this.isCSSLoaded(v.name, true)) {
+                        this.loaded[v.name] = true;
+                    }
+                }
+                this._internal = internal;
+            }
+        }
+        return this.moduleInfo[name];
+    },
+    /**
+    * Expand the names that are aliases to other modules.
+    * @method _expandAliases
+    * @param {string[]} list a module name or a list of names to be expanded
+    * @private
+    * @return {array}
+    */
+    _expandAliases: function(list) {
+        var expanded = [],
+            aliases = YUI.Env.aliases,
+            i, name;
+        list = Y.Array(list);
+        for (i = 0; i < list.length; i += 1) {
+            name = list[i];
+            expanded.push.apply(expanded, aliases[name] ? aliases[name] : [name]);
+        }
+        return expanded;
+    },
+    /**
+    * Populate the conditions cache from raw modules, this is necessary
+    * because no other module will require a conditional module, instead
+    * the condition has to be executed and then the module is analyzed
+    * to be included in the final requirement list. Without this cache
+    * conditional modules will be simply ignored.
+    * @method _populateConditionsCache
+    * @private
+    */
+    _populateConditionsCache: function() {
+        var rawMetaModules = META.modules,
+            cache = GLOBAL_ENV._conditions,
+            i, j, t, trigger;
+
+        // if we have conditions in cache and cache is enabled
+        // we should port them to this loader instance
+        if (cache && !this.ignoreRegistered) {
+            for (i in cache) {
+                if (cache.hasOwnProperty(i)) {
+                    this.conditions[i] = Y.merge(cache[i]);
+                }
+            }
+        } else {
+            for (i in rawMetaModules) {
+                if (rawMetaModules.hasOwnProperty(i) && rawMetaModules[i].condition) {
+                    t = this._expandAliases(rawMetaModules[i].condition.trigger);
+                    for (j = 0; j < t.length; j += 1) {
+                        trigger = t[j];
+                        this.conditions[trigger] = this.conditions[trigger] || {};
+                        this.conditions[trigger][rawMetaModules[i].name || i] = rawMetaModules[i].condition;
+                    }
+                }
+            }
+            GLOBAL_ENV._conditions = this.conditions;
+        }
     },
     /**
     * Reset modules in the module cache to a pre-processed state so additional
@@ -674,7 +754,7 @@ Y.Loader.prototype = {
         var self = this, i, o,
             mod, name, details;
         for (i in self.moduleInfo) {
-            if (self.moduleInfo.hasOwnProperty(i)) {
+            if (self.moduleInfo.hasOwnProperty(i) && self.moduleInfo[i]) {
                 mod = self.moduleInfo[i];
                 name = mod.name;
                 details  = (YUI.Env.mods[name] ? YUI.Env.mods[name].details : null);
@@ -695,8 +775,8 @@ Y.Loader.prototype = {
                         }
                     }
                 }
-                delete mod.langCache;
-                delete mod.skinCache;
+                mod.langCache = undefined;
+                mod.skinCache = undefined;
                 if (mod.skinnable) {
                     self._addSkin(self.skin.defaultSkin, mod.name);
                 }
@@ -744,22 +824,11 @@ Y.Loader.prototype = {
     _inspectPage: function() {
         var self = this, v, m, req, mr, i;
 
-        //Inspect the page for CSS only modules and mark them as loaded.
-        for (i in self.moduleInfo) {
-            if (self.moduleInfo.hasOwnProperty(i)) {
-                v = self.moduleInfo[i];
-                if (v.type && v.type === CSS) {
-                    if (self.isCSSLoaded(v.name)) {
-                        self.loaded[i] = true;
-                    }
-                }
-            }
-        }
         for (i in ON_PAGE) {
             if (ON_PAGE.hasOwnProperty(i)) {
                 v = ON_PAGE[i];
                 if (v.details) {
-                    m = self.moduleInfo[v.name];
+                    m = self.getModuleInfo(v.name);
                     req = v.details.requires;
                     mr = m && m.requires;
 
@@ -786,9 +855,8 @@ Y.Loader.prototype = {
    _requires: function(mod1, mod2) {
 
         var i, rm, after_map, s,
-            info = this.moduleInfo,
-            m = info[mod1],
-            other = info[mod2];
+            m = this.getModuleInfo(mod1),
+            other = this.getModuleInfo(mod2);
 
         if (!m || !other) {
             return false;
@@ -811,7 +879,7 @@ Y.Loader.prototype = {
         }
 
         // check if this module requires one the other supersedes
-        s = info[mod2] && info[mod2].supersedes;
+        s = other.supersedes;
         if (s) {
             for (i = 0; i < s.length; i++) {
                 if (this._requires(mod1, s[i])) {
@@ -820,7 +888,7 @@ Y.Loader.prototype = {
             }
         }
 
-        s = info[mod1] && info[mod1].supersedes;
+        s = m.supersedes;
         if (s) {
             for (i = 0; i < s.length; i++) {
                 if (this._requires(mod2, s[i])) {
@@ -850,7 +918,7 @@ Y.Loader.prototype = {
     */
     _config: function(o) {
         var i, j, val, a, f, group, groupName, self = this,
-            mods = [], mod;
+            mods = [], mod, modInfo;
         // apply config values
         if (o) {
             for (i in o) {
@@ -929,8 +997,9 @@ Y.Loader.prototype = {
             if (self.filterName === 'COVERAGE' && L.isArray(self.coverage) && self.coverage.length) {
                 for (i = 0; i < self.coverage.length; i++) {
                     mod = self.coverage[i];
-                    if (self.moduleInfo[mod] && self.moduleInfo[mod].use) {
-                        mods = [].concat(mods, self.moduleInfo[mod].use);
+                    modInfo = self.getModuleInfo(mod);
+                    if (modInfo && modInfo.use) {
+                        mods = mods.concat(modInfo.use);
                     } else {
                         mods.push(mod);
                     }
@@ -975,16 +1044,15 @@ Y.Loader.prototype = {
      * @private
      */
     _addSkin: function(skin, mod, parent) {
-        var mdef, pkg, name, nmod,
-            info = this.moduleInfo,
+        var pkg, name, nmod,
             sinf = this.skin,
-            ext = info[mod] && info[mod].ext;
+            mdef = mod && this.getModuleInfo(mod),
+            ext = mdef && mdef.ext;
 
         // Add a module definition for the module-specific skin css
         if (mod) {
             name = this.formatSkin(skin, mod);
-            if (!info[name]) {
-                mdef = info[mod];
+            if (!this.getModuleInfo(name)) {
                 pkg = mdef.pkg || mod;
                 nmod = {
                     skin: true,
@@ -1125,19 +1193,20 @@ Y.Loader.prototype = {
         var subs, i, l, t, sup, s, smod, plugins, plug,
             j, langs, packName, supName, flatSup, flatLang, lang, ret,
             overrides, skinname, when, g, p,
+            modInfo = this.moduleInfo[name],
             conditions = this.conditions, trigger;
 
         //Only merge this data if the temp flag is set
         //from an earlier pass from a pattern or else
         //an override module (YUI_config) can not be used to
         //replace a default module.
-        if (this.moduleInfo[name] && this.moduleInfo[name].temp) {
+        if (modInfo && modInfo.temp) {
             //This catches temp modules loaded via a pattern
             // The module will be added twice, once from the pattern and
             // Once from the actual add call, this ensures that properties
             // that were added to the module the first time around (group: gallery)
             // are also added the second time around too.
-            o = Y.merge(this.moduleInfo[name], o);
+            o = Y.merge(modInfo, o);
         }
 
         o.name = name;
@@ -1211,7 +1280,7 @@ Y.Loader.prototype = {
             for (j = 0; j < langs.length; j++) {
                 lang = langs[j];
                 packName = this.getLangPackName(lang, name);
-                smod = this.moduleInfo[packName];
+                smod = this.getModuleInfo(packName);
                 if (!smod) {
                     smod = this._addLangPack(lang, o, packName);
                 }
@@ -1263,7 +1332,7 @@ Y.Loader.prototype = {
                             lang = langs[j];
                             packName = this.getLangPackName(lang, name);
                             supName = this.getLangPackName(lang, i);
-                            smod = this.moduleInfo[packName];
+                            smod = this.getModuleInfo(packName);
 
                             if (!smod) {
                                 smod = this._addLangPack(lang, o, packName);
@@ -1289,7 +1358,7 @@ Y.Loader.prototype = {
                             packName = this.getLangPackName(ROOT_LANG, name);
                             supName = this.getLangPackName(ROOT_LANG, i);
 
-                            smod = this.moduleInfo[packName];
+                            smod = this.getModuleInfo(packName);
 
                             if (!smod) {
                                 smod = this._addLangPack(lang, o, packName);
@@ -1333,14 +1402,7 @@ Y.Loader.prototype = {
         }
 
         if (o.condition) {
-            t = o.condition.trigger;
-            if (YUI.Env.aliases[t]) {
-                t = YUI.Env.aliases[t];
-            }
-            if (!Y.Lang.isArray(t)) {
-                t = [t];
-            }
-
+            t = this._expandAliases(o.condition.trigger);
             for (i = 0; i < t.length; i++) {
                 trigger = t[i];
                 when = o.condition.when;
@@ -1506,7 +1568,6 @@ Y.Loader.prototype = {
             r, old_mod,
             o, skinmod, skindef, skinpar, skinname,
             intl = mod.lang || mod.intl,
-            info = this.moduleInfo,
             ftests = Y.Features && Y.Features.tests.load,
             hash, reparse;
 
@@ -1596,7 +1657,7 @@ Y.Loader.prototype = {
                 if (!hash[o[i]]) {
                     d.push(o[i]);
                     hash[o[i]] = true;
-                    m = info[o[i]];
+                    m = this.getModuleInfo(o[i]);
                     if (m) {
                         add = this.getRequires(m);
                         intl = intl || (m.expanded_map &&
@@ -1706,6 +1767,7 @@ Y.Loader.prototype = {
     * Check to see if named css module is already loaded on the page
     * @method isCSSLoaded
     * @param {String} name The name of the css file
+    * @param {Boolean} skip To skip the short-circuit for ignoreRegister
     * @return Boolean
     */
     isCSSLoaded: function(name, skip) {
@@ -1815,7 +1877,7 @@ Y.Loader.prototype = {
     _addLangPack: function(lang, m, packName) {
         var name = m.name,
             packPath, conf,
-            existing = this.moduleInfo[packName];
+            existing = this.getModuleInfo(packName);
 
         if (!existing) {
 
@@ -1849,7 +1911,7 @@ Y.Loader.prototype = {
             }
         }
 
-        return this.moduleInfo[packName];
+        return this.getModuleInfo(packName);
     },
 
     /**
@@ -1993,7 +2055,7 @@ Y.Loader.prototype = {
         }
 
         var p, found, pname,
-            m = this.moduleInfo[mname],
+            m = this.getModuleInfo(mname),
             patterns = this.patterns;
 
         // check the patterns library to see if we should automatically add
@@ -2220,70 +2282,64 @@ Y.Loader.prototype = {
      * @private
      */
     _sort: function() {
+        var name,
 
-        // create an indexed list
-        var s = YObject.keys(this.required),
-            // loaded = this.loaded,
-            //TODO Move this out of scope
-            done = {},
-            p = 0, l, a, b, j, k, moved, doneKey;
+            // Object containing module names.
+            required = this.required,
 
-        // keep going until we make a pass without moving anything
-        for (;;) {
+            // Keep track of whether we've visited a module.
+            visited = {};
 
-            l = s.length;
-            moved = false;
+        // Will contain modules names, in the correct order,
+        // according to dependencies.
+        this.sorted = [];
 
-            // start the loop after items that are already sorted
-            for (j = p; j < l; j++) {
+        for (name in required) {
+            if (!visited[name] && required.hasOwnProperty(name)) {
+                this._visit(name, visited);
+            }
+        }
+    },
 
-                // check the next module on the list to see if its
-                // dependencies have been met
-                a = s[j];
+    /**
+     * Recursively visits the dependencies of the module name
+     * passed in, and appends each module name to the `sorted` property.
+     * @param {String} name The name of a module.
+     * @param {Object} visited Keeps track of whether a module was visited.
+     * @method _visit
+     * @private
+     */
+    _visit: function (name, visited) {
+        var required, condition, moduleInfo, dependency, dependencies,
+            trigger, isAfter, i, l;
 
-                // check everything below current item and move if we
-                // find a requirement for the current item
-                for (k = j + 1; k < l; k++) {
-                    doneKey = a + s[k];
+        visited[name] = true;
+        required = this.required;
+        moduleInfo = this.moduleInfo[name];
+        condition = this.conditions[name] || {};
 
-                    if (!done[doneKey] && this._requires(a, s[k])) {
+        if (moduleInfo) {
+            // Recurse on each dependency of this module,
+            // figuring out its dependencies, and so on.
+            dependencies = moduleInfo.expanded || moduleInfo.requires;
 
-                        // extract the dependency so we can move it up
-                        b = s.splice(k, 1);
+            for (i = 0, l = dependencies.length; i < l; ++i) {
+                dependency = dependencies[i];
+                trigger = condition[dependency];
 
-                        // insert the dependency above the item that
-                        // requires it
-                        s.splice(j, 0, b[0]);
+                // We cannot process this dependency yet if it must
+                // appear after our current module.
+                isAfter = trigger && (!trigger.when || trigger.when === "after");
 
-                        // only swap two dependencies once to short circut
-                        // circular dependencies
-                        done[doneKey] = true;
-
-                        // keep working
-                        moved = true;
-
-                        break;
-                    }
-                }
-
-                // jump out of loop if we moved something
-                if (moved) {
-                    break;
-                // this item is sorted, move our pointer and keep going
-                } else {
-                    p++;
+                // Is this module name in the required list of modules,
+                // and have we not already visited it?
+                if (required[dependency] && !visited[dependency] && !isAfter) {
+                    this._visit(dependency, visited);
                 }
             }
-
-            // when we make it here and moved is false, we are
-            // finished sorting
-            if (!moved) {
-                break;
-            }
-
         }
 
-        this.sorted = s;
+        this.sorted.push(name);
     },
 
     /**
@@ -2522,7 +2578,7 @@ Y.Loader.prototype = {
         var f = this.filter,
             hasFilter = name && (name in this.filters),
             modFilter = hasFilter && this.filters[name],
-            groupName = group || (this.moduleInfo[name] ? this.moduleInfo[name].group : null);
+            groupName = group || (this.getModuleInfo(name) || {}).group || null;
 
         if (groupName && this.groups[groupName] && this.groups[groupName].filter) {
             modFilter = this.groups[groupName].filter;
@@ -2545,7 +2601,7 @@ Y.Loader.prototype = {
      * @method _url
      * @param {string} path the path fragment.
      * @param {String} name The name of the module
-     * @param {String} [base=self.base] The base url to use
+     * @param {String} [base] The base url to use. Defaults to self.base
      * @return {string} the full url.
      * @private
      */
@@ -2556,7 +2612,8 @@ Y.Loader.prototype = {
     * Returns an Object hash of file arrays built from `loader.sorted` or from an arbitrary list of sorted modules.
     * @method resolve
     * @param {Boolean} [calc=false] Perform a loader.calculate() before anything else
-    * @param {Array} [s=loader.sorted] An override for the loader.sorted array
+    * @param {Array} [s] An override for the loader.sorted array. Defaults to
+    * `loader.sorted`.
     * @return {Object} Object hash (js and css) of two arrays of file lists
     * @example This method can be used as an off-line dep calculator
     *
@@ -2767,7 +2824,7 @@ Y.Loader.prototype = {
 
 
     @method load
-    @param {Callback} cb Executed after all load operations are complete
+    @param {Function} cb Executed after all load operations are complete
     */
     load: function(cb) {
         if (!cb) {

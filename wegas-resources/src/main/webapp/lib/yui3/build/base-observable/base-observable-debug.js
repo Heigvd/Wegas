@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('base-observable', function (Y, NAME) {
 
     /**
@@ -218,4 +225,4 @@ YUI.add('base-observable', function (Y, NAME) {
     Y.BaseObservable = BaseObservable;
 
 
-}, '@VERSION@', {"requires": ["attribute-observable"]});
+}, '3.16.0', {"requires": ["attribute-observable", "base-core"]});

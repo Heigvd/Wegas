@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('slider-value-range', function (Y, NAME) {
 
 /**
@@ -415,4 +422,4 @@ Y.SliderValueRange = Y.mix( SliderValueRange, {
 }, true );
 
 
-}, '@VERSION@', {"requires": ["slider-base"]});
+}, '3.16.0', {"requires": ["slider-base"]});

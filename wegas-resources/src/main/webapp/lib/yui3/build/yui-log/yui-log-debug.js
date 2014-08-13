@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('yui-log', function (Y, NAME) {
 
 /**
@@ -55,6 +62,11 @@ INSTANCE.log = function(msg, cat, src, silent) {
                 bail = !incl[src];
             } else if (excl && (src in excl)) {
                 bail = excl[src];
+            }
+
+            // Set a default category of info if the category was not defined.
+            if ((typeof cat === 'undefined')) {
+                cat = 'info';
             }
 
             // Determine the current minlevel as defined in configuration
@@ -117,4 +129,4 @@ INSTANCE.message = function() {
 };
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});

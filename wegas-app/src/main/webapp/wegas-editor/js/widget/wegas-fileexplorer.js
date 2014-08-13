@@ -257,7 +257,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 if (this.uploader.parentNode.get(LABEL) === "Filename") {
                     this.uploader.parentNode.set(LABEL, e.fileList[0].get("name"));
                 }
-
+                this.editNode.show();
                 // Case 1: Upload file directly
                 var file = e.fileList[0];
                 file.treeLeaf = this.uploader.parentNode;
@@ -484,7 +484,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             Y.Plugin.EditEntityAction.hideEditFormOverlay();
         },
         onListRequestSuccess: function(callback, e) {
-            if (this.editNode) {
+            if (this.editNode && this.editNode.get("parent") === e.cfg.node) {
                 this.editNode.set("rightWidget", null);
             }
             e.cfg.node.destroyAll();
@@ -615,6 +615,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 });
                 this.uploader.parentNode = this.editNode;
                 this.editNode.parentPath = node.path;
+                this.editNode.hide();
                 node.add(this.editNode);
                 node.expand && node.expand(false);
                 this.uploader.show();
