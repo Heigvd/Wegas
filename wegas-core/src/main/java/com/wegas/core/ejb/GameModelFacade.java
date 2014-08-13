@@ -128,6 +128,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             userFacade.deleteRolePermissionsByInstance("g" + g.getId());
         }
         super.remove(id);
+        this.flush();
     }
 
     @Override
@@ -245,7 +246,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         em.flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         gameModel.propagateGameModel();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        em.flush();
+        em.flush();                                 // DA FU    ()
         resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
+    }
+
+    /**
+     * This method just do nothing but is very useful for some (obscure) purpose
+     * like adding breakpoints in a javascript
+     * 
+     * @param msg 
+     */
+    public final void nop(String msg){
+        // for JS breakpoints...
     }
 }

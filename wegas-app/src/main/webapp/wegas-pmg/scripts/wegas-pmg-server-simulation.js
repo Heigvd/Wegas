@@ -17,7 +17,8 @@ var taskTable, currentPeriod,
     STEPS = 10,
     MINTASKDURATION = 0.1,
     STEPNAMES = ["Lundi matin", "Lundi après-midi", "Mardi matin", "Mardi après-midi", "Mercredi matin",
-        "Mercredi après-midi", "Jeudi matin", "Jeudi après-midi", "Vendredi matin", "Vendredi après-midi", "Samedi matin"];
+    "Mercredi après-midi", "Jeudi matin", "Jeudi après-midi", "Vendredi matin", "Vendredi après-midi", "Samedi matin"];
+    MONTH = ["Décembre", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre"];
 /**
  * Divide period in steps (see global variable).
  * Call function step at each step.
@@ -254,8 +255,8 @@ function selectRequirementFromActivity(activity) {
         deltaLevel = 1000,
         reqByWorks = getRequirementsByWork(taskInst.requirements)[workAs],
         totalOfPersonneInTask = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
 
     debug("selectRequirement(" + taskInst + "," + activity.resourceInstance + ", workAs: " + workAs + ", mainSkill: " + activity.resourceInstance.mainSkill + ")");
     for (i = 0; i < taskInst.requirements.size(); i++) {
@@ -468,8 +469,8 @@ function selectFirstUncompletedWork(requirements, metier) {
     debug("selectFirstUncompletedWork(" + requirements + ", " + metier + ")");
     var work, reqByWorks = getRequirementsByWork(requirements), //              // get requirements merged by kind of work.
         totalOfPersonneInTask = Y.Array.sum(requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
 
     for (work in reqByWorks) {
         if (reqByWorks[work].completeness < reqByWorks[work].maxLimit * totalOfPersonneInTask / reqByWorks[work].totalByWork &&
@@ -538,8 +539,8 @@ function calculateActivityProgress(activity, allActivities) {
         work = reqByWorks[workAs],
         sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allActivities, activity), // @fixme should this be here or in the next loop?
         totalOfEmployees = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
     debug("baseAdvance : " + stepAdvance + ", #sameNeedActivity: " + sameNeedActivity.length);
 
     //For each need
@@ -636,11 +637,15 @@ function calculateActivityProgress(activity, allActivities) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    var oWages = taskInst.getPropertyD("wages"),
-        wages = Y.Array.sum(sameNeedActivity, function(a) {
+    var oWages = taskInst.getPropertyD("wages"), timeUnit = Variable.findByName(gm, "timeUnit").getValue(self),
+    wages = Y.Array.sum(sameNeedActivity, function(a) {
+        if (timeUnit == "week") {
             return activity.resourceInstance.getPropertyD("wage") / 4 * activity.resourceInstance.getPropertyD("activityRate") / 100 / STEPS
-        });
-    taskInst.setProperty("wages", taskInst.getPropertyD("wages") + Math.round(wages));
+        } else {
+            return activity.resourceInstance.getPropertyD("wage") * activity.resourceInstance.getPropertyD("activityRate") / 100 / STEPS
+        }
+    });
+    taskInst.setProperty("wages", taskInst.getPropertyD("wages") + wages);
     debug("Wages: " + oWages + " + " + (taskInst.getPropertyD("wages") - oWages) + " = " + taskInst.getPropertyD("wages"));
 
     var oCompleteness = requirement.completeness;
@@ -761,7 +766,14 @@ function checkEnd(activities, currentStep) {
  * @returns {String} the name of the step
  */
 function getStepName(step) {
-    return STEPNAMES[step];
+    var timeUnit = Variable.findByName(gm, "timeUnit").getValue(self), period, day;
+    if (timeUnit == "week") {
+        return STEPNAMES[step];
+    } else {
+        period = Variable.findByName(gm, "periodPhase3").getValue(self);
+        day = (step - 1) * 3 + 1;
+        return day + " " + MONTH[period % 12];
+    }
 }
 
 /**
@@ -788,8 +800,8 @@ function workOnProject(employeeInst) {
         return a.taskDescriptor.getInstance(self).task.getPropertyD("completeness") < 100;
     })
         && Y.Array.find(employeeInst.occupations, function(o) {                 // Check if has an occupation for the futur
-            return o.time >= currentPeriod;
-        });
+        return o.time >= currentPeriod;
+    });
 }
 
 /**

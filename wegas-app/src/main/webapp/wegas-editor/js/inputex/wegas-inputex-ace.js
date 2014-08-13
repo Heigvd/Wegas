@@ -45,6 +45,9 @@ YUI.add('wegas-inputex-ace', function(Y) {
                 i.detach();
             });
             this.editor.destroy();
+            Y.one(this.editor.container).remove().destroy(true);
+            this.editor.container = null;
+            this.editor = null;
         },
         /**
          * Render the field using the YUI Editor widget

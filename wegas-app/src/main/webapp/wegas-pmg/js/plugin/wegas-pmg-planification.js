@@ -53,7 +53,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
         },
         request: function(taskInstanceId, periode, method) {
             Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/Plannification/" + taskInstanceId + "/" + periode,
+                request: "/ResourceDescriptor/Player/" + Wegas.Facade.Game.get('currentPlayerId') + "/Plannification/" + taskInstanceId + "/" + periode,
                 cfg: {
                     method: method
                 }

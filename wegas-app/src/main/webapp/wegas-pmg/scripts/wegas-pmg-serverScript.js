@@ -144,6 +144,7 @@ function updateVariables() {
         employeesRequired = Y.Array.sum(task.requirements, function(r) {
             return r.quantity;
         });
+        task.setProperty("wages", Math.round(task.getPropertyD("wages")));
         if (task.getPropertyD('completeness') > 0) {                            //...and started
             //debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
             ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
