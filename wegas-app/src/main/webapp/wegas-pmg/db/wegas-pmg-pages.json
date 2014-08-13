@@ -387,7 +387,7 @@
                                 "cfg": {
                                     "condition": {
                                         "@class": "Script",
-                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
                                         "language": "JavaScript"
                                     }
                                 }
@@ -397,7 +397,6 @@
                     {
                         "cssClass": "menu-loginbutton",
                         "disabled": false,
-                        "labelIsUser": false,
                         "targetPageLoader": "maindisplayarea",
                         "type": "LoginButton"
                     }
@@ -975,6 +974,7 @@
             },
             {
                 "type": "InboxDisplay",
+                "template": "clean",
                 "variable": {
                     "name": "history"
                 }
@@ -1305,6 +1305,176 @@
                             }
                         }
                     }]
+            }]
+    },
+    "16": {
+        "@name": "Properties",
+        "cssClass": "pmg-properties",
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "Button",
+                "cssClass": "pmg-properties-button",
+                "label": "<span class='checkbox'>Autoreservation</span>",
+                "plugins": [{
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "60px",
+                                "left": "83px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'autoReservation').getValue(self)",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "selected"
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "cssClass": "pmg-properties-button",
+                "label": "<span class='checkbox'>Force question replies</span>",
+                "plugins": [{
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "100px",
+                                "left": "83px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'forceQuestionReplies').getValue(self)",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "selected"
+                        }
+                    }]
+            }, {
+                "type": "Button",
+                "cssClass": "pmg-properties-button",
+                "label": "<span class='checkbox'>EVM</span>",
+                "plugins": [{
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "140px",
+                                "left": "83px",
+                                "zIndex": "10"
+                            }
+                        }
+                    }, {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'evm').getValue(self)",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "selected"
+                        }
+                    }]
+            }
+        ]
+    },
+    "17": {
+        "@name": "Dashboard",
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "Dashboard",
+                "tableCfg": {
+                    "columns": [{
+                            "key": "name"
+                        }, {
+                            "label": "Phase",
+                            "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
+                        }, {
+                            "label": "Period",
+                            "script": "Variable.find(gameModel, 'currentPeriod').item(currentPhase.value-1).getValue(self)"
+                        }, {
+                            "label": "Choices"
+                        }, {
+                            "label": "Management",
+                            "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "User",
+                            "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "Quality",
+                            "script": "Variable.find(gameModel, 'quality').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "Cost",
+                            "script": "Variable.find(gameModel, 'costs').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "Delay",
+                            "script": "Variable.find(gameModel, 'delay').getValue(self)",
+                            "formatter": "colored"
+                        }]
+                }
             }]
     }
 }

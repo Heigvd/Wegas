@@ -4,7 +4,7 @@
     "top": {
         "children": [{
                 "type": "Text",
-                "cssClass": "wegas-title"
+                "cssClass": "wegas-logo"
             }, {
                 "type": "Button",
                 "label": "Admin",
@@ -62,38 +62,7 @@
                         }
                     }]
             }, {
-                "type": "LoginButton",
-                "cssClass": "menu-loginbutton",
-                "plugins": [{
-                        "fn": "WidgetMenu",
-                        "cfg": {
-                            "children": [{
-                                    "type": "Button",
-                                    "label": "Preferences",
-                                    "plugins": [{
-                                            "fn": "OpenTabAction",
-                                            "cfg": {
-                                                "wchildren": [{
-                                                        "type": "Form",
-                                                        "plugins": [{
-                                                                "fn": "UserPreferences"
-                                                            }]
-                                                    }]
-                                            }
-                                        }]
-                                }, {
-                                    "type": "Button",
-                                    "label": "Logout",
-                                    "plugins": [{
-                                            "fn": "OpenUrlAction",
-                                            "cfg": {
-                                                "url": "logout",
-                                                "target": "self"
-                                            }
-                                        }]
-                                }]
-                        }
-                    }]
+                "type": "UserLoginButton"
             }]
     },
     "center": {
@@ -145,7 +114,7 @@
                                                     "plugins": [{
                                                             "fn": "OpenGameAction",
                                                             "cfg": {
-                                                                "editorUrl": "play.html?"
+                                                                "editorUrl": "game-play.html?"
                                                             }
                                                         }]
                                                 }],
@@ -169,7 +138,7 @@
                                                                                 "plugins": [{
                                                                                         "fn": "OpenGameAction",
                                                                                         "cfg": {
-                                                                                            "editorUrl": "play.html?"
+                                                                                            "editorUrl": "game-play.html?"
                                                                                         }
                                                                                     }]
                                                                             }]

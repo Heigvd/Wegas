@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-synthetic', function (Y, NAME) {
 
 /**
@@ -58,8 +65,8 @@ function Notifier(handle, emitFacade) {
  * automatically added after those passed to fire().</p>
  *
  * @method fire
- * @param e {EventFacade|DOMEventFacade|Object|any} (see description)
- * @param arg* {any} additional arguments received by all subscriptions
+ * @param {EventFacade|DOMEventFacade|any} e (see description)
+ * @param {any[]} [arg*] additional arguments received by all subscriptions
  * @private
  */
 Notifier.prototype.fire = function (e) {
@@ -842,4 +849,4 @@ Y.Event.define = function (type, config, force) {
 };
 
 
-}, '@VERSION@', {"requires": ["node-base", "event-custom-complex"]});
+}, '3.16.0', {"requires": ["node-base", "event-custom-complex"]});

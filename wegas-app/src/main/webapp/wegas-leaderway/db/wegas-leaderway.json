@@ -428,7 +428,6 @@
                             }
                         }],
                     "data": {},
-                    "labelIsUser": false,
                     "targetPageLoader": {}
                 }, {
                     "type": "PageLoader",

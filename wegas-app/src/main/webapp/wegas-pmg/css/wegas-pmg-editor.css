@@ -1,0 +1,25 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+.pmg-properties .pmg-properties-button,
+.pmg-properties .pmg-properties-button:hover {
+    background: transparent;
+}
+.pmg-properties .checkbox {
+    background: url(../../wegas-editor/images/checkbox.png) -9px -38px no-repeat;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    padding-left: 23px;
+}
+.pmg-properties .selected .checkbox {
+    background: url(../../wegas-editor/images/checkbox.png) -9px -4px no-repeat;
+}
+
+/* Right panel forms */ 
+.editor-resources-skillset, .editor-resources-occupations {
+    display: block !important;
+}

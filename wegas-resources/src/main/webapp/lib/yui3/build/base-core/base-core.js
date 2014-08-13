@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('base-core', function (Y, NAME) {
 
     /**
@@ -829,4 +836,4 @@ YUI.add('base-core', function (Y, NAME) {
     Y.BaseCore = BaseCore;
 
 
-}, '@VERSION@', {"requires": ["attribute-core"]});
+}, '3.16.0', {"requires": ["attribute-core"]});

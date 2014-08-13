@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('autocomplete-list-keys', function (Y, NAME) {
 
 /**
@@ -183,4 +190,4 @@ ListKeys.prototype = {
 Y.Base.mix(Y.AutoCompleteList, [ListKeys]);
 
 
-}, '@VERSION@', {"requires": ["autocomplete-list", "base-build"]});
+}, '3.16.0', {"requires": ["autocomplete-list", "base-build"]});

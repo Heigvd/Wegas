@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('series-bar', function (Y, NAME) {
 
 /**
@@ -166,4 +173,4 @@ Y.BarSeries = Y.Base.create("barSeries", Y.MarkerSeries, [Y.Histogram], {
 });
 
 
-}, '@VERSION@', {"requires": ["series-marker", "series-histogram-base"]});
+}, '3.16.0', {"requires": ["series-marker", "series-histogram-base"]});

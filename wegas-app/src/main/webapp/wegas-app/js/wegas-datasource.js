@@ -186,7 +186,6 @@ YUI.add('wegas-datasource', function(Y) {
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
-
                         if (payload.cfg.initialRequest) {
                             this.clear(false);
                         }
@@ -521,7 +520,6 @@ YUI.add('wegas-datasource', function(Y) {
             var entity = this.findById(id).clone();
             this.post(entity, parentData, callbacks);
         }
-
     }, {
         NS: "cache",
         NAME: "WEGASCACHE",
@@ -555,7 +553,6 @@ YUI.add('wegas-datasource', function(Y) {
     });
     Y.extend(VariableDescriptorCache, WegasCache, {
         /** @lends Y.Plugin.VariableDescriptorCache# */
-
         /**
          * @function
          * @private
@@ -802,7 +799,6 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             } else if (entity instanceof Wegas.persistence.Player) {
                 this.findById(entity.get("teamId")).get("players").push(entity);
-
             } else {
                 //this.getCache().push(entity);
                 this.getCache().splice(0, 0, entity);                           // Add in first position
@@ -903,7 +899,10 @@ YUI.add('wegas-datasource', function(Y) {
         ATTRS: {
             currentGameId: {},
             currentTeamId: {},
-            currentPlayerId: {}
+            currentPlayerId: {},
+            currentPlayer: {
+                getter: "getCurrentPlayer"
+            }
         }
     });
     Plugin.GameCache = GameCache;
@@ -1035,7 +1034,6 @@ YUI.add('wegas-datasource', function(Y) {
                 for (i in result) {
                     this.pageQuery[i] = false;
                     this.setCache(i, result[i]);
-
                 }
             } else if (page !== "index") {
                 this.pageQuery[page] = false;
@@ -1069,7 +1067,7 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * @function
          */
-        destroyCache: function() {
+        clear: function() {
             this.get(HOST).data = {};
         },
         /**
@@ -1236,11 +1234,10 @@ YUI.add('wegas-datasource', function(Y) {
                                     page["@pageId"] = pageId;
                                     callback(page);
                                 }
-
                             }
                         }, this),
                         failure: function(e) {
-                            callback(null);
+                            callback && callback(null);
                         }
                     }
                 });
@@ -1259,7 +1256,6 @@ YUI.add('wegas-datasource', function(Y) {
                 }
                 this.sendRequest(cfg);
             }
-
         },
         _successHandler: function(e) {
             Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
@@ -1343,6 +1339,12 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         output: function(logs) {
+            var tab = Y.Widget.getByNode("#centerTabView").get("selection");
+
+            Y.Array.each(logs, function(l) {
+                tab.showMessageBis(l.type, "Server error: " + (l.val.message || l.val));
+            });
+
             var cur;
             if (console) {
                 if (console.groupCollapsed) {

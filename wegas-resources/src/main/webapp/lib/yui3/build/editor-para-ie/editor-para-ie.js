@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('editor-para-ie', function (Y, NAME) {
 
 
@@ -131,4 +138,4 @@ YUI.add('editor-para-ie', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["editor-para-base"]});
+}, '3.16.0', {"requires": ["editor-para-base"]});

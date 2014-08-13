@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('cache-offline', function (Y, NAME) {
 
 /**
@@ -215,7 +222,7 @@ Y.extend(CacheOffline, Y.Cache, localStorage ? {
      * Adds entry to cache.
      *
      * @method _defAddFn
-     * @param e {Event.Facade} Event Facade with the following properties:
+     * @param e {EventFacade} Event Facade with the following properties:
      * <dl>
      * <dt>entry (Object)</dt> <dd>The cached entry.</dd>
      * </dl>
@@ -246,7 +253,7 @@ Y.extend(CacheOffline, Y.Cache, localStorage ? {
      * Flushes cache.
      *
      * @method _defFlushFn
-     * @param e {Event.Facade} Event Facade object.
+     * @param e {EventFacade} Event Facade object.
      * @protected
      */
     _defFlushFn: function(e) {
@@ -338,4 +345,4 @@ Y.extend(CacheOffline, Y.Cache, localStorage ? {
 Y.CacheOffline = CacheOffline;
 
 
-}, '@VERSION@', {"requires": ["cache-base", "json"]});
+}, '3.16.0', {"requires": ["cache-base", "json"]});

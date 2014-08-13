@@ -220,7 +220,6 @@
                             }, {
                                 "cssClass": "menu-loginbutton",
                                 "disabled": false,
-                                "labelIsUser": false,
                                 "targetPageLoader": "maindisplayarea",
                                 "type": "LoginButton"
                             }

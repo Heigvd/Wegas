@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('charts-legend', function (Y, NAME) {
 
 /**
@@ -1235,10 +1242,10 @@ Y.ChartLegend = Y.Base.create("chartlegend", Y.Widget, [Y.Renderer], {
      * @param {String | Class} shapeClass The type of shape
      * @param {Object} fill Properties for the shape's fill
      * @param {Object} border Properties for the shape's border
-     * @param {String} text String to be rendered as the legend's text
+     * @param {String} labelStyles String to be rendered as the legend's text
      * @param {Number} width Total width of the legend item
      * @param {Number} height Total height of the legend item
-     * @param {HTML | String} text Text for the legendItem
+     * @param {String} text Text for the legendItem
      * @return Object
      * @private
      */
@@ -1700,4 +1707,4 @@ Y.ChartLegend = Y.Base.create("chartlegend", Y.Widget, [Y.Renderer], {
 });
 
 
-}, '@VERSION@', {"requires": ["charts-base"]});
+}, '3.16.0', {"requires": ["charts-base"]});

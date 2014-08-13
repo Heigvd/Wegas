@@ -36,7 +36,7 @@
         <from-view-id>/wegas-app/view/lobby-selectteam.xhtml</from-view-id>
         <navigation-case>
             <from-outcome>teamJoined</from-outcome>
-            <to-view-id>play.xhtml</to-view-id>
+            <to-view-id>game-play.xhtml</to-view-id>
             <redirect>
                 <view-param>
                     <name>id</name>

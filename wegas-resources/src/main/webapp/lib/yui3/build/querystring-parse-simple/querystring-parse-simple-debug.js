@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('querystring-parse-simple', function (Y, NAME) {
 
 // @TODO this looks like we are requiring the user to extract the querystring
@@ -46,4 +53,4 @@ QueryString.unescape = function (s) {
 };
 
 
-}, '@VERSION@', {"requires": ["yui-base"]});
+}, '3.16.0', {"requires": ["yui-base"]});

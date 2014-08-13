@@ -10,13 +10,15 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 var taskTable, currentPeriod,
     DEBUGMODE = false,
     STEPS = 10,
     MINTASKDURATION = 0.1,
     STEPNAMES = ["Lundi matin", "Lundi après-midi", "Mardi matin", "Mardi après-midi", "Mercredi matin",
-        "Mercredi après-midi", "Jeudi matin", "Jeudi après-midi", "Vendredi matin", "Vendredi après-midi", "Samedi matin"];
+    "Mercredi après-midi", "Jeudi matin", "Jeudi après-midi", "Vendredi matin", "Vendredi après-midi", "Samedi matin"];
+    MONTH = ["Décembre", "Janvier", "Février", "Mars", "Avril", "Mai", "Juin", "Juillet", "Août", "Septembre", "Octobre", "Novembre"];
 /**
  * Divide period in steps (see global variable).
  * Call function step at each step.
@@ -58,6 +60,7 @@ function step(currentStep) {
     Y.Array.each(getActivitiesWithEmployeeOnDifferentNeeds(activities), function(a) {// Calculate progress for each activity
         calculateActivityProgress(a, activities);
     });
+
     Y.Array.each(getTasksByActivities(activities), function(t) {                // Get each modified task and calculate is new quality and completeness
         var oCompleteness = t.getProperty("completeness");
         t.setProperty("completeness", Math.round(calculateTaskProgress(t)));
@@ -72,13 +75,18 @@ function step(currentStep) {
  * @returns {Number}
  */
 function calculateTaskProgress(taskInst) {
-    var //reqByWorks = getRequirementsByWork(taskInst.requirements),
-        nbWork = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        }),
-        taskProgress = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.completeness * r.quantity;
-        }) / nbWork;
+    var nbWork = Y.Array.sum(taskInst.requirements, function(r) {
+        return r.quantity;
+    }),
+        reqByWork = getRequirementsByWork(taskInst.requirements),
+        taskProgress = 0,
+        work;
+
+    for (work in reqByWork) {
+        taskProgress += reqByWork[work].completeness * reqByWork[work].totalByWork;
+    }
+
+    taskProgress = taskProgress / nbWork;
     return (taskProgress > 97) ? 100 : taskProgress;                            // > 97 yes, don't frustrate the players please.
 }
 /**
@@ -181,11 +189,12 @@ function getActivitiesWithEmployeeOnSameNeed(activities, activity) {
  * @returns {Array} an Array of Activity
  */
 function assignRessources(currentStep) {
-    //debug("assignRessources(currentStep: " + currentStep + ", currentPeriod: " + currentPeriod + ")");
+    debug("assignRessources(currentStep: " + currentStep + ", currentPeriod: " + currentPeriod + ")");
     var i, employee, activity, assignables,
         activities = [],
         employees = flattenList(Variable.findByName(gameModel, "employees")),
         period = currentPeriod + currentStep / STEPS;
+
     if (!employees) {
         return [];
     }
@@ -196,9 +205,9 @@ function assignRessources(currentStep) {
             if (assignables.length > 0) {
                 activity = findLastStepCorrespondingActivity(employee,
                     assignables[0].taskDescriptor, period);                     //set corresponding past activity if it existe.
-                //debug("assignRessources(): Existing activity for " + employees[i].name + ":" + activity);
+                debug("assignRessources(): Existing activity for " + employees[i].name + ": " + activity);
                 if (!activity) {                                                // Else create it.
-                    //debug("assignRessources(): Creating new activity");
+                    debug("assignRessources(): Creating new activity");
                     activity = employee.createActivity(assignables[0].taskDescriptor);
                 }
                 var req = selectRequirementFromActivity(activity);
@@ -246,10 +255,10 @@ function selectRequirementFromActivity(activity) {
         deltaLevel = 1000,
         reqByWorks = getRequirementsByWork(taskInst.requirements)[workAs],
         totalOfPersonneInTask = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
 
-    //debug("selectRequirement(" + taskInst + "," + activity.resourceInstance + ", workAs: " + workAs + ", mainSkill: " + activity.resourceInstance.mainSkill + ")");
+    debug("selectRequirement(" + taskInst + "," + activity.resourceInstance + ", workAs: " + workAs + ", mainSkill: " + activity.resourceInstance.mainSkill + ")");
     for (i = 0; i < taskInst.requirements.size(); i++) {
         req = taskInst.requirements.get(i);
         d = Math.abs(parseInt(activity.resourceInstance.mainSkillLevel) - req.level);
@@ -271,9 +280,9 @@ function selectRequirementFromActivity(activity) {
  * @returns {Activity} activity
  */
 function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
-    //debug("findLastStepCorrespondingActivity(" + employeeInst.descriptor.name + ")" + employeeInst.activities.size());
+    debug("findLastStepCorrespondingActivity(" + employeeInst.descriptor.name + ")" + employeeInst.activities.size());
     return Y.Array.find(employeeInst.activities, function(activity) {
-        return activity.taskDescriptor == taskDesc                              // If the task of activity match with the given task (same task and same employee == same activity)
+        return activity.taskDescriptor === taskDesc                              // If the task of activity match with the given task (same task and same employee == same activity)
             && period !== Math.floor(period)                                    // if it s not a new period (current step !== 0)
             && activity.time === getFloat(period - 0.1);                        // if activity was used the last step
     });
@@ -295,36 +304,51 @@ function haveCorrespondingActivityInPast(employeeInst, taskDesc) {
 }
 
 /**
- * Check is the given resource will work on the project for the current period
+ * Return the automatic planning setting 
+ * Such a setting is given by the "autoReservation" bln variable
+ */
+function automatedReservation() {
+    var autoDesc;
+
+    try {
+        autoDesc = Variable.findByName(gm, "autoReservation");
+    } catch (e) {
+        autoDesc = false;
+    }
+
+    // Automatic means the descriptor exists and its value is TRUE
+    return autoDesc && autoDesc.getValue(self);
+}
+
+/**
+ * Check if the given resource will work on the project for the current period
  * 
  *  in automatic mode:
- *      the resource will always works unless it's unavailable (i.e. current occupation not editable)
+ *      the resource will always work unless it's unavailable (i.e. current occupation not editable)
  *  in manual mode:
  *      the resource must have an editable occupation for the current time (i.e has been reseved by the player)
+ *  
+ *  In all case, the resource must be active
  *  
  * @param {RessourceInstance} employeeInst
  * @returns {Boolean} is reserved
  */
 function isReservedToWork(employeeInst) {
-    var autoDesc;
-
-    try {
-        autoDesc = Variable.findByName(gm, "automatic");
-    } catch (e) {
-        autoDesc = false;
+    // Inactive resource never work
+    if (!employeeInst.getActive()) {
+        return false;
     }
 
-    // The boolean doesn't exists or its value is false => Manual
-    if (!autoDesc || ! autoDesc.getValue(self)) {
+    if (!automatedReservation()) {
         // the resource must be reserved.
-        // it means that an editable occupation must exists for the current time
+        // it means that an "editable" occupation must exists for the current time
         return Y.Array.find(employeeInst.occupations, function(o) {
             return o.time === currentPeriod
                 && o.editable;
         });
     } else { // automatic
-        // The resource is alwayse reserved unless
-        // it has an uneditable occupation for the current period
+        // The resource is always reserved unless
+        // it has an "uneditable" occupation for the current period
         return !Y.Array.find(employeeInst.occupations, function(o) {
             return o.time === currentPeriod
                 && !o.editable; // Illness, etc. occupations are not editable
@@ -400,7 +424,7 @@ function checkAssignments(employeeInst, currentStep) {
             break;
         } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
             sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + taskDesc.label,
-                'Je suis sensé travailler sur la tâche "' + taskDesc.label + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituel. <br/>'
+                'Je suis sensé travailler sur la tâche "' + taskDesc.label + '" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituelles. <br/>'
                 + ' Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                 employeeName);
             assignments.remove(i);
@@ -442,11 +466,11 @@ function getPredecessorFactor(taskDesc) {
  * @returns {String} work
  */
 function selectFirstUncompletedWork(requirements, metier) {
-    //debug("selectFirstUncompletedWork(" + requirements + ", " + metier + ")");
+    debug("selectFirstUncompletedWork(" + requirements + ", " + metier + ")");
     var work, reqByWorks = getRequirementsByWork(requirements), //              // get requirements merged by kind of work.
         totalOfPersonneInTask = Y.Array.sum(requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
 
     for (work in reqByWorks) {
         if (reqByWorks[work].completeness < reqByWorks[work].maxLimit * totalOfPersonneInTask / reqByWorks[work].totalByWork &&
@@ -469,7 +493,8 @@ function getRequirementsByWork(requirements) {
     var i, req, work, works = {};
     for (i = 0; i < requirements.size(); i++) {
         req = requirements.get(i);
-        work = works[req.work] = works[req.work] || {//                         //keep an occurance of each kind of work needed
+        //keep an occurance of each kind of work needed
+        work = works[req.work] = works[req.work] || {
             maxLimit: 0,
             typesOfLevels: [],
             completeness: 0,
@@ -514,8 +539,8 @@ function calculateActivityProgress(activity, allActivities) {
         work = reqByWorks[workAs],
         sameNeedActivity = getActivitiesWithEmployeeOnSameNeed(allActivities, activity), // @fixme should this be here or in the next loop?
         totalOfEmployees = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        });
+        return r.quantity;
+    });
     debug("baseAdvance : " + stepAdvance + ", #sameNeedActivity: " + sameNeedActivity.length);
 
     //For each need
@@ -612,11 +637,15 @@ function calculateActivityProgress(activity, allActivities) {
     }
 
     //set Wage (add 1/steps of the need's wage at task);
-    var oWages = taskInst.getPropertyD("wages"),
-        wages = Y.Array.sum(sameNeedActivity, function(a) {
+    var oWages = taskInst.getPropertyD("wages"), timeUnit = Variable.findByName(gm, "timeUnit").getValue(self),
+    wages = Y.Array.sum(sameNeedActivity, function(a) {
+        if (timeUnit == "week") {
             return activity.resourceInstance.getPropertyD("wage") / 4 * activity.resourceInstance.getPropertyD("activityRate") / 100 / STEPS
-        });
-    taskInst.setProperty("wages", taskInst.getPropertyD("wages") + Math.round(wages));
+        } else {
+            return activity.resourceInstance.getPropertyD("wage") * activity.resourceInstance.getPropertyD("activityRate") / 100 / STEPS
+        }
+    });
+    taskInst.setProperty("wages", taskInst.getPropertyD("wages") + wages);
     debug("Wages: " + oWages + " + " + (taskInst.getPropertyD("wages") - oWages) + " = " + taskInst.getPropertyD("wages"));
 
     var oCompleteness = requirement.completeness;
@@ -708,7 +737,7 @@ function getFloat(number, numberOfDigit) {
  * @param {Number} currentStep
  */
 function checkEnd(activities, currentStep) {
-    var i, employeeInst, taskInst, taskDesc, employeeName, nextWork;
+    var i, employeeInst, taskInst, taskDesc, nextWork;
     for (i = 0; i < activities.length; i++) {
         taskDesc = activities[i].taskDescriptor;
         taskInst = taskDesc.getInstance(self);
@@ -720,7 +749,7 @@ function checkEnd(activities, currentStep) {
             if (activities[i].requirement.work != nextWork) {
                 sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.label + ' en partie terminée',
                     'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label
-                    + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeInst.mainSkill,
+                    + '. <br/> Salutations <br/>' + employeeInst.descriptor.label + '<br/> ' + employeeInst.mainSkill,
                     employeeInst.descriptor.label);
                 //sendMessage(getStepName(currentStep) + ') Tâche : ' + taskDesc.label + ' en partie terminée',
                 //        'Nous avons terminé la partie ' + activities[i].requirement.work + ' de la tâche ' + taskDesc.label + '. Je passe à ' + nextWork 
@@ -737,7 +766,14 @@ function checkEnd(activities, currentStep) {
  * @returns {String} the name of the step
  */
 function getStepName(step) {
-    return STEPNAMES[step];
+    var timeUnit = Variable.findByName(gm, "timeUnit").getValue(self), period, day;
+    if (timeUnit == "week") {
+        return STEPNAMES[step];
+    } else {
+        period = Variable.findByName(gm, "periodPhase3").getValue(self);
+        day = (step - 1) * 3 + 1;
+        return day + " " + MONTH[period % 12];
+    }
 }
 
 /**
@@ -764,8 +800,8 @@ function workOnProject(employeeInst) {
         return a.taskDescriptor.getInstance(self).task.getPropertyD("completeness") < 100;
     })
         && Y.Array.find(employeeInst.occupations, function(o) {                 // Check if has an occupation for the futur
-            return o.time >= currentPeriod;
-        });
+        return o.time >= currentPeriod;
+    });
 }
 
 /**

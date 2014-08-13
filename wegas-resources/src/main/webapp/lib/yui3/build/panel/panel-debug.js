@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('panel', function (Y, NAME) {
 
 // TODO: Change this description!
@@ -96,7 +103,7 @@ Y.Panel = Y.Base.create('panel', Y.Widget, [
 });
 
 
-}, '@VERSION@', {
+}, '3.16.0', {
     "requires": [
         "widget",
         "widget-autohide",

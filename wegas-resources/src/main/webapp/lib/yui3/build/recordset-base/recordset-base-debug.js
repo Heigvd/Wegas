@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('recordset-base', function (Y, NAME) {
 
 /**
@@ -648,4 +655,4 @@ Y.Recordset = Recordset;
 
 
 
-}, '@VERSION@', {"requires": ["base", "arraylist"]});
+}, '3.16.0', {"requires": ["base", "arraylist"]});

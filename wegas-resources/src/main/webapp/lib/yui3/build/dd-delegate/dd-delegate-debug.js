@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dd-delegate', function (Y, NAME) {
 
 
@@ -153,7 +160,6 @@ YUI.add('dd-delegate', function (Y, NAME) {
         /**
         * Applies the Y.Plugin.Drop to all nodes matching the cont + nodes selector query.
         * @method syncTargets
-        * @return {Self}
         * @chainable
         */
         syncTargets: function() {
@@ -335,4 +341,4 @@ YUI.add('dd-delegate', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["dd-drag", "dd-drop-plugin", "event-mouseenter"]});
+}, '3.16.0', {"requires": ["dd-drag", "dd-drop-plugin", "event-mouseenter"]});

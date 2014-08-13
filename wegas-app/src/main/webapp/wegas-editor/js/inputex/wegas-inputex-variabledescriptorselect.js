@@ -430,7 +430,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             return VariableDescriptorMethod.superclass.getValue.call(this);
         },
         encodeArgs: function(args, argsCfg) {
-            var i, j;
+            var i;
             for (i = 0; i < args.length; i = i + 1) {
                 if (argsCfg[i].scriptType === "string") {
                     /* if (Y.Lang.isArray(args[i])) {
@@ -446,6 +446,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                      } else {
                      args[i] = '"' + Wegas.Helper.escapeJSString(args[i]) + '"';
                      }*/
+                    args[i] = Y.JSON.stringify(args[i]);
+                } else if (argsCfg[i].scriptType === "array") {
+                    args[i] = Y.JSON.stringify(args[i]);
+                } else if (argsCfg[i].scriptType === "object") {
                     args[i] = Y.JSON.stringify(args[i]);
                 }
             }
@@ -614,7 +618,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         getValue: function() {
             var value = VariableDescriptorCondition.superclass.getValue.call(this);
 
-            if (this.argsOffset > 1) {
+            if (this.argsOffset > 1 && !this._fallbackMode) {
                 var i = this.inputs[this.inputs.length - 1],
                     values = i.getValue();
 

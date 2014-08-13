@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('io-xdr', function (Y, NAME) {
 
 /**
@@ -53,7 +60,7 @@ Method that creates the Flash transport swf.
 @private
 @param {String} uri - location of io.swf.
 @param {String} yid - YUI sandbox id.
-@param {String} yid - IO instance id.
+@param {String} uid - IO instance id.
 **/
 function _swf(uri, yid, uid) {
     var o = '<object id="io_swf" type="application/x-shockwave-flash" data="' +
@@ -315,4 +322,4 @@ event is fired, this value will be set to 0.
 Y.io.xdr = { delay : 100 };
 
 
-}, '@VERSION@', {"requires": ["io-base", "datatype-xml-parse"]});
+}, '3.16.0', {"requires": ["io-base", "datatype-xml-parse"]});

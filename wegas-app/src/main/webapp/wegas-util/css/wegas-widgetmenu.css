@@ -44,9 +44,10 @@
     display: block;
 }
 .yui3-menu-content:empty::before{
-    padding-left: 5px;
-    content: "empty";
+    content: "Empty";
     font-style: italic;
+    display: block;
+    margin: .5em;
 }
 .yui3-menu .yui3-button:hover {
     background: -webkit-gradient(linear,0 0,0 100%,from(transparent),color-stop(40%,rgba(0, 0, 0, 0.05)),to(rgba(0, 0, 0, 0.15)));

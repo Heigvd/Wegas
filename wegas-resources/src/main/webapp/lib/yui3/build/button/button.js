@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('button', function (Y, NAME) {
 
 /**
@@ -329,4 +336,4 @@ Y.Button = Button;
 Y.ToggleButton = ToggleButton;
 
 
-}, '@VERSION@', {"requires": ["button-core", "cssbutton", "widget"]});
+}, '3.16.0', {"requires": ["button-core", "cssbutton", "widget"]});

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('axis-base', function (Y, NAME) {
 
 /**
@@ -600,7 +607,7 @@ Y.AxisBase = Y.Base.create("axisBase", Y.Base, [Y.Renderer], {
      * @method _getCoordsFromValues
      * @param {Number} min The minimum for the axis.
      * @param {Number} max The maximum for the axis.
-     * @param {length} length The distance that the axis spans.
+     * @param {Number} length The distance that the axis spans.
      * @param {Array} dataValues An array of values.
      * @param {Number} offset Value in which to offset the coordinates.
      * @param {Boolean} reverse Indicates whether the coordinates should start from
@@ -898,4 +905,4 @@ Y.AxisBase = Y.Base.create("axisBase", Y.Base, [Y.Renderer], {
 });
 
 
-}, '@VERSION@', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});
+}, '3.16.0', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});

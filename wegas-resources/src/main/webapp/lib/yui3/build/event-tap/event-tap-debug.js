@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('event-tap', function (Y, NAME) {
 
 /**
@@ -27,6 +34,7 @@ var doc = Y.config.doc,
     GESTURE_MAP = Y.Event._GESTURE_MAP,
     EVT_START = GESTURE_MAP.start,
     EVT_TAP = 'tap',
+    POINTER_EVENT_TEST = /pointer/i,
 
     HANDLES = {
         START: 'Y_TAP_ON_START_HANDLE',
@@ -100,7 +108,7 @@ Y.Event.define(EVT_TAP, {
         });
 
     @method on
-    @param {Y.Node} node
+    @param {Node} node
     @param {Array} subscription
     @param {Boolean} notifier
     @public
@@ -114,7 +122,7 @@ Y.Event.define(EVT_TAP, {
     Detaches all event subscriptions set up by the event-tap module
 
     @method detach
-    @param {Y.Node} node
+    @param {Node} node
     @param {Array} subscription
     @param {Boolean} notifier
     @public
@@ -136,7 +144,7 @@ Y.Event.define(EVT_TAP, {
         }, 'li a');
 
     @method delegate
-    @param {Y.Node} node
+    @param {Node} node
     @param {Array} subscription
     @param {Boolean} notifier
     @param {String | Function} filter
@@ -144,9 +152,9 @@ Y.Event.define(EVT_TAP, {
     @static
     **/
     delegate: function (node, subscription, notifier, filter) {
-        subscription[HANDLES.START] = node.delegate(EVT_START, function (e) {
+        subscription[HANDLES.START] = Y.delegate(EVT_START, function (e) {
             this._start(e, node, subscription, notifier, true);
-        }, filter, this);
+        }, node, filter, this);
     },
 
     /**
@@ -154,7 +162,7 @@ Y.Event.define(EVT_TAP, {
     Only used if you use node.delegate(...) instead of node.on(...);
 
     @method detachDelegate
-    @param {Y.Node} node
+    @param {Node} node
     @param {Array} subscription
     @param {Boolean} notifier
     @public
@@ -169,7 +177,7 @@ Y.Event.define(EVT_TAP, {
 
     @method _start
     @param {DOMEventFacade} event
-    @param {Y.Node} node
+    @param {Node} node
     @param {Array} subscription
     @param {Boolean} notifier
     @param {Boolean} delegate
@@ -234,9 +242,9 @@ Y.Event.define(EVT_TAP, {
             subscription.preventMouse = false;
         }
 
-        else if (context.eventType.indexOf('MSPointer') !== -1) {
-            subscription[HANDLES.END] = node.once('MSPointerUp', this._end, this, node, subscription, notifier, delegate, context);
-            subscription[HANDLES.CANCEL] = node.once('MSPointerCancel', this.detach, this, node, subscription, notifier, delegate, context);
+        else if (POINTER_EVENT_TEST.test(context.eventType)) {
+            subscription[HANDLES.END] = node.once(GESTURE_MAP.end, this._end, this, node, subscription, notifier, delegate, context);
+            subscription[HANDLES.CANCEL] = node.once(GESTURE_MAP.cancel, this.detach, this, node, subscription, notifier, delegate, context);
         }
 
     },
@@ -248,7 +256,7 @@ Y.Event.define(EVT_TAP, {
 
     @method _end
     @param {DOMEventFacade} event
-    @param {Y.Node} node
+    @param {Node} node
     @param {Array} subscription
     @param {Boolean} notifier
     @param {Boolean} delegate
@@ -295,4 +303,4 @@ Y.Event.define(EVT_TAP, {
 });
 
 
-}, '@VERSION@', {"requires": ["node-base", "event-base", "event-touch", "event-synthetic"]});
+}, '3.16.0', {"requires": ["node-base", "event-base", "event-touch", "event-synthetic"]});

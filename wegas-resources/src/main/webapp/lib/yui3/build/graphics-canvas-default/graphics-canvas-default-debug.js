@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('graphics-canvas-default', function (Y, NAME) {
 
 Y.Graphic = Y.CanvasGraphic;
@@ -9,4 +16,4 @@ Y.Path = Y.CanvasPath;
 Y.Drawing = Y.CanvasDrawing;
 
 
-}, '@VERSION@');
+}, '3.16.0');

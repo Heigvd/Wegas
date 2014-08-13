@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('resize-base', function (Y, NAME) {
 
 /**
@@ -810,9 +817,8 @@ Y.Resize = Y.extend(
              *
              * @event resize:start
              * @preventable _defResizeStartFn
-             * @param {Event.Facade} event The resize start event.
+             * @param {EventFacade} event The resize start event.
              * @bubbles Resize
-             * @type {Event.Custom}
              */
             publish(EV_RESIZE_START, this._defResizeStartFn);
 
@@ -822,9 +828,8 @@ Y.Resize = Y.extend(
              *
              * @event resize:resize
              * @preventable _defResizeFn
-             * @param {Event.Facade} event The resize event.
+             * @param {EventFacade} event The resize event.
              * @bubbles Resize
-             * @type {Event.Custom}
              */
             publish(EV_RESIZE, this._defResizeFn);
 
@@ -833,9 +838,8 @@ Y.Resize = Y.extend(
              *
              * @event resize:align
              * @preventable _defResizeAlignFn
-             * @param {Event.Facade} event The resize align event.
+             * @param {EventFacade} event The resize align event.
              * @bubbles Resize
-             * @type {Event.Custom}
              */
             publish(EV_RESIZE_ALIGN, this._defResizeAlignFn);
 
@@ -845,9 +849,8 @@ Y.Resize = Y.extend(
              *
              * @event resize:end
              * @preventable _defResizeEndFn
-             * @param {Event.Facade} event The resize end event.
+             * @param {EventFacade} event The resize end event.
              * @bubbles Resize
-             * @type {Event.Custom}
              */
             publish(EV_RESIZE_END, this._defResizeEndFn);
 
@@ -857,9 +860,8 @@ Y.Resize = Y.extend(
              *
              * @event resize:mouseUp
              * @preventable _defMouseUpFn
-             * @param {Event.Facade} event The resize mouseUp event.
+             * @param {EventFacade} event The resize mouseUp event.
              * @bubbles Resize
-             * @type {Event.Custom}
              */
             publish(EV_MOUSE_UP, this._defMouseUpFn);
         },
@@ -1646,4 +1648,4 @@ Y.each(Y.Resize.prototype.ALL_HANDLES, function(handle) {
 });
 
 
-}, '@VERSION@', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});
+}, '3.16.0', {"requires": ["base", "widget", "event", "oop", "dd-drag", "dd-delegate", "dd-drop"], "skinnable": true});

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('attribute-extras', function (Y, NAME) {
 
     /**
@@ -106,7 +113,7 @@ YUI.add('attribute-extras', function (Y, NAME) {
                 }
                 host.set(name, host._state.get(name, INIT_VALUE));
             } else {
-                Y.each(host._state.data, function(v, n) {
+                Y.Object.each(host._state.data, function(v, n) {
                     host.reset(n);
                 });
             }
@@ -143,4 +150,4 @@ YUI.add('attribute-extras', function (Y, NAME) {
     Y.AttributeExtras = AttributeExtras;
 
 
-}, '@VERSION@', {"requires": ["oop"]});
+}, '3.16.0', {"requires": ["oop"]});

@@ -12,16 +12,17 @@
 YUI.add('wegas-scheduledatatable', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, ScheduleDT;
+    var Wegas = Y.Wegas, ScheduleDT,
+        EDITABLE_PERIOD = " editable-period";
 
     /**
      *  @class Add column to datatable
-     *  @name Y.Plugin.scheduleDT
+     *  @name Y.Plugin.ScheduleDT
      *  @extends Y.Plugin.Base
      *  @constructor
      */
     ScheduleDT = Y.Base.create("wegas-scheduledatatable", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
-        /** @lends Y.Plugin.CSSStyles */
+        /** @lends Y.Plugin.ScheduleDT */
 
         /**
          * Lifecycle methods
@@ -37,8 +38,10 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }, this);
         },
         initColumn: function() {
-            var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
+            //var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
+            //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
+            var executionPeriods = this.initialMaximum(),
+                periodPhase3 = this.currentPeriod();
             if (periodPhase3 >= executionPeriods) {
                 this.setColumn(periodPhase3 + 1);
                 this.currentVal = periodPhase3 + 1;
@@ -48,8 +51,10 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }
         },
         columnUpdate: function() {
-            var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
+            //var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
+            //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
+            var executionPeriods = this.initialMaximum(),
+                periodPhase3 = this.currentPeriod();
             if (periodPhase3 >= executionPeriods) {
                 this.setColumn(periodPhase3 + 1, this.currentVal);
                 this.currentVal = periodPhase3 + 1;
@@ -68,11 +73,12 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 period = this.currentPeriod(),
                 bindedCP = Y.bind(this.currentPeriod, this),
                 classTime,
+                manualReservation = !this.get("autoReservation"),
                 formatter = function(o) {
                     if (bindedCP() < o.column.time) {
-                        o.className = "futur";
+                        o.className = "futur" + (manualReservation ? EDITABLE_PERIOD : "");
                     } else if (bindedCP() === o.column.time) {
-                        o.className = "present";
+                        o.className = "present" + (manualReservation ? EDITABLE_PERIOD : "");
                     } else {
                         o.className = "past";
                     }
@@ -82,9 +88,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             while (diff) {
                 if (diff > 0) {
                     if ((newval - diff + 1) === period) {
-                        classTime = "present";
+                        classTime = "present" + (manualReservation ? EDITABLE_PERIOD : "");
                     } else if ((newval - diff + 1) > period) {
-                        classTime = "futur";
+                        classTime = "futur" + (manualReservation ? EDITABLE_PERIOD : "");
                     } else {
                         classTime = "past";
                     }
@@ -104,16 +110,20 @@ YUI.add('wegas-scheduledatatable', function(Y) {
 
         },
         setTime: function() {
-            var table = this.get("host").datatable, period = this.currentPeriod();
+            var table = this.get("host").datatable,
+                period = this.currentPeriod(),
+                manualReservation = !this.get("autoReservation");
             if (table.head) {
                 table.head.theadNode.all(".schedulecolumn").each(function(item, index) {
                     item.removeClass("present");
+                    item.removeClass("present" + EDITABLE_PERIOD);
                     item.removeClass("futur");
+                    item.removeClass("futur" + EDITABLE_PERIOD);
                     item.removeClass("past");
                     if (period === index + 1) {
-                        item.addClass("present");
+                        item.addClass("present" + (manualReservation ? EDITABLE_PERIOD : ""));
                     } else if (period < index + 1) {
-                        item.addClass("futur");
+                        item.addClass("futur" + (manualReservation ? EDITABLE_PERIOD : ""));
                     } else {
                         item.addClass("past");
                     }
@@ -123,6 +133,14 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         },
         currentPeriod: function() {
             var variable = this.get('variable.evaluated');
+            if (!variable) {
+                this.get("host").showMessage("error", "No variable found");
+                return;
+            }
+            return variable.getInstance().get("value");
+        },
+        initialMaximum: function() {
+            var variable = Wegas.Facade.Variable.cache.find("name", "executionPeriods");
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
                 return;
@@ -149,6 +167,13 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "Periode variable"
+                }
+            },
+            autoReservation: {
+                type: "boolean",
+                value: false,
+                _inputex: {
+                    label: "Automated reservation"
                 }
             }
         },

@@ -88,6 +88,42 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     min-height: 80px;
 }
 
+/* Wegas loading (a different way of displaying a loading, as a :after element */
+.wegas-loading-after:after {
+    content: "";
+    background: rgba(255,255,255,0.8) url(../../wegas-app/images/loading.gif) center center no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+}
+
+/** App loading */
+.wegas-loading-app {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -40px;
+    background: white url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+}
+.wegas-loading-app > div {
+    width: auto;
+    height: 2px;
+    background-color: #ededed;
+    margin-top: 37px;
+    margin-left: 9px;
+    margin-right: 1px;
+}
+.wegas-loading-app > div > div {
+    height: 100%;
+    width: 0%;
+    background-color: #072644;
+}
 /* */
 .wegas-smallmessage {
     padding: 20px;
@@ -280,6 +316,7 @@ font {
 .wegas-chat-msg {
     padding-bottom:2px;
 }
+
 /* Unread count plugin */
 .wegas-unreadcount .value {
     color:white;
@@ -341,6 +378,7 @@ font {
 .wegas-click {
     cursor: pointer;
 }
+
 /* Wegas add icon */
 .yui3-skin-sam .wegas-icon {
     display: inline-block;

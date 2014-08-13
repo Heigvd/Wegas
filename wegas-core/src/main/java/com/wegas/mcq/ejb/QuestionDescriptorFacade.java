@@ -9,15 +9,13 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Script;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
-import java.util.HashMap;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -39,6 +37,9 @@ import org.slf4j.LoggerFactory;
 public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
+    /**
+     *
+     */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
     /**
@@ -55,9 +56,15 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * 
      */
     @EJB
+    private RequestFacade requestFacade;
+
+    /**
+     *
+     */
+    @EJB
     QuestionSingleton questionSingleton;
     /**
-     * 
+     *
      */
     @Inject
     private ScriptEventFacade scriptEvent;
@@ -120,44 +127,10 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return
      * @throws WegasException
      */
-//    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
-//    @TransactionManagement(TransactionManagementType.BEAN)
-//    @Lock(LockType.WRITE)
-//    public Reply createReply(Long choiceId, Player player, Long startTime) throws WegasException {
-//        ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
-//
-//        QuestionDescriptor questionDescriptor = choice.getQuestion();
-//        QuestionInstance questionInstance = questionDescriptor.getInstance(player);
-//
-//        System.out.println("Test222 " + questionInstance.getReplies().size()
-//                + "*" + questionInstance.getId()
-//                + "*" + this.findReplyCount(questionInstance.getId())
-//                + "*" + questionInstance.getReplies().size());
-//        if (!questionDescriptor.getAllowMultipleReplies()
-//                && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
-//            //if (!questionDescriptor.getAllowMultipleReplies()
-//            //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
-//            throw new WegasException("You have already answered this question");
-//        }
-//
-//        Reply reply = new Reply();
-//        reply.setStartTime(startTime);
-//        reply.setResult(choice.getInstance(player).getResult());
-//        questionInstance.addReply(reply);
-////        em.persist(reply);
-//        em.flush();
-//        em.refresh(reply);
-//        return reply;
-//    }
     public Reply selectChoice(Long choiceId, Player player, Long startTime) throws WegasException {
         Reply reply = questionSingleton.createReply(choiceId, player, startTime);
-//        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
-//        arguments.put("selectedReply", reply);
         try {
             scriptEvent.fire(player, "replySelect", new EventObject(reply));
-//            scriptManager.eval(player,
-//                    new Script("eventManager.fire(\"replySelect\", {reply: selectedReply});"),
-//                    arguments);
         } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
         }
@@ -206,6 +179,49 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
+     * FOR TEST USAGE ONLY 
+     * 
+     * @param choiceId
+     * @param playerId
+     * @return
+     * @throws ScriptException
+     */
+    public Reply selectAndValidateChoiceTEST(Long choiceId, Long playerId) throws ScriptException {
+        Reply reply = this.selectChoiceTEST(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+        try {
+            this.validateReply(playerId, reply.getId());
+        } catch (ScriptException e) {
+            this.cancelReply(playerId, reply.getId());
+            throw e;
+        }
+
+        requestFacade.commit();
+        return reply;
+    }
+
+    /**
+     * FOR TEST USAGE ONLY 
+     *
+     * @param choiceId
+     * @param player
+     * @param startTime
+     * @return
+     * @throws WegasException
+     */
+    public Reply selectChoiceTEST(Long choiceId, Player player, Long startTime) throws WegasException {
+        Reply reply = questionSingleton.createReplyUntransactionnal(choiceId, player, startTime);
+        try {
+            scriptEvent.fire(player, "replySelect", new EventObject(reply));
+        } catch (ScriptException | NoSuchMethodException e) {
+            // GOTCHA no eventManager is instantiated
+        }
+
+        return reply;
+    }
+
+
+    
+    /**
      *
      * @param playerId
      * @param replyId
@@ -216,13 +232,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         final Reply reply = em.find(Reply.class, replyId);
         em.remove(reply);
 
-//        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Throw an event
-//        arguments.put("selectedReply", reply);
         try {
-            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));
-//            scriptManager.eval(playerFacade.find(playerId),
-//                    new Script("eventManager.fire(\"replyCancel\", {reply: selectedReply});"),
-//                    arguments);
+            scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));// Throw an event
         } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
         }
@@ -239,12 +250,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public void validateReply(final Player player, final Reply validateReply) throws ScriptException, WegasException {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
-        validateReply.setResult(choiceDescriptor.getInstance(player).getResult());       // Refresh the current result
+        validateReply.setResult(choiceDescriptor.getInstance(player).getResult());// Refresh the current result
 
-//        HashMap<String, AbstractEntity> arguments = new HashMap<>();            // Eval impacts
-//        arguments.put("selectedReply", validateReply);
-//        arguments.put("selectedChoice", choiceDescriptor.getInstance(player));
-//        arguments.put("selectedQuestion", validateReply.getQuestionInstance());
         scriptManager.eval(player, validateReply.getResult().getImpact());
         try {
             scriptEvent.fire(player, "replyValidate", new EventObject(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance()));

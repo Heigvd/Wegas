@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dom-base', function (Y, NAME) {
 
 /**
@@ -130,7 +137,7 @@ Y.mix(Y_DOM, {
 
         if (node && node[TAG_NAME]) {
             setter = Y_DOM.VALUE_SETTERS[node[TAG_NAME].toLowerCase()];
-
+            val = (val === null) ? '' : val;
             if (setter) {
                 setter(node, val);
             } else {
@@ -692,4 +699,4 @@ Y.mix(Y.DOM, {
 });
 
 
-}, '@VERSION@', {"requires": ["dom-core"]});
+}, '3.16.0', {"requires": ["dom-core"]});

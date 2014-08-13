@@ -89,58 +89,55 @@ YUI.add('wegas-loginwidget', function(Y) {
                     }
                 });
             } else {
-                cb.one(".main.left").setContent("<h1>Welcome to Wegas</h1>\n\
+                var content = ["<h1>Welcome to Wegas</h1>\n\
                         <p>A <b>Web Game Authoring System</b> for rapid development of serious games without programming skills.</p>"
-                    + "<ul class='description'><li>Create and edit your games</li>"
-                    + "<li>Share your games with other trainers</li>"
-                    + "<li>Use your games during training sessions or in distant e-learning programs</li></ul>"
+                        + "<ul class='description'><li>Create and edit your games</li>"
+                        + "<li>Share your games with other trainers</li>"
+                        + "<li>Use your games during training sessions or in distant e-learning programs</li></ul>"
+                        + "<h2>Sample games</h1>"
+                        + '<div class="wegas-login-thumb"><ul>'];
 
-                    //+" No programming skills are required, you can create your own scenario or adapt an existing one by \n\
-                    //adding elements from other simulations. Advanced users can even create their own serious game from scratch!</p><br />"
+                Y.Array.each(Wegas.Facade.PublicGames.cache.findAll(), function(g) {
+                    var add = "";
+                    switch (g.get("token")) {
+                        case "proggame":
+                            add = '| <a href="#" class="wegas-light-gallery" >Screenshots'
+                                + '<img data-src="wegas-lobby/images/wegas-proggame-1.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-proggame-2.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-proggame-3.png" style="display:none">'
+                                + '</a>';
+                            break
+                        case "virtualpatient":
+                            add = '| <a href="#" class="wegas-light-gallery" >Screenshots'
+                                + '<img data-src="wegas-lobby/images/wegas-virtualpatient-1.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-virtualpatient-2.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-virtualpatient-3.png" style="display:none">'
+                                + '</a>';
+                            break;
+                        case "leaderway":
+                            add = '| <a href="#" class="wegas-light-gallery" >Screenshots'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-1.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-2.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-3.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-4.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-6.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-7.png" style="display:none">'
+                                + '<img data-src="wegas-lobby/images/wegas-leaderway-8.png" style="display:none">'
+                                + '</a>';
+                            break;
+                    }
 
-                    //+ "<div class='preview'><img src='wegas-app/images/wegas-preview.jpg' alt='preview' height='254px' width='633px'/></div>"
-
-                    + "<h2>Sample games</h1>"
-                    + '<div class="wegas-login-thumb"><ul>'
-
-                    + '<li><div class="article-link"><span class="text">'
-                    + '<span class="article-title">Programming game</span>'
-                    + '<span class="description">Learn Javascript by coding your way through the game.</span>'
-                    + '<span class="links"><a href="game.html?token=proggame&al=true">Start playing</a> '
-                    + '| <a href="#" class="wegas-light-gallery" >Screenshots'
-                    + '<img data-src="wegas-lobby/images/wegas-proggame-1.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-proggame-2.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-proggame-3.png" style="display:none">'
-                    + '</a></span></span></span>'
-                    + '<span class="image"><span class="image-offset"><img src="wegas-lobby/images/wegas-preview-proggame-1.png" /></span></span></div></li>'
-
-                    + '<li><div class="article-link"><span class="text">'
-                    + '<span class="article-title">Leaderway</span>'
-                    + '<span class="description">Lead a team and manage its members expectations.</span>'
-                    + '<span class="links"><a href="game.html?token=leaderway&al=true">Start playing</a> '
-                    + '| <a href="#" class="wegas-light-gallery" >Screenshots'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-1.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-2.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-3.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-4.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-6.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-7.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-leaderway-8.png" style="display:none">'
-                    + '</a></span></span></span>'
-                    + '<span class="image"> <span class="image-offset"><img src="wegas-lobby/images/wegas-preview-leaderway-1.png" /></span></span></div></li>'
-
-                    + '<li><div class="article-link"><span class="text">'
-                    + '<span class="article-title">Virtual Patient</span>'
-                    + '<span class="description">This game demonstrates how wegas can be used out of the box.</span>'
-                    + '<span class="links"><a href="game.html?token=virtualpatient&al=true">Start playing</a> '
-                    + '| <a href="#" class="wegas-light-gallery" >Screenshots'
-                    + '<img data-src="wegas-lobby/images/wegas-virtualpatient-1.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-virtualpatient-2.png" style="display:none">'
-                    + '<img data-src="wegas-lobby/images/wegas-virtualpatient-3.png" style="display:none">'
-                    + '</a></span></span></span>'
-                    + '<span class="image"> <span class="image-offset"><img src="wegas-lobby/images/wegas-preview-virtualpatient.png" /></span></span></div></li>'
-
-                    + '</ul></div>');
+                    content.push('<li><div class="article-link"><span class="text">'
+                        + '<span class="article-title">' + g.get("gameModelName") + '</span>'
+                        + '<span class="description">' + g.get("description") + '</span>'
+                        + '<span class="links"><a href="game.html?token=' + g.get("token") + '&al=true">Start playing</a> '
+                        + add
+                        + "</span></span>"
+                        + '<span class="image"><span class="image-offset">'
+                        + '<img src="' + (g.get("properties.imageUri") || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
+                });
+                content.push('</ul></div>');
+                cb.one(".main.left").setContent(content.join(""));
             }
 
             // Create and append login form
@@ -288,9 +285,9 @@ YUI.add('wegas-loginwidget', function(Y) {
             }, this);
 
             this.guestLoginButton.on("click", Y.bind(this.loginRequest, this,
-                "/GuestLogin/"));                                           // Guest login click even
+                "/GuestLogin/"));                                               // Guest login click even
             this.guestTeacherLoginButton.on("click", Y.bind(this.loginRequest, this,
-                "/TeacherGuestLogin/"));                                    // Teacher guest login click event
+                "/TeacherGuestLogin/"));                                        // Teacher guest login click event
 
             this.askPassButton.on("click", function() {                         // Password recovery click event
                 if (this.sendNewPasswordForm.validate()) {

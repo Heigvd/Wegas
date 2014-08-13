@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('dd-proxy', function (Y, NAME) {
 
 
@@ -153,6 +160,8 @@ YUI.add('dd-proxy', function (Y, NAME) {
                 n = host.get(NODE),
                 c = n.cloneNode(true);
 
+            c.all('input[type="radio"]').removeAttribute('name');
+
             delete c._yuid;
             c.setAttribute('id', Y.guid());
             c.setStyle('position', 'absolute');
@@ -246,4 +255,4 @@ YUI.add('dd-proxy', function (Y, NAME) {
 
 
 
-}, '@VERSION@', {"requires": ["dd-drag"]});
+}, '3.16.0', {"requires": ["dd-drag"]});

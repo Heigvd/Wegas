@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 .yui3-skin-night .yui3-calendar-content {
     padding:10px;
     color: #CBCBCB;
@@ -28,6 +35,8 @@
     margin: 0;
     font-size: 1em;
     font-weight: bold;
+    text-align: center;
+    width: 100%;
 }
 
 .yui3-skin-night .yui3-calendar-day,
@@ -67,10 +76,6 @@
 .yui3-skin-night .yui3-calendar-day-selected {
     background-color: #505151;
     color: #fff;
-}
-
-.yui3-skin-night .yui3-calendar-header-label {
-    text-align: center;
 }
 
 .yui3-skin-night .yui3-calendar-left-grid {

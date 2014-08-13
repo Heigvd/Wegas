@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('widget-base', function (Y, NAME) {
 
 /**
@@ -372,7 +379,7 @@ Y.extend(Widget, Y.Base, {
      * </code>
      *
      * @method getClassName
-     * @param {String}+ One or more classname bits to be joined and prefixed
+     * @param {String} [classnames*] One or more classname bits to be joined and prefixed
      */
     getClassName: function () {
         return _getClassName.apply(ClassNameManager, [this._cssPrefix].concat(Y.Array(arguments), true));
@@ -752,7 +759,7 @@ Y.extend(Widget, Y.Base, {
      *
      * @method _setBB
      * @private
-     * @param Node/String
+     * @param {Node|String} node
      * @return Node
      */
     _setBB: function(node) {
@@ -777,7 +784,7 @@ Y.extend(Widget, Y.Base, {
      * For the Widget class, this will most commonly be null (resulting in a new
      * boundingBox node instance being created), unless a srcNode was provided
      * and CONTENT_TEMPLATE is null, in which case it will be srcNode.
-     * This behavior was introduced in @VERSION@ to accomodate single-box widgets
+     * This behavior was introduced in 3.16.0 to accomodate single-box widgets
      * whose BB & CB both point to srcNode (e.g. Y.Button).
      *
      * @method _defaultBB
@@ -813,7 +820,7 @@ Y.extend(Widget, Y.Base, {
      * @param {String} id The node's id attribute
      * @param {Node|String} node The node reference
      * @param {String} template HTML string template for the node
-     * @param {boolean} true if this is the boundingBox, false if it's the contentBox
+     * @param {boolean} isBounding true if this is the boundingBox, false if it's the contentBox
      * @return {Node} The node
      */
     _setBox : function(id, node, template, isBounding) {
@@ -1275,7 +1282,7 @@ Y.extend(Widget, Y.Base, {
 Y.Widget = Widget;
 
 
-}, '@VERSION@', {
+}, '3.16.0', {
     "requires": [
         "attribute",
         "base-base",

@@ -1,3 +1,10 @@
+/*
+YUI 3.16.0 (build 76f0e08)
+Copyright 2014 Yahoo! Inc. All rights reserved.
+Licensed under the BSD License.
+http://yuilibrary.com/license/
+*/
+
 YUI.add('gesture-simulate', function (Y, NAME) {
 
 /**
@@ -1018,7 +1025,6 @@ Simulations.prototype = {
      *      (i.e., "click", "doubletap", "flick").
      * @param {Object} options (Optional) Extra options to copy onto the event object.
      *      For gestures, options are used to refine the gesture behavior.
-     * @return {void}
      */
     _simulateEvent: function(target, type, options) {
         var touches;
@@ -1257,7 +1263,6 @@ Y.GestureSimulation.GESTURES = gestureNames;
  * @param {Function} [cb] The callback to execute when the asynchronouse gesture
  *      simulation is completed.
  *      @param {Error} cb.err An error object if the simulation is failed.
- * @return {void}
  * @for Event
  * @static
  */
@@ -1320,4 +1325,4 @@ Y.Event.simulateGesture = function(node, name, options, cb) {
 };
 
 
-}, '@VERSION@', {"requires": ["async-queue", "event-simulate", "node-screen"]});
+}, '3.16.0', {"requires": ["async-queue", "event-simulate", "node-screen"]});

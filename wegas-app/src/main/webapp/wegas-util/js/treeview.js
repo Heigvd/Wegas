@@ -139,7 +139,7 @@ YUI.add("treeview", function(Y) {
         saveState: function() {
             var state = {}, getChildsState = function(o, item, index) {
                 if (item instanceof Y.TreeNode) {
-                    o[index] = {expanded: !item.get(BOUNDING_BOX).hasClass(classNames.collapsed)};
+                    o[index] = {expanded: !item.get("collapsed")};
                     item.each(Y.bind(getChildsState, item, o[index]));
                 }
             };
@@ -310,18 +310,18 @@ YUI.add("treeview", function(Y) {
         bindUI: function() {
             var bb = this.get(BOUNDING_BOX);
 
-            bb.one(".yui3-treenode-content-toggle").on("click", function(e) {
+            bb.delegate("click", function(e) {
                 e.stopPropagation();
                 this.fire("toggleClick", {
                     node: this
                 });
-            }, this);
-            bb.one("." + this.getClassName(CONTENT, "header")).before("dblclick", function(e) {
+            }, ".yui3-treenode-content-toggle", this);
+            bb.delegate("dblclick", function(e) {
                 e.halt(true);
                 this.toggleTree();
-            }, this);
-            bb.one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
-                var node = e.target;
+            }, "." + this.getClassName(CONTENT, "header"), this);
+            bb.delegate("click", function(e) {
+                var node = e.currentTarget;
                 e.stopPropagation();
                 if (node.hasClass(this.getClassName(CONTENT, "icon"))) {
                     this.fire("iconClick", {
@@ -337,7 +337,7 @@ YUI.add("treeview", function(Y) {
                     node: this,
                     domEvent: e
                 });
-            }, this);
+            }, "." + this.getClassName(CONTENT, "header"), this);
             bb.on("click", function(e) {
                 e.stopPropagation();
             });
@@ -617,7 +617,6 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         initializer: function() {
-            this.events = {};
             this.publish("iconClick", {
                 bubbles: true
             });
@@ -635,14 +634,14 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.events.fullClick = this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "header")).on("click", function(e) {
+            this.get(CONTENT_BOX).delegate("click", function(e) {
                 e.stopImmediatePropagation();
-                if (e.target.hasClass(this.getClassName(CONTENT, "icon"))) {
+                if (e.currentTarget.hasClass(this.getClassName(CONTENT, "icon"))) {
                     this.fire("iconClick", {
                         node: this
                     });
                 }
-                if (e.target.hasClass(this.getClassName(CONTENT, "label"))) {
+                if (e.currentTarget.hasClass(this.getClassName(CONTENT, "label"))) {
                     this.fire("labelClick", {
                         node: this
                     });
@@ -651,11 +650,11 @@ YUI.add("treeview", function(Y) {
                     node: this,
                     domEvent: e
                 });
-            }, this);
+            }, "." + this.getClassName(CONTENT, "header"), this);
             //one line, prevent special chars
-            this.get(CONTENT_BOX).one("." + this.getClassName(CONTENT, "label")).on("blur", function(e) {
-                e.target.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
-            }, this);
+            this.get(CONTENT_BOX).on("blur", function(e) {
+                e.currentTarget.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
+            }, "." + this.getClassName(CONTENT, "label"), this);
         },
         /**
          * Lifecycle method, sync attributes

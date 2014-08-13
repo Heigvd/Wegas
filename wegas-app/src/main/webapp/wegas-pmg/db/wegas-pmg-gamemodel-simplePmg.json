@@ -687,7 +687,67 @@
                         "coordinationRatioSup": "1"
                     },
                     "predecessorNames": []
+                },
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task7",
+                    "label": "task7",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 1,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "500",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "randomDurationInf": "0",
+                            "bac": "0",
+                            "completeness": "0",
+                            "randomDurationSup": "0",
+                            "bonusRatio": "1",
+                            "quality": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Designer",
+                                "level": 9,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            },
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Designer",
+                                "level": 2,
+                                "quantity": 1,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 1,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
+                    "predecessorNames": []
                 }
+
             ]
         },
         {
@@ -2365,11 +2425,68 @@
                     },
                     "scope": {
                         "@class": "GameScope",
-                        "broadcastScope": "TeamScope"
+                        "broadcastScope": "GameScope"
                     },
                     "minValue": 1,
                     "maxValue": null,
                     "defaultValue": 1
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "autoReservation",
+                    "label": "Auto reservation",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    }
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "forceQuestionReplies",
+                    "label": "Force question replies",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    }
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "evm",
+                    "label": "EVM",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    }
+                },
+                {
+                    "@class": "StringDescriptor",
+                    "name": "timeUnit",
+                    "label": "Time unit",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "value": "week"
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    },
+                    "validationPattern": null
                 }
             ]
         }
@@ -2385,10 +2502,11 @@
     },
     "properties": {
         "freeForAll": false,
-        "pagesUri": "wegas-pmg/db/wegas-pmg-pages-simplePmg.json?",
+        "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json?",
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
         "websocket": "",
-        "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js;wegas-pmg/scripts/wegas-pmg-server-test.js",
+        "clientScriptUri": "wegas-pmg/js/wegas-pmg-loader.js",
+        "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js;wegas-pmg/scripts/wegas-pmg-server-test-util.js;wegas-pmg/scripts/wegas-pmg-server-test-simplepmg.js",
         "imageUri": "",
         "iconUri": ""
     },
