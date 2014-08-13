@@ -5,11 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
 */
-
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
-
 /** Align center tabview labels to the left */
 .wegas-hostmode #centerTabView > div > .yui3-tabview-list {
     left: 0px;
@@ -24,25 +22,10 @@
     margin-top: 38px;
 }
 
-/** Hide all advanced feature while in std mode */
-/*.wegas-stdmode .editor-variables,
-.wegas-stdmode .editor-pages,
-.wegas-stdmode .editor-scenarist-button,
-.wegas-stdmode .editor-restart-button,
-.wegas-stdmode .results,
-.wegas-stdmode .editor-preview .wegas-pageeditor-editbutton {
-    display: none;
-}
-.wegas-editmode .editor-variables,
-.wegas-editmode .editor-pages,
-.wegas-editmode .editor-scenarist-button,
-.wegas-editmode .editor-preview .wegas-pageeditor-editbutton {
-    .wegas-editmode .editor-restart-button {  
-    display: inline-block;
-}*/
-
 .wegas-editor-treeview-tablehd {
-    display: none;
+    /* display: none; */
+    padding: 8px 5px 3px 5px;
+    margin: 0;
 }
 
 /* Header toggle button */
@@ -61,12 +44,10 @@
     color: #072644;
 }
 
-/************************* leftTabView  ***************************************/
-
+/************************ leftTabView  ***************************************/
 #leftTabView .yui3-treeview-content>.noPlayer .yui3-treenode-content-header{
     opacity: 0.5;
 }
-
 #leftTabView .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
 #leftTabView .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
     box-shadow: 0px 0px 1px #6D6D6D;
@@ -75,7 +56,6 @@
 }
 
 /************************* leftTabView Checkbox plugin   **********************/
-
 #leftTabView .wegas-toolbar .selectAll{
     position: absolute;
     right: 3px;
@@ -85,54 +65,60 @@
     cursor: pointer;
     background: url(../images/checkbox.png) 57px -42px no-repeat;
 }
-
 #leftTabView .wegas-toolbar .yui3-treenode-selected{
     background: url(../images/checkbox.png) 57px -8px no-repeat;
 }
-
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode .yui3-treenode-content-header,
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content{
     background: url(../images/checkbox.png) right -38px no-repeat;
 }
-
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{
     background: url(../images/checkbox.png) right -4px no-repeat;
     background-color: #EDEDED;
 }
-
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf .yui3-treeleaf-content-header:hover {
     background-color: transparent;
     box-shadow: 0px 0px 1px #6D6D6D;
 }
-
 #leftTabView .yui3-treeview-multiselect .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header:hover {
     background-color: #EDEDED;
 }
 
 /* Page title styles */
-/*.yui3-skin-sam .yui3-button.wegas-title,
-.yui3-skin-sam .yui3-button.wegas-title:hover  {
-    font-weight: 900;
-    font-size: 22px;
-    line-height: 1.5em;
-    color: white;
-    background: -2px -2px url(wegas-app/images/wegas-logoicon-35.png) no-repeat;
-    padding: 0px 25px 0 40px;
-    margin: 8px 6px 4px 10px;
-    height: 32px;
-    text-shadow: 1px 0 1px black, 0 1px 1px black;
-}*/
 .yui3-skin-sam .wegas-title {
     margin-top: 4px;
     font-size: 1.4em;
     line-height: 1em;
 }
-.yui3-skin-sam .wegas-title div {
-    /*text-align:left;*/
-}
 .yui3-skin-sam .wegas-title div.subtitle  {
     color: #e0e0e0;
     font-style: italic;
     font-size: 0.7em;
+}
+
+/* Dasboard styles */
+.wegas-dashboard {
+    padding-top: 40px;
+}
+.yui3-skin-sam .wegas-dashboard-colored {
+    padding: 0px;
+}
+.yui3-skin-sam .wegas-dashboard-colored span {
+    padding: 7px 7px 6px;
+    width: auto;
+    height: auto;
+    display: block;
+    /* overflow: auto; */
+}
+.wegas-dashboard .yui3-datatable-cell {
+     text-align: center; 
+}
+.wegas-dashboard td.yui3-datatable-col-name {
+    min-width: 200px;
+    text-align: left;
+    margin-left: 11px;
+    padding-left: 18px;
+    min-height: 19px;
+    height: 19px;
 }

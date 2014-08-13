@@ -660,20 +660,20 @@ YUI.add("wegas-entity", function(Y) {
                     }]
             }, {
                 type: "DeleteEntityButton"
-            }, {
-                type: "JoinOrResumeButton",
-                cssClass: "wegas-advanced-feature",
-                label: "Join"
-            }, {// We allow the player to open its pages with the widget
+            }, {// Allow the player to open its pages with the widget
                 type: BUTTON,
-                label: "View as",
+                label: "View (player mode)",
                 cssClass: "wegas-advanced-feature",
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
-                            editorUrl: "play.html?"
+                            editorUrl: "game-play.html?"
                         }
                     }]
+            }, {
+                type: "JoinOrResumeButton",
+                cssClass: "wegas-advanced-feature",
+                label: "Join"
             }, {
                 type: BUTTON,
                 label: "Add player",
@@ -684,8 +684,7 @@ YUI.add("wegas-entity", function(Y) {
                             targetClass: "Player"
                         }
                     }]
-            }
-        ]
+            }]
     });
     /**
      * 
@@ -703,6 +702,12 @@ YUI.add("wegas-entity", function(Y) {
             teamId: IDATTRDEF,
             userId: {
                 "transient": true
+            },
+            team: {
+                "transient": true,
+                getter: function() {
+                    return Wegas.Facade.Game.cache.find("id", this.get("teamId"));
+                }
             }
         },
         EDITMENU: [{

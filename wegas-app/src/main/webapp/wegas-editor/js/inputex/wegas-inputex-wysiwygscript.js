@@ -23,8 +23,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          */
         setOptions: function(options) {
             inputEx.WysiwygScript.superclass.setOptions.call(this, options);
-            this.options.className = options.className || "inputEx-Field inputEx-WysiwigScript";
-            this.options.wrapperClassName = options.wrapperClassName || "inputEx-fieldWrapper inputEx-WysiwigScriptWrapper";
+            this.options.className = options.className || "inputEx-Field inputEx-WysiwygScript";
+            this.options.wrapperClassName = options.wrapperClassName || "inputEx-fieldWrapper inputEx-WysiwygScriptWrapper";
             this.options.viewSrc = options.viewSrc || false;                    // wysywig / text
             this.options.expects = options.expects || "statement";              // conditon/statement/getter
             this.options.classFilter = options.classFilter;
@@ -85,7 +85,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.viewSrc = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
                 tooltip: "View source",
-                cssClass: "inputEx-WysiwigScript-viewsrc",
+                cssClass: "inputEx-WysiwygScript-viewsrc",
                 on: {
                     click: Y.bind(function() {
                         if (!this.viewSrc.get("disabled") && (this.validate() || this.isEmpty())) {
@@ -102,7 +102,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.addButton = new Y.Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-add\"></span>",
                 tooltip: "Add",
-                cssClass: "inputEx-WysiwigScript-add",
+                cssClass: "inputEx-WysiwygScript-add",
                 on: {
                     click: Y.bind(function() {
                         if (!this.addButton.get("disabled")) {
@@ -400,7 +400,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         setOptions: function(options) {
             options.defaultValue = [{}];
             options.expects = options.expects || "getter";
-            options.className = options.className || "inputEx-Field inputEx-WysiwigScript inputEx-singleLineWysiwygScript";
+            options.className = options.className || "inputEx-Field inputEx-WysiwygScript inputEx-singleLineWysiwygScript";
             inputEx.SingleLineWysiwygScript.superclass.setOptions.apply(this, arguments);
         },
         updateExpressionList: function() {

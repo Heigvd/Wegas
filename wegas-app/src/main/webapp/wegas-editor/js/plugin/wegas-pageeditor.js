@@ -82,8 +82,8 @@ YUI.add('wegas-pageeditor', function(Y) {
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                     visible: false
                 }).item(0);
-                this.addButton.plug(Y.Plugin.WidgetMenu)
-                    .menu.on("menuOpen", function() {
+                this.addButton.plug(Y.Plugin.WidgetMenu);
+                    this.addButton.menu.on("menuOpen", function() {
                         var menu = host.get("widget").getMenuCfg({
                             targetwidget: host.get("widget")
                         }), addElement = Y.Array.find(menu, function(o) {           /* search "Add" menu */

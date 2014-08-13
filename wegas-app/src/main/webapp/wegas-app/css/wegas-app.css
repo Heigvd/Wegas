@@ -291,6 +291,7 @@ font {
 .wegas-chat-msg {
     padding-bottom:2px;
 }
+
 /* Unread count plugin */
 .wegas-unreadcount .value {
     color:white;
@@ -352,6 +353,7 @@ font {
 .wegas-click {
     cursor: pointer;
 }
+
 /* Wegas add icon */
 .yui3-skin-sam .wegas-icon {
     display: inline-block;
