@@ -211,6 +211,11 @@ YUI.add('wegas-helper', function(Y) {
                 return false;
             // Return true if any of its four corners are visible
             return ((eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has);
+        },
+        scrollIntoViewIfNot: function(node, alignTop) {
+            if (!Helper.isElementVisible(node)) {
+                node.scrollIntoView(alignTop);
+            }
         }
     };
     Y.namespace("Wegas").Helper = Helper;

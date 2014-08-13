@@ -150,6 +150,42 @@ YUI.add('wegas-editor-action', function(Y) {
     });
 
     /**
+     *  @name Y.Plugin.OpenEntityAction
+     *  @extends Y.Plugin.OpenUrlAction
+     *  @class Open a game in the editor
+     *  @constructor
+     */
+    var OpenEntityAction = function() {
+        OpenEntityAction.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(OpenEntityAction, Plugin.OpenUrlAction, {
+        /** @lends Y.Plugin.OpenEntityAction# */
+        _getUrl: function() {
+            var entity = this.get("entity");
+            return this.get("url").replace("{id}", entity.get("id"));
+        }
+    }, {
+        NS: "OpenEntityAction",
+        /** @lends Y.Wegas.OpenEntityAction */
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>entity: the team, game, gamemodel or player entity that will be opened</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
+        ATTRS: {
+            url: {
+                value: 'edit.html?'
+            },
+            entity: {}
+        }
+    });
+    Plugin.OpenEntityAction = OpenEntityAction;
+
+    /**
      *  @name Y.Plugin.OpenGameAction
      *  @extends Y.Plugin.OpenUrlAction
      *  @class Open a game in the editor
@@ -179,11 +215,7 @@ YUI.add('wegas-editor-action', function(Y) {
             //};
 
             if (entity instanceof Wegas.persistence.GameModel) {
-                if (this.get("editorUrl").indexOf("?") === -1) {
-                    params = entity.get("id");                                  // Rest request
-                } else {
-                    params = "gameModelId=" + entity.get("id");
-                }
+                params = "gameModelId=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Player) {
                 params = "id=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Team) {
@@ -228,7 +260,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Plugin.OpenGameAction = OpenGameAction;
-
 
     /**
      *  @name Y.Plugin.PrintAction
@@ -317,37 +348,21 @@ YUI.add('wegas-editor-action', function(Y) {
             this.plug(PrintAction, cfg);
         }
     });
-    Wegas.MultiPrintButton = Y.Base.create("button", Wegas.Button, [], {
-        /** @lends Y.Wegas.PrintButton# */
+
+    /**
+     * @name Y.Wegas.OpenEntityButton
+     * @extends Y.Wegas.Button
+     * @class Shortcut to create a Button with an OpenEntityButton plugin
+     * @constructor
+     */
+    Wegas.OpenEntityButton = Y.Base.create("button", Wegas.Button, [], {
+        /** @lends Y.Wegas.OpenEntityButton# */
         /**
          * @function
          * @private
          */
         initializer: function(cfg) {
-            this.plug(Plugin.WidgetMenu, {
-                menuCfg: {
-                    points: ["tl", "tr"]
-                },
-                event: "mouseenter",
-                children: [{
-                        type: "PrintButton",
-                        label: "Html"
-                    }, {
-                        type: "PrintButton",
-                        label: "Html for player",
-                        mode: "player"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf",
-                        outputType: "pdf"
-                    }, {
-                        type: "PrintButton",
-                        label: "Pdf for player",
-                        outputType: "pdf",
-                        mode: "player"
-                    }
-                ]
-            });
+            this.plug(OpenEntityAction, cfg);
         }
     });
 

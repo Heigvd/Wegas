@@ -18,24 +18,24 @@ YUI.add('wegas-shareuser', function(Y) {
          *
          */
         CONTENT_TEMPLATE: "<div>"
-                + "<div class=\"title\">Name<span style=\"width: 152px;display: inline-block;\"></span>Permissions</div>"
-                + "<div class=\"wegas-userlist\"></div>"
-                + "<div class=\"wegas-adduser\"><div class=\"title\">Add user</div></div></div>",
+            + "<div class=\"title\">Name<span style=\"width: 152px;display: inline-block;\"></span>Permissions</div>"
+            + "<div class=\"wegas-userlist\"></div>"
+            + "<div class=\"wegas-adduser\"><div class=\"title\">Add user</div></div></div>",
         /**
          *
          */
         renderUI: function() {
             var el = this.get(CONTENTBOX),
-                    e = this.get("entity"),
-                    permissions = [{
-                    name: "username",
-                    type: 'markup',
-                    readonly: true,
-                    className: "username-field"
-                }, {
-                    name: "userId",
-                    type: "hidden"
-                }];
+                e = this.get("entity"),
+                permissions = [{
+                        name: "username",
+                        type: 'markup',
+                        readonly: true,
+                        className: "username-field"
+                    }, {
+                        name: "userId",
+                        type: "hidden"
+                    }];
 
             permissions = permissions.concat(Y.Array.map(this.get("permsList"), function(item) {
                 item.type = "boolean";
@@ -48,8 +48,7 @@ YUI.add('wegas-shareuser', function(Y) {
                     fields: permissions,
                     className: "permission-group"
                 },
-                parentEl: el.one(".wegas-userlist"),
-                useButtons: true
+                parentEl: el.one(".wegas-userlist")
             });
 
             this.userList.currentWidget = this;
@@ -60,7 +59,6 @@ YUI.add('wegas-shareuser', function(Y) {
                 this.userList.targetEntityId = "g" + e.get("id");
             }
 
-
             this.autocompleteValue = [];
             this.typeInviteValue = "e-mail, name or lastname";
             this.field = new Y.inputEx.AutoComplete({
@@ -70,7 +68,6 @@ YUI.add('wegas-shareuser', function(Y) {
                 returnValue: Y.bind(function(oResultItem) {
                     if (!this.field.options.value) {
                         this.field.options.value = [];
-                        // console.log("in instanciate");
                     }
                     this.field.options.value.push(oResultItem);
                     return oResultItem.value;
@@ -86,12 +83,12 @@ YUI.add('wegas-shareuser', function(Y) {
                     }, this),
                     enableCache: false,
                     resultListLocator: Y.bind(function(responses) {
-                        Y.Array.forEach(this.userList.subFields, function(user) {
+                        Y.Array.each(this.userList.subFields, function(user) {
                             responses = this.resultListLocator(user.getValue().userId, responses);
                         }, this);
-//                        Y.Array.forEach(this.field.options.value, function(fieldValue) {
-//                            responses = this.resultListLocator(fieldValue.value, responses);
-//                        }, this);
+                        //Y.Array.each(this.field.options.value, function(fieldValue) {
+                        //    responses = this.resultListLocator(fieldValue.value, responses);
+                        //}, this);
                         return responses;
                     }, this)
                 }
@@ -150,8 +147,8 @@ YUI.add('wegas-shareuser', function(Y) {
         bindUI: function() {
             this.saveButton.on("click", function() {
                 var i, emailList = [], otherValueList = [],
-                        fieldValue = this.field.yEl.get("value"), notAdd,
-                        userNames = fieldValue.split(",");
+                    fieldValue = this.field.yEl.get("value"), notAdd,
+                    userNames = fieldValue.split(",");
                 this.sendAddErrorMessage = false;
 
                 if (fieldValue === this.typeInviteValue) {                                        // Check the input element is not empty
@@ -286,7 +283,7 @@ YUI.add('wegas-shareuser', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var data = e.response.results.entities,
-                                i, permissions, splitedPerm, newField;
+                            i, permissions, splitedPerm, newField;
 
                         Y.Array.forEach(data, function(account) {
                             permissions = account.get('permissions');
@@ -318,7 +315,7 @@ YUI.add('wegas-shareuser', function(Y) {
             var selectedPerm = this.get("selectedPermsList");
             Y.Array.each(permGroup.inputs, function(input) {
                 Y.Array.each(selectedPerm, function(perm) {
-                    if(input.options.value === perm){
+                    if (input.options.value === perm) {
                         input.setValue(true);
                     }
                 });
@@ -326,7 +323,7 @@ YUI.add('wegas-shareuser', function(Y) {
         },
         hideUsersWithoutVisiblePermission: function() {
             var i, ii, checkboxes, checked,
-                    users = this.get(CONTENTBOX).one(".inputEx-ListField-childContainer").get("children");
+                users = this.get(CONTENTBOX).one(".inputEx-ListField-childContainer").get("children");
             for (i = 0; i < users.size(); i += 1) {
                 checked = false;
                 checkboxes = users.item(i).all(".inputEx-CheckBox");
@@ -373,7 +370,7 @@ YUI.add('wegas-shareuser', function(Y) {
         onDelete: function(e) {
             this.currentWidget.showMessageBis("success", "Saving...");
             var elementDiv = e.target._node.parentNode, i,
-                    subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
+                subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
             for (i = 0; i < this.subFields.length; i += 1) {
                 if (this.subFields[i].getEl() === subFieldEl) {
                     this.deletePermission(this.targetEntityId, this.subFields[i].getValue().userId); //param : entity Id, have userId

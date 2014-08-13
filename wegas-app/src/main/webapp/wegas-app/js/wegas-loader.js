@@ -85,7 +85,7 @@ YUI().use(function(Y) {
             },
             'wegas-variabledescriptor-entities': {
                 path: 'js/persistence/wegas-variabledescriptor-entities-min.js',
-                requires: 'wegas-entity',
+                requires: ['wegas-entity', "treeview-filter"],
                 ws_provides: ['NumberDescriptor', 'TextDescriptor']
             },
             'wegas-statemachine-entities': {
@@ -212,7 +212,8 @@ YUI().use(function(Y) {
             },
             'wegas-inbox': {
                 path: 'js/widget/wegas-inbox-min.js',
-                requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss", "wegas-widgettoolbar", "wegas-translator", "template-micro"],
+                requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss",
+                    "wegas-widgettoolbar", "wegas-translator", "template-micro"],
                 ws_provides: 'InboxDisplay'
             },
             'wegas-inboxcss': {
@@ -220,13 +221,14 @@ YUI().use(function(Y) {
             },
             'wegas-inbox-list': {
                 path: 'js/widget/wegas-inbox-list-min.js',
-                requires:  ["template-micro", 'wegas-inboxcss'],
+                requires: ["template-micro", 'wegas-inboxcss'],
                 ws_provides: 'InboxList'
             },
             'wegas-form': {
                 path: 'js/widget/wegas-form-min.js',
-                requires: ['wegas-widget', 'wegas-inputex', 'wegas-widgettoolbar', "wegas-button",
-                    'inputex-string', 'inputex-jsonschema', "inputex-group", "event-valuechange"],
+                requires: ['wegas-widget', 'wegas-inputex', 'wegas-widgettoolbar',
+                    "wegas-button", 'inputex-string', 'inputex-jsonschema',
+                    "inputex-group", "event-valuechange"],
                 ws_provides: "Form"
             },
             'wegas-gallerycss': {
@@ -252,8 +254,8 @@ YUI().use(function(Y) {
                 requires: ['wegas-widget', "wegas-inputex", 'wegas-button',
                     'wegas-editor-action', "wegas-inputex-multipleoptions",
                     'inputex-select', 'inputex-string', "inputex-list", "inputex-hidden",
-                    "inputex-autocomplete", "inputex-password", "inputex-email", "wegas-gameinformation",
-                    "wegas-teamcss", "autocomplete-highlighters"],
+                    "inputex-autocomplete", "inputex-password", "inputex-email",
+                    "wegas-gameinformation", "wegas-teamcss", "autocomplete-highlighters"],
                 ws_provides: ["Team", "JoinTeam", "EditTeam", "GameDescription"]
             },
             "wegas-translator": {
@@ -329,11 +331,6 @@ YUI().use(function(Y) {
             'datatable-csv': {
                 path: 'js/plugin/datatableCSV-min.js',
                 ws_provides: "DatatableCSV"
-            },
-            "wegas-pdf": {
-                path: 'js/plugin/wegas-pdf-min.js',
-                requires: ['jspdf', 'jspdfPlugin'],
-                ws_provides: 'PDF'
             },
             'wegas-simpledialogue': {
                 path: "js/widget/wegas-simpledialogue.js",
@@ -457,8 +454,8 @@ YUI().use(function(Y) {
             },
             'wegas-inputex-variabledescriptorselect': {
                 path: 'js/inputex/wegas-inputex-variabledescriptorselect-min.js',
-                requires: ['wegas-inputex', 'inputex-group', 'inputex-combine', 'inputex-number',
-                    'inputex-select'],
+                requires: ['wegas-inputex', 'inputex-group', 'inputex-combine',
+                    'inputex-number', 'inputex-select'],
                 ix_provides: ["entityarrayfieldselect", "variabledescriptorselect"]
             },
             'wegas-inputex-pageloaderselect': {
@@ -507,7 +504,8 @@ YUI().use(function(Y) {
             },
             "wegas-inputex-combobox": {
                 path: 'js/inputex/wegas-inputex-combobox-min.js',
-                requires: ['inputex-autocomplete', 'inputex-string', 'autocomplete', 'autocomplete-filters'],
+                requires: ['inputex-autocomplete', 'inputex-string', 'autocomplete',
+                    'autocomplete-filters'],
                 ix_provides: 'combobox'
             },
             'wegas-panel-fileselect': {
@@ -637,7 +635,8 @@ YUI().use(function(Y) {
                 ws_provides: "QuestionDescriptor"
             },
             'wegas-mcq-tabview': {
-                requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery', "wegas-translator", 'wegas-mcq-tabviewcss', 'wegas-mcq-printcss'],
+                requires: ['tabview', 'wegas-tabviewcss', 'wegas-gallery',
+                    "wegas-translator", 'wegas-mcq-tabviewcss', 'wegas-mcq-printcss'],
                 ws_provides: "MCQTabView"
             },
             'wegas-mcq-tabviewcss': {
@@ -675,7 +674,8 @@ YUI().use(function(Y) {
             'wegas-loginwidget': {
                 requires: ['inputex-group', 'inputex-password', 'inputex-string',
                     "inputex-hidden", "inputex-email", "inputex-checkbox", 'button',
-                    'wegas-widget', 'wegas-button', 'wegas-logincss', "event-key", 'wegas-gameinformation'],
+                    "event-key", 'wegas-widget', 'wegas-button', 'wegas-logincss',
+                    'wegas-gameinformation'],
                 ws_provides: "LoginWidget"
             },
             'wegas-logincss': {
@@ -691,7 +691,7 @@ YUI().use(function(Y) {
                 ws_provides: "ShareUser"
             },
             'wegas-lobby-datatable': {
-                requires: ['datatable', 'button-group', 'wegas-lobby-datatablecss'],
+                requires: ['datatable', 'button-group', 'event-valuechange', 'wegas-lobby-datatablecss'],
                 ws_provides: "GameDataTable"
             },
             'wegas-lobby-datatablecss': {
@@ -719,7 +719,7 @@ YUI().use(function(Y) {
         base: './',
         root: '/',
         modules: {
-            /**book CYOA**/
+            /** book CYOA **/
             'wegas-book': {
                 path: 'wegas-games/wegas-book/js/wegas-book-fight-min.js',
                 requires: 'wegas-book-dice',
@@ -740,7 +740,7 @@ YUI().use(function(Y) {
                 requires: 'wegas-monopoly-display',
                 ws_provides: "Monopolydisplay"
             },
-            /**CEP**/
+            /** CEP **/
             'wegas-cep-folder': {
                 path: 'wegas-cep/js/wegas-cep-folder-min.js',
                 requires: ['wegas-nodeformatter', 'wegas-itemselector', "wegas-injector",

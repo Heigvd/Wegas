@@ -150,49 +150,46 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: "DeleteEntityButton"
             }, {
                 type: BUTTON,
-                label: "More",
-                cssClass: "editor-moregamemodel-button",
+                label: "Export",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: BUTTON,
-                                    label: "Print",
-                                    //cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "WidgetMenu",
-                                            cfg: {
-                                                menuCfg: {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                event: "mouseenter",
-                                                children: [{
-                                                        type: "PrintButton",
-                                                        label: "html"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "html for player",
-                                                        mode: "player"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf",
-                                                        outputType: "pdf"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf for player",
-                                                        outputType: "pdf",
-                                                        mode: "player"
-                                                    }
-                                                ]
-                                            }
-                                        }]
+                                    type: "PrintButton",
+                                    label: "Html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Html (Players document)",
+                                    mode: "player"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf (Players document)",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }, {
+                                    type: "OpenEntityButton",
+                                    label: "Json",
+                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
                                 }]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "More",
+                cssClass: "wegas-advanced-feature",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: []
                         }
                     }]
             }
         ]
     });
-
 
     /**
      * Scope mapper
@@ -529,7 +526,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: ARRAY,
                 _inputex: {
                     _type: "list",
-                    useButtons: true,
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
@@ -680,10 +676,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     targetClass: "TriggerDescriptor"
                                 }, {
                                     type: "AddEntityChildButton",
-                                    label: "Object",
-                                    targetClass: "ObjectDescriptor"
-                                }, {
-                                    type: "AddEntityChildButton",
                                     label: "State machine",
                                     targetClass: "FSMDescriptor"
                                 }, {
@@ -692,13 +684,13 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     targetClass: "InboxDescriptor"
                                 }, {
                                     type: "AddEntityChildButton",
-                                    label: "Dialogue",
-                                    targetClass: "DialogueDescriptor",
-                                    cssClass: "experimental wegas-advaned-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
                                     label: "String",
                                     targetClass: "StringDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Boolean",
+                                    targetClass: "BooleanDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: "AddEntityChildButton",
@@ -707,8 +699,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: "AddEntityChildButton",
+                                    label: "Dialogue",
+                                    targetClass: "DialogueDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
                                     label: "Resource",
                                     targetClass: "ResourceDescriptor",
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Task",
+                                    targetClass: "TaskDescriptor",
                                     cssClass: "wegas-advanced-feature"
                                 }]
                         }
@@ -723,44 +725,41 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: "DeleteEntityButton"
             }, {
                 type: BUTTON,
-                label: "More",
-                cssClass: "editor-moregamemodel-button",
-                //cssClass: "wegas-advanced-feature",
+                label: "Export",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: BUTTON,
-                                    label: "Print",
-                                    //cssClass: "wegas-advanced-feature",
-                                    plugins: [{
-                                            fn: "WidgetMenu",
-                                            cfg: {
-                                                menuCfg: {
-                                                    points: ["tl", "tr"]
-                                                },
-                                                event: "mouseenter",
-                                                children: [{
-                                                        type: "PrintButton",
-                                                        label: "html"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "html for player",
-                                                        mode: "player"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf",
-                                                        outputType: "pdf"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "pdf for player",
-                                                        outputType: "pdf",
-                                                        mode: "player"
-                                                    }
-                                                ]
-                                            }
-                                        }]
+                                    type: "PrintButton",
+                                    label: "Html"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Html (Players document)",
+                                    mode: "player"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf",
+                                    outputType: "pdf"
+                                }, {
+                                    type: "PrintButton",
+                                    label: "Pdf (Players document)",
+                                    outputType: "pdf",
+                                    mode: "player"
+                                }, {
+                                    type: "OpenEntityButton",
+                                    label: "Json",
+                                    url: "rest/Export/GameModel/VariableDescriptor/{id}"
                                 }]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "More",
+                cssClass: "wegas-advanced-feature",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: []
                         }
                     }]
             }
@@ -821,7 +820,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: "list",
                         label: "",
                         scriptType: STRING,
-                        useButtons: true,
                         /*sortable: true*/
                         elementType: {
                             type: "wegasurl",
@@ -982,6 +980,86 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             name: {
                 type: STRING,
                 optional: true
+            }
+        }
+    });
+    /**
+     * BooleanDescriptor mapper
+     */
+    persistence.BooleanDescriptor = Base.create("BooleanDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
+        ATTRS: {
+            "@class": {
+                value: "BooleanDescriptor"
+            },
+            value: {
+                "transient": true,
+                getter: function() {
+                    if (this.getInstance()) {
+                        return this.getInstance().get("value");
+                    } else {
+                        return null;
+                    }
+                }
+            },
+            defaultValue: {
+                type: BOOLEAN,
+                value: false,
+                "transient": true
+            },
+            defaultInstance: {
+                properties: {
+                    "@class": {
+                        type: BOOLEAN,
+                        _inputex: {
+                            value: "BooleanInstance",
+                            _type: HIDDEN
+                        }
+                    },
+                    id: IDATTRDEF,
+                    value: {
+                        type: BOOLEAN,
+                        _inputex: {
+                            label: "Default value"
+                        }
+                    }
+
+                }
+            }
+        },
+        /**
+         * Defines methods available in wysiwyge script editor
+         */
+        METHODS: {
+            setValue: {
+                label: "set",
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: BOOLEAN,
+                        required: true
+                    }]
+            },
+            getValue: {
+                label: VALUE,
+                returns: BOOLEAN,
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            }
+        }
+    });
+    /**
+     * BooleanInstance mapper
+     */
+    persistence.BooleanInstance = Base.create("BooleanInstance", persistence.VariableInstance, [], {}, {
+        ATTRS: {
+            "@class": {
+                value: "BooleanInstance"
+            },
+            value: {
+                type: BOOLEAN
             }
         }
     });

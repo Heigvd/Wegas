@@ -66,7 +66,6 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                                 value: roles,
                                 className: "role-permissions"
                             },
-                            useButtons: true,
                             value: roles,
                             parentEl: this.get(CONTENTBOX),
                             className: "roleBox"

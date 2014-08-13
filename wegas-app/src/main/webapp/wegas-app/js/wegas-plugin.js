@@ -129,8 +129,11 @@ YUI.add('wegas-plugin', function(Y) {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(OpenUrlAction, Action, {
+        _getUrl: function () {
+           return this.get("url");
+        },
         execute: function() {
-            var url = this.get("url");
+            var url = this._getUrl("url");
             if (url.indexOf("http://") === -1) {
                 url = Wegas.app.get("base") + url;
             }

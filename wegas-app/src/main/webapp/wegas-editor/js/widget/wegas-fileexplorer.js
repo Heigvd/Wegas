@@ -137,13 +137,14 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.fileUploader.render(cb);
             this.fileUploader.hide();
             if (this.get("filter")) {
-                this.search = Y.Node.create("<input class='treeview-search' type='text' placeholder='Filter'/>");
+                this.search = Y.Node.create("<input class='treeview-search' type='text' placeholder='Search...'/>");
                 if (this.toolbar) {
                     this.toolbar.get("header").append(this.search);
+                    this.search.wrap("<div class='wegas-filter-input'></div>");
                 } else {
                     this.get("boundingBox").append(this.search);
                     this.search.hide();
-                    this.search.after("blur", function(e) {
+                    this.search.after("blur", function() {
                         if (this.getDOMNode().value === "") {
                             this.hide();
                         }
