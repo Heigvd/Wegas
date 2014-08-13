@@ -220,6 +220,10 @@ YUI.add('wegas-helper', function(Y) {
     };
     Y.namespace("Wegas").Helper = Helper;
     Y.namespace("Wegas").superbind = Helper.superbind;
+
+    /**
+     * 
+     */
     Y.namespace("Wegas").Timer = Y.Base.create("wegas-timer", Y.Base, [], {
         start: function() {
             if (!this.handler) {

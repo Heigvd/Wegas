@@ -38,6 +38,7 @@ YUI.add("treeview-filter", function(Y) {
         filter: function(item, match) {
             var matches = false, subMatch = false;
 
+
             if (item instanceof Y.TreeView) {
                 matches = false;
             } else {
@@ -45,14 +46,19 @@ YUI.add("treeview-filter", function(Y) {
                 matches = this.get("testFn").call(item, match) === true;
 //                } catch (e) {
 //                }
-
             }
+
             if (item.each) {
                 item.each(function(node) {
                     subMatch = this.filter(node, match) || subMatch;
                 }, this);
             }
+
             item.get("boundingBox").removeClass("filter-match").removeClass("filter-no-match").removeClass("filter-sub-match");
+
+            if (!match)
+                return;
+
             if (matches) {
                 item.get("boundingBox").addClass("filter-match");
 //                if (!subMatch && match && item.collapse) {
@@ -74,7 +80,7 @@ YUI.add("treeview-filter", function(Y) {
         doFilter: function(item, match) {
             this.filter(item, match);
             item.get("contentBox").all(".filter-empty").remove(true);
-            if (!item.get("boundingBox").hasClass("filter-sub-match") && item.size() > 0) {
+            if (match && !item.get("boundingBox").hasClass("filter-sub-match") && item.size() > 0) {
                 item.get("contentBox").append("<div class='wegas-smallmessage filter-empty'>" + this.get("emptyMsg") + "</div>");
             }
         },
