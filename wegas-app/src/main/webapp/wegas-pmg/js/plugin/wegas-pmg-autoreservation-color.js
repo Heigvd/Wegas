@@ -17,10 +17,10 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
     /**
      *  @class occupationcolor-like for automatedReservation in datatable
      *  @name Y.Plugin.AutoReservationColor
-     *  @extends Y.Plugin.Base
+     *  @extends Y.Plugin.AbstractPert
      *  @constructor
      */
-    AutoReservationColor = Y.Base.create("wegas-pmg-autoreservation-color", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    AutoReservationColor = Y.Base.create("wegas-pmg-autoreservation-color", Y.Plugin.AbstractPert, [], {
         /** @lends Y.Plugin.AutoReservationColor */
         initializer: function() {
             //this.taskTable;
@@ -62,73 +62,11 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                 }
             }
         },
-        timeSolde: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), properties = taskInst.get("properties"), timeSolde;
-            if (taskInst.get("plannification").length > 0) {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("plannification").length;
-            } else {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("duration");
-            }
-            return timeSolde;
-        },
-        startPlannif: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), plannification = taskInst.get("plannification"), min;
-            min = Math.min.apply(Math, plannification);
-            if (min !== Infinity) {
-                return min;
-            } else {
-                return 0;
-            }
-        },
-        computePert: function(taskTable, currentPeriod) {
-            var predecessors, taskId, taskDesc, i, maxPert, predecessorDuration,
-                allPredDefine, countPertValue = 0, treated = [], predecessorId;
-
-            while (countPertValue < Y.Object.size(taskTable)) {
-                for (taskId in taskTable) {
-                    taskDesc = taskTable[taskId];
-
-                    if (Y.Array.indexOf(treated, taskId) > -1) {
-                        continue;
-                    }
-
-                    maxPert = currentPeriod;
-                    allPredDefine = true;
-                    predecessors = taskDesc.get("predecessors");
-
-                    for (i = 0; i < predecessors.length; i++) {
-                        predecessorId = predecessors[i].get("id");
-                        if (!taskTable[predecessorId]) {
-                            continue;
-                        }
-                        // verifie si le prédecesseur possede le debut pert
-                        if (taskTable[predecessorId].startPert) {
-                            // defini la durée du prédecesseur
-                            predecessorDuration = taskTable[predecessorId].startPert + taskTable[predecessorId].timeSolde;
-                            // verifie si la durée du prédecesseur et la plus grande
-                            if (predecessorDuration > maxPert) {
-                                maxPert = predecessorDuration;
-                            }
-                        } else {
-                            allPredDefine = false;
-                        }
-                    }
-                    // si tous les prédecesseur on un debut pert alors on l'ajoute dans la liste
-                    if (allPredDefine) {
-                        treated.push(taskId);
-                        taskDesc.startPert = maxPert;
-                        taskDesc.startMax = Math.max(taskDesc.startPert, taskDesc.startPlannif);
-                        taskDesc.end = taskDesc.startMax + taskDesc.timeSolde;
-                        countPertValue++;
-                    }
-                }
-            }
-        },
         renderCells: function() {
             var i,
                 dt = this.get("host").datatable,
                 resourceDesc, resourceInst,
-                assignments, assignment, aId,
+                assignments, assignment, aId, first,
                 taskDescId, taskTableId,
                 taskDesc,
                 periods, period,
@@ -142,6 +80,8 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                 assignments = resourceInst.get("assignments");
                 periods = [];
 
+
+                first = null;
                 // foreach assigned task
                 for (aId in assignments) {
                     assignment = assignments[aId];
@@ -150,17 +90,26 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                     // Find the task in taskTable
                     for (taskTableId in this.taskTable) {
                         taskDesc = this.taskTable[taskTableId];
+                        if (aId === "0") {
+                            first = taskDesc.get("index");
+                        }
                         if (taskDesc.get("id") === taskDescId) {
-                            var max = parseInt(taskDesc.end), j;
-                            for (period = parseInt(taskDesc.startMax); period <= max; period++) {
+                            var start = taskDesc.startMax,
+                                end = taskDesc.end;
+
+                            if (start - parseInt(start) === 0 && end - parseInt(end) === 0) {
+                                end--;
+                            }
+
+                            for (period = start; period <= end; period++) {
                                 periods.push(period);
                             }
                             break;
                         }
                     }
                 }
-                for (period in periods) {
-                    this.addColor(HOST.schedule.getCell(i, periods[period]));
+                for (period in periods.sort()) {
+                    this.addColor(HOST.schedule.getCell(i, periods[period]), (period === "0" ? first : ""));
                 }
             }
         },

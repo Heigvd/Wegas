@@ -117,7 +117,8 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             this.panels = Y.Array.map(resourceFoldes.get("items"), function(vd) {
                 var autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
                     autoReserve = autoDesc && autoDesc.getInstance().get("value"),
-                    pmgPanel;
+                    pmgPanel,
+                    currentPhase = Y.Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
 
 
                 pmgPanel = new Wegas.PmgSlidePanel({
@@ -191,7 +192,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         }]
                 }).render(this.get(CONTENTBOX));
 
-                if (autoReserve) {
+                if (autoReserve && currentPhase === 3) {
                     pmgPanel.item(0).plug(Y.Plugin.AutoReservationColor, {
                         taskList: {
                             name: "tasks"
