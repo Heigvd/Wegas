@@ -152,8 +152,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 }
                 //this.setClassFromState();
             }, this);                                                           // Whenever the value is updated, we synchronize the UI
-
-//            this.updateExpressionList();                                        // Synchronize the wysiwig list      
+            if (!this.options.viewSrc) {
+                this.updateExpressionList();                                    // Synchronize the wysiwig list    
+            }
             this.toggleViewSrc(this.options.viewSrc);                           // Set the default mode (wysiwyg or source)
         },
         /**
