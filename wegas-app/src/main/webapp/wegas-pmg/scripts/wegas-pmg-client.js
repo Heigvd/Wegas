@@ -373,20 +373,37 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
     }
 }, true);
 
-// Load game Properties page
+// Game properties & dashboard page
 var centerTab = Y.Widget.getByNode("#centerTabView");
-if (centerTab) {
-    Y.use('wegas-pageeditor-fullwidthtab', function(Y) {
+if (centerTab && Y.one(".wegas-hostmode")) {
+    Y.use('wegas-pageeditor-fullwidthtab', function() {
+
+        // Add dashboard tab in first position
+        var dashboard = centerTab.add({
+            label: "Dashboard",
+//            selected: 2,
+            children: [{
+                    type: "PageLoader",
+                    pageLoaderId: "properties",
+                    defaultPageId: 17
+                }],
+            plugins: [{
+                    fn: "PageeditorFullWidthTab"
+                }]
+        }, 0).item(0);
+        dashboard.set("selected", 2);
+
+        // Add properties tab
         centerTab.add({
             label: "Properties",
             children: [{
                     type: "PageLoader",
                     pageLoaderId: "properties",
                     defaultPageId: 16
+                }],
+            plugins: [{
+                    fn: "PageeditorFullWidthTab"
                 }]
-//            plugins: [{
-//                    fn: "PageeditorFullWidthTab"
-//                }]
         });
     });
 }

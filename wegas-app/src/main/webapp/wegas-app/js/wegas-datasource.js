@@ -899,7 +899,10 @@ YUI.add('wegas-datasource', function(Y) {
         ATTRS: {
             currentGameId: {},
             currentTeamId: {},
-            currentPlayerId: {}
+            currentPlayerId: {},
+            currentPlayer: {
+                getter: "getCurrentPlayer"
+            }
         }
     });
     Plugin.GameCache = GameCache;

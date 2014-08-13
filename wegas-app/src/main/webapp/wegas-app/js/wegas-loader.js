@@ -261,7 +261,7 @@ YUI().use(function(Y) {
             },
             /** Plugins **/
             "wegas-plugin": {
-                requires: ["timers"]
+                requires: "timers"
             },
             "wegas-userpreferences": {
                 path: "js/plugin/wegas-userpreferences-min.js",
@@ -304,7 +304,7 @@ YUI().use(function(Y) {
             },
             "wegas-cssstyles": {
                 path: "js/plugin/wegas-cssstyles-min.js",
-                requires: ["wegas-plugin"],
+                requires: "wegas-plugin",
                 ws_provides: "CSSStyles"
             },
             "wegas-cssstyles-extra": {
@@ -623,8 +623,8 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable"],
-                wprovides: "Dashboard"
+                requires: "datatable",
+                ws_provides: "Dashboard"
             }
         }
     });
@@ -669,7 +669,7 @@ YUI().use(function(Y) {
             },
             "wegas-gameinformation": {
                 path: "js/wegas-gameinformation-min.js",
-                ws_provides: ["GameInformation"]
+                ws_provides: "GameInformation"
             },
             "wegas-join-token": {
                 requires: "wegas-team",

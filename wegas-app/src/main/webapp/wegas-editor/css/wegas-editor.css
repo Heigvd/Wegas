@@ -121,7 +121,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 }
 /* Styles for Animator -> impact game */
-.wegas-console-wysiwyg .inputEx-WysiwigScript > .yui3-button {
+.wegas-console-wysiwyg-content {
+    margin-left: -20px;
+}
+.wegas-console-wysiwyg .inputEx-WysiwygScript > .yui3-button {
     display: none; /* Remove add button*/
 }
 .wegas-stdmode .wegas-console-wysiwyg .results {
@@ -144,12 +147,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: auto;
     overflow: auto;
 }
-.wegas-console-wysiwyg .inputEx-WysiwigScript {
+.wegas-console-wysiwyg .inputEx-WysiwygScript {
     position: relative;
     height: 100%;
 }
-.wegas-console-wysiwyg .inputEx-WysiwigScript > .inputEx-Field {    
-    padding: .5em;
+.wegas-console-wysiwyg .inputEx-WysiwygScript > .inputEx-Field {    
+    /*padding: .5em;*/
+}
+.wegas-console-wysiwyg .inputEx-WysiwygScript > .inputEx-ListField  {
+    margin-left: -72px;
 }
 
 /* YUI3 Console style override */

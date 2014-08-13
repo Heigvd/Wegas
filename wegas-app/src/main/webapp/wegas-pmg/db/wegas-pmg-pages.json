@@ -1311,13 +1311,11 @@
         "@name": "Properties",
         "cssClass": "pmg-properties",
         "type": "AbsoluteLayout",
-        "children": [
-            {
+        "children": [{
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>Autoreservation</span>",
-                "plugins": [
-                    {
+                "plugins": [{
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1327,8 +1325,7 @@
                                 "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}"
                             }
                         }
-                    },
-                    {
+                    }, {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1338,14 +1335,12 @@
                                 "zIndex": "10"
                             }
                         }
-                    },
-                    {
+                    }, {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {}
                         }
-                    },
-                    {
+                    }, {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1356,15 +1351,12 @@
                             "attribute": "cssClass",
                             "value": "selected"
                         }
-                    }
-                ]
-            },
-            {
+                    }]
+            }, {
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>Force question replies</span>",
-                "plugins": [
-                    {
+                "plugins": [{
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1374,8 +1366,7 @@
                                 "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}"
                             }
                         }
-                    },
-                    {
+                    }, {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1385,14 +1376,12 @@
                                 "zIndex": "10"
                             }
                         }
-                    },
-                    {
+                    }, {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {}
                         }
-                    },
-                    {
+                    }, {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1403,15 +1392,12 @@
                             "attribute": "cssClass",
                             "value": "selected"
                         }
-                    }
-                ]
-            },
-            {
+                    }]
+            }, {
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>EVM</span>",
-                "plugins": [
-                    {
+                "plugins": [{
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
@@ -1421,8 +1407,7 @@
                                 "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}"
                             }
                         }
-                    },
-                    {
+                    }, {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
@@ -1432,14 +1417,12 @@
                                 "zIndex": "10"
                             }
                         }
-                    },
-                    {
+                    }, {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {}
                         }
-                    },
-                    {
+                    }, {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
@@ -1450,9 +1433,49 @@
                             "attribute": "cssClass",
                             "value": "selected"
                         }
-                    }
-                ]
+                    }]
             }
         ]
+    },
+    "17": {
+        "@name": "Dashboard",
+        "type": "AbsoluteLayout",
+        "children": [{
+                "type": "Dashboard",
+                "tableCfg": {
+                    "columns": [{
+                            "key": "name",
+                            "label": "Name"
+                        }, {
+                            "label": "Phase",
+                            "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
+                        }, {
+                            "label": "Period",
+                            "script": "Variable.find(gameModel, 'currentPeriod').item(currentPhase.value-1).getValue(self)"
+                        }, {
+                            "label": "Choices"
+                        }, {
+                            "label": "Management",
+                            "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "User",
+                            "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "Quality",
+                            "script": "Variable.find(gameModel, 'quality').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "Cost",
+                            "script": "Variable.find(gameModel, 'costs').getValue(self)",
+                            "formatter": "colored"
+                        }, {
+                            "label": "Delay",
+                            "script": "Variable.find(gameModel, 'delay').getValue(self)",
+                            "formatter": "colored"
+                        }]
+                }
+            }]
     }
 }

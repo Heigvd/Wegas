@@ -46,8 +46,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
          * @returns {Y.Wegas.persistence.VariableInstance}
          */
         getInstance: function(player) {
-            var playerId = player instanceof persistence.Player ? player.get("id") : player || Wegas.Facade.Game.get("currentPlayerId");
-            return this.get("scope").getInstance(playerId);
+            return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
         },
         /**
          * 
@@ -249,8 +248,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * TeamScope mapper
      */
     persistence.TeamScope = Base.create("TeamScope", persistence.Scope, [], {
-        getInstance: function(playerId) {
-            return this.get("variableInstances")[Wegas.Facade.Game.get("currentTeamId")];
+        getInstance: function(player) {
+            return this.get("variableInstances")[player.get("team").get("id")];
         }
     }, {
         ATTRS: {
@@ -264,8 +263,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      * PlayerScope mapper
      */
     persistence.PlayerScope = Base.create("PlayerScope", persistence.Scope, [], {
-        getInstance: function(playerId) {
-            return this.get("variableInstances")[playerId];
+        getInstance: function(player) {
+            return this.get("variableInstances")[player.get("id")];
         }
     }, {
         ATTRS: {
