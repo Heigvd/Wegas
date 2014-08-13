@@ -12,6 +12,7 @@ import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.resourceManagement.persistence.Assignment;
+import com.wegas.resourceManagement.persistence.Occupation;
 import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
@@ -22,6 +23,8 @@ import java.util.Arrays;
 import javax.naming.NamingException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -29,6 +32,8 @@ import org.junit.Test;
  * <ger.benjamin@gmail.com>
  */
 public class ResourceFacadeTest extends AbstractEJBTest {
+
+    static final private Logger logger = LoggerFactory.getLogger(ResourceFacade.class);
 
     /**
      * Test of history methods, of class ResourceInstance
@@ -254,6 +259,74 @@ public class ResourceFacadeTest extends AbstractEJBTest {
         // Clean
         vdf.remove(res.getId());
     }
+    /**
+     * Test of addOccupation method, of class ResourceFacade.
+     * @throws java.lang.Exception
+     */
+    @Test
+    public void testAddOccupation2() throws Exception {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+
+        // Create a resource
+        ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), res);
+
+        // Add occupation to a resource
+        resourceFacade.addOccupation(res.getInstance(player), false, 1.0);
+
+        Occupation newOccupation = ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0);
+
+        // Check resource instance has been correctly setted 
+        assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
+
+        // Check the editiable occupation mode
+        assertEquals(false, newOccupation.getEditable());
+
+        
+        // Check the occupation time
+        assertEquals(1.0, newOccupation.getTime(), 0.00001);
+
+        // Clean
+        vdf.remove(res.getId());
+    }
+
+    /**
+     * Test ResourceFacade.addReservation
+     * @throws javax.naming.NamingException
+     */
+    @Test
+    public void testAddReservation() throws NamingException {
+
+        // Lookup Ejb's
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
+        final ResourceFacade resourceFacade = lookupBy(ResourceFacade.class);
+
+        // Create a resource
+        ResourceDescriptor res = new ResourceDescriptor();
+        res.setLabel("Paul");
+        res.setDefaultInstance(new ResourceInstance());
+        vdf.create(gameModel.getId(), res);
+
+        // reserve Paul for the 1.0 period
+        resourceFacade.reserve(res.getInstance(player), 1.0);
+
+        Occupation newOccupation = ((ResourceInstance) vif.find(res.getId(), player)).getOccupations().get(0);
+        // Check resource instance has been correctly setted 
+        assertEquals(newOccupation.getResourceInstance(), res.getInstance(player));
+        // Check the editiable occupation mode
+        assertEquals(true, newOccupation.getEditable());
+
+        // Clean
+        vdf.remove(res.getId());
+    }
+
 
     /**
      * Test of moveAssignment method, of class ResourceFacade.
