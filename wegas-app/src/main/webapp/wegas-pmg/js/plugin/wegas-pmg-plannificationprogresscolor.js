@@ -40,7 +40,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         },
         fillTaskTable: function() {
             var i, taskDesc, taskInst, dt = this.get("host").datatable,
-                    properties;
+                properties;
 
             for (i = 0; i < dt.data._items.length; i++) {
                 taskDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
@@ -74,7 +74,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         },
         pertValue: function() {
             var predecessors, taskId, taskDesc, i, maxPert, predecessorDuration,
-                    allPredDefine, countPertValue = 0, treated = [], predecessorId;
+                allPredDefine, countPertValue = 0, treated = [], predecessorId;
 
             while (countPertValue < Y.Object.size(this.taskTable)) {
                 for (taskId in this.taskTable) {
@@ -118,15 +118,18 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         },
         findCell: function() {
             var taskId, taskDesc, host = this.get("host"),
-                    dt = this.get("host").datatable, i, ii, cell;
+                dt = this.get("host").datatable, i, ii, cell;
 
             for (i = 0; i < dt.data.size(); i++) {
                 for (taskId in this.taskTable) {
                     taskDesc = this.taskTable[taskId];
                     if (dt.getRecord(i).get("id") === taskDesc.get("id")) {
-                        for (ii = 1; ii <= host.schedule.get("columnToAdd"); ii++) {
+                        var iMax = parseInt(taskDesc.end);
+                        for (ii = parseInt(taskDesc.startMax); ii <= iMax; ii++) {
                             cell = host.schedule.getCell(i, ii);
-                            this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
+                            if (cell) {
+                                this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
+                            }
                         }
                         break;
                     }
