@@ -380,8 +380,7 @@ if (centerTab && Y.one(".wegas-hostmode")) {
 
         // Add dashboard tab in first position
         var dashboard = centerTab.add({
-            label: "Dashboard",
-//            selected: 2,
+            label: "Overview",
             children: [{
                     type: "PageLoader",
                     pageLoaderId: "properties",

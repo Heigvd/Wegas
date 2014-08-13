@@ -1444,8 +1444,7 @@
                 "type": "Dashboard",
                 "tableCfg": {
                     "columns": [{
-                            "key": "name",
-                            "label": "Name"
+                            "key": "name"
                         }, {
                             "label": "Phase",
                             "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"

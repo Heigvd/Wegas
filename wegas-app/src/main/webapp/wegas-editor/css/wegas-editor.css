@@ -121,9 +121,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 }
 /* Styles for Animator -> impact game */
-.wegas-console-wysiwyg-content {
-    margin-left: -20px;
-}
 .wegas-console-wysiwyg .inputEx-WysiwygScript > .yui3-button {
     display: none; /* Remove add button*/
 }
@@ -170,7 +167,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories {
-    /*padding:0;*/
     margin:0;
     border-top: 1px solid #777;
 }
@@ -323,6 +319,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     width: 32px;
     margin: 6px 5px;
 }
+
 /* Wegas title */
 .yui3-skin-sam .wegas-title  {
     font-weight: bolder;
