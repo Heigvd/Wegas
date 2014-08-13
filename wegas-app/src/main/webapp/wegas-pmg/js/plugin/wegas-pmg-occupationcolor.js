@@ -64,6 +64,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     cell.setContent("<span class='editable'></span>");
                 }
             } else {
+                cell.removeClass("editable-period");
                 cell.setContent("<span class='notEditable'></span>");
             }
         },

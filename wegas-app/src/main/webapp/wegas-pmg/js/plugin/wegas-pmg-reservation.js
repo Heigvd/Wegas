@@ -36,7 +36,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                         columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
 
                     this.checkCache(id, columnsCfg.time);
-                }, "tbody .present, tbody .futur", this);
+                }, "tbody .editable-period, tbody .editable-period", this);
         },
         checkCache: function(descriptorId, periode) {
             var vd = Y.Wegas.Facade.Variable.cache.find("id", descriptorId),
