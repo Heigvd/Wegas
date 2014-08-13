@@ -14,6 +14,9 @@
     right: 0px;
     position: fixed;
 }
+.wegas-hostmode  #centerTabView .wegas-toolbar-header {
+    padding-left: 0px;
+}
 .wegas-hostmode #leftTabView .yui3-tabview-list {
     display: none;
 }
@@ -23,9 +26,7 @@
 }
 
 .wegas-editor-treeview-tablehd {
-    /* display: none; */
-    padding: 8px 5px 3px 5px;
-    margin: 0;
+    display: none; 
 }
 
 /* Header toggle button */
@@ -99,7 +100,7 @@
 
 /* Dasboard styles */
 .wegas-dashboard {
-    padding-top: 40px;
+    padding-top: 15px;
 }
 .yui3-skin-sam .wegas-dashboard-colored {
     padding: 0px;
@@ -109,10 +110,11 @@
     width: auto;
     height: auto;
     display: block;
-    /* overflow: auto; */
 }
+.wegas-dashboard .yui3-datatable-header,
 .wegas-dashboard .yui3-datatable-cell {
-     text-align: center; 
+    text-align: center;
+    min-width: 70px;
 }
 .wegas-dashboard td.yui3-datatable-col-name {
     min-width: 200px;
@@ -121,4 +123,7 @@
     padding-left: 18px;
     min-height: 19px;
     height: 19px;
+}
+.wegas-dashboard td.yui3-datatable-col-name .wegas-icon {
+    width: 21px;
 }

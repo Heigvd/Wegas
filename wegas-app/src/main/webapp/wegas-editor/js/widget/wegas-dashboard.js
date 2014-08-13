@@ -85,7 +85,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 Y.Array.each(game.get("teams"), function(t) {
                     Y.Array.each(t.get("players"), function(p) {
                         ret.push({
-                            name: "<span class='wegas-icon wegas-icon-player'></span> " + p.get("name"),
+                            name: "<span class='wegas-icon wegas-icon-player'></span>" + p.get("name"),
                             team: t,
                             player: p
                         });
@@ -95,7 +95,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 ret = Y.Array.map(game.get("teams"), function(t) {
                     return {
                         //icon: "<span class='wegas-icon wegas-icon-team'></span>",
-                        name: "<span class='wegas-icon wegas-icon-team'></span> " + t.get("name"),
+                        name: "<span class='wegas-icon wegas-icon-team'></span>" + t.get("name"),
                         team: t,
                         player: t.get("players").length > 0 ? t.get("players")[0] : null
                     };
