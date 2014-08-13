@@ -34,7 +34,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
                         id = dt.getRecord(e.target).get("id"),
                         columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
                 this.checkCache(id, columnsCfg.time);
-            }, "tbody .present, tbody .futur", this);
+            }, "tbody .present, tbody .futur, tbody .present-auto, tbody .futur-auto", this);
         },
         checkCache: function(descriptorId, periode) {
             var vd = Wegas.Facade.Variable.cache.find("id", descriptorId),
