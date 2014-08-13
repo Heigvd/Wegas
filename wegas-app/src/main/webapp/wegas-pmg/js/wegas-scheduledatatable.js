@@ -39,7 +39,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         },
         initColumn: function() {
             //var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
+            //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
             var executionPeriods = this.initialMaximum(),
                 periodPhase3 = this.currentPeriod();
             if (periodPhase3 >= executionPeriods) {
@@ -52,7 +52,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         },
         columnUpdate: function() {
             //var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
+            //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
             var executionPeriods = this.initialMaximum(),
                 periodPhase3 = this.currentPeriod();
             if (periodPhase3 >= executionPeriods) {
@@ -139,7 +139,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }
             return variable.getInstance().get("value");
         },
-        initialMaximum: function(){
+        initialMaximum: function() {
             var variable = Wegas.Facade.Variable.cache.find("name", "executionPeriods");
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");

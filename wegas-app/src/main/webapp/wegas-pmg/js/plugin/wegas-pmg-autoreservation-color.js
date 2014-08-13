@@ -9,21 +9,24 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
+YUI.add('wegas-pmg-autoreservation-color', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, PlannificationProgressColor;
+    var Wegas = Y.Wegas, AutoReservationColor;
 
     /**
-     *  @class color plannification progress in datatable
-     *  @name Y.Plugin.PlannificationProgressColor
+     *  @class occupationcolor-like for automatedReservation in datatable
+     *  @name Y.Plugin.AutoReservationColor
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    PlannificationProgressColor = Y.Base.create("wegas-pmg-plannificationprogresscolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
-        /** @lends Y.Plugin.PlannificationProgressColor */
+    AutoReservationColor = Y.Base.create("wegas-pmg-autoreservation-color", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+        /** @lends Y.Plugin.AutoReservationColor */
         initializer: function() {
             //this.taskTable;
+
+            Y.log("initializer", "info", "Wegas.AutoReservationColor");
+
             this.onceAfterHostEvent("render", function() {
                 this.sync();
 
@@ -36,14 +39,19 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             this.taskTable = {};
             this.fillTaskTable();
             this.computePert(this.taskTable, this.get("host").schedule.currentPeriod());
-            this.findCell();
+            this.renderCells();
         },
         fillTaskTable: function() {
             var i, taskDesc, taskInst, dt = this.get("host").datatable,
-                properties;
+                properties, tasks, items;
 
-            for (i = 0; i < dt.data._items.length; i++) {
-                taskDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
+            if (!this.get("taskList")) {
+                return;
+            }
+            tasks = Y.Wegas.Facade.Variable.cache.find("name", this.get("taskList"));
+            items = tasks.get('items');
+            for (i = 0; i < items.length; i += 1) {
+                taskDesc = Wegas.Facade.Variable.cache.find("id", items[i].get("id"));
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
                 if (parseInt(properties.completeness) < 100) {
@@ -116,67 +124,66 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 }
             }
         },
-        findCell: function() {
-            var taskId, taskDesc, host = this.get("host"),
-                dt = this.get("host").datatable, i, ii, cell;
+        renderCells: function() {
+            var i,
+                dt = this.get("host").datatable,
+                resourceDesc, resourceInst,
+                assignments, assignment, aId,
+                taskDescId, taskTableId,
+                taskDesc,
+                periods, period,
+                HOST = this.get("host");
 
+
+            // For earch resource instance
             for (i = 0; i < dt.data.size(); i++) {
-                for (taskId in this.taskTable) {
-                    taskDesc = this.taskTable[taskId];
-                    if (dt.getRecord(i).get("id") === taskDesc.get("id")) {
-                        var iMax = parseInt(taskDesc.end);
-                        for (ii = parseInt(taskDesc.startMax); ii <= iMax; ii++) {
-                            cell = host.schedule.getCell(i, ii);
-                            if (cell) {
-                                this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
+                resourceDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
+                resourceInst = resourceDesc.getInstance();
+                assignments = resourceInst.get("assignments");
+                periods = [];
+
+                // foreach assigned task
+                for (aId in assignments) {
+                    assignment = assignments[aId];
+                    taskDescId = assignment.get("taskDescriptorId");
+
+                    // Find the task in taskTable
+                    for (taskTableId in this.taskTable) {
+                        taskDesc = this.taskTable[taskTableId];
+                        if (taskDesc.get("id") === taskDescId) {
+                            var max = parseInt(taskDesc.end), j;
+                            for (period = parseInt(taskDesc.startMax); period <= max; period++) {
+                                periods.push(period);
                             }
+                            break;
                         }
-                        break;
                     }
                 }
-            }
-
-        },
-        findCssClass: function(time, start, end, cell) {
-            var decimal;
-            if (time < this.get("host").schedule.currentPeriod()) {
-                return;
-            }
-            if (start - parseInt(start) === 0 && end - parseInt(end) === 0) {
-                end--;
-            }
-            if (time === parseInt(end) || time === parseInt(start) && parseInt(start) === parseInt(end)) {
-                decimal = end - parseInt(end);
-                if (decimal === 0) {
-                    this.addColor(cell, "fill100");
-                } else if (decimal > 0 && decimal <= 0.3) {
-                    this.addColor(cell, "fill0to25");
-                } else if (decimal > 0.6 && decimal <= 0.99999) {
-                    this.addColor(cell, "fill0to75");
-                } else {
-                    this.addColor(cell, "fill0to50");
+                for (period in periods) {
+                    this.addColor(HOST.schedule.getCell(i, periods[period]));
                 }
-            } else if (time === parseInt(start)) {
-                decimal = start - parseInt(start);
-                if (decimal === 0) {
-                    this.addColor(cell, "fill100");
-                } else if (decimal > 0 && decimal <= 0.3) {
-                    this.addColor(cell, "fill25to100");
-                } else if (decimal > 0.6 && decimal <= 0.99999) {
-                    this.addColor(cell, "fill75to100");
-                } else {
-                    this.addColor(cell, "fill50to100");
-                }
-            } else if (time > parseInt(start) && time < parseInt(end)) {
-                this.addColor(cell, "fill100");
             }
         },
-        addColor: function(cell, cssClass) {
-            cell.append("<span class='progress " + cssClass + "'></span>");
+        addColor: function(cell, text) {
+            // Do not add a span if one already exists. This may occurs when:
+            //   1) several assigned tasks are "planned" at the same time
+            //   2) An uneditable occupation has been added previously
+            if (cell && !cell.hasChildNodes()) {
+                cell.append("<span class='editable'>" + (text ? text : "") + "</span>");
+            }
         }
     }, {
-        NS: "plannificationprogresscolor",
-        NAME: "PlannificationProgressColor"
+        NS: "autoreservation-color",
+        NAME: "autoreservation-color",
+        ATTRS: {
+            taskList: {
+                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Task list"
+                }
+            }
+        }
     });
-    Y.Plugin.PlannificationProgressColor = PlannificationProgressColor;
+    Y.Plugin.AutoReservationColor = AutoReservationColor;
 });
