@@ -59,9 +59,9 @@ YUI.add("wegas-pageloader", function(Y) {
                     this.syncUI();                                              // sync the view
                 }
 
-                if (this.get("variable.content")                                // @backwardcompatibilityand if the current page has change,
-                    && this.get("variable.name")
-                    && this.get("variable.expr")
+                if ((this.get("variable.content")                               // @backwardcompatibilityand if the current page has change,
+                    || this.get("variable.name")
+                    || this.get("variable.expr"))
                     && this.get("variable.evaluated") !== "" + this.get(PAGEID)) {
                     this.syncUI();                                              // sync the view
                 }
