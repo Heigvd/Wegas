@@ -137,7 +137,16 @@
                         }
                     });
 
-                    app.after("render", function() {                            // When the page is rendered
+                    /**
+                     * THIS IS NOT A COMMENT !!!
+                     * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
+                     */
+                    ////<ui:insert name="editorFooter" />////                   // Footer script (for host.html)
+                    /**
+                     * END THIS IS NOT A COMMENT !!!
+                     */
+                     
+                    app.on("render", function() {                               // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
 
@@ -147,17 +156,8 @@
                             Y.log("Error running client scripts.", "error");
                         }
                     });
-
+                    
                     app.render();                                               // Render app
-
-                    /**
-                     * THIS IS NOT A COMMENT !!!
-                     * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
-                     */
-                    ////<ui:insert name="editorFooter" />////                   // Footer script (for host.html)
-                    /**
-                     * END THIS IS NOT A COMMENT !!!
-                     */
                 });
             </script>
 
