@@ -8,19 +8,20 @@
         <ui:define name="title">#{editorGameController.currentGame.name}</ui:define>
 
         <ui:define name="editorHeader">
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css" />
         </ui:define>
 
         <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
         
         <script><ui:define name="editorFooter"><![CDATA[
             
-            Y.Wegas.app.on("render", function() {
+            Y.Wegas.app.after("render", function() {
                 var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
-
-                Y.one("body").addClass("wegas-hostmode");
                 Y.one(".wegas-title").setContent("<div>" + g.get("name") + "</div>"
                     + "<div class='subtitle'>" + g.get("gameModelName") + "</div>");// Update the title
+            });
+            Y.Wegas.app.on("render", function() {
+                Y.one("body").addClass("wegas-hostmode");
                 
                 Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
                     var i, playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
@@ -30,7 +31,7 @@
                     }
 
                     for (i = 0; i < playersTree.treeView.size(); i += 1) {
-                        if (playersTree.treeView.item(i).get("data").entity.get("players") & !playersTree.treeView.item(i).get("data").entity.get("players").length) {
+                        if (playersTree.treeView.item(i).get("data.entity").get("players") & !playersTree.treeView.item(i).get("data.entity").get("players").length) {
                                 playersTree.treeView.item(i).get("boundingBox").addClass("noPlayer");
                         }
                     }
@@ -66,7 +67,6 @@
                             e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
 
                         app.widget.destroy();                                   // Destroy the current view
-                        return;
                         Y.Wegas.Facade.Page.once("response", function(e) {      // When page data source response arrives,
                             var widgetCfg = e.response.results;
                             Y.Wegas.use(widgetCfg, Y.bind(function() {
