@@ -108,7 +108,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                         }
                     }
                 }
-                for (period in periods.sort()) {
+                for (period in periods.sort(function (a,b){return (a > b);})) {
                     this.addColor(HOST.schedule.getCell(i, periods[period]), (period === "0" ? first : ""));
                 }
             }
