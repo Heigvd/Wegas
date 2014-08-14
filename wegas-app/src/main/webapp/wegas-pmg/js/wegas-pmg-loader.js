@@ -31,12 +31,21 @@ YUI.addGroup("wegas-pmg", {
         'wegas-pmg-slidepanel': {
             requires: ['anim', 'wegas-pmgwidget-css', "wegas-pmg-datatable", "wegas-pmg-reservation",
                 "wegas-pmg-occupationcolor", "wegas-pmg-activitycolor", "wegas-pmg-assignment",
-                "wegas-scheduledatatable", "wegas-text"],
+                "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color"],
             ws_provides: ["PmgSlidePanel", "PmgResourcesPanels"]
         },
         "wegas-pmg-reservation": {
             path: 'js/plugin/wegas-pmg-reservation-min.js',
             ws_provides: 'Reservation'
+        },
+       "wegas-pmg-abstractpert": {
+            path: 'js/plugin/wegas-pmg-abstractpert-min.js',
+            ws_provides: 'AbstractPert'
+        },
+       "wegas-pmg-autoreservation-color": {
+            path: 'js/plugin/wegas-pmg-autoreservation-color-min.js',
+            requires: ['wegas-pmgwidget-css', 'wegas-pmg-abstractpert'],
+            ws_provides: 'AutoReservationColor'
         },
         "wegas-pmg-occupationcolor": {
             path: 'js/plugin/wegas-pmg-occupationcolor-min.js',
@@ -71,10 +80,10 @@ YUI.addGroup("wegas-pmg", {
             path: 'js/plugin/wegas-pmg-plannificationactivitycolor-min.js',
             requires: 'wegas-pmgwidget-css',
             ws_provides: 'PlannificationActivityColor'
-        },
+        }, 
         "wegas-pmg-plannificationprogresscolor": {
             path: 'js/plugin/wegas-pmg-plannificationprogresscolor-min.js',
-            requires: 'wegas-pmgwidget-css',
+            requires: ['wegas-pmgwidget-css', 'wegas-pmg-abstractpert'],
             ws_provides: 'PlannificationProgressColor'
         },
         "wegas-pmg-bac": {

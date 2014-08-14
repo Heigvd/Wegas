@@ -17,10 +17,10 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
     /**
      *  @class color plannification progress in datatable
      *  @name Y.Plugin.PlannificationProgressColor
-     *  @extends Y.Plugin.PlannificationActivityColor
+     *  @extends Y.Plugin.AbstractPert
      *  @constructor
      */
-    PlannificationProgressColor = Y.Base.create("wegas-pmg-plannificationprogresscolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    PlannificationProgressColor = Y.Base.create("wegas-pmg-plannificationprogresscolor", Y.Plugin.AbstractPert, [], {
         /** @lends Y.Plugin.PlannificationProgressColor */
         initializer: function() {
             //this.taskTable;
@@ -35,12 +35,12 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         sync: function() {
             this.taskTable = {};
             this.fillTaskTable();
-            this.pertValue();
+            this.computePert(this.taskTable, this.get("host").schedule.currentPeriod());
             this.findCell();
         },
         fillTaskTable: function() {
             var i, taskDesc, taskInst, dt = this.get("host").datatable,
-                    properties;
+                properties;
 
             for (i = 0; i < dt.data._items.length; i++) {
                 taskDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
@@ -54,79 +54,20 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 }
             }
         },
-        timeSolde: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), properties = taskInst.get("properties"), timeSolde;
-            if (taskInst.get("plannification").length > 0) {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("plannification").length;
-            } else {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("duration");
-            }
-            return timeSolde;
-        },
-        startPlannif: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), plannification = taskInst.get("plannification"), min;
-            min = Math.min.apply(Math, plannification);
-            if (min !== Infinity) {
-                return min;
-            } else {
-                return 0;
-            }
-        },
-        pertValue: function() {
-            var predecessors, taskId, taskDesc, i, maxPert, predecessorDuration,
-                    allPredDefine, countPertValue = 0, treated = [], predecessorId;
-
-            while (countPertValue < Y.Object.size(this.taskTable)) {
-                for (taskId in this.taskTable) {
-                    taskDesc = this.taskTable[taskId];
-
-                    if (Y.Array.indexOf(treated, taskId) > -1) {
-                        continue;
-                    }
-
-                    maxPert = this.get("host").schedule.currentPeriod();
-                    allPredDefine = true;
-                    predecessors = taskDesc.get("predecessors");
-
-                    for (i = 0; i < predecessors.length; i++) {
-                        predecessorId = predecessors[i].get("id");
-                        if (!this.taskTable[predecessorId]) {
-                            continue;
-                        }
-                        // verifie si le prédecesseur possede le debut pert
-                        if (this.taskTable[predecessorId].startPert) {
-                            // defini la durée du prédecesseur
-                            predecessorDuration = this.taskTable[predecessorId].startPert + this.taskTable[predecessorId].timeSolde;
-                            // verifie si la durée du prédecesseur et la plus grande
-                            if (predecessorDuration > maxPert) {
-                                maxPert = predecessorDuration;
-                            }
-                        } else {
-                            allPredDefine = false;
-                        }
-                    }
-                    // si tous les prédecesseur on un debut pert alors on l'ajoute dans la liste
-                    if (allPredDefine) {
-                        treated.push(taskId);
-                        taskDesc.startPert = maxPert;
-                        taskDesc.startMax = Math.max(taskDesc.startPert, taskDesc.startPlannif);
-                        taskDesc.end = taskDesc.startMax + taskDesc.timeSolde;
-                        countPertValue++;
-                    }
-                }
-            }
-        },
         findCell: function() {
             var taskId, taskDesc, host = this.get("host"),
-                    dt = this.get("host").datatable, i, ii, cell;
+                dt = this.get("host").datatable, i, ii, cell;
 
             for (i = 0; i < dt.data.size(); i++) {
                 for (taskId in this.taskTable) {
                     taskDesc = this.taskTable[taskId];
                     if (dt.getRecord(i).get("id") === taskDesc.get("id")) {
-                        for (ii = 1; ii <= host.schedule.get("columnToAdd"); ii++) {
+                        var iMax = parseInt(taskDesc.end);
+                        for (ii = parseInt(taskDesc.startMax); ii <= iMax; ii++) {
                             cell = host.schedule.getCell(i, ii);
-                            this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
+                            if (cell) {
+                                this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
+                            }
                         }
                         break;
                     }

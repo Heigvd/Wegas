@@ -64,14 +64,15 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     cell.setContent("<span class='editable'></span>");
                 }
             } else {
+                cell.removeClass("editable-period");
                 cell.setContent("<span class='notEditable'></span>");
             }
         },
         addEngagementDelay: function() {
-            var i, ii, cell, host = this.get("host"),
-                dt = host.datatable,
-                currentPeriod = host.schedule.currentPeriod();
             if (!this.get("autoReservation")) {           // No engagemet delay in automated reservation mode
+                var i, ii, cell, host = this.get("host"),
+                    dt = host.datatable,
+                    currentPeriod = host.schedule.currentPeriod();
                 for (i = 0; i < dt.data.size(); i++) {
                     for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
                         cell = host.schedule.getCell(i, currentPeriod + ii);

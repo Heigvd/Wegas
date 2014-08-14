@@ -85,7 +85,7 @@ public class ResourceFacade {
     }
 
     /**
-     *
+     * 
      * @param resourceInstanceId
      * @param taskDescriptorId
      * @return
@@ -95,7 +95,7 @@ public class ResourceFacade {
     }
 
     /**
-     *
+     * 
      * @param resourceInstance
      * @param taskDescriptor
      * @return
@@ -114,6 +114,36 @@ public class ResourceFacade {
     public Activity createActivity(Long resourceInstanceId, Long taskDescriptorId) {
         return this.createActivity((ResourceInstance) variableInstanceFacade.find(resourceInstanceId),
                 (TaskDescriptor) variableDescriptorFacade.find(taskDescriptorId));
+    }
+
+    /**
+     * Add an occupation for a resource at the given time
+     * 
+     * @param resourceInstance
+     * @param editable
+     * @param time
+     * @return 
+     */
+    public Occupation addOccupation(ResourceInstance resourceInstance,
+                                    Boolean editable,
+                                    double time){
+        Occupation newOccupation = new Occupation(time);
+        newOccupation.setEditable(editable);
+
+        this.addAbstractAssignement(resourceInstance.getId(), newOccupation);
+        return newOccupation;
+    }
+
+    /**
+     * Reserve a resource for the given time
+     * 
+     * @param resourceInstance
+     * @param time
+     * @return 
+     */
+    public Occupation reserve(ResourceInstance resourceInstance,
+                                     double time){
+        return addOccupation(resourceInstance, true, time);
     }
 
     /**

@@ -88,7 +88,7 @@ tbody .past .activity {
 .yui3-skin-sam tbody .schedulecolumn.past {
     background: #f7f7f7;
 }
-.yui3-datatable-columns .schedulecolumn.present, .yui3-datatable-columns .schedulecolumn.present-auto{
+.yui3-datatable-columns .schedulecolumn.present {
     /*background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);*/
     /*background-repeat: no-repeat, repeat-x;*/
     /*background-position: left, center;*/

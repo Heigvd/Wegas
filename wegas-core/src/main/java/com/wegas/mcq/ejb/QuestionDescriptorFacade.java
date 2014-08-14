@@ -9,11 +9,12 @@ package com.wegas.mcq.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.exception.WegasException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -51,6 +52,12 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     @EJB
     private ScriptFacade scriptManager;
+    /**
+     * 
+     */
+    @EJB
+    private RequestFacade requestFacade;
+
     /**
      *
      */
@@ -171,6 +178,49 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         return reply;
     }
 
+    /**
+     * FOR TEST USAGE ONLY 
+     * 
+     * @param choiceId
+     * @param playerId
+     * @return
+     * @throws ScriptException
+     */
+    public Reply selectAndValidateChoiceTEST(Long choiceId, Long playerId) throws ScriptException {
+        Reply reply = this.selectChoiceTEST(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+        try {
+            this.validateReply(playerId, reply.getId());
+        } catch (ScriptException e) {
+            this.cancelReply(playerId, reply.getId());
+            throw e;
+        }
+
+        requestFacade.commit();
+        return reply;
+    }
+
+    /**
+     * FOR TEST USAGE ONLY 
+     *
+     * @param choiceId
+     * @param player
+     * @param startTime
+     * @return
+     * @throws WegasException
+     */
+    public Reply selectChoiceTEST(Long choiceId, Player player, Long startTime) throws WegasException {
+        Reply reply = questionSingleton.createReplyUntransactionnal(choiceId, player, startTime);
+        try {
+            scriptEvent.fire(player, "replySelect", new EventObject(reply));
+        } catch (ScriptException | NoSuchMethodException e) {
+            // GOTCHA no eventManager is instantiated
+        }
+
+        return reply;
+    }
+
+
+    
     /**
      *
      * @param playerId

@@ -116,21 +116,21 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
 
             this.panels = Y.Array.map(resourceFoldes.get("items"), function(vd) {
                 var autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
-                    autoReserve = autoDesc && autoDesc.getInstance().get("value"); 
+                    autoReserve = autoDesc && autoDesc.getInstance().get("value"),
+                    pmgPanel,
+                    currentPhase = Y.Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
 
 
-                return new Wegas.PmgSlidePanel({
-                    
+                pmgPanel = new Wegas.PmgSlidePanel({
                     title: vd.get("label"),
                     children: [{
                             type: "PmgDatatable",
                             plugins: [{
                                     fn: "ScheduleDT",
                                     cfg: {
-                                        //columnToAdd: 24,
                                         variable: {
                                             name: "periodPhase3"
-                                        }, 
+                                        },
                                         autoReservation: autoReserve
                                     }
                                 }, {
@@ -191,6 +191,16 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                             content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
                         }]
                 }).render(this.get(CONTENTBOX));
+
+                if (autoReserve && currentPhase === 3) {
+                    pmgPanel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                        taskList: {
+                            name: "tasks"
+                        }
+                    });
+                }
+
+                return pmgPanel;
             }, this);
         },
         destructor: function() {
