@@ -669,6 +669,7 @@ YUI().use(function(Y) {
             },
             "wegas-gameinformation": {
                 path: "js/wegas-gameinformation-min.js",
+                requires: "wegas-teamcss",
                 ws_provides: "GameInformation"
             },
             "wegas-join-token": {

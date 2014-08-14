@@ -70,12 +70,12 @@ YUI.add('wegas-app', function(Y) {
                     document.getElementsByClassName("wegas-loading-app-current")[0].setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
                     if (requestCounter === 0) {                                 // If all initial request are completed,
-                        Y.later(10, this, function() {                          // let the loading div update
-                            this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
+                        Y.later(10, this, function() {                          // Let the loading div update
+                            this.widget = Wegas.Widget.create(widgetCfg)        // Instantiate the root widget
                                 .render();                                      // and render it
-                            this.fire("render");
-                            document.getElementsByClassName("wegas-loading-app")[0].remove();
-                        });                                  // fire a render event for some eventual post processing
+                            this.fire("render");                                // Fire a render event for some eventual post processing
+                            Y.one(".wegas-loading-app").remove();
+                        });
                     }
                 };
 
