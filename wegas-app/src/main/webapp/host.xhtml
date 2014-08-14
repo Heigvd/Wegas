@@ -37,12 +37,14 @@
                     Y.Wegas.Facade.Page.once("response", function(e) {          // When page data source response arrives,
                         var widgetCfg = e.response.results;
                         Y.Wegas.use(widgetCfg, Y.bind(function() {
+
+                            body.toggleClass("wegas-hostmode")
+                                .toggleClass("wegas-editmode");
+
                             app.widget = Y.Wegas.Widget.create(widgetCfg).render();// Instantiate the root widget and render it
                             app.fire("render");                                 // Fire a render event for some eventual post processing
 
-                            body.toggleClass("wegas-hostmode")
-                                .toggleClass("wegas-editmode")
-                                .removeClass("wegas-loading-after");
+                            body.removeClass("wegas-loading-after");
                         }));
                     });
                     Y.Wegas.Facade.Page.sendInitialRequest();
