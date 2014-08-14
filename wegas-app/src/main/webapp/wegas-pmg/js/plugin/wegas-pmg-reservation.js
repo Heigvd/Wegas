@@ -18,96 +18,57 @@ YUI.add('wegas-pmg-reservation', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-        Reservation;
+    var Wegas = Y.Wegas, Reservation;
 
     Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Reservation */
-
         /**
          * Lifecycle methods
          * @function
          * @private
          */
         initializer: function() {
-                this.get("host").datatable.delegate("click", function(e, a) {
-                    var dt = this.get("host").datatable,
-                        id = dt.getRecord(e.target).get("id"),
-                        columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
-
-                    this.checkCache(id, columnsCfg.time);
-                }, "tbody .editable-period, tbody .editable-period", this);
+            this.get("host").datatable.delegate("click", this.onClick,
+                "tbody .editable-period, tbody .editable-period", this);
         },
-        checkCache: function(descriptorId, periode) {
-            var vd = Y.Wegas.Facade.Variable.cache.find("id", descriptorId),
-                i, abstractAssignement, type = this.get("type"), data;
+        onClick: function(e) {
+            var i, assignment,
+                dt = this.get("host").datatable,
+                cell = dt.getCell(e.currentTarget),
+                time = dt.getColumn(e.currentTarget).time,
+                resource = dt.getRecord(e.currentTarget).get("descriptor").getInstance();
 
-            for (i = 0; i < vd.getInstance().get(type).length; i++) {
-                abstractAssignement = vd.getInstance().get(type)[i];
-                if (abstractAssignement.get("time") === periode && abstractAssignement.get("editable")) {
-                    this.remove(abstractAssignement.get("id"), type);
-                    return;
-                } else if (abstractAssignement.get("time") === periode) {
+            for (i = 0; i < resource.get("occupations").length; i++) {
+                assignment = resource.get("occupations")[i];
+                if (assignment.get("time") === time) {
+                    if (assignment.get("editable")) {                           // this does not make sense if we use the widget with activities
+                        cell.setContent("");
+                        Wegas.Facade.Variable.sendRequest({
+                            request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
+                            cfg: {
+                                method: "DELETE",
+                                updateEvent: false
+                            }
+                        });
+                    }
                     return;
                 }
             }
-
-            if (type === "occupations") {
-                data = this.dataOccupation(periode);
-            } else {
-                data = this.dataActivity(periode);
-            }
-
-            this.add(vd.getInstance().get("id"), data);
-        },
-        dataOccupation: function(periode) {
-            return {
-                "@class": "Occupation",
-                editable: true,
-                time: periode
-            };
-        },
-        dataActivity: function(periode) {
-            return {
-                "@class": "Activity",
-                editable: true,
-                time: periode
-            };
-        },
-        add: function(ressourceId, data) {
+            cell.append('<span class="editable"></span>');
             Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/AbstractAssign/" + ressourceId,
+                request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
                 cfg: {
                     method: "POST",
-                    data: data
+                    updateEvent: false,
+                    data: {
+                        "@class": "Occupation",
+                        editable: true,
+                        time: time
+                    }
                 }
             });
-        },
-        remove: function(abstractAssignementId, type) {
-            Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/AbstractRemove/" + abstractAssignementId + "/" + type,
-                cfg: {
-                    method: "DELETE"
-                }
-            });
-        },
-        /**
-         * Destructor methods.
-         * @function
-         * @private
-         */
-        destructor: function() {
         }
     }, {
-        ATTRS: {
-            type: {
-                value: "occupations",
-                choices: ['occupations', 'activities'],
-                _inputex: {
-                    value: "occupations"
-                }
-            }
-        },
         NS: "reservation",
         NAME: "Reservation"
     });

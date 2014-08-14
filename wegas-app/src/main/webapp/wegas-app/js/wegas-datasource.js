@@ -1316,11 +1316,9 @@ YUI.add('wegas-datasource', function(Y) {
             this.onHostEvent(["*:log", "*:warn", "*:info", "*:error", "*:debug"], function(e) {
                 this.logs.push({type: e.type.split(":").pop(), val: e.details[0]});
 
-                var tab = Y.Widget.getByNode("#centerTabView").get("selection");
-
-                Y.Array.each(logs, function(l) {
-                    tab.showMessageBis(l.type, "Server " + l.type + ": " + e.details[0]);
-                });
+                var type = e.type.split(":").pop();
+                Y.Widget.getByNode("#centerTabView").get("selection")
+                    .showMessageBis(type, "Server " + type + ": " + e.details[0]);
 
                 this._out();
             });

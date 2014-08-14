@@ -11,7 +11,7 @@
  */
 YUI.add('wegas-pmg-planification', function(Y) {
     "use strict";
-    
+
     var Wegas = Y.Wegas, Planification;
 
     /**
@@ -22,40 +22,48 @@ YUI.add('wegas-pmg-planification', function(Y) {
      */
     Planification = Y.Base.create("wegas-pmg-planification", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Planification */
-
         /**
          * Lifecycle methods
          * @function
          * @private
          */
         initializer: function() {
-            this.get("host").datatable.delegate("click", function(e, a) {
-                var dt = this.get("host").datatable,
-                        id = dt.getRecord(e.target).get("id"),
-                        columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
-                this.checkCache(id, columnsCfg.time);
-            }, "tbody .present, tbody .futur", this);
+            this.get("host").datatable.delegate("click", this.onClick,
+                "tbody .present, tbody .futur", this);
         },
-        checkCache: function(descriptorId, periode) {
-            var vd = Wegas.Facade.Variable.cache.find("id", descriptorId),
-                    i, planPeriode;
+        onClick: function(e) {
+            var i, planPeriod,
+                dt = this.get("host").datatable,
+                time = dt.getColumn(e.currentTarget).time,
+                task = dt.getRecord(e.currentTarget).get("descriptor").getInstance(),
+                cell = dt.getCell(e.currentTarget);
 
-            for (i = 0; i < vd.getInstance().get("plannification").length; i++) {
-                planPeriode = vd.getInstance().get("plannification")[i];
-                if (planPeriode === periode) {
-                    // remove plannif
-                    this.request(vd.getInstance().get("id"), periode, "DELETE");
-                    return;
-                }
+            // v1: based on element state
+            if (cell.get("children").size() > 0) {
+                cell.setContent("");
+                this.request(task.get("id"), time, "DELETE");
+                return;
             }
-            // add plannif
-            this.request(vd.getInstance().get("id"), periode, "POST");
+
+            // v2: based on cache state (need to make sure request is finished)
+            //for (i = 0; i < task.get("plannification").length; i++) {
+            //    planPeriod = task.get("plannification")[i];
+            //    if (planPeriod === time) {                                    // remove plannif
+            //        this.request(task.get("id"), time, "DELETE");
+            //        cell.empty();
+            //        return;
+            //    }
+            //}
+
+            cell.append('<span class="editable plannification"></span>');
+            this.request(task.get("id"), time, "POST");                         // add plannif
         },
-        request: function(taskInstanceId, periode, method) {
+        request: function(taskInstanceId, time, method) {
             Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/Player/" + Wegas.Facade.Game.get('currentPlayerId') + "/Plannification/" + taskInstanceId + "/" + periode,
+                request: "/ResourceDescriptor/Player/" + Wegas.Facade.Game.get('currentPlayerId') + "/Plannification/" + taskInstanceId + "/" + time,
                 cfg: {
-                    method: method
+                    method: method,
+                    updateEvent: false
                 }
             });
         }

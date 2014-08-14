@@ -398,6 +398,9 @@ h2{
 /*---------------------------- schedulecolumn -------------------------------- */
 .yui3-datatable-table th.schedulecolumn {
     text-align: center;
+    width: 3.4em;
+    padding-left: 0;
+    padding-right: 0;
 }
 .yui3-datatable-table .yui3-datatable-data .schedulecolumn {
     padding: 0 0 0 0;
