@@ -1315,6 +1315,13 @@ YUI.add('wegas-datasource', function(Y) {
             this.logs = [];
             this.onHostEvent(["*:log", "*:warn", "*:info", "*:error", "*:debug"], function(e) {
                 this.logs.push({type: e.type.split(":").pop(), val: e.details[0]});
+
+                var tab = Y.Widget.getByNode("#centerTabView").get("selection");
+
+                Y.Array.each(logs, function(l) {
+                    tab.showMessageBis(l.type, "Server " + l.type + ": " + e.details[0]);
+                });
+
                 this._out();
             });
             this.onHostEvent("ExceptionEvent", function(e) {
@@ -1339,12 +1346,6 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         output: function(logs) {
-            var tab = Y.Widget.getByNode("#centerTabView").get("selection");
-
-            Y.Array.each(logs, function(l) {
-                tab.showMessageBis(l.type, "Server error: " + (l.val.message || l.val));
-            });
-
             var cur;
             if (console) {
                 if (console.groupCollapsed) {

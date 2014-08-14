@@ -374,7 +374,16 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
 }, true);
 
 // Game properties & dashboard page
-var centerTab = Y.Widget.getByNode("#centerTabView");
+var centerTab = Y.Widget.getByNode("#centerTabView"),
+    properties = centerTab.add({// Add properties tab
+        label: "Properties",
+        children: [{
+                type: "PageLoader",
+                pageLoaderId: "properties",
+                defaultPageId: 16
+            }]
+    }).item(0);
+
 if (centerTab && Y.one(".wegas-hostmode")) {
     Y.use('wegas-pageeditor-fullwidthtab', function() {
 
@@ -392,17 +401,37 @@ if (centerTab && Y.one(".wegas-hostmode")) {
         }, 0).item(0);
         dashboard.set("selected", 2);
 
-        // Add properties tab
-        centerTab.add({
-            label: "Properties",
-            children: [{
-                    type: "PageLoader",
-                    pageLoaderId: "properties",
-                    defaultPageId: 16
-                }],
-            plugins: [{
-                    fn: "PageeditorFullWidthTab"
-                }]
-        });
+        properties.plug(Y.Plugin.PageeditorFullWidthTab);
     });
 }
+
+/* currently not working waiting for a new server deploy
+ Y.use("wegas-inputex-variabledescriptorselect", function(){
+ 
+ Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS["TempImpact.addImpactDuration"]={
+ label:"impact reverse",
+ "arguments":[{
+ type: "string",
+ typeInvite: "factor",
+ scriptType: "string",
+ required: true
+ },{
+ type: "string",
+ typeInvite: "task name",
+ scriptType: "string",
+ required: true
+ },{
+ type: "number",
+ typeInvite: "in period",
+ scriptType: "number",
+ required: true
+ },{
+ type: "number",
+ typeInvite: "value",
+ scriptType: "number",
+ required: true
+ }]
+ }
+ 
+ });
+ */
