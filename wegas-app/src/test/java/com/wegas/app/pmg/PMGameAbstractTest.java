@@ -35,14 +35,20 @@ abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
     @Before
     public void setUpGM() throws IOException, GlassFishException {
         /* insert script from files*/
-        final String script = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-util.js");
-        final String script2 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-simulation.js");
-        final String script3 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-serverScript.js");
-        final String script4 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-test-util.js");
-        final String script5 = TestHelper.readFile(SCRIPTROOT + getScriptTestPath());
+        final String script1 = TestHelper.readFile(SCRIPTROOT + "language.js");
+        final String script2 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-util.js");
+        final String script3 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-simulation.js");
+        final String script4 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-serverScript.js");
+        final String script5 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-test-util.js");
+        final String script6 = TestHelper.readFile(SCRIPTROOT + getScriptTestPath());
 
         //guestLogin();
-        this.createGameModelFromFile(this.getGameModelPath(), script + "\n" + script2 + "\n" + script3 + "\n" + script4 + "\n" + script5);
+        this.createGameModelFromFile(this.getGameModelPath(), script1 + "\n" 
+                + script2 + "\n" 
+                + script3 + "\n" 
+                + script4 + "\n" 
+                + script5 + "\n" 
+                + script6  + "\n");
     }
 
     @After
