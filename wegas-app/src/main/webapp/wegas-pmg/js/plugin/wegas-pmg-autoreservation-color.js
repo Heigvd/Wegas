@@ -101,7 +101,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                                 end--;
                             }
 
-                            for (period = start; period <= end; period++) {
+                            for (period = parseInt(start); period <= end; period++) {
                                 periods.push(period);
                             }
                             break;
