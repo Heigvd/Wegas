@@ -73,7 +73,7 @@ function testNormalAssignment() {
 
     task1.getInstance(self).setProperty('bac', '1500');
 
-    plan(task1, 1, 2)
+    plan(task1, 1, 2);
 
     assign(informaticien1, task1);
     assign(informaticien2, task1);
