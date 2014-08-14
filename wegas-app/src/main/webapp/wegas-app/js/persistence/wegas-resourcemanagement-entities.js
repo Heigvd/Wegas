@@ -917,9 +917,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             completion: {
                 type: NUMBER
             },
-            editable: {
-                type: BOOLEAN
-            },
             requirementId: {
                 type: STRING
             }
