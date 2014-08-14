@@ -42,6 +42,17 @@ function assertEquals(expected, found, msg) {
     }
 }
 
+function checkChoiceHasBeenSelected(choice){
+    assertEquals(true, choice.hasBeenSelected(self), 
+                 choice.getQuestion().getLabel() 
+                 + " ==> " + choice.getLabel() + " has not been selected");
+}
+
+function checkProperty(vd, property, expected, callee){
+    assertEquals(expected, vd.instance.getProperty(property), 
+    callee + ": " + vd.getLabel() + " " + property + " does not match");
+}
+
 function loadResourceFacade() {
     if (!resourceFacade) {
         debug("Load ResourceFacade");

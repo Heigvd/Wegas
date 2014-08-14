@@ -37,12 +37,13 @@ var gameModelFacade,
 
 
 function testArtos() {
-    var oldMode = DEBUGMODE;
-    DEBUGMODE = true;
+    //var oldMode = DEBUGMODE;
+    //DEBUGMODE = true;
     loadVariables();
 
     testGameVersion1();
-    DEBUGMODE = oldMode;
+    testArtosRealGameExample();
+    //DEBUGMODE = oldMode;
 }
 
 
@@ -131,6 +132,59 @@ function loadVariables() {
     }
 }
 
+
+function init_game(){
+    reset();
+    loadVariables();
+}
+
+/*
+ *      ,*************************************.
+ *      |               TESTS                 |
+ *      `~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+ */
+
+function testGameVersion1() {
+    var oldMode = DEBUGMODE,
+        start = Date.now(),
+        a102b, a102b_a;
+        
+    DEBUGMODE = true;
+    
+    breakpoint("pre reset");
+    reset();
+
+    printDuration("reset", start);
+
+    breakpoint("pre load");
+
+    loadVariables();
+
+    
+    printDuration("load", start);
+
+    breakpoint("pre plan");
+
+    planGameManual();
+    printDuration("plan", start);
+
+    breakpoint("pre select 1");
+    selectChoice(getVariableDescriptor("variable_3"));  // A01
+
+    a102b = getVariableDescriptor("evaluationDesBesoinsDesMonteurs");
+    a102b_a = getVariableDescriptor("a_Rencontrer");
+    
+    breakpoint("pre select 2");
+    selectChoice(a102b_a); // A102a
+    checkChoiceHasBeenSelected(a102b_a);
+
+    printDuration("END", start);
+    
+    DEBUGMODE = oldMode;
+}
+
+
+
 function planTasks() {
     plan(task01, 1);
     plan(task02, 2, 3);
@@ -159,32 +213,9 @@ function planGameManual() {
     reserveResources();
 }
 
-
-function testGameVersion1() {
-    var start = Date.now(),
-        a102b_a = getVariableDescriptor("a_Rencontrer"),
-        a01 = getVariableDescriptor("variable_3");
-
-    breakpoint("pre reset");
-    reset();
-
-    printDuration("reset", start);
-
-    breakpoint("pre load");
-
-    loadVariables();
-    printDuration("load", start);
-
-    breakpoint("pre plan");
-
+function testArtosRealGameExample() {
+    init_game();
     planGameManual();
-    printDuration("plan", start);
-
-    breakpoint("pre select 1");
-    selectChoice(a01);
-
-    breakpoint("pre select 2");
-    selectChoice(a102b_a);
-
-    printDuration("END", start);
+    selectChoice(getVariableDescriptor("variable_3"));  // A01
+    selectChoice(getVariableDescriptor("a_Rencontrer")); // A102b
 }
