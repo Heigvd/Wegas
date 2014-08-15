@@ -531,6 +531,11 @@ YUI().use(function(Y) {
                 requires: "wegas-editor-entityaction",
                 ws_provides: ["EditWidgetAction", "DeleteWidgetAction"]
             },
+            "wegas-panel-node": {
+                path: "js/plugin/wegas-panel-node-min.js",
+                requires: ["dd-drag", "plugin"],
+                ws_provides: ["PanelNode"]
+            },
             "wegas-logger": {
                 path: "js/widget/wegas-logger-min.js",
                 requires: ["console", "console-filters"],
@@ -612,7 +617,7 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-statemachine-entities",
                     "dd-constrain", "jsplumb-yui", "button", "event-mousewheel",
-                    "scrollview", "slider"],
+                    "slider", "wegas-panel-node"],
                 ws_provides: "StateMachineViewer"
             },
             "wegas-statemachineviewercss": {

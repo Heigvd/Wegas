@@ -21,9 +21,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         //InitialState modification
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
-        CONTENT_TEMPLATE: "<div>"
-            + "<div class='wegas-statemachineviewer-legend'><div class='legend-initial-state'></div><div class='legend-currentState'></div></div>"
-            + "<div class='scrollable'><div class='sm-zoom'></div></div></div>",
+        CONTENT_TEMPLATE: "<div><div class='scrollable'><div class='sm-zoom'></div></div></div>",
+        BOUNDING_TEMPLATE:"<div><div class='wegas-statemachineviewer-legend'><div class='legend-initial-state'></div><div class='legend-currentState'></div></div></div>",
         /**
          * 
          */
@@ -68,13 +67,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-zoom\"></span>100%"
             }).render(header);
 
-            this.scrollView = new Y.ScrollView({
-                srcNode: ".scrollable",
-                height: "100%",
-                width: "100%",
-                deceleration: 0,
-                axis: "xy"
-            }).render();
+            this.scrollView = Y.one(".scrollable").plug(Y.Plugin.PanelNode).panel;
 
             window.jsPlumb.ready(Y.bind(this.initJsPlumb, this));
         },
@@ -222,8 +215,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 id = 0,
                 cfg = {
                     editorPosition: new Wegas.persistence.Coordinate({
-                        x: parseInt(region.width / 4 + this.scrollView.get("scrollX")),
-                        y: parseInt(region.height / 4 + this.scrollView.get("scrollY"))
+                        x: parseInt(region.width / 4),
+                        y: parseInt(region.height / 4)
                     })
                 };
             Y.Object.each(this.get(ENTITY).get(STATES), function(s, key) {      // Lookup for an available id for the new state
@@ -318,7 +311,6 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             if (!isFromSliderOrInit) {
                 this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
             }
-            this.scrollView.syncUI();                                           // resize scrollview, @fixme: seems working only when first loading or complete refresh
         },
         highlightCurrentState: function() {
             var currentStateNode, sm = this.get(ENTITY);
