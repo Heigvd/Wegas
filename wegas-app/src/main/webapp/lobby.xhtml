@@ -6,7 +6,7 @@
     <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
         <ui:define name="head">
-<!--             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby.css" />-->
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-editor/css/wegas-editor.css&amp;/wegas-lobby/css/wegas-lobby.css" />
         </ui:define>
@@ -77,11 +77,11 @@
                         });
 
                         Y.Widget.getByNode("#gameModelsTab").set("visible", Y.Wegas.Facade.GameModel.cache.find("canDuplicate", true)
-                                || Y.Wegas.Facade.GameModel.cache.find("canEdit", true)); // Hide scenarist tab if no model is available for edition
+                            || Y.Wegas.Facade.GameModel.cache.find("canEdit", true)); // Hide scenarist tab if no model is available for edition
 
                         var gamesTab = Y.Widget.getByNode("#gamesTreeViewTab");
                         gamesTab.set("visible", Y.Wegas.Facade.GameModel.cache.find("canInstantiate", true)
-                                || !gamesTab.witem(0).dataTable.get("data").isEmpty());// Hide teacher tab if no game is available
+                            || !gamesTab.witem(0).table.get("data").isEmpty());// Hide teacher tab if no game is available
 
                         if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
                             gamesTab.set("selected", 2);                        // select created games tab
@@ -90,7 +90,7 @@
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
                         window.open(app.get("base")
-                                + "game-play.html?gameId=" + e.gameId);              // open the game in a new tab
+                            + "game-play.html?gameId=" + e.gameId);              // open the game in a new tab
                         Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
                             on: {
                                 success: function() {
