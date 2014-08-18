@@ -59,9 +59,11 @@
 .wegas-mcqtabview .reply {
     margin: 3px 8px 5px;
 }
+.wegas-mcqtabview .replyDiv > .reply {
+    color: #757575;
+}
 .wegas-mcqtabview .reply .name {
     font-weight: bold;
-    color: #757575;
     margin-bottom: 5px;
 }
 .wegas-mcqtabview .reply .content {
