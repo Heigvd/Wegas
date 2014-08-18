@@ -461,8 +461,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         render: function() {
             var host = this.get(HOST);
 
+            host.get(CONTENTBOX).addClass("wegas-datatable-list");
+
             if (host.toolbar) {
-                host.get(CONTENTBOX).addClass("wegas-datatable-list");
                 host.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons'>"
                     + "<button class='yui3-button button-grid'><span class='wegas-icon wegas-icon-gridview'></span></button>"
                     + "<button class='yui3-button button-list yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
@@ -610,7 +611,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             formatter: "icon",
                             label: " ",
                             sortable: false,
-                            width: "24px"
+                            width: "27px"
                         }, {
                             key: "name",
                             label: "Name"
