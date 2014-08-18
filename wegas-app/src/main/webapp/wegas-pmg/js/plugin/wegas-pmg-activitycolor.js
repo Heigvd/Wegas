@@ -20,6 +20,11 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
      */
     var ActivityColor = Y.Base.create("wegas-pmg-activitycolor", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.ActivityColor */
+        initializer: function() {
+            Y.log("initializer", "info", "Wegas.OccupationColor");
+            this.afterHostMethod("syncUI", this.sync);
+            this.get("host").datatable.after("sort", this.sync, this);
+        },
         sync: function() {
             var i, time,
                 host = this.get("host"),

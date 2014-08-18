@@ -12,17 +12,14 @@
 YUI.add('wegas-pmg-occupationcolor', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, OccupationColor;
-
     /**
      *  @class color occupation in datatable
      *  @name Y.Plugin.OccupationColor
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    OccupationColor = Y.Base.create("wegas-pmg-occupationcolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
+    var OccupationColor = Y.Base.create("wegas-pmg-occupationcolor", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.OccupationColor */
-
         /**
          * Lifecycle methods
          * @function
@@ -30,29 +27,25 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
          */
         initializer: function() {
             Y.log("initializer", "info", "Wegas.OccupationColor");
-            this.onceAfterHostEvent("render", function() {
-                this.sync();
-                this.afterHostMethod("syncUI", this.sync);
-            });
+            this.afterHostMethod("syncUI", this.sync);
             this.get("host").datatable.after("sort", this.sync, this);
         },
         sync: function() {
-            Y.log("sync()", "info", "Wegas.OccupationColor");
-            var i, ii, time,
+            //Y.log("sync()", "info", "Wegas.OccupationColor");
+            var i, ii, time, occupations,
                 host = this.get("host"),
-                dt = host.datatable,
-                abstractAssignement;
+                data = host.datatable.data;
 
             this.addEngagementDelay();
 
-            for (i = 0; i < dt.data.size(); i++) {
-                abstractAssignement = dt.data.item(i).get("descriptor").getInstance().get("occupations");
-                for (ii = 0; ii < abstractAssignement.length; ii++) {
-                    time = abstractAssignement[ii].get("time");
+            for (i = 0; i < data.size(); i++) {
+                occupations = data.item(i).get("descriptor").getInstance().get("occupations");
+                for (ii = 0; ii < occupations.length; ii++) {
+                    time = occupations[ii].get("time");
                     if (time >= host.schedule.currentPeriod()
-                        || !abstractAssignement[ii].get("editable")) {      //Affiche les occupations
+                        || !occupations[ii].get("editable")) {                  //Affiche les occupations
                         if (host.schedule.getCell(i, time)) {
-                            this.addColor(host.schedule.getCell(i, time), abstractAssignement[ii].get("editable"));
+                            this.addColor(host.schedule.getCell(i, time), occupations[ii].get("editable"));
                         }
                     }
                 }
@@ -69,7 +62,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
             }
         },
         addEngagementDelay: function() {
-            if (!this.get("autoReservation")) {           // No engagemet delay in automated reservation mode
+            if (!this.get("autoReservation")) {                                 // No engagement delay in automated reservation mode
                 var i, ii, cell, host = this.get("host"),
                     dt = host.datatable,
                     currentPeriod = host.schedule.currentPeriod();
