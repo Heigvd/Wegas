@@ -1,5 +1,5 @@
 /*
-YUI 3.16.0 (build 76f0e08)
+YUI 3.17.2 (build 9c3c78e)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -533,7 +533,8 @@ Y_Node.DOM_EVENTS = {
     submit: 1,
     scroll: 1,
     textInput: 1,
-    unload: 1
+    unload: 1,
+    invalid: 1
 };
 
 // Add custom event adaptors to this list.  This will make it so
@@ -1006,4 +1007,4 @@ Y.mix(Y.NodeList.prototype, {
 });
 
 
-}, '3.16.0', {"requires": ["event-base", "node-core", "dom-base", "dom-style"]});
+}, '3.17.2', {"requires": ["event-base", "node-core", "dom-base", "dom-style"]});

@@ -1,5 +1,5 @@
 /*
-YUI 3.16.0 (build 76f0e08)
+YUI 3.17.2 (build 9c3c78e)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -905,4 +905,4 @@ Y.AxisBase = Y.Base.create("axisBase", Y.Base, [Y.Renderer], {
 });
 
 
-}, '3.16.0', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});
+}, '3.17.2', {"requires": ["classnamemanager", "datatype-number", "datatype-date", "base", "event-custom"]});
