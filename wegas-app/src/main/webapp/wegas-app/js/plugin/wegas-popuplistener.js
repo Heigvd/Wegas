@@ -20,13 +20,11 @@ YUI.add('wegas-popuplistener', function(Y) {
                     points: [Y.WidgetPositionAlign.TC, Y.WidgetPositionAlign.TC]
                 },
                 buttons: {
-                    footer: [
-                        {
+                    footer: [{
                             name: 'proceed',
                             label: 'OK',
                             action: "exit"
-                        }
-                    ]
+                        }]
                 },
                 modal: false,
                 centered: false,
