@@ -1,5 +1,5 @@
 /*
-YUI 3.16.0 (build 76f0e08)
+YUI 3.17.2 (build 9c3c78e)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -536,4 +536,4 @@ Y.namespace('DataTable').HeaderView = Y.Base.create('tableHeader', Y.View, [], {
 });
 
 
-}, '3.16.0', {"requires": ["datatable-core", "view", "classnamemanager"]});
+}, '3.17.2', {"requires": ["datatable-core", "view", "classnamemanager"]});
