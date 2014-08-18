@@ -109,10 +109,9 @@ YUI.add('wegas-app', function(Y) {
             // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
                 var body = Y.one("body");
-                body.removeClass("wegas-loading-overlay");                      // Remove loading overlay on render
                 body.on("key", function() {                                     // Add shortcut to activate developper mode
-                    body.toggleClass("wegas-stdmode");                          // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                    body.toggleClass("wegas-advancedmode");
+                    body.toggleClass("wegas-stdmode")                           // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                        .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y;                                         // Allow access to Y instance
                 }, "167", this);                                                // on key '°' pressed
             }, this);

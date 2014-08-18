@@ -9,12 +9,12 @@
         <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}">
+            <h:body class="yui3-skin-sam wegas-stdmode #{requestController.currentRoles}">
 
                 <!-- Rollbar error tracking -->
-                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
+                <!--<ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
                     <ui:include src="template/rollbar.xhtml" />
-                </ui:fragment>
+                </ui:fragment>-->
 
                 <!-- YUI3 -->
                 <!-- CDN -->
