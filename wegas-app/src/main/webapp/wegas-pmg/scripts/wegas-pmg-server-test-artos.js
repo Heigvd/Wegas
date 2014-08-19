@@ -62,11 +62,6 @@ function reset() {
     debug("Reset DONE");
 }
 
-function breakpoint(msg) {
-    loadGameModelFacade();
-    gameModelFacade.nop(msg);
-}
-
 function loadVariables() {
     if (!loaded) {
         loaded = true;
@@ -185,32 +180,26 @@ function testGameVersion1() {
 
 
 
-function planTasks() {
+function test_planTasks() {
     plan(task01, 1);
     plan(task02, 2, 3);
 }
 
-function assignResources() {
+function test_assignResources() {
     assign(com_gaelle, task11);
     assign(com_irene, task03, task11);
 }
 
-function reserveResources() {
+function test_reserveResources() {
     reserve(com_irene, 3);
     reserve(com_gaelle, 13, 14);
 }
 
-function planGameAuto() {
-    debug("Plan Auto");
-    planTasks();
-    assignResources();
-}
-
-function planGameManual() {
+function test_planGameManual() {
     debug("Plan Manual");
-    planTasks();
-    assignResources();
-    reserveResources();
+    test_planTasks();
+    test_assignResources();
+    test_reserveResources();
 }
 
 function testArtosRealGameExample() {
@@ -218,4 +207,47 @@ function testArtosRealGameExample() {
     planGameManual();
     selectChoice(getVariableDescriptor("variable_3"));  // A01
     selectChoice(getVariableDescriptor("a_Rencontrer")); // A102b
+}
+
+
+
+
+function testMessage_assign() {
+    // Com
+    assign(com_gaelle, task01);
+    assign(com_irene, task03, task01);
+    
+    // OT
+    assign(it_andre, task01);
+    
+    // Hardware
+    assign(hard_fabien, task12);
+    assign(hard_herve, task02);
+    assign(hard_pierre, task02);
+    assign(hard_zoe, task02, task03);
+}
+
+
+function planGameAuto() {
+    debug("Plan Auto");
+    testMessage_assign();
+}
+
+function goToExecution(){
+    // init_game();
+    loadVariables();
+    
+    nextPeriod(); // Planning
+
+    planGameAuto();
+
+    nextPeriod(); // Execution
+}
+
+
+function testMessages() {
+    debug ("Debug Test Messages");
+    goToExecution();
+    // do first period
+    nextPeriod();  
 }

@@ -96,6 +96,24 @@
         },
         {
             "@class": "NumberDescriptor",
+            "name": "projectUnworkedHours",
+            "label": "Unworked Hours",
+            "title": null,
+            "defaultInstance": {
+                "@class": "NumberInstance",
+                "history": [],
+                "value": 0
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "minValue": 0,
+            "maxValue": null,
+            "defaultValue": 0
+        }, 
+        {
+            "@class": "NumberDescriptor",
             "name": "qualityImpacts",
             "label": "Quality impacts",
             "title": null,
@@ -746,8 +764,57 @@
                         "coordinationRatioSup": "1"
                     },
                     "predecessorNames": []
+                },
+                {
+                    "@class": "TaskDescriptor",
+                    "name": "task8",
+                    "label": "task8",
+                    "title": "",
+                    "defaultInstance": {
+                        "@class": "TaskInstance",
+                        "active": true,
+                        "duration": 20,
+                        "plannification": [],
+                        "properties": {
+                            "fixedCosts": "0",
+                            "predecessorsDependances": "1000",
+                            "unworkedHoursCosts": "0",
+                            "wages": "0",
+                            "randomDurationInf": "0",
+                            "bac": "0",
+                            "completeness": "0",
+                            "randomDurationSup": "0",
+                            "bonusRatio": "1",
+                            "quality": "0"
+                        },
+                        "requirements": [
+                            {
+                                "@class": "WRequirement",
+                                "limit": 100,
+                                "work": "Commercial",
+                                "level": 7,
+                                "quantity": 10,
+                                "completeness": 0,
+                                "quality": 0
+                            }
+                        ]
+                    },
+                    "scope": {
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "description": "",
+                    "index": 1,
+                    "properties": {
+                        "competenceRatioInf": "1",
+                        "progressionOfNeeds": "0",
+                        "coordinationRatioInf": "1",
+                        "takeInHandDuration": "0",
+                        "competenceRatioSup": "1",
+                        "coordinationRatioSup": "1"
+                    },
+                    "predecessorNames": []
                 }
-
             ]
         },
         {

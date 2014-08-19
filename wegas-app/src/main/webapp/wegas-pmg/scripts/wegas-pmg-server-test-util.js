@@ -24,10 +24,16 @@ var resourceFacade,
  * @throw NotFound
  */
 function getVariableDescriptor(name) {
-    var vd = Variable.findByName(gameModel, name);
+    var vd;
+    try{
+        vd = Variable.findByName(gameModel, name);
+    } catch (e){
+        vd = null;
+    }
     assertNotNull(vd, name, "not found");
     return vd;
 }
+
 
 function assertNotNull(variable, varname, msg) {
     if (!variable) {
@@ -36,7 +42,7 @@ function assertNotNull(variable, varname, msg) {
 }
 
 function assertEquals(expected, found, msg) {
-    if (expected != found) {
+    if (expected != found) {  // DO NOT USE === 
 //        debug("ERROR: assert equals does not match");
         throw new Error(msg + " (expected " + expected + ", found " + found + ")");
     }
@@ -50,6 +56,11 @@ function checkChoiceHasBeenSelected(choice){
 
 function checkProperty(vd, property, expected, callee){
     assertEquals(expected, vd.instance.getProperty(property), 
+    callee + ": " + vd.getLabel() + " " + property + " does not match");
+}
+
+function checkDescriptorProperty(vd, property, expected, callee){
+    assertEquals(expected, vd.getProperty(property), 
     callee + ": " + vd.getLabel() + " " + property + " does not match");
 }
 
@@ -109,6 +120,17 @@ function assign(resource) {
         resourceFacade.assign(resource.instance, arguments[i]);
     }
     debug("Assign: DONE");
+}
+
+function clearAssignments(resource){
+    var i, toRemove = [];
+    for (i = 0; i < resource.instance.assignments.size(); i++) {
+        toRemove.push(resource.instance.assignments.get(i));
+    }
+
+    Y.Array.each(toRemove, function(a) {
+        removeAssignment(resource.instance, a);
+    });
 }
 
 /**

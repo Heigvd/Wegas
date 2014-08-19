@@ -12,6 +12,7 @@ steps = 10, minTaskDuration = 0.1, taskTable = {};
  *  function completeRealizationPeriod) and check the end of the project (if true, pass to phase 4).
  */
 function nextPeriod() {
+    debug("NEXT PERIOD DEPRECATED");
     var time = getCurrentInGameTime(), phase = VariableDescriptorFacade.findByName(gm, 'currentPhase'),
             ganttPage, taskPage, phases;
     phases = VariableDescriptorFacade.findByName(gm, 'currentPeriod');
