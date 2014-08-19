@@ -77,8 +77,24 @@
       "minValue": 0,
       "maxValue": null,
       "defaultValue": 15
-    },
-    {
+    }, {
+      "@class": "NumberDescriptor",
+      "name": "projectUnworkedHours",
+      "label": "Unworked Hours",
+      "title": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 0
+      },
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "minValue": 0,
+      "maxValue": null,
+      "defaultValue": 0
+    }, {
       "@class": "NumberDescriptor",
       "name": "projectFixedCosts",
       "label": "Fixed costs",
