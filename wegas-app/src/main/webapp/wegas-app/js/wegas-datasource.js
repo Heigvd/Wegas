@@ -30,6 +30,13 @@ YUI.add('wegas-datasource', function(Y) {
          */
         initializer: function() {
             this.after("sourceChange", this.sendInitialRequest);                // When the source changes, resend inital request
+            this.queue = new Y.Queue();
+            this.after("response", function(e) {                                // Add request queue consumption logic
+                if (e.tId === this.queuetid) {
+                    this.queuetid = null;
+                    this.processQueue();
+                }
+            });
         },
         /**
          * @function
@@ -73,6 +80,17 @@ YUI.add('wegas-datasource', function(Y) {
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
             }
             return Wegas.DataSource.superclass.sendRequest.call(this, request);
+        },
+        sendQueuedRequest: function(request) {
+            this.queue.add(Y.bind(this.sendRequest, this, request));            // Push the request in the queue
+            if (!this.queuetid) {                                               // If a request from the queue is not already running
+                this.processQueue();                                            // process the request
+            }
+        },
+        processQueue: function() {
+            if (this.queue.size()) {                                            // If the request queue isn't empty,
+                this.queuetid = this.queue.next()();                            // run next request in the queue
+            }
         },
         /**
          * @hack
