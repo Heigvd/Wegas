@@ -54,6 +54,12 @@ input[type="submit"], input[type="reset"] {
 html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     height: 100%;
 }
+body{
+    overflow: hidden;
+}
+.wegas-playerview{
+    overflow: auto;
+}
 /* DISABLED RULES */
 [class*="-disabled"]{
     opacity:0.8;
