@@ -28,8 +28,10 @@ YUI.add('wegas-pmg-reservation', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").datatable.delegate("click", this.onClick,
-                "tbody .editable-period, tbody .editable-period", this);
+            this.get("host").datatable.delegate("click", this.onClick, ".present, .futur", this);
+            this.onceAfterHostEvent("render", function() {
+                this.get("host").get("contentBox").addClass("wegas-pmg-reservation");
+            });
         },
         onClick: function(e) {
             var i, assignment,
@@ -69,8 +71,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
             });
         }
     }, {
-        NS: "reservation",
-        NAME: "Reservation"
+        NS: "reservation"
     });
     Y.Plugin.Reservation = Reservation;
 });

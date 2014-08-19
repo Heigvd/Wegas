@@ -112,16 +112,13 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
      */
     Wegas.PmgResourcesPanels = Y.Base.create("wegas-pmg-resourcespanels", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
         renderUI: function() {
-            var resourceFoldes = Wegas.Facade.Variable.cache.find("name", "employees");
+            var panel, resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
+                autoDesc = Wegas.Facade.Variable.cache.find("name", "autoReservation"),
+                autoReserve = autoDesc && autoDesc.getInstance().get("value"), // Ensure variable exists
+                currentPhase = Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
 
-            this.panels = Y.Array.map(resourceFoldes.get("items"), function(vd) {
-                var autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
-                    autoReserve = autoDesc && autoDesc.getInstance().get("value"),
-                    pmgPanel,
-                    currentPhase = Y.Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
-
-
-                pmgPanel = new Wegas.PmgSlidePanel({
+            this.panels = Y.Array.map(resourceFolder.get("items"), function(vd) {
+                panel = new Wegas.PmgSlidePanel({
                     title: vd.get("label"),
                     children: [{
                             type: "PmgDatatable",
@@ -130,8 +127,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                     cfg: {
                                         variable: {
                                             name: "periodPhase3"
-                                        },
-                                        autoReservation: autoReserve
+                                        }
                                     }
                                 }, {
                                     fn: "Assignment",
@@ -142,48 +138,39 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                         columnPosition: 5
                                     }
                                 }, {
-                                    fn: "Reservation"
-                                }, {
                                     fn: "OccupationColor",
                                     cfg: {
                                         autoReservation: autoReserve
                                     }
                                 }, {
                                     fn: "ActivityColor"
-                                }],
+                                }
+                            ],
                             variable: {
                                 name: vd.get("name")
                             },
                             columnsCfg: [{
                                     key: "label",
                                     label: "Name",
-                                    sortable: true,
-                                    allowHTML: true
+                                    sortable: true
                                 }, {
-                                    name: "grade",
                                     label: "Grade",
                                     formatter: "skillLevel",
                                     key: "instance.skillsets",
                                     sortable: true,
                                     allowHTML: true
                                 }, {
-                                    name: "Wage",
                                     label: "Monthly wages",
                                     key: "instance.properties.wage",
-                                    sortable: true,
-                                    allowHTML: true
+                                    sortable: true
                                 }, {
-                                    name: "Rate",
                                     label: "Rate",
                                     key: "instance.properties.activityRate",
-                                    sortable: true,
-                                    allowHTML: true
+                                    sortable: true
                                 }, {
-                                    name: "Motiv",
                                     label: "Motiv.",
                                     key: "instance.moral",
-                                    sortable: true,
-                                    allowHTML: true
+                                    sortable: true
                                 }],
                             defaultSort: null
                         }, {
@@ -192,15 +179,20 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         }]
                 }).render(this.get(CONTENTBOX));
 
+                if (!autoReserve) {
+                    panel.item(0).plug(Y.Plugin.Reservation);                   // Player can click cell to reserve
+                    panel.item(0).plug(Y.Plugin.EngagmentDelay);
+                }
+
                 if (autoReserve && currentPhase === 3) {
-                    pmgPanel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                    panel.item(0).plug(Y.Plugin.AutoReservationColor, {
                         taskList: {
                             name: "tasks"
                         }
                     });
                 }
 
-                return pmgPanel;
+                return panel;
             }, this);
         },
         destructor: function() {
@@ -209,5 +201,4 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             });
         }
     });
-
 });

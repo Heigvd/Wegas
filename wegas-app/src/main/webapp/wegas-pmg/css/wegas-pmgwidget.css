@@ -16,12 +16,7 @@
     background-color: #FF0000;
     height:14px;
 }
-.yui3-datatable-table .engagementDelay {
-    display:block;
-    background-image:url(../../wegas-pmg/images/hatching.png);
-    background-repeat: repeat;
-    height:14px;
-}
+.yui3-datatable-table .engagementDelay,
 .yui3-datatable-table .delay .editable {
     display:block;
     background-image:url(../../wegas-pmg/images/hatching.png);
@@ -154,9 +149,10 @@ tbody .past .activity {
 .tasks .task .menu {
     display: none; 
     position: absolute;
-    padding-top: 5px;
-    margin-top: 15px;
-    top: 0;  left: -10px;  
+    padding-top: 3px;
+    margin-top: 17px;
+    top: 0;  
+    left: -10px;  
     width: 41px;
 }
 .tasks .task .remove, 

@@ -14,7 +14,6 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
     var CONTENTBOX = "contentBox", Breadcrumb;
 
     Breadcrumb = Y.Base.create("wegas-pmg-breadcrumb", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        handlers: null,
         initializer: function() {
             this.handlers = {};
         },
@@ -65,8 +64,7 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             }
         },
         destructor: function() {
-            var k;
-            for (k in this.handlers) {
+            for (var k in this.handlers) {
                 this.handlers[k].detach();
             }
         }

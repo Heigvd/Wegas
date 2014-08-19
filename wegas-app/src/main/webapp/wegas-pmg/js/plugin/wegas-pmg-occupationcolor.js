@@ -26,17 +26,18 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
          * @private
          */
         initializer: function() {
-            Y.log("initializer", "info", "Wegas.OccupationColor");
-            this.afterHostMethod("syncUI", this.sync);
-            this.get("host").datatable.after("sort", this.sync, this);
+            //Y.log("initializer", "info", "Wegas.OccupationColor");
+            this.onceAfterHostEvent("render", function() {
+                this.sync();
+                this.afterHostMethod("syncUI", this.sync);
+                this.get("host").datatable.after("sort", this.sync, this);
+            });
         },
         sync: function() {
             //Y.log("sync()", "info", "Wegas.OccupationColor");
             var i, ii, time, occupations,
                 host = this.get("host"),
                 data = host.datatable.data;
-
-            this.addEngagementDelay();
 
             for (i = 0; i < data.size(); i++) {
                 occupations = data.item(i).get("descriptor").getInstance().get("occupations");
@@ -57,24 +58,8 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     cell.setContent("<span class='editable'></span>");
                 }
             } else {
-                cell.removeClass("editable-period");
-                cell.setContent("<span class='notEditable'></span>");
-            }
-        },
-        addEngagementDelay: function() {
-            if (!this.get("autoReservation")) {                                 // No engagement delay in automated reservation mode
-                var i, ii, cell, host = this.get("host"),
-                    dt = host.datatable,
-                    currentPeriod = host.schedule.currentPeriod();
-                for (i = 0; i < dt.data.size(); i++) {
-                    for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
-                        cell = host.schedule.getCell(i, currentPeriod + ii);
-                        if (cell) {
-                            cell.setContent("<span class='engagementDelay'></span>");
-                            cell.getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
-                        }
-                    }
-                }
+                cell.addClass("noteditable-period")
+                    .setContent("<span class='notEditable'></span>");
             }
         }
     }, {
@@ -87,8 +72,41 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                 }
             }
         },
-        NS: "occupationcolor",
-        NAME: "OccupationColor"
+        NS: "occupationcolor"
     });
     Y.Plugin.OccupationColor = OccupationColor;
+
+    var EngagmentDelay = Y.Base.create("wegas-pmg-engagementdelay", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+        /** @lends Y.Plugin.OccupationColor */
+        /**
+         * Lifecycle methods
+         * @function
+         * @private
+         */
+        initializer: function() {
+            this.onceAfterHostEvent("render", function() {
+                this.sync();
+                this.afterHostMethod("syncUI", this.sync);
+                this.get("host").datatable.after("sort", this.sync, this);
+            });
+        },
+        sync: function() {
+            var i, ii, cell, host = this.get("host"),
+                dt = host.datatable,
+                currentPeriod = host.schedule.currentPeriod();
+
+            for (i = 0; i < dt.data.size(); i++) {
+                for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
+                    cell = host.schedule.getCell(i, currentPeriod + ii);
+                    if (cell) {
+                        cell.setContent("<span class='engagementDelay'></span>")
+                            .getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
+                    }
+                }
+            }
+        }
+    }, {
+        NS: "EngagmentDelay"
+    });
+    Y.Plugin.EngagmentDelay = EngagmentDelay;
 });

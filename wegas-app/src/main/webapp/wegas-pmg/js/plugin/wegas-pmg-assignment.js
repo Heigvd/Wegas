@@ -113,11 +113,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             return node.join("");
         },
         createMenu: function(e) {
-            var resourceId = this.get(HOST).datatable.getRecord(e.target).get("id"),
-                resources = Wegas.Facade.Variable.cache.find("name", this.get(HOST).get('variable')),
-                resourceDesc = Y.Array.find(resources.get("items"), function(r) {
-                    return r.get("id") === resourceId;
-                }),
+            var resourceDesc = this.get(HOST).datatable.getRecord(e.target).get("descriptor"),
                 tasks = this.getTasks(resourceDesc);
 
             if (!this.menu) {
@@ -141,7 +137,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                         points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ?
                             ["tr", "tl"] : ["tl", "tr"]
                     });
-                    task = e.target.get("data").assignement.taskDescriptor
+                    task = e.target.get("data").assignement.taskDescriptor;
                     this.timer.reset();
                 }, this);
 
@@ -165,20 +161,18 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             //add is a boolean to determine if target is remove or add a task
             //you can only add a task which isn't already added.
             //you can only remove a task which is added.
-            var i, tasks, items, taskDesc, label, array = [], taskExist,
-                assignments = resourceDesc.getInstance().get("assignments"),
-                taskExistence = function(item) {
-                    return taskDesc.get("id") === item.get("taskDescriptorId");
-                };
+            var i, tasks, taskDesc, label, array = [], taskExist,
+                assignments = resourceDesc.getInstance().get("assignments");
+
             if (!this.get("taskList")) {
                 return;
             }
-            tasks = Wegas.Facade.Variable.cache.find("name", this.get("taskList"));
-            items = tasks.get('items');
-            for (i = 0; i < items.length; i += 1) {
-                taskExist = false;
-                taskDesc = items[i];
-                taskExist = Y.Array.find(assignments, taskExistence);
+            tasks = Wegas.Facade.Variable.cache.find("name", this.get("taskList")).get('items');
+            for (i = 0; i < tasks.length; i += 1) {
+                taskDesc = tasks[i];
+                taskExist = Y.Array.find(assignments, function(item) {
+                    return taskDesc.get("id") === item.get("taskDescriptorId");
+                });
                 if (!taskExist && taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
                     label = taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined";
                     array.push({
@@ -203,7 +197,14 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
                 cfg: {
                     method: "POST",
-                    data: data.assignement
+                    data: data.assignement,
+                    updateEvent: false
+                },
+                on:{
+                    success: Y.bind(function() {
+                        Y.later(10, this.get("host").datatable, this.get("host").datatable.sort);
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         },
@@ -218,17 +219,17 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                         taskDescriptor.set("description", e.response.entity.get("description"));
                         this.descriptionToDisplay(taskDescriptor, e.response.entity.get("description"));
                     },
-                    failure: function(e) {
+                    failure: function() {
                         this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>Error loading description</i></div>');
                     }
                 }, this)
             });
         },
         descriptionToDisplay: function(descriptor, fieldValue) {
-            var dataToDisplay, i, requirements, progress;
-            progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Progress:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "";
-            dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
-            requirements = descriptor.getInstance().get("requirements");
+            var i, requirements = descriptor.getInstance().get("requirements"),
+                progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Realised:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "",
+                dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
+
             for (i = 0; i < requirements.length; i += 1) {
                 dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
                     + " " + Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
@@ -251,7 +252,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             });
         },
         destructor: function() {
-            Y.log("destructor()", "log", "Wegas.Assignment");
+            //Y.log("destructor()", "log", "Wegas.Assignment");
             Y.Object.each(this.handlers, function(h) {
                 h.detach();
             });
@@ -283,8 +284,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 }
             }
         },
-        NS: "assignment",
-        NAME: "Assignment"
+        NS: "assignment"
     });
     Y.Plugin.Assignment = Assignment;
 });
