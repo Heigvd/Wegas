@@ -62,8 +62,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         //*** Private Methods ***/
         getData: function() {
-            var oneRowDatas,
-                variables = this.get('variable.evaluated'),
+            var variables = this.get('variable.evaluated'),
                 data = [];
             if (!variables) {
                 this.showMessage("error", "Could not find variable");
@@ -74,10 +73,10 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
             Y.Array.each(variables.get("items"), function(item) {
                 if (item.getInstance().get("active")) {
-                    oneRowDatas = item.toJSON();
-                    oneRowDatas.descriptor = item;
-                    oneRowDatas.instance = item.getInstance().toJSON();
-                    data.push(oneRowDatas);
+                    data.push(Y.mix(item.toJSON(), {
+                        descriptor: item,
+                        instance: item.getInstance().toJSON()
+                    }));
                 }
             });
             return data;
@@ -135,12 +134,12 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     Wegas.PmgDatatable = Datatable;
 
     Y.mix(Y.DataTable.BodyView.Formatters, {
-        requieredRessources: function(o) {
+        requieredRessources: function() {
             return function(o) {
                 return TEMPLATES.requiredRessource(o.data.instance.requirements);
             };
         },
-        assignedRessources: function(o) {
+        assignedRessources: function() {
             return function(o) {
                 var assignedRessources = o.data.descriptor.findAssociatedRessources("assignments"),
                     data = TEMPLATES.assignedRessource(assignedRessources);
@@ -150,7 +149,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return data;
             };
         },
-        template: function(o) {
+        template: function() {
             return function(o) {
                 var data;
                 o.data._field = o.column.field;
@@ -195,35 +194,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return data;
             };
         }
-//        "instance": function(o) {
-//            return function(o) {
-//                return o.data.instance[o.column.field];
-//            }
-//        },
-//        "map": function(o) {
-//            return function(o) {
-//                var i, names = o.column.key.split("."),
-//                    data = o.data;
-//                for (var i = 0; i < names.length; i += 1) {
-//                    data = data[names[i]];
-//                }
-//
-//                if (!data)
-//                    data = " - ";
-//                return data;
-//            };
-//        }
     });
-
-    //var PMGDatatableModel = Y.Base.create('pmgdatatablemodel', Y.Model, [], {
-    //    get: function(a) {
-    //        console.log("get", a);
-    //        return PMGDatatableModel.superclass.get.apply(this, arguments);
-    //    }
-    //}, {
-    //    ATTRS: {}
-    //});
-    //Wegas.PMGDatatableModel = PMGDatatableModel;
 
     Wegas.PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
         _createRowHTML: function(model, index, columns) {

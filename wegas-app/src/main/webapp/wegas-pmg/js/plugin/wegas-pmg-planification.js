@@ -32,8 +32,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
                 "tbody .present, tbody .futur", this);
         },
         onClick: function(e) {
-            var i, planPeriod,
-                dt = this.get("host").datatable,
+            var dt = this.get("host").datatable,
                 time = dt.getColumn(e.currentTarget).time,
                 task = dt.getRecord(e.currentTarget).get("descriptor").getInstance(),
                 cell = dt.getCell(e.currentTarget);
@@ -46,24 +45,26 @@ YUI.add('wegas-pmg-planification', function(Y) {
             }
 
             // v2: based on cache state (need to make sure request is finished)
-            //for (i = 0; i < task.get("plannification").length; i++) {
-            //    planPeriod = task.get("plannification")[i];
+            // Y.Array.each(task.get("plannification"), function (planPeriod) {
             //    if (planPeriod === time) {                                    // remove plannif
             //        this.request(task.get("id"), time, "DELETE");
-            //        cell.empty();
+            //        cell.setContent("");
             //        return;
             //    }
-            //}
+            // });
 
             cell.append('<span class="editable plannification"></span>');
             this.request(task.get("id"), time, "POST");                         // add plannif
         },
         request: function(taskInstanceId, time, method) {
-            Wegas.Facade.Variable.sendRequest({
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/Player/" + Wegas.Facade.Game.get('currentPlayerId') + "/Plannification/" + taskInstanceId + "/" + time,
                 cfg: {
                     method: method,
                     updateEvent: false
+                },
+                on: {
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         }

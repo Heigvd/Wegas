@@ -45,7 +45,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 if (assignment.get("time") === time) {
                     if (assignment.get("editable")) {                           // this does not make sense if we use the widget with activities
                         cell.setContent("");
-                        Wegas.Facade.Variable.sendRequest({
+                        Wegas.Facade.Variable.sendQueuedRequest({
                             request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
                             cfg: {
                                 method: "DELETE",
@@ -57,7 +57,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 }
             }
             cell.append('<span class="editable"></span>');
-            Wegas.Facade.Variable.sendRequest({
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
                 cfg: {
                     method: "POST",
