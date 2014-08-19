@@ -132,6 +132,10 @@ tbody .past .activity {
     position: relative;
     margin: 0 1px;
 }
+.yui3-datatable-col-assignments .task:hover .label {
+    background: #0981A9;
+    color: white;
+}
 .yui3-datatable-col-assignments .task .label {
     cursor: move;
     padding: 0 3px;

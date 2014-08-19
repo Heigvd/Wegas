@@ -85,6 +85,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
             this.handlers.sort = table.after("sort", this.sync, this);
             this.beforeHostMethod("syncUI", this.destroySortables);
+            this.afterHostMethod ("syncUI", this.sync);
         },
         sync: function() {
             this.destroySortables();
