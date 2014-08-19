@@ -60,11 +60,15 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     cfg: {
                         method: "DELETE",
                         updateEvent: false
+                    },
+                    on: {
+                        success: Y.bind(this.syncHost, this),
+                        failure: Y.bind(this.defaultFailureHandler, this)
                     }
                 });
-                this.destroySortables();
-                node.remove(true);
-                this.sync();
+                //this.destroySortables();
+                //node.remove(true);
+                //this.sync();
             }, '.task .remove', this);
 
             this.handlers.moveLeft = table.delegate('click', function(e) {
@@ -94,6 +98,9 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 sort.delegate.after('drag:end', this.onDragEnd, this);
                 this.sortable.push(sort);
             }, this);
+        },
+        syncHost: function() {
+            Y.later(10, this.get("host"), this.get("host").syncUI);
         },
         formatAssignment: function(o) {
             var i, taskDesc,
@@ -173,10 +180,11 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 taskExist = Y.Array.find(assignments, function(item) {
                     return taskDesc.get("id") === item.get("taskDescriptorId");
                 });
-                if (!taskExist && taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
+                if (taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
                     label = taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined";
                     array.push({
                         type: "Button",
+                        disabled: taskExist,
                         label: taskDesc.get("index") + ". " + label,
                         data: {
                             assignement: {
@@ -200,13 +208,12 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     data: data.assignement,
                     updateEvent: false
                 },
-                on:{
-                    success: Y.bind(function() {
-                        Y.later(10, this.get("host").datatable, this.get("host").datatable.sort);
-                    }, this),
+                on: {
+                    success: Y.bind(this.syncHost, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
+            this.menuDetails.hide();
         },
         getTaskDescription: function(taskDescriptor) {
             if (taskDescriptor.get("description")) {

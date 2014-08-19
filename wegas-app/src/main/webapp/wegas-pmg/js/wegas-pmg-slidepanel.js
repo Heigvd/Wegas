@@ -72,7 +72,8 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         },
         syncUI: function() {
             var cb = this.get(CONTENTBOX);
-            if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled")) {
+            if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled")
+                && cb.get('scrollHeight') > 0) {
                 cb.ancestor().one(".slidepanel-cleaner").setStyle('height', cb.get('scrollHeight')); //compensates the non-height of the content's absolute position.
             }
         },
@@ -191,7 +192,6 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         }
                     });
                 }
-
                 return panel;
             }, this);
         },

@@ -32,7 +32,11 @@ YUI.add('wegas-plugin', function(Y) {
      */
     Wegas.Plugin = function() {
     };
-    Y.mix(Wegas.Plugin.prototype, {});
+    Y.mix(Wegas.Plugin.prototype, {
+        defaultFailureHandler: function(e) {
+            this.get("host").defaultFailureHandler(e);
+        }
+    });
     Y.mix(Wegas.Plugin, {
         ATTRS: {
             host: {
@@ -129,11 +133,11 @@ YUI.add('wegas-plugin', function(Y) {
         OpenUrlAction.superclass.constructor.apply(this, arguments);
     };
     Y.extend(OpenUrlAction, Action, {
-        _getUrl: function () {
-           return this.get("url");
+        _getUrl: function() {
+            return this.get("url");
         },
         execute: function() {
-            var url = this._getUrl("url");
+            var url = this._getUrl();
             if (url.indexOf("http://") === -1) {
                 url = Wegas.app.get("base") + url;
             }
@@ -206,7 +210,7 @@ YUI.add('wegas-plugin', function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "Variable"/*,
-                    classFilter: ["ListDescriptor"]*/
+                     classFilter: ["ListDescriptor"]*/
                 }
             },
             /**
