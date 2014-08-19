@@ -706,6 +706,10 @@ YUI().use(function(Y) {
             },
             "wegas-lobby-datatablecss": {
                 type: CSS
+            },
+            "wegas-lobby-button": {
+                requires: "uploader-html5",
+                ws_provides: "UploadFileButton"
             }
         }
     });
