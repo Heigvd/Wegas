@@ -700,13 +700,9 @@
                             }
                         }
                     }, {
-                        "fn": "Planification",
-                        "cfg": {
-                        }
+                        "fn": "Planification"
                     }, {
-                        "fn": "Plannificationcolor",
-                        "cfg": {
-                        }
+                        "fn": "Plannificationcolor"
                     }, {
                         "fn": "Tablepopup",
                         "cfg": {
@@ -931,17 +927,11 @@
                             }
                         }
                     }, {
-                        "fn": "Plannificationcolor",
-                        "cfg": {
-                        }
+                        "fn": "Plannificationcolor"
                     }, {
-                        "fn": "PlannificationActivityColor",
-                        "cfg": {
-                        }
+                        "fn": "PlannificationActivityColor"
                     }, {
-                        "fn": "PlannificationProgressColor",
-                        "cfg": {
-                        }
+                        "fn": "PlannificationProgressCoflor"
                     }, {
                         "fn": "Tablepopup",
                         "cfg": {

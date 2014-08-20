@@ -79,6 +79,11 @@ tbody .past .activity {
 }
 .body .yui3-datatable-cell.schedulecolumn{
     border-left: 1px solid lightgray;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 .yui3-skin-sam tbody .schedulecolumn.past {
     background: #f7f7f7;
@@ -198,6 +203,10 @@ tbody .past .activity {
 .gantt-execution-page .yui3-datatable-table .pmg-line-completeness-started .yui3-datatable-col-Realized,
 .yui3-menu-content > button.pmg-line-completeness-started{
     background-color: #FFFDC2;
+}
+.yui3-button.pmg-menu-invalid { 
+    opacity: 0.8;
+    cursor: default;
 }
 
 /* --------------- SlidePanel css ------------------------------------*/

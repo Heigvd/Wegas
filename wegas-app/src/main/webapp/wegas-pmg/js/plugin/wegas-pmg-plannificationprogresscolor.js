@@ -23,12 +23,9 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
     PlannificationProgressColor = Y.Base.create("wegas-pmg-plannificationprogresscolor", Y.Plugin.AbstractPert, [], {
         /** @lends Y.Plugin.PlannificationProgressColor */
         initializer: function() {
-            //this.taskTable;
             this.onceAfterHostEvent("render", function() {
                 this.sync();
-
                 this.afterHostMethod("syncUI", this.sync);
-
                 this.get("host").datatable.after("sort", this.sync, this);
             });
         },
@@ -39,11 +36,11 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             this.findCell();
         },
         fillTaskTable: function() {
-            var i, taskDesc, taskInst, dt = this.get("host").datatable,
-                properties;
+            var i, taskDesc, taskInst, properties,
+                dt = this.get("host").datatable;
 
-            for (i = 0; i < dt.data._items.length; i++) {
-                taskDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
+            for (i = 0; i < dt.data.size(); i++) {
+                taskDesc = dt.getRecord(i).get("descriptor");
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
                 if (parseInt(properties.completeness) < 100) {
@@ -73,7 +70,6 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                     }
                 }
             }
-
         },
         findCssClass: function(time, start, end, cell) {
             var decimal;

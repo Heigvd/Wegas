@@ -49,13 +49,12 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
             this.handlers.update = Wegas.Facade.Variable.after("update", this.sync, this);
 
-            this.handlers.createMenu = table.delegate('click', function(e) {    // fill the "add" menu on click
-                this.createMenu(e, true);
-            }, '.yui3-datatable-data .assignment .assign', this);
+            this.handlers.createMenu = table.delegate('click', this.createMenu, // fill the "add" menu on click
+                '.yui3-datatable-data .assignment .assign', this);
 
             this.handlers.remove = table.delegate('click', function(e) {
                 var node = e.target.get("parentNode").get("parentNode");
-                Wegas.Facade.Variable.sendRequest({
+                Wegas.Facade.Variable.sendQueuedRequest({
                     request: "/ResourceDescriptor/RemoveAssignment/" + node.getAttribute("assignmentid"),
                     cfg: {
                         method: "DELETE",
@@ -85,7 +84,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
             this.handlers.sort = table.after("sort", this.sync, this);
             this.beforeHostMethod("syncUI", this.destroySortables);
-            this.afterHostMethod ("syncUI", this.sync);
+            this.afterHostMethod("syncUI", this.sync);
         },
         sync: function() {
             this.destroySortables();
@@ -185,7 +184,6 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     label = taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined";
                     array.push({
                         type: "Button",
-                        disabled: taskExist,
                         label: taskDesc.get("index") + ". " + label,
                         data: {
                             assignement: {
@@ -194,15 +192,21 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                             },
                             resourceDesc: resourceDesc
                         },
-                        cssClass: taskDesc.getInstance().get("properties.completeness") > 0 ? "pmg-line-completeness-started" : ""
+                        cssClass: (taskDesc.getInstance().get("properties.completeness") > 0 ? "pmg-line-completeness-started " : "")
+                            + (taskExist ? "pmg-menu-invalid" : "")
                     });
                 }
             }
             return array;
         },
         onTaskMenuClick: function(e) {
+            this.menuDetails.hide();
+            if (e.target.get("boundingBox").hasClass("pmg-menu-invalid")) {
+                return;
+            }
             var data = e.target.get("data");
-            Wegas.Facade.Variable.sendRequest({
+
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
                 cfg: {
                     method: "POST",
@@ -214,7 +218,6 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
-            this.menuDetails.hide();
         },
         getTaskDescription: function(taskDescriptor) {
             if (taskDescriptor.get("description")) {
@@ -251,7 +254,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         savePosition: function(node) {
             var i = node.get("parentNode").get("children").indexOf(node);
 
-            Wegas.Facade.Variable.sendRequest({
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + i,
                 cfg: {
                     method: "POST",

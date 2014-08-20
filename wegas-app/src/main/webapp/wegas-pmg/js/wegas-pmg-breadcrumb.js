@@ -18,10 +18,11 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             this.handlers = {};
         },
         renderUI: function() {
-            var i, node, cb = this.get(CONTENTBOX), locations = this.get("locations");
+            var i, node = Y.Node.create("<div class='pmg-breadcrumb'></div>"),
+                cb = this.get(CONTENTBOX), locations = this.get("locations");
             if (locations.length === 0)
                 return;
-            node = Y.Node.create("<div class='pmg-breadcrumb'></div>");
+
             for (i = 0; i < locations.length; i++) {
                 node.append("<span class='element_" + i + "'>" + locations[i] + "</span>");
             }
@@ -31,14 +32,12 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             this.handlers.update = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
         syncUI: function() {
-            var i, cb = this.get(CONTENTBOX), locations = this.get("locations"), varValue,
+            var i, varValue, cb = this.get(CONTENTBOX), locations = this.get("locations"),
                 varDesc = Y.Wegas.Facade.Variable.cache.find("name", this.get("variable"));
             if (locations.length === 0 || !varDesc) {
                 return;
             }
-            cb.all(".pmg-breadcrumb span").each(function(node) {
-                node.removeClass("previous").removeClass("current").removeClass("next");
-            });
+            cb.all(".pmg-breadcrumb span").removeClass("previous").removeClass("current").removeClass("next");
             varValue = varDesc.getInstance().get("value") - varDesc.get("minValue");
             if (typeof varValue === "string") {
                 for (i = 0; i < locations.length; i++) {
@@ -68,7 +67,6 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
                 this.handlers[k].detach();
             }
         }
-
     }, {
         ATTRS: {
             locations: {
@@ -80,6 +78,5 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             }
         }
     });
-
     Y.Wegas.PmgBreadcrumb = Breadcrumb;
 });

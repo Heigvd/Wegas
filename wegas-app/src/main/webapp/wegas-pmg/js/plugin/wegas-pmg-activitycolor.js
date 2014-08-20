@@ -22,27 +22,27 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
         /** @lends Y.Plugin.ActivityColor */
         initializer: function() {
             Y.log("initializer", "info", "Wegas.OccupationColor");
-            this.afterHostMethod("syncUI", this.sync);
-            this.get("host").datatable.after("sort", this.sync, this);
+            this.onceAfterHostEvent("render", function() {
+                this.sync();
+                this.afterHostMethod("syncUI", this.sync);
+                this.get("host").datatable.after("sort", this.sync, this);
+            });
         },
         sync: function() {
-            var i, time,
-                host = this.get("host"),
-                currentPeriod = host.schedule.currentPeriod(),
-                data = host.datatable.data;
+            var time, host = this.get("host"),
+                currentPeriod = host.schedule.currentPeriod();
 
-            for (i = 0; i < data.size(); i++) {
-                Y.Array.each(data.item(i).get("descriptor").getInstance().get("activities"), function(a) {
+            host.datatable.data.each(function(i, index) {
+                Y.Array.each(i.get("descriptor").getInstance().get("activities"), function(a) {
                     time = parseInt(a.get("time"));
                     if (time < currentPeriod) {
-                        host.schedule.getCell(i, time).setContent("<span class='editable'></span>");
+                        host.schedule.getCell(index, time).setContent("<span class='editable'></span>");
                     }
                 });
-            }
+            });
         }
     }, {
-        NS: "activitycolor",
-        NAME: "ActivityColor"
+        NS: "activitycolor"
     });
     Y.Plugin.ActivityColor = ActivityColor;
 });

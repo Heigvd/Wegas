@@ -129,8 +129,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                 }
             }
         },
-        NS: "schedule",
-        NAME: "ScheduleDT"
+        NS: "schedule"
     });
     Y.Plugin.ScheduleDT = ScheduleDT;
 });

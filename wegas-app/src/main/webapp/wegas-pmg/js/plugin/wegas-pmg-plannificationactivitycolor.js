@@ -22,7 +22,6 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
      */
     PlannificationActivityColor = Y.Base.create("wegas-pmg-plannificationactivitycolor", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Plannificationcolor */
-
         /**
          * Lifecycle methods
          * @function
@@ -38,7 +37,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
         findCell: function() {
             Y.log("sync()", "log", "Wegas.PlannificationActivityColor");
             var i, ii, host = this.get("host"), dt = host.datatable,
-                    taskActivities = this.taskActivitiesToAdd();
+                taskActivities = this.taskActivitiesToAdd();
 
             for (i = 0; i < dt.data.size(); i++) {
                 for (ii = 0; ii < taskActivities.length; ii++) {
@@ -49,34 +48,30 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             }
         },
         findTaskActivities: function() {
-            var employees, resourDesc = Wegas.Facade.Variable.cache.find("name", "employees"),
-                    i, ii, iii, taskIndex, work, activities, dt = this.get("host").datatable,
-                    taskActivities = [];
-            if (!resourDesc) {
+            var employees, i, ii, activities,
+                employees = Wegas.Facade.Variable.cache.find("name", "employees"),
+                data = this.get("host").datatable.data,
+                taskActivities = [];
+
+            if (!employees) {
                 return;
-            } else {
-                employees = resourDesc.get("items");
             }
 
-            for (i = 0; i < employees.length; i++) {
-                work = employees[i].get("items");
-                for (ii = 0; ii < work.length; ii++) {
-                    activities = work[ii].getInstance().get("activities");
-                    for (iii = 0; iii < activities.length; iii++) {
-                        for (taskIndex = 0; taskIndex < dt.data.size(); taskIndex++) {
-                            if (dt.data.item(taskIndex).get("id") === activities[iii].get("taskDescriptorId")) {
-                                taskActivities.push(activities[iii]);
-                            }
+            Y.Array.each(employees.flatten(), function(e) {
+                activities = e.getInstance().get("activities");
+                for (i = 0; i < activities.length; i++) {
+                    for (ii = 0; ii < data.size(); ii++) {
+                        if (data.item(ii).get("id") === activities[i].get("taskDescriptorId")) {
+                            taskActivities.push(activities[i]);
                         }
                     }
                 }
-
-            }
+            });
             return taskActivities;
         },
         taskActivitiesToAdd: function() {
             var taskActivities = this.findTaskActivities(), activitiesToAdd = [],
-                    i, ii, exist;
+                i, ii, exist;
             if (!taskActivities) {
                 this.get("host").showMessage("error", "No employees list found");
                 return;
@@ -88,7 +83,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
                 } else {
                     for (ii = 0; ii < activitiesToAdd.length; ii++) {
                         if (activitiesToAdd[ii].get("taskDescriptorId") === taskActivities[i].get("taskDescriptorId") &&
-                                activitiesToAdd[ii].get("time") === taskActivities[i].get("time")) {
+                            activitiesToAdd[ii].get("time") === taskActivities[i].get("time")) {
                             exist = true;
                         }
                     }
@@ -103,8 +98,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             cell.append("<span class='editable activity'></span>");
         }
     }, {
-        NS: "plannificationactivitycolor",
-        NAME: "PlannificationActivityColor"
+        NS: "plannificationactivitycolor"
     });
     Y.Plugin.PlannificationActivityColor = PlannificationActivityColor;
 });

@@ -5,15 +5,14 @@
  * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-
 YUI.add('wegas-pmg-linefilter', function(Y) {
     "use strict";
     var Wegas = Y.Wegas;
+
     Y.Plugin.PMGLineFilter = Y.Base.create("wegas-pmg-linefilter", Y.Plugin.Base, [], {
         /**
          * Lifecycle methods
@@ -29,10 +28,12 @@ YUI.add('wegas-pmg-linefilter', function(Y) {
             this.handlers.push(this.get("host").datatable.after("sort", this.sync, this));
         },
         sync: function() {
-            var dt = this.get("host").datatable, fn = Y.bind(this.get("filterFn"), this);
+            var dt = this.get("host").datatable,
+                fn = this.get("filterFn");
+
             dt.data.each(function(row, id) {
-                fn(row, dt.getRow(id));
-            });
+                fn.call(this, row, dt.getRow(id));
+            }, this);
         },
         destructor: function() {
             Y.Array.each(this.handlers, function(item) {
@@ -50,8 +51,8 @@ YUI.add('wegas-pmg-linefilter', function(Y) {
             }
         }
     });
-    Y.Plugin.PMGLineCompleteness = Y.Base.create("wegas-pmg-linecompleteness", Y.Plugin.PMGLineFilter, [Wegas.Plugin, Wegas.Editable], {
-    }, {
+
+    Y.Plugin.PMGLineCompleteness = Y.Base.create("wegas-pmg-linecompleteness", Y.Plugin.PMGLineFilter, [Wegas.Plugin, Wegas.Editable], {}, {
         NS: "pmglinecompleteness",
         ATTRS: {
             completeClass: {
