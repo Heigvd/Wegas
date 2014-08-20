@@ -88,7 +88,12 @@ function loadQuestionFacade() {
 function selectChoice(choice) {
     debug("select choice");
     loadQuestionFacade();
-    questionFacade.selectAndValidateChoiceTEST(choice.id, self.id);
+    if (choice.getClass().toString() == "class com.wegas.mcq.persistence.ChoiceDescriptor" || 
+        choice.getClass().toString() == "class com.wegas.mcq.persistence.SingleResultChoiceDescriptor"){
+            questionFacade.selectAndValidateChoiceTEST(choice.id, self.id);
+    } else {
+        throw new Error("Given choice \"" + choice + "\" is not a choice");
+    }
     debug("select choice : DONE");
 }
 
