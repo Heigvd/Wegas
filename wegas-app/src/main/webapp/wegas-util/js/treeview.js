@@ -60,11 +60,6 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.on("*:click", function(e) {
-                if (e.node && e.node !== this) {
-                    this.fire("nodeClick", {node: e.node, domEvent: e.domEvent});
-                }
-            });
             //this.after("*:addChild", function(e) {
             //    /* Selection is not updated if a child with selected attribute is added, force it. */
             //    e.target._set(SELECTION, e.target.get(SELECTION));
@@ -75,6 +70,45 @@ YUI.add("treeview", function(Y) {
             this.after("removeChild", function(e) {
                 if (!this.size()) {
                     this.get(BOUNDING_BOX).append("<div class='" + classNames.emptyMSG + "'>" + this.get("emptyMsg") + "</div>");
+                }
+            });
+            this.get(CONTENT_BOX).delegate("click", function(e) {
+                var node = e.target, widget = Y.Widget.getByNode(node);
+                e.stopPropagation();
+                if (node.hasClass(widget.getClassName(CONTENT, "icon"))) {
+                    this.fire("iconClick", {
+                        node: widget
+                    });
+                }
+                if (node.hasClass(widget.getClassName(CONTENT, "label"))) {
+                    widget.fire("labelClick", {
+                        node: widget
+                    });
+                }
+                if (node.hasClass(widget.getClassName(CONTENT, "toggle"))) {
+                    widget.fire("toggleClick", {
+                        node: widget
+                    });
+                } else {
+                    widget.fire("click", {
+                        node: widget,
+                        domEvent: e
+                    });
+                    this.fire("nodeClick", {node: widget, domEvent: e});
+                }
+            }, ".content-header", this);
+            this.get(CONTENT_BOX).delegate("dblclick", function(e) {
+                e.halt(true);
+                Y.Widget.getByNode(e.target).toggleTree();
+            }, "." + getClassName(TREENODE, CONTENT, "header"));
+            //Render child before expand
+            this.before("treenode:collapsedChange", function(e) {
+                var renderTo;
+                if (!e.newVal && e.target.get("rendered")) {
+                    renderTo = e.target._childrenContainer;
+                    e.target.each(function(child) {
+                        child.render(renderTo);
+                    });
                 }
             });
         },
@@ -308,47 +342,6 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            var bb = this.get(BOUNDING_BOX);
-
-            bb.delegate("click", function(e) {
-                e.stopPropagation();
-                this.fire("toggleClick", {
-                    node: this
-                });
-            }, ".yui3-treenode-content-toggle", this);
-            bb.delegate("dblclick", function(e) {
-                e.halt(true);
-                this.toggleTree();
-            }, "." + this.getClassName(CONTENT, "header"), this);
-            bb.delegate("click", function(e) {
-                var node = e.currentTarget;
-                e.stopPropagation();
-                if (node.hasClass(this.getClassName(CONTENT, "icon"))) {
-                    this.fire("iconClick", {
-                        node: this
-                    });
-                }
-                if (node.hasClass(this.getClassName(CONTENT, "label"))) {
-                    this.fire("labelClick", {
-                        node: this
-                    });
-                }
-                this.fire("click", {
-                    node: this,
-                    domEvent: e
-                });
-            }, "." + this.getClassName(CONTENT, "header"), this);
-            bb.on("click", function(e) {
-                e.stopPropagation();
-            });
-            this.before("collapsedChange", function(e) {
-                var renderTo = this._childrenContainer;
-                if (!e.newVal && e.target === this) {
-                    this.each(function(child) {
-                        child.render(renderTo);
-                    });
-                }
-            });
             this.after("collapsedChange", function(e) {
                 if (e.target !== this) {
                     return;
@@ -634,23 +627,6 @@ YUI.add("treeview", function(Y) {
          * @returns {undefined}
          */
         bindUI: function() {
-            this.get(CONTENT_BOX).delegate("click", function(e) {
-                e.stopImmediatePropagation();
-                if (e.currentTarget.hasClass(this.getClassName(CONTENT, "icon"))) {
-                    this.fire("iconClick", {
-                        node: this
-                    });
-                }
-                if (e.currentTarget.hasClass(this.getClassName(CONTENT, "label"))) {
-                    this.fire("labelClick", {
-                        node: this
-                    });
-                }
-                this.fire("click", {
-                    node: this,
-                    domEvent: e
-                });
-            }, "." + this.getClassName(CONTENT, "header"), this);
             //one line, prevent special chars
             this.get(CONTENT_BOX).on("blur", function(e) {
                 e.currentTarget.setContent(e.target.getContent().replace(/&[^;]*;/gm, "").replace(/(\r\n|\n|\r|<br>|<br\/>)/gm, "").replace(/(<|>|\|\\|:|;)/gm, "").replace(/^\s+/g, '').replace(/\s+$/g, ''));
