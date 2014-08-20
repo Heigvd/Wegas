@@ -1036,13 +1036,16 @@ YUI.add('wegas-datasource', function(Y) {
                 'Content-Type': 'application/json;charset=ISO-8859-1',
                 "Managed-Mode": "false"
             });
-            this.get(HOST).sendRequest(requestCfg);
+            return this.get(HOST).sendRequest(requestCfg);
         },
         /**
          * @function
          * @private
          */
         beforeResponse: function(e) {
+            if (e.error) {
+                return;
+            }
             var result = e.response.results,
                 page = e.data ? (e.data.getResponseHeader("Page") || '') : null,
                 i;
@@ -1065,13 +1068,15 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         setCache: function(pageId, object) {
-            var old = Y.JSON.stringify(this.getCache(pageId));
+            var old = Y.JSON.stringify(this.getCache(pageId)), page;
             if (Y.Lang.isObject(object)) {
                 delete object['@name'];
                 if (Y.JSON.stringify(object) !== old) {
                     this.get(HOST).data["" + pageId] = object;
+                    page = Y.clone(object);
+                    page["@pageId"] = pageId;
                     this.fire("pageUpdated", {
-                        page: this.getPage(pageId)
+                        page: page
                     });
                 }
             }
@@ -1094,7 +1099,7 @@ YUI.add('wegas-datasource', function(Y) {
         put: function(page, callback) {
             var pageId = page["@pageId"], pe = Y.clone(page);
             delete pe["@pageId"];
-            this.sendRequest({
+            return this.sendRequest({
                 request: "" + pageId,
                 cfg: {
                     method: PUT,
@@ -1119,7 +1124,7 @@ YUI.add('wegas-datasource', function(Y) {
             var pe = Y.clone(entity);
             delete pe["@pageId"];
             this.index = null;
-            this.sendRequest({
+            return this.sendRequest({
                 request: "",
                 cfg: {
                     method: PUT,
@@ -1152,7 +1157,7 @@ YUI.add('wegas-datasource', function(Y) {
                 return;
             }
             patch = dmp.patch_toText(dmp.patch_make(Y.JSON.stringify(oldPage), Y.JSON.stringify(newPage)));
-            this.sendRequest({
+            return this.sendRequest({
                 request: "" + pageId,
                 cfg: {
                     method: PUT,
@@ -1172,7 +1177,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         editMeta: function(pageId, meta, callback) {
             this.index = null;
-            this.sendRequest({
+            return this.sendRequest({
                 request: "" + pageId + "/meta",
                 cfg: {
                     method: PUT,
@@ -1189,7 +1194,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         duplicate: function(pageId, callback) {
             this.index = null;
-            this.sendRequest({
+            return this.sendRequest({
                 request: "" + pageId + "/duplicate",
                 on: {
                     success: Y.bind(function(e) {
@@ -1210,7 +1215,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         deletePage: function(pageId, callback) {
             this.index = null;
-            this.sendRequest({
+            return this.sendRequest({
                 request: "" + pageId,
                 cfg: {
                     method: 'DELETE'
@@ -1241,7 +1246,7 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             } else if (!this.pageQuery[pageId]) {
                 this.pageQuery[pageId] = true;
-                this.sendRequest({
+                return  this.sendRequest({
                     request: "" + pageId,
                     on: {
                         success: Y.bind(function(e) {
@@ -1260,7 +1265,6 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 });
             }
-            return page;
         },
         getIndex: function(callback) {
             var cfg = {request: "index", on: {}};
@@ -1272,7 +1276,7 @@ YUI.add('wegas-datasource', function(Y) {
                         callback(e.response.results);
                     };
                 }
-                this.sendRequest(cfg);
+                return this.sendRequest(cfg);
             }
         },
         _successHandler: function(e) {
