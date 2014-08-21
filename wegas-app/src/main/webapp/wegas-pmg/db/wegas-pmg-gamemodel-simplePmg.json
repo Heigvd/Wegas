@@ -695,7 +695,7 @@
                         "broadcastScope": "TeamScope"
                     },
                     "description": "",
-                    "index": 1,
+                    "index": 6,
                     "properties": {
                         "competenceRatioInf": "1",
                         "progressionOfNeeds": "0",
@@ -754,7 +754,7 @@
                         "broadcastScope": "TeamScope"
                     },
                     "description": "",
-                    "index": 1,
+                    "index": 7,
                     "properties": {
                         "competenceRatioInf": "1",
                         "progressionOfNeeds": "0",
@@ -793,7 +793,7 @@
                                 "limit": 100,
                                 "work": "Commercial",
                                 "level": 7,
-                                "quantity": 10,
+                                "quantity": 1,
                                 "completeness": 0,
                                 "quality": 0
                             }
@@ -804,7 +804,7 @@
                         "broadcastScope": "TeamScope"
                     },
                     "description": "",
-                    "index": 1,
+                    "index": 8,
                     "properties": {
                         "competenceRatioInf": "1",
                         "progressionOfNeeds": "0",
