@@ -791,7 +791,7 @@ YUI().use(function(Y) {
         root: "/lib/",
         modules: {
             "jsplumb-yui": {
-                path: "jsPlumb/yui.jsPlumb-1.5.5-min.js"
+                path: "jsPlumb/yui.jsPlumb-1.6.4-min.js"
             },
             esprima: {
                 path: "esprima/esprima-min.js"
