@@ -22,7 +22,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         //Highlight irrelevent states, notinitial and no incoming transition
         //Ability to move a transition, currently destroying and recreating a new one
         CONTENT_TEMPLATE: "<div><div class='scrollable'><div class='sm-zoom'></div></div></div>",
-        BOUNDING_TEMPLATE:"<div><div class='wegas-statemachineviewer-legend'><div class='legend-initial-state'></div><div class='legend-currentState'></div></div></div>",
+        BOUNDING_TEMPLATE: "<div><div class='wegas-statemachineviewer-legend'><div class='legend-initial-state'></div><div class='legend-currentState'></div></div></div>",
         /**
          * 
          */
@@ -121,8 +121,6 @@ YUI.add("wegas-statemachineviewer", function(Y) {
 
             this.btnZoomValue.on(CLICK, function(e) {
                 this.setZoom(1, false);
-                this.scrollView.set("scrollX", 0);
-                this.scrollView.set("scrollY", 0);
             }, this);
         },
         syncUI: function() {
@@ -303,14 +301,17 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             }
         },
         setZoom: function(lvl, isFromSliderOrInit) {
+            var oldZoom = this.currentZoom;
             this.currentZoom = Math.min(Math.max(lvl, StateMachineViewer.MIN_ZOOM), StateMachineViewer.MAX_ZOOM);
-
+            this.scrollView.set("scrollX", this.scrollView.get("scrollX") / oldZoom * this.currentZoom);
+            this.scrollView.set("scrollY", this.scrollView.get("scrollY") / oldZoom * this.currentZoom);
             this.get(CONTENT_BOX).one(".sm-zoom").setStyle("transform", 'scale(' + this.currentZoom + ')');
-            jp.setZoom(this.currentZoom);
+//            jp.setZoom(this.currentZoom);                                     //jsPlumb v1.6.1 @deprecated
             this.btnZoomValue.set("label", "<span class=\"wegas-icon wegas-icon-zoom\"></span>" + parseInt(this.currentZoom * 100) + "%");
             if (!isFromSliderOrInit) {
                 this.sliderZoom.set("value", this.currentZoom * StateMachineViewer.FACTOR_ZOOM);
             }
+
         },
         highlightCurrentState: function() {
             var currentStateNode, sm = this.get(ENTITY);
@@ -347,7 +348,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         }
     }, {
         MIN_ZOOM: 0.3,
-        MAX_ZOOM: 3,
+        MAX_ZOOM: 1.9, // DRAG problems over 1.9.
         FACTOR_ZOOM: 1000,
         ATTRS: {
             entity: {
