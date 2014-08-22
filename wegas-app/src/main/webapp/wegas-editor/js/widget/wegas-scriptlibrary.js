@@ -77,7 +77,7 @@ YUI.add('wegas-scriptlibrary', function(Y) {
             this.aceField.session.on("change", Y.bind(function() {              // Each time the ace content change
                 var libraries = this.scripts ? this.scripts.get("val") : {},
                     selected = this.selectField.getValue();
-                    
+
                 if (libraries[selected]) {
                     var newContent = this.aceField.getValue();
                     this.showMessageBis("success", "Script not saved");

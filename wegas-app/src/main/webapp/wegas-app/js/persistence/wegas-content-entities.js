@@ -72,8 +72,8 @@ YUI.add("wegas-content-entities", function(Y) {
                 writeOnce: "initOnly",
                 setter: function(bytes) {
                     var precision = 2,
-                            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
-                            i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+                        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
+                        i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
                     return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + sizes[i];
                 },
                 _inputex: {
