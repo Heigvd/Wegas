@@ -204,7 +204,7 @@ YUI.add('wegas-datasource', function(Y) {
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
-                        if (payload.cfg.initialRequest) {
+                        if (payload.cfg && payload.cfg.initialRequest) {
                             this.clear(false);
                         }
 
@@ -215,7 +215,7 @@ YUI.add('wegas-datasource', function(Y) {
                                 payload.response.entity = payload.response.entities[0];// Shortcut, useful if there is only one instance
                             }
                         }
-                        if (payload.cfg.updateCache !== false) {
+                        if (!payload.cfg || payload.cfg.updateCache !== false) {
                             this.onResponseRevived(payload);
                         }
                         host.fire("response", payload);
@@ -237,7 +237,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         onResponseRevived: function(e) {
-            var i, entity, evtPayload, response = e.serverResponse;
+            var i, entity, method, evtPayload, response = e.serverResponse;
 
             this.updated = false;
             if (e.error) {                                                      // If there was an server error, do not update the cache
@@ -252,7 +252,8 @@ YUI.add('wegas-datasource', function(Y) {
                     for (i = 0; i < response.get("entities").length; i += 1) {  // Update the cache with the Entites in the reply body
                         entity = response.get("entities")[i];
                         if (Lang.isObject(entity)) {
-                            this.updated = this.updateCache(e.cfg.method, entity, !e.cfg.initialRequest) || this.updated;
+                            method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
+                            this.updated = this.updateCache(method, entity, !e.cfg || !e.cfg.initialRequest) || this.updated;
                         }
                     }
                 }
@@ -265,7 +266,7 @@ YUI.add('wegas-datasource', function(Y) {
                     //this.fire("serverEvent", evtPayload);
                 }
             }
-            if (e.cfg.updateEvent !== false && this.updated) {
+            if ((!e.cfg || e.cfg.updateEvent !== false) && this.updated) {
                 this.get(HOST).fire("update", e);
                 this.updated = false;
             }

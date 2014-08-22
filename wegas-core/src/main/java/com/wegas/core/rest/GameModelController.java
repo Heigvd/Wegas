@@ -13,12 +13,19 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.jcr.RepositoryException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -42,6 +49,16 @@ public class GameModelController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
+    /**
+     *
+     */
+    @EJB
+    private UserFacade userFacade;
+    /**
+     *
+     */
+    @EJB
+    private FileController fileController;
 
     /**
      *
@@ -181,5 +198,95 @@ public class GameModelController {
             }
         }
         return games;
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/Restore/{path: .*}")
+    public GameModel restoreVersion(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("path") String path) throws IOException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+
+        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+
+        gameModelFacade.createWithDebugGame(gm);
+        return gm;
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/Create/{path: .*}")
+    public GameModel createFromVersion(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("path") String path) throws IOException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+
+        gm.setName(gameModelFacade.findUniqueName(gm.getName()));               // Find a unique name for this new game
+
+        gameModelFacade.createWithDebugGame(gm);
+        return gm;
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/CreateVersion/{version: .*}")
+    public void createVersion(@PathParam("gameModelId") Long gameModelId,
+            @PathParam("name") String name) throws RepositoryException, IOException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+        String serialized = mapper.writerWithView(Views.Export.class).
+                writeValueAsString(gameModelFacade.find(gameModelId));          // Serialize the entity
+
+        if (!fileController.directoryExists(gameModelId, "/History")) {         // Create version folder if it does not exist
+            fileController.createDirectory(gameModelId, "History", "/", null, null);
+        }
+
+        fileController.createFile(gameModelId, name + ".json", "/History",
+                "application/octet-stream", null, null,
+                new ByteArrayInputStream(serialized.getBytes("UTF-8")));        // Create a file containing the version
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    @GET
+    @Path("{gameModelId: [1-9][0-9]*}/CreateVersion")
+    public void createVersion(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, IOException {
+        this.createVersion(gameModelId, new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date())
+                + " by " + userFacade.getCurrentUser().getName());
     }
 }

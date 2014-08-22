@@ -708,8 +708,8 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-lobby-button": {
-                requires: "uploader-html5",
-                ws_provides: "UploadFileButton"
+                requires: ["uploader-html5", "treeview"],
+                ws_provides: ["UploadFileButton", "GameModelHistory"]
             }
         }
     });
