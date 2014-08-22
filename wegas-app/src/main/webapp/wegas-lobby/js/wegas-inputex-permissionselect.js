@@ -54,7 +54,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                             return role.get("val");
                         }, this);
 
-                        this.messageDiv = Y.Node.create('<div class="wegas-smallmessage">Click new to add rights</div>');
+                        this.messageDiv = Y.Node.create('<div class="wegas-smallmessage">No rights added yet</div>');
                         this.get(CONTENTBOX).append(this.messageDiv);
 
                         this.permsField = new PermissionList({

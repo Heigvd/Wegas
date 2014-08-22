@@ -312,8 +312,7 @@
                                                     }
                                                 }, {
                                                     "type": "UploadFileButton",
-                                                    "label": "<span class='wegas-icon wegas-icon-newfile'></span>Upload json",
-                                                    "cssClass": "wegas-advanced-feature"
+                                                    "label": "<span class='wegas-icon wegas-icon-newfile'></span>Upload"
                                                 }]
                                         }
                                     }]

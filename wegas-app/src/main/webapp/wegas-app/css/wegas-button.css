@@ -9,7 +9,7 @@
 /* YUI3 Button Widget styles redefinition */
 .yui3-button {
     vertical-align: top;
-    padding: .1em 0.6em .1em;
+    padding: 0.2em 0.7em .1em;
     min-height: 26px;
     margin: 0;
     box-shadow: none;
@@ -29,7 +29,7 @@
     vertical-align: top;
 }
 .yui3-button .wegas-icon {
-    margin: -1px 2px 0 0;
+    margin: -2px 2px 0 0;
 }
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {
     display:none !important;
@@ -85,7 +85,7 @@
     background-position: 0px -271px;
 }
 .yui3-skin-sam .wegas-icon-save {
-    background-position: 0px -653px;
+    background-position: 0px -652px;
 }
 .yui3-skin-sam .wegas-icon-delete {
     background-position: 0px -771px;
