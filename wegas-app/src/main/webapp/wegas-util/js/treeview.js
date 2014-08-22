@@ -73,7 +73,7 @@ YUI.add("treeview", function(Y) {
                 }
             });
             this.get(CONTENT_BOX).delegate("click", function(e) {
-                var node = e.target, widget = Y.Widget.getByNode(node);
+                var node = e.target, widget = Y.Widget.getByNode(e.currentTarget);
                 e.stopPropagation();
                 if (node.hasClass(widget.getClassName(CONTENT, "icon"))) {
                     this.fire("iconClick", {
@@ -99,7 +99,7 @@ YUI.add("treeview", function(Y) {
             }, ".content-header", this);
             this.get(CONTENT_BOX).delegate("dblclick", function(e) {
                 e.halt(true);
-                Y.Widget.getByNode(e.target).toggleTree();
+                Y.Widget.getByNode(e.currentTarget).toggleTree();
             }, "." + getClassName(TREENODE, CONTENT, "header"));
             //Render child before expand
             this.before("treenode:collapsedChange", function(e) {
