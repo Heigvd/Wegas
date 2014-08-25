@@ -15,8 +15,10 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.ejb.EJB;
@@ -174,20 +176,89 @@ public class ScriptFacade implements Serializable {
             return;
         }
         String root = currentPath.substring(0, index);
+
         String[] files = new String[0];
         if (evt.getPlayer().getGameModel().getProperties().getScriptUri() != null) { //@TODO : precompile? cache ?
             files = evt.getPlayer().getGameModel().getProperties().getScriptUri().split(";");
         }
-        for (String f : files) {
+
+        for (String f : getJavaScriptsRecursively(root, files)) {
             evt.getEngine().put(ScriptEngine.FILENAME, "Script file " + f); //@TODO: JAVA 8 filename in scope
             try {
-                evt.getEngine().eval(new java.io.FileReader(root + f));
+                evt.getEngine().eval(new java.io.FileReader(f));
+                logger.info("File " + f + " successfully injected");
             } catch (FileNotFoundException ex) {
-                logger.warn("File " + root + f + " was not found");
+                logger.warn("File " + f + " was not found");
             } catch (ScriptException ex) {
                 throw new com.wegas.core.exception.ScriptException(f, ex.getLineNumber(), ex.getMessage());
             }
         }
+    }
+
+    /**
+     * extract all javascript files from the files list. If one of the files is
+     * a directory, recurse through it and fetch *.js.
+     *
+     * Note: When iterating, if a script and its minified version stands in the directory, 
+     *       the minified is ignored (debugging purpose)
+     *
+     * @param root
+     * @param files
+     * @return
+     */
+    private Collection<String> getJavaScriptsRecursively(String root, String[] files) {
+        List<File> queue = new LinkedList<>();
+        List<String> result = new LinkedList<>();
+
+        for (String file : files) {
+            File f = new File(root + "/" + file);
+            // Put directories in the recurse queue and files in result list
+            // this test may look redundant with the one done bellow... but...
+            // actually, it ensures a -min.js script given by the user is never ignored
+            if (f.isDirectory()) {
+                queue.add(f);
+            } else {
+                result.add(f.getPath());
+            }
+        }
+
+        while (queue.size() > 0) {
+            File current = queue.remove(0);
+            System.out.flush();
+
+            if (!Files.isSymbolicLink(current.toPath()) && current.canRead()) {
+                if (current.isDirectory()) {
+                    File[] listFiles = current.listFiles();
+                    if (listFiles == null) {
+                        break;
+                    } else {
+                        queue.addAll(Arrays.asList(listFiles));
+                    }
+                } else {
+                    if (current.isFile()
+                            && current.getName().endsWith(".js") // Is a javascript
+                            && !isMinifedDuplicata(current)) { // avoid minified version when original exists
+                        result.add(current.getPath());
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
+     * check if the given file is a minified version of an existing one
+     *
+     * @param file
+     * @return
+     */
+    private boolean isMinifedDuplicata(File file) {
+        if (file.getName().endsWith("-min.js")) {
+            String siblingPath = file.getPath().replaceAll("-min.js$", ".js");
+            File f = new File(siblingPath);
+            return f.exists();
+        }
+        return false;
     }
 
     // *** Sugar *** //
