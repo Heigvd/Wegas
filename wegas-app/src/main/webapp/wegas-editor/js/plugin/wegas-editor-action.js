@@ -162,7 +162,8 @@ YUI.add('wegas-editor-action', function(Y) {
         /** @lends Y.Plugin.OpenEntityAction# */
         _getUrl: function() {
             var entity = this.get("entity");
-            return this.get("url").replace("{id}", entity.get("id"));
+            return this.get("url").replace("{id}", entity.get("id"))
+                .replace("{name}", entity.get("name"));
         }
     }, {
         NS: "OpenEntityAction",

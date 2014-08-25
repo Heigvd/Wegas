@@ -61,7 +61,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             response.setEntity(serverResponse);
 
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-//                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
+                //serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
                 EntityUpdatedEvent e = new EntityUpdatedEvent(rmf.getUpdatedInstances());
                 serverResponse.getEvents().add(e);
                 try {
@@ -73,6 +73,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             }
 
             serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());// Push events stored in RequestManager
+        }
+
+        // Handle force download parameter
+        if (request.getQueryParameters().get("forcedownload") != null) {
+            response.getHttpHeaders().putSingle("Content-Disposition", "attachement");
         }
 
         return response;
