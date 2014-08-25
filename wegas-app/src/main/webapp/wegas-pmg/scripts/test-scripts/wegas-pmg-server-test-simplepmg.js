@@ -17,6 +17,7 @@ var gameModelFacade, loaded = false,
     designer1, designer2, designer3, designer4,
     quality, costs, delay,
     projectUnworkedHours, actualCost,
+    language,
     currentPhase;
 
 
@@ -60,6 +61,7 @@ function loadVariables() {
         projectUnworkedHours = getVariableDescriptor('projectUnworkedHours').getInstance(self);
         actualCost = getVariableDescriptor('actualCost').getInstance(self);
         currentPhase = getVariableDescriptor('currentPhase').getInstance(self);
+        language = getVariableDescriptor('language').getInstance(self);
     }
 }
 
@@ -877,8 +879,10 @@ function testLanguage() {
     exp_missingKey = "[I18N] MISSING fr translation for \"wacky-name\"";
     assertEquals(exp_missingKey, missingKey, "TestLanguage(): Missing KEY");
 
-    setLocale("ru");
+
+    language.setValue("ru");
     missingLocale = I18n_t(key, {task: "Task #1", nextTask: "Task #2", employeeName: "John"});
     exp_missingLocale = "[I18N] MISSING ru LOCALE";
     assertEquals(exp_missingLocale, missingLocale, "TestLanguage(): Missing KEY");
+    language.setValue("fr");
 }
