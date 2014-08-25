@@ -224,7 +224,6 @@ public class ScriptFacade implements Serializable {
 
         while (queue.size() > 0) {
             File current = queue.remove(0);
-            System.out.flush();
 
             if (!Files.isSymbolicLink(current.toPath()) && current.canRead()) {
                 if (current.isDirectory()) {
