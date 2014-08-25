@@ -42,13 +42,13 @@ YUI.add('wegas-lobby-button', function(Y) {
 
             this.uploader.on("fileselect", function() {
                 this.showOverlay();
-                uploader.uploadAll();
-                uploader.set("enabled", false);
+                this.uploader.uploadAll();
+                this.uploader.set("enabled", false);
             }, this);
             this.uploader.on("uploadcomplete", function(e) {
                 this.hideOverlay();
-                uploader.set("enabled", true);
-                uploader.set("fileList", []);
+                this.uploader.set("enabled", true);
+                this.uploader.set("fileList", []);
                 try {
                     Wegas.Facade.GameModel.cache._beforeDefDataFn(e);
                 } catch (e) {
@@ -57,11 +57,11 @@ YUI.add('wegas-lobby-button', function(Y) {
                 }
                 this.showMessageBis("success", "Scenario imported");
             }, this);
-            // uploader.on("alluploadscomplete", function() {}, this);
+            // this.uploader.on("alluploadscomplete", function() {}, this);
             this.uploader.on("uploaderror", function() {
                 this.hideOverlay();
-                uploader.set("enabled", true);
-                uploader.set("fileList", []);
+                this.uploader.set("enabled", true);
+                this.uploader.set("fileList", []);
                 this.showMessageBis("error", "Error uploading scnenario");
             }, this);
         },

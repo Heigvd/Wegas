@@ -125,7 +125,7 @@ public class GameModelController {
      * @return
      */
     @GET
-    @Path("{entityId : [1-9][0-9]*}")
+    @Path("{entityId : [1-9][0-9]*}{extension: (\\.json)?}")
     public GameModel get(@PathParam("entityId") Long entityId) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + entityId);
