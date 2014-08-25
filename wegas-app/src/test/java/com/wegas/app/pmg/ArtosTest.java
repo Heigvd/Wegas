@@ -29,7 +29,7 @@ public class ArtosTest extends PMGameAbstractTest {
 
     @Override
     protected String getScriptTestPath() {
-        return "wegas-pmg-server-test-artos.js";
+        return "test-scripts/wegas-pmg-server-test-artos.js";
     }
 
 }

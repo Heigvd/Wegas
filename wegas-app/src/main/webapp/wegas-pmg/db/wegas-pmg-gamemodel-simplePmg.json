@@ -2573,7 +2573,7 @@
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
         "websocket": "",
         "clientScriptUri": "wegas-pmg/js/wegas-pmg-loader.js",
-        "scriptUri": "wegas-pmg/scripts/wegas-pmg-server-util.js;wegas-pmg/scripts/wegas-pmg-serverScript.js;wegas-pmg/scripts/wegas-pmg-server-simulation.js;wegas-pmg/scripts/wegas-pmg-server-test-util.js;wegas-pmg/scripts/wegas-pmg-server-test-simplepmg.js",
+        "scriptUri": "wegas-pmg/scripts/server-scripts/",
         "imageUri": "",
         "iconUri": ""
     },

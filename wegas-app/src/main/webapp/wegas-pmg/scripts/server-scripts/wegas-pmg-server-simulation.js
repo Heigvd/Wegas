@@ -122,7 +122,7 @@ function step(currentStep) {
     // Consolidate requirments progress & quality into tasks
     Y.Array.each(getTasksFromActivities(activities), function(t) {
         var oCompleteness = t.getProperty("completeness");
-        t.setProperty("completeness", Math.round(calculateTaskProgress(t)));
+        t.setProperty("completeness", calculateTaskProgress(t));
         t.setProperty("quality", calculateTaskQuality(t));
         debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
     });
@@ -297,7 +297,12 @@ function calculateTaskProgress(taskInst) {
 
 
     taskProgress = taskProgress / nbWork;
-    return (taskProgress > TASK_COMPLETED_AT) ? 100 : taskProgress; // > 97 yes, don't frustrate the players please.
+
+    if (taskProgress > 0.0 & taskProgress < 1) {
+        taskProgress = 1; // Avoid >0 to be round to 0
+    }
+
+    return (taskProgress > TASK_COMPLETED_AT) ? 100 : Math.round(taskProgress); // > 97 yes, don't frustrate the players please.
 }
 
 

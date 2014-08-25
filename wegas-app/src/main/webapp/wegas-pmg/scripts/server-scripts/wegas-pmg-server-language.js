@@ -15,7 +15,6 @@ var defaultLocale = "fr",
     locale = null,
     i18nTable = {
         fr: {
-            specialChars : "יאז ???????",
             messages: {
                 startOnTask: {
                     from: "%employeeName%",
