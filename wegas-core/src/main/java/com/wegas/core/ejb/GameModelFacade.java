@@ -138,7 +138,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @return
      */
     public String findUniqueName(String oName) {
-        int suffix = 0;
+        int suffix = 2;
         String newName = oName;
         while (true) {
             try {
