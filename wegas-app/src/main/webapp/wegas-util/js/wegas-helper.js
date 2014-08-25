@@ -12,13 +12,15 @@
  */
 YUI.add('wegas-helper', function(Y) {
     "use strict";
+
+    var Wegas = Y.namespace("Wegas"), Helper;
+
     /**
      * @name Y.Wegas.Helper
      * @class
      * @constructor
      */
-
-    var Helper = {
+    Helper = {
         /**
          * Generate ID an unique id based on current time.
          * @function
@@ -70,6 +72,10 @@ YUI.add('wegas-helper', function(Y) {
             var div = document.createElement("div");
             div.innerHTML = html;
             return div.textContent || div.innerText || "";
+        },
+        trimLength: function(string, length, after) {
+            after = after || "...";
+            return string.length > length ? string.substring(0, length - after.length) + after : string.substring(0, length);
         },
         /**
          * Format a date, using provided format string.
@@ -218,13 +224,13 @@ YUI.add('wegas-helper', function(Y) {
             }
         }
     };
-    Y.namespace("Wegas").Helper = Helper;
-    Y.namespace("Wegas").superbind = Helper.superbind;
+    Wegas.Helper = Helper;
+    Wegas.superbind = Helper.superbind;
 
     /**
      * 
      */
-    Y.namespace("Wegas").Timer = Y.Base.create("wegas-timer", Y.Base, [], {
+    Wegas.Timer = Y.Base.create("wegas-timer", Y.Base, [], {
         start: function() {
             if (!this.handler) {
                 this.handler = Y.later(this.get("duration"), this, this.timeOut);
@@ -244,7 +250,7 @@ YUI.add('wegas-helper', function(Y) {
             return this;
         },
         timeOut: function() {
-            this.handler = null;
+            this.cancel();
             this.fire("timeOut");
             return this;
         },
