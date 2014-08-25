@@ -115,7 +115,7 @@ abstract public class GameModelTest {
         return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
     }
 
-    protected Object evalFile(String path) throws ScriptException {
+    protected Object evalFile(String path) throws ScriptException, IOException {
         return this.evalScript(TestHelper.readFile(path));
     }
 
