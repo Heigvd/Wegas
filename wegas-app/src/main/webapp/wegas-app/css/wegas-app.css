@@ -50,7 +50,12 @@ input[type="submit"], input[type="reset"] {
 *:focus {
     outline: none; /* Remove chrome focus outline */
 }
+font {
+    background: transparent !important;
+    color: inherit !important;
+}
 
+/* */
 html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     height: 100%;
 }
@@ -60,20 +65,22 @@ body{
 .wegas-playerview{
     overflow: auto;
 }
+
 /* DISABLED RULES */
 [class*="-disabled"]{
     opacity:0.8;
 }
+
 /* HIDDEN RULES */
 [class*="-hidden"]{
     display: none;
 }
+
 /* Widget */
 /*.wegas-playerview .wegas-widget {
     overflow: hidden
 }*/
 
-/* Wegas styles */
 /* Wegas loading (overlay on content) */
 .wegas-loading {
     /*position: relative;*/
@@ -154,9 +161,14 @@ body{
 .yui3-wegas-progressbar-hidden{
     display:none !important;
 }
+
 /* Tooltip */
 .wegas-tooltip {
     position:absolute;
+    display: block !important;
+}
+.wegas-tooltip-hidden {
+    visibility: hidden;
 }
 .wegas-tooltip-content {
     background: white;
@@ -164,15 +176,11 @@ body{
     padding: 5px;
     box-shadow: 1px 2px 4px #6D6D6D;
     font-size: 0.8em;
-    text-align: center;
-    /*font-style: italic;*/
+    max-width: 450px;
 }
 .wegas-tooltip-content img {
     max-height: 300px;
     max-width: 300px;
-}
-.wegas-tooltip-hidden {
-    visibility:hidden;
 }
 
 /* Toggle button */
@@ -192,7 +200,6 @@ body{
 
 /** Page loader styles */
 .wegas-playerview .wegas-pageloader {
-    /*overflow: auto;*/
     min-height: 50px;
     min-width: 50px;
 }
@@ -203,33 +210,6 @@ body{
 .wegas-pageloader-content{
     width: inherit;
     height: inherit;
-}
-/*body, html, body > .wegas-pageloader, body > .wegas-pageloader > .wegas-pageloader-content{
-    width:100%;
-    height:100%;
-}*/
-
-/* Google translate */
-.wegas-translate {
-    float: right;
-    padding: 14px 10px 0;
-}
-.goog-te-gadget-simple {
-    border:none !important;
-}
-.goog-te-menu-value span {
-    color: black !important;
-    border-left: none !important;
-    font-weight: bold !important;
-    font-size: 11px !important;
-    color: #6E6E6E !important;
-}
-/*.goog-te-banner-frame,.goog-te-balloon-frame{
-    display:none !important;
-}*/
-font {
-    background: transparent !important;
-    color: inherit !important;
 }
 
 /*
