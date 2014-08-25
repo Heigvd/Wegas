@@ -185,7 +185,7 @@
     border-bottom: none;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
-    padding-right: 4px;
+    padding-right: 4px !important;
     width: 95px!important;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-name,
