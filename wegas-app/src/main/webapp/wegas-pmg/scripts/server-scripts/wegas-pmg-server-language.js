@@ -11,9 +11,7 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
-var defaultLocale = "fr",
-    locale = null,
-    i18nTable = {
+var i18nTable = {
         fr: {
             messages: {
                 startOnTask: {
@@ -89,10 +87,6 @@ var defaultLocale = "fr",
         en: {
         }};
 
-function setLocale(newLocale) {
-    locale = newLocale.toLowerCase();
-}
-
 /*
  * Take the initial string and replace ALL parameters by theirs argument value 
  * provided by k/v in args object.
@@ -116,7 +110,7 @@ function mapArguments(string, args, tName) {
 
 
 function currentLocale() {
-    return (locale ? locale : defaultLocale);
+    return Variable.findByName(gameModel, "language").getValue(self);
 }
 /**
  * Return the translation for the key messages, according to current locale
@@ -126,14 +120,15 @@ function currentLocale() {
  * @returns {String} the translated string filled with provided arguments
  */
 function I18n_t(key, object) {
-    var value = i18nTable[currentLocale()];
+    var locale = currentLocale(),
+        value = i18nTable[locale];
     if (value) {
         var res = key.split("."),
             i;
         for (i = 0; i < res.length; i++) {
             value = value[res[i]];
             if (!value) {
-                return "[I18N] MISSING " + currentLocale() + " translation for \"" + key + "\"";
+                return "[I18N] MISSING " + locale + " translation for \"" + key + "\"";
             }
         }
 
@@ -143,7 +138,7 @@ function I18n_t(key, object) {
 
         return mapArguments(value, object, key);
     } else {
-        return "[I18N] MISSING " + currentLocale() + " LOCALE";
+        return "[I18N] MISSING " + locale + " LOCALE";
     }
 }
 

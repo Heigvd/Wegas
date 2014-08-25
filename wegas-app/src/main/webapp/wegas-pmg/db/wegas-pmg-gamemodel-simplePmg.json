@@ -111,7 +111,7 @@
             "minValue": 0,
             "maxValue": null,
             "defaultValue": 0
-        }, 
+        },
         {
             "@class": "NumberDescriptor",
             "name": "qualityImpacts",
@@ -2465,6 +2465,65 @@
                     "minValue": null,
                     "maxValue": null,
                     "defaultValue": 0
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "phaseLimit",
+                    "label": "PhaseLimit",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0
+
+                },
+                {
+                    "@class": "NumberDescriptor",
+                    "name": "periodLimit",
+                    "label": "PeriodLimit",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "NumberInstance",
+                        "history": [],
+                        "value": 0
+
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+
+                    },
+                    "minValue": null,
+                    "maxValue": null,
+                    "defaultValue": 0
+
+                },
+                {
+                    "@class": "BooleanDescriptor",
+                    "name": "advancementLimit",
+                    "label": "AdvancementLimit",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "BooleanInstance",
+                        "value": false
+
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+
+                    }
+
                 }]
         },
         {
@@ -2548,6 +2607,21 @@
                     "defaultInstance": {
                         "@class": "StringInstance",
                         "value": "week"
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    },
+                    "validationPattern": null
+                },
+                {
+                    "@class": "StringDescriptor",
+                    "name": "language",
+                    "label": "Language",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "value": "fr"
                     },
                     "scope": {
                         "@class": "GameScope",
