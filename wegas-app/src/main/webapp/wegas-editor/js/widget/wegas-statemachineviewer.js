@@ -51,12 +51,14 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
             }).render(header);
             header.append('<div style="width:10px;display:inline-block;"></div>'); // Add a separator
+
             this.sliderZoom = new Y.Slider({
                 min: StateMachineViewer.MIN_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 max: StateMachineViewer.MAX_ZOOM * StateMachineViewer.FACTOR_ZOOM,
                 value: StateMachineViewer.FACTOR_ZOOM                           // default zoom
             }).render(header);
             header.append('<div style="width:10px;display:inline-block;"></div>'); // Add a separator
+
             this.btnZoomValue = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-zoom\"></span>100%"
             }).render(header);
@@ -358,15 +360,6 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             },
             availableTransitions: {
                 value: ["Transition"]
-            }
-        },
-        FORMATSCRIPT: function(script) {
-            if (script && script.get) {
-                return script.get("content") || "";
-            } else if (Y.Lang.isObject(script)) {
-                return script.content || "";
-            } else {
-                return "";
             }
         }
     });
@@ -695,16 +688,18 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             Y.one(this.connection.getLabelOverlay().getElement()).addClass("wegas-editing");
         },
         updateLabel: function() {
-            var label, entity = this.get(ENTITY);
-            if (entity instanceof Wegas.persistence.DialogueTransition) {
-                label = entity.get("actionText");
-            } else {
-                label = StateMachineViewer.FORMATSCRIPT(entity.get("triggerCondition"))
-                    || StateMachineViewer.FORMATSCRIPT(entity.get("preStateImpact"));
-            }
+            var entity = this.get(ENTITY),
+                condition = Y.inputEx.WysiwygScript.formatScript(entity.get("triggerCondition")),
+                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("preStateImpact")),
+                label = entity instanceof Wegas.persistence.DialogueTransition ? entity.get("actionText") : condition;
+
             this.connection.setLabel({
                 label: label || "<em>Empty</empty>",
                 cssClass: "transition-label"
+            });
+            Y.one(this.connection.getLabelOverlay().getElement()).plug(Y.Plugin.Tooltip, {
+                content: (condition ? "<b>Condition</b><br />" + condition + "<br />" : "")
+                    + (impact ? "<br /><b>Impact</b><br />" + impact : "")
             });
         },
         destructor: function() {
@@ -763,7 +758,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
              * @param {type} args any arguments
              * @returns {undefined}
              */
-            call: function(args) {
+            call: function() {
                 var cb;
                 if (this._c) {
                     return;

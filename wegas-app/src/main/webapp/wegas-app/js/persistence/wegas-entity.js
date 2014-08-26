@@ -308,7 +308,7 @@ YUI.add("wegas-entity", function(Y) {
                         cfg: {
                             children: [{
                                     type: BUTTON,
-                                    label: "Export",
+                                    label: "Print",
                                     plugins: [{
                                             fn: "WidgetMenu",
                                             cfg: {
@@ -337,7 +337,7 @@ YUI.add("wegas-entity", function(Y) {
                                         }]
                                 }, {
                                     type: "OpenEntityButton",
-                                    url: "rest/Export/GameModel/{id}",
+                                    url: "rest/Export/GameModel/{id}/{name}.json?forcedownload",
                                     label: "Download"
                                 }]
                         }

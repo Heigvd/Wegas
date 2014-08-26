@@ -34,7 +34,7 @@
 }
 .yui3-wegas-state {
     position:absolute;
-    width:120px;
+    width: 140px;
     height:48px;
     border:2px solid;
     border-radius: 15px;
@@ -224,7 +224,7 @@
     background-color: white;
     padding:3px;
     z-index:2;
-    border: 1px solid lightgray;
+    border: 1px solid gray;
     opacity: 0.9;
     cursor: pointer;
     max-width: 120px;    
@@ -293,4 +293,7 @@
 .wegas-statemachineviewer .wegas-editing {
     font-weight: bolder;
     background: #9fb3c7;
+}
+.wegas-statemachineviewer .wegas-editing * {
+    font-weight: bolder;
 }

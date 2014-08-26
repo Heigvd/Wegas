@@ -265,7 +265,7 @@ YUI().use(function(Y) {
             },
             "wegas-userpreferences": {
                 path: "js/plugin/wegas-userpreferences-min.js",
-                requires: ["wegas-form", "wegas-plugin"],
+                requires: "wegas-plugin",
                 ws_provides: "UserPreferences"
             },
             "wegas-tooltip": {
@@ -617,7 +617,7 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-statemachine-entities",
                     "dd-constrain", "jsplumb-yui", "button", "event-mousewheel",
-                    "slider", "wegas-panel-node"],
+                    "slider", "wegas-panel-node", "wegas-inputex-wysiwygscript"],
                 ws_provides: "StateMachineViewer"
             },
             "wegas-statemachineviewercss": {

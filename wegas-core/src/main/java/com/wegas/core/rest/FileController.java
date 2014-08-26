@@ -455,6 +455,19 @@ public class FileController {
         }
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @param path
+     * @param mediaType
+     * @param note
+     * @param description
+     * @param file
+     * @return
+     * @throws RepositoryException
+     * @throws WegasException
+     */
     public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
             String note, String description, InputStream file) throws RepositoryException, WegasException {
 
@@ -492,6 +505,16 @@ public class FileController {
         }
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @param path
+     * @param note
+     * @param description
+     * @return
+     * @throws RepositoryException
+     */
     public DirectoryDescriptor createDirectory(Long gameModelId, String name, String path, String note, String description) throws RepositoryException {
 
         //logger.debug("Directory name: {}", name);
@@ -519,12 +542,25 @@ public class FileController {
         }
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param path
+     * @return
+     * @throws RepositoryException
+     */
     public boolean directoryExists(Long gameModelId, String path) throws RepositoryException {
         ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
         return dir.exist();
     }
 
+    /**
+     *
+     * @param gameModelId
+     * @param path
+     * @return
+     */
     public InputStream getFile(Long gameModelId, String path) {
         logger.debug("Asking file (/{})", path);
 
