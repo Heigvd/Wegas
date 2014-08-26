@@ -9,7 +9,7 @@
 /* YUI3 Button Widget styles redefinition */
 .yui3-button {
     vertical-align: top;
-    padding: 0.2em 0.7em .1em;
+    padding: 0.2em 0.6em .1em;
     min-height: 26px;
     margin: 0;
     box-shadow: none;
@@ -46,7 +46,7 @@
     background-position: 0px 0px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-newfile {
-    background-position: 1px -401px;
+    background-position: 1px -400px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-joingame {
     background-position: 1px -1028px;
@@ -85,7 +85,7 @@
     background-position: 0px -271px;
 }
 .yui3-skin-sam .wegas-icon-save {
-    background-position: 0px -652px;
+    background-position: 0px -653px;
 }
 .yui3-skin-sam .wegas-icon-delete {
     background-position: 0px -771px;
@@ -155,4 +155,7 @@
     background: transparent url(../images/oxygen-pdf-icon.png) no-repeat scroll 0px 1px !important;
     width: 48px;
     height: 48px;
+}
+.yui3-skin-sam .wegas-icon-restore {
+    background-position: 0 -100px;
 }

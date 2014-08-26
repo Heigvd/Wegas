@@ -21,6 +21,8 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             method: "\u2501\u2501\u2501\u2501"
         };
 
+    Y.namespace("inputEx.Wegas");
+
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorSelect
      * @class
@@ -191,7 +193,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          *
          * @overrride Y.inputEx.Group.onChange()
          */
-        onChange: function(fieldValue, fieldInstance) {
+        onChange: function(fieldValue) {
             if (!fieldValue) {
                 return;
             }
@@ -282,7 +284,32 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             return [];
         }
     });
-    Y.inputEx.VariableDescriptorSelect = VariableDescriptorSelect;
+    Y.mix(VariableDescriptorSelect, {
+        BINARYOPERATORS: [{
+                value: "===",
+                label: "equals"
+            }, {
+                value: ">",
+                label: "is greater than"
+            }, {
+                value: "<",
+                label: "is smaller than"
+            }, {
+                value: ">=",
+                label: "is greater or equal to"
+            }, {
+                value: "<=",
+                label: "is smaller or equal to"
+            }],
+        LOGICALOPERATORS: [{
+                value: "&&",
+                label: "AND"
+            }, {
+                value: "||",
+                label: "OR"
+            }]
+    });
+    inputEx.Wegas.VariableDescriptorSelect = VariableDescriptorSelect;
     inputEx.registerType("variabledescriptorselect", VariableDescriptorSelect, {});
 
     /**
@@ -391,7 +418,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 //        type: "array",
                 //        items: cMethod["arguments"]
                 //    }
-                //}, builder = new Y.inputEx.JsonSchema.Builder({
+                //}, builder = new inputEx.JsonSchema.Builder({
                 //    'schemaIdentifierMap': schemaMap,
                 //    'defaultOptions':{
                 //        'showMsg':true
@@ -548,11 +575,11 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
     };
 
     Y.extend(VariableDescriptorStatement, VariableDescriptorMethod, {
+        /** @lends Y.Wegas.VariableDescriptorStatement# */
         setOptions: function(options) {
             VariableDescriptorStatement.superclass.setOptions.call(this, options);
             this.options.returnsFilter = ["void"];
         },
-        /** @lends Y.Wegas.VariableDescriptorStatement# */
         GLOBALMETHODS: {
             "RequestManager.sendCustomEvent": {
                 className: "wegas-method-returnline",
@@ -583,6 +610,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         }
     });
     inputEx.registerType("statement", VariableDescriptorStatement, {});
+    inputEx.Wegas.VariableDescriptorStatement = VariableDescriptorStatement;
 
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorCondition
@@ -642,22 +670,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     fields: [{
                             type: "select",
                             value: this.options.operator,
-                            choices: [{
-                                    value: "===",
-                                    label: "equals"
-                                }, {
-                                    value: ">",
-                                    label: "is greater than"
-                                }, {
-                                    value: "<",
-                                    label: "is smaller than"
-                                }, {
-                                    value: ">=",
-                                    label: "is greater or equal to"
-                                }, {
-                                    value: "<=",
-                                    label: "is smaller or equal to"
-                                }]
+                            choices: VariableDescriptorSelect.BINARYOPERATORS
                         }, {
                             type: "number",
                             required: true,
@@ -691,6 +704,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         }
     });
     inputEx.registerType("condition", VariableDescriptorCondition, {});
+    inputEx.Wegas.VariableDescriptorCondition = VariableDescriptorCondition;
 
     /**
      * @name Y.inputEx.Wegas.VariableDescriptorGetter
@@ -700,10 +714,10 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
      * @param {Object} options InputEx definition object
      */
     var VariableDescriptorGetter = function(options) {
-        Y.inputEx.VariableDescriptorSelect.superclass.constructor.call(this, options);
+        VariableDescriptorGetter.superclass.constructor.call(this, options);
     };
 
-    Y.extend(VariableDescriptorGetter, Y.inputEx.VariableDescriptorSelect, {
+    Y.extend(VariableDescriptorGetter, VariableDescriptorSelect, {
         /** @lends Y.inputEx.Wegas.VariableDescriptorGetter# */
         syncUI: function() {
             VariableDescriptorGetter.superclass.syncUI.call(this);

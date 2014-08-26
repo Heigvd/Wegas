@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -86,7 +85,6 @@ YUI.add('datatable-csv', function(Y) {
 
             }
             return DatatableCSV.arraysToCSV(records);
-
         },
         /**
          * lifecycle method

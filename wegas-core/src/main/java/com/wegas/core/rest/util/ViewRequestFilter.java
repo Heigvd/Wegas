@@ -52,7 +52,6 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             rmf.setLocale(Locale.getDefault());
         }
 
-
         String newUri = cr.getRequestUri().toString();
         String firstPathSeg = cr.getPathSegments().get(0).getPath();
 
@@ -110,7 +109,6 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             case "Private":
                 return Views.Private.class;
 
-
             case "Export":
                 return Views.Export.class;
 
@@ -127,7 +125,6 @@ public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter
             default:
                 return Views.Public.class;
         }
-
     }
 
     /**
