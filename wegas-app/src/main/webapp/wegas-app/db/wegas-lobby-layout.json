@@ -114,7 +114,7 @@
                                                     "plugins": [{
                                                             "fn": "OpenGameAction",
                                                             "cfg": {
-                                                                "editorUrl": "play.html?"
+                                                                "editorUrl": "game-play.html?"
                                                             }
                                                         }]
                                                 }],
@@ -138,7 +138,7 @@
                                                                                 "plugins": [{
                                                                                         "fn": "OpenGameAction",
                                                                                         "cfg": {
-                                                                                            "editorUrl": "play.html?"
+                                                                                            "editorUrl": "game-play.html?"
                                                                                         }
                                                                                     }]
                                                                             }]
@@ -310,6 +310,9 @@
                                                                 "showMsg": true
                                                             }]
                                                     }
+                                                }, {
+                                                    "type": "UploadFileButton",
+                                                    "label": "<span class='wegas-icon wegas-icon-newfile'></span>Upload"
                                                 }]
                                         }
                                     }]

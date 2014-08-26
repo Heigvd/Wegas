@@ -22,7 +22,7 @@ YUI.add('wegas-sharerole', function(Y) {
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
                 e = this.get("entity");
-            
+
             this.targetEntityId = (e instanceof Y.Wegas.persistence.GameModel) ? "gm" + e.get("id")
                 : "g" + e.get("id");
 

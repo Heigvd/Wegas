@@ -9,13 +9,13 @@
 
         <ui:define name="head">
 
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css" />
 
-            <!-- CSS library for current game model is included directly in the file -->
+            <!-- Stylesheets from current game model style library -->
             <style type="text/css">#{editorGameController.styleSheets}</style>
 
-            <!-- Stylesheets injected directly in the game model -->
+            <!-- Stylesheets from current game model cssUri property -->
             <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
@@ -138,7 +138,7 @@
                     app.after("render", function() {                            // When the page is rendered
                         var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
                         Y.one(".wegas-title").setContent("&lt;div>" + g.get("name") + "&lt;/div>"
-                            + "&lt;div class='subtitle'>" + g.get("gameModelName") + "&lt;/dvi>");// Update the title
+                            + "&lt;div class='subtitle'>" + g.get("gameModelName") + "&lt;/div>");// Update the title
 
                         var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
 

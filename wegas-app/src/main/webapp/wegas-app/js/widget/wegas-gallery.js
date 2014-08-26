@@ -281,6 +281,7 @@ YUI.add("wegas-gallery", function(Y) {
                 h.detach();
             });
             this.scrollView.destroy();
+            this.get("boundingBox").purge(true);
         },
         // *** Private Methods *** //
         /**Generate index indicator

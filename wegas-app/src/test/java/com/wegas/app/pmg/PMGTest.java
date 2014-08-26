@@ -28,6 +28,6 @@ public class PMGTest extends PMGameAbstractTest {
 
     @Override
     protected String getScriptTestPath() {
-        return "wegas-pmg-server-test-simplepmg.js";
+        return "test-scripts/wegas-pmg-server-test-simplepmg.js";
     }
 }

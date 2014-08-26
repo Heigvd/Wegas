@@ -12,9 +12,9 @@
 YUI.add("wegas-pageeditor-resize", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
-            BOUNDINGBOX = "boundingBox",
-            WIDTH = "width",
-            HEIGHT = "height";
+        BOUNDINGBOX = "boundingBox",
+        WIDTH = "width",
+        HEIGHT = "height";
     /**
      * PageEditor Plugin Extension enabling widget resize.
      * @constructor

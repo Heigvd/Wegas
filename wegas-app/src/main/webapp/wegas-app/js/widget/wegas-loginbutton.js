@@ -232,7 +232,7 @@ YUI.add("wegas-loginbutton", function(Y) {
 
             if (mainAccount) {
                 name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
-            } 
+            }
             this.set("label", name);
         },
         destructor: function() {

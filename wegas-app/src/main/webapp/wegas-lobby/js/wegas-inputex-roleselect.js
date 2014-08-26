@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add("wegas-inputex-roleselect", function (Y) {
+YUI.add("wegas-inputex-roleselect", function(Y) {
     "use strict";
 
     /**
@@ -23,7 +23,7 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
      *   <li>favicon: boolean whether the domain favicon.ico should be displayed or not (default is true, except for https)</li>
      * </ul>
      */
-    var RoleSelect = function (options) {
+    var RoleSelect = function(options) {
         RoleSelect.superclass.constructor.call(this, options);
     };
 
@@ -33,17 +33,16 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
         /**
          * @function
          */
-        setValue: function (val, sendUpdatedEvent) {
+        setValue: function(val, sendUpdatedEvent) {
             if (val) {
                 this.ovalue = val;
                 RoleSelect.superclass.setValue.call(this, val.id, sendUpdatedEvent);
             }
         },
-
         /**
          * @function
          */
-        getValue: function () {
+        getValue: function() {
             if (this.ovalue) {
                 return this.ovalue;                                             // Still loading
             } else {
@@ -55,34 +54,31 @@ YUI.add("wegas-inputex-roleselect", function (Y) {
                 };
             }
         },
-
         /**
          * @function
          */
-        setOptions: function (options) {
+        setOptions: function(options) {
             RoleSelect.superclass.setOptions.call(this, options);
             this.options.choices = [];
         },
-
         /**
          * @function
          */
-        render: function () {
+        render: function() {
             RoleSelect.superclass.render.apply(this, arguments);
             Y.Wegas.Facade.Role.sendRequest({
                 request: "/",
                 on: {
-                    success: Y.bind(function () {
+                    success: Y.bind(function() {
                         this.renderOptions(Y.Wegas.Facade.Role.data);
                     }, this)
                 }
             });
         },
-
         /**
          * @function
          */
-        renderOptions: function (options) {
+        renderOptions: function(options) {
             var i;
             for (i = 0; i < options.length; i = i + 1) {
                 this.addChoice({

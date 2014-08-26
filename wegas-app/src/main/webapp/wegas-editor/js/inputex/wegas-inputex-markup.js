@@ -12,8 +12,8 @@
 YUI.add("wegas-inputex-markup", function(Y) {
 
     var lang = Y.Lang,
-            inputEx = Y.inputEx,
-            MarkupField;
+        inputEx = Y.inputEx,
+        MarkupField;
 
     /**
      * Basic string field (equivalent to the input type "text")
@@ -72,7 +72,7 @@ YUI.add("wegas-inputex-markup", function(Y) {
          */
         setValue: function(value, sendUpdatedEvt) {
             this.el.innerHTML = value;
-            
+
             // call parent class method to set style and fire "updated" event
             MarkupField.superclass.setValue.call(this, value, sendUpdatedEvt);
         }

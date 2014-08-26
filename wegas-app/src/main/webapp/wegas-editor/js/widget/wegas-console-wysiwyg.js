@@ -19,7 +19,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
      *  @constructor
      */
     var CONTENTBOX = 'contentBox',
-            WysiwygConsole, Wegas = Y.Wegas, Plugin = Y.Plugin;
+        WysiwygConsole, Wegas = Y.Wegas, Plugin = Y.Plugin;
 
     WysiwygConsole = Y.Base.create("wegas-console-wysiwyg", Wegas.Console, [Y.WidgetChild, Wegas.Widget], {
         /**
@@ -50,14 +50,14 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             });
             cb.append('<div class="results"></div>');
 
-            this.toolbar.get("header").append(this.srcField.addButton.get("boundingBox").removeClass("inputEx-WysiwigScript-add")
-                    .append("Add impact"));
+            this.toolbar.get("header").append(this.srcField.addButton.get("boundingBox").removeClass("inputEx-WysiwygScript-add")
+                .append("Add impact"));
             this.srcField.addButton.fire("click");
 
             this.renderRunButton();
 
-            this.toolbar.get("header").append(this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwigScript-viewsrc")
-                    .append("Source"));
+            this.toolbar.get("header").append(this.srcField.viewSrc.get("boundingBox").removeClass("inputEx-WysiwygScript-viewsrc")
+                .append("Source"));
         },
         /**
          * @function
@@ -72,8 +72,8 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             this.handlers.push(this.get("parent").on("selectedChange", function(e) {
                 var treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView,
-                        cGameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
-                        playerId, selected = 0;
+                    cGameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(), i,
+                    playerId, selected = 0;
 
                 if (e.newVal !== 1) {
                     treeView.unplug(Plugin.CheckBoxTV);
@@ -120,9 +120,9 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          */
         getPlayerList: function() {
             var players, selection,
-                    freeForAll = Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll"),
-                    treeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content"),
-                    playerList = [];
+                freeForAll = Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll"),
+                treeview = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team .yui3-treeview-content"),
+                playerList = [];
 
             if (!treeview) {
                 return [Wegas.Facade.Game.get('currentPlayerId')];
@@ -132,8 +132,8 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             if (!selection.size()) {
                 this.showMessageBis("info", (freeForAll)
-                        ? "No player is selected. This impact has not been run"
-                        : "No team is selected. This impact has not been run");
+                    ? "No player is selected. This impact has not been run"
+                    : "No team is selected. This impact has not been run");
             }
 
             selection.each(function(item) {
@@ -155,7 +155,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          */
         getTeams: function() {
             var i, treeView = Y.Widget.getByNode("#leftTabView .wegas-editor-treeview-team").treeView,
-                    teams = [];
+                teams = [];
             for (i = 0; i < treeView.size(); i += 1) {
                 if (!this.isEmptyTeam(treeView.item(i))) {
                     teams.push(i);
@@ -195,8 +195,8 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             this.nodeClick = editorTreeview.treeView.on("nodeClick", function(e) {
                 this.selectAll.toggleClass("yui3-treenode-selected",
-                        e.currentTarget.get("selection")
-                        && e.currentTarget.get("selection").size() >= this.getTeams().length);// Update selectAll visibility when all teams are selected
+                    e.currentTarget.get("selection")
+                    && e.currentTarget.get("selection").size() >= this.getTeams().length);// Update selectAll visibility when all teams are selected
 
                 if (this.isEmptyTeam(e.node)) {                                 // Not allowed to select empty teams
                     e.node.deselectAll();

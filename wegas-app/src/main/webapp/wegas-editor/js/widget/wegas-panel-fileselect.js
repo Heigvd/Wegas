@@ -11,7 +11,7 @@
  */
 YUI.add("wegas-panel-fileselect", function(Y) {
     "use strict";
-    
+
     Y.Wegas.FileSelect = Y.Base.create("wegas-panel-fileselect", Y.Base, [], {
         initializer: function() {
             this.publish("fileSelected");
