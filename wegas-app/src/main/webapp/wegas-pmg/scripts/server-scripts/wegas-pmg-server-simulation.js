@@ -511,10 +511,6 @@ function sendStartWorkingOnTaskMail(resourceInstance, currentStep, taskDesc) {
     sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "startOnTask");
 }
 
-function sendIncoherentPlanning(resourceInstance, currentStep, taskDesc) {
-    sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "incoherentPlanning");
-}
-
 function sendGoToOtherActivities(resourceInstance, currentStep, taskDesc) {
     sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "endOfTaskOtherActivities");
 }
