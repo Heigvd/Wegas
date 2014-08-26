@@ -21,22 +21,22 @@ Event.on("replyValidate", function(e) {
     root = Variable.findParentList(root);
     
     if (root.name == "actions") {
-        type = "Action";
+        type = "Action";  // I18nalize
         msg += e.question.getDescriptor().getDescription() + "<br><hr><br>";    // choice description
     } else {
-        type = "Question";
+        type = "Question"; // I18nalize
         msg += "<b>" + e.choice.getDescriptor().getTitle() + "</b><br>";        // Choice selected
         msg += e.choice.getDescriptor().getDescription() + "<br><hr><br>";      // choice description
     }
     msg += e.reply.getResult().getAnswer();                                     //Reply
     
     type += " " + currentPhaseName(currentPhase);
-    type += " period " + Variable.find(gameModel, "currentPeriod").item(currentPhase -1).getValue(self);
+    type += " period " + Variable.find(gameModel, "currentPeriod").item(currentPhase -1).getValue(self); // I18nalize
 
     sendHistory(type, e.question.getDescriptor().getTitle(), msg, []);
 });
 
-function currentPhaseName(currentPhase) {
+function currentPhaseName(currentPhase) { // TODO Max I18nalize
     switch (currentPhase) {
         case 1:
             return "Initiation";

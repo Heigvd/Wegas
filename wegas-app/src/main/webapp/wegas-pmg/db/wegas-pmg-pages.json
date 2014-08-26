@@ -26,7 +26,7 @@
                     }, {
                         "fn": "Tooltip",
                         "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
+                            "content": "Project Management Game"
                         }
                     }]
             }, {
@@ -515,7 +515,7 @@
                 "children": [{
                         "type": "Template",
                         "data": {},
-                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= unworked %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
+                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= projectUnworkedHours %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
                         "variable": {
                             "name": "tasks"
                         }

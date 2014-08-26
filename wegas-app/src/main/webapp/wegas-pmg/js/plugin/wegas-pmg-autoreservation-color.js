@@ -101,24 +101,24 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                                 end--;
                             }
 
-                            for (period = start; period <= end; period++) {
+                            for (period = parseInt(start); period <= end; period++) {
                                 periods.push(period);
                             }
                             break;
                         }
                     }
                 }
-                for (period in periods.sort()) {
-                    this.addColor(HOST.schedule.getCell(i, periods[period]), (period === "0" ? first : ""));
+                for (period in periods) {
+                    this.addColor(HOST.schedule.getCell(i, periods[period]));
                 }
             }
         },
-        addColor: function(cell, text) {
+        addColor: function(cell) {
             // Do not add a span if one already exists. This may occurs when:
             //   1) several assigned tasks are "planned" at the same time
             //   2) An uneditable occupation has been added previously
             if (cell && !cell.hasChildNodes()) {
-                cell.append("<span class='editable'>" + (text ? text : "") + "</span>");
+                cell.append("<span class='editable'></span>");
             }
         }
     }, {
