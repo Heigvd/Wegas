@@ -63,7 +63,7 @@ YUI.add('wegas-editable', function(Y) {
          */
         toObject: function(mask) {
             mask = Lang.isArray(mask) ? mask : Array.prototype.slice.call(arguments);
-            
+
             var masker = mask.length > 0 ? function(key, value) {
                 if (Y.Array.indexOf(mask, key) !== -1) {
                     return undefined;

@@ -78,7 +78,7 @@
 .yui3-treenode-content-header,
 .yui3-treeleaf-content-header {
     position: relative;
-    padding: 5px 27px 5px 2px;
+    padding: 5px 27px 6px 2px;
     white-space: nowrap;
     font-style: normal;
     max-height: 50px;
@@ -176,14 +176,14 @@
 .yui3-treeview-content .filter-sub-match > .content-header,
 .yui3-treeview-content .filter-match .filter-no-match > .content-header,
 .yui3-treeview-content .filter-match .filter-no-match > div > .content-header{
-    /*    max-height: 50px;
-        padding: 2px 27px 2px 2px;*/
-    max-height: none;
-    opacity: .6;
+    max-height: 50px;
+    padding: 5px 27px 6px 2px;
+    /* opacity: .6; */
 }
 .yui3-treeview-content .filter-match > .content-header,
 .yui3-treeview-content .filter-match > div > .content-header{
     opacity: 1;
+    background: rgba(0, 70, 139, 0.06);
 }
 .yui3-treeview-content .filter-no-match > .content-header,
 .yui3-treeview-content .filter-no-match > div > .content-header{

@@ -1,7 +1,11 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 /*--------------------------------header--------------------------------------*/
-body {
-    /*font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;*/
-}
 .layout {
     font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
     background: #282828;
@@ -21,7 +25,6 @@ body {
     background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
     background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
     background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-
 }
 .pmg-nextweek:after {
     content: "Next period";
@@ -39,7 +42,6 @@ body {
     color:black;
     float:left;
     text-align: center;
-
     font-size: 9pt;
 }
 .pmg-breadcrumb .previous{
@@ -101,7 +103,6 @@ body {
 
 }
 
-
 /*-----------------------------horizontal-menu--------------------------------*/
 .layout .horizontal-menu{
     background-color:#ADADAE;
@@ -126,28 +127,23 @@ body {
     text-align:left;
     font-size: 1.1em;
 }
-
 .horizontal-menu button:hover {
     background-color:#DDDDDD;
 }
-
 .yui3-skin-sam .layout .yui3-button-selected {
     background-color:white;
     color:black;
     box-shadow: none;
 }
-
 .layout .horizontal-menu .wegas-login{
     float: right;
     padding: 0px 21px 0 10px;
     border-left: 1px solid lightgray;
 }
-
 .layout .horizontal-menu .yui3-button-disabled {
     background-repeat: repeat-x;
     background-color: #ADAD96;
 }
-
 .layout .horizontal-menu .yui3-button-disabled:hover {
     border-width:0 1px 1px 0;
     padding-bottom:0px;
@@ -186,7 +182,6 @@ h2{
     width: 60px;
     background:#ADADAE;
 }
-
 .vertical-menu div button{
     width:60px;
     height:60px;
@@ -203,7 +198,6 @@ h2{
 }
 .vertical-menu div button:first-child {
     border-top: 1px solid lightgray
-
 }
 .vertical-menu div button:hover {
     background-color:#DDDDDD;
@@ -220,7 +214,6 @@ h2{
 .vertical-menu .history {
     background-image: url(../../wegas-pmg/images/clock.png);
 }
-
 .vertical-menu .help, .vertical-menu .help:hover{
     display:none;
     border-width:0;
@@ -234,7 +227,6 @@ h2{
     right:0;
     display:none;
 }
-
 .wegas-unreadcount {
     /*line-height:1em;*/
     position:relative;
@@ -251,11 +243,6 @@ h2{
     border-radius: 0;
     border-bottom-right-radius: 16px;
     background-image: none;
-    /*    background-image: -moz-linear-gradient(top,rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-        background-image: -ms-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-        background-image: -o-linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-        background-image: linear-gradient(rgba(255,255,255,0.30),rgba(255,255,255,0.15) 40%,transparent);
-    */
 }
 
 /*---------------------------questions and actions----------------------------*/
@@ -271,7 +258,6 @@ h2{
     border: none;
     width: 50%;
 }
-
 .yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
@@ -280,11 +266,9 @@ h2{
     border:none;
     background:white;
 }
-
 .wegas-mcqtabview .yui3-tab {
     border-width: 0 0 1px 0;
 }
-
 .yui3-skin-sam .wegas-mcqtabview .pmg-subtitle  .left ,
 .yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
     text-decoration: underline;
@@ -303,23 +287,18 @@ h2{
 .wegas-mcqtabview {
     line-height: normal;
 }
-
 .body .wegas-mcqtabview-content .content{
     margin-top: 0px;
 }
-
 .yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel{
     margin-top:1px
 }
-
 .wegas-mcqtabview-content .content .content{
     margin:0;
 }
-
 .yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
     color:black;
 }
-
 .wegas-mcqtabview .title {
     font-weight: bold;
     padding: 0 6px 4px;
@@ -362,25 +341,21 @@ h2{
 .history-page .wegas-text{
     height:27px;
 }
-
 .yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;
     border: none;
     width: 50%;
 }
-
 .yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     padding:0;
     border: none;
 }
-
 .wegas-inbox .read{
     padding:0 5px 0;
 }
-
 .wegas-inbox .body{
     position: relative;
     bottom: 0;
@@ -391,28 +366,21 @@ h2{
 }
 
 /*----------------------------------Datatable---------------------------------*/
-/*.body .yui3-datatable-col-_id{
-    display:none;
-}*/
-
 .body .yui3-datatable table{
     width:100%;
     border: none;
     font-size: 0.9em;
 }
-
 .body .yui3-datatable-columns th{
     background: none;
     color: #0981A9;
     border-bottom: 2px solid #0981A9;
     /*background-repeat: repeat-x;*/
 }
-
 .body .yui3-datatable-cell,
 .body .yui3-datatable-header{
     border-left:none;
 }
-
 .body .yui3-datatable-odd .yui3-datatable-cell,
 .body .yui3-datatable-even .yui3-datatable-cell{
     background: none;
@@ -431,6 +399,9 @@ h2{
 /*---------------------------- schedulecolumn -------------------------------- */
 .yui3-datatable-table th.schedulecolumn {
     text-align: center;
+    width: 3.4em;
+    padding-left: 0;
+    padding-right: 0;
 }
 .yui3-datatable-table .yui3-datatable-data .schedulecolumn {
     padding: 0 0 0 0;
@@ -529,12 +500,8 @@ h2{
 }*/
 
 /*----------------------------------SlidePanel----------------------------*/
-
 .resources-page .slidepanel-title,
-.project-page .slidepanel-title{
-    /*background-image: url(wegas-pmg/images/h2.png);*/
-    /*background-repeat: repeat-x;*/
-    /*background-color: white;*/
+.project-page .slidepanel-title {
     height:27px;
     width:100%;
 }
@@ -545,7 +512,6 @@ h2{
     float: left;
     width: 50%;
     height: 250px;
-
 }
 .project-page h2 {
     padding-top: 21px;
@@ -555,29 +521,24 @@ h2{
     margin-left: 24px;
     margin-top: 15px;
 }
-
 .project-page .finances .wegas-pmg-slidepanel-content {
     margin-top: 15px;
     margin-left: 30px;
 }
-
 .project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
     font-size: 11pt;
     margin-top: 8px;
 }
-
 .project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours{
     margin-left: 20px;
     margin-top: 5px;
 }
-
 .project-page .total {
     font-weight: bold;
     font-size: 12pt;
     margin-top: 10px;
 }
-
 .project-page .wages .variableValue, .project-page .fixedCosts .variableValue, .project-page .unworkedHours .variableValue,
 .project-page .total .variableValue, .project-page .projectFixedCost .variableValue, .project-page .taskTotal .variableValue{
     float: right;
@@ -596,10 +557,15 @@ h2{
 .resources-page .wegas-slidepanel-toggled .slidepanel-title{
     background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat 7px -71px;
 }
+.wegas-pmg-reservation .present, .wegas-pmg-reservation .futur {
+    cursor: pointer;
+}
+.wegas-pmg-reservation .noteditable-period {
+    cursor: default;
+}
 /*---------------------------- Cursor pointer ---------------------*/
-.gantt-plannification-page tbody .present, .gantt-plannification-page tbody .futur,
-.resources-page tbody .present, .resources-page tbody .futur, .assignment span,
-table tbody .popup{
+.gantt-plannification-page .present, .gantt-plannification-page .futur, 
+.assignment span, table tbody .popup{
     cursor: pointer;
 }
 
@@ -613,35 +579,24 @@ table tbody .popup{
     background-color: #878787;
     opacity: 0.3;
 }
-
 .gantt-execution-page .plannification:only-child{
     margin-top: -14px;
 }
-
 .gantt-execution-page .activity:only-child,
 .gantt-execution-page .progress:nth-of-type(1) {
     margin-top: 14px;
 }
 
 /*---------------------------- EVM-page---------------------------------*/
-/*.evm-page h2 {
-    border: none;
-}*/
-
 .evm-page .slidepanel-content{
     overflow:hidden;
     width:100%;
 }
-
 .evm-page .slidepanel-title{
-    /*background-image: url(wegas-pmg/images/h2.png);*/
-    /*background-repeat: repeat-x;*/
-    /*background-color: white;*/
     height:26px;
     width:100%;
     padding-bottom: 1px;
 }
-
 .evm-page .wegas-chart {
     margin-left: 48px;
     margin-top: 15px;
@@ -652,10 +607,4 @@ table tbody .popup{
     margin-bottom: 3px;
     font-weight: bold;
     font-size: 9pt;
-}
-
-
-/* Editor styles (right panel form) */ 
-.editor-resources-skillset, .editor-resources-occupations {
-    display: block !important;
 }

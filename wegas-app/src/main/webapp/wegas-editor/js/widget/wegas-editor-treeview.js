@@ -173,9 +173,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
      */
     var TeamTreeView = Y.Base.create("wegas-editor-treeview", EditorTreeView, [], {
         CONTENT_TEMPLATE: '<div class="wegas-editor-treeview-team">'
-            + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 255px">'
+            + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 100px">'
             + '<div class="yui3-u yui3-u-col1">Name</div>'
-            //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -250px;width:250px">'
+            //+ '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -100px;width:100px">'
             //+ '<div class="yui3-u">Players</div></div>'
             + '</div>' + '<div class="treeview"></div>' + '</div>',
         renderUI: function() {
@@ -188,6 +188,11 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);
 
+            this.treeView.each(function(n) {
+                if (n.get("data.entity").get("players") && !n.get("data.entity").get("players").length) {
+                    n.get("boundingBox").addClass("noPlayer");
+                }
+            });
             //this.plug(Plugin.EditorTVToggleClick);
             //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
             //    this.get("parent").set("label", "Players");
@@ -217,6 +222,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         expanded = Y.Array.find(children, function(p) {
                             return p.selected;
                         }) || !collapsed;
+
+                    expanded = !collapsed;
 
                     return {
                         type: "TreeNode",

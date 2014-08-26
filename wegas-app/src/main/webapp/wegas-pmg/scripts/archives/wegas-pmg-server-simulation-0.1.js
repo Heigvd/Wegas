@@ -10,7 +10,6 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
- * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 var taskTable, currentPeriod,
     DEBUGMODE = false,
@@ -375,6 +374,7 @@ function getAssignables(assignments, currentStep) {
             })) {
                 return a;
             } else {
+                // NOT MY WORK
                 sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la tâche : ' + a.taskDescriptor.label,
                     'Je suis censé travailler sur la tâche "' + a.taskDescriptor.label + '" mais je ne suis pas qualifié pour ce travail. <br/>'
                     + ' Salutations <br/>' + a.resourceInstance.descriptor.label + '<br/> ' + a.resourceInstance.mainSkill,
@@ -412,10 +412,12 @@ function checkAssignments(employeeInst, currentStep) {
         taskInst = taskDesc.getInstance();
         if (taskInst.getPropertyD("completeness") >= 100) {
             if (nextTasks[0]) {
+                // EndOfTask SWITCH 
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.label,
                     'La tâche "' + taskDesc.label + '" est terminée, je passe à la tâche ' + nextTasks[0].taskDescriptor.label + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             } else {
+                // EndOfTask OTHER ACTIVITIES
                 sendMessage('(' + getStepName(currentStep) + ') Fin de la tâche : ' + taskDesc.label,
                     'La tâche "' + taskDesc.label + '" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);

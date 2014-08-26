@@ -15,7 +15,8 @@
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
-var resourceController, questionController;
+var resourceFacade,
+    questionFacade;
 
 /**
  * @param {string} name the variable descriptor's name (i.e. scriptAlias) to look for
@@ -23,10 +24,16 @@ var resourceController, questionController;
  * @throw NotFound
  */
 function getVariableDescriptor(name) {
-    var vd = Variable.findByName(gameModel, name);
+    var vd;
+    try{
+        vd = Variable.findByName(gameModel, name);
+    } catch (e){
+        vd = null;
+    }
     assertNotNull(vd, name, "not found");
     return vd;
 }
+
 
 function assertNotNull(variable, varname, msg) {
     if (!variable) {
@@ -35,25 +42,41 @@ function assertNotNull(variable, varname, msg) {
 }
 
 function assertEquals(expected, found, msg) {
-    if (expected != found) {
+    if (expected != found) {  // DO NOT USE === 
 //        debug("ERROR: assert equals does not match");
         throw new Error(msg + " (expected " + expected + ", found " + found + ")");
     }
 }
 
-function loadResourceController() {
-    if (!resourceController) {
-        debug("Load ResourceController");
-        resourceController = lookupBean("ResourceController");
-        debug("Load ResourceController: DONE");
+function checkChoiceHasBeenSelected(choice){
+    assertEquals(true, choice.hasBeenSelected(self), 
+                 choice.getQuestion().getLabel() 
+                 + " ==> " + choice.getLabel() + " has not been selected");
+}
+
+function checkProperty(vd, property, expected, callee){
+    assertEquals(expected, vd.instance.getProperty(property), 
+    callee + ": " + vd.getLabel() + " " + property + " does not match");
+}
+
+function checkDescriptorProperty(vd, property, expected, callee){
+    assertEquals(expected, vd.getProperty(property), 
+    callee + ": " + vd.getLabel() + " " + property + " does not match");
+}
+
+function loadResourceFacade() {
+    if (!resourceFacade) {
+        debug("Load ResourceFacade");
+        resourceFacade = lookupBean("ResourceFacade");
+        debug("Load ResourceFacade: DONE");
     }
 }
 
-function loadQuestionController() {
-    if (!questionController) {
-        debug("Load QuestionController...");
-        questionController = lookupBean("QuestionController");
-        debug("Load QuestionController: DONE");
+function loadQuestionFacade() {
+    if (!questionFacade) {
+        debug("Load QuestionFacade...");
+        questionFacade = lookupBean("QuestionDescriptorFacade");
+        debug("Load QuestionFacade: DONE");
     }
 }
 
@@ -64,8 +87,13 @@ function loadQuestionController() {
  */
 function selectChoice(choice) {
     debug("select choice");
-    loadQuestionController();
-    questionController.selectChoice(self.id, choice.id);
+    loadQuestionFacade();
+    if (choice.getClass().toString() == "class com.wegas.mcq.persistence.ChoiceDescriptor" || 
+        choice.getClass().toString() == "class com.wegas.mcq.persistence.SingleResultChoiceDescriptor"){
+            questionFacade.selectAndValidateChoiceTEST(choice.id, self.id);
+    } else {
+        throw new Error("Given choice \"" + choice + "\" is not a choice");
+    }
     debug("select choice : DONE");
 }
 
@@ -76,9 +104,9 @@ function selectChoice(choice) {
  */
 function plan(task) {
     debug ("Plan task " + task);
-    loadResourceController();
+    loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
-        resourceController.addTaskPlannification(self.id ,task.instance.id, arguments[i]);
+        resourceFacade.addTaskPlannification(self.id, task.instance.id, arguments[i]);
     }
     debug ("Plan task: DONE");
 }
@@ -92,11 +120,22 @@ function plan(task) {
  */
 function assign(resource) {
     debug ("Assign: " + resource);
-    loadResourceController();
+    loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
-        resourceController.addAssignment(resource.instance.id, arguments[i]);
+        resourceFacade.assign(resource.instance, arguments[i]);
     }
     debug("Assign: DONE");
+}
+
+function clearAssignments(resource){
+    var i, toRemove = [];
+    for (i = 0; i < resource.instance.assignments.size(); i++) {
+        toRemove.push(resource.instance.assignments.get(i));
+    }
+
+    Y.Array.each(toRemove, function(a) {
+        removeAssignment(resource.instance, a);
+    });
 }
 
 /**
@@ -107,9 +146,9 @@ function assign(resource) {
  */
 function reserve(resource) {
     debug ("Reserve: " + resource);
-    loadResourceController();
+    loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
-        resourceController.addReservation(resource.instance.id, arguments[i]);
+        resourceFacade.reserve(resource.instance, arguments[i]);
     }
     debug ("reserve: DONE");
 }

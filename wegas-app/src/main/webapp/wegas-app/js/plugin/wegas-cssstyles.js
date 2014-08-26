@@ -109,7 +109,7 @@ YUI.add('wegas-cssstyles', function(Y) {
                         if (value) {
                             value = Y.Lang.trim(value);
                             if (Y.Array.indexOf(CSSStyles.MEASURE_STYLE, style) > -1
-                                    && parseInt(value, 10).toString() === value) {
+                                && parseInt(value, 10).toString() === value) {
                                 styles[style] = value + CSSStyles.MEASURE_SUFFIX;
 
                             }

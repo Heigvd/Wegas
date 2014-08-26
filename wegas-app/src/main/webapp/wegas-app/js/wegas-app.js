@@ -57,15 +57,25 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         render: function() {
-            var ds, dsClass, widgetCfg,
+
+            // Add loading animation (done without YUI cause node module is not available yet)
+            document.body.innerHTML += "<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>";
+
+            var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), //                       // Data sources cfg objects
+
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() {                                        // When a response to initial requests is received
                     requestCounter -= 1;
+                    document.getElementsByClassName("wegas-loading-app-current")[0].setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
+
                     if (requestCounter === 0) {                                 // If all initial request are completed,
-                        this.widget = Wegas.Widget.create(widgetCfg)            // instantiate the root widget
-                            .render();                                          // and render it
-                        this.fire("render");                                    // fire a render event for some eventual post processing
+                        Y.later(10, this, function() {                          // Let the loading div update
+                            this.widget = Wegas.Widget.create(widgetCfg)        // Instantiate the root widget
+                                .render();                                      // and render it
+                            this.fire("render");                                // Fire a render event for some eventual post processing
+                            Y.one(".wegas-loading-app").remove();
+                        });
                     }
                 };
 
@@ -93,15 +103,15 @@ YUI.add('wegas-app', function(Y) {
                     widgetCfg = e.response.results;                             // store the result for later use
                     Wegas.use(widgetCfg, Y.bind(onRequest, this));              // Optim: Load pages dependencies as soon as the data is received
                 }, this);
+                totalRequests = requestCounter;
             }, this));
 
             // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
                 var body = Y.one("body");
-                body.removeClass("wegas-loading-overlay");                      // Remove loading overlay on render
                 body.on("key", function() {                                     // Add shortcut to activate developper mode
-                    body.toggleClass("wegas-stdmode");                          // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                    body.toggleClass("wegas-advancedmode");
+                    body.toggleClass("wegas-stdmode")                           // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                        .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y;                                         // Allow access to Y instance
                 }, "167", this);                                                // on key '°' pressed
             }, this);

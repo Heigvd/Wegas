@@ -12,7 +12,7 @@ YUI.add('wegas-editor-form', function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", inputEx = Y.inputEx, Lang = Y.Lang,
-            Wegas = Y.Wegas, Form, EditEntityForm;
+        Wegas = Y.Wegas, Form, EditEntityForm;
 
     /**
      * @name Y.Wegas.Form
@@ -199,11 +199,11 @@ YUI.add('wegas-editor-form', function(Y) {
             var entity = this.get("entity");
 
             if ((Wegas.persistence.VariableDescriptor &&
-                    (entity instanceof Wegas.persistence.VariableDescriptor
-                            || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
-                    || entity instanceof Wegas.persistence.JpaAccount
-                    || entity instanceof Wegas.persistence.GameModel
-                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entities, just need to check if it causes bugs
+                (entity instanceof Wegas.persistence.VariableDescriptor
+                    || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
+                || entity instanceof Wegas.persistence.JpaAccount
+                || entity instanceof Wegas.persistence.GameModel
+                || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entities, just need to check if it causes bugs
                 this.showOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// Retrieve the entity from the source
                     on: {

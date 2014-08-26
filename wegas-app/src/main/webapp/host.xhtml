@@ -13,96 +13,111 @@
 
         <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
         
-        <ui:define name="editorFooter">
-        Y.Wegas.app.after("render", function(e) {
-            var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
-            
-            Y.one(".wegas-title").setContent("&lt;div>" + g.get("name") + "&lt;/div>"
-                + "&lt;div class='subtitle'>" + g.get("gameModelName") + "&lt;/dvi>");// Update the title
+        <script><ui:define name="editorFooter"><![CDATA[
+                        
+            Y.Wegas.app.once("render", function() {                
+                Y.one("body").addClass("wegas-hostmode");
                 
-            Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
-                var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
-                
-                if (!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
-                    playersTree.treeView.plug(Y.Plugin.TeamSelection);
-                }
-                
-                for (i = 0; i &lt; playersTree.treeView.size(); i += 1) {
-                    if (playersTree.treeView.item(i).get("data").entity.get("players") &amp;&amp; !playersTree.treeView.item(i).get("data").entity.get("players").length) {
-                            playersTree.treeView.item(i).get("boundingBox").addClass("noPlayer");
-                    }
-                }
-                
-                playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
-                    var entity = e.target.get("data.entity"),
-                            player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
-                    
-                    if (!player) {
-                        this.showMessageBis("info", "This team is empty", 4000);
-                        return;
-                    }
-                    
-                    //Check if click is whit multiselect plugin
-                    if (e.currentTarget.treeView.treeviewselect){
-                        return
-                    }
-                    Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
-                });
-                                
+                // Handle switch from host to edit mode
                 var body = Y.one("body"),
                     button = new Y.Wegas.ToggleButton({
-                        label: "Enable edition",
-                        cssClass: "wegas-advanced-feature"
+                        label: "Edit game",
+                        cssClass: "host-switchmode"
                     }).render();
 
-                body.addClass("wegas-hostmode");
-
-                button.get("boundingBox").addClass("host-switchmode");
                 button.after("pressedChange", function(e) {
-                    body.addClass("wegas-loading-after");
+                body.addClass("wegas-loading-after");
 
                     Y.Wegas.Facade.Page.cache.clear();
                     Y.Wegas.Facade.Page.set("initialFullRequest",
                         e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
 
-                    app.widget.destroy();                                   // Destroy the current view
-                    Y.Wegas.Facade.Page.once("response", function(e) {      // When page data source response arrives,
-                        var widgetCfg = e.response.results;
-                        Y.Wegas.use(widgetCfg, Y.bind(function() {
-                            app.widget = Y.Wegas.Widget.create(Y.clone(widgetCfg)).render();// Instantiate the root widget and render it
-                            this.fire("render");                            // Fire a render event for some eventual post processing
+                    app.widget.destroy();                                       // Destroy the current view
 
-                            body.toggleClass("wegas-hostmode")
-                                .toggleClass("wegas-editmode")
-                                .removeClass("wegas-loading-after");
-                        }, this));
-                    }, this);
+                    Y.Wegas.Facade.Page.once("response", function(e) {          // When page data source response arrives,
+                        var widgetCfg;
+                        if (e.cfg.initialRequest) {
+                            widgetCfg = Y.clone(e.response.results);
+                            Y.Wegas.use(widgetCfg, Y.bind(function() {
+
+                                body.toggleClass("wegas-hostmode")
+                                    .toggleClass("wegas-editmode");
+
+                                app.widget = Y.Wegas.Widget.create(widgetCfg).render();// Instantiate the root widget and render it
+                                app.fire("render");                                 // Fire a render event for some eventual post processing
+
+                                body.removeClass("wegas-loading-after");
+                            }));
+                        }
+                    });
                     Y.Wegas.Facade.Page.sendInitialRequest();
                 });
-                
-                // Handle player change event
-                Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
-                    var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
-                        preview = Y.Widget.getByNode(".editor-preview");
 
-                    this.set('currentTeamId', player.get("teamId"));        // Update current teamid
+                        // Handle player change event
+                        Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function() {// Whenever the current player id changes
+                            var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
+                                preview = Y.Widget.getByNode(".editor-preview");
 
-                    preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
+                            this.set('currentTeamId', player.get("teamId"));            // Update current teamid
 
-                    Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
-                        Y.Wegas.Facade.Variable.fire("update");
-                        preview.hideOverlay();
+                            preview.showOverlay();                                      // Show a loading overlay in the Preview tab during the request
+
+                            Y.later(10, this, function() {                              // Version 1: All data are loaded, only need to change trigger udate
+                                Y.Wegas.Facade.Variable.fire("update");
+                                preview.hideOverlay();
+                            });
+
+                            //Y.Wegas.Facade.Variable.set("source",                     // Version 2: Only current player data are loaded, need to update the datasource
+                            //    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
+                            //    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
+                            //    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
+                            //    + "/VariableDescriptor");                         // Retrieve variable instances for the new player
+                            //Y.Wegas.Facade.Variable.once("response", preview.hideOverlay, preview);
+                        });
                     });
 
-                    //Y.Wegas.Facade.Variable.set("source",                   // Version 2: Only current player data are loaded, need to update the datasource
-                    //    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
-                    //    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
-                    //    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")
-                    //    + "/VariableDescriptor");                         // Retrieve variable instances for the new player
-                    //Y.Wegas.Facade.Variable.once("response", preview.hideOverlay, preview);
+                Y.Wegas.app.on("render", function() {
+                    Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
+                        var i, playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
+
+                        if (!playersTree)
+                            return; // Edit mode
+
+                        if (!Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
+                            playersTree.treeView.plug(Y.Plugin.TeamSelection);
+                        }
+
+                        for (i = 0; i < playersTree.treeView.size(); i += 1) {
+                            if (playersTree.treeView.item(i).get("data.entity").get("players") & !playersTree.treeView.item(i).get("data.entity").get("players").length) {
+                                playersTree.treeView.item(i).get("boundingBox").addClass("noPlayer");
+                            }
+                        }
+
+                        // Switch current player on treeview click
+                        playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
+                            var entity = e.target.get("data.entity"),
+                                player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
+
+                            if (!player) {
+                                this.showMessageBis("info", "This team is empty", 4000);
+                                return;
+                            }
+
+                            if (e.currentTarget.treeView.treeviewselect) {           //Check if click is with multiselect plugin
+                                return;
+                            }
+                            Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
+                        });
+                    });
                 });
-            });            
-        });
-        </ui:define>
+
+                Y.Wegas.app.after("render", function() {
+                    var g = Y.Wegas.Facade.Game.cache.getCurrentGame();
+                    Y.one(".wegas-title").setContent("<div>" + g.get("name") + "</div>"
+                        + "<div class='subtitle'>" + g.get("gameModelName") + "</div>");// Update the title
+                });
+
+        //]]></ui:define></script>
+        
     </ui:composition>
 </html>

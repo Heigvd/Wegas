@@ -1,0 +1,111 @@
+{
+    "type": "ResizableLayout",
+    "top": {
+        "height": 25,
+        "children": [{
+                "type": "Button",
+                "cssClass": "wegas-logo",
+                "tooltip": "Back to lobby",
+                "plugins": [{
+                        "fn": "OpenUrlAction",
+                        "cfg": {
+                            "url": "",
+                            "target": "_self"
+                        }
+                    }]
+            }, {
+                "type": "Text",
+                "cssClass": "wegas-title"
+            }, {
+                "type": "UserLoginButton"
+            }]
+    },
+    "left": {
+        "width": 300,
+        "children": [{
+                "type": "TabView",
+                "id": "leftTabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [{
+                        "label": "Players",
+                        "cssClass": "wegas-tabview-fullheight",
+                        "children": [{
+                                "type": "TeamTreeView",
+                                "dataSource": "Game",
+                                "plugins": [{
+                                        "fn": "WidgetToolbar"
+                                    }]
+                            }]
+                    }, {
+                        "type": "Tab",
+                        "label": "Variables",
+                        "cssClass": "editor-variables",
+                        "children": [{
+                                "type": "VariableTreeView",
+                                "dataSource": "Variable",
+                                "plugins": [{
+                                        "fn": "EditorTVNodeLoader"
+                                    }, {
+                                        "fn": "WidgetToolbar"
+                                    }]
+                            }]
+                    }, {
+                        "type": "Tab",
+                        "label": "Pages",
+                        "cssClass": "editor-pages",
+                        "children": [{
+                                "type": "PageTreeview"
+                            }]
+                    }]
+            }]
+    },
+    "center": {
+        "children": [{
+                "id": "centerTabView",
+                "type": "TabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "children": [{
+                        "type": "Tab",
+                        "label": "Preview",
+                        "children": [{
+                                "type": "PageLoader",
+                                "pageLoaderId": "previewPageLoader",
+                                "defaultPageId": 1,
+                                "cssClass": "editor-preview wegas-playerview",
+                                "plugins": [{
+                                        "fn": "PreviewFullScreen"
+                                    }, {
+                                        "fn": "WidgetToolbar"
+                                    }, {
+                                        "fn": "Injector"
+                                    }, {
+                                        "fn": "PopupListener",
+                                        "cfg": {
+                                            "showServerMessages": true
+                                        }
+                                    }
+                                ]
+                            }]
+                    }, {
+                        "label": "Impact",
+                        "children": [{
+                                "type": "WysiwygConsole",
+                                "cssClass": "wegas-console"
+                            }]
+                    }]
+            }]
+    },
+    "right": {
+        "width": "455px",
+        "children": [{
+                "type": "TabView",
+                "id": "rightTabView",
+                "cssClass": "wegas-tabview-fullheight",
+                "plugins": [{
+                        "fn": "LayoutToggleTab"
+                    }, {
+                        "fn": "RemoveTab"
+                    }]
+            }]
+    }
+}

@@ -131,27 +131,33 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.flush();
     }
 
+    /**
+     * Find a unique name for this new game (e.g. Oldname(1))
+     *
+     * @param oName
+     * @return
+     */
+    public String findUniqueName(String oName) {
+        int suffix = 0;
+        String newName = oName;
+        while (true) {
+            try {
+                this.findByName(newName);
+            } catch (NoResultException ex) {
+                return newName;
+            } catch (NonUniqueResultException ex) {
+            }
+            newName = oName + "(" + suffix + ")";
+            suffix++;
+        }
+    }
+
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
         final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
 
-        boolean added = false;                                                  // Find a unique name for this new game (e.g. Oldname(1))
-        int suffix = 1;
-        String newName;
-        while (!added) {
-            newName = srcGameModel.getName() + "(" + suffix + ")";
-            try {
-                this.findByName(newName);
-                suffix++;
-            } catch (NoResultException ex) {
-                newGameModel.setName(newName);
-                added = true;
-            } catch (NonUniqueResultException ex) {
-                suffix++;
-            }
-        }
-
+        newGameModel.setName(this.findUniqueName(srcGameModel.getName()));      // Find a unique name for this new game (e.g. Oldname(1))
         this.create(newGameModel);                                              // Create the new game model
 
         try {                                                                   // Clone files and pages
@@ -253,10 +259,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     /**
      * This method just do nothing but is very useful for some (obscure) purpose
      * like adding breakpoints in a javascript
-     * 
-     * @param msg 
+     *
+     * @param msg
      */
-    public final void nop(String msg){
+    public final void nop(String msg) {
         // for JS breakpoints...
     }
 }

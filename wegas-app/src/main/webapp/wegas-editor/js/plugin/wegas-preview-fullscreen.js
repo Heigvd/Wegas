@@ -20,26 +20,20 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
             var host = this.get('host');
 
             if (host.toolbar) {
-                this.swapNode = Y.Node.create("<span></span>");
+                this.swapNode = Y.Node.create("<span class='wegas-fullscreen'></span>");
                 Y.one("body").append(this.swapNode);
-                //this.fullScreenButton = host.toolbar.add(new Y.ToggleButton({
-                //    label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
-                //})).item(0);
 
-                this.fullScreenButton = new Y.ToggleButton({
+                var fullScreenButton = host.toolbar.add({
+                    type: "ToggleButton",
                     label: "<span class='wegas-icon wegas-icon-fullscreen'></span>Fullscreen"
-                });
-                this.fullScreenButton.render(host.toolbar.get("header"));
+                }).item(0);
 
-                this.fullScreenButton.after("pressedChange", function() {
-                    this.get("host").get("boundingBox").swap(this.swapNode);
+                fullScreenButton.after("pressedChange", function() {
+                    host.get("boundingBox").swap(this.swapNode);
                 }, this);
             }
         },
         destructor: function() {
-            if (this.fullScreenButton) {
-                this.fullScreenButton.destroy();
-            }
             if (this.swapNode) {
                 this.swapNode.destroy(true);
             }

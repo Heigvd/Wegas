@@ -12,7 +12,7 @@
 YUI.add("wegas-pageeditor-dragdrop", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
-            BOUNDINGBOX = "boundingBox";
+        BOUNDINGBOX = "boundingBox";
     /**
      * PageEditor Plugin Extension enabling position drag and drop.
      * @constructor
@@ -87,10 +87,10 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
             }, this);
             this._dd.on("drag:end", function(e) {
                 var bb = this._dd.get("dragNode"),
-                        widget = Y.Widget.getByNode(bb),
-                        oldStyles = widget.CSSPosition.get("styles"),
-                        newStyles = {},
-                        style;
+                    widget = Y.Widget.getByNode(bb),
+                    oldStyles = widget.CSSPosition.get("styles"),
+                    newStyles = {},
+                    style;
                 for (style in oldStyles) {
                     if (oldStyles.hasOwnProperty(style)) {
                         if (oldStyles[style] !== "") {

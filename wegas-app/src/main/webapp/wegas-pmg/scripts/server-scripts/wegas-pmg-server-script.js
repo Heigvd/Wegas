@@ -145,6 +145,7 @@ function updateVariables() {
         planedValue = Variable.findByName(gm, 'planedValue'),
         earnedValue = Variable.findByName(gm, 'earnedValue'),
         actualCost = Variable.findByName(gm, 'actualCost'),
+        projectUnworkedHours = Variable.findByName(gm, 'projectUnworkedHours'),
         tasks = getActiveTasks(),
         pv = calculatePlanedValue(Variable.findByName(gm, 'periodPhase3').getValue(self));// pv = for each task, sum -> bac * task completeness / 100
 
@@ -177,6 +178,7 @@ function updateVariables() {
         return t.getPropertyD('completeness');
     }) / tasks.length);                                                     // completness = average of all task's completeness in %
 
+    ac += projectUnworkedHours.getValue(self);
 
     planedValue.setValue(self, pv);
 

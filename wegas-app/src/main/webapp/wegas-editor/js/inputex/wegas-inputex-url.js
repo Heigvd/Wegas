@@ -106,7 +106,7 @@ YUI.add("wegas-inputex-url", function(Y) {
         setValue: function(val) {
             inputEx.Wegas.ImageUrlField.superclass.setValue.apply(this, arguments);
             var cb = new Y.Node(this.divEl),
-                    previewNode = cb.one(".preview");
+                previewNode = cb.one(".preview");
             if (val && val.length > 0) {
                 previewNode.setContent('<img data-file="' + val + '" style="max-width:100%;padding-top: 5px;" />');
                 Y.Plugin.Injector.parser(previewNode.one("img"));               // Manually run parser, since it is not plugged on the editor

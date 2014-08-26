@@ -1,38 +1,34 @@
-/*occupation & activity plugin css */
-
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+/* Occupation & activity plugin css */
 .yui3-datatable-table .editable {
     display:block;
     background-color: #3399FF;
     height:14px;
 }
-
 .yui3-datatable-table .notEditable {
     display:block;
     background-color: #FF0000;
     height:14px;
 }
-
-.yui3-datatable-table .engagementDelay {
-    display:block;
-    background-image:url(../../wegas-pmg/images/hatching.png);
-    background-repeat: repeat;
-    height:14px;
-}
-
+.yui3-datatable-table .engagementDelay,
 .yui3-datatable-table .delay .editable {
     display:block;
     background-image:url(../../wegas-pmg/images/hatching.png);
     background-repeat: repeat;
     height:14px;
 }
-
 .yui3-datatable-table .fill100 {
     display:block;
     background-color: #3399FF;
     height:14px;
     opacity:  0.3;
 }
-
 .yui3-datatable-table .fill0to25 {
     display:block;
     background-color: #3399FF;
@@ -40,7 +36,6 @@
     opacity:  0.3;
     margin-right: 75%;
 }
-
 .yui3-datatable-table .fill0to50 {
     display:block;
     background-color: #3399FF;
@@ -48,7 +43,6 @@
     opacity:  0.3;
     margin-right: 50%;
 }
-
 .yui3-datatable-table .fill0to75 {
     display:block;
     background-color: #3399FF;
@@ -56,7 +50,6 @@
     opacity:  0.3;
     margin-right: 25%;
 }
-
 .yui3-datatable-table .fill25to100 {
     display:block;
     background-color: #3399FF;
@@ -64,7 +57,6 @@
     opacity:  0.3;
     margin-left: 25%;
 }
-
 .yui3-datatable-table .fill50to100 {
     display:block;
     background-color: #3399FF;
@@ -72,7 +64,6 @@
     opacity:  0.3;
     margin-left: 50%;
 }
-
 .yui3-datatable-table .fill75to100 {
     display:block;
     background-color: #3399FF;
@@ -80,50 +71,49 @@
     opacity:  0.3;
     margin-left: 75%;
 }
-
 tbody .past span {
     opacity:  0.3;
 }
-
 tbody .past .activity {
     opacity:  1;
 }
-
 .body .yui3-datatable-cell.schedulecolumn{
     border-left: 1px solid lightgray;
+    -moz-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
-
 .yui3-skin-sam tbody .schedulecolumn.past {
     background: #f7f7f7;
 }
-.yui3-datatable-columns .schedulecolumn.present, .yui3-datatable-columns .schedulecolumn.present-auto{
+.yui3-datatable-columns .schedulecolumn.present {
     /*background-image: url(../../wegas-pmg/images/next.png), url(../../wegas-pmg/images/h2.png);*/
     /*background-repeat: no-repeat, repeat-x;*/
     /*background-position: left, center;*/
     background: #0981A9;
     color: white;
 }
-
 .body .yui3-datatable-columns .past{
     background-color: #c0c0c0;
     background-image: none;
 }
-
 .yui3-datatable-data .right {
     text-align:right;
 }
-
 .yui3-datatable-data .center {
     text-align:center;
 }
-/*Assignment plugin CSS */
+
+/* Assignment plugin CSS */
 .yui3-datatable-col-assignments .assignment{
     display:block;
     float: left;
-    width:10%;
+    width: 17px;
     text-align: center;
+    margin-top: 1px;
 }
-
 .yui3-datatable-col-assignments .assignment span{
     display:block;
     float: left;
@@ -131,45 +121,70 @@ tbody .past .activity {
     height:16px;
     width:16px;
 }
-
 .yui3-datatable-col-assignments .assignment .assign{
     background-image: url(../../wegas-pmg/images/add.png);
 }
-
 .yui3-datatable-col-assignments .tasks{
     display:block;
     float: left;
     width:80%;
 }
-
-.yui3-datatable-col-assignments .task{
-    /*    display:inline-block;
-        padding: 0 5px;*/
+.yui3-datatable-col-assignments .task {
     display: block;
     float: left;
+    /* width: 15px; */
+    /*height: 40px;*/
+    position: relative;
+    margin: 0 1px;
+}
+.yui3-datatable-col-assignments .task:hover .label {
+    background: #0981A9;
+    color: white;
+}
+.yui3-datatable-col-assignments .task .label {
+    cursor: move;
+    padding: 0 3px;
+    display: block;
     font-style:normal;
     text-align:center;
-    width: 15px;
-    /*height: 40px;*/
     line-height:17px;
-    border: 1px solid #000;
-    margin: 0 0 0 3px;
+    border: 1px solid gray;
+    /* margin: 0; */
     color:#000000;
-    -moz-box-shadow:4px 4px 7px rgba(0,0,0, 0.4);
-    -webkit-box-shadow:4px 4px 7px rgba(0,0,0, 0.4);
-    box-shadow:4px 4px 7px rgba(0,0,0, 0.4);
-    -moz-border-radius:3px;
-    -webkit-border-radius:3px;
-    cursor: move;
+    letter-spacing: -2px;
+    padding-right: 5px;
+    border-radius: 2px;
 }
-
-.tasks .task .remove {
-    display: block;
+.tasks .task .menu {
+    display: none; 
+    position: absolute;
+    padding-top: 3px;
+    margin-top: 17px;
+    top: 0;  
+    left: -10px;  
+    width: 41px;
+}
+.tasks .task .remove, 
+.tasks .task .dirleft,
+.tasks .task .dirright {
     height: 16px;
     width: 16px;
-    margin-top: -17px;
     background-image: url(../../wegas-pmg/images/remove.png);
     cursor: pointer;
+    top: 37px;
+    display: inline-block;
+} 
+.tasks .task:hover .menu, 
+.tasks .task:hover .menu:hover {
+    display: block;
+}
+.tasks .task .dirleft {
+    background: url(../../wegas-pmg/images/move-left.png) -3px;  
+    width: 10px;
+}
+.tasks .task .dirright {
+    background: url(../../wegas-pmg/images/move-right.png) -3px;  
+    width: 10px;
 }
 /* bac plugin */
 .yui3-datatable-table input.invalid{
@@ -189,6 +204,10 @@ tbody .past .activity {
 .yui3-menu-content > button.pmg-line-completeness-started{
     background-color: #FFFDC2;
 }
+.yui3-button.pmg-menu-invalid { 
+    opacity: 0.8;
+    cursor: default;
+}
 
 /* --------------- SlidePanel css ------------------------------------*/
 .wegas-pmg-slidepanel .wegas-pmg-slidepanel-content{
@@ -196,7 +215,7 @@ tbody .past .activity {
     width:100%;
 }
 
-/* legends */
+/* Legends */
 .pmg-legend{
     margin: 5px 10px 10px;
     padding: 1px 0;

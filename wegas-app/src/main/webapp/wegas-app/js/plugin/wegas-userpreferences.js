@@ -16,12 +16,12 @@ YUI.add("wegas-userpreferences", function(Y) {
             this.get("host").get("boundingBox").addClass("userPreferences");
             this.afterHostEvent("render", function() {
                 var k, entity = Y.Wegas.Facade.User.get("currentUser").getMainAccount(),
-                        host = this.get("host"),
-                        fieldsToIgnore = [];
+                    host = this.get("host"),
+                    fieldsToIgnore = [];
 
                 for (k in entity.toObject()) {                                  //hide ineditable fields
                     if (k !== 'firstname' && k !== 'lastname' && k !== 'username'
-                            && k !== 'password' && k !== 'submit') {
+                        && k !== 'password' && k !== 'submit') {
                         fieldsToIgnore.push(k);
                     }
                 }
@@ -37,8 +37,8 @@ YUI.add("wegas-userpreferences", function(Y) {
         },
         sendUpdate: function() {
             var user = Y.Wegas.Facade.User.get("currentUser").getMainAccount().toObject(),
-                    host = this.get("host"),
-                    updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
+                host = this.get("host"),
+                updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
 
             Y.Wegas.Facade.User.sendRequest({
                 request: "/Account/" + updatedAccount.id,

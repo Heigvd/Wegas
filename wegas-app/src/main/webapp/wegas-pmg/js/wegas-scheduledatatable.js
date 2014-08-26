@@ -12,8 +12,7 @@
 YUI.add('wegas-scheduledatatable', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, ScheduleDT,
-        AUTO_SUFFIX = "-auto";
+    var Wegas = Y.Wegas, ScheduleDT;
 
     /**
      *  @class Add column to datatable
@@ -23,81 +22,40 @@ YUI.add('wegas-scheduledatatable', function(Y) {
      */
     ScheduleDT = Y.Base.create("wegas-scheduledatatable", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.ScheduleDT */
-
         /**
          * Lifecycle methods
          * @function
          * @private
          */
         initializer: function() {
-            this.initColumn();
-
-            this.updateHandler = Wegas.Facade.Variable.after("update", function() {
-                Y.log("sync()", "log", "Wegas.ScheduleDT");
-                this.columnUpdate();
-            }, this);
+            this.sync();
+            this.updateHandler = Wegas.Facade.Variable.after("update", this.sync, this);
         },
-        initColumn: function() {
-            //var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
-            var executionPeriods = this.initialMaximum(),
-                periodPhase3 = this.currentPeriod();
-            if (periodPhase3 >= executionPeriods) {
-                this.setColumn(periodPhase3 + 1);
-                this.currentVal = periodPhase3 + 1;
-            } else {
-                this.setColumn(executionPeriods);
-                this.currentVal = executionPeriods;
-            }
-        },
-        columnUpdate: function() {
-            //var executionPeriods = Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                //periodPhase3 = Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue();
-            var executionPeriods = this.initialMaximum(),
-                periodPhase3 = this.currentPeriod();
-            if (periodPhase3 >= executionPeriods) {
-                this.setColumn(periodPhase3 + 1, this.currentVal);
-                this.currentVal = periodPhase3 + 1;
-            } else {
-                this.setTime();
-            }
+        sync: function() {
+            Y.log("sync()", "log", "Wegas.ScheduleDT");
+            this.__currentPeriod = this._currentPeriod();                       // Cache current period value
+            this.setColumn(Math.max(this.currentPeriod(), this.initialMaximum()));
+            this.setTime();
         },
         /**
          * @function
          * @private
          * @description setValue of column
          */
-        setColumn: function(newval, preval) {
-            var diff = newval - (preval ? preval : 0),
+        setColumn: function(newval) {
+            var diff = newval - (this.currentVal ? this.currentVal : 0),
                 table = this.get("host").datatable,
-                period = this.currentPeriod(),
-                bindedCP = Y.bind(this.currentPeriod, this),
-                classTime,
-                auto = this.get("autoReservation"),
-                formatter = function(o) {
-                    if (bindedCP() < o.column.time) {
-                        o.className = "futur" + (auto ? AUTO_SUFFIX : "");
-                    } else if (bindedCP() === o.column.time) {
-                        o.className = "present" + (auto ? AUTO_SUFFIX : "");
-                    } else {
-                        o.className = "past";
-                    }
+                formatter = Y.bind(function(o) {
+                    o.className = this.getClass(o.column.time);
                     return "";
-                };
+                }, this);
 
             while (diff) {
                 if (diff > 0) {
-                    if ((newval - diff + 1) === period) {
-                        classTime = "present" + (auto ? AUTO_SUFFIX : "");
-                    } else if ((newval - diff + 1) > period) {
-                        classTime = "futur" + (auto ? AUTO_SUFFIX : "");
-                    } else {
-                        classTime = "past";
-                    }
                     table.addColumn({
                         key: (newval - diff + 1).toString(),
                         time: (newval - diff + 1),
-                        className: "schedulecolumn " + classTime,
+                        className: "schedulecolumn " + this.getClass(newval - diff + 1),
                         formatter: formatter
                     });
                     diff -= 1;
@@ -106,32 +64,33 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     diff += 1;
                 }
             }
-            this.setTime();
-
+            this.currentVal = newval;
+        },
+        getClass: function(time) {
+            if (time === this.currentPeriod()) {
+                return "present";
+            } else if (time > this.currentPeriod()) {
+                return "futur";
+            } else {
+                return  "past";
+            }
         },
         setTime: function() {
-            var table = this.get("host").datatable,
-                period = this.currentPeriod(),
-                auto = this.get("autoReservation");
+            var table = this.get("host").datatable;
+
             if (table.head) {
                 table.head.theadNode.all(".schedulecolumn").each(function(item, index) {
-                    item.removeClass("present");
-                    item.removeClass("present" + AUTO_SUFFIX);
-                    item.removeClass("futur");
-                    item.removeClass("futur" + AUTO_SUFFIX);
-                    item.removeClass("past");
-                    if (period === index + 1) {
-                        item.addClass("present" + (auto ? AUTO_SUFFIX : ""));
-                    } else if (period < index + 1) {
-                        item.addClass("futur" + (auto ? AUTO_SUFFIX : ""));
-                    } else {
-                        item.addClass("past");
-                    }
+                    item.removeClass("present")
+                        .removeClass("futur")
+                        .removeClass("past")
+                        .addClass(this.getClass(index + 1));
                 }, this);
             }
-            this.lastPeriod = period;
         },
         currentPeriod: function() {
+            return this.__currentPeriod;
+        },
+        _currentPeriod: function() {
             var variable = this.get('variable.evaluated');
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
@@ -139,7 +98,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             }
             return variable.getInstance().get("value");
         },
-        initialMaximum: function(){
+        initialMaximum: function() {
             var variable = Wegas.Facade.Variable.cache.find("name", "executionPeriods");
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
@@ -148,7 +107,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             return variable.getInstance().get("value");
         },
         getCell: function(rowIndex, time) {
-            var add = (this.get("host").assignment) ? 1 : 0;                    // @hack
+            var add = this.get("host").assignment ? 1 : 0;                      // @hack
             return this.get("host").datatable.getCell([rowIndex, this.get("host").get("columnsCfg").length + time - 1 + add]);
         },
         /**
@@ -168,17 +127,9 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                     _type: "variableselect",
                     label: "Periode variable"
                 }
-            },
-            autoReservation: {
-                type: "boolean",
-                value: false,
-                _inputex: {
-                    label: "Automated reservation"
-                }
             }
         },
-        NS: "schedule",
-        NAME: "ScheduleDT"
+        NS: "schedule"
     });
     Y.Plugin.ScheduleDT = ScheduleDT;
 });

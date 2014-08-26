@@ -37,12 +37,13 @@ var gameModelFacade,
 
 
 function testArtos() {
-    var oldMode = DEBUGMODE;
-    DEBUGMODE = true;
+    //var oldMode = DEBUGMODE;
+    //DEBUGMODE = true;
     loadVariables();
 
     testGameVersion1();
-    DEBUGMODE = oldMode;
+    testArtosRealGameExample();
+    //DEBUGMODE = oldMode;
 }
 
 
@@ -56,13 +57,9 @@ function loadGameModelFacade() {
 function reset() {
     debug("Reset...");
     loadGameModelFacade();
-    //gameModelFacade.refresh(gameModel);
-    //gameModelFacade.reset(gameModel);
-}
-
-function breakpoint(msg){
-    loadGameModelFacade();
-    gameModelFacade.nop(msg);
+    gameModelFacade.refresh(gameModel);
+    gameModelFacade.reset(gameModel);
+    debug("Reset DONE");
 }
 
 function loadVariables() {
@@ -130,58 +127,127 @@ function loadVariables() {
     }
 }
 
-function planGameManual(){
-    debug("Plan");
-    // Task 01 Gantt
-    plan(task01, 1);
-    plan(task02, 2, 3);
 
-    // END GANTT
-
-    // Gaelle
-    assign(com_gaelle, task11);
-    reserve(com_gaelle, 13, 14);
-
-    // Irene
-    assign(com_irene, task03, task11);
-    reserve(com_irene, 3);
-
-    // END RESOURCE
+function init_game(){
+    reset();
+    loadVariables();
 }
 
-function testGameVersion1() {
-    var start = Date.now(),
-        a102b_a = getVariableDescriptor("a_Rencontrer"),
-        a01 = getVariableDescriptor("variable_3");
-    
-    //breakpoint("pre reset");
+/*
+ *      ,*************************************.
+ *      |               TESTS                 |
+ *      `~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
+ */
 
-    // NEVER CALL RESET 
-    // reset();  NEVER CALL RESET                                            // NEVER CALL RESET()
-    // NEVER CALL RESET 
+function testGameVersion1() {
+    var oldMode = DEBUGMODE,
+        start = Date.now(),
+        a102b, a102b_a;
+        
+    DEBUGMODE = true;
+    
+    breakpoint("pre reset");
+    reset();
 
     printDuration("reset", start);
-    
+
     breakpoint("pre load");
-    
+
     loadVariables();
+
+    
     printDuration("load", start);
 
     breakpoint("pre plan");
-    
+
     planGameManual();
     printDuration("plan", start);
 
     breakpoint("pre select 1");
-    
-    //NEVER CALL selectChoice
-    //selectChoice(a01);
+    selectChoice(getVariableDescriptor("variable_3"));  // A01
+
+    a102b = getVariableDescriptor("evaluationDesBesoinsDesMonteurs");
+    a102b_a = getVariableDescriptor("a_Rencontrer");
     
     breakpoint("pre select 2");
-    
-    // Choice1
-    // NEVER CALL selectChoice
-    //selectChoice(a102b_a);
-    
+    selectChoice(a102b_a); // A102a
+    checkChoiceHasBeenSelected(a102b_a);
+
     printDuration("END", start);
+    
+    DEBUGMODE = oldMode;
+}
+
+
+
+function test_planTasks() {
+    plan(task01, 1);
+    plan(task02, 2, 3);
+}
+
+function test_assignResources() {
+    assign(com_gaelle, task11);
+    assign(com_irene, task03, task11);
+}
+
+function test_reserveResources() {
+    reserve(com_irene, 3);
+    reserve(com_gaelle, 13, 14);
+}
+
+function test_planGameManual() {
+    debug("Plan Manual");
+    test_planTasks();
+    test_assignResources();
+    test_reserveResources();
+}
+
+function testArtosRealGameExample() {
+    init_game();
+    planGameManual();
+    selectChoice(getVariableDescriptor("variable_3"));  // A01
+    selectChoice(getVariableDescriptor("a_Rencontrer")); // A102b
+}
+
+
+
+
+function testMessage_assign() {
+    // Com
+    assign(com_gaelle, task01);
+    assign(com_irene, task03, task01);
+    
+    // OT
+    assign(it_andre, task01);
+    
+    // Hardware
+    assign(hard_fabien, task12);
+    assign(hard_herve, task02);
+    assign(hard_pierre, task02);
+    assign(hard_zoe, task02, task03);
+}
+
+
+function planGameAuto() {
+    debug("Plan Auto");
+    testMessage_assign();
+}
+
+function goToExecution(){
+    // init_game();
+    loadVariables();
+    
+    nextPeriod(); // Planning
+
+    planGameAuto();
+
+    nextPeriod(); // Execution
+}
+
+
+function testMessages() {
+    debug ("Debug Test Messages");
+    goToExecution();
+    // do first period
+    nextPeriod();  
 }

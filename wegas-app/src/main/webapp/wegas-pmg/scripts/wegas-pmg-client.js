@@ -373,20 +373,65 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
     }
 }, true);
 
-// Load game Properties page
-var centerTab = Y.Widget.getByNode("#centerTabView");
-if (centerTab) {
-    Y.use('wegas-pageeditor-fullwidthtab', function(Y) {
-        centerTab.add({
-            label: "Properties",
+// Game properties & dashboard page
+var centerTab = Y.Widget.getByNode("#centerTabView"),
+    properties = centerTab.add({// Add properties tab
+        label: "Properties",
+        children: [{
+                type: "PageLoader",
+                pageLoaderId: "properties",
+                defaultPageId: 16
+            }]
+    }).item(0);
+
+if (centerTab && Y.one(".wegas-hostmode")) {
+    Y.use('wegas-pageeditor-fullwidthtab', function() {
+
+        // Add dashboard tab in first position
+        var dashboard = centerTab.add({
+            label: "Overview",
             children: [{
                     type: "PageLoader",
                     pageLoaderId: "properties",
-                    defaultPageId: 16
+                    defaultPageId: 17
+                }],
+            plugins: [{
+                    fn: "PageeditorFullWidthTab"
                 }]
-//            plugins: [{
-//                    fn: "PageeditorFullWidthTab"
-//                }]
-        });
+        }, 0).item(0);
+        dashboard.set("selected", 2);
+
+        properties.plug(Y.Plugin.PageeditorFullWidthTab);
     });
 }
+
+/* currently not working waiting for a new server deploy
+ Y.use("wegas-inputex-variabledescriptorselect", function(){
+ 
+ Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS["TempImpact.addImpactDuration"]={
+ label:"impact reverse",
+ "arguments":[{
+ type: "string",
+ typeInvite: "factor",
+ scriptType: "string",
+ required: true
+ },{
+ type: "string",
+ typeInvite: "task name",
+ scriptType: "string",
+ required: true
+ },{
+ type: "number",
+ typeInvite: "in period",
+ scriptType: "number",
+ required: true
+ },{
+ type: "number",
+ typeInvite: "value",
+ scriptType: "number",
+ required: true
+ }]
+ }
+ 
+ });
+ */

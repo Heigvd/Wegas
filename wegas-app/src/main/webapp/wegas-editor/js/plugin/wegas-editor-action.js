@@ -429,7 +429,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -499,7 +498,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>

@@ -18,7 +18,8 @@ public class ArtosTest extends PMGameAbstractTest {
 
     @Test
     public void testArtos() throws ScriptException {
-        this.evalScript("testArtos()");
+        //this.evalScript("testArtos()");
+        this.evalScript("testMessages()");
     }
 
     @Override
@@ -28,7 +29,7 @@ public class ArtosTest extends PMGameAbstractTest {
 
     @Override
     protected String getScriptTestPath() {
-        return "wegas-pmg-server-test-artos.js";
+        return "test-scripts/wegas-pmg-server-test-artos.js";
     }
 
 }

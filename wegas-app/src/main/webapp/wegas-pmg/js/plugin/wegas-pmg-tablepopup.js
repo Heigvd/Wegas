@@ -22,8 +22,6 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
      */
     Tablepopup = Y.Base.create("wegas-pmg-tablepopup", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Tablepopup */
-        menuDetails: null,
-        handlers: null,
         /**
          * Lifecycle methods
          * @function
@@ -35,51 +33,49 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                 width: this.get("width"),
                 points: ["tl", "tr"]
             });
-            this.onceAfterHostEvent("render", this.bind);
-            this.afterHostMethod("syncUI", this.bind);
-            this.get("host").datatable.after("sort", this.bind, this);
+            this.bind();
+            this.onceAfterHostEvent("render", this.sync);
+            this.afterHostMethod("syncUI", this.sync);
+            this.get("host").datatable.after("sort", this.sync, this);
         },
         bind: function() {
             Y.log("bind()", "log", "Wegas.Tablepopup");
-            var i, record, dt = this.get("host").datatable, field, descriptor;
+            var descriptor, field = this.get("field"),
+                dt = this.get("host").datatable;
 
+            this.handlers.push(dt.delegate("mouseover", function(e) {
+                descriptor = dt.getRecord(e.currentTarget).get("descriptor");
+                this.menuDetails.attachTo(e.currentTarget);
+
+                if (descriptor.get(field)) {
+                    this.display(descriptor.get(field));
+                } else {
+                    this.request(descriptor);
+                }
+            }, ".popup", this));
+            this.handlers.push(dt.delegate("mouseout", this.menuDetails.hide, ".popup", this.menuDetails));
+        },
+        sync: function() {
+            var i, dt = this.get("host").datatable;
             for (i = 0; i < dt.get("data").size(); i++) {
                 dt.getCell([i, this.get("column")]).addClass("popup");
-                this.handlers.push(dt.getCell([i, this.get("column")]).on('click', function(e) {
-                    dt = this.get("host").datatable;
-                    field = this.get("field");
-                    record = dt.getRecord(e.target);
-                    descriptor = Wegas.Facade.Variable.cache.find("id", record.get("id"));
-
-                    this.menuDetails.attachTo(e.target);
-
-                    if (descriptor.get(field)) {
-                        this.display(descriptor.get(field));
-                    } else {
-                        this.request(descriptor);
-                    }
-                }, this));
-
-                this.handlers.push(dt.getCell([i, 1]).on('mouseout', function(e) {
-                    this.menuDetails.hide();
-                }, this));
             }
         },
         request: function(descriptor) {
             Wegas.Facade.Variable.cache.getWithView(descriptor, "Extended", {// Retrieve the object from the server in Export view
                 on: Wegas.superbind({
                     success: function(e) {
-                        var field = this.get("field");
-                        if (e.response.entity.get(field)) {
-                            descriptor.set(field, e.response.entity.get(field));
-                            this.display(e.response.entity.get(field));
+                        var field = this.get("field"),
+                            val = e.response.entity.get(this.get("field"));
+                        if (val) {
+                            descriptor.set(field, val);
+                            this.display(val);
                         } else {
                             this.get("host").showMessage("error", "This information does not exist");
                         }
-
                     },
-                    failure: function(e) {
-                        this.get("host").showMessage("error", "An error occurs");
+                    failure: function() {
+                        this.get("host").showMessage("error", "An error occured");
                     }
                 }, this)
             });
@@ -94,8 +90,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
          * @private
          */
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i++) {
+            for (var i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].detach();
             }
         }
@@ -117,8 +112,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
                 }
             }
         },
-        NS: "tablepopup",
-        NAME: "Tablepopup"
+        NS: "tablepopup"
     });
     Y.Plugin.Tablepopup = Tablepopup;
 });

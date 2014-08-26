@@ -54,9 +54,18 @@ import org.xml.sax.SAXException;
 @Path("GameModel/{gameModelId : ([1-9][0-9]*)?}/File")
 public class FileController {
 
+    /**
+     *
+     */
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileController.class);
+    /**
+     *
+     */
     @EJB
     private GameModelFacade gmFacade;
+    /**
+     *
+     */
     private static final String FILENAME_REGEXP = "(\\w|\\.| |-|_)+";
 
     /**
@@ -79,7 +88,7 @@ public class FileController {
     public Response upload(@PathParam("gameModelId") Long gameModelId,
             @FormDataParam("name") String name,
             @FormDataParam("note") String note,
-            @FormDataParam("note") String description,
+            @FormDataParam("description") String description,
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, WegasException {
@@ -87,50 +96,19 @@ public class FileController {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
         logger.debug("File name: {}", details.getContentDisposition().getFileName());
+
         if (name == null) {
             name = details.getContentDisposition().getFileName();
         }
         AbstractContentDescriptor detachedFile = null;
         try {
-            Pattern pattern = Pattern.compile(FILENAME_REGEXP);
-            Matcher matcher = pattern.matcher(name);
-            if (name.equals("") || !matcher.matches()) {
-                throw new WegasException(name + " is not a valid filename.");
-            }
-            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
-
-            AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
-            if (dir.exist()) {                                                  //directory has to exist
-                if (details.getContentDisposition().getFileName() == null || details.getContentDisposition().getFileName().equals("")) {       //Assuming an empty filename means a directory
-                    detachedFile = new DirectoryDescriptor(name, path, connector);
-                } else {
-                    logger.debug("File name: {}", details.getContentDisposition().getFileName());
-                    detachedFile = new FileDescriptor(name, path, connector);
-                }
-                if (!detachedFile.exist()) {                                        //Node should not exist
-                    note = note == null ? "" : note;
-                    detachedFile.setNote(note);
-                    detachedFile.setDescription(description);
-                    if (detachedFile instanceof FileDescriptor) {
-                        //TODO : check allowed mime-types
-                        try {
-                            ((FileDescriptor) detachedFile).setBase64Data(file, details.getMediaType().toString());
-                            logger.info(details.getFormDataContentDisposition().getFileName() + "(" + details.getMediaType() + ") uploaded as \"" + name + "\"");
-                        } catch (IOException ex) {
-                            logger.error("Error reading uploaded file :", ex);
-                            connector.save();
-                        }
-                    } else {
-                        detachedFile.sync();
-                        logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
-                    }
-                } else {
-                    throw new WegasException(detachedFile.getPath() + "/" + name + " already exists");
-                }
+            if (details.getContentDisposition().getFileName() == null
+                    || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory
+                detachedFile = this.createDirectory(gameModelId, name, path, note, description);
             } else {
-                logger.debug("Parent Directory does not exist");
+                detachedFile = this.createFile(gameModelId, name, path, details.getMediaType().toString(),
+                        note, description, file);
             }
-            connector.save();
         } catch (final WegasException ex) {
             Response.StatusType status = new Response.StatusType() {
                 @Override
@@ -148,10 +126,8 @@ public class FileController {
                     return ex.getLocalizedMessage();
                 }
             };
-
             return Response.status(status).build();
         }
-
         return Response.ok(detachedFile, MediaType.APPLICATION_JSON).build();
     }
 
@@ -199,7 +175,6 @@ public class FileController {
             if (connector != null) {
                 connector.save();
             }
-
         }
         return response.build();
     }
@@ -478,5 +453,99 @@ public class FileController {
         } catch (RepositoryException ex) {
             logger.error(null, ex);
         }
+    }
+
+    public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
+            String note, String description, InputStream file) throws RepositoryException, WegasException {
+
+        logger.debug("File name: {}", name);
+
+        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
+        Matcher matcher = pattern.matcher(name);
+        if (name.equals("") || !matcher.matches()) {
+            throw new WegasException(name + " is not a valid filename.");
+        }
+        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
+
+        AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
+        if (dir.exist()) {                                                      //directory has to exist
+            FileDescriptor detachedFile = new FileDescriptor(name, path, connector);
+
+            if (!detachedFile.exist()) {                                        //Node should not exist
+                detachedFile.setNote(note == null ? "" : note);
+                detachedFile.setDescription(description);
+                //TODO : check allowed mime-types
+                try {
+                    detachedFile.setBase64Data(file, mediaType);
+                    logger.info(name + "(" + mediaType + ") uploaded");
+                    connector.save();
+                    return detachedFile;
+                } catch (IOException ex) {
+                    logger.error("Error reading uploaded file :", ex);
+                    throw new WegasException("Error reading uploaded file");
+                }
+            } else {
+                throw new WegasException(detachedFile.getPath() + " " + name + " already exists");
+            }
+        } else {
+            throw new WegasException("Parent directory " + path + " does not exist exists");
+        }
+    }
+
+    public DirectoryDescriptor createDirectory(Long gameModelId, String name, String path, String note, String description) throws RepositoryException {
+
+        //logger.debug("Directory name: {}", name);
+        Pattern pattern = Pattern.compile(FILENAME_REGEXP);
+        Matcher matcher = pattern.matcher(name);
+        if (name.equals("") || !matcher.matches()) {
+            throw new WegasException(name + " is not a valid filename.");
+        }
+        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
+        AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
+        if (dir.exist()) {                                                      // Directory has to exist
+            DirectoryDescriptor detachedFile = new DirectoryDescriptor(name, path, connector);
+
+            if (!detachedFile.exist()) {                                        // Node should not exist
+                detachedFile.setNote(note == null ? "" : note);
+                detachedFile.setDescription(description);
+                detachedFile.sync();
+                logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
+                return detachedFile;
+            } else {
+                throw new WegasException(detachedFile.getPath() + " " + name + " already exists");
+            }
+        } else {
+            throw new WegasException(path + " directory does not exist already exists");
+        }
+    }
+
+    public boolean directoryExists(Long gameModelId, String path) throws RepositoryException {
+        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
+        AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
+        return dir.exist();
+    }
+
+    public InputStream getFile(Long gameModelId, String path) {
+        logger.debug("Asking file (/{})", path);
+
+        InputStream ret = null;
+        AbstractContentDescriptor fileDescriptor = null;
+        ContentConnector connector = null;
+        try {
+            connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
+            fileDescriptor = DescriptorFactory.getDescriptor(path, connector);
+        } catch (PathNotFoundException e) {
+            logger.debug("Asked path does not exist: {}", e.getMessage());
+            throw new WegasException("Directory " + path + " doest not exist");
+        } catch (RepositoryException e) {
+            logger.error("Need to check those errors", e);
+        }
+        if (fileDescriptor instanceof FileDescriptor) {
+            ret = new BufferedInputStream(((FileDescriptor) fileDescriptor).getBase64Data(), 512);
+            if (connector != null) {
+                connector.save();
+            }
+        }
+        return ret;
     }
 }

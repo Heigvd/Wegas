@@ -46,7 +46,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         RequestFacade rmf = RequestFacade.lookup();
 
         //rmf.commit();
-
         if (Boolean.parseBoolean(request.getHeaderValue("Managed-Mode"))
                 && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
             ServerResponse serverResponse = new ServerResponse();
@@ -54,7 +53,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
 
-            } else {
+            } else if (response.getEntity() != null) {
                 ArrayList entities = new ArrayList();
                 entities.add(response.getEntity());
                 serverResponse.setEntities(entities);
@@ -105,8 +104,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter, Resou
         /**
          *
          */
-        // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-        private List<AbstractEntity> entities;
+        private List<AbstractEntity> entities = new ArrayList<>();
         /**
          *
          */

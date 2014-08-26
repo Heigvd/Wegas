@@ -54,6 +54,12 @@ input[type="submit"], input[type="reset"] {
 html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     height: 100%;
 }
+body{
+    overflow: hidden;
+}
+.wegas-playerview{
+    overflow: auto;
+}
 /* DISABLED RULES */
 [class*="-disabled"]{
     opacity:0.8;
@@ -99,6 +105,32 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     right: 0;
     z-index: 1000;
 }
+
+/** App loading */
+.wegas-loading-app {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    width: 80px;
+    height: 70px;
+    margin-top: -50px;
+    margin-left: -40px;
+    background: white url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+}
+.wegas-loading-app > div {
+    width: auto;
+    height: 2px;
+    margin-top: 37px;
+    background: #b5b5b5;
+    margin-left: 6px;
+    margin-right: 1px;
+}
+.wegas-loading-app > div > div {
+    height: 100%;
+    width: 0%;
+    background-color: #072644;
+}
+
 /* */
 .wegas-smallmessage {
     padding: 20px;
@@ -155,8 +187,6 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     -khtml-opacity: 0.55;
     -moz-opacity: 0.55;
     opacity: 0.55;
-    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
-    -moz-box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
     box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
 }
 
@@ -291,6 +321,7 @@ font {
 .wegas-chat-msg {
     padding-bottom:2px;
 }
+
 /* Unread count plugin */
 .wegas-unreadcount .value {
     color:white;
@@ -352,6 +383,7 @@ font {
 .wegas-click {
     cursor: pointer;
 }
+
 /* Wegas add icon */
 .yui3-skin-sam .wegas-icon {
     display: inline-block;

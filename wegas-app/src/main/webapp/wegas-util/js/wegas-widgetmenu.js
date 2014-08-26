@@ -83,7 +83,7 @@ YUI.add('wegas-widgetmenu', function(Y) {
         show: function(node) {
             var menu = this.getMenu();
             node = node || this.get("targetNode");
-            menu.attachTo(node);                                                // /Get a menu instance and attach it to the target node
+            menu.attachTo(node);                                                // Get a menu instance and attach it to the target node
             menu.focus();
         },
         // *** Private methods *** //
@@ -256,7 +256,6 @@ YUI.add('wegas-widgetmenu', function(Y) {
             }
             this.fire("timerCanceled");
         }
-
     }, {
         /** @lends Y.Wegas.Menu */
         ATTRS: {

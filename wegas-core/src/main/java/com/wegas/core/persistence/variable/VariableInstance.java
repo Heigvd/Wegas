@@ -11,6 +11,7 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
+import com.wegas.core.persistence.variable.primitive.ObjectInstance;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import com.wegas.core.persistence.variable.primitive.TextInstance;
 import com.wegas.core.persistence.variable.scope.AbstractScope;
@@ -20,17 +21,18 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.rest.util.Views;
-import com.wegas.resourceManagement.persistence.ResourceInstance;
-import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.mcq.persistence.ChoiceInstance;
 import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
-import com.wegas.core.persistence.variable.primitive.ObjectInstance;
+import com.wegas.resourceManagement.persistence.ResourceInstance;
+import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
 import org.codehaus.jackson.map.annotate.JsonView;
+import org.eclipse.persistence.annotations.Index;
+import org.eclipse.persistence.annotations.Indexes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,6 +47,20 @@ import org.slf4j.LoggerFactory;
     @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
     @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid")
 })
+
+@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
+    @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
+    @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
+    @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
+})
+
+/* JPA2.1 (GlassFish4) Indexes
+@Table(indexes = {
+     @Index(columnList = "gamescope_id"),
+     @Index(columnList = "teamscope_id"),
+     @Index(columnList = "playerscope_id")
+})
+*/
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),

@@ -7,9 +7,8 @@
  */
 package com.wegas.app;
 
-
-
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
@@ -20,14 +19,15 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import javax.script.ScriptException;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-
-
 public abstract class AbstractTest {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
     private GameModel gm;
     private Player player;
@@ -42,17 +42,27 @@ public abstract class AbstractTest {
     }
 
     protected final void createGameModelFromFile(String gameModelPath) throws IOException {
-        this.createGameModelFromFile(gameModelPath, "");
+        this.createGameModelFromFileWithScript(gameModelPath);
     }
 
-    protected final void createGameModelFromFile(String path, String injectScript) throws IOException {
+    protected final void createGameModelFromFileWithScript(String path, String... injectScriptsPath) throws IOException {
         String pmg = TestHelper.readFile(path);
         GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
-        gameModel.getScriptLibrary().put("injectedScript", new GameModelContent("JavaScript", injectScript));
+
+        //for (int i = 0; i < injectScriptsPath.length; i++){
+        for (String injectScriptPath : injectScriptsPath){
+            String injectScript = TestHelper.readFile(injectScriptPath);
+            
+            if (injectScript == null){
+                throw new WegasException("Injected Script doesn't exists [" + injectScriptPath + "]");
+            }
+            gameModel.getScriptLibrary().put("[injectedScript] " + injectScriptPath, new GameModelContent("JavaScript", injectScript));
+        }
+
         System.out.println("Create game model : " + gameModel.getName());
         AbstractEJBContainerTest.gmFacade.createWithDebugGame(gameModel);
         junit.framework.Assert.assertNotNull(gameModel.getId()); //persisted
-        
+
         this.gm = gameModel;
         player = gm.getPlayers().get(0);
     }
@@ -67,19 +77,19 @@ public abstract class AbstractTest {
         return this.evalScript(TestHelper.readFile(path));
     }
 
-    protected Object evalScript(String script) throws ScriptException
-    {
+    protected Object evalScript(String script) throws ScriptException {
         return getScriptController().run(gm.getId(), this.player.getId(), new Script(script));
     }
 
     protected abstract ScriptController getScriptController();
+
     protected abstract VariableDescriptorFacade getVariableDescriptorFacade();
-    
-    protected GameModel getGameModel(){
+
+    protected GameModel getGameModel() {
         return gm;
     }
 
-    protected Player getPlayer(){
+    protected Player getPlayer() {
         return player;
     }
 }

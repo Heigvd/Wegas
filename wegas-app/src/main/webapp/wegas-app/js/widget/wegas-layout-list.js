@@ -13,8 +13,8 @@ YUI.add('wegas-layout-list', function(Y) {
     "use strict";
 
     var BOUNDINGBOX = 'boundingBox',
-            CONTENTBOX = 'contentBox',
-            List;
+        CONTENTBOX = 'contentBox',
+        List;
 
     /**
      * @name Y.Wegas.List

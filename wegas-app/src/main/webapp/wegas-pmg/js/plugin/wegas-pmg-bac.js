@@ -18,8 +18,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-        Bac;
+    var Wegas = Y.Wegas, Bac;
 
     Bac = Y.Base.create("wegas-pmg-bac", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Bac */
@@ -31,38 +30,27 @@ YUI.add('wegas-pmg-bac', function(Y) {
          */
         initializer: function() {
             this.onceAfterHostEvent("render", function() {
-                this.addBacColumn();
-                this.addInputField();
-                this.afterHostMethod("syncUI", this.addInputField);
-                this.onKeyUpEvent();
+                this.get("host").datatable.addColumn({
+                    key: 'bac',
+                    label: "BAC",
+                    allowHTML: true,
+                    formatter: function(o) {
+                        return "<input class='bacField' value='" + o.data.instance.properties.bac + "'></input>";
+                    }
+                }, this.get("columnPosition"));
+                this.bind();
+                this.get("host").datatable.after("sort", this.addInputField, this);
             });
-            this.get("host").datatable.after("sort", this.addInputField, this);
         },
-        addBacColumn: function() {
-            this.get("host").datatable.addColumn({
-                key: 'bac',
-                label: "BAC"
-            }, this.get("columnPosition"));
-        },
-        addInputField: function() {
-            var i, dt = this.get("host").datatable, cell, field, taskDesc;
-
-            for (i = 0; i < dt.data._items.length; i++) {
-                taskDesc = dt.data.item(i).get("descriptor");
-                cell = dt.getCell([i, this.get("columnPosition")]);
-                field = Y.Node.create("<input class='bacField'></input>");
-                field.set("value", taskDesc.getInstance().get("properties").bac);
-                cell.append(field);
-            }
-        },
-        onKeyUpEvent: function() {
+        bind: function() {
             var dt = this.get("host").datatable;
-            this.changeHandle = this.get("host").datatable.delegate("change", function(e) {
-                var record = dt.getRecord(e.target), val = Y.Lang.trim(e.target.get("value"));
-                val = (val === "") ? "0" : val; //empty is 0
+            this.changeHandle = dt.delegate("change", function(e) {
+                var record = dt.getRecord(e.target),
+                    val = Y.Lang.trim(e.target.get("value"));
+                val = (val === "") ? "0" : val;                                 // Empty is 0
                 e.target.removeClass("invalid");
                 if (this.isValidField(val)) {
-                    val = parseInt(val, 10) + ""; // Remove leading 0 : binary number
+                    val = parseInt(val, 10) + "";                               // Remove leading 0 : binary number
                     e.target.set("value", val);
                     if (record && record.get("instance").properties.bac + "" !== val) {
                         record.get("instance").properties.bac = val;
@@ -74,15 +62,14 @@ YUI.add('wegas-pmg-bac', function(Y) {
             }, ".bacField", this);
         },
         isValidField: function(value) {
-            var regexp = /^[+]?\d+$/; //positive number
-            if (!regexp.test(value)) {
+            if (!/^[+]?\d+$/.test(value)) {                                     //positive number
                 this.get("host").showMessage("error", "\"" + value + "\" is not a positive integer");
                 return false;
             }
             return true;
         },
         request: function(taskDescriptor) {
-            Wegas.Facade.Variable.sendRequest({
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
@@ -90,7 +77,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                     updateEvent: false,
                     data: {
                         "@class": "Script",
-                        //     content: "Variable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") + "').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
+                        //content: "Variable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") + "').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
                         content: "updateBAC('" + taskDescriptor.get("name") + "','" + taskDescriptor.get("instance").properties.bac + "');"
                     }
                 }
@@ -110,8 +97,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                 }
             }
         },
-        NS: "bac",
-        NAME: "Bac"
+        NS: "bac"
     });
     Y.Plugin.Bac = Bac;
 });

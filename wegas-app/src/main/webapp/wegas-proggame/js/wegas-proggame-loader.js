@@ -8,7 +8,7 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.addModule("wegas-proggame", {
+YUI.addGroup("wegas-proggame", {
     base: './wegas-proggame/',
     root: '/wegas-proggame/',
     modules: {

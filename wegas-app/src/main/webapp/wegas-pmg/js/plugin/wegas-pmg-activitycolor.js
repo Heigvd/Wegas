@@ -12,37 +12,37 @@
 YUI.add('wegas-pmg-activitycolor', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, ActivityColor;
     /**
      *  @class color occupation in datatable
      *  @name Y.Plugin.ActivityColor
      *  @extends Y.Plugin.OccupationColor
      *  @constructor
      */
-    ActivityColor = Y.Base.create("wegas-pmg-activitycolor", Y.Plugin.OccupationColor, [Wegas.Plugin, Wegas.Editable], {
+    var ActivityColor = Y.Base.create("wegas-pmg-activitycolor", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.ActivityColor */
-
+        initializer: function() {
+            Y.log("initializer", "info", "Wegas.OccupationColor");
+            this.onceAfterHostEvent("render", function() {
+                this.sync();
+                this.afterHostMethod("syncUI", this.sync);
+                this.get("host").datatable.after("sort", this.sync, this);
+            });
+        },
         sync: function() {
-            var i, ii, time, abstractAssignement,
-                    host = this.get("host"),
-                    currentPeriod = host.schedule.currentPeriod(),
-                    dt = host.datatable;
+            var time, host = this.get("host"),
+                currentPeriod = host.schedule.currentPeriod();
 
-            for (i = 0; i < dt.data.size(); i++) {
-                abstractAssignement = dt.data.item(i).get("descriptor").getInstance().get("activities");
-                for (ii = 0; ii < abstractAssignement.length; ii++) {
-                    time = parseInt(abstractAssignement[ii].get("time"));
+            host.datatable.data.each(function(i, index) {
+                Y.Array.each(i.get("descriptor").getInstance().get("activities"), function(a) {
+                    time = parseInt(a.get("time"));
                     if (time < currentPeriod) {
-                        this.addColor(host.schedule.getCell(i, time),
-                                abstractAssignement[ii].get("editable") === null ? "true" : abstractAssignement[ii].get("editable"));
-
+                        host.schedule.getCell(index, time).setContent("<span class='editable'></span>");
                     }
-                }
-            }
+                });
+            });
         }
     }, {
-        NS: "activitycolor",
-        NAME: "ActivityColor"
+        NS: "activitycolor"
     });
     Y.Plugin.ActivityColor = ActivityColor;
 });

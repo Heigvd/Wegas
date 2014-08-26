@@ -261,7 +261,7 @@ YUI().use(function(Y) {
             },
             /** Plugins **/
             "wegas-plugin": {
-                requires: ["timers"]
+                requires: "timers"
             },
             "wegas-userpreferences": {
                 path: "js/plugin/wegas-userpreferences-min.js",
@@ -304,7 +304,7 @@ YUI().use(function(Y) {
             },
             "wegas-cssstyles": {
                 path: "js/plugin/wegas-cssstyles-min.js",
-                requires: ["wegas-plugin"],
+                requires: "wegas-plugin",
                 ws_provides: "CSSStyles"
             },
             "wegas-cssstyles-extra": {
@@ -531,6 +531,11 @@ YUI().use(function(Y) {
                 requires: "wegas-editor-entityaction",
                 ws_provides: ["EditWidgetAction", "DeleteWidgetAction"]
             },
+            "wegas-panel-node": {
+                path: "js/plugin/wegas-panel-node-min.js",
+                requires: ["dd-drag", "plugin"],
+                ws_provides: ["PanelNode"]
+            },
             "wegas-logger": {
                 path: "js/widget/wegas-logger-min.js",
                 requires: ["console", "console-filters"],
@@ -559,7 +564,8 @@ YUI().use(function(Y) {
             },
             "wegas-preview-fullscreen": {
                 path: "js/plugin/wegas-preview-fullscreen-min.js",
-                ws_provides: "PreviewFullScreen"
+                ws_provides: "PreviewFullScreen",
+                requires: "wegas-pageeditorcss"
             },
             'wegas-pageeditor-fullwidthtab': {
                 path: "js/plugin/wegas-pageeditor-fullwidthtab-min.js",
@@ -611,7 +617,7 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-statemachine-entities",
                     "dd-constrain", "jsplumb-yui", "button", "event-mousewheel",
-                    "scrollview", "slider"],
+                    "slider", "wegas-panel-node"],
                 ws_provides: "StateMachineViewer"
             },
             "wegas-statemachineviewercss": {
@@ -622,8 +628,8 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable"],
-                wprovides: "Dashboard"
+                requires: "datatable",
+                ws_provides: "Dashboard"
             }
         }
     });
@@ -668,7 +674,8 @@ YUI().use(function(Y) {
             },
             "wegas-gameinformation": {
                 path: "js/wegas-gameinformation-min.js",
-                ws_provides: ["GameInformation"]
+                requires: "wegas-teamcss",
+                ws_provides: "GameInformation"
             },
             "wegas-join-token": {
                 requires: "wegas-team",
@@ -699,6 +706,10 @@ YUI().use(function(Y) {
             },
             "wegas-lobby-datatablecss": {
                 type: CSS
+            },
+            "wegas-lobby-button": {
+                requires: ["uploader-html5", "treeview"],
+                ws_provides: ["UploadFileButton", "GameModelHistory"]
             }
         }
     });
@@ -780,7 +791,7 @@ YUI().use(function(Y) {
         root: "/lib/",
         modules: {
             "jsplumb-yui": {
-                path: "jsPlumb/yui.jsPlumb-1.5.5-min.js"
+                path: "jsPlumb/yui.jsPlumb-1.6.4-min.js"
             },
             esprima: {
                 path: "esprima/esprima-min.js"

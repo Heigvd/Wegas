@@ -10,35 +10,69 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-var gameModelFacade = lookupBean("GameModelFacade"),
-    task1 = Variable.findByName(self.getGameModel(), 'task1'),
-    task2 = Variable.findByName(self.getGameModel(), 'task2'),
-    task3 = Variable.findByName(self.getGameModel(), 'task3'),
-    task4 = Variable.findByName(self.getGameModel(), 'task4'),
-    task5 = Variable.findByName(self.getGameModel(), 'task5'),
-    task6 = Variable.findByName(self.getGameModel(), 'task6'),
-    task7 = Variable.findByName(self.getGameModel(), 'task7'),
-    commercial1 = Variable.findByName(gameModel, 'commercial1'),
-    commercial2 = Variable.findByName(gameModel, 'commercial2'),
-    commercial3 = Variable.findByName(gameModel, 'commercial3'),
-    commercial4 = Variable.findByName(gameModel, 'commercial4'),
-    commercial5 = Variable.findByName(gameModel, 'commercial5'),
-    informaticien1 = Variable.findByName(gameModel, 'informaticien1'),
-    informaticien2 = Variable.findByName(gameModel, 'informaticien2'),
-    informaticien3 = Variable.findByName(gameModel, 'informaticien3'),
-    informaticien4 = Variable.findByName(gameModel, 'informaticien4'),
-    informaticien5 = Variable.findByName(gameModel, 'informaticien5'),
-    designer1 = Variable.findByName(gameModel, 'designer1'),
-    designer2 = Variable.findByName(gameModel, 'designer2'),
-    designer3 = Variable.findByName(gameModel, 'designer3'),
-    designer4 = Variable.findByName(gameModel, 'designer4'),
-    quality = Variable.findByName(gameModel, 'quality').getInstance(self),
-    costs = Variable.findByName(gameModel, 'costs').getInstance(self),
-    delay = Variable.findByName(gameModel, 'delay').getInstance(self),
-    currentPhase = Variable.findByName(gameModel, 'currentPhase').getInstance(self);
+var gameModelFacade, loaded = false,
+    task1, task2, task3, task4, task5, task6, task7, task8,
+    commercial1, commercial2, commercial3, commercial4, commercial5,
+    informaticien1, informaticien2, informaticien3, informaticien4, informaticien5,
+    designer1, designer2, designer3, designer4,
+    quality, costs, delay,
+    projectUnworkedHours, actualCost,
+    language,
+    currentPhase;
+
+
+
+function loadGameModelFacade() {
+    if (!gameModelFacade) {
+        debug("Load GameModelFacade");
+        gameModelFacade = lookupBean("GameModelFacade");
+    }
+}
+
+function loadVariables() {
+    if (!loaded) {
+        loaded = true;
+        task1 = getVariableDescriptor('task1');
+        task2 = getVariableDescriptor('task2');
+        task3 = getVariableDescriptor('task3');
+        task4 = getVariableDescriptor('task4');
+        task5 = getVariableDescriptor('task5');
+        task6 = getVariableDescriptor('task6');
+        task7 = getVariableDescriptor('task7');
+        task8 = getVariableDescriptor('task8');
+
+        commercial1 = getVariableDescriptor('commercial1');
+        commercial2 = getVariableDescriptor('commercial2');
+        commercial3 = getVariableDescriptor('commercial3');
+        commercial4 = getVariableDescriptor('commercial4');
+        commercial5 = getVariableDescriptor('commercial5');
+        informaticien1 = getVariableDescriptor('informaticien1');
+        informaticien2 = getVariableDescriptor('informaticien2');
+        informaticien3 = getVariableDescriptor('informaticien3');
+        informaticien4 = getVariableDescriptor('informaticien4');
+        informaticien5 = getVariableDescriptor('informaticien5');
+        designer1 = getVariableDescriptor('designer1');
+        designer2 = getVariableDescriptor('designer2');
+        designer3 = getVariableDescriptor('designer3');
+        designer4 = getVariableDescriptor('designer4');
+        quality = getVariableDescriptor('quality').getInstance(self);
+        costs = getVariableDescriptor('costs').getInstance(self);
+        delay = getVariableDescriptor('delay').getInstance(self);
+        projectUnworkedHours = getVariableDescriptor('projectUnworkedHours').getInstance(self);
+        actualCost = getVariableDescriptor('actualCost').getInstance(self);
+        currentPhase = getVariableDescriptor('currentPhase').getInstance(self);
+        language = getVariableDescriptor('language').getInstance(self);
+    }
+}
+
+
 
 function testsimplepmg() {
     debug(arguments.callee.name);
+    loadVariables();
+
+    testLanguage();
+    testUnworkedHours();
     testNormalAssignment();
     testMultipleWork();
     testTooManyResources();
@@ -73,7 +107,7 @@ function testNormalAssignment() {
 
     task1.getInstance(self).setProperty('bac', '1500');
 
-    plan(task1, 1, 2)
+    plan(task1, 1, 2);
 
     assign(informaticien1, task1);
     assign(informaticien2, task1);
@@ -82,12 +116,12 @@ function testNormalAssignment() {
     reserve(informaticien2, 1, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(50, task1.instance.getProperty('completeness'), "testNormalAssignment(): task1 completness does not match");
+    checkProperty(task1, 'completeness', 50, arguments.callee.name);
     nextPeriod();                                                               // -> Executing week 3
-    assertEquals(100, task1.instance.getProperty('completeness'), "testNormalAssignment(): task1 completness does not match");
+    checkProperty(task1, 'completeness', 100, arguments.callee.name);
     assertEquals(100, costs.value, "testNormalAssignment(): task1 costs does not match");
     assertEquals(100, delay.value, "testNormalAssignment(): task1 delay does not match");
-    assertEquals(100, quality.value, "testNormalAssignment(): task1 quality does not match");                                                             // -> Closing
+    assertEquals(100, quality.value, "testNormalAssignment(): task1 quality does not match");       // -> Closing
 }
 function testMultipleWork() {
     debug(arguments.callee.name);
@@ -103,9 +137,9 @@ function testMultipleWork() {
     reserve(commercial1, 1, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(50, task2.instance.getProperty('completeness'), "testMultipleWork(): task1 completness does not match");
+    checkProperty(task2, 'completeness', 50, arguments.callee.name);
     nextPeriod();                                                               // -> Executing week 3
-    assertEquals(100, task2.instance.getProperty('completeness'), "testMultipleWork(): task1 completness does not match");                                                           // -> Closing
+    checkProperty(task2, 'completeness', 100, arguments.callee.name);           // -> Closing
 }
 function testNotEnoughResources() {
     debug(arguments.callee.name);
@@ -119,7 +153,7 @@ function testNotEnoughResources() {
     reserve(informaticien1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(25, task1.instance.getProperty('completeness'), "testTooManyResources(): task1 completness does not match");
+    checkProperty(task1, 'completeness', 25, arguments.callee.name);
 }
 
 function testTooManyResources() {
@@ -138,7 +172,7 @@ function testTooManyResources() {
     reserve(informaticien3, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(75, task1.instance.getProperty('completeness'), "testTooManyResources(): task1 completness does not match");                                                             // -> Closing
+    checkProperty(task1, 'completeness', 75, arguments.callee.name);            // -> Closing
 }
 function testMotivationFactor() {
     debug(arguments.callee.name);
@@ -159,10 +193,10 @@ function testMotivationFactor() {
     reserve(informaticien2, 1, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(60, task1.instance.getProperty('completeness'), "testMotivationFactor(): task1 completness does not match"); //ancien 60 %
-    assertEquals(104, task1.instance.getProperty('quality'), "testMotivationFactor(): task1 quality does not match"); //ancien 104
-    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testMotivationFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(500, task1.instance.getProperty('wages'), "testMotivationFactor(): task1 wages does not match"); //ancien 500
+    checkProperty(task1, 'completeness', 60, arguments.callee.name); //ancien 60 %
+    checkProperty(task1, 'quality', 104, arguments.callee.name); //ancien 104
+    checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task1, 'wages', 500, arguments.callee.name); //ancien 500
 }
 function testremoveassign() {
     debug(arguments.callee.name);
@@ -183,17 +217,17 @@ function testOtherWorkFactor() {
     reserve(informaticien1, 1, 2, 3, 4);
 
     doNextPeriod(4);                                                            // -> Executing week 3
-    assertEquals(50, task2.instance.getProperty('completeness'), "testOtherWorkFactor(): task1 completness does not match"); //ancien 50
+    checkProperty(task2, 'completeness', 50, arguments.callee.name); //ancien 50
     nextPeriod();
-    assertEquals(70, task2.instance.getProperty('completeness'), "testOtherWorkFactor(): task1 quality does not match"); //ancien 70
+    checkProperty(task2, 'completeness', 70, arguments.callee.name); //ancien 70
     nextPeriod();
-    assertEquals(90, task2.instance.getProperty('completeness'), "testOtherWorkFactor(): task1 quality does not match"); //ancien 90
+    checkProperty(task2, 'completeness', 90, arguments.callee.name); //ancien 90
 }
 function testBonusProjectFactor() {
     debug(arguments.callee.name);
     reset();
 
-    Variable.findByName(gameModel, 'bonusRatio').instance.setValue(1.15);
+    getVariableDescriptor('bonusRatio').instance.setValue(1.15);
 
     assign(informaticien1, task1);
     assign(informaticien2, task1);
@@ -202,7 +236,7 @@ function testBonusProjectFactor() {
     reserve(informaticien2, 1, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(58, task1.instance.getProperty('completeness'), "testBonusProjectFactor(): task1 completness does not match");
+    checkProperty(task1, 'completeness', 58, arguments.callee.name);
 }
 function testActivityFactor() {
     debug(arguments.callee.name);
@@ -216,10 +250,10 @@ function testActivityFactor() {
     reserve(informaticien1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(13, task1.instance.getProperty('completeness'), "testActivityFactor(): task1 completness does not match"); //ancien 12
-    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testActivityFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(100, task1.instance.getProperty('wages'), "testActivityFactor(): task1 wages does not match"); //ancien 100
-    assertEquals(100, task1.instance.getProperty('quality'), "testActivityFactor(): task1 quality does not match"); //ancien 98
+    checkProperty(task1, 'completeness', 13, arguments.callee.name); //ancien 12
+    checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task1, 'wages', 100, arguments.callee.name); //ancien 100
+    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 98
 }
 function testCoordinationRatioInf() {
     debug(arguments.callee.name);
@@ -239,10 +273,10 @@ function testCoordinationRatioInf() {
     reserve(informaticien4, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(30, task1.instance.getProperty('completeness'), "testCoordinationRatioInf(): task1 completness does not match"); //ancien 30%
-    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testCoordinationRatioInf(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(1000, task1.instance.getProperty('wages'), "testCoordinationRatioInf(): task1 wages does not match"); //ancien 1000
-    assertEquals(100, task1.instance.getProperty('quality'), "testCoordinationRatioInf(): task1 quality does not match"); //ancien 100
+    checkProperty(task1, 'completeness', 30, arguments.callee.name); //ancien 30%
+    checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task1, 'wages', 1000, arguments.callee.name); //ancien 1000
+    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks() {
     debug(arguments.callee.name);
@@ -258,10 +292,10 @@ function testCoordinationRatioInfDiffWorks() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(75, task2.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks(): task2 completness does not match"); //ancien 75%
-    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(750, task2.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks(): task2 wages does not match"); //ancien 750
-    assertEquals(100, task2.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks(): task2 quality does not match"); //ancien 100
+    checkProperty(task2, 'completeness', 75, arguments.callee.name); //ancien 75%
+    checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
+    checkProperty(task2, 'quality', 100, arguments.callee.name); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks2() {
     debug(arguments.callee.name);
@@ -278,10 +312,10 @@ function testCoordinationRatioInfDiffWorks2() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(80, task2.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks2(): task2 completness does not match"); //ancien 80%
-    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks2(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(750, task2.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks2(): task2 wages does not match"); //ancien 750
-    assertEquals(100, task2.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks2(): task2 quality does not match"); //ancien 100
+    checkProperty(task2, 'completeness', 80, arguments.callee.name); //ancien 80%
+    checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
+    checkProperty(task2, 'quality', 100, arguments.callee.name); //ancien 100
 }
 //TODO Check differences (probably round problem)
 function testCoordinationRatioInfDiffWorks3() {
@@ -305,14 +339,14 @@ function testCoordinationRatioInfDiffWorks3() {
     reserve(designer2, 1, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(80, task6.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks3(): completness does not match"); //ancien 81%
-    assertEquals(500, task6.instance.getProperty('fixedCosts'), "testCoordinationRatioInfDiffWorks3(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(1500, task6.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks3(): wages does not match"); //ancien 1500
-    assertEquals(100, task6.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks3(): quality does not match"); //ancien 100
+    checkProperty(task6, 'completeness', 80, arguments.callee.name); //ancien 81%
+    checkProperty(task6, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task6, 'wages', 1500, arguments.callee.name); //ancien 1500
+    checkProperty(task6, 'quality', 100, arguments.callee.name); //ancien 100
     nextPeriod();
-    assertEquals(100, task6.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks3(): completness does not match"); //ancien 100%
-    assertEquals(1950, task6.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks3(): wages does not match"); //ancien 1950
-    assertEquals(100, task6.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks3(): quality does not match"); //ancien 100
+    checkProperty(task6, 'completeness', 100, arguments.callee.name); //ancien 100%
+    checkProperty(task6, 'wages', 1950, arguments.callee.name); //ancien 1950
+    checkProperty(task6, 'quality', 100, arguments.callee.name); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks4() {
     debug(arguments.callee.name);
@@ -336,13 +370,13 @@ function testCoordinationRatioInfDiffWorks4() {
     reserve(designer2, 1, 2);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    assertEquals(53, task6.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks4(): task6 completness does not match"); // Old pmg 53%
-    assertEquals(1500, task6.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks4(): wages does not match"); // Old pmg: 1500
-    assertEquals(100, task6.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks4(): quality does not match"); // Old pmg: 100
+    checkProperty(task6, 'completeness', 53, arguments.callee.name); // Old pmg 53%
+    checkProperty(task6, 'wages', 1500, arguments.callee.name); // Old pmg: 1500
+    checkProperty(task6, 'quality', 100, arguments.callee.name); // Old pmg: 100
     nextPeriod();                                                               // -> Execution week 3
-    assertEquals(100, task6.instance.getProperty('completeness'), "testCoordinationRatioInfDiffWorks4(): task6 completness does not match"); // Old pmg 100%
-    assertEquals(2850, task6.instance.getProperty('wages'), "testCoordinationRatioInfDiffWorks4(): wages does not match"); // Old pmg: 3000 @FIXME
-    assertEquals(100, task6.instance.getProperty('quality'), "testCoordinationRatioInfDiffWorks4(): quality does not match"); // Old pmg: 100
+    checkProperty(task6, 'completeness', 100, arguments.callee.name); // Old pmg 100%
+    checkProperty(task6, 'wages', 2850, arguments.callee.name); // Old pmg: 3000 @FIXME
+    checkProperty(task6, 'quality', 100, arguments.callee.name); // Old pmg: 100
 }
 //TODO Check differences (probably round problem)
 function testCoordinationRatioDiffLevel() {
@@ -363,10 +397,10 @@ function testCoordinationRatioDiffLevel() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    assertEquals(87, task2.instance.getProperty('completeness'), "testCoordinationRatioDiffLevel(): task2 completness does not match"); //ancien 84%
-    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCoordinationRatioDiffLevel(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(750, task2.instance.getProperty('wages'), "testCoordinationRatioDiffLevel(): task2 wages does not match"); //ancien 750
-    assertEquals(102, task2.instance.getProperty('quality'), "testCoordinationRatioDiffLevel(): task2 quality does not match"); //ancien 101
+    checkProperty(task2, 'completeness', 87, arguments.callee.name); //ancien 84%
+    checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
+    checkProperty(task2, 'quality', 102, arguments.callee.name); //ancien 101
 }
 function testCoordinationRatioSup() {
     debug(arguments.callee.name);
@@ -384,10 +418,10 @@ function testCoordinationRatioSup() {
     reserve(informaticien3, 1);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    assertEquals(50, task1.instance.getProperty('completeness'), "testCoordinationRatioSup(): task1 completness does not match"); //ancien 50%
-    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testCoordinationRatioSup(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(750, task1.instance.getProperty('wages'), "testCoordinationRatioSup(): task1 wages does not match"); //ancien 750
-    assertEquals(100, task1.instance.getProperty('quality'), "testCoordinationRatioSup(): task1 quality does not match"); //ancien 100
+    checkProperty(task1, 'completeness', 50, arguments.callee.name); //ancien 50%
+    checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task1, 'wages', 750, arguments.callee.name); //ancien 750
+    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 100
 }
 function testCompetenceRatioInf() {
     debug(arguments.callee.name);
@@ -405,10 +439,10 @@ function testCompetenceRatioInf() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(40, task2.instance.getProperty('completeness'), "testCompetenceRatioInf(): task2 completness does not match"); //ancien 42%
-    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCompetenceRatioInf(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(500, task2.instance.getProperty('wages'), "testCompetenceRatioInf(): task2 wages does not match"); //ancien 500
-    assertEquals(96, task2.instance.getProperty('quality'), "testCompetenceRatioInf(): task2 quality does not match"); //ancien 96
+    checkProperty(task2, 'completeness', 40, arguments.callee.name); //ancien 42%
+    checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'quality', 96, arguments.callee.name); //ancien 96
 }
 function testCompetenceRatioSup() {
     debug(arguments.callee.name);
@@ -421,14 +455,14 @@ function testCompetenceRatioSup() {
 
     assign(informaticien1, task2);
     assign(commercial1, task2);
-    resourceController.addReservation(informaticien1.instance.id, 1);
-    resourceController.addReservation(commercial1.instance.id, 1);
+    reserve(informaticien1, 1);
+    reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    assertEquals(60, task2.instance.getProperty('completeness'), "testCompetenceRatioSup(): task2 completness does not match"); //ancien 60%
-    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testCompetenceRatioSup(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(500, task2.instance.getProperty('wages'), "testCompetenceRatioSup(): task2 wages does not match"); //ancien 500
-    assertEquals(103, task2.instance.getProperty('quality'), "testCompetenceRatioSup(): task2 quality does not match"); //ancien 103
+    checkProperty(task2, 'completeness', 60, arguments.callee.name); //ancien 60%
+    checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'quality', 103, arguments.callee.name); //ancien 103
 }
 function testRandomDurationInf() {
     debug(arguments.callee.name);
@@ -468,34 +502,34 @@ function testLearnFactor() {
     assign(commercial2, task5);
     assign(commercial3, task5);
 
-    resourceController.addReservation(commercial1.instance.id, 1);
-    resourceController.addReservation(commercial2.instance.id, 2);
-    resourceController.addReservation(commercial3.instance.id, 3);
-    resourceController.addReservation(commercial3.instance.id, 4);
+    reserve(commercial1, 1);
+    reserve(commercial2, 2);
+    reserve(commercial3, 3);
+    reserve(commercial3, 4);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    assertEquals(10, task5.instance.getProperty('completeness'), "testLearnFactor(): task5 completness does not match"); //ancien 10%
-    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testLearnFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(250, task5.instance.getProperty('wages'), "testLearnFactor(): task5 wages does not match"); //ancien 250
-    assertEquals(100, task5.instance.getProperty('quality'), "testLearnFactor(): task5 quality does not match"); //ancien 100
+    checkProperty(task5, 'completeness', 10, arguments.callee.name); //ancien 10%
+    checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task5, 'wages', 250, arguments.callee.name); //ancien 250
+    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
-    assertEquals(20, task5.instance.getProperty('completeness'), "testLearnFactor(): task5 completness does not match"); //ancien 20%
-    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testLearnFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(500, task5.instance.getProperty('wages'), "testLearnFactor(): task5 wages does not match"); //ancien 500
-    assertEquals(100, task5.instance.getProperty('quality'), "testLearnFactor(): task5 quality does not match"); //ancien 100
+    checkProperty(task5, 'completeness', 20, arguments.callee.name); //ancien 20%
+    checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task5, 'wages', 500, arguments.callee.name); //ancien 500
+    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
-    assertEquals(28, task5.instance.getProperty('completeness'), "testLearnFactor(): task5 completness does not match"); //ancien 28%
-    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testLearnFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(750, task5.instance.getProperty('wages'), "testLearnFactor(): task5 wages does not match"); //ancien 750
-    assertEquals(100, task5.instance.getProperty('quality'), "testLearnFactor(): task5 quality does not match"); //ancien 100
+    checkProperty(task5, 'completeness', 28, arguments.callee.name); //ancien 28%
+    checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task5, 'wages', 750, arguments.callee.name); //ancien 750
+    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
-    assertEquals(38, task5.instance.getProperty('completeness'), "testLearnFactor(): task5 completness does not match"); //ancien 38%
-    assertEquals(500, task5.instance.getProperty('fixedCosts'), "testLearnFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(1000, task5.instance.getProperty('wages'), "testLearnFactor(): task5 wages does not match"); //ancien 1000
-    assertEquals(100, task5.instance.getProperty('quality'), "testLearnFactor(): task5 quality does not match"); //ancien 100
+    checkProperty(task5, 'completeness', 38, arguments.callee.name); //ancien 38%
+    checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task5, 'wages', 1000, arguments.callee.name); //ancien 1000
+    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
 }
 function testRequirementLimit() {
     debug(arguments.callee.name);
@@ -507,13 +541,13 @@ function testRequirementLimit() {
     reserve(informaticien1, 1, 2, 3, 4);
 
     doNextPeriod(4);                                                            // -> Execution week 3
-    assertEquals(50, task2.instance.getProperty('completeness'), "testRequirementLimit(): task1 completness does not match"); // Old pmg: 50%
+    checkProperty(task2, 'completeness', 50, arguments.callee.name); // Old pmg: 50%
     nextPeriod();                                                               // -> Executing week 4
-    assertEquals(70, task2.instance.getProperty('completeness'), "testRequirementLimit(): task1 completness does not match"); // Old pmg: 70%
+    checkProperty(task2, 'completeness', 70, arguments.callee.name); // Old pmg: 70%
     nextPeriod();                                                               // -> Executing week 3
-    assertEquals(80, task2.instance.getProperty('completeness'), "testRequirementLimit(): task1 completness does not match"); // Old pmg: 80%
+    checkProperty(task2, 'completeness', 80, arguments.callee.name); // Old pmg: 80%
     nextPeriod();                                                               // -> Executing week 3
-    assertEquals(80, task2.instance.getProperty('completeness'), "testRequirementLimit(): task1 completness does not match"); // Old pmg: 80%
+    checkProperty(task2, 'completeness', 80, arguments.callee.name); // Old pmg: 80%
 
     task2.instance.requirements.get(0).limit = 100;                              // Revert changes on the limit
 }
@@ -531,40 +565,40 @@ function testPredecessorFactor() {
     //task1
     assign(informaticien1, task1);
     assign(informaticien2, task1);
-    resourceController.addReservation(informaticien1.instance.id, 1);
-    resourceController.addReservation(informaticien2.instance.id, 1);
+    reserve(informaticien1, 1);
+    reserve(informaticien2, 1);
 
     //task2
     assign(commercial1, task2);
     assign(commercial2, task2);
     assign(informaticien3, task2);
 
-    resourceController.addReservation(commercial1.instance.id, 1);
-    resourceController.addReservation(commercial2.instance.id, 1);
-    resourceController.addReservation(informaticien3.instance.id, 1);
+    reserve(commercial1, 1);
+    reserve(commercial2, 1);
+    reserve(informaticien3, 1);
 
     //task3    
     assign(commercial3, task3);
     assign(informaticien4, task3);
 
-    resourceController.addReservation(commercial3.instance.id, 2);
-    resourceController.addReservation(informaticien4.instance.id, 2);
+    reserve(commercial3, 2);
+    reserve(informaticien4, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    assertEquals(50, task1.instance.getProperty('completeness'), "testPredecessorFactor(): task1 completness does not match"); //ancien 50%
-    assertEquals(500, task1.instance.getProperty('fixedCosts'), "testPredecessorFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(500, task1.instance.getProperty('wages'), "testPredecessorFactor(): task1 wages does not match"); //ancien 500
-    assertEquals(100, task1.instance.getProperty('quality'), "testPredecessorFactor(): task1 quality does not match"); //ancien 100
-    assertEquals(75, task2.instance.getProperty('completeness'), "testPredecessorFactor(): task1 completness does not match"); //ancien 75%
-    assertEquals(500, task2.instance.getProperty('fixedCosts'), "testPredecessorFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(750, task2.instance.getProperty('wages'), "testPredecessorFactor(): task5 wages does not match"); //ancien 750
-    assertEquals(100, task2.instance.getProperty('quality'), "testPredecessorFactor(): task5 quality does not match"); //ancien 100
+    checkProperty(task1, 'completeness', 50, arguments.callee.name); //ancien 50%
+    checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task1, 'wages', 500, arguments.callee.name); //ancien 500
+    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task2, 'completeness', 75, arguments.callee.name); //ancien 75%
+    checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
+    checkProperty(task2, 'quality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
-    assertEquals(20, task3.instance.getProperty('completeness'), "testPredecessorFactor(): task3 completness does not match"); //ancien 20%
-    assertEquals(500, task3.instance.getProperty('fixedCosts'), "testPredecessorFactor(): fixedCosts quality does not match"); //ancien 500
-    assertEquals(500, task3.instance.getProperty('wages'), "testPredecessorFactor(): task3 wages does not match"); //ancien 500
-    assertEquals(100, task3.instance.getProperty('quality'), "testPredecessorFactor(): task3 quality does not match"); //ancien 100
+    checkProperty(task3, 'completeness', 20, arguments.callee.name); //ancien 20%
+    checkProperty(task3, 'fixedCosts', 500, arguments.callee.name); //ancien 500
+    checkProperty(task3, 'wages', 500, arguments.callee.name); //ancien 500
+    checkProperty(task3, 'quality', 100, arguments.callee.name); //ancien 100
 }
 function testUnassignable() {
     debug(arguments.callee.name);
@@ -598,13 +632,13 @@ function testResourceChangeWithinTask() {
     assign(commercial1, task1);
     assign(commercial1, task2);
 
-    resourceController.addReservation(commercial1.instance.id, 1);
-    resourceController.addReservation(commercial2.instance.id, 2);
-    resourceController.addReservation(commercial3.instance.id, 3);
-    resourceController.addReservation(commercial4.instance.id, 4);
+    reserve(commercial1, 1);
+    reserve(commercial2, 2);
+    reserve(commercial3, 3);
+    reserve(commercial4, 4);
 
     doNextPeriod(5);                                                            // -> Executing week 4
-    // assertEquals(100, task1.instance.getProperty('completeness'), "testSimplePMGNormalAssignment(): task1 completness does not match");                                                             // -> Closing
+    // checkProperty(task1, 'completeness', 100, arguments.callee.name);                                                             // -> Closing
 }
 
 
@@ -628,11 +662,138 @@ function testUnworkedReq() {
 
     doNextPeriod(3);
 
-    assertEquals(100, task7.instance.getProperty('completeness'), "testUnworledReq(): task7 completness does not match");
+    checkProperty(task7, 'completeness', 100, arguments.callee.name);
+}
+
+
+function testUnworkedHours() {
+    var unworkedCost = 0;
+    debug(arguments.callee.name);
+    reset();
+    debug("Init");
+
+    doNextPeriod(2);
+
+    assertEquals(0, projectUnworkedHours.value, "testUnworkedHours(): initial value does not match");
+
+
+    debug("costs0: " + unworkedCost + " :: " + projectUnworkedHours.value);
+
+
+    commercial1.setProperty('maxBilledUnworkedHours', '100');
+    checkDescriptorProperty(commercial1, 'maxBilledUnworkedHours', '100', " UnworkedHours v1");
+
+    assign(commercial1, task1, task8);  // 1step on task1 -> NotMyWork + 9step on task8
+    reserve(commercial1, 1);           // Unworked 10% 1000$/4 ->  25$
+    // Do first execution period
+    silentNextPeriod();
+    clearAssignments(commercial1);
+
+    unworkedCost += 25; // -> Ancien 25
+    debug("costs1: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period1 value does not match");
+    assertEquals(250, actualCost.value, "testUnworkedHours(): period1 ac does not match");
+
+
+    commercial2.setProperty('maxBilledUnworkedHours', '10');
+    checkDescriptorProperty(commercial2, 'maxBilledUnworkedHours', '10', " UnworkedHours v2");
+    assign(commercial2, task1, task8);  // 1step on task1 -> NotMyWork + 9step on task8
+    reserve(commercial2, 2); // Unworked 10% -> 25$
+    // Do 2nd execution period
+    silentNextPeriod();
+    clearAssignments(commercial2);
+
+    unworkedCost += 25; // -> Ancien 50
+    debug("costs2: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period2 value does not match");
+    assertEquals(500, actualCost.value, "testUnworkedHours(): period1 ac does not match");
+
+
+    clearAssignments(commercial3);
+    commercial3.setProperty('maxBilledUnworkedHours', '5');
+    checkDescriptorProperty(commercial3, 'maxBilledUnworkedHours', '5', " UnworkedHours v3");
+    assign(commercial3, task1, task8);  // 1step on task1 -> NotMyWork + 9step on task8
+    reserve(commercial3, 3);  // Unworked 5%  -> 12.5$
+    // Do 3rd execution period
+    silentNextPeriod();
+    clearAssignments(commercial3);
+
+    unworkedCost += 12.5;   // -> Ancien 62.5
+    debug("costs3: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period3 value does not match");
+
+
+
+
+
+    commercial4.setProperty('maxBilledUnworkedHours', '20');
+    assign(commercial4, task1);  // 1step on task1 -> NotMyWork + 9step loosed
+    reserve(commercial4, 4); // Unwork 20% of 1000/4 => 50$
+    // Do 4th execution period
+    silentNextPeriod();
+    clearAssignments(commercial4);
+
+    unworkedCost += 50;  // Ancien 112.50 
+    debug("costs4: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period4 value does not match");
+
+
+
+
+    commercial5.setProperty('maxBilledUnworkedHours', '50');
+    reserve(commercial5, 5); // Unwork 50% -> 125$
+    // Do 5th execution period
+    silentNextPeriod();
+
+    unworkedCost += 125; // Ancien 237.5
+    debug("costs5: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period5 value does not match");
+
+
+
+
+    reserve(commercial1, 6); // Unwork 100% -> 250$
+    // Do 6th execution period
+    silentNextPeriod();
+
+    unworkedCost += 250;  // Ancien 487.50
+    debug("costs6: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period6 value does not match");
+
+
+
+
+    designer1.setProperty('maxBilledUnworkedHours', '200');
+    reserve(designer1, 7); // Unwork 100%    250$
+    // Do 5th execution period
+    silentNextPeriod();
+
+    unworkedCost += 250; // ancien 737.5
+    debug("costs7: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost, projectUnworkedHours.value, "testUnworkedHours(): period7 value does not match");
+
+
+
+
+    designer2.setProperty('maxBilledUnworkedHours', '-200');
+    reserve(designer2, 8); // Unwork 0% -> 0$
+    // Do 5th execution period
+    silentNextPeriod();
+
+    debug("costs8: " + unworkedCost + " :: " + projectUnworkedHours.value);
+    assertEquals(unworkedCost + 0, projectUnworkedHours.value, "testUnworkedHours(): period8 value does not match");
+}
+
+function silentNextPeriod() {
+    var oldMode = DEBUGMODE;
+    DEBUGMODE = false;
+    nextPeriod();
+    DEBUGMODE = oldMode;
 }
 
 
 function reset() {
+    loadVariables();
     removePredecessor();
 //    addTestPredecessor();
 
@@ -653,6 +814,7 @@ function reset() {
     defaultEmployee(informaticien4);
     defaultEmployee(informaticien5);
 
+    loadGameModelFacade();
     gameModelFacade.refresh(gameModel);
     gameModelFacade.reset(gameModel);
 }
@@ -695,4 +857,32 @@ function removePredecessor() {
         taskDesc = taskDescList.items.get(i);
         taskDesc.getPredecessors().clear();
     }
+}
+
+
+function testLanguage() {
+    var missingArgs, missingKey, missingLocale, ok,
+        exp_missingArgs, exp_missingKey, exp_missingLocale, exp_ok,
+        key = "messages.endOfTaskSwitchToNew.content";
+
+    debug(arguments.callee.name);
+
+    ok = I18n_t(key, {task: "Task #1", nextTask: "Task #2", employeeName: "John", job: "Job"});
+    exp_ok = "La tâche \"Task #1\" est terminée, je passe à la tâche Task #2 <br/> Salutations <br/>John<br/> Job";
+    assertEquals(exp_ok, ok, "TestLanguage(): OK Failed");
+
+    missingArgs = I18n_t(key, {task: "Task #1", nextTask: "Task #2"});
+    exp_missingArgs = "[I18N] MISSING MANDATORY ARGUMENT \"job\" FOR \"" + key + "\"";
+    assertEquals(exp_missingArgs, missingArgs, "TestLanguage(): Missing Arg");
+
+    missingKey = I18n_t("wacky-name");
+    exp_missingKey = "[I18N] MISSING fr translation for \"wacky-name\"";
+    assertEquals(exp_missingKey, missingKey, "TestLanguage(): Missing KEY");
+
+
+    language.setValue("ru");
+    missingLocale = I18n_t(key, {task: "Task #1", nextTask: "Task #2", employeeName: "John"});
+    exp_missingLocale = "[I18N] MISSING ru LOCALE";
+    assertEquals(exp_missingLocale, missingLocale, "TestLanguage(): Missing KEY");
+    language.setValue("fr");
 }
