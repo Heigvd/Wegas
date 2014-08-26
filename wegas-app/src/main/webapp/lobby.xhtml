@@ -89,12 +89,17 @@
                     });
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
-                        window.open(app.get("base")
-                            + "game-play.html?gameId=" + e.gameId);              // open the game in a new tab
+                        /*    window.open(app.get("base")
+                         + "game-play.html?gameId=" + e.gameId);     */         // open the game in a new tab
                         Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
                             on: {
                                 success: function() {
-                                    Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
+                                    //Find row with joined game and "click" it.
+                                    var dt = Y.Widget.getByNode(".wegas-joinedgamesdatatable").table;
+                                    dt.data.some(function(d) {
+                                        return d.get("entity").get("id") === e.gameId ? dt.getRow(d).simulate("click") : false;
+                                    });
+//                                    Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
                                 }
                             }
                         });
