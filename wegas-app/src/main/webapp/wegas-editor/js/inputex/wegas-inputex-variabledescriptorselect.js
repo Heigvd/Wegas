@@ -80,7 +80,6 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             this.options.value = val;
             this.syncUI();
             if (!this.validate()) {
-                this.empty();
                 this._fallback(this.options.raw, "Failed to validate statement");
             }
         },
@@ -98,10 +97,12 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
         },
         validate: function() {
             var valid = !!this.getValue() && VariableDescriptorSelect.superclass.validate.call(this);
-            try {
-                window.esprima.parse(this.getValue());
-            } catch (e) {
-                valid = false;
+            if (valid) {
+                try {
+                    window.esprima.parse(this.getValue());
+                } catch (e) {
+                    valid = false;
+                }
             }
             if (!valid) {
                 this.options.showMsg = true;
@@ -177,6 +178,25 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
          * @returns {undefined}
          */
         _fallback: function(value, message) {
+            var msg = [],
+                /**
+                 * Crawl inputs to find error messages.
+                 * Inputs should add an error message to explain validation fail.
+                 * @param {type} scope the input
+                 * @returns {undefined}
+                 */
+                crawlMsg = function(scope) {
+                    var i;
+                    if (scope.inputs && scope.inputs.length) {
+                        for (i in scope.inputs) {
+                            if (scope.inputs[i].options.messages.error) {
+                                msg.push(scope.inputs[i].options.messages.error);
+                            }
+                            crawlMsg(scope.inputs[i]);
+                        }
+                    }
+                };
+            crawlMsg(this);
             value = value || "";
             this.empty();
             this.addField({
@@ -186,7 +206,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 cols: 500,
                 wrapperClassName: "inputEx-fieldWrapper wegas-variabledescriptor-select-fallback"
             });
-            this.displayMessage(message);
+            this.displayMessage(msg.length ? msg.join("<br>") : message);
             this._fallbackMode = true;
         },
         /**
@@ -760,15 +780,37 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                 results = options.entity ? options.entity.getInstance().get(options.field) :
                     Y.Plugin.EditEntityAction.currentEntity.getInstance().get(options.field);
             }
-            options.choices = Y.Array.map(results, function(r) {
+            options.choices = [{
+                    label: DISABLED_CHOICE_LABEL.variable,
+                    value: null,
+                    disabled: true
+                }].concat(Y.Array.map(results, function(r) {
                 return {
                     value: r.get(options.returnAttr || "name"),
                     label: r.getEditorLabel() || this.optionNameToString(r, options)
                 };
-            }, this);
+            }, this));
 
             EntityArrayFieldSelect.superclass.setOptions.call(this, options);
             this.options.entity = options.entity;
+            this.options.field = options.field;
+        },
+        setValue: function(value) {
+            EntityArrayFieldSelect.superclass.setValue.apply(this, arguments);
+            this.options.value = value;
+        },
+        validate: function() {
+            var valid = this.getValue();
+            if (valid) {
+                this.options.messages.error = null;
+            } else {
+                this.options.messages.error = "'" + this.options.value + "' is not a valid choice";
+            }
+            return this.getValue();
+        },
+        addChoice: function() {
+            EntityArrayFieldSelect.superclass.addChoice.apply(this, arguments);
+            this.disableChoice({label: DISABLED_CHOICE_LABEL.variable});
         },
         optionNameToString: function(result, options) {
             var string = [],
@@ -850,5 +892,5 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             }, this);
         }
     });
-    inputEx.registerType("flatvariableselect", FlatVariableSelect);             // Register this class as "list" type
+    inputEx.registerType("flatvariableselect", FlatVariableSelect); // Register this class as "list" type
 });
