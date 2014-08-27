@@ -308,7 +308,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             return cfg[index].type !== "hidden"
                                 && cfg[index].type !== "list";
                         }), function(o) {
-                            return Wegas.Helper.trimLength(Wegas.Helper.stripHtml(source(o.range)), 50, "\"...");// Args are limited to 50 char
+                            return Wegas.Helper.trimLength(Wegas.Helper.stripHtml(source(o.range)), 50, "...\"");// Args are limited to 50 char
                         }).join(", ");
                     },
                     parse = function(i) {
