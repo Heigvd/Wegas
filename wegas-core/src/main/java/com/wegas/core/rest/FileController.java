@@ -100,7 +100,7 @@ public class FileController {
         if (name == null) {
             name = details.getContentDisposition().getFileName();
         }
-        AbstractContentDescriptor detachedFile = null;
+        AbstractContentDescriptor detachedFile;
         try {
             if (details.getContentDisposition().getFileName() == null
                     || details.getContentDisposition().getFileName().equals("")) {//Assuming an empty filename means a directory

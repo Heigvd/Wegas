@@ -130,28 +130,3 @@ public class PlayerScope extends AbstractScope {
         return ret;
     }
 }
-/*
- * public class UuidMapKeyDeserializerModule extends Module {
- *
- * @Override public String getModuleName() { return getClass().getName(); }
- *
- * @Override public Version version() { return Version.unknownVersion(); }
- *
- * @Override public void setupModule(SetupContext context) {
- * context.addKeyDeserializers(new KeyDeserializers() { @Override public
- * KeyDeserializer findKeyDeserializer(JavaType type, DeserializationConfig
- * config, BeanDescription beanDesc, BeanProperty property) throws
- * JsonMappingException { if (type.getRawClass().equals(UUID.class)) { return
- * new UuidDeserializer(); } return null; } }); }
- *
- * private static class UuidDeserializer extends KeyDeserializer { @Override
- * public UUID deserializeKey(String key, DeserializationContext ctxt) throws
- * IOException { return UUID.fromString(key); } } } class UserDeserializer
- * extends StdKeyDeserializer {
- *
- * protected UserDeserializer(Class<UserEntity> cls) { super(cls); }
- *
- * @Override protected Object _parse(String key, DeserializationContext ctxt)
- * throws Exception { ObjectMapper mapper = new ObjectMapper(); return
- * mapper.readValue(key, UserEntity.class); } }
- */
