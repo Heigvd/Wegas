@@ -27,24 +27,39 @@ YUI.add('wegas-lobby-button', function(Y) {
          * @private
          */
         renderUI: function() {
+            var cb = this.get("contentBox");
+
             this.uploader = new Y.UploaderHTML5({
                 fileFieldName: "file",
                 selectButtonLabel: this.get("label"),
                 appendNewFiles: false,
                 multipleFiles: false,
                 withCredentials: false,
+                //dragAndDropArea: cb,
+                //dragAndDropArea: cb.ancestor(".wegas-lobby-datatable"),
                 fileFilters: [{description: "Json", extensions: "*.json"}],
                 uploadURL: Wegas.app.get("base") + "rest/GameModel/",
                 uploadHeaders: {
                     'Managed-Mode': 'true'
                 }
-            }).render(this.get(CONTENTBOX));
+            }).render(cb);
+
+            Y.later(40, this, function() {
+                cb.ancestor(".wegas-lobby-datatable").prepend("<div class=\"wegas-dropdummy\">Drop a json file to create a scenario</div>");
+                this.uploader.set("dragAndDropArea", cb.ancestor(".wegas-lobby-datatable"));
+            });
 
             this.uploader.on("fileselect", function() {
                 this.showOverlay();
                 this.uploader.uploadAll();
                 this.uploader.set("enabled", false);
             }, this);
+            this.uploader.on(["dragenter", "dragover"], function() {
+                cb.ancestor(".wegas-lobby-datatable").addClass("wegas-dragover");
+            });
+            this.uploader.on(["dragleave", "drop"], function(e) {
+               // cb.ancestor(".wegas-lobby-datatable").removeClass("wegas-dragover");
+            });
             this.uploader.on("uploadcomplete", function(e) {
                 this.hideOverlay();
                 this.uploader.set("enabled", true);
@@ -52,18 +67,18 @@ YUI.add('wegas-lobby-button', function(Y) {
                 try {
                     Wegas.Facade.GameModel.cache._beforeDefDataFn(e);
                 } catch (e) {
-                    this.showMessageBis("success", "Error uploading scnenario");
+                    this.showMessageBis("success", "Error creating scenario");
                     return;
                 }
                 this.showMessageBis("success", "Scenario imported");
             }, this);
-            // this.uploader.on("alluploadscomplete", function() {}, this);
             this.uploader.on("uploaderror", function() {
                 this.hideOverlay();
                 this.uploader.set("enabled", true);
                 this.uploader.set("fileList", []);
-                this.showMessageBis("error", "Error uploading scnenario");
+                this.showMessageBis("error", "Error creating scenario");
             }, this);
+            // this.uploader.on("alluploadscomplete", function() {}, this);
         },
         destructor: function() {
             this.uploader.destroy();

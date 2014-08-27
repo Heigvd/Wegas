@@ -8,16 +8,24 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.ResetEvent;
+import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModel_;
+import com.wegas.core.rest.FileController;
+import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -33,6 +41,8 @@ import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import org.apache.shiro.SecurityUtils;
+import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
@@ -42,6 +52,10 @@ import javax.persistence.criteria.Root;
 @LocalBean
 public class GameModelFacade extends BaseFacade<GameModel> {
 
+    /**
+     *
+     */
+    final static String HISTORYPATH = "History";
     /**
      *
      */
@@ -62,6 +76,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      */
     @Inject
     private Event<ResetEvent> resetEvent;
+    /**
+     *
+     */
+    @EJB
+    private FileController fileController;
 
     /**
      *
@@ -254,6 +273,95 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
         em.flush();                                 // DA FU    ()
         resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @param serializedGameModel
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    private void createVersion(Long gameModelId, String name, String serializedGameModel) throws RepositoryException, IOException {
+
+        if (!fileController.directoryExists(gameModelId, "/" + HISTORYPATH)) {  // Create version folder if it does not exist
+            fileController.createDirectory(gameModelId, HISTORYPATH, "/", null, null);
+        }
+
+        fileController.createFile(gameModelId, name + ".json", "/" + HISTORYPATH,
+                "application/octet-stream", null, null,
+                new ByteArrayInputStream(serializedGameModel.getBytes("UTF-8")));// Create a file containing the version
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param name
+     * @throws RepositoryException
+     * @throws IOException
+     */
+    public void createVersion(Long gameModelId, String name) throws RepositoryException, IOException {
+        this.createVersion(gameModelId, name, this.find(gameModelId).toJson(Views.Export.class));
+    }
+
+    /**
+     *
+     * @throws IOException
+     */
+    //@Schedule(hour = "2")
+    public void automaticVersionCreation() throws IOException, RepositoryException {
+        for (GameModel model : this.findTemplateGameModels()) {
+
+            String serialized = model.toJson(Views.Export.class);
+            String hash = Integer.toHexString(serialized.hashCode());
+
+            //System.out.println("for" + model + "*" + hash);
+            if (!fileController.directoryExists(model.getId(), "/" + HISTORYPATH)) {// Create version folder if it does not exist
+                fileController.createDirectory(model.getId(), HISTORYPATH, "/", null, null);
+            }
+
+            List<AbstractContentDescriptor> history = fileController.listDirectory(model.getId(), "/" + HISTORYPATH);
+            boolean found = false;
+            for (AbstractContentDescriptor item : history) {
+                //System.out.println("checking" + item.getName() + "*" + hash);
+                if (item.getName().contains(hash)) {
+                    //System.out.println("fOUND");
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                this.createVersion(model.getId(),
+                        new SimpleDateFormat("yyyy.MM.dd HH.mm.ss").format(new Date()) + "-" + hash + ".json",
+                        serialized);
+            }
+
+            //System.gc();
+        }
+    }
+
+    /**
+     *
+     * @param gameModelId
+     * @param path
+     * @return
+     * @throws IOException
+     */
+    public GameModel createFromVersion(Long gameModelId, String path) throws IOException {
+
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+
+        InputStream file = fileController.getFile(gameModelId, path);           // Retrieve file from content repository
+
+        ObjectMapper mapper = JacksonMapperProvider.getMapper();                // Retrieve a jackson mapper instance
+        GameModel gm = mapper.readValue(file, GameModel.class);                 // and deserialize file
+
+        gm.setName(this.findUniqueName(gm.getName()));               // Find a unique name for this new game
+
+        this.createWithDebugGame(gm);
+        return gm;
     }
 
     /**

@@ -7,13 +7,10 @@
  */
 package com.wegas.core.exception;
 
-import javax.ejb.ApplicationException;
-
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@ApplicationException(rollback = false)
 public class PersistenceException extends RuntimeException {
 
     /**
