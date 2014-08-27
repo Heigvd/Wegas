@@ -190,7 +190,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             this.nodes = {};
             this.destroyAll();
             if (sm) {
-                Y.Object.each(sm.get(STATES), this.addState, this); // Render all states
+                Y.Object.each(sm.get(STATES), this.addState, this);             // Render all states
                 this.each(function() {                                          // For each state,
                     // try {
                     Y.Object.each(this.get(ENTITY).get("transitions"), function(t) {// render transitions
@@ -221,7 +221,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 id = Math.max(id, +key);
             });
             id = id + 1;
-            state = new Wegas.persistence[type](cfg); // State or DialogueState
+            state = new Wegas.persistence[type](cfg);                           // State or DialogueState
             //this.setZoom(1, false);                                           // force setting default zoom to have correct position            
             this.get(ENTITY).get(STATES)[id.toString()] = state;
             this.save();
@@ -382,12 +382,19 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 });
         },
         syncUI: function() {
-            var entity = this.get(ENTITY),
-                bb = this.get(BOUNDING_BOX);
-            bb.one(".wegas-state-text").setHTML((entity instanceof Wegas.persistence.DialogueState ?
-                entity.get("text") : entity.get("label")) || "<center><em><br />Empty</em></center>");
-            bb.toggleClass("initial-state", this.get(PARENT).get(ENTITY).getInitialStateId() === this.get(SID));
-            //this.sidNode.setHTML((e instanceof Wegas.persistence.DialogueState ? e.get("text") : StateMachineViewer.FORMATSCRIPT(e.get("onEnterEvent")).substring(0, 30)) || "");
+            var label, entity = this.get(ENTITY),
+                impact = Y.inputEx.WysiwygScript.formatScript(entity.get("onEnterEvent"));
+
+            if (entity instanceof Wegas.persistence.DialogueState) {
+                label = entity.get("text");
+            } else if (entity.get("label")) {
+                label = "<center>" + entity.get("label") + "</center>";
+            } else {
+                label = impact;
+            }
+            this.get(BOUNDING_BOX).toggleClass("initial-state", this.get(PARENT).get(ENTITY).getInitialStateId() === this.get(SID));
+            this.get(BOUNDING_BOX).one(".wegas-state-text").setHTML(label || "<center><em><br />Empty</em></center>")
+                .set("title", impact ? "<b>Impact</b><br />" + impact : "").plug(Y.Plugin.Tooltip);
         },
         bindUI: function() {
             var stateMachine = this.get(PARENT),
