@@ -414,7 +414,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     /**
      * NumberDescriptor mapper
      */
-    persistence.NumberDescriptor = Base.create("NumberDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
+    persistence.NumberDescriptor = Base.create("NumberDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {
+        getMaxValue: function() {
+            return this.get("maxValue");
+        },
+        getMinValue: function() {
+            return this.get("minValue");
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "NumberDescriptor"

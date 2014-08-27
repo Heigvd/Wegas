@@ -78,11 +78,31 @@
                     }]
             }, {
                 "type": "Button",
-                "label": "Pass week",
+                "label": "",
                 "cssClass": "pmg-nextweek",
                 "disabled": false,
                 "tooltip": "Advance to next week",
                 "plugins": [{
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self),init = Variable.find(gameModel, 'periodPhase1'),plan = Variable.find(gameModel, 'periodPhase2'),exec = Variable.find(gameModel, 'periodPhase3'),clos = Variable.find(gameModel, 'periodPhase4'),comp = Variable.find(gameModel, 'projectCompleteness').getValue(self); return (phase == 1 && init.getMaxValue() == init.getValue(self)) || (phase == 2 && plan.getMaxValue() == plan.getValue(self)) || (phase == 4 && clos.getMaxValue() == clos.getValue(self)) || (phase == 3 && comp >= 100)",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "passPhase"
+                        }
+                    },{
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), currentPeriod = Variable.find(gameModel, 'currentPeriod').item(phase-1).getValue(self), advancement = Variable.find(gameModel, 'advancementLimit').getValue(self),phaseLimit = Variable.find(gameModel, 'phaseLimit').getValue(self),periodLimit = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return (advancement && !(phase === 3 && currentPeriod >= executionPeriods) && phase >= phaseLimit && currentPeriod >= periodLimit)",
+                                "language": "JavaScript"
+                            }
+                        }
+                    },{
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "onClick": {
@@ -1149,6 +1169,73 @@
         "children": [{
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
+                "label": "<span class='checkbox'>Advancement limit</span>",
+                "plugins": [
+                    {
+                        "fn": "ExecuteScriptAction",
+                        "cfg": {
+                            "targetEvent": "click",
+                            "onClick": {
+                                "@class": "Script",
+                                "language": "JavaScript",
+                                "content": "if (Variable.find(gameModel, \"advancementLimit\").getValue(self)){\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, true);\n}"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "28px",
+                                "left": "83px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'advancementLimit').getValue(self)",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "selected"
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "AdvancementLimit",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "60px",
+                                "left": "83px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Button",
+                "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>Autoreservation</span>",
                 "plugins": [{
                         "fn": "ExecuteScriptAction",
@@ -1165,9 +1252,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "60px",
-                                "left": "83px",
-                                "zIndex": "10"
+                                "top": "190px",
+                                "left": "83px"
                             }
                         }
                     }, {
@@ -1206,9 +1292,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "100px",
-                                "left": "83px",
-                                "zIndex": "10"
+                                "top": "230px",
+                                "left": "83px"
                             }
                         }
                     }, {
@@ -1247,9 +1332,8 @@
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "140px",
-                                "left": "83px",
-                                "zIndex": "10"
+                                "top": "270px",
+                                "left": "83px"
                             }
                         }
                     }, {

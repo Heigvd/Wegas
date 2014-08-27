@@ -19,6 +19,44 @@
     background: url(../../wegas-editor/images/checkbox.png) -9px -4px no-repeat;
 }
 
+/****************************** advancementlimit ******************************/
+.wegas-pmg-advancementlimit {
+    width: 100%;
+}
+.wegas-pmg-advancementlimit .wegas-template-valuebox-unit {
+    width: 20px;
+    text-align: center;
+}
+.wegas-pmg-advancementlimit .phase .wegas-template-valuebox,
+.wegas-pmg-advancementlimit .phase p{
+    display: inline-block;
+}
+.wegas-pmg-advancementlimit .phase p {
+    width: 85px;
+}
+.wegas-pmg-advancementlimit .wegas-template-valuebox-unit{
+    background-color: white;
+}
+.wegas-pmg-advancementlimit .playerAdvancement{
+    background-color: lightgray;
+    cursor: default;
+}
+.wegas-pmg-advancementlimit .currentPlayerState{
+    background-color: #0981A9;
+    cursor: pointer;
+}
+.wegas-pmg-advancementlimit .clickable{
+    cursor: pointer;
+}
+.wegas-pmg-advancementlimit .blockPosition {
+    -moz-box-shadow: inset 0px 0px 7px #000000;
+    -webkit-box-shadow: inset 0px 0px 7px #000000;
+    box-shadow: inset 0px 0px 7px #000000;
+}
+.wegas-pmg-advancementlimit .afterBlockPosition {
+    border-color: red;
+}
+
 /* Right panel forms */ 
 .editor-resources-skillset, .editor-resources-occupations {
     display: block !important;

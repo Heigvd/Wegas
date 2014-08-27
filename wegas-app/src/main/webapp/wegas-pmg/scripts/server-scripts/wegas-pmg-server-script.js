@@ -24,10 +24,11 @@ var gm = self.getGameModel(), TempImpact;
 function nextPeriod() {
     var currentPhase = getCurrentPhase(),
         currentPeriod = getCurrentPeriod();
-    
-    Variable.find(gm, "currentTime").add(self, 1);
 
     allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
+    advancementLimit();
+
+    Variable.find(gm, "currentTime").add(self, 1);
 
     if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
         runSimulation();
@@ -49,7 +50,7 @@ function nextPeriod() {
         }
         Event.fire("nextPhase");
         Event.fire("nextWeek");
-        
+
     } else {                                                                    // Otherwise pass to next period
         currentPeriod.add(self, 1);
         Event.fire("nextWeek");
@@ -70,15 +71,32 @@ function checkEndOfProject() {
 }
 
 /**
+ * Check if an advancement limit existe
+ */
+function advancementLimit() {
+    var phaseLimit, periodLimit, executionPeriods;
+    if (Variable.find(gm, "advancementLimit").getValue(self)) {
+        phaseLimit = Variable.find(gm, "phaseLimit").getValue(self);
+        periodLimit = Variable.find(gm, "periodLimit").getValue(self);
+        executionPeriods = Variable.find(gm, "executionPeriods").getValue(self);
+        if (!(getCurrentPhase().getValue(self) === 3 && getCurrentPeriod().getValue(self) >= executionPeriods)) {
+            if (getCurrentPhase().getValue(self) >= phaseLimit && getCurrentPeriod().getValue(self) >= periodLimit) {
+                throw new Error("StringMessage: Ask your course leader for permissions to continue.");
+            }
+        }
+    }
+}
+
+/**
  * Check if all questions from a phase are answered
  */
 function allPhaseQuestionAnswered() {
     var i, question, questions, forceQuestion = Variable.findByName(gm, "forceQuestionReplies").getValue(self);
-    
+
     if (!forceQuestion) {
         return;
     }
-    
+
     try {
         questions = Variable.findByName(gm, "questions").items.get(getCurrentPhase().getValue(self) - 1)
             .items.get(getCurrentPeriod().getValue(self) - 1).items;
@@ -157,8 +175,8 @@ function updateVariables() {
 
     Variable.findByName(gm, 'projectCompleteness')
         .setValue(self, Y.Array.sum(tasks, function(t) {
-            return t.getPropertyD('completeness');
-        }) / tasks.length);                                                     // completness = average of all task's completeness in %
+        return t.getPropertyD('completeness');
+    }) / tasks.length);                                                     // completness = average of all task's completeness in %
 
     ac += projectUnworkedHours.getValue(self);
 
@@ -237,11 +255,11 @@ function addImpactDuration(name, method, arguments, inTime) {
         currentTime = Variable.findByName(gm, "currentTime").getInstance().getValue(),
         endTim = inTime + currentTime,
         object = {
-            n: name,
-            m: method,
-            a: arguments,
-            t: endTim
-        };
+        n: name,
+        m: method,
+        a: arguments,
+        t: endTim
+    };
     factorsDesc.setProperty(self, Date.now(), JSON.stringify(object));
 }
 
@@ -252,9 +270,9 @@ function cancelEffect() {
         args;
     for (i = 0; i < propertiesKey.length; i++) {
         object = JSON.parse(factorsDesc.getProperty(self, propertiesKey[i]));
-        args = JSON.stringify(object.a).substr(1, JSON.stringify(object.a).length-2);
+        args = JSON.stringify(object.a).substr(1, JSON.stringify(object.a).length - 2);
         if (currentTime === object.t) {
-            eval("Variable.find(gm, '"+object.n+"')."+object.m+"(self, "+args+")");
+            eval("Variable.find(gm, '" + object.n + "')." + object.m + "(self, " + args + ")");
             factorsDesc.removeProperty(self, propertiesKey[i]);
         }
     }

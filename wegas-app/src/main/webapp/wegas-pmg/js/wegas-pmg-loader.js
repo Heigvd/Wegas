@@ -17,18 +17,18 @@ YUI.addGroup("wegas-pmg", {
         "wegas-scheduledatatable": {
             ws_provides: 'ScheduleDT'
         },
-        'wegas-pmgwidget-css': {
+        "wegas-pmgwidget-css": {
             path: 'css/wegas-pmgwidget-min.css',
             type: 'css'
         },
-        'wegas-pmg-breadcrumb': {
+        "wegas-pmg-breadcrumb": {
             ws_provides: "PmgBreadcrumb"
         },
-        'wegas-pmg-datatable': {
+        "wegas-pmg-datatable": {
             requires: ['datatable', 'datatable-mutable', "template"],
             ws_provides: "PmgDatatable"
         },
-        'wegas-pmg-slidepanel': {
+        "wegas-pmg-slidepanel": {
             requires: ['anim', 'wegas-pmgwidget-css', "wegas-pmg-datatable", "wegas-pmg-reservation",
                 "wegas-pmg-occupationcolor", "wegas-pmg-activitycolor", "wegas-pmg-assignment",
                 "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color"],
@@ -94,6 +94,11 @@ YUI.addGroup("wegas-pmg", {
             path: 'js/plugin/wegas-pmg-tablepopup-min.js',
             requires: 'wegas-widgetmenu',
             ws_provides: 'Tablepopup'
+        },
+        "wegas-pmg-advancementlimit": {
+            path: 'js/wegas-pmg-advancementlimit-min.js',
+            requires: [],
+            ws_provides: "AdvancementLimit"
         }
     }
 });
