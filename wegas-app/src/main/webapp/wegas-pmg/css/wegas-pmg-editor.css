@@ -24,8 +24,14 @@
     width: 100%;
 }
 .wegas-pmg-advancementlimit .wegas-template-valuebox-unit {
-    width: 20px;
+    width: 22px;
+    height: 19px;
     text-align: center;
+    border-left: none;
+    line-height: 20px;
+}
+.wegas-pmg-advancementlimit .wegas-template-valuebox-unit:first-child{
+    border-left: 1px solid gray;
 }
 .wegas-pmg-advancementlimit .phase .wegas-template-valuebox,
 .wegas-pmg-advancementlimit .phase p{
@@ -36,6 +42,10 @@
 }
 .wegas-pmg-advancementlimit .wegas-template-valuebox-unit{
     background-color: white;
+}
+.wegas-pmg-advancementlimit .box-execution .wegas-template-valuebox-unit:last-child {
+    margin-left: 4px;
+    border-left: 1px solid gray;
 }
 .wegas-pmg-advancementlimit .playerAdvancement{
     background-color: lightgray;
@@ -49,13 +59,17 @@
     cursor: pointer;
 }
 .wegas-pmg-advancementlimit .blockPosition {
-    -moz-box-shadow: inset 0px 0px 7px #000000;
-    -webkit-box-shadow: inset 0px 0px 7px #000000;
-    box-shadow: inset 0px 0px 7px #000000;
+    border-right: 3px solid black;
 }
 .wegas-pmg-advancementlimit .afterBlockPosition {
-    border-color: red;
+    background-color: rgba(178, 0, 0, 0.5);
 }
+/*.wegas-pmg-advancementlimit .afterBlockPosition:after {
+    content: url(../../wegas-pmg/images/remove.png);
+    position: relative;
+    top: -9px;
+    left: 5px;
+}*/
 
 /* Right panel forms */ 
 .editor-resources-skillset, .editor-resources-occupations {
