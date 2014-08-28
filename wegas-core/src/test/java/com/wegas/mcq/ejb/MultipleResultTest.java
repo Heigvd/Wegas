@@ -12,6 +12,7 @@ import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.mcq.persistence.*;
+import javax.ejb.EJBException;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
 import junit.framework.Assert;
@@ -52,7 +53,6 @@ public class MultipleResultTest extends AbstractEJBTest {
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final QuestionSingleton qSingleton = lookupBy(QuestionSingleton.class);
 
-        
         // Create a 1reply-question
         QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
@@ -69,7 +69,7 @@ public class MultipleResultTest extends AbstractEJBTest {
 
         vdf.createChild(question.getId(), choice1);
 
-               // second one
+        // second one
         ChoiceDescriptor choice2 = new SingleResultChoiceDescriptor();
         choice2.setDefaultInstance(new ChoiceInstance());
         choice2.setName("choice2");
@@ -85,7 +85,7 @@ public class MultipleResultTest extends AbstractEJBTest {
         try {
             s1.start();
             s2.start();
-        } catch (WegasException e) {
+        } catch (EJBException e) {
             // One of them will fail...
         }
 

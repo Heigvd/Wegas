@@ -578,12 +578,8 @@ YUI.add("wegas-entity", function(Y) {
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
-                                    type: "JoinOrResumeButton",
-                                    label: "Join as a player",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
                                     type: BUTTON,
-                                    label: "Export",
+                                    label: "Print",
                                     plugins: [{
                                             fn: "WidgetMenu",
                                             cfg: {
@@ -611,6 +607,9 @@ YUI.add("wegas-entity", function(Y) {
                                             }
                                         }]
                                 }, {
+                                    type: "JoinOrResumeButton",
+                                    label: "Join as a player"
+                                }, {
                                     type: BUTTON,
                                     label: "Create a scenario based on this game",
                                     cssClass: "wegas-advanced-feature"
@@ -621,8 +620,7 @@ YUI.add("wegas-entity", function(Y) {
                                     cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: "Linkwidget"
-                                }
-                            ]
+                                }]
                         }
                     }]
             }
