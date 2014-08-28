@@ -211,7 +211,4 @@ YUI.add('wegas-form', function(Y) {
         data: "SaveObjectAction"
     });
 
-    inputEx.Group.groupOptions.splice(0, 4);
-    inputEx.Group.groupOptions[0].label = null;
-    inputEx.Group.groupOptions[0].useButtons = true;
 });

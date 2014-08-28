@@ -163,7 +163,7 @@ YUI().use(function(Y) {
             },
             "wegas-loginbutton": {
                 path: "js/widget/wegas-loginbutton-min.js",
-                requires: ["wegas-button", "wegas-widgetmenu"],
+                requires: "wegas-widgetmenu",
                 ws_provides: ["LoginButton", "UserLoginButton"]
             },
             "wegas-chat": {
@@ -223,8 +223,7 @@ YUI().use(function(Y) {
             },
             "wegas-form": {
                 path: "js/widget/wegas-form-min.js",
-                requires: ["wegas-widget", "wegas-inputex", "wegas-widgettoolbar",
-                    "wegas-button", "inputex-string", "inputex-jsonschema",
+                requires: ["wegas-inputex", "wegas-widgettoolbar",
                     "inputex-group", "event-valuechange"],
                 ws_provides: "Form"
             },
@@ -245,10 +244,10 @@ YUI().use(function(Y) {
             },
             "wegas-team": {
                 path: "js/widget/wegas-team-min.js",
-                requires: ["wegas-widget", "wegas-inputex", "wegas-button",
+                requires: ["wegas-inputex", "wegas-button",
                     "wegas-editor-action", "wegas-inputex-multipleoptions",
                     "inputex-select", "inputex-string", "inputex-list", "inputex-hidden",
-                    "inputex-autocomplete", "inputex-password", "inputex-email",
+                    "inputex-group", "inputex-autocomplete", "inputex-password", "inputex-email",
                     "wegas-gameinformation", "wegas-teamcss", "autocomplete-highlighters"],
                 ws_provides: ["Team", "JoinTeam", "EditTeam"]
             },
@@ -336,6 +335,9 @@ YUI().use(function(Y) {
         }
     });
 
+    /**
+     * Utilities
+     */
     YUI.addGroup("wegas-util", {
         base: "./wegas-util/",
         root: "/wegas-util/",
@@ -359,9 +361,8 @@ YUI().use(function(Y) {
                 requires: "widget"
             },
             "wegas-widgetmenu": {
-                requires: ["yui-later", "event-mouseenter", "event-outside",
-                    "widget", "widget-parent", "widget-child", "widget-stack",
-                    "widget-position", "widget-position-align", "widget-position-constrain",
+                requires: ["event-mouseenter", "event-outside",
+                    "widget-stack", "widget-position", "widget-position-align", "widget-position-constrain",
                     "wegas-button", "wegas-widgetmenucss"]
             },
             "wegas-widgetmenucss": {
@@ -392,6 +393,10 @@ YUI().use(function(Y) {
             },
             "wegas-imageloader": {
                 requires: ["io-base", "imageloader"]
+            },
+            "wegas-panel-node": {
+                requires: ["dd-drag", "plugin"],
+                ws_provides: "PanelNode"
             }
         }
     });
@@ -506,7 +511,7 @@ YUI().use(function(Y) {
             },
             "wegas-panel-fileselect": {
                 path: "js/widget/wegas-panel-fileselect-min.js",
-                requires: ["widget", "panel", "wegas-fileexplorer"],
+                requires: ["panel", "wegas-fileexplorer"],
                 ws_provides: "FileSelect"
             },
             "wegas-editorcss": {
@@ -530,11 +535,6 @@ YUI().use(function(Y) {
                 path: "js/plugin/wegas-editor-widgetaction-min.js",
                 requires: "wegas-editor-entityaction",
                 ws_provides: ["EditWidgetAction", "DeleteWidgetAction"]
-            },
-            "wegas-panel-node": {
-                path: "js/plugin/wegas-panel-node-min.js",
-                requires: ["dd-drag", "plugin"],
-                ws_provides: ["PanelNode"]
             },
             "wegas-logger": {
                 path: "js/widget/wegas-logger-min.js",
@@ -583,7 +583,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-treeview": {
                 path: "js/widget/wegas-editor-treeview-min.js",
-                requires: ["treeview", "wegas-widget", "wegas-widgetmenu", "wegas-editor-treeviewcss"],
+                requires: ["treeview", "wegas-widgetmenu", "wegas-editor-treeviewcss"],
                 ws_provides: ["EditorTreeView", "TeamTreeView"]
             },
             "wegas-editor-treeviewcss": {
@@ -692,7 +692,7 @@ YUI().use(function(Y) {
                 type: CSS
             },
             "wegas-sharerole": {
-                requires: ["inputex-select", "inputex-list", "inputex-checkbox"],
+                requires: ["inputex-select", "inputex-list", "inputex-string", "inputex-checkbox"],
                 ws_provides: ["ShareRole", "TeamsList"]
             },
             "wegas-shareuser": {
@@ -713,22 +713,22 @@ YUI().use(function(Y) {
             }
         }
     });
-    YUI.addGroup("wegas-form", {
-        base: "./wegas-form/",
-        root: "/wegas-form/",
-        modules: {
-            form: {
-                requires: ["base", "widget", "widget-parent", "widget-child",
-                    "formcss"]
-            },
-            formcss: {
-                requires: ["base", "widget", "widget-parent", "widget-child"]
-            },
-            "form-rte": {
-                requires: ["form", "tinymce"]
-            }
-        }
-    });
+    //YUI.addGroup("wegas-form", {
+    //    base: "./wegas-form/",
+    //    root: "/wegas-form/",
+    //    modules: {
+    //        form: {
+    //            requires: ["base", "widget", "widget-parent", "widget-child",
+    //                "formcss"]
+    //        },
+    //        formcss: {
+    //            requires: ["base", "widget", "widget-parent", "widget-child"]
+    //        },
+    //        "form-rte": {
+    //            requires: ["form", "tinymce"]
+    //        }
+    //    }
+    //});
     YUI.addGroup("wegas-others", {
         base: "./",
         root: "/",

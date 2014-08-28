@@ -15,9 +15,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
     PageTreeview = Y.Base.create("wegas-editor-page", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         renderUI: function() {
-            this.treeView = new Y.TreeView({
-                render: this.get(CONTENT_BOX)
-            });                                                                 // Render the treeview
+            this.treeView = new Y.TreeView().render(this.get(CONTENT_BOX));     // Render the treeview
             this.treeView.addTarget(this);                                      // Treeview events bubble
             this.plug(Plugin.WidgetToolbar);                                    // Add a toolbar
 
