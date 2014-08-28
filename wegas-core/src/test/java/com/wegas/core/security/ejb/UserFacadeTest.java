@@ -215,7 +215,7 @@ public class UserFacadeTest {
     /**
      * Test CreateSameUser
      */
-    @Test(expected = WegasException.class)
+    @Test(expected = EJBException.class)
     public void testCreateSameUser() throws Exception {
         u.addAccount(abstractAccount);
         userFacade.create(u);
