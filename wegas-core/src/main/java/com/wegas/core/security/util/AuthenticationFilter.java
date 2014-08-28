@@ -5,10 +5,17 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.security.servlet;
+package com.wegas.core.security.util;
 
+import com.wegas.core.Helper;
+import com.wegas.core.exception.WegasException;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.rest.UserController;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.NamingException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +42,18 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
     @Override
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
         Subject subject = getSubject(request, response);
-        return subject.isAuthenticated() || subject.isRemembered();
+        if (subject.isAuthenticated() || subject.isRemembered()) {
+            return true;
+        } else if (request.getParameter("al") != null
+                && Helper.getWegasProperty("guestallowed").equals("true")) {    // Automatic guest login
+            try {
+                Helper.lookupBy(UserFacade.class).guestLogin();
+                return true;
+            } catch (NamingException ex) {
+                // Gotcha: log this
+            }
+        }
+        return false;
     }
 
     /**
@@ -46,13 +64,13 @@ public class AuthenticationFilter extends PassThruAuthenticationFilter {
      */
     @Override
     protected void redirectToLogin(ServletRequest request, ServletResponse response) throws IOException {
-        String loginUrl = getLoginUrl();
         HttpServletRequest httpRequest = (HttpServletRequest) request;
+
         String url = WebUtils.getRequestUri(httpRequest);
         if (httpRequest.getQueryString() != null) {
             url += "?" + httpRequest.getQueryString();
         }
-        loginUrl += "?redirect=" + URLEncoder.encode(url, "UTF-8");
-        WebUtils.issueRedirect(request, response, loginUrl);
+        WebUtils.issueRedirect(request, response,
+                getLoginUrl() + "?redirect=" + URLEncoder.encode(url, "UTF-8"));
     }
 }

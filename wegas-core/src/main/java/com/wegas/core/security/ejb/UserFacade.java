@@ -108,7 +108,7 @@ public class UserFacade extends BaseFacade<User> {
 
             return newUser;
         }
-        throw new WegasException("Guset log in not allowed on this server");
+        throw new WegasException("Guest log in not allowed on this server");
     }
 
     /**

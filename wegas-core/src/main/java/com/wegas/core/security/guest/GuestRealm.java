@@ -16,7 +16,6 @@ import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
-import javax.persistence.NoResultException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
