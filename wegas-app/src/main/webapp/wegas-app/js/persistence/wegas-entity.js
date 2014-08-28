@@ -520,7 +520,7 @@ YUI.add("wegas-entity", function(Y) {
                                             rightLabel: "Admin",
                                             value: "Game:View,Edit"
                                         }],
-                                    roleList: ["Teacher", "Administrator", "Scenarist"],
+                                    roleList: ["Trainer", "Administrator", "Scenarist"],
                                     selectedPermsList: ["Game:View,Edit"]
                                 }]
                         }
