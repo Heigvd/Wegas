@@ -52,6 +52,9 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
 
             for (i = 1; i <= period; i += 1) {
                 boxUnits.append("<div class='wegas-template-valuebox-unit'>" + i + "</div>");
+                if (phase === "box-execution" && i === period){
+                    boxUnits.append("<div class='wegas-template-valuebox-unit'>...</div>");
+                }
             }
             node.append(boxUnits);
             return node;
@@ -123,14 +126,22 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             }
         },
         valueBoxClick: function(e) {
-            var script, phase = 0, phaseDiv = e.target.ancestor().ancestor().ancestor();
+            var script, phase = 0, phaseDiv = e.target.ancestor().ancestor().ancestor(),
+                period3 = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
+                val;
 
             while (phaseDiv !== null) {
                 phase += 1;
                 phaseDiv = phaseDiv.previous();
             }
+            
+            if (e.target.getHTML() === "..."){
+                val = period3 + 1;
+            } else {
+                val = parseInt(e.target.getHTML());
+            }
 
-            script = 'Variable.find(gameModel, "periodLimit").setValue(self, ' + parseInt(e.target.getHTML()) + ');';
+            script = 'Variable.find(gameModel, "periodLimit").setValue(self, ' + val + ');';
             script += 'Variable.find(gameModel, "phaseLimit").setValue(self, ' + phase + ');';
 
             this.showOverlay();

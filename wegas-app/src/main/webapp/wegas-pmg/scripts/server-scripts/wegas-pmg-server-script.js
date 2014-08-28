@@ -79,7 +79,7 @@ function advancementLimit() {
         phaseLimit = Variable.find(gm, "phaseLimit").getValue(self);
         periodLimit = Variable.find(gm, "periodLimit").getValue(self);
         executionPeriods = Variable.find(gm, "executionPeriods").getValue(self);
-        if (!(getCurrentPhase().getValue(self) === 3 && getCurrentPeriod().getValue(self) >= executionPeriods)) {
+        if (!(getCurrentPhase().getValue(self) === 3 && getCurrentPeriod().getValue(self) > executionPeriods)) {
             if (getCurrentPhase().getValue(self) >= phaseLimit && getCurrentPeriod().getValue(self) >= periodLimit) {
                 throw new Error("StringMessage: Ask your course leader for permissions to continue.");
             }
