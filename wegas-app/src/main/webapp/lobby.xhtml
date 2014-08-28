@@ -6,9 +6,9 @@
     <ui:composition template="wegas-app/jsf/app-default.xhtml">
 
         <ui:define name="head">
-            <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby.css" />-->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-editor/css/wegas-editor.css&amp;/wegas-lobby/css/wegas-lobby.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor.css" />
+            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-lobby/css/wegas-lobby.css" />
+            <!--<link rel="stylesheet" type="text/css" href="#{request.contextPath}/rest/combo/?/wegas-editor/css/wegas-editor.css&amp;/wegas-lobby/css/wegas-lobby.css" />-->
         </ui:define>
 
         <ui:define name="body">
@@ -89,20 +89,8 @@
                     });
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
-                        /*    window.open(app.get("base")
-                         + "game-play.html?gameId=" + e.gameId);     */         // open the game in a new tab
-                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
-                            on: {
-                                success: function() {
-                                    //Find row with joined game and "click" it.
-                                    var dt = Y.Widget.getByNode(".wegas-joinedgamesdatatable").table;
-                                    dt.data.some(function(d) {
-                                        return d.get("entity").get("id") === e.gameId ? dt.getRow(d).simulate("click") : false;
-                                    });
-//                                    Y.Widget.getByNode("#joinedGamesTab").showMessageBis("success", "Game joined", 10000);
-                                }
-                            }
-                        });
+                        //window.open(app.get("base") + "game-play.html?gameId=" + e.gameId);// open the game in a new tab
+                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest();    // and refresh the list of games
                     });
 
                     app.render();                                               // Render lobby

@@ -210,6 +210,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
+                                                    "showEditionAfterRequest": false,
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                                     "targetClass": "Game",
                                                     "dataSource": "Game",
@@ -282,6 +283,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
+                                                    "showEditionAfterRequest": false,
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New scenario",
                                                     "targetClass": "GameModel",
                                                     "dataSource": "GameModel",

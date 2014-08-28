@@ -264,15 +264,17 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
                 var dataSource = this.get(DATASOURCE);
                 dataSource.cache.post(newVal, null, {
-                    success: function(e) {
-                        //EditEntityAction.hideEditFormOverlay();
-                        //EditEntityAction.showUpdateForm(e.response.entity, dataSource);
-                        //EditEntityAction.showFormMessage("success", "Item created");
+                    success: Y.bind(function(e) {
+                        if (this.get("showEditionAfterRequest")) {
+                            var button = Wegas.Widget.create(e.response.entity.getMenuCfg({dataSource: dataSource})[0]);
+                            button.render().fire("click");
+                            button.destroy();
 
-                        var button = Wegas.Widget.create(e.response.entity.getMenuCfg({dataSource: dataSource})[0]);
-                        button.render().fire("click");
-                        button.destroy();
-                    },
+                            //EditEntityAction.hideEditFormOverlay();
+                            //EditEntityAction.showUpdateForm(e.response.entity, dataSource);
+                            //EditEntityAction.showFormMessage("success", "Item created");
+                        }
+                    }),
                     failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
             }, this), null, this.get("formCfg"));
@@ -289,6 +291,9 @@ YUI.add('wegas-editor-entityaction', function(Y) {
         NAME: "NewEntityAction",
         ATTRS: {
             targetClass: {},
+            showEditionAfterRequest: {
+                value: true
+            },
             dataSource: {
                 getter: function(val) {
                     if (!val) {

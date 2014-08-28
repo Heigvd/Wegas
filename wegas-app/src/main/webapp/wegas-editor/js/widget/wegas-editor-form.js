@@ -203,7 +203,7 @@ YUI.add('wegas-editor-form', function(Y) {
                     || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
                 || entity instanceof Wegas.persistence.JpaAccount
                 || entity instanceof Wegas.persistence.GameModel
-                || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entities, just need to check if it causes bugs
+                || entity instanceof Wegas.persistence.Game) {                  // @fixme we may get extended mode for any entities, just need to check if it causes bugs
                 this.showOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// Retrieve the entity from the source
                     on: {
