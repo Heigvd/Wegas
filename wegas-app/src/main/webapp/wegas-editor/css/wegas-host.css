@@ -46,8 +46,9 @@
 }
 
 /************************ leftTabView  ***************************************/
-#leftTabView .yui3-treeview-content>.noPlayer .yui3-treenode-content-header{
+#leftTabView .yui3-treeview-content > .noPlayer .yui3-treenode-content-header{
     opacity: 0.5;
+    cursor: default;
 }
 #leftTabView .yui3-treeview-content>.yui3-treenode-selected .yui3-treenode-content-header,
 #leftTabView .yui3-treeview-content>.yui3-treeleaf-selected .yui3-treeleaf-content-header{

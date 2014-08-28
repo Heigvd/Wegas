@@ -35,23 +35,19 @@ YUI.add('wegas-team', function(Y) {
          * For creating the field inputEx libary is used
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX),
-                game = this.getTargetGame();
-
             this.saveButton = new Y.Button({//                                  // Render the button
                 label: "Join game",
-                render: cb,
                 visible: false
-            });
+            }).render(this.get(CONTENTBOX));
 
-            Wegas.Facade.Game.cache.getWithView(game, "Extended", {//         // Get the game model full description
+            Wegas.Facade.Game.cache.getWithView(this.getTargetGame(), "Extended", {// Get the game model full description
                 on: {
                     success: Y.bind(this.onGameRetrieved, this)
                 }
             });
         },
         bindUI: function() {
-            this.saveButton.on("click", this.onSaveButtonClick, this);                // On join button click
+            this.saveButton.on("click", this.onSaveButtonClick, this);          // On join button click
         },
         destructor: function() {
             this.saveButton.destroy();
@@ -369,7 +365,7 @@ YUI.add('wegas-team', function(Y) {
                 teamId = this.get("teamId"),
                 teamSelectionNode = cb.one(".teamselection");
 
-//            if (e) cb.one(".wegas-gameinformation").append(Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
+            //if (e) cb.one(".wegas-gameinformation").append(Wegas.GameInformation.renderGameInformation(e.response.entities[0]));
             teamSelectionNode.append("<br /><div class=\"title\">Edit your team</div>");
 
             this.teamEdition = new Wegas.TeamFormList({
@@ -425,44 +421,6 @@ YUI.add('wegas-team', function(Y) {
         }
     });
     Wegas.EditTeam = EditTeam;
-
-    var GameDescription = Y.Base.create("wegas-gamedescription", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
-        /** @lends Y.Wegas.JoinTeam# */
-        CONTENT_TEMPLATE: "<div><div class=\"title\"></div><div class=\"subtitle\"></div><div class=\"description wegas-loading-div\"></div></div>",
-        // *** Private fields *** //
-
-        /**
-         * @function
-         * @private
-         * @description All button and fields are created.
-         * For creating the field inputEx libary is used
-         */
-        renderUI: function() {
-            var cb = this.get(CONTENTBOX),
-                entity = this.get("entity"),
-                game = (entity instanceof Wegas.persistence.Team) ? Wegas.Facade.Game.cache.findById(entity.get("gameId"))
-                : entity;
-
-            cb.one(".subtitle").setHTML("Created by " + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime")));// Set game name
-
-            Wegas.Facade.Game.cache.getWithView(game, "Extended", {/// Get the game model full description
-                on: {
-                    success: Y.bind(function(e) {
-                        var game = e.response.entity;
-                        cb.one(".title").setHTML("" + game.get("gameModelName") + " <br />" + game.get("name")); // Add title
-                        cb.one(".description").setHTML(game.get("description"))
-                            //|| "<em><center>No description available</em></center>")
-                            .removeClass("wegas-loading-div");
-                    }, this)
-                }
-            });
-        }
-    }, {
-        ATTRS: {
-            entity: {}
-        }
-    });
-    Wegas.GameDescription = GameDescription;
 
     var TeamFormList = Y.Base.create("wegas-teamformlist", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class=\"header yui3-g\">"

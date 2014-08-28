@@ -97,7 +97,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             //Y.one(this.divEl).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
 
             if (value.used) {
-                Y.one(subfield.divEl).all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
+                Y.one(subfield.divEl).all(".inputEx-Field").setStyle("textDecoration", "line-through");// strike through used tokens
             }
             return subfield;
         },
