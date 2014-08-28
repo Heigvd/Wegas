@@ -302,7 +302,7 @@ YUI.add("wegas-entity", function(Y) {
             }, {
                 type: BUTTON,
                 label: "More",
-                cssClass: "editor-moregamemodel-button",
+                cssClass: "editor-button-more",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
@@ -573,18 +573,13 @@ YUI.add("wegas-entity", function(Y) {
             }, {
                 type: BUTTON,
                 label: "More",
-                cssClass: "wegas-advanced-feature",
+                cssClass: "editor-button-more",
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
                             children: [{
                                     type: "JoinOrResumeButton",
-                                    label: "Join",
-                                    cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "AddEntityChildButton",
-                                    label: "Add team",
-                                    targetClass: "Team",
+                                    label: "Join as a player",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: BUTTON,
@@ -612,17 +607,18 @@ YUI.add("wegas-entity", function(Y) {
                                                         label: "Pdf (Players document)",
                                                         outputType: "pdf",
                                                         mode: "player"
-                                                    }, {
-                                                        type: "OpenEntityButton",
-                                                        label: "Json",
-                                                        url: "rest/Export/GameModel/Game/{id}"
                                                     }]
                                             }
                                         }]
                                 }, {
                                     type: BUTTON,
                                     label: "Create a scenario based on this game",
-                                    disabled: true
+                                    cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "Add team",
+                                    targetClass: "Team",
+                                    cssClass: "wegas-advanced-feature"
                                 }, {
                                     type: "Linkwidget"
                                 }

@@ -87,12 +87,6 @@
                         playersTree.treeView.plug(Y.Plugin.TeamSelection);
                     }
 
-                    for (i = 0; i < playersTree.treeView.size(); i += 1) {
-                        if (playersTree.treeView.item(i).get("data.entity").get("players") & !playersTree.treeView.item(i).get("data.entity").get("players").length) {
-                            playersTree.treeView.item(i).get("boundingBox").addClass("noPlayer");
-                        }
-                    }
-
                     // Switch current player on treeview click
                     playersTree.on(["treeleaf:click", "treenode:click"], function(e) {// Listen to click events on the first child (treeview)
                         var entity = e.target.get("data.entity"),
