@@ -16,9 +16,12 @@
 #rightTabView .yui3-tab-remove {
     display: none;
 }
-.wegas-role-teacher #gamesTreeViewTab,
+.wegas-role-trainer #gamesTreeViewTab,
+/*.wegas-role-trainer #gameModelsTab,*/
 .wegas-role-scenarist #gamesTreeViewTab,
-.wegas-role-teacher #gameModelsTab {
+.wegas-role-scenarist #gameModelsTab,
+.wegas-role-administrator #gamesTreeViewTab,
+.wegas-role-administrator #gameModelsTab {
     display: inline-block;
 }
 .yui3-skin-sam .wegas-logo  {
