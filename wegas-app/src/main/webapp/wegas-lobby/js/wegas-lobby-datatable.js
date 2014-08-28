@@ -287,9 +287,12 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 this.addedHandler = this.get(HOST).get(DATASOURCE).after("added", function(e) {// When an entity is created
                     this.currentSelection = e.entity.get("id");                 // view it in the table
                     Y.later(20, this, function() {
-                        this.get(HOST).table.get("data").each(function(r) {
+                        dt.get("data").each(function(r) {
                             if (this.currentSelection === r.get("entity").get("id")) {
-                                this.get(HOST).table.getRow(r).scrollIntoView();
+                                dt.getRow(r).scrollIntoView();
+                                dt.set("selectedRow", dt.getRow(r));
+                                this.get(HOST).get("parent")
+                                    && this.get(HOST).get("parent").set("selected", 2);// Ensure the parent tab is currently visible
                                 //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                             }
                         }, this);
