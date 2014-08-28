@@ -78,7 +78,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 Y.Array.find(redirect.split("?")[1].split("&"), function(c) {
                     p = c.split("=");
                     if (p[0] === "token") {
-                       return token = p[1];
+                        return token = p[1];
                     }
                 });
                 cb.one(".main.left").setContent("<h1>Want to test this game ?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
@@ -168,9 +168,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: cb.one(".login")
             });
             this.loginButton = new Y.Button({
-                label: "Log in",
-                render: cb.one(".login")
-            });
+                label: "Log in"
+            }).render(cb.one(".login"));
             cb.one(".login").append('<a class="forgot">Forgot password?</a>');
 
             // Create and append "sign in" from
@@ -223,17 +222,14 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: cb.one(".signup")
             });
             this.signUpButton = new Y.Button({
-                label: "Sign in",
-                render: cb.one(".signup")
-            });
+                label: "Sign in"
+            }).render(cb.one(".signup"));
             this.guestLoginButton = new Wegas.Button({
-                label: "Log in as guest",
-                render: cb.one(".signup-zone .guestlogin")
-            });
+                label: "Log in as guest"
+            }).render(cb.one(".signup-zone .guestlogin"));
             this.guestTeacherLoginButton = new Wegas.Button({
-                label: "Log in as guest teacher",
-                render: cb.one(".signup-zone .guestlogin")
-            });
+                label: "Log in as guest teacher"
+            }).render(cb.one(".signup-zone .guestlogin"));
 
             // Create, append and hide from to ask a new password.
             this.sendNewPasswordForm = new Y.inputEx.Group({
@@ -247,9 +243,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: askPassNode
             });
             this.askPassButton = new Y.Button({
-                label: "Submit",
-                render: askPassNode
-            });
+                label: "Submit"
+            }).render(askPassNode);
             askPassNode.append('<a class="return">Create an account</a>');
             askPassNode.hide();
         },

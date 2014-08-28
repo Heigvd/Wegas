@@ -60,14 +60,11 @@ YUI.add('wegas-lobby-datatable', function(Y) {
          * @private
          */
         bindUI: function() {
-            var ds = this.get(DATASOURCE),
-                request = this.get("request");
+            var ds = this.get(DATASOURCE);
+
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
                 this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
-                if (request) {
-                    ds.sendRequest(request);
-                }
             }
 
             this.table.delegate('click', function(e) {
@@ -90,23 +87,29 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 Y.later(20, this, function() {
                     this.table.get("data").each(function(r) {
                         if (newEntityId === r.get("entity").get("id")) {
-                            this.table.getRow(r).scrollIntoView();
-                            this.table.set("selectedRow", this.table.getRow(r));
+                            var row = this.table.getRow(r);
+                            row.scrollIntoView();
+
                             this.get("parent")
-                                && this.get("parent").set("selected", 2);       // Ensure the parent tab is currently visible
-                            //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
+                                && this.table.get("selectedRow") !== row
+                                && this.get("parent").set("selected", 2);       // @hack Ensure the parent tab is currently visible
+
+                            this.table.set("selectedRow", row);
                         }
                     }, this);
                 });
 
             }, this);
             Y.Do.after(function() {
-                this.get("data").each(function(r) {
+                if (this.requestdt)
+                    return;
+
+                this.table.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
                         this.getRow(r).addClass("wegas-datatable-selected");
                     }
-                }, this);
-            }, this, "syncUI", this.table);
+                }, this.table);
+            }, this, "syncUI", this);
         },
         /**
          * @function
@@ -269,15 +272,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     Plugin.RequestDT = Y.Base.create("RequestDT", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
-                var host = this.get(HOST);
-                host.showOverlay();
-                host.get(DATASOURCE).sendRequest({
+                this.get(HOST).showOverlay()
+                    .get(DATASOURCE).sendRequest({
                     request: "/" + Wegas.Facade.User.get("currentUserId")
                 });
             });
         }
     }, {
-        NS: "RequestDT"
+        NS: "requestdt"
     });
 
     Y.DataTable.BodyView.Formatters.icon = function(col) {
@@ -537,7 +539,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             this.menu = new Wegas.Menu();
             this.menu.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.get(HOST).fire, this.get(HOST));
-            //this.menu.addTarget(this.get(HOST));
             this.menu.render();
         },
         onTreeViewClick: function(e) {

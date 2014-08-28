@@ -13,7 +13,6 @@ YUI.add("wegas-teaching-main", function(Y) {
     TeachingMain = Y.Base.create("wegas-teaching-main", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class='layer' style='width:100%;height:620px;'></div></div>",
         // Graphic (Y.Graphic used to draw arrows)
-        graphic: null,
         // Arrow const
         ARROW_NONE: 0,
         ARROW_NORMAL: 1,
@@ -31,9 +30,8 @@ YUI.add("wegas-teaching-main", function(Y) {
         rectangleEditor: null,
         renderUI: function() {
             this.graphic = new Y.Graphic({
-                render: this.get(CONTENTBOX).one(".layer"),
                 autoDraw: true
-            });
+            }).render(this.get(CONTENTBOX).one(".layer"));
             /* Create and add 12 arrows */
             this.createArrow(100, 225, 100, 300, 1);// Horizontal
             this.createArrow(375, 225, 375, 300, 2);
@@ -133,11 +131,10 @@ YUI.add("wegas-teaching-main", function(Y) {
         },
         createButton: function(x1, y1, orientation, handleClick) {
             // Button to edit arrow
-            var cb = this.get("contentBox"),
-                buttonWidget = new Y.Button({
-                    label: "Éditer",
-                    render: cb
-                }), button = buttonWidget.get("contentBox");
+            var buttonWidget = new Y.Button({
+                label: "Éditer"
+            }).render(this.get("contentBox")),
+                button = buttonWidget.get("contentBox");
 
             button.setStyle('position', 'absolute');
 
