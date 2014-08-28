@@ -2,7 +2,6 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.TestHelper;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
@@ -10,6 +9,7 @@ import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -251,7 +251,6 @@ public class UserFacadeTest {
 //        abstractAccount.addRole(r);
 //        accountFacade.merge(abstractAccount);
 //        Assert.assertEquals(3, accountFacade.find(abstractAccount.getId()).getRoles().size());
-
         roleFacade.remove(r.getId());
 
         Assert.assertNull(roleFacade.find(r.getId()));                                             // A not NoResultException should be thrown here
