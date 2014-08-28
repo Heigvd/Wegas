@@ -338,16 +338,19 @@ YUI.add('wegas-editor-entityaction', function(Y) {
             var entity = this.get(ENTITY),
                 host = this.get(HOST),
                 dataSource = this.get(DATASOURCE),
-                newEntity, targetArray;
+                newEntity, targetArray, child, menuItems, form;
 
             switch (this.get("method").toString().toLowerCase()) {
                 case "put":
-                    var child = Y.Array.find(descriptor.get(this.get("attributeKey")), function(i) {
+                    child = Y.Array.find(descriptor.get(this.get("attributeKey")), function(i) {
                         return i.get(ID) === entity.get(ID);
+                    });
+                    menuItems = Y.Array.filter(child.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
+                        return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
                     });
 
                     EditEntityAction.hideRightTabs();                           // Hide all active tabs
-                    EditEntityAction.showEditForm(child, function(newVal) {
+                    form = EditEntityAction.showEditForm(child, function(newVal) {
                         child.setAttrs(newVal);
                         dataSource.cache.put(descriptor.toObject(), {
                             on: {
@@ -359,6 +362,8 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             }
                         });
                     });
+                    form.toolbar.add(menuItems);
+                    form.toolbar.item(0) && form.toolbar.item(0).get(CONTENTBOX).setStyle("marginRight", "10px");
                     break;
                 case "post":
                     newEntity = Wegas.Editable.revive({
@@ -402,6 +407,26 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             }
                         });
                     }
+                    break;
+                case "copy":
+                    targetArray = descriptor.get(this.get("attributeKey"));
+                    Y.Array.find(targetArray, function(e, i, a) {
+                        if (e.get(ID) === entity.get(ID)) {
+                            a.push(new entity.constructor(entity.toObject("id")));
+                            return true;
+                        }
+                        return false;
+                    });
+                    host.showOverlay();
+
+                    dataSource.cache.put(descriptor.toObject(), {
+                        on: {
+                            success: function() {
+                                EditEntityAction.hideRightTabs();
+                            },
+                            failure: Y.bind(host.defaultFailureHandler, host)
+                        }
+                    });
                     break;
             }
         }
