@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 public abstract class AbstractTest {
+
     private static final Logger logger = LoggerFactory.getLogger(AbstractTest.class);
 
     private GameModel gm;
@@ -50,10 +51,10 @@ public abstract class AbstractTest {
         GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
 
         //for (int i = 0; i < injectScriptsPath.length; i++){
-        for (String injectScriptPath : injectScriptsPath){
+        for (String injectScriptPath : injectScriptsPath) {
             String injectScript = TestHelper.readFile(injectScriptPath);
-            
-            if (injectScript == null){
+
+            if (injectScript == null) {
                 throw new WegasException("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
             gameModel.getScriptLibrary().put("[injectedScript] " + injectScriptPath, new GameModelContent("JavaScript", injectScript));
@@ -71,7 +72,6 @@ public abstract class AbstractTest {
         this.gm = null;
         this.player = null;
     }
-
 
     protected Object evalFile(String path) throws ScriptException {
         return this.evalScript(TestHelper.readFile(path));

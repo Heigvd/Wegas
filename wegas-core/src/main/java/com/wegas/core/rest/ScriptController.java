@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.exception.ScriptException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
@@ -18,7 +19,6 @@ import java.util.HashMap;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.script.ScriptException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -72,9 +72,13 @@ public class ScriptController {
 
         if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
                 || userFacade.matchCurrentUser(playerId)) {
-            Object r = scriptManager.eval(playerId, script);
-            requestFacade.commit();
-            return r;
+            try {
+                Object r = scriptManager.eval(playerId, script);
+                requestFacade.commit();
+                return r;
+            } catch (ScriptException e) {                                        // Try catch since script exception does not rollback
+                throw new WegasException("Error running script", e);
+            }
         } else {
             throw new UnauthorizedException();
 

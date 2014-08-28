@@ -7,23 +7,26 @@
  */
 package com.wegas.core.exception;
 
+import javax.ejb.ApplicationException;
+
 /**
  *
- * @author Cyril Junod <cyril.junod at gmail.com>
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class WegasException extends RuntimeException {
+@ApplicationException(rollback = false)
+public class NoRollBackException extends WegasException {
 
     /**
      *
      */
-    public WegasException() {
+    public NoRollBackException() {
     }
 
     /**
      *
      * @param message
      */
-    public WegasException(String message) {
+    public NoRollBackException(String message) {
         super(message);
     }
 
@@ -32,7 +35,7 @@ public class WegasException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public WegasException(String message, Throwable cause) {
+    public NoRollBackException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -20,7 +20,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonIgnoreProperties({"cause", "stackTrace", "suppressed"})
 @XmlType(name = "WegasScriptException")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ScriptException extends WegasException {
+public class ScriptException extends NoRollBackException {
 
     private String script;
     private Integer lineNumber;
