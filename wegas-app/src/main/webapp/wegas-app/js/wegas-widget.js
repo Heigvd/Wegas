@@ -76,7 +76,8 @@ YUI.add("wegas-widget", function(Y) {
          * @description show an loading - overlay on all the screen.
          */
         showOverlay: function() {
-            this.fire("wegas:showOverlay")
+            this.fire("wegas:showOverlay");
+            return this;
         },
         /**
          * @function
