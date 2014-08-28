@@ -46,6 +46,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 width: "100%"
             });
             this.table = new Y.DataTable(cfg)                                   // Render datatable
+                .addAttr("selectedRow", {value: null})
                 .render(this.get(CONTENTBOX))
                 .set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
 
@@ -68,6 +69,44 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     ds.sendRequest(request);
                 }
             }
+
+            this.table.delegate('click', function(e) {
+                if (e.target.ancestor(".yui3-datatable-col-menu"))
+                    return;                                                     // @hack Prevent event on menu click
+                if (!this.getRecord(e.target).get("entity"))
+                    Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
+                this.set('selectedRow', e.currentTarget);
+            }, '.yui3-datatable-data tr[data-yui3-record]', this.table);
+
+            this.table.on("selectedRowChange", function(e) {
+                this.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
+                e.newVal.addClass("wegas-datatable-selected");
+                this.currentSelection = this.getRecord(e.newVal).get("entity").get("id");
+            });
+
+            this.addedHandler = ds.after("added", function(e) {// When an entity is created
+                var newEntityId = e.entity.get("id");                           // view it in the table
+                this.table.currentSelection = null;
+                Y.later(20, this, function() {
+                    this.table.get("data").each(function(r) {
+                        if (newEntityId === r.get("entity").get("id")) {
+                            this.table.getRow(r).scrollIntoView();
+                            this.table.set("selectedRow", this.table.getRow(r));
+                            this.get("parent")
+                                && this.get("parent").set("selected", 2);       // Ensure the parent tab is currently visible
+                            //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
+                        }
+                    }, this);
+                });
+
+            }, this);
+            Y.Do.after(function() {
+                this.get("data").each(function(r) {
+                    if (this.currentSelection === r.get("entity").get("id")) {
+                        this.getRow(r).addClass("wegas-datatable-selected");
+                    }
+                }, this);
+            }, this, "syncUI", this.table);
         },
         /**
          * @function
@@ -88,6 +127,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         destructor: function() {
             this.table.destroy();
+            this.addedHandler.detach();
             this.updateHandler.detach();
             this.failureHandler.detach();
         },
@@ -129,7 +169,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         iconUri: entity.get("properties.iconUri"),
                         imageUri: entity.get("properties.imageUri")
                             //teamsCount: gameModel && gameModel.get("properties.freeForAll") ? -1 : entity.get("teams").length,
-                            //token: entity.get("properties.freeForAll") ? entity.get("token") : "",
+                            //token: entity.get("properties.freeForAll") ? entity.get("token") : "", 
                     };
                     break;
 
@@ -270,55 +310,15 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      */
     Plugin.EditorDTMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.currentSelection = -1;                                         // Remember currently selected id
-
-            this.afterHostEvent(RENDER, function() {
-                var dt = this.get(HOST).table;
-
-                dt.addAttr("selectedRow", {value: null});
-                dt.delegate('click', function(e) {
-                    if (e.target.ancestor(".yui3-datatable-col-menu"))
-                        return;                                                 // @hack Prevent event on menu click
-
-                    this.set('selectedRow', e.currentTarget);
-                }, '.yui3-datatable-data tr[data-yui3-record]', dt);
-                dt.after('selectedRowChange', this.onClick, this);
-
-                this.addedHandler = this.get(HOST).get(DATASOURCE).after("added", function(e) {// When an entity is created
-                    this.currentSelection = e.entity.get("id");                 // view it in the table
-                    Y.later(20, this, function() {
-                        dt.get("data").each(function(r) {
-                            if (this.currentSelection === r.get("entity").get("id")) {
-                                dt.getRow(r).scrollIntoView();
-                                dt.set("selectedRow", dt.getRow(r));
-                                this.get(HOST).get("parent")
-                                    && this.get(HOST).get("parent").set("selected", 2);// Ensure the parent tab is currently visible
-                                //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
-                            }
-                        }, this);
-                    });
-                }, this);
+            this.onceAfterHostEvent("render", function() {
+                this.get(HOST).table.after('selectedRowChange', this.onClick, this);
             });
-
-            this.doAfter("syncUI", function() {
-                this.get(HOST).table.get("data").each(function(r) {
-                    if (this.currentSelection === r.get("entity").get("id")) {
-                        this.get(HOST).table.getRow(r).addClass("wegas-datatable-selected");
-                        //host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
-                    }
-                }, this);
-            });
-        },
-        destructor: function() {
-            this.addedHandler.detach();
         },
         onClick: function(e) {
             var host = this.get(HOST), button,
-                tr = e.newVal, // the Node for the TR clicked ...
                 //last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
-                rec = host.table.getRecord(tr), // the current Record for the clicked TR
                 menuItems = this.get("children"),
-                entity = rec.get("entity"),
+                entity = host.table.getRecord(e.newVal).get("entity"),
                 data = {
                     entity: entity,
                     dataSource: host.get(DATASOURCE)
@@ -326,28 +326,15 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             Plugin.EditorDTMenu.currentGameModel = entity;                      // @hack so game model creation will work
 
-            //if (last_tr) {
-            //    last_tr.removeClass("wegas-datatable-selected");
-            //}
-            host.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
-
-            this.currentSelection = entity.get("id");
-
-            tr.addClass("wegas-datatable-selected");
-            if (entity) {
-                if (menuItems) {                                                // If there are menu items in the cfg
-                    Wegas.Editable.mixMenuCfg(menuItems, data);                 // use them
-                } else {                                                        // Otherwise
-                    menuItems = entity.getMenuCfg(data);                        // use entity default menu
-                }
-
-                button = Wegas.Widget.create(menuItems[0]);
-                button.render().fire("click");                                  // launch first button action
-                button.destroy();
-            } else {
-                Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
-                this.currentSelection = null;
+            if (menuItems) {                                                    // If there are menu items in the cfg
+                Wegas.Editable.mixMenuCfg(menuItems, data);                     // use them
+            } else {                                                            // Otherwise
+                menuItems = entity.getMenuCfg(data);                            // use entity default menu
             }
+
+            button = Wegas.Widget.create(menuItems[0]);
+            button.render().fire("click");                                      // launch first button action
+            button.destroy();
         }
     }, {
         NS: "EditorDTMenu",
@@ -409,7 +396,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 e.currentTarget.menu.render(e.currentTarget.one("td.yui3-datatable-col-menu"));
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
-                host.currentSelection = null;
             }
         }
     }, {

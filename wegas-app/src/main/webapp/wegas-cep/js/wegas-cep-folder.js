@@ -59,8 +59,8 @@ YUI.add('wegas-cep-folder', function(Y) {
                 render: true,
                 buttons: []
             }),
-                    dialogueDescriptor = this.findDialogue(),
-                    bodyNode = panel.getStdModNode("body", true);
+                dialogueDescriptor = this.findDialogue(),
+                bodyNode = panel.getStdModNode("body", true);
 
             bodyNode.addClass("cep-folder-panel");
             panel.plug(Y.Plugin.Injector);
@@ -68,9 +68,8 @@ YUI.add('wegas-cep-folder', function(Y) {
             new Y.Wegas.SimpleDialogue({
                 dialogueVariable: {
                     content: "Variable.find('" + dialogueDescriptor.get("name") + "')"
-                },
-                render: bodyNode
-            });
+                }
+            }).render(bodyNode);
             this.currentDialogue = dialogueDescriptor;
             this.panel = panel;
         },

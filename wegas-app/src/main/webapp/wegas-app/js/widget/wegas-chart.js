@@ -21,11 +21,10 @@ YUI.add('wegas-chart', function(Y) {
             this.dsUpdateHandler = Y.Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
         renderUI: function() {
-            this.get(CONTENTBOX).append("Loading ...");
+            this.get(CONTENTBOX).append("Loading...");
 
             this.chart = new Y.Chart({
                 type: this.get("chartType"),
-//                    render: this.get(CONTENTBOX),
 //                seriesCollection: seriesCollection,
                 // categoryType:"time",                                         // Start sur l'axe mais l'axe devient time
                 axes: {
