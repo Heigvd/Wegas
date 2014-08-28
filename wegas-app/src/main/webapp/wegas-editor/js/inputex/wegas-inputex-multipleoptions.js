@@ -38,7 +38,7 @@ YUI.add("wegas-inputex-multipleoptions", function(Y) {
             } else {
                 this.select(field);
             }
-            (new Y.Node(field.divEl)).on("click", field.el.focus, field.el);    // When a user click
+            Y.one(field.divEl).on("click", field.el.focus, field.el);           // When a user click
             return field;
         },
         select: function(field) {
@@ -51,9 +51,9 @@ YUI.add("wegas-inputex-multipleoptions", function(Y) {
         },
         addField: function(fieldOptions) {
             inputEx.MultipleOptions.superclass.addField.call(this, fieldOptions);
-            if (this.inputs.length === 1) {
-                //(new Y.Node(this.fieldset)).append("<div class=\"wegas-inputex-nulti-separator\"><br /><center>OR</center><br /></div>");
-            }
+            //if (this.inputs.length === 1) {
+            //     Y.one(field.divEl).append("<div class=\"wegas-inputex-nulti-separator\"><br /><center>OR</center><br /></div>");
+            //}
         },
         toggleAll: function(value) {
             var i;
@@ -62,7 +62,7 @@ YUI.add("wegas-inputex-multipleoptions", function(Y) {
             }
         },
         toggle: function(field, value) {
-            (new Y.Node(field.divEl)).toggleClass("wegas-inputex-multi-selected", value);
+            Y.one(field.divEl).toggleClass("wegas-inputex-multi-selected", value);
         }
     });
 

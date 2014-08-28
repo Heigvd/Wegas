@@ -188,11 +188,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);
 
-            this.treeView.each(function(n) {
-                if (n.get("data.entity").get("players") && !n.get("data.entity").get("players").length) {
-                    n.get("boundingBox").addClass("noPlayer");
-                }
-            });
             //this.plug(Plugin.EditorTVToggleClick);
             //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
             //    this.get("parent").set("label", "Players");
@@ -235,7 +230,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         data: {
                             entity: entity
                         },
-                        iconCSS: "wegas-icon-team"
+                        iconCSS: "wegas-icon-team",
+                        cssClass: children.length ? "" : "noPlayer"
                     };
 
                 case "Player":
