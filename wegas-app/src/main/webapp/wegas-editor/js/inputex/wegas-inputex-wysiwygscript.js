@@ -83,7 +83,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          */
         renderComponent: function() {
             inputEx.Script.superclass.renderComponent.call(this);
-            var field = (new Y.Node(this.fieldContainer));
+            var field = Y.one(this.fieldContainer);
 
             this.viewSrc = new Wegas.Button({//                                 //Add the "view src" button
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
@@ -139,8 +139,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     click: Y.bind(this.eval, this)
                 }
             }).render(field);
-            (new Y.Node(this.fieldContainer))
-                .prepend(this.viewSrc.get("boundingBox"))
+
+            field.prepend(this.viewSrc.get("boundingBox"))
                 .prepend(this.sortButton.get("boundingBox"))
                 .prepend(this.runButton.get("boundingBox"))
                 .prepend(this.addButton.get("boundingBox"))                     // Move view src and add buttons to the top of the the wysiwyg list 
@@ -220,7 +220,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             }
         },
         updateExpressionList: function(sort) {
-            var container = new Y.Node(this.fieldContainer),
+            var container = Y.one(this.fieldContainer),
                 fields;
             container.one(".msg").setContent("");                               // Reset layout
 

@@ -63,8 +63,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             Y.one(this.divEl).append(this.msgEl);
             this.syncUI();
             if (this.options.label) {
-                var node = new Y.Node(this.fieldset);
-                node.get("parentNode").prepend("<label>" + this.options.label + "</label>");
+                Y.one(this.fieldset).get("parentNode").prepend("<label>" + this.options.label + "</label>");
             }
 //            this.on("updated", function() {
 //                this.setClassFromState();
@@ -244,7 +243,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             while (this.inputs.length > 0) {
                 this.inputs.pop().destroy();
             }
-            (new Y.Node(this.fieldset)).empty();
+            Y.one(this.fieldset).empty();
         },
         /**
          * Overriden to add reference to parententity
@@ -747,7 +746,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
                     this.currentEntity, this.currentEntity.get("items")));      // Pushes the current entity methods and children to the stack
             }
             if (!this.currentEntity) {
-                (new Y.Node(this.fieldset)).append("<div><em>No variable created</em></div>");
+                Y.one(this.fieldset).append("<div><em>No variable created</em></div>");
             }
         }
     });

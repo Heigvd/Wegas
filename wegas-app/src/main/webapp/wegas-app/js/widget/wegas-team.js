@@ -590,7 +590,7 @@ YUI.add('wegas-team', function(Y) {
                         field.wmodified = true;
                     }
                     field.on("updated", function(e, aut, subfields) {
-                        fields = new Y.Node(subfields.getEl());
+                        fields = Y.one(subfields.getEl());
                         if (subfields.inputs[1].getValue() === "") {
                             if (!fields.one(".wegas-newAccount"))
                                 fields.append("<p class='wegas-newAccount'>Your are creating a new account</p>");
