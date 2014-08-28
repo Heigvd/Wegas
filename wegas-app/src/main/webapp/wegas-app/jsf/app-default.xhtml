@@ -62,13 +62,16 @@
                     <script type="text/javascript">
                         YUI_config.comboBase = YUI_config.Wegas.comboBase;      // Force use of self hosted yui3
                         YUI_config.filter = "min";
-                        //YUI_config.combine = true;
+                        YUI_config.combine = true;
                         YUI_config.root = "/lib/yui3/build/";
                     </script>
                 </ui:fragment>
 
                 <!-- Wegas & inputEx Loader -->
                 <ui:fragment rendered="#{requestController.debugMode()}">
+                    <script type="text/javascript">
+                        YUI_config.combine = false;                             // Desactivate combine in debug mode so the loader dont break
+                    </script>
                     <script type="text/javascript" src="#{request.contextPath}/lib/inputex/src/loader-min.js"></script>
                     <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader.js"></script>
                 </ui:fragment>
