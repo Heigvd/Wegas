@@ -173,7 +173,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         Reply reply = this.selectChoice(choiceId, player, Long.valueOf(0));
         try {
             this.validateReply(player, reply.getId());
-        } catch (ScriptException | ConstraintViolationException e) {
+        } catch (Exception e) {// Could be a catch on (ScriptException | ConstraintViolationException | WegasException)
             this.cancelReply(playerId, reply.getId());
             throw e;
         }
