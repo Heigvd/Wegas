@@ -98,7 +98,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), currentPeriod = Variable.find(gameModel, 'currentPeriod').item(phase-1).getValue(self), advancement = Variable.find(gameModel, 'advancementLimit').getValue(self),phaseLimit = Variable.find(gameModel, 'phaseLimit').getValue(self),periodLimit = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return (advancement && !(phase === 3 && currentPeriod > executionPeriods) && phase >= phaseLimit && currentPeriod >= periodLimit)",
+                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase-1).getValue(self), advancement = Variable.find(gameModel, 'advancementLimit').getValue(self),phaseLimit = Variable.find(gameModel, 'phaseLimit').getValue(self),periodLimit = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return (advancement && !(phase === 3 && period > executionPeriods) && phase >= phaseLimit && period >= periodLimit)",
                                 "language": "JavaScript"
                             }
                         }
