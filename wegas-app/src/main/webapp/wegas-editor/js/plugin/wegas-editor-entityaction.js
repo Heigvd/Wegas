@@ -274,7 +274,7 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             //EditEntityAction.showUpdateForm(e.response.entity, dataSource);
                             //EditEntityAction.showFormMessage("success", "Item created");
                         }
-                    }),
+                    }, this),
                     failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                 });
             }, this), null, this.get("formCfg"));

@@ -70,15 +70,18 @@ YUI.add('wegas-loginwidget', function(Y) {
          * Call 'redirect' function if user is alread logged.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX), token,
-                askPassNode = cb.one(".ask-pass");
+            var cb = this.get(CONTENTBOX), token, p,
+                askPassNode = cb.one(".ask-pass"),
+                redirect = decodeURIComponent(Wegas.Helper.getURLParameter("redirect"));
 
-            if (Wegas.Helper.getURLParameter("redirect").indexOf("token") > -1) {// If the user is trying to acces a specific game
-                this.loginRequest("/GuestLogin/");
-
-            } else if (Wegas.Helper.getURLParameter("redirect").indexOf("al=true") > -1) {// If the user is trying to acces a specific game
+            if (redirect.indexOf("token=") > -1) {// If the user is trying to acces a specific game
+                Y.Array.find(redirect.split("?")[1].split("&"), function(c) {
+                    p = c.split("=");
+                    if (p[0] === "token") {
+                       return token = p[1];
+                    }
+                });
                 cb.one(".main.left").setContent("<h1>Want to test this game ?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
-                token = Wegas.Helper.getURLParameter("redirect").substr(Wegas.Helper.getURLParameter("redirect").indexOf('token=') + 6);
                 Wegas.Facade.Game.sendRequest({
                     request: "/FindByToken/" + token,
                     on: {
