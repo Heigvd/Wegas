@@ -39,17 +39,9 @@
 }
 
 /*Css for jointteam */
-.wegas-gameinformation {
-    /*border: 1px solid lightgray;*/
-}
-.wegas-gamedescription,
 /*.wegas-gameinformation,*/
 .wegas-jointeam-content {
     padding: .5em;
-}
-.wegas-jointeam .title, .wegas-gamedescription .title {
-    font-weight: bolder;
-    /* margin-bottom: 5px; */
 }
 .wegas-gameinformation .description {
     padding: 5px 0 10px;

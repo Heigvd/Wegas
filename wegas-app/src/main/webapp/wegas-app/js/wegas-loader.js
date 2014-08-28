@@ -250,7 +250,7 @@ YUI().use(function(Y) {
                     "inputex-select", "inputex-string", "inputex-list", "inputex-hidden",
                     "inputex-autocomplete", "inputex-password", "inputex-email",
                     "wegas-gameinformation", "wegas-teamcss", "autocomplete-highlighters"],
-                ws_provides: ["Team", "JoinTeam", "EditTeam", "GameDescription"]
+                ws_provides: ["Team", "JoinTeam", "EditTeam"]
             },
             "wegas-teamcss": {
                 type: CSS
