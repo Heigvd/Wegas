@@ -812,7 +812,43 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: STRING,
                         label: "From",
                         scriptType: STRING
+                    }, { 
+                        type: STRING,
+                        label: "Subject",
+                        scriptType: STRING,
+                        required: true
                     }, {
+                        type: HTML,
+                        label: "Body",
+                        scriptType: STRING,
+                        required: true
+                    }, {
+                        type: "list",
+                        label: "",
+                        scriptType: STRING,
+                        /*sortable: true*/
+                        elementType: {
+                            type: "wegasurl",
+                            label: "",
+                            required: true
+                        }
+                    }]
+            },
+            sendDatedMessage: {
+                label: "send dated message",
+                className: "wegas-method-sendmessage",
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "From",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Date",
+                        scriptType: STRING
+                    }, { 
                         type: STRING,
                         label: "Subject",
                         scriptType: STRING,
@@ -888,6 +924,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: BOOLEAN
             },
             from: {},
+            date: {},
             attachements: {}
         }
     });
