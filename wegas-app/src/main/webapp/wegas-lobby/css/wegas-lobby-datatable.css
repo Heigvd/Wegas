@@ -187,6 +187,7 @@
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
     padding-right: 4px !important;
     width: 95px!important;
+    padding-left: 0px;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-name,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-gameModelName {

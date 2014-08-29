@@ -35,7 +35,7 @@ YUI.add('wegas-gameinformation', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var game = e.response.entity;
-                        this.get(CONTENTBOX).append(GameInformation.renderGameInformation(game));
+                        this.get(CONTENTBOX).setHTML(GameInformation.renderGameInformation(game));
                     }, this)
                 }
             });
@@ -47,11 +47,11 @@ YUI.add('wegas-gameinformation', function(Y) {
         renderGameInformation: function(game) {
             return '<div>'
                 + (game.get("properties.imageUri") ? '<img src=\"' + game.get("properties.imageUri") + '\" />' : "")
-                + '<div class="title">' + game.get("gameModelName") + "</div>"
-                + '<div class="gametitle">' + game.get("name") + "</div>"
-                + '<div class="subtitle">Created by ' + game.get("createdByName") + ", " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>"
+                + '<div class="title">' + game.get("name") + "</div>"
+                + '<div class="gametitle">' + game.get("gameModelName") + "</div>"
+                + '<div class="subtitle">Created by ' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime"), true) + "</div>"
                 + (game.get("description") ? '<div class="description"> ' + game.get("description") + '</div>' : "")
-                + '<div style="clear: both"/></div>'
+                + '<div style="clear: both"/></div>';
         }
     });
     Wegas.GameInformation = GameInformation;

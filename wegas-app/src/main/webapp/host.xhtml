@@ -5,7 +5,7 @@
 
     <ui:composition template="edit.xhtml">
 
-        <ui:define name="title">#{editorGameController.currentGame.name}</ui:define>
+        <ui:define name="title">#{editorGameController.currentGame.name} - #{editorGameController.currentGameModel.name}</ui:define>
 
         <ui:define name="editorHeader">
             <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-host-min.css" />

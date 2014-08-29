@@ -88,18 +88,10 @@ YUI.add('wegas-team', function(Y) {
                 },
                 on: {
                     success: Y.bind(function() {
-//                        this.showMessage("success", "Game joined");
-
+                        //this.showMessage("success", "Game joined");
                         Y.fire("gameJoined", {
-                            gameId: this.getTargetGame().get("id"),
                             game: this.getTargetGame()
                         });
-                        this.hideOverlay();
-
-                        this.get("contentBox").empty();
-
-                        var rightTab = Y.Widget.getByNode("#rightTabView");     // Empty right tab on join
-                        rightTab && rightTab.destroyAll();
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
@@ -112,11 +104,12 @@ YUI.add('wegas-team', function(Y) {
             if (!playerToAdd) {
                 playerToAdd = this.teamEdition.getAccounts();
             }
-            Wegas.Facade.Game.sendRequest({//                                 // Add all player to the list in the list to the target game
-                request: "/JoinTeam/" + teamId,
+            Wegas.Facade.Game.sendRequest({//                                   // Add all player to the list in the list to the target game
+                request: "/JoinTeam/" + teamId + (this.get("token") ? "/" + this.get("token") : ""),
                 cfg: {
                     method: "POST",
-                    data: playerToAdd
+                    data: playerToAdd,
+                    updateCache: false
                 },
                 on: {
                     success: Y.bind(this.onSaved, this),
@@ -163,9 +156,9 @@ YUI.add('wegas-team', function(Y) {
 
             var showTeamSelection = false,
                 showTeamCreation = false,
-                showTeamEdition = false;                                    // Default case, free for all games
+                showTeamEdition = false;                                        // Default case, free for all games
 
-            if (entity instanceof Wegas.persistence.Team) {                   // If target entity is a team
+            if (entity instanceof Wegas.persistence.Team) {                     // If target entity is a team
                 if (gameModel.get("properties.freeForAll")) {                   // If game is free for all (no team)
                     this.sendJoinTeamRequest(entity.get("id"));                 // join it directly
                 } else if (entity.get("players").length === 0) {                // and this team is empty, (first connectin to this team)
@@ -175,7 +168,7 @@ YUI.add('wegas-team', function(Y) {
                         "This team has already been created. You can contact it's members so they can join you in.");
                 }
             } else if (entity instanceof Wegas.persistence.Game && // If target entity is a game
-                !(gameModel && gameModel.get("properties.freeForAll"))) {   // and its game is not free for all (uses teams)
+                !(gameModel && gameModel.get("properties.freeForAll"))) {       // and its game is not free for all (uses teams)
                 showTeamCreation = true;
             }
             if (showTeamCreation || showTeamEdition) {
@@ -202,7 +195,7 @@ YUI.add('wegas-team', function(Y) {
 
                 //teamSelectionNode.append("<div style=\"margin:10px 0\"><span style=\"color: #505050;font-style: italic;padding-left: 20px;\">Team name:</span>&nbsp;&nbsp;&nbsp;" + teamName + "</div>");
 
-                this.teamField = new Y.inputEx.MultipleOptions({//                Create team edition field
+                this.teamField = new Y.inputEx.MultipleOptions({// Create team edition field
                     parentEl: teamSelectionNode,
                     fields: [{
                             type: "hidden",
@@ -227,9 +220,8 @@ YUI.add('wegas-team', function(Y) {
             }
             if (showTeamEdition || showTeamCreation) {
                 this.teamEdition = new Wegas.TeamFormList({
-                    render: teamSelectionNode,
                     entity: entity
-                });
+                }).render(teamSelectionNode);
                 this.teamEdition.addExistingAccount(
                     Wegas.Facade.User.get("currentUser").getMainAccount());// Push  current user to the team's player list
             }
@@ -258,8 +250,7 @@ YUI.add('wegas-team', function(Y) {
                 if (this.teamId) {
                     this.sendMultiJoinTeamRequest(this.teamId);
                 } else {
-                    Wegas.Facade.Game.sendRequest({//                             // create the team
-                        //request: "/" + entity.get("id") + "/CreateTeam/" + name,
+                    Wegas.Facade.Game.sendRequest({//                           // create the team
                         request: "/" + entity.get("id") + "/CreateTeam",
                         cfg: {
                             method: "POST",
@@ -279,7 +270,7 @@ YUI.add('wegas-team', function(Y) {
             } else if (this.showTeamEdition) {                                  // If joining
                 if (name !== entity.get("name")) {                              // If team name was edited,
                     entity.set("name", name);
-                    Wegas.Facade.Game.sendRequest({//                         // update it
+                    Wegas.Facade.Game.sendRequest({//                           // update it
                         request: "/Team/" + entity.get("id"),
                         cfg: {
                             method: "PUT",
@@ -310,32 +301,23 @@ YUI.add('wegas-team', function(Y) {
          */
         onSaved: function(e) {
             //this.showMessage("success", "Game joined");
-
             Y.fire("gameJoined", {
-                gameId: e.response.entity.get("id"),
                 game: e.response.entity
-                    //gameId: this.getTargetGame().get("id"),
-                    //game: this.getTargetGame()
             });
-            this.hideOverlay();
-
-            this.destructor();
-            this.get("contentBox").empty();
-
-            var rightTab = Y.Widget.getByNode("#rightTabView");
-            rightTab && rightTab.destroyAll();
         },
         sendTokenJoinGame: function(token) {
             this.showOverlay();
             Wegas.Facade.Game.sendRequest({
                 request: "/JoinGame/" + token,
                 cfg: {
-                    updateCache: !this.get("customEvent")
+                    updateCache: false
                 },
                 on: {
                     success: Y.bind(function(e) {
                         if (e.response.entity instanceof Wegas.persistence.Team) { // If the returned value is a Team enity
-                            this.sendJoinTeamRequest(e.response.entity.get("id"));
+                            Y.fire("gameJoined", {
+                                game: e.response.entities[1]
+                            });
                         } else {
                             // TODO
                             this.hideOverlay();
@@ -346,6 +328,10 @@ YUI.add('wegas-team', function(Y) {
                     }, this)
                 }
             });
+        }
+    }, {
+        ATTRS: {
+            token: {}
         }
     });
     Wegas.JoinTeam = JoinTeam;
@@ -369,9 +355,8 @@ YUI.add('wegas-team', function(Y) {
             teamSelectionNode.append("<br /><div class=\"title\">Edit your team</div>");
 
             this.teamEdition = new Wegas.TeamFormList({
-                render: teamSelectionNode,
                 entity: entity
-            });
+            }).render(teamSelectionNode);
 
             Wegas.Facade.User.sendRequest({
                 request: "/Account/FindByTeamId/" + teamId,
@@ -382,7 +367,6 @@ YUI.add('wegas-team', function(Y) {
                             this.teamEdition.addExistingAccount(entity);
                             this.joinedAccounts.push(entity);
                         }, this);
-
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }

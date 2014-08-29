@@ -7,6 +7,7 @@
  */
 package com.wegas.core.exception;
 
+import javax.ejb.ApplicationException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -16,11 +17,12 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+@ApplicationException(rollback = false)
 @XmlRootElement
 @JsonIgnoreProperties({"cause", "stackTrace", "suppressed"})
 @XmlType(name = "WegasScriptException")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ScriptException extends NoRollBackException {
+public class ScriptException extends WegasException {
 
     private String script;
     private Integer lineNumber;

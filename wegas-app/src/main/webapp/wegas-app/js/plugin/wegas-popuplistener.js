@@ -76,7 +76,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             });
         },
         onShowMessage: function(e) {
-            if (this.get("filter") && this.get("filter").indexOf(e.level) > -1) {
+            if (this.get("filter") && this.get("filter").indexOf(e.level) > -1 && e.noFilter !== true) {
                 return;
             }
 
@@ -90,7 +90,12 @@ YUI.add('wegas-popuplistener', function(Y) {
             this.get("host").get(this.get("targetAttr"))
                 .addClass("wegas-loading")
                 .prepend("<div class='wegas-loading-overlay'></div>");
+
             e.halt(true);
+
+            Y.later(5000, this, function() {
+                this.get("host").get(this.get("targetAttr")).all(".wegas-loading-overlay").addClass("wegas-loading-long");
+            });
         },
         onHideOverlay: function(e) {
             this.hideOverlay();

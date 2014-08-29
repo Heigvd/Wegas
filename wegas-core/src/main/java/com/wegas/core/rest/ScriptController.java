@@ -76,12 +76,11 @@ public class ScriptController {
                 Object r = scriptManager.eval(playerId, script);
                 requestFacade.commit();
                 return r;
-            } catch (ScriptException e) {                                        // Try catch since script exception does not rollback
+            } catch (ScriptException e) {                                       // Try catch since script exception does not rollback
                 throw new WegasException("Error running script", e);
             }
         } else {
             throw new UnauthorizedException();
-
         }
     }
 

@@ -81,7 +81,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 this.currentSelection = this.getRecord(e.newVal).get("entity").get("id");
             });
 
-            this.addedHandler = ds.after("added", function(e) {// When an entity is created
+            this.addedHandler = ds.after("added", function(e) {                 // When an entity is created
+                if (this.requestdt)
+                    return;
+
                 var newEntityId = e.entity.get("id");                           // view it in the table
                 this.table.currentSelection = null;
                 Y.later(20, this, function() {
@@ -100,10 +103,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 });
 
             }, this);
-            Y.Do.after(function() {
-                if (this.requestdt)
-                    return;
 
+            Y.Do.after(function() {
                 this.table.get("data").each(function(r) {
                     if (this.currentSelection === r.get("entity").get("id")) {
                         this.getRow(r).addClass("wegas-datatable-selected");
@@ -272,8 +273,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     Plugin.RequestDT = Y.Base.create("RequestDT", Plugin.Base, [], {
         initializer: function() {
             this.afterHostEvent(RENDER, function() {
-                this.get(HOST).showOverlay()
-                    .get(DATASOURCE).sendRequest({
+                var host = this.get(HOST);
+                host.showOverlay();
+                host.get(DATASOURCE).cache.clear();
+                host.get(DATASOURCE).sendRequest({
                     request: "/" + Wegas.Facade.User.get("currentUserId")
                 });
             });
@@ -318,7 +321,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         onClick: function(e) {
             var host = this.get(HOST), button,
-                //last_tr = e.prevVal, //  "   "   "   the last TR clicked ...
                 menuItems = this.get("children"),
                 entity = host.table.getRecord(e.newVal).get("entity"),
                 data = {
@@ -394,7 +396,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     children: menuItems
                 });
                 e.currentTarget.menu.on(["*:message", "*:showOverlay", "*:hideOverlay"], host.fire, host);
-                // e.currentTarget.menu.addTarget(this.get(HOST));
                 e.currentTarget.menu.render(e.currentTarget.one("td.yui3-datatable-col-menu"));
             } else {
                 Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");

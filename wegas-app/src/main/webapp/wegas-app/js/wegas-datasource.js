@@ -307,20 +307,20 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                     break;
             }
-            this.addToCache(entity, updateEvent);                               // In case we still have not found anything
+            this.addToCache(entity);                                        // In case we still have not found anything
+            if (updateEvent) {
+                this.get(HOST).fire("added", {
+                    entity: entity
+                });
+            }
             return true;
         },
         /**
          * @function
          * @private
          */
-        addToCache: function(entity, updateEvent) {
+        addToCache: function(entity) {
             this.getCache().push(entity);
-            if (updateEvent) {
-                this.get(HOST).fire("added", {
-                    entity: entity
-                });
-            }
         },
         /// *** Cache methods *** //
         /**
@@ -822,9 +822,6 @@ YUI.add('wegas-datasource', function(Y) {
                 //this.getCache().push(entity);
                 this.getCache().splice(0, 0, entity);                           // Add in first position
             }
-            this.get(HOST).fire("added", {
-                entity: entity
-            });
         },
         /**
          * @deprecated
