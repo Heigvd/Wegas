@@ -435,3 +435,42 @@ if (centerTab && Y.one(".wegas-hostmode")) {
  
  });
  */
+
+
+
+Y.mix(persistence.ResourceDescriptor.prototype, {
+    isFirstPriority: function(taskDescriptor) {
+        var assignments = this.getInstance().get("assignments");
+    
+        return assignments.length > 0 && assignments[0].get('taskDescriptorId') === taskDescriptor.get("id");
+    },
+    isReservedToWork : function() {
+        var autoReserve = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation").get("value"),
+            currentPeriod = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase3").getInstance().get("value"),
+            occupations = this.getInstance().get("occupations"),
+            oi;
+                
+        if (autoReserve) {
+            // Auto Reservation : resource is always reserved unless
+            // an uneditable occupation exist
+            for (oi = 0; oi < occupations.length; oi++) {
+                if (occupations[oi].get("time") === currentPeriod && !occupations[oi].get("editable")) {
+                    return false;
+                }
+            }
+            return true;
+        } else {
+            // Manual Reservation: never reserved unless 
+            // editable occupation
+            for (oi = 0; oi < occupations.length; oi++) {
+                if (occupations[oi].get("time") === currentPeriod && occupations[oi].get("editable")) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }, isPlannedForCurrentPeriod : function(taskDescriptor) {
+        return this.isFirstPriority(taskDescriptor) && this.isReservedToWork();
+    }
+});
+
