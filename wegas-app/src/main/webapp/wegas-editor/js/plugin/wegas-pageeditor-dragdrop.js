@@ -57,7 +57,7 @@ YUI.add("wegas-pageeditor-dragdrop", function(Y) {
                 node: this.get("host").get(CONTENTBOX)
             });
             this._ddNode.before("mousedown", function(e) {
-                this.detach();
+                this.detachHandlers();
                 this._dd.set("dragNode", this.overlayWidget.get(BOUNDINGBOX));
                 this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
                 this._ddNode.show();

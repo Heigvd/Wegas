@@ -10,7 +10,6 @@
  */
 YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
-
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
@@ -22,7 +21,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 _type: HIDDEN
             }
         };
-
     /**
      * QuestionDescriptor mapper
      */
@@ -183,7 +181,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             }
         }
     });
-
     /**
      * QuestionInstance mapper
      */
@@ -219,7 +216,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             }
         }
     });
-
     /**
      * ChoiceDescriptor mapper
      */
@@ -369,7 +365,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
             }
         }
     });
-
     /**
      * ChoiceDescriptor mapper
      */
@@ -588,6 +583,16 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             }, {
                 type: BUTTON,
+                label: "Copy",
+                plugins: [{
+                        fn: "EditEntityArrayFieldAction",
+                        cfg: {
+                            method: "copy",
+                            attributeKey: "results"
+                        }
+                    }]
+            }, {
+                type: BUTTON,
                 label: "Delete",
                 plugins: [{
                         fn: "EditEntityArrayFieldAction",
@@ -636,7 +641,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
          */
         getStatus: function(time) {
             var choiceDescriptor = this.getChoiceDescriptor();
-
             if ((this.get("startTime") + choiceDescriptor.get("duration")) <= time) {
                 return 0;
             } else if (this.get("startTime") <= time) {
