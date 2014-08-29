@@ -256,17 +256,17 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
 
             if (cQuestionInstance.get("replies").length > 0) {                  // Display the selected replies
-                ret.push('<div class="subtitle">Results</div><div class="replies">');  //Selected replies
+                ret.push('<div class="subtitle">Results</div><div class="replies ">');  //Selected replies
                 for (j = cQuestionInstance.get("replies").length - 1; j >= 0; j -= 1) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
                     title = choiceDescriptor.get("title");
-                    ret.push('<div class="replyDiv"><div class="reply"><div class="name">', title, '</div>',
-                        '<div>',
-                        (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
-                        '</div>',
-                        //'<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
-                        '<div style="clear:both"></div></div>');
+                    ret.push('<div class="replyDiv ' + ((j=== cQuestionInstance.get("replies").length - 1 )? 'mostRecentReply' : 'olderReply') + '"><div class="reply"><div class="name">', title, '</div>',
+                            '<div>',
+                            (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
+                            '</div>',
+                            //'<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
+                            '<div style="clear:both"></div></div>');
 
                     if (reply.get("result").get("answer")) {
                         ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div></div>');
