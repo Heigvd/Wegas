@@ -65,7 +65,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 angle: this.angleTransform(cfg.angle) || 0.15, // The length of each line
                 lineWidth: cfg.lineWidth || 0.44, // The line thickness
                 pointer: cfg.pointer ? Y.merge(cfg.pointer) : {
-                    pointerlength: 0.5, // The radius of the inner circle
+                    pointerlength: 0.6, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
