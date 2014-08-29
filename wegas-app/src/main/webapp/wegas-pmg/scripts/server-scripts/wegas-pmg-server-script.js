@@ -11,7 +11,8 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-var gm = self.getGameModel(), TempImpact;
+var gm = self.getGameModel(), TempImpact,
+    DEBUGMODE = false;
 
 /**
  * Call all necessary method to pass a period and calculate all variable.
@@ -22,8 +23,8 @@ var gm = self.getGameModel(), TempImpact;
  *  function completeRealizationPeriod) and check the end of the project (if true, pass to phase 4).
  */
 function nextPeriod() {
-    var currentPhase = getCurrentPhase(),
-        currentPeriod = getCurrentPeriod();
+    var currentPhase = PMGSimulation.getCurrentPhase(),
+        currentPeriod = PMGSimulation.getCurrentPeriod();
 
     allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
     advancementLimit();
@@ -31,7 +32,8 @@ function nextPeriod() {
     Variable.find(gm, "currentTime").add(self, 1);
 
     if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
-        runSimulation();
+        PMGSimulation.run();
+
         currentPeriod.add(self, 1);
         if (checkEndOfProject()) {                                              // If the project is over
             currentPhase.add(self, 1);
@@ -118,7 +120,7 @@ function allPhaseQuestionAnswered() {
  * @returns {Number} Planned value
  */
 function calculatePlanedValue(period) {
-    return Y.Array.sum(getActiveTasks(), function(t) {
+    return Y.Array.sum(PMGSimulation.getActiveTasks(), function(t) {
         if (t.plannification.size() === 0) {                                    // If the user did not provide a planfication
             return t.getPropertyD('bac');                                       // return budget at completion as it is
 
@@ -146,7 +148,7 @@ function updateVariables() {
         earnedValue = Variable.findByName(gm, 'earnedValue'),
         actualCost = Variable.findByName(gm, 'actualCost'),
         projectUnworkedHours = Variable.findByName(gm, 'projectUnworkedHours'),
-        tasks = getActiveTasks(),
+        tasks = PMGSimulation.getActiveTasks(),
         pv = calculatePlanedValue(Variable.findByName(gm, 'periodPhase3').getValue(self));// pv = for each task, sum -> bac * task completeness / 100
 
     for (i = 0; i < tasks.length; i++) {

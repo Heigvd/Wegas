@@ -1,0 +1,54 @@
+{
+    "@class": "GameModel",
+    "pages": {},
+    "name": "Language Only PMG",
+    "description": "",
+    "createdTime": 1409219464,
+    "template": true,
+    "childVariableDescriptors": [
+        {
+            "@class": "ListDescriptor",
+            "name": "properties",
+            "label": "Game properties",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ListInstance"
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "items": [
+                {
+                    "@class": "StringDescriptor",
+                    "name": "language",
+                    "label": "Language",
+                    "title": null,
+                    "defaultInstance": {
+                        "@class": "StringInstance",
+                        "value": "fr"
+                    },
+                    "scope": {
+                        "@class": "GameScope",
+                        "broadcastScope": "GameScope"
+                    },
+                    "validationPattern": null
+                }
+            ]
+        }
+    ],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "pagesUri": "",
+        "cssUri": "",
+        "websocket": "",
+        "clientScriptUri": "",
+        "scriptUri": "wegas-pmg/scripts/server-scripts/",
+        "imageUri": "",
+        "iconUri": ""
+    },
+    "createdByName": "Maxence Laurent"
+}

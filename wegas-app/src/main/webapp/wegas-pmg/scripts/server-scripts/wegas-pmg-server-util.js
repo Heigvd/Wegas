@@ -132,3 +132,17 @@ function flattenList(list, finalList) {
     }
     return finalList;
 }
+
+
+/**
+ * Print a console msg if in debug mode
+ * 
+ * @param {String} msg
+ */
+function debug(msg) {
+    if (DEBUGMODE) {
+        println(msg);
+        RequestManager.sendCustomEvent("debug", msg);
+    }
+}
+

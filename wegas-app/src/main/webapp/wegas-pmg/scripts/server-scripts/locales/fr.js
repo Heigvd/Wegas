@@ -9,37 +9,45 @@
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-var i18nTable_fr = {
+var i18nOrdinate = (function(module) { return module;}(i18nOrdinate || {})),
+    i18nTable = (function(module) { return module;}(i18nTable || {}));
+
+i18nTable.fr = {
     messages: {
         startOnTask: {
             from: "%employeeName%",
-            subject: "(%step%) Tâche : %task%",
-            content: 'Jecommence mon travail sur la tâche %task% <br/> Salutations <br/>%employeeName%<br/> %job%'
+            subject: "Tâche : %task%",
+            content: "J'ai commencé mon travail sur la tâche %task% %step%<br/> Salutations <br/>%employeeName%<br/> %job%"
         },
         endOfTaskSwitchToNew: {
             from: "%employeeName%",
-            subject: "(%step%) Fin de la tâche : %task%",
-            content: 'La tâche "%task%" est terminée, je passe à la tâche %nextTask% <br/> Salutations <br/>%employeeName%<br/> %job%'
+            subject: "Fin de la tâche : %task%",
+            content: 'La tâche "%task%" est terminée depuis %step%, je passe à la tâche %nextTask% <br/> Salutations <br/>%employeeName%<br/> %job%'
         },
         endOfTaskOtherActivities: {
             from: "%employeeName%",
-            subject: "(%step%) Fin de la tâche : %task%",
-            content: 'La tâche "%task%" est terminée. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>%employeeName%<br/> %job%'
+            subject: "Fin de la tâche : %task%",
+            content: 'La tâche "%task%" est terminée depuis %step%. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>%employeeName%<br/> %job%'
         },
         blockedByPredecessors: {
             from: "%employeeName%",
-            subject: "(%step%) Impossible de progresser sur la tâche : %task%",
-            content: 'Je suis censé travailler sur la tâche "%task%" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituelles. <br/> Salutations <br/>%employeeName%<br/> %job%'
+            subject: "Impossible de progresser sur la tâche : %task%",
+            content: 'Je suis venu %step% pour travailler sur la tâche "%task%" mais les tâches précedentes ne sont pas assez avancées. <br/> Je retourne donc à mes occupations habituelles. <br/> Salutations <br/>%employeeName%<br/> %job%'
         },
         skillCompleted: {
             from: "%skill%",
-            subject: "(%step%) Tâche : %task% en partie terminée",
-            content: 'Nous avons terminé la partie %skill% de la tâche %task%. <br/> Salutations'
+            subject: "Tâche : %task% en partie terminée",
+            content: 'Nous avons terminé la partie %skill% de la tâche %task% %step%. <br/> Salutations'
         },
         notMyWork: {
             from: "%employeeName%",
-            subject: "(%step%) Impossible de progresser sur la tâche : %task%",
-            content: 'Je suis censé travailler sur la tâche "%task%" mais je ne suis pas qualifié pour ce travail. <br /> Salutations <br/>%employeeName%<br/> %job%'
+            subject: "Impossible de progresser sur la tâche : %task%",
+            content: 'Je suis venu %step% pour travailler sur la tâche "%task%" mais je ne suis pas qualifié pour ce travail. <br /> Salutations <br/>%employeeName%<br/> %job%'
+        },
+        planningProblem: {
+            from: "%employeeName%",
+            subject: "Problème de planification",
+            content: "Bonjour, <br><br> Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /> Salutations <br/>%employeeName%<br/> %job%"
         }
     },
     date: {
@@ -69,10 +77,31 @@ var i18nTable_fr = {
             dec: "décembre"
         },
         formatter: {
-            on_date: "le %day% %month%",
-            on_weekday: "%day% %ampm%",
-            date: "%day% %month%",
-            weekday: "%day% %ampm%"
+            onDate: "le %day% %month%",
+            onWeekday: "%day% %ampm%",
+            date: "le %day% %month%",
+            weekday: "%day% %ampm%",
+            wholeMonth: "tout le mois",
+            wholeWeek: "toute la semaine"
         }
+    },
+    phase: {
+        phase1: "Initiation",
+        phase2: "Planification",
+        phase3: "Réalisation",
+        phase4: "Terminaison"
+    },
+    question: {
+        question: "Question",
+        action: "Action"
     }
 };
+
+i18nOrdinate.fr = (function(number) {
+    switch (number) {
+        case 1:
+            return number + "er";
+        default:
+            return number + "ème";
+    }
+});

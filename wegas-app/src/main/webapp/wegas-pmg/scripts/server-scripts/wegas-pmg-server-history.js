@@ -9,34 +9,35 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-function sendHistory(from, title, msg) {
-    Variable.find(gameModel, "history").sendMessage(self, from, title, msg);
+
+function sendHistory(from, title, msg, date) {
+    Variable.find(gameModel, "history").sendMessage(self, from, title, msg, date);
 }
 
 Event.on("replyValidate", function(e) {
-    var msg = "", root, type,
+    var msg = "", root, type, date,
         currentPhase = Variable.find(gameModel, "currentPhase").getValue(self);
 
     root = Variable.findParentList(e.question.getDescriptor());
     root = Variable.findParentList(root);
     
     if (root.name == "actions") {
-        type = "Action";  // I18nalize
+        type = I18n.t("question.action");
         msg += e.question.getDescriptor().getDescription() + "<br><hr><br>";    // choice description
     } else {
-        type = "Question"; // I18nalize
+        type = I18n.t("question.question");
         msg += "<b>" + e.choice.getDescriptor().getTitle() + "</b><br>";        // Choice selected
         msg += e.choice.getDescriptor().getDescription() + "<br><hr><br>";      // choice description
     }
     msg += e.reply.getResult().getAnswer();                                     //Reply
     
-    type += " " + currentPhaseName(currentPhase);
-    type += " period " + Variable.find(gameModel, "currentPeriod").item(currentPhase -1).getValue(self); // I18nalize
+    date = currentPhaseName(currentPhase);
+    date += "." + Variable.find(gameModel, "currentPeriod").item(currentPhase -1).getValue(self);
 
-    sendHistory(type, e.question.getDescriptor().getTitle(), msg, []);
+    sendHistory(type, e.question.getDescriptor().getTitle(), msg, date, []);
 });
 
-function currentPhaseName(currentPhase) { // TODO Max I18nalize
+function currentPhaseName(currentPhase) { // TODO I18nalize ??? Must be the same as the ones in the time bar !
     switch (currentPhase) {
         case 1:
             return "Initiation";
