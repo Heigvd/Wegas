@@ -27,7 +27,7 @@ function nextPeriod() {
         currentPeriod = PMGSimulation.getCurrentPeriod();
 
     allPhaseQuestionAnswered();                                                 // First Check if all questions are answered
-    advancementLimit();
+    assertAdvancementLimit();
 
     Variable.find(gm, "currentTime").add(self, 1);
 
@@ -75,7 +75,7 @@ function checkEndOfProject() {
 /**
  * Check if an advancement limit existe
  */
-function advancementLimit() {
+function assertAdvancementLimit() {
     var phaseLimit, periodLimit, executionPeriods;
     if (Variable.find(gm, "advancementLimit").getValue(self)) {
         phaseLimit = Variable.find(gm, "phaseLimit").getValue(self);

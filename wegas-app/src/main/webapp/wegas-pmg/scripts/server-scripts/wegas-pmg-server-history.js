@@ -11,12 +11,11 @@
  */
 
 function sendHistory(from, title, msg, date) {
-    Variable.find(gameModel, "history").sendMessage(self, from, title, msg, date);
+    Variable.find(gameModel, "history").sendDatedMessage(self, from, date, title, msg);
 }
 
 Event.on("replyValidate", function(e) {
-    var msg = "", root, type, date,
-        currentPhase = Variable.find(gameModel, "currentPhase").getValue(self);
+    var msg = "", root, type;
 
     root = Variable.findParentList(e.question.getDescriptor());
     root = Variable.findParentList(root);
@@ -31,21 +30,5 @@ Event.on("replyValidate", function(e) {
     }
     msg += e.reply.getResult().getAnswer();                                     //Reply
     
-    date = currentPhaseName(currentPhase);
-    date += "." + Variable.find(gameModel, "currentPeriod").item(currentPhase -1).getValue(self);
-
-    sendHistory(type, e.question.getDescriptor().getTitle(), msg, date, []);
+    sendHistory(type, e.question.getDescriptor().getTitle(), msg, PMGSimulation.getCurrentPeriodFullName());
 });
-
-function currentPhaseName(currentPhase) { // TODO I18nalize ??? Must be the same as the ones in the time bar !
-    switch (currentPhase) {
-        case 1:
-            return "Initiation";
-        case 2:
-            return "Planning";
-        case 3:
-            return "Execution";
-        case 4:
-            return "Closing";
-    }
-}

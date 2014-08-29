@@ -31,8 +31,12 @@ var PMGSimulation = (function() {
         return Variable.findByName(gameModel, "currentPhase");
     }
 
+    function getCurrentPhaseNumber() {
+        return getCurrentPhase().getValue(self);
+    }
+
     function getCurrentPeriod() {
-        var currentPhase = getCurrentPhase().getValue(self),
+        var currentPhase = getCurrentPhaseNumber(),
             periods = Variable.findByName(gameModel, "currentPeriod");
         if (periods !== null && currentPhase !== null) {
             return periods.items.get(currentPhase - 1);
@@ -49,7 +53,6 @@ var PMGSimulation = (function() {
         AUTOMATED_RESERVATION = automatedReservation();
         currentPeriodNumber = getCurrentPeriod().getValue(self);
         debug("runSimulation(currentPeriodNumber: " + currentPeriodNumber + ")");
-
         resourceTable = {};
         // Init task table
         taskTable = {};
@@ -65,7 +68,6 @@ var PMGSimulation = (function() {
         }
 
         debug("All Step Computed");
-
         billUnworkedHoursForUselessResources();
     }
 
@@ -113,16 +115,13 @@ var PMGSimulation = (function() {
      */
     function step(currentStep) {
         debug("step(" + currentStep + ")");
-
         // Process assignments
         var activities = assignResources(currentStep);
-
         // Calculate progress for each requirement
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             debug("step(): computeReq:" + r);
             calculateRequirementProgress(r, activities);
         });
-
         // Consolidate requirments progress & quality into tasks
         Y.Array.each(getTasksFromActivities(activities), function(t) {
             var oCompleteness = t.getProperty("completeness");
@@ -130,7 +129,6 @@ var PMGSimulation = (function() {
             t.setProperty("quality", calculateTaskQuality(t));
             debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
         });
-
         checkEnd(activities, currentStep);
     }
 
@@ -144,7 +142,6 @@ var PMGSimulation = (function() {
         debug(arguments.callee.name + "(currentStep: " + currentStep + ", currentPeriodNumber: " + currentPeriodNumber + ")");
         var activities = [],
             i, resources = flattenList(Variable.findByName(gameModel, "employees"));
-
         if (!resources) {
             return [];
         }
@@ -153,7 +150,6 @@ var PMGSimulation = (function() {
         }
 
         debug(arguments.callee.name + "(activities before filtering: " + activities + ")");
-
         return activities.filter(function(o) {
             return o; // not null
         });
@@ -172,11 +168,9 @@ var PMGSimulation = (function() {
     function assignResource(currentStep, resourceInstance) {
         debug(arguments.callee.name + " (" + resourceInstance + ")\n***************************");
         var activity = null;
-
         if (isReservedToWork(resourceInstance, currentPeriodNumber)) {
             var i, allAssignments = resourceInstance.assignments,
                 justCompletedTasks = [];
-
             // iterate through assigments until an activity exists
             for (i = 0; i < allAssignments.size() && !activity; i++) {
                 var currentAssignment = allAssignments.get(i);
@@ -185,7 +179,6 @@ var PMGSimulation = (function() {
                 if (!isCompleted(taskDesc)) {
                     if (notBlockedByPredecessors(taskDesc)) {
                         var req = selectRequirement(taskDesc.getInstance(self), resourceInstance);
-
                         if (req) {
                             activity = getActivity(resourceInstance, taskDesc,
                                 currentPeriodNumber + currentStep / STEPS,
@@ -195,7 +188,6 @@ var PMGSimulation = (function() {
                             debug("   -> NOT MY WORK req not found...");
                             sendNotMyWorkMail(resourceInstance, currentStep, taskDesc);
                             allAssignments.remove(i);
-
                             // dont work this step -> bill
                             addUnworkedHours(resourceInstance, 10); // Limit 10% -> a step
                             break; // stop looking for an activity
@@ -215,13 +207,12 @@ var PMGSimulation = (function() {
                 }
             }
             debug("All req processed (activity is : " + activity);
-
             /**
              * TRACKING MESSAGES
              */
             debug("TRACKING\n**************");
             if (justCompletedTasks.length === 0) {
-                // No task just completed
+// No task just completed
                 if (activity) {
                     if (activity.getTime() < 0) { // Just created activity ? 
                         if (!findActivityByTaskAndPeriod(resourceInstance, activity.taskDescriptor, currentPeriodNumber - 1)) {
@@ -239,19 +230,17 @@ var PMGSimulation = (function() {
                 for (t in justCompletedTasks) {
                     debug(" ->JUST COMPLETED TASKS[" + t + "]: " + justCompletedTasks[t]);
                 }
-                // task have been completed during the previous step -> tracking-message
+// task have been completed during the previous step -> tracking-message
                 if (activity) {
                     sendGoToNextTaskMail(resourceInstance, currentStep, activity.taskDesc, justCompletedTasks[0]);
                 } else {
-                    // No more workable tasks for the resource message
+// No more workable tasks for the resource message
                     sendGoToOtherActivities(resourceInstance, currentStep, justCompletedTasks[0]);
                 }
             }
         }
         debug("**************");
-
         removeAssignmentsFromCompleteTasks(resourceInstance);
-
         if (activity) {
             activity.setTime(currentPeriodNumber + currentStep / STEPS);
         }
@@ -268,11 +257,9 @@ var PMGSimulation = (function() {
     function checkEnd(activities, currentStep) {
         debug(arguments.callee.name + "() step: " + currentStep);
         var taskInst, taskDesc;
-
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             taskInst = r.getTaskInstance(),
                 taskDesc = taskInst.getDescriptor();
-
             if (!isTaskInstanceCompleted(taskInst)) {
                 if (isSkillCompleted(taskInst, r.work)) {
                     sendSkillCompletedEmail(currentStep, taskDesc, r.work);
@@ -294,14 +281,12 @@ var PMGSimulation = (function() {
             skillsOverview = getSkillsOverview(taskInst),
             taskProgress = 0,
             skill;
-
         for (skill in skillsOverview) {
             taskProgress += skillsOverview[skill].completeness * skillsOverview[skill].totalByWork;
         }
 
 
         taskProgress = taskProgress / nbWork;
-
         if (taskProgress > 0.0 & taskProgress < 1) {
             taskProgress = 1; // Avoid >0 to be round to 0
         }
@@ -412,16 +397,14 @@ var PMGSimulation = (function() {
      */
     function getActivity(resource, taskDesc, period, req) {
         var activity = findLastStepCorrespondingActivity(resource, taskDesc, period);
-
         if (!activity) {
             debug("               Creating new activity");
             activity = resource.createActivity(taskDesc);
-            activity.setTime(-1);  // @hack -1 means the activity has just been created
+            activity.setTime(-1); // @hack -1 means the activity has just been created
         } else {
             debug("               Existing activity for " + resource.name + ": " + activity);
         }
         activity.setRequirement(req);
-
         debug(arguments.callee.name + " (" + activity + ")");
         return activity;
     }
@@ -440,11 +423,8 @@ var PMGSimulation = (function() {
         }, percentToBill = Math.min(status["maxUnworkedHoursPercent"], limit),
             projectUHDesc = Variable.findByName(gameModel, 'projectUnworkedHours'),
             projectUh = projectUHDesc.getValue(self);
-
         percentToBill = Math.max(percentToBill - status["currentUnworkedHoursPercent"], 0);
-
         status["currentUnworkedHoursPercent"] += percentToBill;
-
         projectUh += getResourcePeriodWages(resourceInst) * percentToBill / 100;
         projectUHDesc.setValue(self, projectUh);
     }
@@ -455,7 +435,6 @@ var PMGSimulation = (function() {
             oldTaskName = oldTask.label,
             newTaskName = newTask.label,
             key = "endOfTaskSwitchToNew";
-
         sendMessage(
             I18n.t("messages." + key + ".subject", {
                 task: oldTaskName
@@ -475,7 +454,6 @@ var PMGSimulation = (function() {
     function sendSkillCompletedEmail(currentStep, taskDesc, skill) {
         var taskName = taskDesc.label,
             key = "skillCompleted";
-
         sendMessage(
             I18n.t("messages." + key + ".subject", {
                 task: taskName}),
@@ -494,7 +472,6 @@ var PMGSimulation = (function() {
             resourceSkill = resourceInstance.mainSkill,
             timeUnit = Variable.findByName(gm, "timeUnit").getValue(self),
             wholePeriod, key = "planningProblem";
-
         if (timeUnit == "week") {
             wholePeriod = I18n.t("date.formatter.wholeWeek");
         } else {
@@ -517,7 +494,6 @@ var PMGSimulation = (function() {
         var resourceName = resourceInstance.descriptor.label,
             resourceSkill = resourceInstance.mainSkill,
             taskName = taskDesc.label;
-
         sendMessage(
             I18n.t("messages." + key + ".subject", {
                 task: taskName}),
@@ -672,7 +648,7 @@ var PMGSimulation = (function() {
             autoDesc = false;
         }
 
-        // Automatic means the descriptor exists and its value is TRUE
+// Automatic means the descriptor exists and its value is TRUE
         return autoDesc && autoDesc.getValue(self);
     }
 
@@ -691,21 +667,21 @@ var PMGSimulation = (function() {
      * @returns {Boolean} is reserved
      */
     function isReservedToWork(employeeInst, period) {
-        // Inactive resource never work
+// Inactive resource never work
         if (!employeeInst.getActive()) {
             return false;
         }
 
         if (!AUTOMATED_RESERVATION) {
-            // the resource must be reserved.
-            // it means that an "editable" occupation must exists for the current time
+// the resource must be reserved.
+// it means that an "editable" occupation must exists for the current time
             return Y.Array.find(employeeInst.occupations, function(o) {
                 return o.time === period
                     && o.editable;
             });
         } else { // automatic
-            // The resource is always reserved unless
-            // it has an "uneditable" occupation for the current period
+// The resource is always reserved unless
+// it has an "uneditable" occupation for the current period
             return !Y.Array.find(employeeInst.occupations, function(o) {
                 return o.time === period
                     && !o.editable; // Illness, etc. occupations are not editable
@@ -782,12 +758,9 @@ var PMGSimulation = (function() {
     function getSkillsOverview(taskInstance) {
         var i, req, work, works = {},
             requirements = taskInstance.requirements;
-
         debug(arguments.callee.name + " req: " + requirements);
-
         for (i = 0; i < requirements.size(); i++) {
             req = requirements.get(i);
-
             //keep an occurance of each kind of work needed
             work = works[req.work] = works[req.work] || {
                 maxLimit: 0,
@@ -813,7 +786,6 @@ var PMGSimulation = (function() {
     function calculateRequirementProgress(requirement, allActivities) {
         debug(arguments.callee.name);
         debug("calculateRequirementProgress(requirement: " + requirement + ", task: " + requirement.getTaskInstance() + ")");
-
         var i, employeeInst, activityRate, averageSkillsetQuality, correctedRessources,
             taskInst = requirement.getTaskInstance(),
             taskDesc = taskInst.getDescriptor(),
@@ -834,13 +806,10 @@ var PMGSimulation = (function() {
             totalOfEmployees = Y.Array.sum(taskInst.requirements, function(r) {
                 return r.quantity;
             });
-
         debug("baseAdvance : " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees);
-
         // Iterate through resources to sum various factor components
         for (i = 0; i < effectiveTotalOfEmployees; i++) {
             employeeInst = sameNeedActivities[i].resourceInstance;
-
             activityRate = employeeInst.getPropertyD("activityRate");
             sumActivityRate += activityRate;
             //Calculate ressource motivation factor
@@ -852,7 +821,6 @@ var PMGSimulation = (function() {
             //Calcul variables for skill factor
             var deltaLevel = parseInt(employeeInst.mainSkillLevel) - requirement.level,
                 skillsetFactor = (deltaLevel > 0) ? taskDesc.getPropertyD("competenceRatioSup") : taskDesc.getPropertyD("competenceRatioInf");
-
             employeeSkillsetFactor = Math.max(0, 1 + 0.05 * skillsetFactor * deltaLevel);
             //debug("calc skillset: activityRate:" + activityRate + ", skillsetFactor: " + skillsetFactor + "deltaLevel: " + deltaLevel);
             sumEmployeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate; //Calcul variables for needSkillFactor (numérateur de la moyenne pondérée facteur compétence besoin)
@@ -863,7 +831,7 @@ var PMGSimulation = (function() {
             if (!haveCorrespondingActivityInPast(employeeInst, taskDesc)) {
                 newOnTask++;
             }
-            //Calculate variable for quality
+//Calculate variable for quality
             sumMotivationXActivityRate += employeeInst.moral * activityRate;
             sumSkillsetXActivityRate += employeeInst.mainSkillLevel * activityRate; //level * activityRate
         }
@@ -877,7 +845,7 @@ var PMGSimulation = (function() {
             debug("facteur taux activité besoin : " + sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100) + ", sumActivityCoefficientXActivityRate : " + sumActivityCoefficientXActivityRate + ", ActivityNeedRateFactor : " + sumActivityCoefficientXActivityRate / sumActivityRate);
         }
 
-        // calculate numberOfRessourcesFactor
+// calculate numberOfRessourcesFactor
         if (totalOfEmployees !== 0) {
             var cooridationfactor = (effectiveTotalOfEmployees <= requirement.quantity) ?
                 taskDesc.getPropertyD("coordinationRatioInf") : taskDesc.getPropertyD("coordinationRatioSup");
@@ -909,7 +877,6 @@ var PMGSimulation = (function() {
         debug("projectBonusRatio : " + Variable.findByName(gameModel, "bonusRatio").getValue(self) + ", stepAdvance: " + stepAdvance);
         stepAdvance *= getPredecessorFactor(taskDesc); //calculate predecessorFactor
         debug("predecessorFactor: " + getPredecessorFactor(taskDesc) + ", stepAdvance: " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees);
-
         stepAdvance *= 100;
         //calculate stepQuality
         if (sumActivityRate !== 0) {
@@ -919,22 +886,20 @@ var PMGSimulation = (function() {
                 + skillFactor * (averageSkillsetQuality - requirement.level); //skillset (level) quality
         }
 
-        // Compute new quality 
+// Compute new quality 
         if (requirement.completeness + stepAdvance > 0) {
             stepQuality = (stepQuality / 2) * 100; //step Quality
             requirement.quality = (requirement.quality * requirement.completeness + stepQuality * stepAdvance) / (requirement.completeness + stepAdvance);
             debug("StepQuality: " + requirement.quality + ", sumSkillsetXActivityRate: " + sumSkillsetXActivityRate + ", sumMotivationXActivityRate: " + sumMotivationXActivityRate);
         }
 
-        //set Wage (add 1/steps of the need's wage at task);
+//set Wage (add 1/steps of the need's wage at task);
         var oWages = taskInst.getPropertyD("wages"),
             wages = Y.Array.sum(sameNeedActivities, function(a) {
                 return getResourceStepWages(a.resourceInstance);
             });
-
         taskInst.setProperty("wages", taskInst.getPropertyD("wages") + wages);
         debug("Wages: " + oWages + " + " + (taskInst.getPropertyD("wages") - oWages) + " = " + taskInst.getPropertyD("wages"));
-
         var oCompleteness = requirement.completeness;
         requirement.completeness += stepAdvance; // update requirement completion
         debug("Requirement completeness change: " + oCompleteness + " + " + stepAdvance + " = " + requirement.completeness);
@@ -948,7 +913,6 @@ var PMGSimulation = (function() {
         var timeUnit = Variable.findByName(gm, "timeUnit").getValue(self),
             activityRate = resourceInstance.getPropertyD("activityRate"),
             wages = resourceInstance.getPropertyD("wage") * activityRate / 100.0;
-
         if (timeUnit == "week") { // Do not use === 
             wages /= 4.0;
         }
@@ -1019,7 +983,7 @@ var PMGSimulation = (function() {
         numberOfDigit = Math.pow(10, (numberOfDigit > 1) ? numberOfDigit : 1);
         return Math.round(number * numberOfDigit) / numberOfDigit;
     }
-   
+
     /**
      * Return a name for each step.
      * @param {Number} step
@@ -1036,7 +1000,6 @@ var PMGSimulation = (function() {
             var period = Variable.findByName(gm, "periodPhase3").getValue(self),
                 month = I18n.t("date.month." + MONTH_KEY[period % 12]),
                 day = step * 3 + 1;
-
             return I18n.t("date.formatter.date", {day: day, month: month});
         }
     }
@@ -1076,11 +1039,31 @@ var PMGSimulation = (function() {
      * @param {String} from the sender of the message.
      */
     function sendMessage(subject, content, from) {
-        var date = "Execution." + getCurrentPeriod().getValue(self);
-        Variable.find(gameModel, "inbox").sendDatedMessage(self, from, date, subject, content, []);
+        Variable.find(gameModel, "inbox").sendDatedMessage(self, from, getCurrentPeriodFullName(), subject, content, []);
+    }
+
+    function getCurrentPhaseName() { 
+        // TODO I18nalize ??? Must be the same as the ones in the time bar !
+        switch (getCurrentPhaseNumber()) {
+            case 1:
+                return "Initiation";
+            case 2:
+                return "Planning";
+            case 3:
+                return "Execution";
+            case 4:
+                return "Closing";
+        }
+    }
+
+    function getCurrentPeriodFullName() {
+        return getCurrentPhaseName() + "." + getCurrentPeriod().getValue(self);
     }
 
     return {
+        getCurrentPeriodFullName: function() {
+            return getCurrentPeriodFullName();
+        },
         getActiveTasks: function() {
             return getActiveTasks();
         },
@@ -1094,5 +1077,4 @@ var PMGSimulation = (function() {
             runSimulation();
         }
     };
-
 }());
