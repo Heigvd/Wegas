@@ -62,6 +62,38 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
      * ResourceDescriptor mapper
      */
     persistence.ResourceDescriptor = Y.Base.create("ResourceDescriptor", persistence.VariableDescriptor, [], {
+        isFirstPriority: function(taskDescriptor) {
+            var assignments = this.getInstance().get("assignments");
+            return assignments.length > 0 && assignments[0].get('taskDescriptorId') === taskDescriptor.get("id");
+        },
+        isReservedToWork: function() {
+            var autoReserve = Wegas.Facade.Variable.cache.find("name", "autoReservation").get("value"),
+                currentPeriod = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase3").getInstance().get("value"),
+                occupations = this.getInstance().get("occupations");
+            
+            if (autoReserve) {
+                // Auto Reservation : resource is always reserved unless
+                // an uneditable occupation exist
+                for (var oi = 0; oi < occupations.length; oi++) {
+                    if (occupations[oi].get("time") === currentPeriod && !occupations[oi].get("editable")) {
+                        return false;
+                    }
+                }
+                return true;
+            } else {
+                // Manual Reservation: never reserved unless 
+                // editable occupation
+                for (var oi = 0; oi < occupations.length; oi++) {
+                    if (occupations[oi].get("time") === currentPeriod && occupations[oi].get("editable")) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        },
+        isPlannedForCurrentPeriod: function(taskDescriptor) {
+            return this.isFirstPriority(taskDescriptor) && this.isReservedToWork();
+        },
         getConfidence: function() {
             return this.getInstance().get("confidence");
         }
