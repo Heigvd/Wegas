@@ -18,7 +18,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
             object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
             requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
-            assignedRessource: micro.compile('<% var gras=false, currentPeriode = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase3").getInstance().get("value"); for(var i = 0; i < this.length; i+=1){ gras=false; var occupations = this[i].ressourceInstance.get("occupations"); for(var oi = 0; oi<occupations.length; oi++) { if(occupations[oi].get("time")==currentPeriode && occupations[oi].get("editable")){gras=true; break;}} for (var j in this[i].ressourceInstance.get("skillsets")){ if (gras) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
+            assignedResource: micro.compile('<% var bold=false; for(var i = 0; i < this.length; i+=1){ bold = this[i].ressourceDescriptor.isPlannedForCurrentPeriod(this[i].taskDescriptor); for (var j in this[i].ressourceInstance.get("skillsets")){ if (bold) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
         };
 
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
@@ -141,8 +141,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         assignedRessources: function() {
             return function(o) {
-                var assignedRessources = o.data.descriptor.findAssociatedRessources("assignments"),
-                    data = TEMPLATES.assignedRessource(assignedRessources);
+                var assignedResources = o.data.descriptor.findAssociatedRessources("assignments"),
+                    data = TEMPLATES.assignedResource(assignedResources);
                 if (!data) {
                     data = " - ";
                 }
