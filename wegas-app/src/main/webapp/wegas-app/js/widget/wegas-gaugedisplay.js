@@ -23,9 +23,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
      * @description Manage a canevas gauge based on a instance's value
      */
     GaugeDisplay = Y.Base.create("wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.GaugeDisplay#
-         */
+        /** @lends Y.Wegas.GaugeDisplay# */
         // *** Private fields *** //
         /**
          * Content box of this widget, static
@@ -339,6 +337,5 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             }
         }
     });
-
     Y.Wegas.GaugeDisplay = GaugeDisplay;
 });

@@ -94,6 +94,27 @@ body{
     left: 0;
     right: 0;
     z-index: 10;
+    overflow: hidden;
+}
+
+.wegas-loading-overlay:after {
+    content: "A long-running process has been\a detected. Please wait....";
+    font-style: italic;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: 1.8em;
+    margin-left: -7.7em;
+    font-size: .8em;
+    white-space: pre;
+    text-align: center;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s ease-in-out;
+    -moz-transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
+}
+.wegas-loading-overlay.wegas-loading-long:after {
+    opacity: 1;
 }
 /* Wegas loading (a different way of displaying a loading, as a background */
 .wegas-loading-div {

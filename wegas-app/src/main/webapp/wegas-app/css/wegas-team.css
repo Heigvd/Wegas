@@ -65,11 +65,11 @@
 }
 .wegas-gameinformation .title {
     font-size: 1.3em;
-    margin-top: 0.3em;
+    margin: 0.5em 0 0em;
     font-weight: bolder;
 }
 .wegas-gameinformation .gametitle {
-    margin-bottom: 2px;
+    margin-bottom: .3em;
     font-size: 1.1em;
     color: grey;
     font-weight: bold;

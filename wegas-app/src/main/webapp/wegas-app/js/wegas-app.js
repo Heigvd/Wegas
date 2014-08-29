@@ -109,12 +109,16 @@ YUI.add('wegas-app', function(Y) {
             // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
                 var body = Y.one("body");
-                body.on("key", function() {                                     // Add shortcut to activate developper mode
+                body.on("key", function() {                                     // Add shortcut to activate developper mode on key '°' pressed
                     body.toggleClass("wegas-stdmode")                           // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y;                                         // Allow access to Y instance
-                }, "167", this);                                                // on key '°' pressed
-            }, this);
+                    if (!this.audio) {                                          // Mexican guy
+                        this.audio = new Audio(this.get("base") + "wegas-app/images/wegas-mexican.mp3");
+                        this.audio.play();
+                    }
+                }, "167", this);
+            });
         },
         /**
          * Destructor methods.

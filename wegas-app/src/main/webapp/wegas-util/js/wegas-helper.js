@@ -128,7 +128,7 @@ YUI.add('wegas-helper', function(Y) {
          * @argument {Number} timestamp
          * @return {String} The formatted time
          */
-        smartDate: function(timestamp) {
+        smartDate: function(timestamp, prefix) {
             var date = new Date(timestamp),
                 now = new Date(),
                 diffN = now.getTime() - timestamp,
@@ -148,13 +148,12 @@ YUI.add('wegas-helper', function(Y) {
                 return  Math.round(diffN / oneMinute) + " minutes ago";
             } else if (diffN < oneDay
                 && now.getDay() === date.getDay()) {                            // Today
-                return Helper.formatDate(timestamp, "%H:%i");
+                return (prefix ? "at ": "") + Helper.formatDate(timestamp, "%H:%i");
             } else if (date.getYear() === now.getYear()) {                      // This year
-                return Helper.formatDate(timestamp, "%d %M");
+                return (prefix ? "the ": "") + Helper.formatDate(timestamp, "%d %M");
             } else {                                                             // Older
-                return Helper.formatDate(timestamp, "%d %M %Y");
+                return (prefix ? "the ": "") + Helper.formatDate(timestamp, "%d %M %Y");
             }
-
         },
         /**
          * Java hashCode implementation
