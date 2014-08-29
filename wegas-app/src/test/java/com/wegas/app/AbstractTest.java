@@ -46,12 +46,8 @@ public abstract class AbstractTest {
         this.createGameModelFromFileWithScript(gameModelPath);
     }
 
-    protected final void createGameModelFromFileWithScript(String path, String... injectScriptsPath) throws IOException {
-        String pmg = TestHelper.readFile(path);
-        GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
-
-        //for (int i = 0; i < injectScriptsPath.length; i++){
-        for (String injectScriptPath : injectScriptsPath) {
+    protected final void createGameModelWithScript(GameModel gameModel, String... injectScriptsPath) throws IOException {
+        for (String injectScriptPath : injectScriptsPath){
             String injectScript = TestHelper.readFile(injectScriptPath);
 
             if (injectScript == null) {
@@ -66,6 +62,12 @@ public abstract class AbstractTest {
 
         this.gm = gameModel;
         player = gm.getPlayers().get(0);
+    }
+
+    protected final void createGameModelFromFileWithScript(String path, String... injectScriptsPath) throws IOException {
+        String pmg = TestHelper.readFile(path);
+        GameModel gameModel = JacksonMapperProvider.getMapper().readValue(pmg, GameModel.class);
+        this.createGameModelWithScript(gameModel, injectScriptsPath);
     }
 
     protected void cleanData() {

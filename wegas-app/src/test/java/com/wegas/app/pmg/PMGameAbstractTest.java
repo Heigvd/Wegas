@@ -8,7 +8,6 @@
 package com.wegas.app.pmg;
 
 import com.wegas.app.AbstractEJBContainerTest;
-import com.wegas.app.TestHelper;
 import java.io.IOException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;

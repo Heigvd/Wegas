@@ -25,7 +25,7 @@ public class LanguageTest extends PMGameAbstractTest {
     protected String getGameModelPath() {
         return "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-simplePmg.json";
     }
-
+    
     @Override
     protected String getScriptTestPath() {
         return "test-scripts/wegas-pmg-server-test-language.js";
