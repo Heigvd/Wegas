@@ -55,11 +55,11 @@
                     }]
             }, {
                 "type": "Template",
-                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'), phase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').get('value'); if (phase != 3) {maxVal = this.value} else if (this.value >= exec) { maxVal = this.value; maxVal++} else { maxVal = exec} %><% for(var i=+this.minValue; i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
+                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.value >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
                 "cssClass": "pmg-period",
                 "data": {},
                 "variable": {
-                    "content": "Variable.find('currentPeriod').item(currentPhase.value-1)"
+                    "content": "Variable.find('currentPhase')"
                 },
                 "plugins": [{
                         "fn": "CSSPosition",
@@ -87,7 +87,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPhase').item(phase);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && comp >= 100);",
+                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase - 1);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Variable.find(gameModel, 'projectCompleteness').getValue(self) >= 100);",
                                 "language": "JavaScript"
                             },
                             "attribute": "cssClass",
