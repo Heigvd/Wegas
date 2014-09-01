@@ -34,4 +34,5 @@
 *.ico binary
 *.woff binary
 *.ttf binary
+*.mp3 binary
 
