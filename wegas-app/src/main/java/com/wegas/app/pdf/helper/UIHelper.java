@@ -23,9 +23,8 @@ import javax.faces.context.ResponseWriter;
  */
 public class UIHelper {
 
-
     public static final String CSS_CLASS_PREFIX = "wegas-pdf-";
-    
+
     public static final String CSS_CLASS_COLUMN = CSS_CLASS_PREFIX + "column";
     public static final String CSS_CLASS_COLUMNS = CSS_CLASS_PREFIX + "columns";
 
@@ -64,6 +63,7 @@ public class UIHelper {
     public static final String TEXT_ACTIVE = "Active";
     public static final String TEXT_CONDITION = "Condition";
     public static final String TEXT_CONTENT = "Content";
+    public static final String TEXT_DATE = "Date";
     public static final String TEXT_DEFAULT_RESULT = "Default result";
     public static final String TEXT_DEFAULT_STATE = "Default State";
     public static final String TEXT_DESCRIPTION = "Description";
@@ -89,11 +89,10 @@ public class UIHelper {
     public static final String TEXT_MESSAGE = "Message";
     public static final String TEXT_MAIN_SKILL = "Mail Skill";
     public static final String TEXT_ATTACHEMENTS = "Attachements";
-    
+
     public static final String TEXT_MIN_VALUE = "Max Value";
     public static final String TEXT_MAX_VALUE = "Min Value";
     public static final String TEXT_VALUE = "Value";
-
 
     public static String unescapeAndTrimQuotes(String st) {
         return Helper.unescape(st).replaceAll("^\\s*\"|\"\\s*$", "");
@@ -367,7 +366,7 @@ public class UIHelper {
     public static void printText(FacesContext ctx, ResponseWriter writer, String text, String style) throws IOException {
 
         //if (text == null || text.replace("\\s", "").length() == 0) {
-        if (text == null){
+        if (text == null) {
             text = TEXT_NOT_AVAILABLE;
             style += " " + CSS_CLASS_PROPERTY_VALUE_NA;
         }
@@ -506,25 +505,29 @@ public class UIHelper {
      * @param destination
      * @param from
      * @param subject
+     * @param date
      * @param body
      * @param attachements
      * @throws IOException
      */
     public static void printMessage(FacesContext context, ResponseWriter writer,
-            String destination, String from, String subject, String body,
+            String destination, String from, String subject, String date, String body,
             List<String> attachements) throws IOException {
 
         UIHelper.startDiv(writer, CSS_CLASS_MESSAGE_CONTAINER);
 
         UIHelper.printProperty(context, writer, UIHelper.TEXT_FROM, unescapeAndTrimQuotes(from));
         UIHelper.printProperty(context, writer, UIHelper.TEXT_DESTINATION, unescapeAndTrimQuotes(destination));
+        if (date != null  && !date.isEmpty()) {
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DATE, unescapeAndTrimQuotes(date));
+        }
         UIHelper.printProperty(context, writer, UIHelper.TEXT_SUBJECT, unescapeAndTrimQuotes(subject));
 
         if (attachements != null) {
             UIHelper.printProperty(context, writer, UIHelper.TEXT_ATTACHEMENTS, attachements.toString());
         }
 
-        UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);// ODO do something else to not print PropertyTextArea Key than kes = " "...
+        UIHelper.printPropertyTextArea(context, writer, " ", unescapeAndTrimQuotes(body), false, true);// TODO do something else to not print PropertyTextArea Key than key = " "...
 
         UIHelper.endDiv(writer);
     }
