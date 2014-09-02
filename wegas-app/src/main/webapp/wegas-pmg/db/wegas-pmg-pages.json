@@ -769,21 +769,6 @@
         "children": [{
                 "type": "PmgResourcesPanels",
                 "cssClass": "resources-page"
-            }, {
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [{
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('employees')"
-                            },
-                            "outputType": "html"
-                        }
-                    }],
-                "data": {}
             }]
     },
     "6": {
