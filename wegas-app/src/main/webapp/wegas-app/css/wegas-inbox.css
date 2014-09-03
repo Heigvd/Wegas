@@ -24,14 +24,27 @@
 .yui3-skin-sam .wegas-inbox .unread {
     font-weight: bolder;
 }
+.yui3-skin-sam .wegas-inbox .msg-subject {
+    /* float: left; */
+    /* word-break: break-word; */
+    /* width: 90%; */
+    /* background-color: pink; */
+    max-width: 85%;
+    /* word-wrap: normal; */
+}
+.yui3-skin-sam .wegas-inbox .msg-date {
+    float: right;
+    /* width: 20%; */
+    max-width: 15%;
+    /* background-color: rgb(26, 26, 172); */
+}
 .yui3-skin-sam .wegas-inbox .msg-from,
 .yui3-skin-sam .wegas-inbox .msg-attachement {
     color: #757575;
-    font-style: italic;
+    /* font-style: italic; */
 }
 .yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-from:before {
-    content: "From "
-}
+    content: "From: ";}
 .yui3-skin-sam .wegas-inbox .msg-header-inbox .msg-attachement:before {
     content: "Attachements "
 }

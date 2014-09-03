@@ -178,7 +178,8 @@ public class ScriptFacade implements Serializable {
         String root = currentPath.substring(0, index);
 
         String[] files = new String[0];
-        if (evt.getPlayer().getGameModel().getProperties().getScriptUri() != null) { //@TODO : precompile? cache ?
+        String scriptURI = evt.getPlayer().getGameModel().getProperties().getScriptUri();
+        if (scriptURI != null && ! scriptURI.equals("")){
             files = evt.getPlayer().getGameModel().getProperties().getScriptUri().split(";");
         }
 

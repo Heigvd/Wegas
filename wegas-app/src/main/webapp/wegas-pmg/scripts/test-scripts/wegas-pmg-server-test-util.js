@@ -25,9 +25,9 @@ var resourceFacade,
  */
 function getVariableDescriptor(name) {
     var vd;
-    try{
+    try {
         vd = Variable.findByName(gameModel, name);
-    } catch (e){
+    } catch (e) {
         vd = null;
     }
     assertNotNull(vd, name, "not found");
@@ -48,20 +48,20 @@ function assertEquals(expected, found, msg) {
     }
 }
 
-function checkChoiceHasBeenSelected(choice){
-    assertEquals(true, choice.hasBeenSelected(self), 
-                 choice.getQuestion().getLabel() 
-                 + " ==> " + choice.getLabel() + " has not been selected");
+function checkChoiceHasBeenSelected(choice) {
+    assertEquals(true, choice.hasBeenSelected(self),
+        choice.getQuestion().getLabel()
+        + " ==> " + choice.getLabel() + " has not been selected");
 }
 
-function checkProperty(vd, property, expected, callee){
-    assertEquals(expected, vd.instance.getProperty(property), 
-    callee + ": " + vd.getLabel() + " " + property + " does not match");
+function checkProperty(vd, property, expected, callee) {
+    assertEquals(expected, vd.instance.getProperty(property),
+        callee + ": " + vd.getLabel() + " " + property + " does not match");
 }
 
-function checkDescriptorProperty(vd, property, expected, callee){
-    assertEquals(expected, vd.getProperty(property), 
-    callee + ": " + vd.getLabel() + " " + property + " does not match");
+function checkDescriptorProperty(vd, property, expected, callee) {
+    assertEquals(expected, vd.getProperty(property),
+        callee + ": " + vd.getLabel() + " " + property + " does not match");
 }
 
 function loadResourceFacade() {
@@ -88,9 +88,9 @@ function loadQuestionFacade() {
 function selectChoice(choice) {
     debug("select choice");
     loadQuestionFacade();
-    if (choice.getClass().toString() == "class com.wegas.mcq.persistence.ChoiceDescriptor" || 
-        choice.getClass().toString() == "class com.wegas.mcq.persistence.SingleResultChoiceDescriptor"){
-            questionFacade.selectAndValidateChoiceTEST(choice.id, self.id);
+    if (choice.getClass().toString() == "class com.wegas.mcq.persistence.ChoiceDescriptor" ||
+        choice.getClass().toString() == "class com.wegas.mcq.persistence.SingleResultChoiceDescriptor") {
+        questionFacade.selectAndValidateChoiceTEST(choice.id, self.id);
     } else {
         throw new Error("Given choice \"" + choice + "\" is not a choice");
     }
@@ -103,12 +103,12 @@ function selectChoice(choice) {
  * @returns {undefined}
  */
 function plan(task) {
-    debug ("Plan task " + task);
+    debug("Plan task " + task);
     loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
         resourceFacade.addTaskPlannification(self.id, task.instance.id, arguments[i]);
     }
-    debug ("Plan task: DONE");
+    debug("Plan task: DONE");
 }
 
 /**
@@ -119,7 +119,7 @@ function plan(task) {
  * @returns {undefined}
  */
 function assign(resource) {
-    debug ("Assign: " + resource);
+    debug("Assign: " + resource);
     loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
         resourceFacade.assign(resource.instance, arguments[i]);
@@ -127,14 +127,14 @@ function assign(resource) {
     debug("Assign: DONE");
 }
 
-function clearAssignments(resource){
+function clearAssignments(resource) {
     var i, toRemove = [];
     for (i = 0; i < resource.instance.assignments.size(); i++) {
         toRemove.push(resource.instance.assignments.get(i));
     }
 
     Y.Array.each(toRemove, function(a) {
-        removeAssignment(resource.instance, a);
+        resource.instance.assignments.remove(a);
     });
 }
 
@@ -145,12 +145,12 @@ function clearAssignments(resource){
  * @returns {undefined}
  */
 function reserve(resource) {
-    debug ("Reserve: " + resource);
+    debug("Reserve: " + resource);
     loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
         resourceFacade.reserve(resource.instance, arguments[i]);
     }
-    debug ("reserve: DONE");
+    debug("reserve: DONE");
 }
 
 /**
@@ -173,8 +173,7 @@ function doNextPeriod(times) {
  * @param {timestamp} since 
  * @returns {undefined}
  */
-function printDuration(msg, since){
+function printDuration(msg, since) {
     var d = Date.now() - since;
-    debug (msg + ": " + d + " [ms]" );
+    debug(msg + ": " + d + " [ms]");
 }
-

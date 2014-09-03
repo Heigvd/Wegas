@@ -2647,7 +2647,7 @@
         "cssUri": "wegas-pmg/css/wegas-pmg.css",
         "websocket": "",
         "clientScriptUri": "wegas-pmg/js/wegas-pmg-loader.js",
-        "scriptUri": "wegas-pmg/scripts/server-scripts/",
+        "scriptUri": "wegas-pmg/scripts/server-scripts/;wegas-pmg/scripts/test-scripts/wegas-pmg-server-test-util.js;wegas-pmg/scripts/test-scripts/wegas-pmg-server-test-simplepmg.js",
         "imageUri": "",
         "iconUri": ""
     },
