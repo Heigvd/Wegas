@@ -474,34 +474,75 @@ Y.mix(persistence.ResourceDescriptor.prototype, {
     }
 });
 
-Y.mix(Y.inputEx.Wegas.VariableDescriptorStatement.prototype.GLOBALMETHODS, {
-    "PMGHelper.sendMessage": {
-        label: "Send Message",
-        className: "wegas-method-sendmessage",
-        "arguments": [
-            {
-                type: "string",
-                label: "From",
-                scriptType: "string"
-            }, {
-                type: "string",
-                label: "Subject",
-                scriptType: "string",
-                required: true
-            }, {
-                type: "html",
-                label: "Body",
-                scriptType: "string",
-                required: true
-            }, {
-                type: "list",
-                label: "",
-                scriptType: "string",
-                elementType: {
-                    type: "wegasurl",
-                    label: "",
+Y.use("wegas-inputex-variabledescriptorselect", function(){
+    Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
+        "PMGHelper.sendMessage": {
+            label: "[PMG] Send Message",
+            className: "wegas-method-sendmessage",
+            "arguments": [
+                {
+                    type: "string",
+                    label: "From",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "Subject",
+                    scriptType: "string",
                     required: true
-                }
+                }, {
+                    type: "html",
+                    label: "Body",
+                    scriptType: "string",
+                    required: true
+                }, {
+                    type: "list",
+                    label: "",
+                    scriptType: "string",
+                    elementType: {
+                        type: "wegasurl",
+                        label: "",
+                        required: true
+                    }
+                }]
+        }/*,
+    "PMGHelper.addImpactDuration" : {   // currently not working waiting for a new server deploy
+           label:"[PMG] impact reverse",
+           "arguments":[{
+                type: "string",
+                typeInvite: "factor",
+                scriptType: "string",
+                required: true
+            },{
+                type: "string",
+                typeInvite: "task name",
+                scriptType: "string",
+                required: true
+            },{
+                type: "number",
+                typeInvite: "in period",
+                scriptType: "number",
+                required: true
+            },{
+                type: "number",
+                typeInvite: "value",
+                scriptType: "number",
+                required: true
             }]
-    }
+        }*/
+    });
 });
+
+/*
+Y.use("wegas-inputex-variabledescriptorselect", function(){
+    Y.mix(Y.inputEx.getFieldClass("condition").prototype.GLOBALMETHODS, {
+        "PMGHelper.workingOnProject": {
+            label: "2 [PMG] is working on project",
+            "arguments" : [{
+                type: "variabledescriptorselect",
+                scriptType: "ResourceDescriptor",
+                classFilter: "ResourceDescriptor",
+                required: true
+            }]
+        }
+    });
+});*/
