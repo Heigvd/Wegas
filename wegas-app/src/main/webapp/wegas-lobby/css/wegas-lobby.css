@@ -178,6 +178,11 @@
     height: 16px;
 }
 
+/* Edit game's scenario tab */
+.wegas-stdmode .wegas-lobby-parentgamemodeltab .editor-form-gamemodel-name {
+    display: none;
+}
+
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper {
     float: left;

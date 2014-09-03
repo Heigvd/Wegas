@@ -529,7 +529,7 @@ YUI().use(function(Y) {
             },
             "wegas-editor-form": {
                 path: "js/widget/wegas-editor-form-min.js",
-                ws_provides: "EditEntityForm"
+                ws_provides: ["EditEntityForm", "EditParentGameModelForm"]
             },
             "wegas-editor-widgetaction": {
                 path: "js/plugin/wegas-editor-widgetaction-min.js",

@@ -181,9 +181,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Render the treeview
-            this.treeView.addTarget(this);
-            this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
+            })                                                                 // Render the treeview
+                .addTarget(this)
+                .render(this.get(CONTENTBOX).one(".treeview"));
 
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);

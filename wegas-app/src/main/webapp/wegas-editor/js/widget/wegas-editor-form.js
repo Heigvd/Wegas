@@ -220,30 +220,6 @@ YUI.add('wegas-editor-form', function(Y) {
         showUpdateForm: function(entity) {
             this.set("value", entity.toObject());                               // Set the form value of the form,
             this.set("cfg", this.get("cfg") || entity.getFormCfg());            // and then its fields
-
-            // Add entity menu items to toolbar
-            //var menuItems = entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
-            ////var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1), function(i) {
-            ////    return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-            ////});                                                               // Retrieve menu and remove the first item
-            //
-            //Y.Array.each(menuItems, function(i) {                               // @hack Add icons to some buttons
-            //    switch (i.label) {
-            //        case "Delete":
-            //        case "New":
-            //        case "New element":
-            //        case "Copy":
-            //        case "View":
-            //        case "Open in editor":
-            //        case "Open":
-            //        case "Edit":
-            //            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-            //    }
-            //});
-            //Y.soon(Y.bind(function() {
-            //    this.get("parent").get("parent").get("parent").get("parent").toolbar.add(menuItems);
-            //    this.get("parent").toolbar.add(menuItems);                          // Add menu items to the form
-            //}, this));
         },
         save: function() {
             if (!this.form.validate()) {
@@ -276,4 +252,35 @@ YUI.add('wegas-editor-form', function(Y) {
         }
     });
     Wegas.EditEntityForm = EditEntityForm;
+
+    /**
+     * 
+     */
+    Wegas.EditParentGameModelForm = Y.Base.create("wegas-form", EditEntityForm, [], {
+        showUpdateForm: function(entity) {
+            Y.later(100, this, function() {                                      // @hack Minor optim, since the parent tab is always unselected by default...
+                Wegas.EditParentGameModelForm.superclass.showUpdateForm.call(this, entity.get("gameModel"));// Display the game model edit form instead of the game's
+            });
+        },
+        save: function() {
+            if (!this.form.validate()) {
+                return;
+            }
+
+            Wegas.Facade.GameModel.cache.put(this.get("value"), {
+                cfg: {
+                    updateCache: false
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        this.showMessageBis("success", "All changes saved");
+                        this.get("entity").set("gameModelName", e.response.entity.get("name"));// @hack update the source event
+                        this.get("dataSource").fire("update");                  // and trigger the update event manually
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
+        }
+    });
+
 });

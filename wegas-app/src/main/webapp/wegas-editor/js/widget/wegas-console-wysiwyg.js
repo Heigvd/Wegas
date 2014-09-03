@@ -218,8 +218,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
+            for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         }
