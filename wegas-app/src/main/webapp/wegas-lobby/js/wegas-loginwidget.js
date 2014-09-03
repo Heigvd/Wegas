@@ -132,7 +132,7 @@ YUI.add('wegas-loginwidget', function(Y) {
 
                     content.push('<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">' + g.get("gameModelName") + '</span>'
-                        + '<span class="description">' + g.get("description") + '</span>'
+                        + '<span class="description">' + g.get("gameModel").get("description") + '</span>'
                         + '<span class="links"><a href="game.html?token=' + g.get("token") + '&al=true">Start playing</a> '
                         + add
                         + "</span></span>"
