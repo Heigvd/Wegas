@@ -54,8 +54,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                             return role.get("val");
                         }, this);
 
-                        this.messageDiv = Y.Node.create('<div class="wegas-smallmessage">No rights added yet</div>');
-                        this.get(CONTENTBOX).append(this.messageDiv);
+                        this.get(CONTENTBOX).append('<div class="wegas-smallmessage">No rights added yet</div>');
 
                         this.permsField = new PermissionList({
                             //listLabel: 'Websites',
@@ -78,9 +77,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             });
         },
         destructor: function() {
-            if (this.permsField) {
-                this.permsField.destroy();
-            }
+            this.permsField && this.permsField.destroy();
         },
         sync: function() {
             var list = this.permsField.getRoleIds();
@@ -95,11 +92,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                 });
             });
 
-            if (this.permsField.subFields.length < 1) {
-                this.messageDiv.show();
-            } else {
-                this.messageDiv.hide();
-            }
+            this.get(CONTENTBOX).one(".wegas-smallmessage").toggleView(this.permsField.subFields.length < 1);
         }
     }, {
         /** @lends Y.Wegas.RolePermissionList */
@@ -227,7 +220,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
         }
 
     });
-    inputEx.registerType("permissionsselect", inputEx.Wegas.PermissionSelect);  // Register this class as "wegasurl" type
+    inputEx.registerType("permissionsselect", inputEx.Wegas.PermissionSelect);  // Register this class as "permissionsselect" type
 
     /**
      * @fixme @hack override to receive events.
@@ -274,6 +267,5 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             PermissionList.superclass.onDelete.apply(this, arguments);
         }
     });
-    inputEx.registerType("permissionslist", PermissionList);                    // Register this class as "wegasurl" type
-
+    inputEx.registerType("permissionslist", PermissionList);                    // Register this class as "permissionslist" type
 });

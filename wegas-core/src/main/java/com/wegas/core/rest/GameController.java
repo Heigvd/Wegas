@@ -12,7 +12,6 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
-import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
@@ -275,14 +274,13 @@ public class GameController {
         List<User> users = userFacade.findOrCreate(accounts);
         Game g = null;
         Player p = null;
-        StringBuilder r = new StringBuilder();
-        r.append("The following users are already part of a team in the same game:");
+        StringBuilder r = new StringBuilder("Some users have already joined this game in another team: ");
 
         for (User user : users) {
             try {
                 p = playerFacade.findByGameIdAndUserId(teamFacade.find(teamId).getGame().getId(), user.getId());
                 r.append(" - ").append(user.getName()).append(";");
-            } catch (PersistenceException e) {
+            } catch (NoResultException e) {
                 // Gotcha
             }
         }
