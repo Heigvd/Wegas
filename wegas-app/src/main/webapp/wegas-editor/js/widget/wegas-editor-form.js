@@ -164,13 +164,11 @@ YUI.add('wegas-editor-form', function(Y) {
                 value: 1000
             },
             buttons: {
-                value: [
-                    {
+                value: [{
                         type: "Button",
                         action: "submit",
                         label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save"
-                    }
-                ]
+                    }]
             }
         }
     });
@@ -216,6 +214,13 @@ YUI.add('wegas-editor-form', function(Y) {
             } else {                                                            // Otherwise,
                 this.showUpdateForm(entity);                                    // render the form directy
             }
+
+
+            // @hack allow use of FileLibrary by setting the source
+            if (entity instanceof Wegas.persistence.GameModel
+                || entity instanceof Wegas.persistence.Game) {
+                Wegas.Facade.File.set("source", "rest/GameModel/" + (entity.get("gameModelId") || entity.get("id")) + "/File/");
+            }
         },
         showUpdateForm: function(entity) {
             this.set("value", entity.toObject());                               // Set the form value of the form,
@@ -258,7 +263,7 @@ YUI.add('wegas-editor-form', function(Y) {
      */
     Wegas.EditParentGameModelForm = Y.Base.create("wegas-form", EditEntityForm, [], {
         showUpdateForm: function(entity) {
-            Y.later(100, this, function() {                                      // @hack Minor optim, since the parent tab is always unselected by default...
+            Y.later(100, this, function() {                                     // @hack Minor optim, since the parent tab is always unselected by default...
                 Wegas.EditParentGameModelForm.superclass.showUpdateForm.call(this, entity.get("gameModel"));// Display the game model edit form instead of the game's
             });
         },
@@ -274,7 +279,9 @@ YUI.add('wegas-editor-form', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         this.showMessageBis("success", "All changes saved");
-                        this.get("entity").set("gameModelName", e.response.entity.get("name"));// @hack update the source event
+                        this.get("entity").set("gameModelName", e.response.entity.get("name"))// @hack update the source event
+                            .set("gameModel", e.response.entity)
+                            .set("properties", e.response.entity.get("properties"));
                         this.get("dataSource").fire("update");                  // and trigger the update event manually
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)

@@ -35,7 +35,6 @@ YUI.add('wegas-lobby-button', function(Y) {
                 appendNewFiles: false,
                 multipleFiles: false,
                 withCredentials: false,
-                //dragAndDropArea: cb,
                 //dragAndDropArea: cb.ancestor(".wegas-lobby-datatable"),
                 fileFilters: [{description: "Json", extensions: "*.json"}],
                 uploadURL: Wegas.app.get("base") + "rest/GameModel/",
@@ -57,26 +56,23 @@ YUI.add('wegas-lobby-button', function(Y) {
             this.uploader.on(["dragenter", "dragover"], function() {
                 cb.ancestor(".wegas-lobby-datatable").addClass("wegas-dragover");
             });
-            this.uploader.on(["dragleave", "drop"], function(e) {
+            this.uploader.on(["dragleave", "drop"], function() {
                 cb.ancestor(".wegas-lobby-datatable").removeClass("wegas-dragover");
             });
             this.uploader.on("uploadcomplete", function(e) {
-                this.hideOverlay();
-                this.uploader.set("enabled", true);
-                this.uploader.set("fileList", []);
+                this.uploader.set("enabled", true).set("fileList", []);
                 try {
                     Wegas.Facade.GameModel.cache._beforeDefDataFn(e);
                 } catch (e) {
                     this.showMessageBis("success", "Error creating scenario");
                     return;
                 }
-                this.showMessageBis("success", "Scenario imported");
+                this.hideOverlay().showMessageBis("success", "Scenario imported");
             }, this);
             this.uploader.on("uploaderror", function() {
-                this.hideOverlay();
-                this.uploader.set("enabled", true);
-                this.uploader.set("fileList", []);
-                this.showMessageBis("error", "Error creating scenario");
+                this.hideOverlay().showMessageBis("error", "Error creating scenario");
+                this.uploader.set("enabled", true).set("fileList", []);
+                this.uploader.queue = null;                                     // @hack Otherwise file upload doesnt work after an error
             }, this);
             // this.uploader.on("alluploadscomplete", function() {}, this);
         },

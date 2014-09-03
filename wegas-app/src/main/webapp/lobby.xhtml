@@ -68,6 +68,12 @@
                                             currentUserId: #{requestController.currentUser.id}
                                         }
                                     }]
+                            },
+                            File: {
+                                //source: "rest/GameModel/0/File/",
+                                plugins: [{
+                                        fn: "JSONSchema"
+                                    }]
                             }
                         }
                     });

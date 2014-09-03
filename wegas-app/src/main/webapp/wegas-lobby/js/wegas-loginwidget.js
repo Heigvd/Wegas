@@ -129,7 +129,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                                 + '</a>';
                             break;
                     }
-
+                    var imageUri = Y.Plugin.Injector.getImageUri(g.get("properties.imageUri"), g.get("gameModelId"));
                     content.push('<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">' + g.get("gameModelName") + '</span>'
                         + '<span class="description">' + g.get("gameModel").get("description") + '</span>'
@@ -137,7 +137,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         + add
                         + "</span></span>"
                         + '<span class="image"><span class="image-offset">'
-                        + '<img src="' + (g.get("properties.imageUri") || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
+                        + '<img src="' + (imageUri || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
                 });
                 content.push('</ul></div>');
                 cb.one(".main.left").setContent(content.join(""));

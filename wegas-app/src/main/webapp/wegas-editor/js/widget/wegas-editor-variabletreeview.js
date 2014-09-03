@@ -84,13 +84,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genTreeViewElement: function(entity) {
-            var children,
-                elClass = entity.get(CLASS),
+            var children, elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
                 text = entity.getEditorLabel(), /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
-                tooltip = null;
-            //tooltip = "Type: " + entity.getType().replace("Descriptor", "");
+                tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel();
 
             if (entity.get("items")) {
                 collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
