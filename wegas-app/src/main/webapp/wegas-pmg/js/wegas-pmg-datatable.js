@@ -38,11 +38,11 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 // Add specific getter for deep properties
                 if (ct[i].key && ct[i].key.indexOf(".") >= 0) {
                     // Key with points issue... 
-                    ct[i].key = ct[i].key.replace(/\./g, "_");  // @hack replace '.' by '_'
+                    ct[i].key = ct[i].key.replace(/\./g, "%");  // @hack replace '.' by '%'
 
                     recordTypes[ct[i].key] = {getter: function(i, key) {
                             var v = this, k,
-                                keys = key.split("_");
+                                keys = key.split("%");
 
                             // Fetch the value TODO/@fixme more consise way ?
                             for (k in keys) {
