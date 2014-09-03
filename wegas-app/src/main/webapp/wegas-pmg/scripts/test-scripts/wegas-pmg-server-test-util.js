@@ -166,6 +166,10 @@ function doNextPeriod(times) {
     }
 }
 
+function nextPeriod() {
+    PMGSimulation.nextPeriod();
+}
+
 
 /**
  * Println the time (in [ms]) elasped since the given param
@@ -176,4 +180,11 @@ function doNextPeriod(times) {
 function printDuration(msg, since) {
     var d = Date.now() - since;
     debug(msg + ": " + d + " [ms]");
+}
+
+
+function addPredecessor(descName, listPredName) {
+    Y.Array.each(listPredName, function(predName) {
+        Variable.findByName(gameModel, descName).predecessors.add(Variable.findByName(gameModel, predName));
+    });
 }

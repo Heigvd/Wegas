@@ -108,7 +108,7 @@
                             "onClick": {
                                 "@class": "Script",
                                 "language": "JavaScript",
-                                "content": "nextPeriod()"
+                                "content": "PMGSimulation.nextPeriod()"
                             },
                             "targetEvent": "click"
                         }

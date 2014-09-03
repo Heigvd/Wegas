@@ -10229,7 +10229,7 @@
                                     "index": 0,
                                     "triggerCondition": {
                                         "@class": "Script",
-                                        "content": "VariableDescriptorFacade.find(gameModel, \"currentPhase\").getValue(self)===3 && workOnProject(Variable.find(gameModel, \"Urs\").getInstance(self))===true",
+                                        "content": "VariableDescriptorFacade.find(gameModel, \"currentPhase\").getValue(self)===3 && PmgHelper.workOnProject(Variable.find(gameModel, \"Urs\"))===true",
                                         "language": "JavaScript"
                                     },
                                     "preStateImpact": null,
@@ -10254,7 +10254,7 @@
                                     "index": 0,
                                     "triggerCondition": {
                                         "@class": "Script",
-                                        "content": "VariableDescriptorFacade.find(gameModel, \"currentPhase\").getValue(self)===3 && workOnProject(Variable.find(gameModel, \"Urs\").getInstance(self))===true",
+                                        "content": "VariableDescriptorFacade.find(gameModel, \"currentPhase\").getValue(self)===3 && PMGHelper.workOnProject(Variable.find(gameModel, \"Urs\"))===true",
                                         "language": "JavaScript"
                                     },
                                     "preStateImpact": null,

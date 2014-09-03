@@ -6,10 +6,15 @@
  * Licensed under the MIT License
  */
 /**
+ * Contaims utiliy functions that are not linked to the PMG
+ * 
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 importPackage(javax.naming);
+
+var DEBUGMODE = false;
+
 /**
  * get the specified wegas bean.
  * @param String name, the name of the bean
@@ -141,8 +146,16 @@ function flattenList(list, finalList) {
  */
 function debug(msg) {
     if (DEBUGMODE) {
-        println(msg);
-        RequestManager.sendCustomEvent("debug", msg);
+        printMessage(msg);
     }
 }
 
+/**
+ * Print a console msg if in debug mode
+ * 
+ * @param {String} msg
+ */
+function printMessage(msg) {
+    println(msg);
+    RequestManager.sendCustomEvent("debug", msg);
+}
