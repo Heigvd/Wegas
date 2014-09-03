@@ -168,11 +168,11 @@ YUI.add("wegas-entity", function(Y) {
                         }, {
                             name: "imageUri",
                             label: "Thumbnail",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                            type: "wegasurl"
                         }, {
                             name: "iconUri",
                             label: "Icon",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                            type: "wegasurl"
                         }, {
                             name: "scriptUri",
                             label: "Server scripts",
