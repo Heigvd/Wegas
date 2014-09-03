@@ -183,7 +183,21 @@ YUI.add('wegas-cssstyles', function(Y) {
                                 name: "right"
                             }, {
                                 name: "bottom"
+                            }, {
+                                type: "select",
+                                name: "overflow",
+                                choices: ["visible" , "hidden" , "scroll" , "auto" , "inherit"]
+                            }, {
+                                type: "select",
+                                name: "overflow-x",
+                                choices: ["visible" , "hidden" , "scroll" , "auto" , "inherit"]
+                            }, {
+                                type: "select",
+                                name: "overflow-y",
+                                choices: ["visible" , "hidden" , "scroll" , "auto" , "inherit"]
                             }
+                            
+                            
                             //{
                             //    name: "backgroundColor",
                             //    type: "colorpicker",

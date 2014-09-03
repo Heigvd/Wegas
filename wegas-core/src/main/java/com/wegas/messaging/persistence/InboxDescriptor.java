@@ -76,12 +76,46 @@ public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
      * @param from
      * @param subject
      * @param body
+     * @param date
+     * @return {
+     * @see Message} The sent message
+     */
+    public Message sendDatedMessage(Player p, String from, String date, String subject, String body) {
+        return this.getInstance(p).sendMessage(from, subject, body, date);
+    }
+
+
+    /**
+     *
+     * Sugar to be used from scripts.
+     *
+     * @param p
+     * @param from
+     * @param subject
+     * @param body
      * @param attachements 
     * @return {@link Message} the sent message
      */
     public Message sendMessage(Player p, String from, String subject, String body, List<String> attachements) {
         return this.getInstance(p).sendMessage(from, subject, body, attachements);
     }
+
+    /**
+     *
+     * Sugar to be used from scripts.
+     *
+     * @param p
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param attachements 
+    * @return {@link Message} the sent message
+     */
+    public Message sendDatedMessage(Player p, String from, String date, String subject, String body, List<String> attachements) {
+        return this.getInstance(p).sendMessage(from, subject, body, date, attachements);
+    }
+
 
     /**
      *

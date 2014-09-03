@@ -59,7 +59,7 @@ YUI.add('wegas-app', function(Y) {
         render: function() {
 
             // Add loading animation (done without YUI cause node module is not available yet)
-            document.body.innerHTML += "<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>";
+         //   document.body.innerHTML += "<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>";
 
             var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), //                       // Data sources cfg objects
