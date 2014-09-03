@@ -37,6 +37,11 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
             }, this);
         },
         syncUI: function() {
+            if (!Y.one(".wegas-role-administrator")) {                          // @hack do not send request for non-admins
+                this.get("parent").hide();
+                Y.later(20, this.get("parent"), this.get("parent").destroy);
+                return;
+            }
             if (this.permsField) {
                 this.permsField.destroy();
             }
