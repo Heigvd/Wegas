@@ -1,5 +1,4 @@
 {
-    "id": 2003,
     "type": "ResizableLayout",
     "top": {
         "children": [{
@@ -162,6 +161,7 @@
                                                                         "plugins": [{
                                                                                 "fn": "OpenTabAction",
                                                                                 "cfg": {
+                                                                                    "label": "Join",
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{

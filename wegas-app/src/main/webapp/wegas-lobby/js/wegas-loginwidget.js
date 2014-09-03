@@ -55,7 +55,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         <div class='partner'>\n\
                             <a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a>\n\
                           </div>\n\
-                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
+                        <div class='licence'><p>Wegas is an initiative of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
                         <div class='followus'>\n\
                   <a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a>\n\
                             </div>\n\
@@ -81,7 +81,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         return token = p[1];
                     }
                 });
-                cb.one(".main.left").setContent("<h1>Want to test this game ?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
+                cb.one(".main.left").setContent("<h1>Want to test this game?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
                 Wegas.Facade.Game.sendRequest({
                     request: "/FindByToken/" + token,
                     on: {

@@ -58,7 +58,7 @@ YUI.add('wegas-lobby-button', function(Y) {
                 cb.ancestor(".wegas-lobby-datatable").addClass("wegas-dragover");
             });
             this.uploader.on(["dragleave", "drop"], function(e) {
-               // cb.ancestor(".wegas-lobby-datatable").removeClass("wegas-dragover");
+                cb.ancestor(".wegas-lobby-datatable").removeClass("wegas-dragover");
             });
             this.uploader.on("uploadcomplete", function(e) {
                 this.hideOverlay();

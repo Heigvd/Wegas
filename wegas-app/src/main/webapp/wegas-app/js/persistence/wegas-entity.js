@@ -589,15 +589,8 @@ YUI.add("wegas-entity", function(Y) {
                                                 event: "mouseenter",
                                                 children: [{
                                                         type: "PrintButton",
-                                                        label: "Html"
-                                                    }, {
-                                                        type: "PrintButton",
                                                         label: "Html (Players document)",
                                                         mode: "player"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "Pdf",
-                                                        outputType: "pdf"
                                                     }, {
                                                         type: "PrintButton",
                                                         label: "Pdf (Players document)",
@@ -619,7 +612,8 @@ YUI.add("wegas-entity", function(Y) {
                                     targetClass: "Team",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
-                                    type: "Linkwidget"
+                                    type: "Linkwidget",
+                                    cssClass: "wegas-advanced-feature"
                                 }]
                         }
                     }]
