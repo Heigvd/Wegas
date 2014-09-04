@@ -45,12 +45,13 @@ YUI.add('wegas-gameinformation', function(Y) {
             entity: {}
         },
         renderGameInformation: function(game) {
+            var imageUri = Y.Plugin.Injector.getImageUri(game.get("properties.imageUri"), game.get("gameModelId"));
             return '<div>'
-                + (game.get("properties.imageUri") ? '<img src=\"' + game.get("properties.imageUri") + '\" />' : "")
+                + (game.get("properties.imageUri") ? '<img src=\"' + imageUri + '\" />' : "")
                 + '<div class="title">' + game.get("name") + "</div>"
                 + '<div class="gametitle">' + game.get("gameModelName") + "</div>"
                 + '<div class="subtitle">Created by ' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime"), true) + "</div>"
-                + (game.get("description") ? '<div class="description"> ' + game.get("description") + '</div>' : "")
+                + (game.get("gameModel").get("description") ? '<div class="description"> ' + game.get("gameModel").get("description") + '</div>' : "")
                 + '<div style="clear: both"/></div>';
         }
     });

@@ -51,6 +51,8 @@ YUI.add("wegas-inputex-url", function(Y) {
         //    }
         //},
         destructor: function() {
+            this.fileExplorerButton.destroy();
+            this.uploader.destroy();
             if (this.filepanel) {
                 this.fileExplorer.destroy();
                 this.filepanel.destroy();
@@ -64,7 +66,45 @@ YUI.add("wegas-inputex-url", function(Y) {
 
             this.fieldContainer.classList.add("inputEx-wegas-UrlField");
 
-            this.imgButton = new Y.Button({
+            this.uploader = new Y.UploaderHTML5({
+                fileFieldName: "file",
+                selectButtonLabel: "<span class='wegas-icon wegas-icon-newfile'></span>",
+                appendNewFiles: false,
+                multipleFiles: false,
+                withCredentials: false,
+                dragAndDropArea: Y.one(this.fieldContainer).ancestor(".inputEx-fieldWrapper"),
+                uploadURL: Y.Wegas.app.get("base") + Y.Wegas.Facade.File.get("source") + "upload"
+            }).render(this.fieldContainer);
+
+            this.uploader.on("fileselect", function() {
+                Y.Widget.getByNode(this.fieldContainer).showOverlay();
+                this.uploader.uploadAll();
+                this.uploader.set("enabled", false);
+            }, this);
+
+            this.uploader.on(["dragenter", "dragover"], function() {
+                Y.one(this.fieldContainer).one("input").setStyle("background", "#ededed");
+            }, this);
+
+            this.uploader.on(["dragleave", "drop"], function(e) {
+                Y.one(this.fieldContainer).one("input").setStyle("background", "none");
+            }, this);
+
+            this.uploader.on("uploadcomplete", function(e) {
+                this.setValue("/" + e.file.get("name"));
+                Y.Widget.getByNode(this.fieldContainer).hideOverlay();
+                this.uploader.set("enabled", true).set("fileList", []);
+            }, this);
+
+            this.uploader.on("uploaderror", function(e) {
+                Y.Widget.getByNode(this.fieldContainer).hideOverlay()
+                    .showMessageBis("error", e.statusText || "Error uploading file");
+                this.uploader.queue = null;                                     // @hack Otherwise file upload doesnt work after an error
+                this.uploader.set("enabled", true).set("fileList", []);
+            }, this);
+            // this.uploader.on("alluploadscomplete", function() {}, this);
+
+            this.uploadButton = new Y.Button({
                 label: "<span class=\"wegas-icon wegas-icon-fileexplorer\"></span>",
                 on: {
                     click: Y.bind(this.showFileExplorer, this)

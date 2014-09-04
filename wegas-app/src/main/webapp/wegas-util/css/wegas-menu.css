@@ -8,7 +8,7 @@
 .wegas-menu-content li > div{
     cursor:pointer;
     list-style-type: none;
-    padding: 3px 5px 6px;
+    padding: 4px 5px 6px;
 }
 .wegas-menu-content ul{
     position:absolute;

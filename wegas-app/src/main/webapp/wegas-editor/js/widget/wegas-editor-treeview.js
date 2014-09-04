@@ -36,9 +36,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.currentSelection = -1;
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Instantiate treeview
-            this.treeView.addTarget(this);                                      // Listen to treeview's events
-            this.treeView.render(this.get(CONTENTBOX));                         // Render treeview                   
+            }).render(this.get(CONTENTBOX))                                     // Instantiate & render treeview
+                .addTarget(this);                                               // Listen to treeview's events
 
             this.plug(Plugin.EditorTVContextMenu);                              // Open context menu on right click
             this.plug(Plugin.RememberExpandedTreeView);                         // Selected node is preserved across requests
@@ -181,9 +180,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Render the treeview
-            this.treeView.addTarget(this);
-            this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
+            })                                                                 // Render the treeview
+                .addTarget(this)
+                .render(this.get(CONTENTBOX).one(".treeview"));
 
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);

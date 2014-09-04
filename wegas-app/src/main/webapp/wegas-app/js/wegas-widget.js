@@ -86,6 +86,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         hideOverlay: function() {
             this.fire("wegas:hideOverlay");
+            return this;
         },
         /**
          * Display a closable message with a status-image.

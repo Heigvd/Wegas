@@ -10,34 +10,40 @@
  */
 
 /* Override default browser styles and counter YUI's cssreset. */
+html, body {
+    height: 100%;
+}
+body {
+    overflow: hidden;
+}
 select {
     margin: 0;
 }
-strong{
+strong {
     font-weight: 700;
 }
-em{
+em {
     font-style: italic;
 }
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
-h1{
+h1 {
     font-size: 2.2em;
 }
-h2{
+h2 {
     font-size: 1.8em;
 }
-h3{
+h3 {
     font-size: 1.4em;
 }
-h4{
+h4 {
     font-size: 1.3em;
 }
-h5{
+h5 {
     font-size: 1.2em;
 }
-h6{
+h6 {
     font-size: 1.1em;
 }
 input, input[type="text"], input[type="password"] {
@@ -55,35 +61,17 @@ font {
     color: inherit !important;
 }
 
-/* */
-html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
-    height: 100%;
-}
-body{
-    overflow: hidden;
-}
-.wegas-playerview{
-    overflow: auto;
-}
-
-/* DISABLED RULES */
+/* Hidden widgets (.yui3-button-disabled, etc.) */
 [class*="-disabled"]{
     opacity:0.8;
 }
-
-/* HIDDEN RULES */
+/* Hidden widgets (.yui3-button-hidden, etc.) */
 [class*="-hidden"]{
     display: none;
 }
 
-/* Widget */
-/*.wegas-playerview .wegas-widget {
-    overflow: hidden
-}*/
-
 /* Wegas loading (overlay on content) */
 .wegas-loading {
-    /*position: relative;*/
     height: 100%;
 }
 .wegas-loading-overlay {
@@ -96,7 +84,6 @@ body{
     z-index: 10;
     overflow: hidden;
 }
-
 .wegas-loading-overlay:after {
     content: "A long-running process has been\a detected. Please wait....";
     font-style: italic;
@@ -121,7 +108,6 @@ body{
     background: transparent url(../../wegas-app/images/loading.gif) center center no-repeat;
     min-height: 80px;
 }
-
 /* Wegas loading (a different way of displaying a loading, as a :after element */
 .wegas-loading-after:after {
     content: "";
@@ -133,8 +119,7 @@ body{
     right: 0;
     z-index: 1000;
 }
-
-/** App loading */
+/* Wegas App loading */
 .wegas-loading-app {
     position: fixed;
     top: 50%;
@@ -175,7 +160,7 @@ body{
 }
 .wegas-list-content:empty:before,
 .wegas-choicelist-content:empty:before{
-    content:"Empty list"
+    content: "Empty";
 }
 
 /* Progress bar */
@@ -220,6 +205,12 @@ body{
 }
 
 /** Page loader styles */
+.wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
+    height: 100%;
+}
+.wegas-playerview{
+    overflow: auto;
+}
 .wegas-playerview .wegas-pageloader {
     min-height: 50px;
     min-width: 50px;
@@ -233,9 +224,7 @@ body{
     height: inherit;
 }
 
-/*
-* Visibility plugin
-*/
+/* Visibility plugin */
 .timed-hidden-node{
     visibility: hidden;
 }

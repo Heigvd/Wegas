@@ -55,7 +55,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         <div class='partner'>\n\
                             <a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a>\n\
                           </div>\n\
-                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
+                        <div class='licence'><p>Wegas is an initiative of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
                         <div class='followus'>\n\
                   <a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a>\n\
                             </div>\n\
@@ -81,7 +81,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         return token = p[1];
                     }
                 });
-                cb.one(".main.left").setContent("<h1>Want to test this game ?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
+                cb.one(".main.left").setContent("<h1>Want to test this game?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
                 Wegas.Facade.Game.sendRequest({
                     request: "/FindByToken/" + token,
                     on: {
@@ -129,15 +129,15 @@ YUI.add('wegas-loginwidget', function(Y) {
                                 + '</a>';
                             break;
                     }
-
+                    var imageUri = Y.Plugin.Injector.getImageUri(g.get("properties.imageUri"), g.get("gameModelId"));
                     content.push('<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">' + g.get("gameModelName") + '</span>'
-                        + '<span class="description">' + g.get("description") + '</span>'
+                        + '<span class="description">' + g.get("gameModel").get("description") + '</span>'
                         + '<span class="links"><a href="game.html?token=' + g.get("token") + '&al=true">Start playing</a> '
                         + add
                         + "</span></span>"
                         + '<span class="image"><span class="image-offset">'
-                        + '<img src="' + (g.get("properties.imageUri") || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
+                        + '<img src="' + (imageUri || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
                 });
                 content.push('</ul></div>');
                 cb.one(".main.left").setContent(content.join(""));

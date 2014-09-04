@@ -88,7 +88,10 @@ YUI.add('wegas-join-token', function(Y) {
          * Call rest request for join the game : rest/GameModel/1/Game/{gameModelID}/JoinGame/{token}
          */
         sendTokenJoin: function(token) {
-            this.showOverlay();
+            if (!this.isInitialTokenTry) {
+                this.showOverlay();
+            }
+
             Y.log("sendTokenJoin()", "info", "Wegas.TokenJoin");
 
             Wegas.Facade.Game.sendRequest({

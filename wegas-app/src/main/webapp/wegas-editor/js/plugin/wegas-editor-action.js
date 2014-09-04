@@ -121,32 +121,23 @@ YUI.add('wegas-editor-action', function(Y) {
      * Duplicate the plugin to allow multiple tab creation
      * @returns {undefined}
      */
-    Plugin.OpenTabActionSec = function() {
-        Plugin.OpenTabActionSec.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Plugin.OpenTabActionSec, Plugin.OpenTabAction, {}, {
+    Plugin.OpenTabActionSec = Y.Base.create("OpenTabActionSec", Plugin.OpenTabAction, [], {}, {
         /** @lends Y.Plugin.OpenTabAction */
         NS: "OpenTabActionSec",
-        NAME: "OpenTabActionSec",
         ATTRS: {
             selected: {
                 value: 0
             }
         }
     });
-    Plugin.OpenTabActionThi = function() {
-        Plugin.OpenTabActionThi.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Plugin.OpenTabActionThi, Plugin.OpenTabActionSec, {}, {
-        NS: "OpenTabActionThi",
-        NAME: "OpenTabActionThi"
+    Plugin.OpenTabActionThi = Y.Base.create("OpenTabActionThi", Plugin.OpenTabActionSec, [], {}, {
+        NS: "OpenTabActionThi"
     });
-    Plugin.OpenTabActionFou = function() {
-        Plugin.OpenTabActionFou.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Plugin.OpenTabActionFou, Plugin.OpenTabActionSec, {}, {
-        NS: "OpenTabActionFou",
-        NAME: "OpenTabActionFou"
+    Plugin.OpenTabActionFou = Y.Base.create("OpenTabActionFou", Plugin.OpenTabActionSec, [], {}, {
+        NS: "OpenTabActionFou"
+    });
+    Plugin.OpenTabActionFiv = Y.Base.create("OpenTabActionFiv", Plugin.OpenTabActionSec, [], {}, {
+        NS: "OpenTabActionFiv"
     });
 
     /**
