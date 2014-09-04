@@ -24,9 +24,8 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         CSSBackground.superclass.constructor.apply(this, arguments);
     };
 
-    CSSBackground = Y.extend(CSSBackground, Plugin.CSSStyles, {
+    CSSBackground = Y.extend(CSSBackground, Plugin.CSSStyles, {}, {
         /** @lends Y.Plugin.CSSBackground */
-    }, {
         ATTRS: {
             styles: {
                 _inputex: {
@@ -55,11 +54,8 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         CSSPosition.superclass.constructor.apply(this, arguments);
     };
 
-    CSSPosition = Y.extend(CSSPosition, Plugin.CSSStyles, {
+    CSSPosition = Y.extend(CSSPosition, Plugin.CSSStyles, {}, {
         /** @lends Y.Plugin.CSSPosition */
-        initializer: function() {
-        }
-    }, {
         ATTRS: {
             styles: {
                 _inputex: {
@@ -113,9 +109,8 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         CSSText.superclass.constructor.apply(this, arguments);
     };
 
-    CSSText = Y.extend(CSSText, Plugin.CSSStyles, {
-        /** @lends Y.Plugin.CSSText */
-    }, {
+    CSSText = Y.extend(CSSText, Plugin.CSSStyles, {}, {
+        /** @lends Y.Plugin.CSSStyles */
         ATTRS: {
             styles: {
                 _inputex: {
@@ -157,11 +152,8 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
         CSSSize.superclass.constructor.apply(this, arguments);
     };
 
-    CSSSize = Y.extend(CSSSize, Plugin.CSSStyles, {
+    CSSSize = Y.extend(CSSSize, Plugin.CSSStyles, {}, {
         /** @lends Y.Plugin.CSSSize */
-        initializer: function() {
-        }
-    }, {
         ATTRS: {
             styles: {
                 _inputex: {

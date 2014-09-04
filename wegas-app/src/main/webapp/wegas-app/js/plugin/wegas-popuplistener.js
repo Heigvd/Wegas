@@ -124,6 +124,5 @@ YUI.add('wegas-popuplistener', function(Y) {
             return (Y.Lang.isString(o)) ? {content: o} : o;
         }
     });
-
     Y.Plugin.PopupListener = PopupListener;
 });

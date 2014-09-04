@@ -430,3 +430,10 @@ div.inputEx-RadioField-choice input[type="radio"] {
 .inputEx-ComboBox:hover .inputex-combobox-select{
     display:inline;
 }
+
+/* Uneditable field */
+.inputEx-uneditableField .inputEx-Field {
+    border: 1px solid lightgray;
+    padding: 2px;
+    background: #fafafa;
+}

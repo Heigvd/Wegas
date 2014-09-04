@@ -72,11 +72,6 @@
     margin-left: -68px;
     margin-right: 1px;
 }
-.wegas-game-scenario .inputEx-Field {
-    border: 1px solid lightgray;
-    padding: 2px;
-    background: #fafafa;
-}
 .wegas-game-token .inputEx-StringField-wrapper:before {
     content:"Enrolment key ";
     color: #505050;
