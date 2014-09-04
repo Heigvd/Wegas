@@ -13,6 +13,7 @@ YUI.add('wegas-datasource', function(Y) {
     "use strict";
 
     var HOST = "host", ID = "id", POST = "POST", PUT = "PUT", ITEMS = "items",
+        CLASS = "@class",
         Lang = Y.Lang, Wegas = Y.Wegas, DataSource = Y.DataSource, Plugin = Y.Plugin,
         WegasCache, VariableDescriptorCache, GameModelCache, GameCache, PageCache;
 
@@ -263,7 +264,7 @@ YUI.add('wegas-datasource', function(Y) {
                     evtPayload = Y.mix({
                         serverEvent: response.get("events")[i]
                     }, e);
-                    this.fire(evtPayload.serverEvent.get("@class"), evtPayload);
+                    this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
                     //this.fire("serverEvent", evtPayload);
                 }
             }
@@ -459,7 +460,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         post: function(data, parent, callback) {
-            var request = (parent) ? "/" + parent.get(ID) + "/" + data["@class"] : "/";
+            var request = (parent) ? "/" + parent.get(ID) + "/" + data[CLASS] : "/";
 
             this.sendRequest({
                 request: request,
@@ -528,9 +529,9 @@ YUI.add('wegas-datasource', function(Y) {
         deleteObject: function(entity, cfg) {
             this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()),
-                cfg: {
+                cfg: Y.mix({
                     method: "DELETE"
-                }
+                }, cfg.cfg)
             }, cfg));
         },
         /**
@@ -543,7 +544,6 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         NS: "cache",
-        NAME: "WEGASCACHE",
         /** @lends Y.Plugin.WegasCache */
         ATTRS: {
             testFn: {
@@ -565,14 +565,7 @@ YUI.add('wegas-datasource', function(Y) {
      *  @extends Y.Plugin.WegasCache
      *  @constructor
      */
-    VariableDescriptorCache = function() {
-        VariableDescriptorCache.superclass.constructor.apply(this, arguments);
-    };
-    Y.mix(VariableDescriptorCache, {
-        NS: "cache",
-        NAME: "VariableDescriptorCache"
-    });
-    Y.extend(VariableDescriptorCache, WegasCache, {
+    VariableDescriptorCache = Y.Base.create("VariableDescriptorCache", WegasCache, [], {
         /** @lends Y.Plugin.VariableDescriptorCache# */
         /**
          * @function
@@ -602,7 +595,7 @@ YUI.add('wegas-datasource', function(Y) {
             });
         },
         generateRequest: function(data) {
-            if (data['@class'].indexOf("Instance") > -1) {
+            if (data[CLASS].indexOf("Instance") > -1) {
                 return '/' + data.descriptorId + '/VariableInstance/' + data.id;
             } else {
                 return "/" + data.id;
@@ -648,7 +641,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @function
          */
         put: function(data, cfg) {
-            if (data['@class'].indexOf("Instance") !== -1) {
+            if (data[CLASS].indexOf("Instance") !== -1) {
                 this.sendRequest(Y.mix({
                     request: '/1/VariableInstance/' + data.id,
                     cfg: {
@@ -742,6 +735,9 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         }
+    }, {
+        NS: "cache",
+        NAME: "VariableDescriptorCache"
     });
     Plugin.VariableDescriptorCache = VariableDescriptorCache;
 
@@ -780,7 +776,6 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         NS: "cache",
-        NAME: "GameModelCache",
         ATTRS: {
             currentGameModelId: {}
         }
@@ -829,17 +824,16 @@ YUI.add('wegas-datasource', function(Y) {
          * @deprecated
          */
         generateRequest: function(data) {
-            if (data['@class'] === 'Team') {
+            if (data[CLASS] === 'Team') {
                 return '/' + data.gameId + '/Team/' + data.id;
-            } else if (data['@class'] === 'Player') {
-                return "/" + this.getGameByTeamId(data.teamId).get(ID)
-                    + '/Team/' + data.teamId + '/Player/' + data.id;
+            } else if (data[CLASS] === 'Player') {
+                return "/Team/" + data.teamId + '/Player/' + data.id;
             } else {
                 return "/" + data.id;
             }
         },
         post: function(entity, parentData, callback) {
-            if (entity["@class"] === "Player") {
+            if (entity[CLASS] === "Player") {
                 this.sendRequest({
                     request: "/" + this.getGameByTeamId(parentData.id).get(ID)
                         + "/Team/" + parentData.id + "/Player",
@@ -849,7 +843,7 @@ YUI.add('wegas-datasource', function(Y) {
                     },
                     on: callback
                 });
-            } else if (entity["@class"] === "Game") {
+            } else if (entity[CLASS] === "Game") {
                 this.sendRequest({
                     request: "/" + entity.gameModelId,
                     cfg: {
@@ -913,7 +907,6 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         NS: "cache",
-        NAME: "GameCache",
         ATTRS: {
             currentGameId: {},
             currentTeamId: {},
@@ -939,14 +932,14 @@ YUI.add('wegas-datasource', function(Y) {
             return false;
         },
         generateRequest: function(data) {
-            if (data['@class'] === 'JpaAccount') {
+            if (data[CLASS] === 'JpaAccount') {
                 return "/Account/" + data.id;
             } else {
                 return "/" + data.id;
             }
         },
         post: function(data, parentData, callback) {
-            if (data["@class"] === "JpaAccount") {                              // Allow user creation based on a Jpa Account
+            if (data[CLASS] === "JpaAccount") {                              // Allow user creation based on a Jpa Account
                 data = {
                     "@class": "User",
                     accounts: [data]
@@ -973,7 +966,6 @@ YUI.add('wegas-datasource', function(Y) {
         }
     }, {
         NS: "cache",
-        NAME: "UserCache",
         ATTRS: {
             currentUserId: {},
             currentUser: {
@@ -994,10 +986,6 @@ YUI.add('wegas-datasource', function(Y) {
     PageCache = function() {
         PageCache.superclass.constructor.apply(this, arguments);
     };
-    Y.mix(PageCache, {
-        NS: "cache",
-        NAME: "PageCache"
-    });
     Y.extend(PageCache, Plugin.Base, {
         /** @lends Y.Plugin.PageCache# */
 
@@ -1284,6 +1272,9 @@ YUI.add('wegas-datasource', function(Y) {
         },
         _failureHandler: function(e) {
         }
+    }, {
+        NS: "cache",
+        NAME: "PageCache"
     });
     Plugin.PageCache = PageCache;
 

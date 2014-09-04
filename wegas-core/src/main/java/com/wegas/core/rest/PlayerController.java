@@ -11,20 +11,20 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import org.apache.shiro.SecurityUtils;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : [1-9][0-9]*}/Team/{teamId : [1-9][0-9]*}/Player")
+@Path("GameModel/{gameModelId : ([1-9][0-9]*)?}{sep: /?}Game/{gameId : ([1-9][0-9]*)?}{sep2: /?}Team/{teamId : [1-9][0-9]*}/Player")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class PlayerController {
@@ -33,9 +33,21 @@ public class PlayerController {
      *
      */
     @EJB
+    private UserFacade userFacade;
+
+    /**
+     *
+     */
+    @EJB
     private PlayerFacade playerFacade;
+    /**
+     *
+     */
     @EJB
     private TeamFacade teamFacade;
+    /**
+     *
+     */
     @EJB
     private GameFacade gameFacade;
 
@@ -100,7 +112,10 @@ public class PlayerController {
     @Path("{playerId: [1-9][0-9]*}")
     public Player delete(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-        SecurityHelper.checkPermission(p.getGame(), "Edit");
+
+        if (!userFacade.getCurrentUser().equals(p.getUser())) {
+            SecurityHelper.checkPermission(p.getGame(), "Edit");
+        }
         playerFacade.remove(playerId);
         return p;
     }

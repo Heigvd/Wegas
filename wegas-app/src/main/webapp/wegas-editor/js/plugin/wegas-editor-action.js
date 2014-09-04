@@ -13,7 +13,7 @@ YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
     var Linkwidget, Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
-        CONTENTBOX = 'contentBox', OpenTabAction, OpenTabActionSec;
+        CONTENTBOX = "contentBox", OpenTabAction, OpenTabActionSec;
 
     /**
      *  @name Y.Plugin.ResetAction
@@ -181,36 +181,14 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             var params, entity = this.get("entity");
-            //        testPlayer = function(game) {
-            //    var teams = game.get("teams"), i, ret = false;
-            //    for (i = 0; i < teams.length; i += 1) {
-            //        ret = teams[i].get("players").length > 0;
-            //        if (ret) {
-            //            break;
-            //        }
-            //    }
-            //    return ret;
-            //};
 
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Player) {
                 params = "id=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Team) {
-                //if (entity.get("players").length < 1) {
-                //    alert("Team " + entity.get("name") + " has no player");
-                //    return;
-                //}
                 params = "teamId=" + entity.get("id");
             } else {
-                //if (entity.get("teams").length < 1) {
-                //    alert("Game " + entity.get("name") + " has no Team");
-                //    return;
-                //}
-                //else if (!testPlayer(entity)) {
-                //    alert("Game " + entity.get("name") + " has no player");
-                //    return;
-                //}
                 params = "gameId=" + entity.get("id");
             }
             this.set("url", this.get("editorUrl") + params);
@@ -502,12 +480,15 @@ YUI.add('wegas-editor-action', function(Y) {
         execute: function() {
             var entity = this.get("entity"),
                 host = this.get("host"),
-                player = Y.Array.find(entity.get("teams"), function(t) {
-                    return Y.Array.find(t.get("players"), function(p) {
-                        return p.get("userId") === Wegas.Facade.User.cache.get("currentUserId");
-                    });
+                player;
+
+            Y.Array.find(entity.get("teams"), function(t) {
+                player = Y.Array.find(t.get("players"), function(p) {
+                    return p.get("userId") === Wegas.Facade.User.cache.get("currentUserId");
                 });
-            this.get("host").showOverlay();
+                return player;
+            });
+            host.showOverlay();
             Wegas.Facade.Game.cache.deleteObject(player, {
                 cfg: {
                     updateCache: false
@@ -515,12 +496,7 @@ YUI.add('wegas-editor-action', function(Y) {
                 on: {
                     success: function() {
                         host.hideOverlay();
-                        Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
-                            on: {
-                                success: function() {
-                                }
-                            }
-                        });
+                        Wegas.Facade.RegisteredGames.sendInitialRequest();      // Refresh the list of games
                         Y.Widget.getByNode(".wegas-joinedgamesdatatable").showMessageBis("success", "Game left");
                         Y.Widget.getByNode("#rightTabView").destroyAll();       // Empty right tab on join
                         Y.Widget.getByNode("#rightTabView").get("parent").unplug(Plugin.WidgetToolbar);
