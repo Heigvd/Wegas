@@ -66,10 +66,11 @@
         </properties>
     </action>
     <action>
-        <actionName>CUSTOM-Debug -skip-test</actionName>
-        <displayName>Debug -skip-test</displayName>
+        <actionName>CUSTOM-Debug exploded -skip-test</actionName>
+        <displayName>Debug -exploded -skip-test</displayName>
         <goals>
-            <goal>package</goal>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
         </goals>
         <properties>
             <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
