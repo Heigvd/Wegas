@@ -73,10 +73,17 @@
     background-color: transparent;
     visibility: hidden;
     font-size: 0;
-    padding: 0 3px 0 5px;
+    padding: 0 2px 0 4px;
+}
+
+.yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected .yui3-datatable-col-menu .yui3-button {
+    visibility: visible;
+}
+.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-data:hover tr.wegas-datatable-selected .yui3-datatable-col-menu .yui3-button {
+    visibility: hidden;
 }
 .yui3-skin-sam .wegas-lobby-datatable tr:hover .yui3-datatable-col-menu .yui3-button {
-    visibility: visible;
+    visibility: visible !important;
 }
 .yui3-skin-sam .wegas-lobby-datatable td.yui3-datatable-col-iconCSS {
     padding-right: 0;

@@ -101,19 +101,22 @@
                         Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
                             on: {
                                 success: function() {
-                                    var dt = Y.Widget.getByNode(".wegas-joinedgamesdatatable").table;
-                                    dt.data.some(function(d) {                  //Find row with joined game and seéect it.
+                                    var joinedTable = Y.Widget.getByNode(".wegas-joinedgamesdatatable");
+                                    joinedTable.table.data.some(function(d) {   //Find row with joined game and seéect it.
                                         if (d.get("entity").get("id") === e.game.get("id")) {
-                                            dt.set("selectedRow", dt.getRow(d));
+                                            joinedTable.table.getRow(d).addClass("wegas-datatable-selected").simulate("mouseover");
+                                            //dt.set("selectedRow", dt.getRow(d));
                                             return true;
                                         }
                                     });
-                                    Y.Widget.getByNode("#joinedGamesTab").fire("wegas:message", {
-                                        level: "success",
-                                        content: "Game joined",
-                                        timeout: 1500,
-                                        noFilter: true                          // Success messages are normally displayed in toolbar
-                                    });
+                                    joinedTable.get("parent").set("selected", 2)
+                                        .fire("wegas:message", {
+                                            level: "success",
+                                            content: "Game joined",
+                                            timeout: 2000,
+                                            noFilter: true                      // Success messages are normally displayed in toolbar
+                                        });
+
                                 }
                             }
                         });

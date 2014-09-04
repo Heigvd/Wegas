@@ -15,17 +15,17 @@ YUI().use(function(Y) {
     "use strict";
     var CSS = "css";
 
-    if (typeof YUI_config === "undefined") {
+    if (!YUI_config) {
         YUI_config = {};
     }
-    if (typeof YUI_config.groups === "undefined") {
+    if (!YUI_config.groups) {
         YUI_config.groups = {
             inputex: {
                 modulesByType: {}
             }
         };
     }
-    if (typeof YUI_config.Wegas === "undefined") {
+    if (!YUI_config.Wegas) {
         YUI_config.Wegas = {};
     }
     YUI_config.Wegas.modulesByType = {};
@@ -54,7 +54,9 @@ YUI().use(function(Y) {
                 requires: ["base", "plugin", "array-extras", "timers",
                     "wegas-helper", "wegas-entity", "wegas-datasource"]
             },
-            "wegas-editable": {},
+            "wegas-editable": {
+                requires: "inputex-jsonschema"
+            },
             /**
              * Persistence
              */
@@ -467,8 +469,7 @@ YUI().use(function(Y) {
                 path: "js/inputex/wegas-inputex-wysiwygscript-min.js",
                 requires: ["wegas-inputex", "wegas-inputex-list", "wegas-inputex-script",
                     "wegas-inputex-variabledescriptorselect",
-                    "wegas-button", "inputex-jsonschema", "inputex-list",
-                    "wegas-inputex-url",
+                    "wegas-button", "inputex-list", "wegas-inputex-url",
                     "wegas-inputex-rte", // for mail attachements in script
                     "esprima"],
                 ix_provides: ["script", "variableselect", "flatvariableselect"]
@@ -518,12 +519,12 @@ YUI().use(function(Y) {
             },
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
-                requires: ["wegas-button", "wegas-plugin", "event-key"],
+                requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
                 ws_provides: ["OpenTabAction", "OpenTabButton", "Linkwidget"]
             },
             "wegas-editor-entityaction": {
                 path: "js/plugin/wegas-editor-entityaction-min.js",
-                requires: ["wegas-plugin", "inputex-jsonschema", "wegas-form"],
+                requires: ["wegas-plugin", "wegas-form"],
                 ws_provides: ["NewEntityAction", "EditEntityAction", "NewEntityButton"]
             },
             "wegas-editor-form": {

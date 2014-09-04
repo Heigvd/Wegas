@@ -43,6 +43,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         sendInitialRequest: function(cfg) {
+            this.cache && this.cache.clear();
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) {              // Use this condition to allow empty strings (e.g. ")
                 return this.sendRequest(Y.mix(cfg || {}, {
                     request: this.get("initialRequest"),

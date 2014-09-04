@@ -92,7 +92,7 @@ h1, h2, .title{
 .main h2 {
     margin-bottom: 1px;
 }
-.main p{
+.main > p{
     margin-bottom:10px;
     text-align:justify;
     margin-right:30px;

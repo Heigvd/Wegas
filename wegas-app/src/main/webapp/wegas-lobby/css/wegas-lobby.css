@@ -13,6 +13,10 @@
 .yui3-skin-sam #centerTabView .yui3-tab {
     max-width: 130px;
 }
+.yui3-skin-sam #centerTabView .wegas-status-message {
+    float: none;
+    padding-left: 3px;
+}
 #rightTabView .yui3-tab-remove {
     display: none;
 }
@@ -29,6 +33,7 @@
     height: 30px;
     background: url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat 8px 6px;
 }
+
 /** Edit game form */
 .wegas-lobby-editgame  .wegas-form-content {
     padding-bottom: 0px !important;
@@ -182,7 +187,14 @@
 .wegas-stdmode .wegas-lobby-parentgamemodeltab .editor-form-gamemodel-name {
     display: none;
 }
-
+.wegas-joinedgamesdatatable .lobby-button-open  {
+    font-size: inherit!important;
+    float: left;
+    padding-right: 0.3em !important;
+}
+.wegas-joinedgamesdatatable .lobby-button-edit {
+    display: none;
+}
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper {
     float: left;

@@ -224,7 +224,7 @@ YUI.add("wegas-entity", function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [{
-                        fn: "EntityEditMenu"
+                        fn: "ToolbarMenu"
                     }, {
                         fn: "OpenTabAction",
                         cfg: {
@@ -479,7 +479,7 @@ YUI.add("wegas-entity", function(Y) {
                 type: BUTTON,
                 label: "Edit",
                 plugins: [{
-                        fn: "EntityEditMenu"
+                        fn: "ToolbarMenu"
                     }, {
                         fn: "OpenTabAction",
                         cfg: {
@@ -808,7 +808,7 @@ YUI.add("wegas-entity", function(Y) {
      */
     persistence.JpaAccount = Base.create("JpaAccount", persistence.Entity, [], {
         getPublicName: function() {
-            return this.get("name");
+            return this.get(NAME);
         }
     }, {
         ATTRS: {
@@ -865,7 +865,7 @@ YUI.add("wegas-entity", function(Y) {
                 _inputex: {
                     _type: "password",
                     label: "Password",
-                    strengthIndicator: true,
+                    strengthIndicator: false,
                     capsLockWarning: true,
                     id: "password",
                     typeInvite: null,
