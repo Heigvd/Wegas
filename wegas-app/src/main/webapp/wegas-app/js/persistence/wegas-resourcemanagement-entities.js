@@ -37,7 +37,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         }
     };
 
-    Y.namespace("Wegas.persistence.Resources");
+    Y.namespace("Wegas.persistence.Resources");                                 // Create namespace
 
     /**
      * 
@@ -856,7 +856,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     });
                     return v;
                 },
-                _inputex: Y.Wegas.persistence.TaskDescriptor.ATTRS.defaultInstance.properties.requirements._inputex
+                _inputex: persistence.TaskDescriptor.ATTRS.defaultInstance.properties.requirements._inputex
             },
             properties: {
                 _inputex: {

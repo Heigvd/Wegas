@@ -14,12 +14,12 @@ YUI.add('wegas-object-entities', function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", NAME = "name", HTML = "html",
         VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
-        Wegas = Y.Wegas;
+        persistence = Y.Wegas.persistence;
 
     /**
      * ObjectDescriptor mapper
      */
-    Wegas.persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", Wegas.persistence.VariableDescriptor, [], {
+    persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
         getProperty: function(player, key) {
             return this.getInstance(player).get("properties." + key);
         }
@@ -98,7 +98,7 @@ YUI.add('wegas-object-entities', function(Y) {
             },
             getProperty: {
                 label: "property equals",
-                returns: "string",
+                returns: STRING,
                 arguments: [{
                         type: HIDDEN,
                         value: "self"
@@ -126,7 +126,7 @@ YUI.add('wegas-object-entities', function(Y) {
     /**
      * ObjectInstance mapper
      */
-    Wegas.persistence.ObjectInstance = Y.Base.create("ObjectInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.ObjectInstance = Y.Base.create("ObjectInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "ObjectInstance"

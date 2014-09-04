@@ -148,11 +148,11 @@ YUI.add('wegas-helper', function(Y) {
                 return  Math.round(diffN / oneMinute) + " minutes ago";
             } else if (diffN < oneDay
                 && now.getDay() === date.getDay()) {                            // Today
-                return (prefix ? "at ": "") + Helper.formatDate(timestamp, "%H:%i");
+                return (prefix ? "at " : "") + Helper.formatDate(timestamp, "%H:%i");
             } else if (date.getYear() === now.getYear()) {                      // This year
-                return (prefix ? "the ": "") + Helper.formatDate(timestamp, "%d %M");
+                return (prefix ? "the " : "") + Helper.formatDate(timestamp, "%d %M");
             } else {                                                             // Older
-                return (prefix ? "the ": "") + Helper.formatDate(timestamp, "%d %M %Y");
+                return (prefix ? "the " : "") + Helper.formatDate(timestamp, "%d %M %Y");
             }
         },
         /**

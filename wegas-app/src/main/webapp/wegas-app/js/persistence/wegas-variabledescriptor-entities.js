@@ -391,7 +391,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         value: SELF
                     }],
                 localEval: function(player) {
-                    return this.getInstance(player).get("value");
+                    return this.getInstance(player).get(VALUE);
                 }
             }
         }
@@ -444,7 +444,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "transient": true,
                 getter: function() {
                     if (this.getInstance()) {
-                        return this.getInstance().get("value");
+                        return this.getInstance().get(VALUE);
                     } else {
                         return null;
                     }
@@ -615,8 +615,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     _type: HIDDEN
                 },
                 setter: function(val) {
-                    var i;
-                    for (i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
+                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
                         val[i].parentDescriptor = this;
                     }
                     return val;
@@ -812,7 +811,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: STRING,
                         label: "From",
                         scriptType: STRING
-                    }, { 
+                    }, {
                         type: STRING,
                         label: "Subject",
                         scriptType: STRING,
@@ -826,7 +825,6 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: "list",
                         label: "",
                         scriptType: STRING,
-                        /*sortable: true*/
                         elementType: {
                             type: "wegasurl",
                             label: "",
@@ -848,7 +846,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: STRING,
                         label: "Date",
                         scriptType: STRING
-                    }, { 
+                    }, {
                         type: STRING,
                         label: "Subject",
                         scriptType: STRING,
@@ -1038,7 +1036,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "transient": true,
                 getter: function() {
                     if (this.getInstance()) {
-                        return this.getInstance().get("value");
+                        return this.getInstance().get(VALUE);
                     } else {
                         return null;
                     }

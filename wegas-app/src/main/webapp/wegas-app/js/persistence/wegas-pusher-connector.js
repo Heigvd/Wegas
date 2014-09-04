@@ -11,6 +11,8 @@
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
 
+    var PusherDataSource, Wegas = Y.Wegas;
+
     /**
      * PusherConnector singleton for each applicationKey
      * @name Y.Wegas.util.PusherConnector
@@ -18,11 +20,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
      * @param {Object} config, requires applicationKey
      * @returns {Instance}
      */
-    var PusherDataSource = function() {
-        PusherDataSource.superclass.constructor.apply(this, arguments);
-    };
-
-    Y.extend(PusherDataSource, Y.Wegas.DataSource, {
+    var PusherDataSource = Y.Base.create("PusherDataSource", Wegas.DataSource, [], {
         /* @lends Y.Wegas.util.PusherConnector# */
         /*
          * life cycle method
@@ -32,10 +30,8 @@ YUI.add('wegas-pusher-connector', function(Y) {
          * @returns {undefined}
          */
         initializer: function(cfg) {
-
             this.pusherInit(cfg);
             //this.pusher = new Pusher('732a1df75d93d028e4f9');
-
         },
         pusherInit: function(cfg) {
             if (!window.Pusher) {
@@ -50,9 +46,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });
-            this.gameChannel = this.pusher.subscribe('Game-' + Y.Wegas.Facade.Game.get("currentGameId"));
-            this.teamChannel = this.pusher.subscribe('Team-' + Y.Wegas.Facade.Game.get("currentTeamId"));
-            this.playerChannel = this.pusher.subscribe('Player-' + Y.Wegas.Facade.Game.get("currentPlayerId"));
+            this.gameChannel = this.pusher.subscribe('Game-' + Wegas.Facade.Game.get("currentGameId"));
+            this.teamChannel = this.pusher.subscribe('Team-' + Wegas.Facade.Game.get("currentTeamId"));
+            this.playerChannel = this.pusher.subscribe('Player-' + Wegas.Facade.Game.get("currentPlayerId"));
             this.pusher.bind_all(Y.bind(this.eventReceived, this));
         },
         /**
@@ -81,11 +77,11 @@ YUI.add('wegas-pusher-connector', function(Y) {
         triggerCustomEvent: function(channel, data, event) {
             var id;
             if (channel === "Game") {
-                id = Y.Wegas.Facade.Game.get("currentGameId");
+                id = Wegas.Facade.Game.get("currentGameId");
             } else if (channel === "Team") {
-                id = Y.Wegas.Facade.Game.get("currentTeamId");
+                id = Wegas.Facade.Game.get("currentTeamId");
             } else {
-                id = Y.Wegas.Facade.Game.get("currentPlayerId");
+                id = Wegas.Facade.Game.get("currentPlayerId");
             }
             this.sendRequest({
                 request: "Send/" + channel + "/" + id + "/" + event,
@@ -124,6 +120,6 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }
         }
     });
-    Y.Wegas.PusherDataSource = PusherDataSource;
+    Wegas.PusherDataSource = PusherDataSource;
     //new PusherConnectorFactory({applicationKey: "732a1df75d93d028e4f9"});
 });
