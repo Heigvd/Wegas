@@ -143,8 +143,9 @@ public class FileController {
     @CacheMaxAge(time = 1, unit = TimeUnit.SECONDS)
     public Response read(@PathParam("gameModelId") Long gameModelId, @PathParam("absolutePath") String name, @Context Request request) {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
-
+        //SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
+        
+        
         logger.debug("Asking file (/{})", name);
         AbstractContentDescriptor fileDescriptor;
         ContentConnector connector = null;
@@ -498,7 +499,7 @@ public class FileController {
                     throw new WegasException("Error reading uploaded file");
                 }
             } else {
-                throw new WegasException(detachedFile.getPath() + " " + name + " already exists");
+                throw new WegasException(detachedFile.getPath() + name + " already exists");
             }
         } else {
             throw new WegasException("Parent directory " + path + " does not exist exists");
@@ -535,7 +536,7 @@ public class FileController {
                 logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
                 return detachedFile;
             } else {
-                throw new WegasException(detachedFile.getPath() + " " + name + " already exists");
+                throw new WegasException(detachedFile.getPath() + name + " already exists");
             }
         } else {
             throw new WegasException(path + " directory does not exist already exists");

@@ -127,7 +127,10 @@ YUI.add("wegas-entity", function(Y) {
         EDITORNAME: "Scenario",
         ATTRS: {
             name: {
-                type: STRING
+                type: STRING,
+                _inputex: {
+                    wrapperClassName: "inputEx-fieldWrapper editor-form-gamemodel-name"
+                }
             },
             games: {
                 type: ARRAY,
@@ -160,16 +163,16 @@ YUI.add("wegas-entity", function(Y) {
                                     label: "individually"
                                 }, {
                                     value: false,
-                                    label: "in teams"
+                                    label: "in team"
                                 }]
                         }, {
                             name: "imageUri",
                             label: "Thumbnail",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                            type: "wegasurl"
                         }, {
                             name: "iconUri",
                             label: "Icon",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                            type: "wegasurl"
                         }, {
                             name: "scriptUri",
                             label: "Server scripts",
@@ -233,6 +236,15 @@ YUI.add("wegas-entity", function(Y) {
                                 }]
                         }
                     }, {
+                        fn: "OpenTabActionThi",
+                        cfg: {
+                            label: "History",
+                            tabSelector: "#rightTabView",
+                            wchildren: [{
+                                    type: "GameModelHistory"
+                                }]
+                        }
+                    }, {
                         fn: "OpenTabActionSec",
                         cfg: {
                             label: "Share",
@@ -250,15 +262,6 @@ YUI.add("wegas-entity", function(Y) {
                                             value: "GameModel:Instantiate"
                                         }],
                                     roleList: ["Administrator", "Scenarist"]
-                                }]
-                        }
-                    }, {
-                        fn: "OpenTabActionThi",
-                        cfg: {
-                            label: "History",
-                            tabSelector: "#rightTabView",
-                            wchildren: [{
-                                    type: "GameModelHistory"
                                 }]
                         }
                     }, {
@@ -372,14 +375,6 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-scenario"
                 }
             },
-            description: {
-                type: STRING,
-                format: TEXT,
-                optional: true,
-                _inputex: {
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
-                }
-            },
             createdByName: {
                 "transient": true
             },
@@ -488,7 +483,7 @@ YUI.add("wegas-entity", function(Y) {
                     }, {
                         fn: "OpenTabAction",
                         cfg: {
-                            label: "Details",
+                            label: "Access",
                             emptyTab: true,
                             tabSelector: "#rightTabView",
                             wchildren: [{
@@ -509,19 +504,13 @@ YUI.add("wegas-entity", function(Y) {
                                 }]
                         }
                     }, {
-                        fn: "OpenTabActionSec",
+                        fn: "OpenTabActionFiv",
                         cfg: {
-                            label: "Share",
+                            label: "Details",
                             tabSelector: "#rightTabView",
                             wchildren: [{
-                                    type: "ShareUser",
-                                    cssClass: "editor-trainer-share",
-                                    permsList: [{
-                                            rightLabel: "Admin",
-                                            value: "Game:View,Edit"
-                                        }],
-                                    roleList: ["Trainer", "Administrator", "Scenarist"],
-                                    selectedPermsList: ["Game:View,Edit"]
+                                    type: "EditParentGameModelForm",
+                                    cssClass: "wegas-lobby-parentgamemodeltab"
                                 }]
                         }
                     }, {
@@ -536,6 +525,22 @@ YUI.add("wegas-entity", function(Y) {
                                         }, {
                                             fn: "EditorTVToolbarMenu"
                                         }]
+                                }]
+                        }
+                    }, {
+                        fn: "OpenTabActionSec",
+                        cfg: {
+                            label: "Share",
+                            tabSelector: "#rightTabView",
+                            wchildren: [{
+                                    type: "ShareUser",
+                                    cssClass: "editor-trainer-share",
+                                    permsList: [{
+                                            rightLabel: "Admin",
+                                            value: "Game:View,Edit"
+                                        }],
+                                    roleList: ["Trainer", "Administrator", "Scenarist"],
+                                    selectedPermsList: ["Game:View,Edit"]
                                 }]
                         }
                     }, {
@@ -589,15 +594,8 @@ YUI.add("wegas-entity", function(Y) {
                                                 event: "mouseenter",
                                                 children: [{
                                                         type: "PrintButton",
-                                                        label: "Html"
-                                                    }, {
-                                                        type: "PrintButton",
                                                         label: "Html (Players document)",
                                                         mode: "player"
-                                                    }, {
-                                                        type: "PrintButton",
-                                                        label: "Pdf",
-                                                        outputType: "pdf"
                                                     }, {
                                                         type: "PrintButton",
                                                         label: "Pdf (Players document)",
@@ -619,7 +617,8 @@ YUI.add("wegas-entity", function(Y) {
                                     targetClass: "Team",
                                     cssClass: "wegas-advanced-feature"
                                 }, {
-                                    type: "Linkwidget"
+                                    type: "Linkwidget",
+                                    cssClass: "wegas-advanced-feature"
                                 }]
                         }
                     }]

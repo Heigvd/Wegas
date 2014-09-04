@@ -101,7 +101,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                         }
                     }, this);
                 });
-
             }, this);
 
             Y.Do.after(function() {
@@ -149,8 +148,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     data = this.genEntityData(entity);
                     if (data) {
                         Y.mix(data, {//                                         // Add some default properties
-                            entity: entity,
-                            iconCSS: 'wegas-icon-' + entity.get("@class").toLowerCase()
+                            entity: entity
                         });
                         ret.push(data);
                     }
@@ -232,7 +230,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             dataTableCfg: {
                 value: {
                     columns: [{
-                            key: "iconCSS",
                             formatter: "icon",
                             label: " ",
                             sortable: false,
@@ -287,9 +284,12 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
     Y.DataTable.BodyView.Formatters.icon = function(col) {
         col.className = 'wegas-lobby-datatable-icon';
+        function makeUri(uri, o) {
+            return Plugin.Injector.getImageUri(uri, o.data.entity.get("gameModelId") || o.data.entity.get("id"));
+        }
         return function(o) {
-            return '<img class="wegas-lobby-icon" src="' + (o.data.iconUri || "wegas-lobby/images/wegas-game-icon.png") + '" />'
-                + '<img class="wegas-lobby-thumb" src="' + (o.data.imageUri || "wegas-lobby/images/wegas-game-thumb.png") + '" />';
+            return '<img class="wegas-lobby-icon" src="' + (makeUri(o.data.iconUri || o.data.imageUri, o) || "wegas-lobby/images/wegas-game-icon.png") + '" />'
+                + '<img class="wegas-lobby-thumb" src="' + (makeUri(o.data.imageUri, o) || "wegas-lobby/images/wegas-game-thumb.png") + '" />';
         };
     };
     Y.DataTable.BodyView.Formatters.link = function() {
@@ -598,7 +598,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 dataSource: "PublicGames",
                 dataTableCfg: {
                     columns: [{
-                            key: "iconCSS",
                             formatter: "icon",
                             label: " ",
                             sortable: false,

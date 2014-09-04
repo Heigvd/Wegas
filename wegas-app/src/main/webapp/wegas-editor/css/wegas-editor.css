@@ -354,50 +354,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     padding-top: 0px;
 }
 
-/* Join-token team styles */
-.wegas-join-token-hidden {
-    display: block;
-}
-.wegas-join-token-hidden > * {
-    display:none;
-}
-.wegas-join-token-hidden:after {
-    content: "Joining game...";
-    font-style: italic;
-}
-.wegas-join-token-content button {
-    margin-left: 11.3em;
-    margin-top: 10px;
-    padding: 7px 18px;
-}
-.wegas-jointeam-content button {
-    margin-left: 0;
-    margin-top: 0.5em;
-    padding: 7px 18px;
-    width: 146px;
+/* Open game tab */
+.open-game-tab {
+    margin: 1em .5em 0;
 }
 .editor-button-resume {
     margin-left: 0.5em;
     margin-top: 1.3em;
     padding: 7px 18px;
     width: 146px;
-}
-.wegas-join-token .teamselection button {
-    margin-left: 0px;
-}
-.wegas-join-token .description {
-    padding: 10px 0 20px;
-    margin: 10px 10px 20px;
-}
-.yui3-tabview .wegas-join-token-content > .inputEx-fieldWrapper{
-    padding-top: 30px;
-}
-.wegas-join-token .inputEx-label,
-.wegas-jointeam .inputEx-label{
-    width: 11em;
-}
-.open-game-tab {
-    margin: 0 .5em;
 }
 
 /* Wegas editor icons */

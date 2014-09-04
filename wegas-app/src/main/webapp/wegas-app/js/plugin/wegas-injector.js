@@ -140,6 +140,17 @@ YUI.add("wegas-injector", function(Y) {
                 element.set(attr, Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"))
                     .removeAttribute("data-file");
             }
+        },
+        getImageUri: function(uri, gameModelId) {
+            if (uri && uri.indexOf("/") === 0) {
+                if (gameModelId) {
+                    return Y.Wegas.app.get("base") + "rest/GameModel/" + gameModelId + "/File/read" + uri;
+                } else {
+                    return Y.Wegas.Facade.File.get("source") + "read" + uri;
+                }
+            } else {
+                return uri;
+            }
         }
     });
     Y.Plugin.Injector = Injector;

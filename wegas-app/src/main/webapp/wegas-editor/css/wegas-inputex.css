@@ -121,14 +121,28 @@ div.inputEx-description {
 }
 /* Wegas Url Field styles */
 .inputEx-wegas-UrlField {
-    padding-right:40px;
+    padding-right: 69px;
+}
+.inputEx-wegas-UrlField .yui3-uploader {
+    display: inline-block;
+    float: right;
+    margin-right: -40px;
+    padding: 2px 4px 0px 6px;
+    vertical-align: top;
+    margin-top: -2px;
+}
+.inputEx-wegas-UrlField .yui3-uploader input {
+    display: none;
 }
 .inputEx-wegas-UrlField button {
     float: right;
-    margin-right: -40px;
-    padding: 5px 7px 1px;
+    padding: 3px 4px 1px 6px;
     vertical-align: top;
-    margin-top: -4px;
+    margin-top: -2px;
+    display: inline-block;
+}
+.inputEx-wegas-UrlField > button {
+    margin-right: -69px;
 }
 
 /* wegas-inputex-ace styles */

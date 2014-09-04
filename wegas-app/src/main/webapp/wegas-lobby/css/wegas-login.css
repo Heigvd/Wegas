@@ -9,7 +9,7 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 body {
-    font-family: Verdana, Geneva, sans-serif;
+    overflow: auto !important;
 }
 input {
     border: 1px solid lightgray;
@@ -41,7 +41,7 @@ a {
     float:left;
 }
 .logo{
-    margin: -5px 0 0 -17px;
+    margin: -5px 0 0 -16px;
     background-image: url('../../wegas-app/images/wegas-logowhite.png');
     height:60px;
     width:140px;
@@ -104,15 +104,6 @@ h1, h2, .title{
     list-style: disc;
     margin-left: 34px;
 }
-.wegas-text, .bd {
-    padding:15px 0 15px 0;
-}
-/*.preview{
-    text-align: left;
-}
-.preview img{
-    box-shadow: 2px 2px 4px 4px #888;
-}*/
 .signup > div  div{
     float:left;
     width:165px;
@@ -174,7 +165,7 @@ h1, h2, .title{
     margin: -12px 0 0 16px;
 }
 .yui3-skin-sam  .yui3-button{
-    background: #072644;
+    background-color: #072644;
     color:white;
 }
 .content .inputEx-message, .capsLockWarning{
@@ -186,10 +177,6 @@ h1, h2, .title{
 .capsLockWarning{
     margin-top:0;
 }
-/*.signup{
-    border: solid #888;
-    border-width: 0 0 1px;
-}*/
 .ask-pass .yui3-button{
     float:right;
     margin: -37px 10px 0 0;
@@ -268,18 +255,15 @@ h1, h2, .title{
     font-weight: bold;
     color: #777;
 }
-
 .wegas-loginwidget .login-gameInformation {
     border: solid 1px lightgrey;
     width: 570px;
 }
-
 .wegas-loginwidget .login-gameInformation img {
     width: 33%;
     float: left;
     margin: 1em 1em 1em 1em;
 }
-
 .wegas-loginwidget .login-gameInformation .title {
     margin-top: 1em;
     font-size: 1.2em;
