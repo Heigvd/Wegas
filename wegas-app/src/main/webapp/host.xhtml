@@ -32,19 +32,19 @@
                         Y.Wegas.Facade.Page.set("initialFullRequest",
                             e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
 
-                        app.widget.destroy();                                       // Destroy the current view
+                        app.widget.destroy();                                   // Destroy the current view
 
                         Y.Wegas.Facade.Page.sendInitialRequest({
                             on: {
                                 success: function(e) {
-                                    var widgetCfg = Y.clone(e.response.results);    // @fixme Seems to work without the clone
+                                    var widgetCfg = Y.clone(e.response.results);// @fixme Seems to work without the clone
                                     Y.Wegas.use(widgetCfg, Y.bind(function() {
 
                                         body.toggleClass("wegas-hostmode")
                                             .toggleClass("wegas-editmode");
 
                                         app.widget = Y.Wegas.Widget.create(widgetCfg).render();// Instantiate the root widget and render it
-                                        app.fire("render");                                 // Fire a render event for some eventual post processing
+                                        app.fire("render");                     // Fire a render event for some eventual post processing
 
                                         body.removeClass("wegas-loading-after");
                                     }));
@@ -58,16 +58,16 @@
                         var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
                             preview = Y.Widget.getByNode(".editor-preview");
 
-                        this.set('currentTeamId', player.get("teamId"));            // Update current teamid
+                        this.set('currentTeamId', player.get("teamId"));        // Update current teamid
 
-                        preview.showOverlay();                                      // Show a loading overlay in the Preview tab during the request
+                        preview.showOverlay();                                  // Show a loading overlay in the Preview tab during the request
 
-                        Y.later(10, this, function() {                              // Version 1: All data are loaded, only need to change trigger udate
+                        Y.later(10, this, function() {                          // Version 1: All data are loaded, only need to change trigger udate
                             Y.Wegas.Facade.Variable.fire("update");
                             preview.hideOverlay();
                         });
 
-                        //Y.Wegas.Facade.Variable.set("source",                     // Version 2: Only current player data are loaded, need to update the datasource
+                        //Y.Wegas.Facade.Variable.set("source",                 // Version 2: Only current player data are loaded, need to update the datasource
                         //    //this.get("base") + "rest/EditorPrivate/" + player.get("id")
                         //    Y.Wegas.app.get("base") + "rest/Private/" + player.get("id")
                         //    + "/GameModel/" + Y.Wegas.Facade.GameModel.get("currentGameModelId")

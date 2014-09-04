@@ -509,6 +509,9 @@ YUI.add('wegas-editor-action', function(Y) {
                 });
             this.get("host").showOverlay();
             Wegas.Facade.Game.cache.deleteObject(player, {
+                cfg: {
+                    updateCache: false
+                },
                 on: {
                     success: function() {
                         host.hideOverlay();

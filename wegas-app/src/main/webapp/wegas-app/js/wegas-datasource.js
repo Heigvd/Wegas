@@ -267,7 +267,8 @@ YUI.add('wegas-datasource', function(Y) {
                     //this.fire("serverEvent", evtPayload);
                 }
             }
-            if ((!e.cfg || e.cfg.updateEvent !== false) && this.updated) {
+            if ((!e.cfg || e.cfg.updateEvent !== false)
+                && (this.updated || e.cfg.initialRequest)) {
                 this.get(HOST).fire("update", e);
                 this.updated = false;
             }

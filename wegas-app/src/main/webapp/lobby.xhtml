@@ -89,7 +89,7 @@
 
                         var gamesTab = Y.Widget.getByNode("#gamesTreeViewTab");
                         gamesTab.set("visible", Y.Wegas.Facade.GameModel.cache.find("canInstantiate", true)
-                            || !gamesTab.witem(0).table.get("data").isEmpty());// Hide teacher tab if no game is available
+                            || !gamesTab.witem(0).table.get("data").isEmpty()); // Hide teacher tab if no game is available
 
                         if (Y.Wegas.Facade.Game.data.length > 0) {              // If the user has already created a game
                             gamesTab.set("selected", 2);                        // select created games tab
@@ -98,25 +98,26 @@
 
                     Y.on("gameJoined", function(e) {                            // As soon as a game is joined,
                         //window.open(app.get("base") + "game-play.html?gameId=" + e.game.get("id"));// open the game in a new tab
-                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // and refresh the list of games
+                        Y.Wegas.Facade.RegisteredGames.sendInitialRequest({//   // Refresh the list of games
                             on: {
                                 success: function() {
                                     var joinedTable = Y.Widget.getByNode(".wegas-joinedgamesdatatable");
-                                    joinedTable.table.data.some(function(d) {   //Find row with joined game and seéect it.
+                                    joinedTable.table.data.some(function(d) {   // Find row with joined game and seéect it.
                                         if (d.get("entity").get("id") === e.game.get("id")) {
+                                            joinedTable.get("contentBox").all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                                             joinedTable.table.getRow(d).addClass("wegas-datatable-selected").simulate("mouseover");
                                             //dt.set("selectedRow", dt.getRow(d));
                                             return true;
                                         }
                                     });
                                     joinedTable.get("parent").set("selected", 2)
+                                        .showMessageBis("success", "Game joined")// Otherwise the previous message will remain visible (at least the msg should be "")
                                         .fire("wegas:message", {
                                             level: "success",
                                             content: "Game joined",
                                             timeout: 2000,
                                             noFilter: true                      // Success messages are normally displayed in toolbar
                                         });
-
                                 }
                             }
                         });
