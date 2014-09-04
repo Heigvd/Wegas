@@ -19,9 +19,9 @@ YUI.add('wegas-imageloader', function(Y) {
      * @constructor
      */
     var BlobBuilder = window.MozBlobBuilder || window.WebKitBlobBuilder || window.BlobBuilder,
-            ImgageLoader = function() {
-                Y.Wegas.ImgageLoader.superclass.constructor.apply(this, arguments);
-            };
+        ImgageLoader = function() {
+            Y.Wegas.ImgageLoader.superclass.constructor.apply(this, arguments);
+        };
 
     ImgageLoader.NAME = 'ImgageLoader';
 
@@ -96,7 +96,7 @@ YUI.add('wegas-imageloader', function(Y) {
                 request.onload = Y.bind(function(loadEvt) {
                     if (loadEvt.target.status === 200) {
                         var blob, bb = new BlobBuilder(),
-                                reader = new FileReader();
+                            reader = new FileReader();
 
                         bb.append(loadEvt.target.response);                     // Note: not request.responseText
                         blob = bb.getBlob(loadEvt.target.getResponseHeader("Content-Type"));
@@ -144,16 +144,16 @@ YUI.add('wegas-imageloader', function(Y) {
 
     function customBase64Encode(inputStr) {
         var bbLen = 3,
-                enCharLen = 4,
-                inpLen = inputStr.length,
-                inx = 0,
-                jnx,
-                keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-                + "0123456789+/=",
-                output = "",
-                paddingBytes = 0;
+            enCharLen = 4,
+            inpLen = inputStr.length,
+            inx = 0,
+            jnx,
+            keyStr = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+            + "0123456789+/=",
+            output = "",
+            paddingBytes = 0;
         var bytebuffer = new Array(bbLen),
-                encodedCharIndexes = new Array(enCharLen);
+            encodedCharIndexes = new Array(enCharLen);
 
         while (inx < inpLen) {
             for (jnx = 0; jnx < bbLen; ++jnx) {

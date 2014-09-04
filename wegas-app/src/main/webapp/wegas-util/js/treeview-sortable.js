@@ -12,10 +12,8 @@
 YUI.add("treeview-sortable", function(Y) {
     "use strict";
 
-    var HOST = "host",
-            NODE = 'node',
-            CONTENTBOX = 'contentBox',
-            TreeViewSortable;
+    var HOST = "host", NODE = "node", CONTENTBOX = 'contentBox',
+        TreeViewSortable;
 
     TreeViewSortable = Y.Base.create("treeview-sortable", Y.Plugin.Base, [], {
         initializer: function() {
@@ -25,8 +23,7 @@ YUI.add("treeview-sortable", function(Y) {
             }
 
             this.afterHostEvent("render", function() {
-                var host = this.get(HOST),
-                        cb = host.get(CONTENTBOX);
+                var cb = this.get(HOST).get(CONTENTBOX);
 
                 cb.setStyles({
                     overflowY: "auto",
@@ -40,8 +37,8 @@ YUI.add("treeview-sortable", function(Y) {
                     opacity: '.2',
                     invalid: ".wegas-editor-dummy",
                     moveType: "insert"
-                            // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
-                            // opacityNode: "dragNode",
+                        // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
+                        // opacityNode: "dragNode",
 
                 });
                 this.sortable.treeSortPlg = this;
@@ -61,10 +58,10 @@ YUI.add("treeview-sortable", function(Y) {
                     if (addedNode !== undefined) {                              // remove it from where it was
                         addedNode.remove();
                     }
-                    var dragNode = ev.drag.get("node"),
-                            dropNode = ev.drop.get("node"),
-                            found = this.testGroups(dragNode, dropNode),
-                            tOl = dropNode.one("ul");                           // tOl is looking for a child ol below the li
+                    var dragNode = ev.drag.get(NODE),
+                        dropNode = ev.drop.get(NODE),
+                        found = this.testGroups(dragNode, dropNode),
+                        tOl = dropNode.one("ul");                               // tOl is looking for a child ol below the li
 
                     //console.log("drag:over(", dropNode.get("nodeName").toLowerCase(), tOl ? "has tol" : "no tol",
                     //        found, dropNode._node.className,
@@ -75,7 +72,7 @@ YUI.add("treeview-sortable", function(Y) {
                             if (tOl) {                                          // try and append it to existing ol on the target
                                 try {
                                     if (found) {
-                                        tOl.append(ev.drag.get("node"));
+                                        tOl.append(ev.drag.get(NODE));
                                     }
                                 } catch (e) {
                                 }
@@ -84,7 +81,7 @@ YUI.add("treeview-sortable", function(Y) {
                                     return;
                                     if (found) {
                                         dropNode.append(newNode);               // try adding newNode
-                                        newNode.append(ev.drag.get("node"));
+                                        newNode.append(ev.drag.get(NODE));
                                         addedNode = newNode;
                                     }
                                 } catch (e) {
@@ -95,7 +92,7 @@ YUI.add("treeview-sortable", function(Y) {
                         case "ul":                                              // if we're over an ol, just add this as a new li child
                             try {
                                 if (found) {
-                                    dropNode.append(ev.drag.get("node"));
+                                    dropNode.append(ev.drag.get(NODE));
                                     return;
 
                                 }
@@ -110,12 +107,12 @@ YUI.add("treeview-sortable", function(Y) {
 
                 this.sortable.delegate.dd.after('drag:end', function(ev) {
                     var node = this.sortable.delegate.get('currentNode'),
-                            //  prev = node.previous(), next = node.next(),
-                            dragWidget = Y.Widget.getByNode(node),
-                            dropNode = node.get("parentNode"),
-                            dropWidget = Y.Widget.getByNode(dropNode),
-                            index = dropNode.get("children").indexOf(node),
-                            targetNode = ev.target.get("node");
+                        //  prev = node.previous(), next = node.next(),
+                        dragWidget = Y.Widget.getByNode(node),
+                        dropNode = node.get("parentNode"),
+                        dropWidget = Y.Widget.getByNode(dropNode),
+                        index = dropNode.get("children").indexOf(node),
+                        targetNode = ev.target.get(NODE);
 
                     //Y.log("onDragEnd()", "info", "Wegas.VariableTreeView");
 
@@ -137,8 +134,8 @@ YUI.add("treeview-sortable", function(Y) {
             this.afterHostEvent(["*:collapsedChange"], this.sync);
         },
         sync: function() {
-            var cb = this.get(HOST).get(CONTENTBOX), i,
-                    nodeGroups = this.get("nodeGroups");
+            var cb = this.get(HOST).get(CONTENTBOX),
+                nodeGroups = this.get("nodeGroups");
             // cb.all(".wegas-editor-dummy").remove(true);
 
             cb.all(".wegas-editor-dummy").each(function(n) {                    // Remove useless dummies
@@ -148,23 +145,19 @@ YUI.add("treeview-sortable", function(Y) {
             });
 
             Y.Array.each(nodeGroups, function(item) {
-                cb.all("." + item.nodeClass).addClass("treeview-draggable");          // Add class to all draggable nodes
+                cb.all("." + item.nodeClass).addClass("treeview-draggable");    // Add class to all draggable nodes
 
-                cb.all(item.parentNode + " ul:empty")                                      // Add dummies to allow drag on empty nodes
-                        .append("<li class=\"yui3-widget yui3-treenode wegas-editor-dummy " + item.nodeClass + " \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
+                cb.all(item.parentNode + " ul:empty")                           // Add dummies to allow drag on empty nodes
+                    .append("<li class=\"yui3-widget yui3-treenode wegas-editor-dummy " + item.nodeClass + " \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
                 //.append('<li class="yui3-widget yui3-treenode wegas-editor-dummy wegas-editor-listitem yui3-dd-drop " tabindex="1"><div class="content-header yui3-treenode-content-header"><span class="yui3-treenode-content-label" ><i>empty</i></span></div></li>');
-
             });
 
-
-            for (i = 0; i < nodeGroups.length; i += 1) {
-            }
             this.sortable.sync();
         },
         testGroups: function(dragNode, dropNode) {
-            var i, groups = this.get("nodeGroups");
+            var groups = this.get("nodeGroups");
             if (groups) {
-                return !!Y.Array.find(groups, function(item) {                // Added custom class mathing for node groups
+                return !!Y.Array.find(groups, function(item) {                  // Added custom class mathing for node groups
                     return dragNode.hasClass(item.nodeClass) && dropNode.hasClass(item.nodeClass);
                 });
             }
@@ -182,7 +175,6 @@ YUI.add("treeview-sortable", function(Y) {
         destructor: function() {
             this.sortable.destroy();
         }
-
     }, {
         NAME: "TreeViewSortable",
         NS: "sortable",
@@ -216,14 +208,13 @@ YUI.add("treeview-sortable", function(Y) {
         //},
         _onDropEnter: function(e) {
             // console.log("_onDropEnter(" + dropNode._node.className + ", " + dropNode.one(".yui3-treenode-content-label").getHTML() + ")");
-
             if (this.treeSortPlg.testGroups(e.drag.get(NODE), e.drop.get(NODE))) {
                 NestedSortable.superclass._onDropEnter.apply(this, e);
             }
         },
         _onDragOver: function(e) {
             var dragNode = e.drag.get(NODE),
-                    dropNode = e.drop.get(NODE);
+                dropNode = e.drop.get(NODE);
 
             //console.log("_onDragOver(", dropNode._node.className,
             //        (dropNode.one(".yui3-treenode-content-label")) ?

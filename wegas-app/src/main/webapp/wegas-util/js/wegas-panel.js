@@ -13,8 +13,8 @@ YUI.add('wegas-panel', function(Y) {
     "use strict";
 
     Y.namespace("Wegas").Panel = Y.Base.create("wegas-panel", Y.Widget,
-            [Y.WidgetParent, Y.WidgetPosition, Y.WidgetStdMod, Y.WidgetButtons,
-                Y.WidgetModality, Y.WidgetPositionAlign, Y.WidgetStack], {
+        [Y.WidgetParent, Y.WidgetPosition, Y.WidgetStdMod, Y.WidgetButtons,
+            Y.WidgetModality, Y.WidgetPositionAlign, Y.WidgetStack], {
         syncUI: function() {
             this.set("content", this.get("content"));
         },

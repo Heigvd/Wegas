@@ -78,7 +78,7 @@
 
             Y.Wegas.app.on("render", function() {
                 Y.use("button", "wegas-console-wysiwyg", "wegas-editor-treeview", function(Y) {
-                    var i, playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
+                    var playersTree = Y.Widget.getByNode(".wegas-editor-treeview-team");
 
                     if (!playersTree)
                         return; // Edit mode
@@ -97,7 +97,7 @@
                             return;
                         }
 
-                        if (e.currentTarget.treeView.treeviewselect) {           //Check if click is with multiselect plugin
+                        if (e.currentTarget.treeView.treeviewselect) {          //Check if click is with multiselect plugin
                             return;
                         }
                         Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));

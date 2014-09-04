@@ -10,10 +10,11 @@
  */
 YUI.add('wegas-mcq-entities', function(Y) {
     "use strict";
+
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
-        Wegas = Y.Wegas,
+        Wegas = Y.Wegas, persistence = Wegas.persistence,
         IDATTRDEF = {
             type: STRING,
             optional: true, // The id is optional for entites that have not been persisted
@@ -21,10 +22,11 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 _type: HIDDEN
             }
         };
+
     /**
      * QuestionDescriptor mapper
      */
-    Wegas.persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", Wegas.persistence.ListDescriptor, [], {
+    persistence.QuestionDescriptor = Y.Base.create("QuestionDescriptor", persistence.ListDescriptor, [], {
         getRepliesByStartTime: function(startTime) {
             return this.getInstance().getRepliesByStartTime(startTime);
         }
@@ -105,10 +107,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 plugins: [{
                         fn: "WidgetMenu",
                         cfg: {
-                            //menuCfg: {
-                            //    points: ["tl", "tr"]
-                            //},
-                            //event: "mouseenter",
                             children: [{
                                     type: BUTTON,
                                     label: "Standard",
@@ -518,7 +516,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * MCQ Result mapper
      */
-    Wegas.persistence.Result = Y.Base.create("Result", Wegas.persistence.Entity, [], {
+    persistence.Result = Y.Base.create("Result", persistence.Entity, [], {
         getChoiceDescriptor: function() {
             return Wegas.Facade.Variable.cache.findById(this.get("choiceDescriptorId"));
         },
@@ -606,7 +604,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * MCQ ChoiceInstance mapper
      */
-    Wegas.persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.ChoiceInstance = Y.Base.create("ChoiceInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "ChoiceInstance"
@@ -630,7 +628,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
     /**
      * MCQ Reply mapper
      */
-    Wegas.persistence.Reply = Y.Base.create("Reply", Wegas.persistence.Entity, [], {
+    persistence.Reply = Y.Base.create("Reply", persistence.Entity, [], {
         getChoiceDescriptor: function() {
             if (this.get("result")) {
                 return this.get("result").getChoiceDescriptor();

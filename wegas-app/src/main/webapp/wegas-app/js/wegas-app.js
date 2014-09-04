@@ -12,7 +12,8 @@
 YUI.add('wegas-app', function(Y) {
     "use strict";
 
-    var Wegas = Y.namespace('Wegas');
+    var Wegas = Y.namespace('Wegas');                                           // Create namespace
+
     /**
      * Create a new wegas-app
      *
@@ -57,13 +58,8 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         render: function() {
-
-            // Add loading animation (done without YUI cause node module is not available yet)
-         //   document.body.innerHTML += "<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>";
-
             var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), //                       // Data sources cfg objects
-
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() {                                        // When a response to initial requests is received
                     requestCounter -= 1;
@@ -108,9 +104,8 @@ YUI.add('wegas-app', function(Y) {
 
             // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
-                var body = Y.one("body");
-                body.on("key", function() {                                     // Add shortcut to activate developper mode on key '°' pressed
-                    body.toggleClass("wegas-stdmode")                           // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                Y.one("body").on("key", function(e) {                           // Add shortcut to activate developper mode on key '°' pressed
+                    e.target.toggleClass("wegas-stdmode")                       // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y;                                         // Allow access to Y instance
                     if (!this.audio) {                                          // Mexican guy
@@ -152,7 +147,7 @@ YUI.add('wegas-app', function(Y) {
                 msg += "\n Server reply " + Y.JSON.stringify(response, null, "\t");
 
                 if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") {// If the user session has timed out,
-                    new Wegas.Panel({// show a message that invites to reconnect
+                    new Wegas.Panel({//                                         // Show a message that invites to reconnect
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
                         modal: true,
                         centered: true,
