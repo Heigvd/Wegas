@@ -12,12 +12,12 @@
 YUI.add("wegas-visibilitytimer", function(Y) {
     "use strict";
     var HIDDENNODECSSCLASS = "timed-hidden-node",
-        visibilityPlugin;
+        VisibilityPlugin;
 
-    visibilityPlugin = function() {
-        visibilityPlugin.superclass.constructor.apply(this, arguments);
+    VisibilityPlugin = function() {
+        VisibilityPlugin.superclass.constructor.apply(this, arguments);
     };
-    Y.extend(visibilityPlugin, Y.Plugin.Base, {
+    Y.extend(VisibilityPlugin, Y.Plugin.Base, {
         initializer: function() {
             this.timers = [];
             this.initialVisible = null;
@@ -31,22 +31,14 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             this.start();
         },
         reset: function() {
-            var t;
+            var t, host = this.get("host");
             for (t in this.timers) {
                 this.timers[t].cancel();
             }
-            if (this.initialVisible) {
-                if (this.get("host") instanceof Y.Widget) {
-                    this.get("host").show();
-                } else if (this.get("host") instanceof Y.Node) {
-                    this.get("host").removeClass(HIDDENNODECSSCLASS);
-                }
-            } else {
-                if (this.get("host") instanceof Y.Widget) {
-                    this.get("host").hide();
-                } else if (this.get("host") instanceof Y.Node) {
-                    this.get("host").addClass(HIDDENNODECSSCLASS);
-                }
+            if (host instanceof Y.Widget) {
+                host.set("visible", this.initialVisible);
+            } else if (host instanceof Y.Node) {
+                host.toggleClass(HIDDENNODECSSCLASS, !this.initialVisible);
             }
         },
         start: function() {
@@ -56,19 +48,13 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             this.reset();
             this.restartEvent.detach();
         }
-
-    });
-    Y.mix(visibilityPlugin, {
+    }, {
         ATTRS: {
             time: {
                 value: "0",
                 type: "string",
                 _inputex: {
                     label: "Timer ms"
-                },
-                setter: function(v) {
-                    this._set("arrayTime", v.split(","));
-                    return v;
                 }
             },
             arrayTime: {
@@ -81,7 +67,11 @@ YUI.add("wegas-visibilitytimer", function(Y) {
             }
         }
     });
-    Y.Plugin.ShowAfter = Y.Base.create("wegas-showafter", visibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+
+    /**
+     * 
+     */
+    Y.Plugin.ShowAfter = Y.Base.create("wegas-showafter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**
          * @lends Y.Plugin.ShowAfter#
          */
@@ -108,21 +98,15 @@ YUI.add("wegas-visibilitytimer", function(Y) {
         NS: "showafter",
         ATTRS: {
             time: {
-                value: "0",
-                type: "string",
                 _inputex: {
                     label: "Show after (ms)",
                     description: "Multiple times may be separated by ','",
                     regexp: /^([0-9]+(,|, | , | ,)?)*[^, ]$/
-                },
-                setter: function(v) {
-                    this._set("arrayTime", v.split(","));
-                    return v;
                 }
             }
         }
     });
-    Y.Plugin.HideAfter = Y.Base.create("wegas-hideafter", visibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    Y.Plugin.HideAfter = Y.Base.create("wegas-hideafter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**
          * @lends Y.Plugin.HideAfter#
          */
@@ -148,16 +132,10 @@ YUI.add("wegas-visibilitytimer", function(Y) {
         NS: "hideafter",
         ATTRS: {
             time: {
-                value: "0",
-                type: "string",
                 _inputex: {
                     label: "Hide after (ms)",
                     description: "Multiple times may be separated by ','",
                     regexp: /^([0-9]+(,|, | , | ,)?)*[^, ]$/
-                },
-                setter: function(v) {
-                    this._set("arrayTime", v.split(","));
-                    return v;
                 }
             }
         }

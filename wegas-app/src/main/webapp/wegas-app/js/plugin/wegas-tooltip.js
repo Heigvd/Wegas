@@ -574,5 +574,4 @@ YUI.add('wegas-tooltip', function(Y) {
         }
     });
     Wegas.Tooltip = Tooltip;
-
 });

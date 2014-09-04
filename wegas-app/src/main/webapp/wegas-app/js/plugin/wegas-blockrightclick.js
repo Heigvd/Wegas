@@ -37,9 +37,7 @@ YUI.add('wegas-blockrightclick', function(Y) {
                 type: "string"
             }
         },
-        NS: "BlockRightclick",
-        NAME: "BlockRightclick"
+        NS: "BlockRightclick"
     });
     Y.Plugin.BlockRightclick = BlockRightclick;
-
 });

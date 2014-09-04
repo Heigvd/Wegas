@@ -20,7 +20,6 @@ YUI.add('wegas-cssstyles', function(Y) {
      */
     var CSSStyles = Y.Base.create("wegas-cssstyles", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.CSSStyles */
-
         /**
          * Lifecycle methods
          * @function
@@ -89,11 +88,10 @@ YUI.add('wegas-cssstyles', function(Y) {
          * @returns {undefined}
          */
         nodeStyle: function(key, value) {
-            if (this.get("host") instanceof Y.Widget) {
-                this.get("host").get(this.get("targetNode")).setStyle(key, value);
-            } else if (this.get("host") instanceof Y.Node) {
-                return this.get("host").setStyle(key, value);
-            }
+            var host = this.get("host"),
+                node = host instanceof Y.Widget ? host.get(this.get("targetNode")) : host;
+
+            node.setStyle(key, value);
         },
         /**
          * @function
@@ -111,7 +109,6 @@ YUI.add('wegas-cssstyles', function(Y) {
                             if (Y.Array.indexOf(CSSStyles.MEASURE_STYLE, style) > -1
                                 && parseInt(value, 10).toString() === value) {
                                 styles[style] = value + CSSStyles.MEASURE_SUFFIX;
-
                             }
                         }
                         this.setStyle(styles, style);
@@ -186,18 +183,16 @@ YUI.add('wegas-cssstyles', function(Y) {
                             }, {
                                 type: "select",
                                 name: "overflow",
-                                choices: ["visible" , "hidden" , "scroll" , "auto" , "inherit"]
+                                choices: ["visible", "hidden", "scroll", "auto", "inherit"]
                             }, {
                                 type: "select",
                                 name: "overflow-x",
-                                choices: ["visible" , "hidden" , "scroll" , "auto" , "inherit"]
+                                choices: ["visible", "hidden", "scroll", "auto", "inherit"]
                             }, {
                                 type: "select",
                                 name: "overflow-y",
-                                choices: ["visible" , "hidden" , "scroll" , "auto" , "inherit"]
+                                choices: ["visible", "hidden", "scroll", "auto", "inherit"]
                             }
-                            
-                            
                             //{
                             //    name: "backgroundColor",
                             //    type: "colorpicker",

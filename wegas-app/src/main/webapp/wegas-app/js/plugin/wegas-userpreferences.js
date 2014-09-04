@@ -14,6 +14,7 @@ YUI.add("wegas-userpreferences", function(Y) {
     var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             this.get("host").get("boundingBox").addClass("userPreferences");
+
             this.afterHostEvent("render", function() {
                 var k, entity = Y.Wegas.Facade.User.get("currentUser").getMainAccount(),
                     host = this.get("host"),
@@ -26,8 +27,8 @@ YUI.add("wegas-userpreferences", function(Y) {
                     }
                 }
 
-                host.set("cfg", entity.getFormCfg(fieldsToIgnore));
-                host.set("values", entity.toObject());
+                host.set("cfg", entity.getFormCfg(fieldsToIgnore))
+                    .set("values", entity.toObject());
             });
 
             this.onHostEvent("submit", function(e) {
@@ -59,9 +60,7 @@ YUI.add("wegas-userpreferences", function(Y) {
             });
         }
     }, {
-        NAME: "UserPreferences",
         NS: "UserPreferences"
     });
-
     Y.Plugin.UserPreferences = UserPreferences;
 });

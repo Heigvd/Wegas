@@ -23,8 +23,7 @@ YUI.add('wegas-conditionaldisable', function(Y) {
             });
         },
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
+            for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         },
