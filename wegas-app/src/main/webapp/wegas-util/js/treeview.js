@@ -760,14 +760,17 @@ YUI.add("treeview", function(Y) {
                     child.set(SELECTED, 1);
                 }
             });
-            this.get(HOST).after("render", function() {
-                this.after("treeleaf:selectedChange", function(e) {
+            this.onceAfterHostEvent("render", function() {
+                this.afterHostEvent("treeleaf:selectedChange", function(e) {
                     if (e.newVal > 0) {
                         e.target.get("parent").selectAll();
                     } else {
                         e.target.get("parent").deselectAll();
                     }
-                }, this);
+                });
+                this.afterHostEvent("nodeClick", function(e) {
+                    e.node.set("selected", 1);
+                });
             });
         }
     }, {
