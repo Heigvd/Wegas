@@ -249,7 +249,7 @@ public class GameModelController {
      * @throws RepositoryException
      * @throws IOException
      */
-    @GET
+    @POST
     @Path("{gameModelId: [1-9][0-9]*}/CreateVersion/{version: .*}")
     public void createVersion(@PathParam("gameModelId") Long gameModelId,
             @PathParam("name") String name) throws RepositoryException, IOException {
@@ -264,7 +264,7 @@ public class GameModelController {
      * @throws RepositoryException
      * @throws IOException
      */
-    @GET
+    @POST
     @Path("{gameModelId: [1-9][0-9]*}/CreateVersion")
     public void createVersion(@PathParam("gameModelId") Long gameModelId) throws RepositoryException, IOException {
 
@@ -278,7 +278,7 @@ public class GameModelController {
      * @throws IOException
      * @throws RepositoryException
      */
-    @GET
+    @POST
     @Path("AutoVersion")
     public void automaticVersionCreation() throws IOException, RepositoryException {
         gameModelFacade.automaticVersionCreation();
