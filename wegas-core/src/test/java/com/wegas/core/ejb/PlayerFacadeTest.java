@@ -10,23 +10,16 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.User;
-import java.util.List;
 import javax.naming.NamingException;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class GameFacadeTest extends AbstractEJBTest {
+public class PlayerFacadeTest extends AbstractEJBTest {
 
-    private static final Logger logger = LoggerFactory.getLogger(GameFacadeTest.class);
     private static GameFacade gameFacade;
 
     @BeforeClass
@@ -38,10 +31,9 @@ public class GameFacadeTest extends AbstractEJBTest {
      * Test registeredGames
      */
     @Test
-    public void testFindRegisteredGames() throws Exception {
+    public void testRemovePlayer() throws Exception {
         final TeamFacade teamFacade = lookupBy(TeamFacade.class);
         final PlayerFacade playerFacade = lookupBy(PlayerFacade.class);
-        final UserFacade userFacade = lookupBy(UserFacade.class);
 
         final Game g = new Game("game");
         g.setGameModel(gameModel);
@@ -49,19 +41,21 @@ public class GameFacadeTest extends AbstractEJBTest {
         final Team t = new Team("team");
         t.setGame(g);
         teamFacade.create(t);
-        final User u = new User();
-        final JpaAccount abstractAccount = new JpaAccount();
-        abstractAccount.setEmail("a@a.com");
-        u.addAccount(abstractAccount);
-        userFacade.create(u);
-        final Player p = new Player("player");
-        p.setUser(u);
-        p.setTeam(t);
-        playerFacade.create(p);
+        final Player p1 = new Player("player");
+        p1.setTeam(t);
+        playerFacade.create(p1);
+        final Player p2 = new Player("player1");
+        p2.setTeam(t);
+        playerFacade.create(p2);
 
-        final List<Game> registeredGames = gameFacade.findRegisteredGames(u.getId());
-        org.junit.Assert.assertEquals("game", registeredGames.get(0).getName());
+        Game ng = gameFacade.find(g.getId());
+        org.junit.Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
 
-        gameFacade.remove(g.getId());
+        playerFacade.remove(p1.getId());
+
+        ng = gameFacade.find(g.getId());
+        org.junit.Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
+
+        gameFacade.remove(ng);                                                  // Clean up
     }
 }

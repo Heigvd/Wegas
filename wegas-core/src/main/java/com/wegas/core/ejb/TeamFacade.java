@@ -96,7 +96,7 @@ public class TeamFacade extends BaseFacade<Team> {
         while (t.getName() == null) {                                           // If no name is provided,
             String name = baseName + "-" + suffix;                              // generate one
             try {
-                this.findByName(gameId, t.getName());
+                this.findByName(gameId, name);
                 suffix++;
             } catch (NoResultException e) {
                 t.setName(name);

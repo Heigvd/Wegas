@@ -372,7 +372,7 @@ YUI.add("wegas-entity", function(Y) {
                 _inputex: {
                     _type: "uneditable",
                     label: "Scenario",
-                    wrapperClassName: "inputEx-fieldWrapper wegas-game-scenario"
+                    wrapperClassName: "inputEx-fieldWrapper inputEx-uneditableField wegas-game-scenario"
                 }
             },
             createdByName: {
