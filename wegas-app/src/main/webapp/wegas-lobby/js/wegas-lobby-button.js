@@ -115,6 +115,7 @@ YUI.add('wegas-lobby-button', function(Y) {
                         Wegas.Facade.GameModel.sendRequest({
                             request: "/" + this.get("entity").get("id") + "/CreateVersion",
                             cfg: {
+                                method: "POST",
                                 updateCache: false
                             },
                             on: {
