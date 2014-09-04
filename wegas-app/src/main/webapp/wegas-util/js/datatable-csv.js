@@ -28,6 +28,7 @@ YUI.add('datatable-csv', function(Y) {
          * @returns {undefined}
          */
         initializer: function() {
+            var bb = this.get("host").get("boundingBox");
             this.bcsv = new Y.Button({
                 label: "CSV",
                 on: {
@@ -35,7 +36,7 @@ YUI.add('datatable-csv', function(Y) {
                         DatatableCSV.dataToWindow(this._toCSV());
                     }, this)
                 }
-            }).render(this.get("host").get("boundingBox"));
+            }).render(bb);
             this.bdcsv = new Y.Button({
                 label: "Download CSV",
                 on: {
@@ -57,7 +58,7 @@ YUI.add('datatable-csv', function(Y) {
                         //}
                     }, this)
                 }
-            }).render(this.get("host").get("boundingBox"));
+            }).render(bb);
         },
         /**
          * Transformation method, datatable to CSV
