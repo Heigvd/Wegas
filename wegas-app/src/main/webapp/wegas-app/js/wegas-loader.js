@@ -324,10 +324,6 @@ YUI().use(function(Y) {
                 requires: "wegas-plugin",
                 ws_provides: ["ShowAfter", "HideAfter"]
             },
-            "datatable-csv": {
-                path: "js/plugin/datatableCSV-min.js",
-                ws_provides: "DatatableCSV"
-            },
             "wegas-simpledialogue": {
                 path: "js/widget/wegas-simpledialogue-min.js",
                 ws_provides: "SimpleDialogue"
@@ -343,6 +339,9 @@ YUI().use(function(Y) {
         root: "/wegas-util/",
         modules: {
             "wegas-helper": {},
+            "datatable-csv": {
+                ws_provides: "DatatableCSV"
+            },
             "event-mouse-startstop": {
                 requires: "event-base"
             },
