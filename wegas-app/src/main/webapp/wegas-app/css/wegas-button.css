@@ -97,7 +97,7 @@
     background-position: 0px -834px;
 }
 .yui3-skin-sam .wegas-icon-fileexplorer {
-    background-position: 0px -868px;
+    background-position: 0px -870px;
 }
 .yui3-skin-sam .wegas-icon-add {
     background-position: 2px -1028px;
@@ -109,7 +109,7 @@
     background-position: 2px -804px;
 }
 .yui3-skin-sam .wegas-icon-edit {
-    background-position: 2px -1109px;
+    background-position: 1px -1109px;
 }
 .yui3-skin-sam .wegas-icon-designmode {
     background-position: 0px -1110px;
@@ -156,6 +156,10 @@
     width: 22px;
     height: 22px;
     margin: 6px;
-}.yui3-skin-sam .wegas-icon-restore {
+}
+.yui3-skin-sam .wegas-icon-restore {
     background-position: 0 -100px;
+}
+.yui3-skin-sam .wegas-icon-leave {
+    background-position: 1px -127px;
 }

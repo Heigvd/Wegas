@@ -118,6 +118,7 @@
 }
 .wegas-jointeam .teamselection:empty {
     background: white;
+    padding:0;
 }
 .wegas-jointeam .wegas-gameinformation {
     margin-bottom: 1em;

@@ -341,8 +341,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             button.destroy();
         }
     }, {
-        NS: "EditorDTMenu",
-        NAME: "EditorDTMenu",
+        NS: "menu",
         ATTRS: {
             children: {}
         }
@@ -369,7 +368,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             }
             var host = this.get(HOST),
                 rec = host.table.getRecord(e.currentTarget), // the current Record for the clicked TR
-                menuItems = this.get("children"),
+                menuItems = this.get("children") || (host.menu && host.menu.get("children")),
                 entity = rec.get("entity"),
                 data = {
                     entity: entity,
@@ -385,6 +384,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 Y.Array.each(menuItems, function(i) {                           // @hack add icons to some buttons
                     switch (i.label) {
                         case "Delete":
+                        case "Leave":
                         case "Copy":
                         case "Open":
                         case "Edit":
@@ -433,14 +433,12 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     //    }
     //}, {
     //    NS: "EditorDTLink",
-    //    NAME: "EditorDTLink",
     //    ATTRS: {
     //        url: {
     //            value: "game-play.html?"
     //        }
     //    }
     //});
-
 
     /**
      * @class Open a menu on right click, containing the admin edition field
@@ -546,30 +544,38 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             var host = this.get(HOST),
                 tr = e.domEvent.target.ancestor("tr"), // the Node for the TR clicked ...
                 rec = host.table.getRecord(tr), // the current Record for the clicked TR
-                menuItems = this.get("children"),
+                menuItems = this.get("children") || (host.menu && host.menu.get("children")),
                 entity = rec.get("entity"),
                 data = {
                     entity: entity,
                     dataSource: host.get(DATASOURCE)
-                },
-            menuItems = entity.getMenuCfg(data).slice(0);                       // Fetch menu items
+                };
 
-            Y.Array.each(menuItems, function(i, itemIndex) {                    // @HACK Fix the submenu positioning
-                Y.Array.each(i.plugins, function(p, index) {
-                    if (p.fn === "WidgetMenu") {
-                        menuItems[itemIndex] = Y.mix({}, menuItems[itemIndex]);
-                        menuItems[itemIndex].plugins = menuItems[itemIndex].plugins.slice(0);
-                        menuItems[itemIndex].plugins[index] = {
-                            fn: "WidgetMenu",
-                            cfg: Y.mix({
-                                menuCfg: {
-                                    points: ["tl", "tr"]
-                                },
-                                event: "mouseenter"
-                            }, p.cfg)
-                        };
-                    }
-                });
+            if (menuItems) {                                                    // If there are menu items in the cfg
+                Wegas.Editable.mixMenuCfg(menuItems, data);                     // use them
+            } else {                                                            // Otherwise
+                menuItems = entity.getMenuCfg(data);                            // use entity default menu
+            }
+
+            menuItems = Y.Array.map(menuItems, function(i) {                    // @HACK Fix the submenu positioning menuItems[itemIndex]
+                if (i.plugins) {
+                    return Y.mix({
+                        plugins: Y.Array.map(i.plugins, function(p) {
+                            if (p.fn === "WidgetMenu") {
+                                return Y.mix({
+                                    cfg: Y.mix({
+                                        menuCfg: {
+                                            points: ["tl", "tr"]
+                                        },
+                                        event: "mouseenter"
+                                    }, p.cfg)
+                                }, p);
+                            }
+                            return p;
+                        })
+                    }, i);
+                }
+                return i;
             });
 
             if (menuItems) {

@@ -358,12 +358,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .open-game-tab {
     margin: 1em .5em 0;
 }
-.editor-button-resume {
-    margin-left: 0.5em;
-    margin-top: 1.3em;
-    padding: 7px 18px;
-    width: 146px;
-}
 
 /* Wegas editor icons */
 .yui3-skin-sam .wegas-icon-game,
