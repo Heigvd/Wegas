@@ -116,6 +116,7 @@ YUI.add("wegas-widget", function(Y) {
                 content: txt,
                 timeout: timeout
             });
+            return this;
         },
         rebuild: function() {
             var parent, index, cfg;
