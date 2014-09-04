@@ -92,15 +92,15 @@ YUI.add('wegas-scripteval', function(Y) {
             if (Y.Lang.isObject(script)) {                                      // Normalize script argument
                 script = script.content;
             }
-            /*jslint evil: true */
             if (!this.upToDate) {                                               //Only compute if new value
                 this._buildContext();
             }
             this.context.self = player || Wegas.Facade.Game.cache.getCurrentPlayer();
-            if (script.indexOf("return ") === -1) {
+            if (script.indexOf("return") === -1) {
                 script = "return " + script;
             }
-            return (new Function("with(this) { " + script + ";}")).call(this.context);
+            /*jslint evil: true */
+            return (new Function(Y.Object.keys(this.context), script)).apply({}, Y.Object.values(this.context));
         },
         /**
          * @function
