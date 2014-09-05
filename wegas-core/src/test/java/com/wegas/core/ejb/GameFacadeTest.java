@@ -15,6 +15,7 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.List;
 import javax.naming.NamingException;
+import static org.junit.Assert.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -60,7 +61,7 @@ public class GameFacadeTest extends AbstractEJBTest {
         playerFacade.create(p);
 
         final List<Game> registeredGames = gameFacade.findRegisteredGames(u.getId());
-        org.junit.Assert.assertEquals("game", registeredGames.get(0).getName());
+        assertEquals("game", registeredGames.get(0).getName());
 
         gameFacade.remove(g.getId());
     }
