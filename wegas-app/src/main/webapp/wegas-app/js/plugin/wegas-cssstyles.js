@@ -192,6 +192,10 @@ YUI.add('wegas-cssstyles', function(Y) {
                                 type: "select",
                                 name: "overflow-y",
                                 choices: ["visible", "hidden", "scroll", "auto", "inherit"]
+                            }, {
+                                type: "select",
+                                name: "font-variant",
+                                choices: ["inherit", "initial", "normal", "small-caps"]
                             }
                             //{
                             //    name: "backgroundColor",
