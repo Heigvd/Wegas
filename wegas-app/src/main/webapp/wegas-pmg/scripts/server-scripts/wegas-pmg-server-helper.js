@@ -56,7 +56,7 @@ var PMGHelper = (function() {
      * @param {type} resourceDescriptor
      * @returns {Boolean}
      */
-    function workingOnProject(resourceDescriptor) {
+    function workOnProject(resourceDescriptor) {
         return isReservedToWork(resourceDescriptor) && resourceDescriptor.getInstance(self).assignments.size() > 0;
     }
 
@@ -262,8 +262,8 @@ var PMGHelper = (function() {
         sendHistory: function(from, title, message) {
             return sendHistory(from, title, message);
         },
-        workingOnProject: function(resourceDescriptor) {                           // Condition
-            return workingOnProject(resourceDescriptor);
+        workOnProject: function(resourceDescriptor) {                           // Condition
+            return workOnProject(resourceDescriptor);
         },
         willWorkOnProject: function(resourceDescriptor) {                           // Condition
             return willWorkOnProject(resourceDescriptor);

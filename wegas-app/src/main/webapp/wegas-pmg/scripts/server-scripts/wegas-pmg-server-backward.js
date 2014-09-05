@@ -16,7 +16,7 @@ function nextPeriod(){
 }
 
 function workOnProject(resourceInstance){
-    return PMGHelper.workingOnProject(resourceInstance.getDescriptor());
+    return PMGHelper.workOnProject(resourceInstance.getDescriptor());
 }
 
 function addImpactDuration(a, b, c, d){
