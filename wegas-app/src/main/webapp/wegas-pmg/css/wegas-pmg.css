@@ -127,6 +127,10 @@
     text-align:left;
     font-size: 1.1em;
 }
+.layout .horizontal-menu button.hidden-button {
+    display: none;
+}
+
 .horizontal-menu button:hover {
     background-color:#DDDDDD;
 }
