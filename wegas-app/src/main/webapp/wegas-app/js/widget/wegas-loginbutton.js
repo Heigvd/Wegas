@@ -211,8 +211,8 @@ YUI.add("wegas-loginbutton", function(Y) {
                             Y.one("body").toggleClass("wegas-ascii");
                             Y.use("cookie", function(Y) {
                                 if (Y.one("body.wegas-ascii")) {
-                                    this.audio = new Audio(Wegas.app.get("base") + "wegas-app/images/wegas-mexican.mp3");
-                                    this.audio.play();
+                                    var audio = new Audio(Wegas.app.get("base") + "wegas-app/images/wegas-mexican.mp3");
+                                    audio.play();
                                     Y.Cookie.set("asciimode", "wegas-ascii");
                                 } else {
                                     Y.Cookie.remove("asciimode");

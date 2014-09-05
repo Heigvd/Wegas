@@ -581,8 +581,7 @@ body.wegas-ascii *:before {
 .wegas-ascii input[type="checkbox"] + *:before, .wegas-ascii input[type="radio"] + *:before {
     content: "o";
     border: 1px solid;
-    color:  black!important
-        ;
+    color: black!important;
     padding: 0 3px;
     margin-right: 4px;
 }
