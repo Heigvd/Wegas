@@ -888,11 +888,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     persistence.InboxInstance = Base.create("InboxInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
-                value: "InboxInstance",
-                _inputex: {
-                    disabled: true,
-                    label: "Nothing to edit"
-                }
+                value: "InboxInstance"
             },
             messages: {
                 type: ARRAY,
@@ -984,20 +980,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "transient": true
             },
             "@class": {
-                value: "Script",
-                type: STRING
+                value: "Script"
             },
-            //language: {
-            //    value: "JavaScript",
-            //    type: STRING,
-            //    choices: [{
-            //            value: "JavaScript"
-            //        }],
-            //    _inputex: {
-            //        //type:"select",
-            //        _type: HIDDEN
-            //    }
-            //},
             content: {
                 type: STRING,
                 format: TEXT,

@@ -152,8 +152,7 @@ YUI.add('wegas-scripteval', function(Y) {
             }
         }
     }, {
-        NS: "script",
-        NAME: "scriptEval"
+        NS: "script"
     });
     Y.Plugin.ScriptEval = ScriptEval;
 
