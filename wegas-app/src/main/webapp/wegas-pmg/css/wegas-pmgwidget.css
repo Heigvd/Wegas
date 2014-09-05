@@ -253,3 +253,32 @@ tbody .past .activity {
 .pmg-legend .planification{
     background-color: rgba(135, 135, 135, 0.3);
 }
+
+.onclickpopup {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.pmg-popup-overlay {
+    background: white;
+    border: 1px solid lightgray;
+    box-shadow: 1px 2px 4px #6d6d6d;
+    z-index: 100;
+    /* position: absolute; */
+    font-size: 8pt;
+    min-width: 12em
+;
+    padding: 5px;
+}
+
+.pmg-popup-overlay .yui3-widget-bd .subtitle{
+    color: rgb(68, 68, 68);
+    margin-bottom: 3px;
+    font-weight: bold;
+    font-size: 8.5pt;
+}
+
+.pmg-popup-overlay .yui3-widget-hd {
+    font-size: 9pt;
+    font-weight: bold;
+}
