@@ -110,7 +110,7 @@
                                             "children": [{
                                                     "type": "Button",
                                                     "label": "Edit",
-                                                    "cssClass": "lobby-button-edit",
+                                                    "cssClass": "wegas-button-edit",
                                                     "plugins": [{
                                                             "fn": "ToolbarMenu",
                                                             "cfg": {
@@ -149,7 +149,7 @@
                                                 }, {
                                                     "type": "Button",
                                                     "label": "Open",
-                                                    "cssClass": "lobby-button-open",
+                                                    "cssClass": "wegas-button-open",
                                                     "plugins": [{
                                                             "fn": "OpenGameAction",
                                                             "cfg": {
@@ -159,7 +159,6 @@
                                                 }, {
                                                     "type": "Button",
                                                     "label": "Leave",
-                                                    "cssClass": "lobby-button-leave",
                                                     "plugins": [{
                                                             "fn": "LeaveGameAction"
                                                         }]

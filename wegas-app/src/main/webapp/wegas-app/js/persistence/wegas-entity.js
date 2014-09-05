@@ -223,6 +223,7 @@ YUI.add("wegas-entity", function(Y) {
         EDITMENU: [{
                 type: BUTTON,
                 label: "Edit",
+                cssClass: "wegas-button-edit",
                 plugins: [{
                         fn: "ToolbarMenu"
                     }, {
@@ -290,6 +291,7 @@ YUI.add("wegas-entity", function(Y) {
             }, {
                 type: BUTTON,
                 label: "Open",
+                cssClass: "wegas-button-open",
                 plugins: [{
                         fn: "OpenGameAction"
                     }]
@@ -478,6 +480,7 @@ YUI.add("wegas-entity", function(Y) {
         EDITMENU: [{
                 type: BUTTON,
                 label: "Edit",
+                cssClass: "wegas-button-edit",
                 plugins: [{
                         fn: "ToolbarMenu"
                     }, {
@@ -565,6 +568,7 @@ YUI.add("wegas-entity", function(Y) {
                     }]
             }, {
                 type: BUTTON,
+                cssClass: "wegas-button-open",
                 label: "Open",
                 plugins: [{
                         fn: "OpenGameAction",
@@ -813,11 +817,7 @@ YUI.add("wegas-entity", function(Y) {
     }, {
         ATTRS: {
             "@class": {
-                type: STRING,
-                value: "JpaAccount",
-                _inputex: {
-                    _type: HIDDEN
-                }
+                value: "JpaAccount"
             },
             name: {
                 "transient": true,
@@ -943,11 +943,7 @@ YUI.add("wegas-entity", function(Y) {
     }, {
         ATTRS: {
             "@class": {
-                type: STRING,
-                value: "GuestJpaAccount",
-                _inputex: {
-                    _type: HIDDEN
-                }
+                value: "GuestJpaAccount"
             },
             permissions: {
                 "transient": true,

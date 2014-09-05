@@ -182,13 +182,17 @@
 .wegas-stdmode .wegas-lobby-parentgamemodeltab .editor-form-gamemodel-name {
     display: none;
 }
-.wegas-joinedgamesdatatable .lobby-button-open  {
+.wegas-lobby-datatable .wegas-datatable-menu .yui3-button  {
+    display: none;
+}
+.wegas-lobby-datatable .wegas-datatable-menu .wegas-button-edit  {
+    display: inline-block;
+}
+.wegas-lobby-datatable .wegas-datatable-menu .wegas-button-open  {
     font-size: inherit!important;
     float: left;
     padding-right: 0.3em !important;
-}
-.wegas-joinedgamesdatatable .lobby-button-edit {
-    display: none;
+    display: inline-block;
 }
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper {
