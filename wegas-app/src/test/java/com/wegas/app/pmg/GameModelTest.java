@@ -121,7 +121,7 @@ abstract public class GameModelTest {
 
     protected final void checkNumber(String name, double expectedValue, String errorMessage) {
         final VariableDescriptorFacade vdf = lookup(VariableDescriptorFacade.class);
-        org.junit.Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
+        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
     }
 
     protected final void checkNumber(String name, double expectedValue) {

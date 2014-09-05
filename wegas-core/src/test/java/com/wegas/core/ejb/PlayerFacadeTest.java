@@ -11,6 +11,7 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import javax.naming.NamingException;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -49,13 +50,13 @@ public class PlayerFacadeTest extends AbstractEJBTest {
         playerFacade.create(p2);
 
         Game ng = gameFacade.find(g.getId());
-        org.junit.Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
+        Assert.assertEquals(2, ng.getTeams().get(1).getPlayers().size());
 
         playerFacade.remove(p1.getId());
 
         ng = gameFacade.find(g.getId());
-        org.junit.Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
+        Assert.assertEquals(1, ng.getTeams().get(1).getPlayers().size());
 
-        gameFacade.remove(ng);                                                  // Clean up
+        gameFacade.remove(g.getId());                                           // Clean up
     }
 }
