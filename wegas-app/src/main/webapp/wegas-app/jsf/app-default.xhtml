@@ -7,7 +7,7 @@
     <ui:composition template="page-default.xhtml">
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-stdmode #{requestController.currentRoles}">
+            <h:body class="yui3-skin-sam #{cookie['asciimode'].value} wegas-stdmode #{requestController.currentRoles} ">
                 <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
 
                 <!-- Rollbar error tracking -->

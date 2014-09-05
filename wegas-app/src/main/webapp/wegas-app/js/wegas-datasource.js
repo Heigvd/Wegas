@@ -1333,7 +1333,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.onHostEvent("ExceptionEvent", function(e) {
                 var type = e.type.split(":").pop();
                 Y.Widget.getByNode("#centerTabView").get("selection")
-                    .showMessageBis(type, "Server " + type + ": " + e.details[0]);
+                    .showMessageBis(type, "Server error: " + e.message);
 
                 this.logs.push({type: "error", val: e.details[0]});
                 this._out();
