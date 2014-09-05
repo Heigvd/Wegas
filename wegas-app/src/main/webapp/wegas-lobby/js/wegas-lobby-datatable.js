@@ -93,8 +93,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             var row = this.table.getRow(r);
                             row.scrollIntoView();
 
-                            this.get("parent")
-                                && this.table.get("selectedRow") !== row
+                            this.table.get("selectedRow") !== row
+                                && this.get("parent")
+                                && !this.get("parent").get("selected")
                                 && this.get("parent").set("selected", 2);       // @hack Ensure the parent tab is currently visible
 
                             this.table.set("selectedRow", row);
