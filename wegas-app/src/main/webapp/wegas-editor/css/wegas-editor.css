@@ -502,7 +502,7 @@ body.wegas-ascii *:before {
 .wegas-ascii .wegas-layout-left > .yui3-widget{
     border-right: 1px solid; 
 }
-.yui3-skin-sam .wegas-layout-right {
+.wegas-ascii .wegas-layout-right {
     top: 0px;
 }
 .wegas-ascii .wegas-layout-right> .yui3-widget {
@@ -638,4 +638,7 @@ body.wegas-ascii *:before {
 }
 .wegas-ascii  .yui3-resize-handle-inner-r, .wegas-ascii .yui3-resize-handle-inner-l {
     background: none;
+}
+.wegas-ascii .wegas-toolbar-header {
+    padding: .5em 0;
 }
