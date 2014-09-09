@@ -408,7 +408,7 @@ if (centerTab && Y.one(".wegas-hostmode")) {
 /* currently not working waiting for a new server deploy
  Y.use("wegas-inputex-variabledescriptorselect", function(){
  
- Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS["TempImpact.addImpactDuration"]={
+ Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS["PMGHelper.addImpactDuration"]={
  label:"impact reverse",
  "arguments":[{
  type: "string",
@@ -441,15 +441,15 @@ if (centerTab && Y.one(".wegas-hostmode")) {
 Y.mix(persistence.ResourceDescriptor.prototype, {
     isFirstPriority: function(taskDescriptor) {
         var assignments = this.getInstance().get("assignments");
-    
+
         return assignments.length > 0 && assignments[0].get('taskDescriptorId') === taskDescriptor.get("id");
     },
-    isReservedToWork : function() {
+    isReservedToWork: function() {
         var autoReserve = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation").get("value"),
             currentPeriod = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase3").getInstance().get("value"),
             occupations = this.getInstance().get("occupations"),
             oi;
-                
+
         if (autoReserve) {
             // Auto Reservation : resource is always reserved unless
             // an uneditable occupation exist
@@ -469,8 +469,80 @@ Y.mix(persistence.ResourceDescriptor.prototype, {
             }
             return false;
         }
-    }, isPlannedForCurrentPeriod : function(taskDescriptor) {
+    }, isPlannedForCurrentPeriod: function(taskDescriptor) {
         return this.isFirstPriority(taskDescriptor) && this.isReservedToWork();
     }
 });
 
+Y.use("wegas-inputex-variabledescriptorselect", function(){
+    Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
+        "PMGHelper.sendMessage": {
+            label: "[PMG] Send Message",
+            className: "wegas-method-sendmessage",
+            "arguments": [
+                {
+                    type: "string",
+                    label: "From",
+                    scriptType: "string"
+                }, {
+                    type: "string",
+                    label: "Subject",
+                    scriptType: "string",
+                    required: true
+                }, {
+                    type: "html",
+                    label: "Body",
+                    scriptType: "string",
+                    required: true
+                }, {
+                    type: "list",
+                    label: "",
+                    scriptType: "string",
+                    elementType: {
+                        type: "wegasurl",
+                        label: "",
+                        required: true
+                    }
+                }]
+        }/*,
+    "PMGHelper.addImpactDuration" : {   // currently not working waiting for a new server deploy
+           label:"[PMG] impact reverse",
+           "arguments":[{
+                type: "string",
+                typeInvite: "factor",
+                scriptType: "string",
+                required: true
+            },{
+                type: "string",
+                typeInvite: "task name",
+                scriptType: "string",
+                required: true
+            },{
+                type: "number",
+                typeInvite: "in period",
+                scriptType: "number",
+                required: true
+            },{
+                type: "number",
+                typeInvite: "value",
+                scriptType: "number",
+                required: true
+            }]
+        }*/
+    });
+});
+
+/*
+Y.use("wegas-inputex-variabledescriptorselect", function(){
+    Y.mix(Y.inputEx.getFieldClass("condition").prototype.GLOBALMETHODS, {
+        "PMGHelper.workingOnProject": {
+            label: "2 [PMG] is working on project",
+            "arguments" : [{
+                type: "variabledescriptorselect",
+                scriptType: "ResourceDescriptor",
+                classFilter: "ResourceDescriptor",
+                required: true
+            }]
+        }
+    });
+});*/

@@ -95,6 +95,21 @@ YUI.addGroup("wegas-pmg", {
             requires: 'wegas-widgetmenu',
             ws_provides: 'Tablepopup'
         },
+        "wegas-pmg-tabletooltip": {
+            path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
+            requires: ['overlay', 'wegas-pmgwidget-css'],
+            ws_provides: 'Tabletooltip'
+        },
+        "wegas-pmg-taskpopup": {
+            path: 'js/plugin/wegas-pmg-taskpopup-min.js',
+            requires: ['overlay', 'wegas-pmgwidget-css'],
+            ws_provides: 'Taskpopup'
+        },
+        "wegas-pmg-taskonclickpopup": {
+            path: 'js/plugin/wegas-pmg-taskonclickpopup-min.js',
+            requires: ['overlay', 'wegas-pmgwidget-css'],
+            ws_provides: 'Taskonclickpopup'
+        },
         "wegas-pmg-advancementlimit": {
             path: 'js/wegas-pmg-advancementlimit-min.js',
             requires: [],

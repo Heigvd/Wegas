@@ -298,7 +298,7 @@ function findLastStepCorrespondingActivity(employeeInst, taskDesc, period) {
 function haveCorrespondingActivityInPast(employeeInst, taskDesc) {
     return Y.Array.find(employeeInst.activities, function(activity) {
         return activity.taskDescriptor === taskDesc                             //if the task of activity match with the given task (same task and same employee == same activity)
-            && currentPeriod > activity.time;
+            && currentPeriod > activity.time; // avoid current period activity activity 
     });
 }
 

@@ -78,7 +78,7 @@ YUI.add('wegas-pmg-bac', function(Y) {
                     data: {
                         "@class": "Script",
                         //content: "Variable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") + "').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
-                        content: "updateBAC('" + taskDescriptor.get("name") + "','" + taskDescriptor.get("instance").properties.bac + "');"
+                        content: "PMGHelper.updateBAC('" + taskDescriptor.get("name") + "','" + taskDescriptor.get("instance").properties.bac + "');"
                     }
                 }
             });

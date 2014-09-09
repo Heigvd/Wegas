@@ -17,13 +17,13 @@ import org.junit.Test;
 public class LanguageTest extends PMGameAbstractTest {
 
     @Test
-    public void testSimplePMG() throws ScriptException {
+    public void testLanguage() throws ScriptException {
         this.evalScript("testLanguage()");
     }
 
     @Override
     protected String getGameModelPath() {
-        return "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-simplePmg.json";
+        return "src/main/webapp/wegas-pmg/db/wegas-pmg-gamemodel-language.json";
     }
     
     @Override

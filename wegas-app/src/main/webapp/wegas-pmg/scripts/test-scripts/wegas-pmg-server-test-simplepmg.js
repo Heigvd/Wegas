@@ -685,7 +685,7 @@ function testUnworkedHours() {
     assign(commercial1, task1, task8);  // 1step on task1 -> NotMyWork + 9step on task8
     reserve(commercial1, 1);           // Unworked 10% 1000$/4 ->  25$
     // Do first execution period
-    silentNextPeriod();
+    nextPeriod();
     clearAssignments(commercial1);
 
     unworkedCost += 25; // -> Ancien 25
@@ -699,7 +699,7 @@ function testUnworkedHours() {
     assign(commercial2, task1, task8);  // 1step on task1 -> NotMyWork + 9step on task8
     reserve(commercial2, 2); // Unworked 10% -> 25$
     // Do 2nd execution period
-    silentNextPeriod();
+    nextPeriod();
     clearAssignments(commercial2);
 
     unworkedCost += 25; // -> Ancien 50
@@ -714,7 +714,7 @@ function testUnworkedHours() {
     assign(commercial3, task1, task8);  // 1step on task1 -> NotMyWork + 9step on task8
     reserve(commercial3, 3);  // Unworked 5%  -> 12.5$
     // Do 3rd execution period
-    silentNextPeriod();
+    nextPeriod();
     clearAssignments(commercial3);
 
     unworkedCost += 12.5;   // -> Ancien 62.5
@@ -729,7 +729,7 @@ function testUnworkedHours() {
     assign(commercial4, task1);  // 1step on task1 -> NotMyWork + 9step loosed
     reserve(commercial4, 4); // Unwork 20% of 1000/4 => 50$
     // Do 4th execution period
-    silentNextPeriod();
+    nextPeriod();
     clearAssignments(commercial4);
 
     unworkedCost += 50;  // Ancien 112.50 
@@ -742,7 +742,7 @@ function testUnworkedHours() {
     commercial5.setProperty('maxBilledUnworkedHours', '50');
     reserve(commercial5, 5); // Unwork 50% -> 125$
     // Do 5th execution period
-    silentNextPeriod();
+    nextPeriod();
 
     unworkedCost += 125; // Ancien 237.5
     debug("costs5: " + unworkedCost + " :: " + projectUnworkedHours.value);
@@ -753,7 +753,7 @@ function testUnworkedHours() {
 
     reserve(commercial1, 6); // Unwork 100% -> 250$
     // Do 6th execution period
-    silentNextPeriod();
+    nextPeriod();
 
     unworkedCost += 250;  // Ancien 487.50
     debug("costs6: " + unworkedCost + " :: " + projectUnworkedHours.value);
@@ -765,7 +765,7 @@ function testUnworkedHours() {
     designer1.setProperty('maxBilledUnworkedHours', '200');
     reserve(designer1, 7); // Unwork 100%    250$
     // Do 5th execution period
-    silentNextPeriod();
+    nextPeriod();
 
     unworkedCost += 250; // ancien 737.5
     debug("costs7: " + unworkedCost + " :: " + projectUnworkedHours.value);
@@ -777,19 +777,11 @@ function testUnworkedHours() {
     designer2.setProperty('maxBilledUnworkedHours', '-200');
     reserve(designer2, 8); // Unwork 0% -> 0$
     // Do 5th execution period
-    silentNextPeriod();
+    nextPeriod();
 
     debug("costs8: " + unworkedCost + " :: " + projectUnworkedHours.value);
     assertEquals(unworkedCost + 0, projectUnworkedHours.value, "testUnworkedHours(): period8 value does not match");
 }
-
-function silentNextPeriod() {
-    var oldMode = DEBUGMODE;
-    DEBUGMODE = false;
-    nextPeriod();
-    DEBUGMODE = oldMode;
-}
-
 
 function reset() {
     loadVariables();

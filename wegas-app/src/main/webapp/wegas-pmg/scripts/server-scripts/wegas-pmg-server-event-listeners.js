@@ -7,13 +7,8 @@
  */
 /**
  * @fileoverview
- * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
-
-function sendHistory(from, title, msg, date) {
-    Variable.find(gameModel, "history").sendDatedMessage(self, from, date, title, msg);
-}
-
 Event.on("replyValidate", function(e) {
     var msg = "", root, type;
 
@@ -30,5 +25,12 @@ Event.on("replyValidate", function(e) {
     }
     msg += e.reply.getResult().getAnswer();                                     //Reply
     
-    sendHistory(type, e.question.getDescriptor().getTitle(), msg, PMGSimulation.getCurrentPeriodFullName());
+    PMGHelper.sendHistory(type, e.question.getDescriptor().getTitle(), msg);
+});
+
+Event.on("addTaskPlannification", function() {
+    PMGSimulation.plannedValueHistory();
+});
+Event.on("removeTaskPlannification", function() {
+    PMGSimulation.plannedValueHistory();
 });

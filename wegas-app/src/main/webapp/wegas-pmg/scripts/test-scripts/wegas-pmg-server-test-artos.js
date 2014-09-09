@@ -37,13 +37,10 @@ var gameModelFacade,
 
 
 function testArtos() {
-    //var oldMode = DEBUGMODE;
-    //DEBUGMODE = true;
     loadVariables();
 
     testGameVersion1();
     testArtosRealGameExample();
-    //DEBUGMODE = oldMode;
 }
 
 
@@ -140,12 +137,9 @@ function init_game(){
  */
 
 function testGameVersion1() {
-    var oldMode = DEBUGMODE,
-        start = Date.now(),
+    var start = Date.now(),
         a102b, a102b_a;
         
-    DEBUGMODE = true;
-    
     breakpoint("pre reset");
     reset();
 
@@ -174,8 +168,6 @@ function testGameVersion1() {
     checkChoiceHasBeenSelected(a102b_a);
 
     printDuration("END", start);
-    
-    DEBUGMODE = oldMode;
 }
 
 

@@ -36,12 +36,14 @@ abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
     public void setUpGM() throws IOException, GlassFishException {
         /* insert script from files*/
         String[] scripts = {
-            SCRIPTROOT + "server-scripts/wegas-pmg-server-util.js",
-            SCRIPTROOT + "server-scripts/wegas-pmg-server-script.js",
-            SCRIPTROOT + "server-scripts/wegas-pmg-server-simulation.js",
             SCRIPTROOT + "server-scripts/locales/fr.js",
             SCRIPTROOT + "server-scripts/locales/en.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-backward.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-event-listeners.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-helper.js",
             SCRIPTROOT + "server-scripts/wegas-pmg-server-language.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-simulation.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-util.js",
             SCRIPTROOT + "test-scripts/wegas-pmg-server-test-util.js",
             SCRIPTROOT + getScriptTestPath()};
 
