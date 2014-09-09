@@ -9,10 +9,11 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-plugin', function(Y) {
+YUI.add("wegas-plugin", function(Y) {
     "use strict";
 
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas"),
+        PREVIEW_PAGELOADER_ID = "previewPageLoader",
         PAGELOADER_CONFIG = {
             FULL_PAGE: {
                 label: "Entire page",
@@ -22,7 +23,7 @@ YUI.add('wegas-plugin', function(Y) {
                 label: "Current page display",
                 value: "Current page display"
             }
-        }, PREVIEW_PAGELOADER_ID = "previewPageLoader";
+        };
 
     /**
      *  @name Y.Wegas.Plugin
@@ -34,7 +35,13 @@ YUI.add('wegas-plugin', function(Y) {
     };
     Y.mix(Wegas.Plugin.prototype, {
         defaultFailureHandler: function(e) {
-            this.get("host").defaultFailureHandler(e);
+            this.get(HOST).defaultFailureHandler(e);
+        },
+        showOverlay: function() {
+            this.get(HOST).showOverlay();
+        },
+        hideOverlay: function() {
+            this.get(HOST).hideOverlay();
         }
     });
     Y.mix(Wegas.Plugin, {
@@ -84,7 +91,7 @@ YUI.add('wegas-plugin', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
-            this.get("host").get("boundingBox").addClass("wegas-" + this.get("targetEvent"));
+            this.get(HOST).get("boundingBox").addClass("wegas-" + this.get("targetEvent"));
             this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
@@ -154,7 +161,6 @@ YUI.add('wegas-plugin', function(Y) {
             url: {
                 type: "string",
                 _inputex: {
-                    //_type: "wegasurl"
                     label: "Open url"
                 }
             },
@@ -193,7 +199,7 @@ YUI.add('wegas-plugin', function(Y) {
             var outputType = this.get("outputType");
             //var gameModelId = Wegas.Facade.GameModel.get("currentGameModelId");
             var playerId = Y.Wegas.Facade.Game.get("currentPlayerId");
-            var root = this.get("root.evaluated").get('name');
+            var root = this.get("root.evaluated").get("name");
             var printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
             window.open(printUrl);
         }
@@ -262,7 +268,7 @@ YUI.add('wegas-plugin', function(Y) {
         },
         execute: function() {
             var targetPageLoader = this._getTargetPageLoader();
-            if (!targetPageLoader || this.get("host").get("disabled")) {
+            if (!targetPageLoader || this.get(HOST).get("disabled")) {
                 return;
             }
             /* 
@@ -275,13 +281,13 @@ YUI.add('wegas-plugin', function(Y) {
                 }, this, targetPageLoader)));
         },
         _getTargetPageLoader: function() {
-            var targetPageLoader, plID = this.get('targetPageLoaderId');
+            var targetPageLoader, plID = this.get("targetPageLoaderId");
             switch (plID) {
                 case PAGELOADER_CONFIG.FULL_PAGE.value:
                     targetPageLoader = Wegas.PageLoader.find(PREVIEW_PAGELOADER_ID);
                     break;
                 case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
-                    targetPageLoader = Y.Widget.getByNode(this.get("host").get("root").get("boundingBox").ancestor());
+                    targetPageLoader = Y.Widget.getByNode(this.get(HOST).get("root").get("boundingBox").ancestor());
                     break;
                 default:
                     targetPageLoader = Wegas.PageLoader.find(plID);

@@ -356,9 +356,6 @@ YUI.add('wegas-editor-entityaction', function(Y) {
                             on: {
                                 success: function() {
                                     EditEntityAction.hideRightTabs();
-                                    //EditEntityAction.hideEditFormOverlay();
-                                    //EditEntityAction.showFormMessage("success", "Item has been added");
-                                    //EditEntityAction.hideFormFields();
                                 },
                                 failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                             }

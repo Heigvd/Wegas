@@ -100,6 +100,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }, this);
         },
         syncHost: function() {
+            this.hideOverlay();
             Y.later(10, this.get("host"), this.get("host").syncUI);
         },
         formatAssignment: function(o) {
@@ -206,6 +207,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             }
             var data = e.target.get("data");
 
+            this.showOverlay();
             Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
                 cfg: {

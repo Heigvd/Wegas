@@ -28,34 +28,35 @@ YUI.add('wegas-pmg-reservation', function(Y) {
          * @private
          */
         initializer: function() {
-            this.get("host").datatable.delegate("click", this.onClick, ".present, .futur", this);
             this.onceAfterHostEvent("render", function() {
-                this.get("host").get("contentBox").addClass("wegas-pmg-reservation");
+                var host = this.get("host");
+                host.datatable.delegate("click", this.onClick, ".present, .futur", this);
+                host.get("contentBox").addClass("wegas-pmg-reservation");
             });
         },
         onClick: function(e) {
-            var i, assignment,
-                dt = this.get("host").datatable,
+            var dt = this.get("host").datatable,
                 cell = dt.getCell(e.currentTarget),
                 time = dt.getColumn(e.currentTarget).time,
-                resource = dt.getRecord(e.currentTarget).get("descriptor").getInstance();
+                resource = dt.getRecord(e.currentTarget).get("descriptor").getInstance(),
+                assignment = Y.Array.find(resource.get("occupations"), function(o) {
+                    return o.get("time") === time;
+                });
 
-            for (i = 0; i < resource.get("occupations").length; i++) {
-                assignment = resource.get("occupations")[i];
-                if (assignment.get("time") === time) {
-                    if (assignment.get("editable")) {                           // this does not make sense if we use the widget with activities
-                        cell.setContent("");
-                        Wegas.Facade.Variable.sendQueuedRequest({
-                            request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
-                            cfg: {
-                                method: "DELETE",
-                                updateEvent: false
-                            }
-                        });
-                    }
-                    return;
+            if (assignment || cell.one("span")) {                               // if the cell is full and there is no assignment, it means we are still waiting for server reply
+                if (assignment && assignment.get("editable")) {
+                    cell.setContent("");
+                    Wegas.Facade.Variable.sendQueuedRequest({
+                        request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
+                        cfg: {
+                            method: "DELETE",
+                            updateEvent: false
+                        }
+                    });
                 }
+                return;
             }
+
             cell.append('<span class="editable"></span>');
             Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
