@@ -133,7 +133,12 @@ YUI.add('wegas-cssstyles-extra', function(Y) {
                             name: "textAlign",
                             choices: ["", "left", "right", "center", "justify", "inherit"],
                             label: "text align"
-                        }]
+                        }, {
+                            type: "select",
+                            name: "fontVariant",
+                            choices: ["", "normal", "small-caps"],
+                            label: "text variant"
+                         }]
                 }
             }
         },
