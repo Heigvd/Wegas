@@ -8,12 +8,19 @@
 
         <ui:define name="page">
             <h:body class="yui3-skin-sam #{cookie['asciimode'].value} wegas-stdmode #{requestController.currentRoles} ">
+
+                <!-- Loading -->
                 <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
 
                 <!-- Rollbar error tracking -->
                 <!--<ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
                     <ui:include src="template/rollbar.xhtml" />
                 </ui:fragment>-->
+
+                <!-- Ascii mode -->
+                <ui:fragment rendered="#{cookie['asciimode'].value != null}">
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-ascii.css"></link>
+                </ui:fragment>
 
                 <!-- YUI3 -->
                 <!-- CDN -->
@@ -23,11 +30,6 @@
                 <!-- Self hosted -->
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
-                </ui:fragment>
-
-                <!-- Ascii mode -->
-                <ui:fragment rendered="#{cookie['asciimode'].value != null}">
-                    <script type="text/javascript" src="#{request.contextPath}/wegas-editor/css/wegas-editor-asciicss.css"></script>
                 </ui:fragment>
 
                 <!-- YUI 3 config -->
