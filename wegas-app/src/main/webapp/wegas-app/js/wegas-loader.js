@@ -517,6 +517,9 @@ YUI().use(function(Y) {
             "wegas-editorcss": {
                 type: CSS
             },
+            "wegas-editor-asciicss": {
+                type: CSS
+            },
             "wegas-editor-action": {
                 path: "js/plugin/wegas-editor-action-min.js",
                 requires: ["wegas-button", "wegas-plugin", "event-key", "inputex-string"],
