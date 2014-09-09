@@ -68,7 +68,6 @@ function loadVariables() {
 
 
 function testsimplepmg() {
-    DEBUGMODE = true;
     debug(arguments.callee.name);
     loadVariables();
 
