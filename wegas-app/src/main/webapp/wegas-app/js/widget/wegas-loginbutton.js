@@ -209,7 +209,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                     on: {
                         click: function() {
                             Y.one("body").toggleClass("wegas-ascii");
-                            Y.use("cookie", function(Y) {
+                            Y.use("cookie", "wegas-editor-asciicss", function(Y) {
                                 if (Y.one("body.wegas-ascii")) {
                                     var audio = new Audio(Wegas.app.get("base") + "wegas-app/images/wegas-mexican.mp3");
                                     audio.play();

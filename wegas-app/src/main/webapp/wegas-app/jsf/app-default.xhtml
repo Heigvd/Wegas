@@ -25,6 +25,11 @@
                     <script type="text/javascript" src="#{request.contextPath}/lib/yui3/build/yui/yui-min.js"></script>
                 </ui:fragment>
 
+                <!-- Ascii mode -->
+                <ui:fragment rendered="#{cookie['asciimode'].value != null}">
+                    <script type="text/javascript" src="#{request.contextPath}/wegas-editor/css/wegas-editor-asciicss.css"></script>
+                </ui:fragment>
+
                 <!-- YUI 3 config -->
                 <!-- Will be use for every call to the YUI(cfg) function. Can be overridden by the cfg parameter -->
                 <script type="text/javascript">
