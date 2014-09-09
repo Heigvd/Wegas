@@ -11,7 +11,6 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 
-
 var i18nOrdinate = (function(module) { return module;}(i18nOrdinate || {})),
     i18nTable = (function(module) { return module;}(i18nTable || {}));
 
@@ -26,9 +25,9 @@ var i18nOrdinate = (function(module) { return module;}(i18nOrdinate || {})),
          */
         function mapArguments(string, args, tName) {
             var pattern = /.*%([a-zA-Z0-9_]*)%/,
-                match;
+                match, key;
             while (match = pattern.exec(string)) {
-                var key = match[1];
+                key = match[1];
                 if (args && args.hasOwnProperty(key)) {
                     string = string.replace("%" + key + "%", args[key]);
                 } else {
@@ -83,7 +82,7 @@ var i18nOrdinate = (function(module) { return module;}(i18nOrdinate || {})),
                 return translate(key, args);
             },
             o: function(number) {
-                return ordinate(number)
+                return ordinate(number);
             }
         };
     }());
