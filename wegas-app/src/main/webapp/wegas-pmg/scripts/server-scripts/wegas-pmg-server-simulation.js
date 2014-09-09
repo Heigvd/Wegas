@@ -217,11 +217,11 @@ var PMGSimulation = (function() {
                 for (t in justCompletedTasks) {
                     debug(" ->JUST COMPLETED TASKS[" + t + "]: " + justCompletedTasks[t]);
                 }
-// task have been completed during the previous step -> tracking-message
                 if (activity) {
-                    sendGoToNextTaskMail(resourceInstance, currentStep, activity.taskDesc, justCompletedTasks[0]);
+                    // task have been completed during the previous step -> tracking-message
+                    sendGoToNextTaskMail(resourceInstance, currentStep, justCompletedTasks[0], activity.taskDescriptor);
                 } else {
-// No more workable tasks for the resource message
+                    // No more workable tasks for the resource message
                     sendGoToOtherActivities(resourceInstance, currentStep, justCompletedTasks[0]);
                 }
             }
