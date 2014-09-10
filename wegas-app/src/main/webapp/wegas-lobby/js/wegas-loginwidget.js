@@ -83,10 +83,10 @@ YUI.add('wegas-loginwidget', function(Y) {
                 });
                 cb.one(".main.left").setContent("<h1>Want to test this game?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
                 Wegas.Facade.Game.sendRequest({
-                    request: "/FindByToken/" + token,
+                    request: "/FindByToken/" + token + "?view=Extended",
                     on: {
                         success: Y.bind(function(e) {
-                            cb.one(".main.left").append("<div class=login-gameInformation>" + Wegas.GameInformation.renderGameInformation(e.response.entities[0]) + "</div>");
+                            cb.one(".main.left").append("<div class=wegas-gameinformation>" + Wegas.GameInformation.renderGameInformation(e.response.entities[0]) + "</div>");
                         }, this),
                         failure: Y.bind(this.defaultFailureHandler, this)
                     }

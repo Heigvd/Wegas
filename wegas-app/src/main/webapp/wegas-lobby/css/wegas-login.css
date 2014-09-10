@@ -93,7 +93,7 @@ h1, h2, .title{
     margin-bottom: 1px;
 }
 .main > p{
-    margin-bottom:10px;
+    margin-bottom: 2.5em;
     text-align:justify;
     margin-right:30px;
 }
@@ -252,21 +252,8 @@ h1, h2, .title{
 
 .wegas-testgame {
     font-size: 1.2em;
-    font-weight: bold;
+    font-style: italic;
     color: #777;
-}
-.wegas-loginwidget .login-gameInformation {
-    border: solid 1px lightgrey;
-    width: 570px;
-}
-.wegas-loginwidget .login-gameInformation img {
-    width: 33%;
-    float: left;
-    margin: 1em 1em 1em 1em;
-}
-.wegas-loginwidget .login-gameInformation .title {
-    margin-top: 1em;
-    font-size: 1.2em;
 }
 .wegas-panel {
     max-width: 400px;
