@@ -91,12 +91,13 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     this.table.get("data").each(function(r) {
                         if (newEntityId === r.get("entity").get("id")) {
                             var row = this.table.getRow(r);
-                            row.scrollIntoView();
 
                             this.table.get("selectedRow") !== row
                                 && this.get("parent")
                                 && !this.get("parent").get("selected")
-                                && this.get("parent").set("selected", 2);       // @hack Ensure the parent tab is currently visible
+                                && this.get("parent").set("selected", 2);       // @hack Ensure the parent tab is currently not visible befor displaying
+
+                            row.scrollIntoView();
 
                             this.table.set("selectedRow", row);
                         }

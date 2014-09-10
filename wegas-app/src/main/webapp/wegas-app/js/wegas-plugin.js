@@ -38,10 +38,10 @@ YUI.add("wegas-plugin", function(Y) {
             this.get(HOST).defaultFailureHandler(e);
         },
         showOverlay: function() {
-            this.get(HOST).showOverlay();
+            return this.get(HOST).showOverlay();
         },
         hideOverlay: function() {
-            this.get(HOST).hideOverlay();
+            return this.get(HOST).hideOverlay();
         }
     });
     Y.mix(Wegas.Plugin, {
