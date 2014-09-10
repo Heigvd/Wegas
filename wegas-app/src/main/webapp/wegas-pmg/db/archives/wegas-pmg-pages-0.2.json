@@ -415,8 +415,8 @@
                                         "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
                                         "language": "JavaScript"
                                     },
-                                    "attribute": "cssClass",
-                                    "value": "hidden-button"
+                                    "attribute" : "cssClass",
+                                    "value" : "hidden-button"
                                 }
                             }]
                     }, {
@@ -568,19 +568,6 @@
         "direction": "vertical",
         "children": [{
                 "type": "PmgSlidePanel",
-                "title": "Project Overview",
-                "cssClass": "pmg-project-overview",
-                "animation": false,
-                "children": [{
-                        "type": "Template",
-                        "data": {},
-                        "custom": "<%  var names = ['Initiation', 'Planning', 'Executing', 'Closing'], projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>\n<div class=\"current-time\">\n<span class='label'>Current Time</span></div>\n<div class='current-stage'><span class='label'>- Phase</span><span class='variableValue'><%= names[currentPhase -1] %></span></div>\n<div class='current-period'><span class='label'>- Period</span><span class='variableValue'><%= currentPeriod %></span></div>\n\n",
-                        "variable": {
-                            "name": "currentPhase"
-                        }
-                    }]
-            }, {
-                "type": "PmgSlidePanel",
                 "title": "Finances",
                 "cssClass": "finances",
                 "animation": false,
@@ -592,9 +579,34 @@
                             "name": "tasks"
                         }
                     }]
-
-
-
+            }, {
+                "type": "PmgSlidePanel",
+                "title": "EVM",
+                "cssClass": "evm",
+                "animation": false,
+                "children": [{
+                        "height": "200px",
+                        "chartType": "combo",
+                        "width": "90%",
+                        "horizontalGridlines": true,
+                        "legendPosition": "bottom",
+                        "type": "Chart",
+                        "verticalGridlines": true,
+                        "hStart": "1",
+                        "hMinEnd": {
+                            "name": "executionPeriods"
+                        },
+                        "variables": [{
+                                "name": "actualCost",
+                                "label": "AC (Actual Cost)"
+                            }, {
+                                "name": "planedValue",
+                                "label": "PV (Planed Value)"
+                            }, {
+                                "name": "earnedValue",
+                                "label": "EV (Earned Value)"
+                            }]
+                    }]
             }, {
                 "type": "PmgSlidePanel",
                 "title": "Indicators History: Management and Users",
