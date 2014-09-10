@@ -7,7 +7,6 @@
  */
 YUI.add("wegas-content-entities", function(Y) {
     "use strict";
-
     var persistence = Y.Wegas.persistence;
 
     persistence.Content = Y.Base.create("Content", persistence.Entity, [], {}, {
@@ -26,6 +25,20 @@ YUI.add("wegas-content-entities", function(Y) {
             },
             name: {
                 type: "string",
+                optional: true,
+                _inputex: {
+                    _type: "uneditable"
+                }
+            },
+            privateContent: {
+                type: "boolean",
+                _inputex: {
+                    label: "Private"
+                }
+            },
+            inheritedPrivate: {
+                type: "boolean",
+                "transient": true,
                 _inputex: {
                     _type: "uneditable"
                 }
@@ -54,7 +67,6 @@ YUI.add("wegas-content-entities", function(Y) {
             }
         }
     });
-
     persistence.Directory = Y.Base.create("Directory", persistence.Content, [], {}, {
         ATTRS: {
             "@class": {
@@ -62,7 +74,6 @@ YUI.add("wegas-content-entities", function(Y) {
             }
         }
     });
-
     persistence.File = Y.Base.create("File", persistence.Content, [], {}, {
         ATTRS: {
             "@class": {

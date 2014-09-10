@@ -56,8 +56,8 @@ var PMGSimulation = (function() {
         return flattenList(Variable.findByName(gameModel, "employees"));
     }
 
-    function getInstancesFromDescriptors(descriptors){
-        return descriptors.map(function(desc){
+    function getInstancesFromDescriptors(descriptors) {
+        return descriptors.map(function(desc) {
             desc.getInstacnce(self);
         }, this);
     }
@@ -107,6 +107,7 @@ var PMGSimulation = (function() {
             debug("step(): computeReq:" + r);
             calculateRequirementProgress(r, activities);
         });
+
         // Consolidate requirments progress & quality into tasks
         Y.Array.each(getTasksFromActivities(activities), function(t) {
             var oCompleteness = t.getProperty("completeness");
@@ -226,12 +227,11 @@ var PMGSimulation = (function() {
                 }
             }
         }
-        debug("**************");
-        removeAssignmentsFromCompleteTasks(resourceInstance);
+        //removeAssignmentsFromCompleteTasks(resourceInstance); // After each step 
         if (activity) {
             activity.setTime(currentPeriodNumber + currentStep / STEPS);
         }
-
+        debug("**************");
         return activity;
     }
 
@@ -243,7 +243,13 @@ var PMGSimulation = (function() {
      */
     function checkEnd(activities, currentStep) {
         debug(arguments.callee.name + "() step: " + currentStep);
-        var taskInst, taskDesc;
+        var taskInst, taskDesc,
+            resources = flattenList(Variable.findByName(gameModel, "employees"));
+
+        for (i = 0; i < resources.length; i++) {
+            removeAssignmentsFromCompleteTasks(resources[i].getInstance(self));
+        }
+
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             taskInst = r.getTaskInstance(),
                 taskDesc = taskInst.getDescriptor();
@@ -269,9 +275,8 @@ var PMGSimulation = (function() {
             taskProgress = 0,
             skill;
         for (skill in skillsOverview) {
-            taskProgress += skillsOverview[skill].completeness * skillsOverview[skill].totalByWork;
+            taskProgress += skillsOverview[skill].completenessXquantity;
         }
-
 
         taskProgress = taskProgress / nbWork;
         if (taskProgress > 0.0 & taskProgress < 1) {
@@ -312,19 +317,19 @@ var PMGSimulation = (function() {
      * planified completeness is based on function ''getPlannifiedCompleteness''
      * @param {taskDescriptor} taskDesc
      * @returns {Number} delay between 0 and 100
-    function getCurrentTaskDelay(taskDesc) {
-        var taskInst = taskDesc.getInstance(self),
-            completeness = taskInst.getPropertyD("completeness"),
-            planifiedCompleteness = getPlannifiedCompleteness(taskInst);
-        if (completeness > 0 && taskInst.plannification.length > 0) {
-            if (planifiedCompleteness <= 0) {
-                return completeness + 100;
-            } else {
-                return completeness / planifiedCompleteness * 100;
-            }
-        }
-        return 0;
-    }
+     function getCurrentTaskDelay(taskDesc) {
+     var taskInst = taskDesc.getInstance(self),
+     completeness = taskInst.getPropertyD("completeness"),
+     planifiedCompleteness = getPlannifiedCompleteness(taskInst);
+     if (completeness > 0 && taskInst.plannification.length > 0) {
+     if (planifiedCompleteness <= 0) {
+     return completeness + 100;
+     } else {
+     return completeness / planifiedCompleteness * 100;
+     }
+     }
+     return 0;
+     }
      */
 
 
@@ -540,18 +545,26 @@ var PMGSimulation = (function() {
      * @returns {WRequirement} the selected (most adapted) requierement
      */
     function selectRequirement(taskInst, resourceInst) {
-        var skill = resourceInst.mainSkill,
-            skillCompleted = isSkillCompleted(taskInst, skill);
         debug("selectRequirement(" + taskInst + "," + resourceInst + ", mainSkill: " + resourceInst.mainSkill + ")");
-        if (!skillCompleted) {
-            var selectedReq = null, d, req, i,
+        var skill = resourceInst.mainSkill,
+            overview = getSkillsOverview(taskInst);
+
+        // Be sure current tast requiere resource skill
+        if (overview[skill]) {
+            var nbRequiredResourceInTask = 0, ski,
+                selectedReq = null, d, req, i,
                 deltaLevel = 1000;
+            for (ski in overview) {
+                nbRequiredResourceInTask += overview[ski].quantity;
+            }
             for (i = 0; i < taskInst.requirements.size(); i++) {
                 req = taskInst.requirements.get(i);
                 d = Math.abs(parseInt(resourceInst.mainSkillLevel) - req.level);
-                if (req.work == skill && deltaLevel > d) { // do not use ===  !!!
-                    deltaLevel = d;
-                    selectedReq = req;
+                if (req.work == skill && deltaLevel > d && overview[skill].quantity > 0) {
+                    if (req.completeness < overview[skill].maxLimit * nbRequiredResourceInTask / overview[skill].quantity) {
+                        deltaLevel = d;
+                        selectedReq = req;
+                    }
                 }
             }
             if (selectedReq && !selectedReq.getTaskInstance()) {
@@ -663,11 +676,13 @@ var PMGSimulation = (function() {
      */
     function isSkillCompleted(taskInstance, skill) {
         debug("isSkillCompleted(" + taskInstance + ", " + skill + ")");
+
         var skillOverview = getSkillsOverview(taskInstance)[skill],
             totalOfPersonneInTask = Y.Array.sum(taskInstance.requirements, function(r) {
                 return r.quantity;
             });
-        return (skillOverview && skillOverview.completeness >= skillOverview.maxLimit * totalOfPersonneInTask / skillOverview.totalByWork);
+        //return (skillOverview && skillOverview.completeness >= skillOverview.maxLimit * totalOfPersonneInTask / skillOverview.quantity);
+        return (skillOverview && skillOverview.completenessXquantity >= skillOverview.maxLimit * totalOfPersonneInTask);
     }
 
     /**
@@ -684,6 +699,7 @@ var PMGSimulation = (function() {
         var i, req, work, works = {},
             requirements = taskInstance.requirements;
         debug(arguments.callee.name + " req: " + requirements);
+
         for (i = 0; i < requirements.size(); i++) {
             req = requirements.get(i);
             //keep an occurance of each kind of work needed
@@ -691,12 +707,18 @@ var PMGSimulation = (function() {
                 maxLimit: 0,
                 typesOfLevels: [],
                 completeness: 0,
-                totalByWork: 0
+                quantity: 0,
+                completenessXquantity: 0
             };
             //keep the highest limit of all limits from each kind of work needed
             work.maxLimit = Math.max(work.maxLimit, req.limit);
-            work.totalByWork += req.quantity;
+            work.quantity += req.quantity;
             work.completeness += req.completeness;
+            work.completenessXquantity += req.quantity * req.completeness;
+        }
+
+        for (work in works) {
+            works[work].weightedCompleteness = works[work].completenessXquantity / works[work].quantity;
         }
         return works;
     }
@@ -782,12 +804,16 @@ var PMGSimulation = (function() {
             debug("Facteur nb ressource besoin : " + correctedRessources + ", stepAdvance: " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees + ", correctedRessources: " + correctedRessources);
         }
 
-        if (work.completeness >= work.totalByWork * 100) {      // Other work factor 
-            debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.totalByWork: " + work.totalByWork + ", totalOfEmployees: " + totalOfEmployees + ", work.completeness:" + work.completeness);
+        debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.weightedCompleteness: " + work.weightedCompleteness);
+        //if (work.completeness >= work.quantity * 100) {      // Other work factor 
+        if (work.weightedCompleteness >= 100) {      // Other work factor 
+            //debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.quantity: " + work.quantity + ", totalOfEmployees: " + totalOfEmployees + ", work.completeness:" + work.completeness);
+            debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.weightedCompleteness: " + work.weightedCompleteness);
             stepAdvance *= 0.8;
         }
 
         stepAdvance *= taskTable[taskDesc.name].randomFactor; // Random factor 
+        debug("randomFactor : " + taskTable[taskDesc.name].randomFactor + " , stepAdvance: " + stepAdvance);
 
         //calculate learnFactor
         if (taskTable[taskDesc.name].completeness > 15 && !PMGHelper.workOnTask(employeeInst.descriptor, taskDesc)) {

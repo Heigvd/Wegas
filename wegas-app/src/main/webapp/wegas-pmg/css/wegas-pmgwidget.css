@@ -11,6 +11,18 @@
     background-color: #3399FF;
     height:14px;
 }
+
+.wegas-pmg-reservation .past .notEditable {
+    background-color: #ffbdbd;
+}
+
+.wegas-pmg-reservation .past .editable {
+    background-color: #bddeff;
+    color: rgb(80, 80, 80);
+    font-size: 6pt;
+    text-align: center;
+}
+
 .yui3-datatable-table .notEditable {
     display:block;
     background-color: #FF0000;
@@ -71,9 +83,9 @@
     opacity:  0.3;
     margin-left: 75%;
 }
-tbody .past span {
+/*tbody .past span {
     opacity:  0.3;
-}
+}*/
 tbody .past .activity {
     opacity:  1;
 }

@@ -15,6 +15,7 @@ import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.api.JackrabbitRepositoryFactory;
 import org.apache.jackrabbit.api.management.DataStoreGarbageCollector;
@@ -56,7 +57,7 @@ public class JackrabbitConnector {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
             final RepositoryManager rm = rf.getRepositoryManager(JackrabbitConnector.repo);
-            SessionHolder.getSession(null);
+            final Session session = SessionHolder.getSession(null);
             Integer countDeleted = 0;
             DataStoreGarbageCollector gc = rm.createDataStoreGarbageCollector();
             try {
@@ -66,7 +67,7 @@ public class JackrabbitConnector {
                 gc.close();
             }
 
-            SessionHolder.closeSession(null);
+            SessionHolder.closeSession(session);
             rm.stop();
             logger.info("Jackrabbit GarbageCollector ended, {} items removed", countDeleted);
         } catch (RepositoryException ex) {
