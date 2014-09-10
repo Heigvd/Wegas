@@ -61,7 +61,7 @@ font {
     color: inherit !important;
 }
 
-/* Hidden widgets (.yui3-button-disabled, etc.) */
+/* Disabled widgets (.yui3-button-disabled, etc.) */
 [class*="-disabled"]{
     opacity:0.8;
 }
@@ -70,56 +70,7 @@ font {
     display: none;
 }
 
-/* Wegas loading (overlay on content) */
-.wegas-loading {
-    height: 100%;
-}
-.wegas-loading-overlay {
-    background: rgba(255, 255, 255, 0.8) url(../../wegas-app/images/loading.gif) center center no-repeat;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    overflow: hidden;
-}
-.wegas-loading-overlay:after {
-    content: "A long-running process has been\a detected. Please wait....";
-    font-style: italic;
-    position:absolute;
-    top: 50%;
-    left: 50%;
-    margin-top: 1.8em;
-    margin-left: -7.7em;
-    font-size: .8em;
-    white-space: pre;
-    text-align: center;
-    opacity: 0;
-    -webkit-transition: opacity 0.5s ease-in-out;
-    -moz-transition: opacity 0.5s ease-in-out;
-    transition: opacity 0.5s ease-in-out;
-}
-.wegas-loading-overlay.wegas-loading-long:after {
-    opacity: 1;
-}
-/* Wegas loading (a different way of displaying a loading, as a background */
-.wegas-loading-div {
-    background: transparent url(../../wegas-app/images/loading.gif) center center no-repeat;
-    min-height: 80px;
-}
-/* Wegas loading (a different way of displaying a loading, as a :after element */
-.wegas-loading-after:after {
-    content: "";
-    background: rgba(255,255,255,0.8) url(../../wegas-app/images/loading.gif) center center no-repeat;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
-/* Wegas App loading */
+/* App loading */
 .wegas-loading-app {
     position: fixed;
     top: 50%;
@@ -142,6 +93,120 @@ font {
     height: 100%;
     width: 0%;
     background-color: #072644;
+}
+
+/* Wegas loading (overlay on content) */
+.wegas-loading {
+    height: 100%;
+}
+.wegas-loading-overlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    overflow: hidden;
+}
+.wegas-loading-overlay:after {
+    content: "A long-running process has been\a detected. Please wait....";
+    font-style: italic;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: 2.2em;
+    margin-left: -6.9em;
+    font-size: .8em;
+    white-space: pre;
+    text-align: center;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s ease-in-out;
+    -moz-transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
+}
+.wegas-loading-overlay.wegas-loading-long:after {
+    opacity: 1;
+}
+.wegas-loader { 
+    width: 36px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -15px;
+    margin-left: -16px;
+}
+.wegas-loader .bar {
+    background-color: #072644;
+    border: 1px solid #072644;
+    float:left;
+    margin-right:4px; 
+    margin-top:6px; 
+    width:6px; 
+    height:18px;
+    animation-duration: 1.2s;
+    animation-iteration-count: infinite;
+    animation-name: loadingbar;
+    -webkit-animation-duration: 1.2s;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-name: loadingbar;
+    -moz-animation-duration: 1.2s;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-name: loadingbar;
+}
+.wegas-loader .bar:nth-child(2) { 
+    animation-delay: 0.1s;                                                      /* Delay both the second and third bar at the start */
+    -webkit-animation-delay: 0.1s; 
+    -moz-animation-delay: 0.1s; 
+}
+.wegas-loader .bar:nth-child(3) { 
+    animation-delay: 0.2s;
+    -webkit-animation-delay: 0.2s; 
+    -moz-animation-delay: 0.2s; 
+}
+@-webkit-keyframes loadingbar {
+    0% { }
+    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
+    20% { margin-top:0px; height:28px; border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { margin-top:1px; height:26px; border-color:#d1d8e6; background-color:#bac5db; }
+    40% { margin-top:3px; height:23px; }
+    50% { margin-top:5px; height:22px; }
+    60% { margin-top:6px; height:18px; }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-moz-keyframes loadingbar {
+    0% { }
+    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
+    20% { margin-top:0px; height:32px; border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { margin-top:1px; height:30px; border-color:#d1d8e6; background-color:#bac5db; }
+    40% { margin-top:3px; height:26px; }
+    50% { margin-top:5px; height:22px; }
+    60% { margin-top:6px; height:18px; }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-o-keyframes loadingbar {
+    0% { }
+    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
+    20% { margin-top:0px; height:32px; border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { margin-top:1px; height:30px; border-color:#d1d8e6; background-color:#bac5db; }
+    40% { margin-top:3px; height:26px; }
+    50% { margin-top:5px; height:22px; }
+    60% { margin-top:6px; height:18px; }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@keyframes loadingbar {
+    0% { }
+    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
+    20% { margin-top:0px; height:32px; border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { margin-top:1px; height:30px; border-color:#d1d8e6; background-color:#bac5db; }
+    40% { margin-top:3px; height:26px; }
+    50% { margin-top:5px; height:22px; }
+    60% { margin-top:6px; height:18px; }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
 }
 
 /* */
@@ -285,8 +350,6 @@ font {
     right: 5px;
     margin: 0;
 }
-
-/* Chat styles */
 .wegas-chat  div.inputEx-fieldWrapper {
     padding:0;
 }

@@ -79,8 +79,8 @@
     margin-top: 1px;
 }
 .wegas-toolbar select {
-    margin: 1px 0;
-    height: 22px;
+    margin: -1px 0;
+    height: 26px;
 }
 .wegas-toolbar div.inputEx-label {
     padding: 4px 1px 0 0;
