@@ -364,7 +364,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     }, this));
                     break;
                 case "delete":
-                    if (confirm("Are your sure your want to delete this item ?")) {
+                    Wegas.Panel.confirm("Are your sure your want to delete this item?", Y.bind(function() {
                         targetArray = descriptor.get(this.get("attributeKey"));
                         Y.Array.find(targetArray, function(e, i, a) {
                             if (e.get(ID) === entity.get(ID)) {
@@ -383,7 +383,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 failure: Y.bind(this.defaultFailureHandler, this)
                             }
                         });
-                    }
+                    }, this));
                     break;
                 case "copy":
                     targetArray = descriptor.get(this.get("attributeKey"));
@@ -506,7 +506,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         execute: function() {
             var entity = this.get(ENTITY), i;
 
-            if (confirm("Are your sure your want to delete this " + entity.getType().toLowerCase() + " ?")) {
+            Wegas.Panel.confirm("Are your sure your want to delete this " + entity.getType().toLowerCase() + "?", Y.bind(function() {
                 this.showOverlay();
                 this.confirmDelete = true;
                 this.get(DATASOURCE).cache.deleteObject(entity, {
@@ -534,7 +534,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         failure: Y.bind(this.defaultFailureHandler, this)
                     }
                 });
-            }
+            }, this));
         }
     }, {
         NS: "DeleteEntityAction"
