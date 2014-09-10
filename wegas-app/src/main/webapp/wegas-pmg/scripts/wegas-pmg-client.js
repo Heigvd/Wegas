@@ -375,14 +375,7 @@ Y.mix(persistence.ResourceDescriptor.METHODS, {
 
 // Game properties & dashboard page
 var centerTab = Y.Widget.getByNode("#centerTabView"),
-    properties = centerTab.add({// Add properties tab
-        label: "Properties",
-        children: [{
-                type: "PageLoader",
-                pageLoaderId: "properties",
-                defaultPageId: 16
-            }]
-    }).item(0);
+    properties;
 
 if (centerTab && Y.one(".wegas-hostmode")) {
     Y.use('wegas-pageeditor-fullwidthtab', function() {
@@ -401,6 +394,14 @@ if (centerTab && Y.one(".wegas-hostmode")) {
         }, 0).item(0);
         dashboard.set("selected", 2);
 
+        properties = centerTab.add({// Add properties tab
+            label: "Properties",
+            children: [{
+                    type: "PageLoader",
+                    pageLoaderId: "properties",
+                    defaultPageId: 16
+                }]
+        }).item(0);
         properties.plug(Y.Plugin.FullWidthTab);
     });
 }
@@ -474,7 +475,7 @@ Y.mix(persistence.ResourceDescriptor.prototype, {
     }
 });
 
-Y.use("wegas-inputex-variabledescriptorselect", function(){
+Y.use("wegas-inputex-variabledescriptorselect", function() {
     Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
         "PMGHelper.sendMessage": {
             label: "PMG - Send Message",
@@ -505,44 +506,44 @@ Y.use("wegas-inputex-variabledescriptorselect", function(){
                     }
                 }]
         },
-    "PMGHelper.addImpactDuration" : {   // currently not working waiting for a new server deploy
-           label:"PMG - Impact reverse",
-           "arguments":[{
-                type: "string",
-                typeInvite: "factor",
-                scriptType: "string",
-                required: true
-            },{
-                type: "string",
-                typeInvite: "task name",
-                scriptType: "string",
-                required: true
-            },{
-                type: "number",
-                typeInvite: "in period",
-                scriptType: "number",
-                required: true
-            },{
-                type: "number",
-                typeInvite: "value",
-                scriptType: "number",
-                required: true
-            }]
+        "PMGHelper.addImpactDuration": {// currently not working waiting for a new server deploy
+            label: "[PMG] impact reverse",
+            "arguments": [{
+                    type: "string",
+                    typeInvite: "factor",
+                    scriptType: "string",
+                    required: true
+                }, {
+                    type: "string",
+                    typeInvite: "task name",
+                    scriptType: "string",
+                    required: true
+                }, {
+                    type: "number",
+                    typeInvite: "in period",
+                    scriptType: "number",
+                    required: true
+                }, {
+                    type: "number",
+                    typeInvite: "value",
+                    scriptType: "number",
+                    required: true
+                }]
         }
     });
 });
 
 /*
-Y.use("wegas-inputex-variabledescriptorselect", function(){
-    Y.mix(Y.inputEx.getFieldClass("condition").prototype.GLOBALMETHODS, {
-        "PMGHelper.workingOnProject": {
-            label: "2 [PMG] is working on project",
-            "arguments" : [{
-                type: "variabledescriptorselect",
-                scriptType: "ResourceDescriptor",
-                classFilter: "ResourceDescriptor",
-                required: true
-            }]
-        }
-    });
-});*/
+ Y.use("wegas-inputex-variabledescriptorselect", function(){
+ Y.mix(Y.inputEx.getFieldClass("condition").prototype.GLOBALMETHODS, {
+ "PMGHelper.workingOnProject": {
+ label: "2 [PMG] is working on project",
+ "arguments" : [{
+ type: "variabledescriptorselect",
+ scriptType: "ResourceDescriptor",
+ classFilter: "ResourceDescriptor",
+ required: true
+ }]
+ }
+ });
+ });*/
