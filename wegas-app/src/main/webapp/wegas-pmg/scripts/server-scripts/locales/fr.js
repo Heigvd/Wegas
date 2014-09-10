@@ -16,17 +16,17 @@ i18nTable.fr = {
     messages: {
         startOnTask: {
             from: "%employeeName%",
-            subject: "Tâche : %task%",
-            content: "J'ai commencl mon travail sur la tâche %task% %step%<br/> Salutations <br/>%employeeName%<br/> %job%"
+            subject: "Tâche: %task%",
+            content: "J'ai commencé mon travail sur la tâche %task% %step%<br/> Salutations <br/>%employeeName%<br/> %job%"
         },
         endOfTaskSwitchToNew: {
             from: "%employeeName%",
-            subject: "Fin de la tâche : %task%",
+            subject: "Fin de la tâche: %task%",
             content: 'La tâche "%task%" est terminée depuis %step%, je passe à la tâche %nextTask% <br/> Salutations <br/>%employeeName%<br/> %job%'
         },
         endOfTaskOtherActivities: {
             from: "%employeeName%",
-            subject: "Fin de la tâche : %task%",
+            subject: "Fin de la tâche: %task%",
             content: 'La tâche "%task%" est terminée depuis %step%. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>%employeeName%<br/> %job%'
         },
         blockedByPredecessors: {
@@ -36,7 +36,7 @@ i18nTable.fr = {
         },
         skillCompleted: {
             from: "%skill%",
-            subject: "Tâche : %task% en partie terminée",
+            subject: "Tâche: %task% en partie terminée",
             content: 'Nous avons terminé la partie %skill% de la tâche %task% %step%. <br/> Salutations'
         },
         notMyWork: {
