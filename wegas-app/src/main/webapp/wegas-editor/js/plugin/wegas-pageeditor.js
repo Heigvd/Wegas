@@ -358,13 +358,6 @@ YUI.add('wegas-pageeditor', function(Y) {
             }
 
             this.detachHandlers();
-            if (this.overlayMask) {
-                this.overlayMask.destroy(true);
-            }
-            if (this.highlightOverlay) {
-                this.hideOverlay();
-                this.highlightOverlay.destroy(true);
-            }
             if (this.shownOverlay) {
                 if (this.shownOverlay._widget && this.shownOverlay._widget._peDHandle) {
                     this.shownOverlay._widget._peDHandle.detach();
@@ -372,6 +365,15 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
                 this.shownOverlay.destroy(true);
             }
+            if (this.highlightOverlay) {
+                this.hideOverlay();
+                this.highlightOverlay.destroy(true);
+            }
+            if (this.overlayMask) {
+                this.overlayMask.destroy(true);
+            }
+
+
             for (var i = 0; i < this.fixedHandlers.length; i += 1) {
                 this.fixedHandlers[i].detach();
             }
