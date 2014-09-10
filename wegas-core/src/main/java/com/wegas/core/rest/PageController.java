@@ -51,8 +51,9 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        return Response.ok(pages.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
+        try (Pages pages = new Pages(gameModelId)) {
+            return Response.ok(pages.getPages(), MediaType.APPLICATION_JSON).header("Page", "*").build();
+        }
     }
 
     /**
@@ -69,20 +70,20 @@ public class PageController {
     public Response getPage(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId)
             throws RepositoryException, WegasException {
-        Pages pages = new Pages(gameModelId);
-        Page page = pages.getPage(pageId);
+        try (final Pages pages = new Pages(gameModelId)) {
+            Page page = pages.getPage(pageId);
 
-        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
+            SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
-        if (page == null) {                                                     //try admin repo
-            page = this.getAdminPage(pageId);
-            if (page == null) {
-                return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+            if (page == null) {                                                     //try admin repo
+                page = this.getAdminPage(pageId);
+                if (page == null) {
+                    return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+                }
             }
+            return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
+                    .header("Page", pageId).build();
         }
-        return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
-                .header("Page", pageId).build();
-
     }
 
     /**
@@ -100,9 +101,10 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
-                .header("Page", "index").build();
+        try (final Pages pages = new Pages(gameModelId)) {
+            return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
+                    .header("Page", "index").build();
+        }
     }
 
     /**
@@ -126,11 +128,12 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        Page page = new Page(pageId, content);
-        pages.store(page);
-        return Response.ok(pages.getPage(pageId).getContent(), MediaType.APPLICATION_JSON)
-                .header("Page", pageId).build();
+        try (final Pages pages = new Pages(gameModelId)) {
+            Page page = new Page(pageId, content);
+            pages.store(page);
+            return Response.ok(pages.getPage(pageId).getContent(), MediaType.APPLICATION_JSON)
+                    .header("Page", pageId).build();
+        }
     }
 
     /**
@@ -150,11 +153,12 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        page.setId(pageId);
-        pages.setMeta(page);
-        return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
-                .header("Page", "index").build();
+        try (final Pages pages = new Pages(gameModelId)) {
+            page.setId(pageId);
+            pages.setMeta(page);
+            return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
+                    .header("Page", "index").build();
+        }
     }
 
     /**
@@ -173,20 +177,21 @@ public class PageController {
             throws RepositoryException, IOException, WegasException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
-        Pages pages = new Pages(gameModelId);
-        if (name == null || name.equals("")) {
+        try (final Pages pages = new Pages(gameModelId)) {
+            if (name == null || name.equals("")) {
 
-            Map<String, String> index = pages.getIndex();
-            Integer pageId = 1;
-            while (index.containsKey(pageId.toString())) {
-                pageId++;
+                Map<String, String> index = pages.getIndex();
+                Integer pageId = 1;
+                while (index.containsKey(pageId.toString())) {
+                    pageId++;
+                }
+                name = pageId.toString();
             }
-            name = pageId.toString();
+            Page page = new Page(name, content);
+            pages.store(page);
+            return Response.ok(pages.getPage(name).getContent(), MediaType.APPLICATION_JSON)
+                    .header("Page", name).build();
         }
-        Page page = new Page(name, content);
-        pages.store(page);
-        return Response.ok(pages.getPage(name).getContent(), MediaType.APPLICATION_JSON)
-                .header("Page", name).build();
     }
 
     /**
@@ -201,19 +206,20 @@ public class PageController {
     @Path("/{pageId : ([1-9][0-9]*)|[A-Za-z]+}/duplicate")
     public Response duplicate(@PathParam("gameModelId") String gameModelId,
             @PathParam("pageId") String pageId) throws RepositoryException, IOException {
-        final Pages pages = new Pages(gameModelId);
-        Page page = pages.getPage(pageId);
-        String pageName = null;
-        if (page == null) {
-            page = this.getAdminPage(pageId);                                   //check admin pages
+        try (final Pages pages = new Pages(gameModelId)) {
+            Page page = pages.getPage(pageId);
+            String pageName = null;
             if (page == null) {
-                throw new WegasException("Attempt to duplicate an inexistant page");
+                page = this.getAdminPage(pageId);                                   //check admin pages
+                if (page == null) {
+                    throw new WegasException("Attempt to duplicate an inexistant page");
+                }
+                pageName = page.getId();
+            } else if (page.getName() != null) {
+                ((ObjectNode) page.getContent()).put("@name", page.getName() + "-copy");
             }
-            pageName = page.getId();
-        } else if (page.getName() != null) {
-            ((ObjectNode) page.getContent()).put("@name", page.getName() + "-copy");
+            return this.createPage(gameModelId, page.getContent(), pageName);
         }
-        return this.createPage(gameModelId, page.getContent(), pageName);
     }
 
     /**
@@ -234,11 +240,12 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        for (Entry<String, JsonNode> p : pageMap.entrySet()) {
-            pages.store(new Page(p.getKey(), p.getValue()));
+        try (final Pages pages = new Pages(gameModelId)) {
+            for (Entry<String, JsonNode> p : pageMap.entrySet()) {
+                pages.store(new Page(p.getKey(), p.getValue()));
+            }
+            return getPages(gameModelId);
         }
-        return getPages(gameModelId);
     }
 
     /**
@@ -254,9 +261,10 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        pages.delete();
-        return Response.ok().header("Page", "*").build();
+        try (final Pages pages = new Pages(gameModelId)) {
+            pages.delete();
+            return Response.ok().header("Page", "*").build();
+        }
     }
 
     /**
@@ -276,9 +284,10 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        pages.deletePage(pageId);
-        return this.getIndex(gameModelId);
+        try (final Pages pages = new Pages(gameModelId)) {
+            pages.deletePage(pageId);
+            return this.getIndex(gameModelId);
+        }
     }
 
     /**
@@ -302,19 +311,21 @@ public class PageController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        Pages pages = new Pages(gameModelId);
-        Page page = pages.getPage(pageId);
-        if (page == null) {
-            return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+        try (final Pages pages = new Pages(gameModelId)) {
+            Page page = pages.getPage(pageId);
+            if (page == null) {
+                return Response.status(Response.Status.NOT_FOUND).header("Page", pageId).build();
+            }
+            page.patch(patch);
+            pages.store(page);
+            return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
+                    .header("Page", pageId).build();
         }
-        page.patch(patch);
-        pages.store(page);
-        return Response.ok(page.getContent(), MediaType.APPLICATION_JSON)
-                .header("Page", pageId).build();
     }
 
     private Page getAdminPage(String id) throws RepositoryException {
-        Pages pages = new Pages(PageController.ADMIN_REPO_ID);
-        return pages.getPage(id);
+        try (final Pages pages = new Pages(PageController.ADMIN_REPO_ID)) {
+            return pages.getPage(id);
+        }
     }
 }
