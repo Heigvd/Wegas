@@ -686,27 +686,11 @@
                         "key": "instance.duration",
                         "className": "right"
                     }, {
-                        "label": "Realised %",
-                        "name": "Realised",
-                        "width": "7%",
-                        "key": "instance.properties.completeness",
-                        "className": "right"
-                    }, {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "key": "instance.properties.fixedCosts",
                         "className": "right",
                         "formatter": "rounded"
-                    }, {
-                        "name": "Wages",
-                        "label": "Wages",
-                        "key": "instance.properties.wages",
-                        "className": "right"
-                    }, {
-                        "name": "Quality",
-                        "label": "Quality",
-                        "key": "instance.properties.quality",
-                        "className": "right"
                     }, {
                         "key": "requirements",
                         "label": "Ressources",
