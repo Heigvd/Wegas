@@ -56,9 +56,8 @@ YUI.add('wegas-cep-folder', function(Y) {
                 modal: true,
                 width: 980,
                 height: 400,
-                render: true,
-                buttons: []
-            }),
+                buttons: {}
+            }).render(),
                 dialogueDescriptor = this.findDialogue(),
                 bodyNode = panel.getStdModNode("body", true);
 

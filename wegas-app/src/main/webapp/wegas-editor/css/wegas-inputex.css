@@ -333,6 +333,7 @@ img.inputEx-ListField-delButton {
     z-index: 5;
     top: 4px;
     left: -20px;
+    /*background: transparent url(../../wegas-app/images/wegas-app-sprite.png) no-repeat scroll 0px -1006px !important;*/
 }
 .inputEx-ListField-ArrowUp {
     left: -50px;

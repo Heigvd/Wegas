@@ -79,6 +79,8 @@
                                     }, {
                                         "fn": "Injector"
                                     }, {
+                                        "fn": "BlockAction"
+                                    }, {
                                         "fn": "PopupListener",
                                         "cfg": {
                                             "showServerMessages": true

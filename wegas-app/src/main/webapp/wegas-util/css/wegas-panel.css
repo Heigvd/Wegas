@@ -7,12 +7,11 @@
 .wegas-panel-content {
     text-align: center;
     margin: 10px;
-    background: rgba(110, 110, 110, 0.8);
+    background: rgba(110, 110, 110, 0.9);
     border-radius: 10px;
-    box-shadow: 1px 2px 4px #6D6D6D;
-    border: 1px solid #6E6E6E;
+    box-shadow: 3px 3px 2px #4E4D4D;
     color: white;
-    padding: 1em 1em 0.2em 1em;
+    padding: 1em 1em 0.8em 1em;
     position: relative;
 }
 .wegas-panel-content .yui3-widget-bd{
@@ -20,13 +19,13 @@
     overflow: auto;
 }
 .wegas-panel-content .yui3-widget-ft{
-    padding-top: 10px;
+    padding-top: 0.4em;
     text-align: right;
 }
 .wegas-panel-content .yui3-widget-ft button{
     background-color: rgba(160, 160, 160, 0.8);
     color: white;
-
+    margin-left: 0.3em;
 }
 .wegas-panel-content .yui3-widget-bd .icon{
     background-repeat: no-repeat;

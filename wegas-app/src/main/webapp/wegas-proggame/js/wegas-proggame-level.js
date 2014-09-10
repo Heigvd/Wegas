@@ -689,9 +689,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                 zIndex: 1000,
                 width: "962px",
                 height: 709,
-                render: true,
-                buttons: []
-            }));
+                buttons: {}
+            })).render();
             this.hide();
             panel.get("boundingBox").addClass("proggame-panel");
             return panel;
@@ -701,9 +700,8 @@ YUI.add('wegas-proggame-level', function(Y) {
                 modal: true,
                 centered: false,
                 zIndex: 1000,
-                render: true,
-                buttons: []
-            });
+                buttons: {}
+            }).render();
             panel.get("boundingBox").addClass("proggame-tutorial");
             Y.one(".yui3-widget-mask").setStyle("opacity", 0.3);
             Y.one("body").append("<div class='proggame-tuto-transparentmask'></div>");

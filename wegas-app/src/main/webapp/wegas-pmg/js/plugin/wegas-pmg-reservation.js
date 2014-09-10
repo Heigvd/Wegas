@@ -45,30 +45,34 @@ YUI.add('wegas-pmg-reservation', function(Y) {
 
             if (assignment || cell.one("span")) {                               // if the cell is full and there is no assignment, it means we are still waiting for server reply
                 if (assignment && assignment.get("editable")) {
-                    cell.setContent("");
-                    Wegas.Facade.Variable.sendQueuedRequest({
-                        request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
-                        cfg: {
-                            method: "DELETE",
-                            updateEvent: false
-                        }
+                    Wegas.Panel.confirmPlayerAction(function() {
+                        cell.setContent("");
+                        Wegas.Facade.Variable.sendQueuedRequest({
+                            request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
+                            cfg: {
+                                method: "DELETE",
+                                updateEvent: false
+                            }
+                        });
                     });
                 }
                 return;
             }
 
-            cell.append('<span class="editable"></span>');
-            Wegas.Facade.Variable.sendQueuedRequest({
-                request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
-                cfg: {
-                    method: "POST",
-                    updateEvent: false,
-                    data: {
-                        "@class": "Occupation",
-                        editable: true,
-                        time: time
+            Wegas.Panel.confirmPlayerAction(function() {
+                cell.append('<span class="editable"></span>');
+                Wegas.Facade.Variable.sendQueuedRequest({
+                    request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
+                    cfg: {
+                        method: "POST",
+                        updateEvent: false,
+                        data: {
+                            "@class": "Occupation",
+                            editable: true,
+                            time: time
+                        }
                     }
-                }
+                });
             });
         }
     }, {

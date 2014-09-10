@@ -90,7 +90,6 @@ YUI.add('wegas-leaderway-team', function(Y) {
                 modal: true,
                 width: 980,
                 height: 400,
-                render: true,
                 cssClass: "leaderway-team-panel",
                 buttons: {
                     header: [{
@@ -99,7 +98,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
                             action: "exit"
                         }]
                 }
-            });
+            }).render();
 
             panel.get("boundingBox").addClass("leaderway-team-panel");
             panel.plug(Y.Plugin.Injector);

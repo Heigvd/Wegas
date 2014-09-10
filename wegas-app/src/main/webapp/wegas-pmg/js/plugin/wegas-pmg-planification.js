@@ -39,8 +39,10 @@ YUI.add('wegas-pmg-planification', function(Y) {
 
             // v1: based on element state
             if (cell.get("children").size() > 0) {
-                cell.setContent("");
-                this.request(task.get("id"), time, "DELETE");
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    cell.setContent("");
+                    this.request(task.get("id"), time, "DELETE");
+                }, this));
                 return;
             }
 
@@ -53,8 +55,10 @@ YUI.add('wegas-pmg-planification', function(Y) {
             //    }
             // });
 
-            cell.append('<span class="editable plannification"></span>');
-            this.request(task.get("id"), time, "POST");                         // add plannif
+            Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                cell.append('<span class="editable plannification"></span>');
+                this.request(task.get("id"), time, "POST");                         // add plannif
+            }, this));
         },
         request: function(taskInstanceId, time, method) {
             Wegas.Facade.Variable.sendQueuedRequest({

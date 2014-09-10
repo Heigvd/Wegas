@@ -150,7 +150,6 @@ YUI.add('wegas-app', function(Y) {
                     new Wegas.Panel({//                                         // Show a message that invites to reconnect
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
                         modal: true,
-                        centered: true,
                         buttons: {
                             footer: [{
                                     label: 'Click here to reconnect',
