@@ -475,35 +475,37 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         execute: function() {
-            var entity = this.get("entity"),
-                player;
+            Wegas.Panel.confirm("Are you sure you want to leave this game?", Y.bind(function() {
+                var entity = this.get("entity"),
+                    player;
 
-            this.showOverlay();
+                this.showOverlay();
 
-            Y.Array.find(entity.get("teams"), function(t) {
-                player = Y.Array.find(t.get("players"), function(p) {
-                    return p.get("userId") === Wegas.Facade.User.cache.get("currentUserId");
+                Y.Array.find(entity.get("teams"), function(t) {
+                    player = Y.Array.find(t.get("players"), function(p) {
+                        return p.get("userId") === Wegas.Facade.User.cache.get("currentUserId");
+                    });
+                    return player;
                 });
-                return player;
-            });
 
-            Wegas.Facade.Game.cache.deleteObject(player, {
-                cfg: {
-                    updateCache: false
-                },
-                on: {
-                    success: Y.bind(function() {
-                        this.hideOverlay();
-                        Wegas.Facade.RegisteredGames.sendInitialRequest();      // Refresh the list of games
-                        Y.Widget.getByNode(".wegas-joinedgamesdatatable")
-                            .showMessageBis("successPopup", "Game left", 2000)  // Popup
-                            .showMessageBis("success", "Game left");            // toolbar
+                Wegas.Facade.Game.cache.deleteObject(player, {
+                    cfg: {
+                        updateCache: false
+                    },
+                    on: {
+                        success: Y.bind(function() {
+                            this.hideOverlay();
+                            Wegas.Facade.RegisteredGames.sendInitialRequest();      // Refresh the list of games
+                            Y.Widget.getByNode(".wegas-joinedgamesdatatable")
+                                .showMessageBis("successPopup", "Game left", 2000)  // Popup
+                                .showMessageBis("success", "Game left");            // toolbar
 
-                        Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
-                }
-            });
+                            Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
+                        }, this),
+                        failure: Y.bind(this.defaultFailureHandler, this)
+                    }
+                });
+            }, this));
         }
     }, {
         /** @lends Y.Wegas.LeaveGameAction */
