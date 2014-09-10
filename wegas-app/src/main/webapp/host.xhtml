@@ -23,11 +23,11 @@
                         button = new Y.Wegas.ToggleButton({
                             label: "Edit game",
                             cssClass: "host-switchmode"
-                        }).render();
+                        }).render(".wegas-layout-hd");
 
                     button.after("pressedChange", function(e) {
                         body.addClass("wegas-loading-after");
-
+                        button.get("boundingBox").remove();
                         Y.Wegas.Facade.Page.cache.clear();
                         Y.Wegas.Facade.Page.set("initialFullRequest",
                             e.newVal ? "wegas-app/db/wegas-editor-layout.json" : "wegas-app/db/wegas-host-layout.json");
@@ -47,6 +47,7 @@
                                         app.fire("render");                     // Fire a render event for some eventual post processing
 
                                         body.removeClass("wegas-loading-after");
+                                        button.get("boundingBox").appendTo(".wegas-layout-hd");
                                     }));
                                 }
                             }
