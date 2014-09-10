@@ -27,95 +27,97 @@ function lookupBean(name) {
 /**
  * 
  */
-Y = {
-    Array: {},
-    Object: {}
-};
-Y.Array.each = function(array, fn, thisObj) {
-    if (array.toArray)
-        array = array.toArray();                                                //convert list to array
-    for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
-        if (i in array) {
-            fn.call(thisObj || Y, array[i], i, array);
-        }
-    }
-    return Y;
-};
-Y.Array.unique = function(array, testFn) {
-    var i = 0,
-        len = array.length,
-        results = [],
-        j, result, resultLen, value;
-
-    // Note the label here. It's used to jump out of the inner loop when a value
-    // is not unique.
-    outerLoop: for (; i < len; i++) {
-        value = array[i];
-
-        // For each value in the input array, iterate through the result array
-        // and check for uniqueness against each result value.
-        for (j = 0, resultLen = results.length; j < resultLen; j++) {
-            result = results[j];
-
-            // If the test function returns true or there's no test function and
-            // the value equals the current result item, stop iterating over the
-            // results and continue to the next value in the input array.
-            if (testFn) {
-                if (testFn.call(array, value, result, i, array)) {
-                    continue outerLoop;
-                }
-            } else if (value === result) {
-                continue outerLoop;
+Y = Y || {};
+Y.Array = {
+    each: function(array, fn, thisObj) {
+        if (array.toArray)
+            array = array.toArray();                                            //convert list to array
+        for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
+            if (i in array) {
+                fn.call(thisObj || Y, array[i], i, array);
             }
         }
+        return Y;
+    },
+    unique: function(array, testFn) {
+        var i = 0,
+            len = array.length,
+            results = [],
+            j, result, resultLen, value;
 
-        // If we get this far, that means the current value is not already in
-        // the result array, so add it.
-        results.push(value);
-    }
-    return results;
-};
+        // Note the label here. It's used to jump out of the inner loop when a value
+        // is not unique.
+        outerLoop: for (; i < len; i++) {
+            value = array[i];
 
-Y.Array.find = function(a, f, o) {
-    if (a.toArray)
-        a = a.toArray();                                                        //convert list to array
-    for (var i = 0, l = a.length; i < l; i++) {
-        if (i in a && f.call(o, a[i], i, a)) {
-            return a[i];
+            // For each value in the input array, iterate through the result array
+            // and check for uniqueness against each result value.
+            for (j = 0, resultLen = results.length; j < resultLen; j++) {
+                result = results[j];
+
+                // If the test function returns true or there's no test function and
+                // the value equals the current result item, stop iterating over the
+                // results and continue to the next value in the input array.
+                if (testFn) {
+                    if (testFn.call(array, value, result, i, array)) {
+                        continue outerLoop;
+                    }
+                } else if (value === result) {
+                    continue outerLoop;
+                }
+            }
+
+            // If we get this far, that means the current value is not already in
+            // the result array, so add it.
+            results.push(value);
         }
+        return results;
+    },
+    find: function(a, f, o) {
+        if (a.toArray)
+            a = a.toArray();                                                    //convert list to array
+        for (var i = 0, l = a.length; i < l; i++) {
+            if (i in a && f.call(o, a[i], i, a)) {
+                return a[i];
+            }
+        }
+        return null;
+    },
+    sum: function(a, f, o) {
+        if (a.toArray)
+            a = a.toArray();                                                    //convert list to array
+        for (var i = 0, l = a.length, r = 0; i < l; i++) {
+            r += f.call(o, a[i], i, a);
+        }
+        return r;
     }
-    return null;
 };
-Y.Array.sum = function(a, f, o) {
-    if (a.toArray)
-        a = a.toArray();                                                        //convert list to array
-    for (var i = 0, l = a.length, r = 0; i < l; i++) {
-        r += f.call(o, a[i], i, a);
-    }
-    return r;
-};
-Y.Object.keys = function(obj) {
-    var keys = [], key;
+Y.Object = {
+    keys: function(obj) {
+        var keys = [], key;
 
-    for (key in obj) {
-        keys.push(key);
-    }
+        for (key in obj) {
+            keys.push(key);
+        }
 
-    return keys;
-};
-Y.Object.values = function(obj) {
-    var keys = Y.Object.keys(obj),
-        i = 0,
-        len = keys.length,
-        values = [];
-    for (; i < len; ++i) {
-        values.push(obj[keys[i]]);
+        return keys;
+    },
+    values: function(obj) {
+        var keys = Y.Object.keys(obj),
+            i = 0,
+            len = keys.length,
+            values = [];
+        for (; i < len; ++i) {
+            values.push(obj[keys[i]]);
+        }
+        return values;
     }
-    return values;
 };
+
 Y.log = function(level, msg, sender) {
     println("[" + level + "] " + msg);
 };
+
 /**
  * Transform a wegas List in an array.
  * If the wegas list contain other wegas list (and contain other wegas list, etc),
@@ -137,7 +139,6 @@ function flattenList(list, finalList) {
     }
     return finalList;
 }
-
 
 /**
  * Print a console msg if in debug mode

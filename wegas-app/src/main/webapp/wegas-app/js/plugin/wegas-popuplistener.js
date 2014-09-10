@@ -12,11 +12,13 @@
 YUI.add('wegas-popuplistener', function(Y) {
     "use strict";
 
-    var PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
+    var PopupListener, HOST = "host";
+
+    PopupListener = Y.Base.create("wegas-popuplistener", Y.Plugin.Base, [], {
         DEFAULT_CONFIG: function() {
             return {
                 align: {
-                    node: this.get("host").get(this.get("alignAttr")),
+                    node: this.get(HOST).get(this.get("alignAttr")),
                     points: [Y.WidgetPositionAlign.TC, Y.WidgetPositionAlign.TC]
                 },
                 buttons: {
@@ -32,7 +34,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             };
         },
         initializer: function() {
-            var bb = this.get("host").get(this.get("targetAttr"));
+            var bb = this.get(HOST).get(this.get("targetAttr"));
 
             this.handlers = [
                 bb.on("dom-message:showPopup", this._show, this),
@@ -48,20 +50,19 @@ YUI.add('wegas-popuplistener', function(Y) {
 
             if (this.get("showServerMessages")) {
                 this.handlers.push(Y.Wegas.Facade.Variable.on("popupEvent", function(e) {
-                    this.get("host").showMessage("info", e.content);
+                    this.get(HOST).showMessage("info", e.content);
                 }, this));
             }
         },
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
+            for (var i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
             this.hideOverlay();
         },
         _show: function(event) {
             event = Y.mix(this.DEFAULT_CONFIG(), PopupListener.stringToObject(event), true, null, 0, false);
-            var panel = new Y.Wegas.Panel(event).render(this.get("host").get(this.get("targetAttr")));
+            var panel = new Y.Wegas.Panel(event).render(this.get(HOST).get(this.get("targetAttr")));
             if (event.timeout) {
                 setTimeout(function() {
                     panel.get("destroyed") || panel.exit();
@@ -76,9 +77,12 @@ YUI.add('wegas-popuplistener', function(Y) {
             });
         },
         onShowMessage: function(e) {
-            if (this.get("filter") && this.get("filter").indexOf(e.level) > -1 && e.noFilter !== true) {
+            if (this.get("filter") && this.get("filter").indexOf(e.level) > -1) {
                 return;
             }
+
+            if (e.level === "successPopup")
+                e.level = "success";                                       // @hack to create popups that will not be displayed in the toolbar
 
             if (e.level) {
                 e.content = "<div class='icon icon-" + e.level + "'>" + (e.content) + "</div>";
@@ -87,14 +91,14 @@ YUI.add('wegas-popuplistener', function(Y) {
             e.halt(true);
         },
         onShowOverlay: function(e) {
-            this.get("host").get(this.get("targetAttr"))
+            this.get(HOST).get(this.get("targetAttr"))
                 .addClass("wegas-loading")
                 .prepend("<div class='wegas-loading-overlay'></div>");
 
             e.halt(true);
 
             Y.later(5000, this, function() {
-                this.get("host").get(this.get("targetAttr")).all(".wegas-loading-overlay").addClass("wegas-loading-long");
+                this.get(HOST).get(this.get("targetAttr")).all(".wegas-loading-overlay").addClass("wegas-loading-long");
             });
         },
         onHideOverlay: function(e) {
@@ -102,7 +106,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             e.halt(true);
         },
         hideOverlay: function() {
-            this.get("host").get(this.get("targetAttr"))
+            this.get(HOST).get(this.get("targetAttr"))
                 .removeClass("wegas-loading")
                 .all("> .wegas-loading-overlay").remove(true);
         }

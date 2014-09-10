@@ -80,10 +80,7 @@
 
                     app.after("render", function() {
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {// On center tab change,
-                            Y.later(10, this, function() {
-                                Y.Widget.getByNode(".wegas-layout-right > .wegas-widget").unplug(Y.Plugin.WidgetToolbar);
-                                Y.Widget.getByNode("#rightTabView").destroyAll();// empty right panel
-                            });
+                            Y.later(10, this, Y.Plugin.EditEntityAction.hideRightTabs);
                         });
 
                         Y.Widget.getByNode("#gameModelsTab").set("visible", Y.Wegas.Facade.GameModel.cache.find("canDuplicate", true)
@@ -112,20 +109,16 @@
                                             return true;
                                         }
                                     });
-                                    joinedTable.showMessageBis("success", "Game joined")// Otherwise the previous message will remain visible (at least the msg should be "")
-                                        .fire("wegas:message", {
-                                            level: "success",
-                                            content: "Game joined",
-                                            timeout: 2000,
-                                            noFilter: true                      // Success messages are normally displayed in toolbar
-                                        });
+                                    joinedTable.showMessageBis("successForce", "Game joined", 2000) // Toolbar: successForce" type will not be displayed in the toolbar
+                                        .showMessageBis("success", "Game joined");// Popup
+
                                     var tab = joinedTable.get("parent");
                                     if (!tab.get("selected", 2))
                                         tab.set("selected", 2);
                                 }
                             }
                         });
-                        Y.Widget.getByNode("#rightTabView").destroyAll();       // Empty right tab on join
+                        Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
                     });
 
                     app.render();                                               // Render lobby

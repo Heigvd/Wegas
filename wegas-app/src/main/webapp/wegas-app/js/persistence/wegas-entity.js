@@ -614,16 +614,27 @@ YUI.add("wegas-entity", function(Y) {
                                 }, {
                                     type: BUTTON,
                                     label: "Create a scenario based on this game",
-                                    cssClass: "wegas-advanced-feature"
+                                    plugins: [{
+                                            fn: "SendRequestAction",
+                                            cfg: {
+                                                ds: "GameModel",
+                                                request: "/{gameModelId}/Duplicate",
+                                                cfg: {
+                                                    method: "POST"
+                                                }
+                                            }
+                                        }]
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Add team",
                                     targetClass: "Team",
                                     cssClass: "wegas-advanced-feature"
-                                }, {
-                                    type: "Linkwidget",
-                                    cssClass: "wegas-advanced-feature"
-                                }]
+                                }
+                                //, {
+                                //    type: "Linkwidget",
+                                //    cssClass: "wegas-advanced-feature"
+                                //}
+                            ]
                         }
                     }]
             }
