@@ -396,12 +396,12 @@ if (centerTab && Y.one(".wegas-hostmode")) {
                     defaultPageId: 17
                 }],
             plugins: [{
-                    fn: "PageeditorFullWidthTab"
+                    fn: "FullWidthTab"
                 }]
         }, 0).item(0);
         dashboard.set("selected", 2);
 
-        properties.plug(Y.Plugin.PageeditorFullWidthTab);
+        properties.plug(Y.Plugin.FullWidthTab);
     });
 }
 

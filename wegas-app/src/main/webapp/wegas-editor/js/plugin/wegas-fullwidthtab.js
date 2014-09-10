@@ -12,7 +12,7 @@
 YUI.add("wegas-pageeditor-fullwidthtab", function(Y) {
     "use strict";
 
-    Y.Plugin.PageeditorFullWidthTab = Y.Base.create("wegas-pageeditor-fullwidthtab", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    Y.Plugin.FullWidthTab = Y.Base.create("wegas-pageeditor-fullwidthtab", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
             this.handlers = [];
             var host = this.get("host"), layoutCenter, tabview, item;
@@ -21,7 +21,7 @@ YUI.add("wegas-pageeditor-fullwidthtab", function(Y) {
                 layoutCenter = host.get("root").get("boundingBox").ancestor();
                 this.handlers.push(tabview.after("selectionChange", function(e) {
                     item = tabview.item(e.target.get("selection").get("index"));
-                    if (item.PageeditorFullWidthTab) {
+                    if (item.FullWidthTab) {
                         if (!tabview.oldPosition) {
                             tabview.oldPosition = layoutCenter.getStyle("left");
                             layoutCenter.setStyle("left", "-8px");
@@ -42,6 +42,6 @@ YUI.add("wegas-pageeditor-fullwidthtab", function(Y) {
             }
         }
     }, {
-        NS: "PageeditorFullWidthTab"
+        NS: "FullWidthTab"
     });
 });
