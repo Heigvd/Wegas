@@ -350,15 +350,16 @@ YUI.add("wegas-plugin", function(Y) {
     };
     Y.extend(ExecuteScriptAction, Action, {
         execute: function() {
-            var host = this.get(HOST);
-            if (!host.get("disabled")) {
-                host.showOverlay();
-                Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
-                    on: {
-                        success: Y.bind(host.hideOverlay, host),
-                        failure: Y.bind(host.defaultFailureHandler, host)
-                    }
-                });
+            if (!this.get(HOST).get("disabled")) {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    this.showOverlay();
+                    Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
+                        on: {
+                            success: Y.bind(this.hideOverlay, this),
+                            failure: Y.bind(this.defaultFailureHandler, this)
+                        }
+                    });
+                }, this));
             }
         }
     }, {

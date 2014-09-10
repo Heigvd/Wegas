@@ -12,7 +12,7 @@
 YUI.add('wegas-mcq-tabview', function(Y) {
     "use strict";
 
-    var CONTENTBOX = 'contentBox',
+    var CONTENTBOX = 'contentBox', Wegas = Y.Wegas,
         MCQTabView;
 
     /**
@@ -24,7 +24,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
      * @description  Display and allow to reply at questions and choice sent
      *  to the current player
      */
-    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.MCQTabView# */
         // *** Lifecycle Methods *** //
         /**
@@ -36,7 +36,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             /**
              * datasource from Y.Wegas.Facade.Variable
              */
-            this.dataSource = Y.Wegas.Facade.Variable;
+            this.dataSource = Wegas.Facade.Variable;
             this.tabView = new Y.TabView();
             /**
              * TabView widget used to display question/choices and corresponding reply
@@ -50,7 +50,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             /**
              * JS translator
              */
-            this.jsTranslator = new Y.Wegas.Translator();
+            this.jsTranslator = new Wegas.Translator();
         },
         /**
          * @function
@@ -75,18 +75,21 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             this.tabView.after("selectionChange", this.onTabSelected, this);
 
             this.get(CONTENTBOX).delegate("click", function(e) {
-                this.showOverlay();
-                this.dataSource.sendRequest({
-                    request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
-                        + "/Player/" + Y.Wegas.Facade.Game.get('currentPlayerId'),
-                    cfg: {
-                        method: "POST"
-                    },
-                    on: {
-                        failure: Y.bind(this.defaultFailureHandler, this)
-                    }
 
-                });
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    this.showOverlay();
+                    this.dataSource.sendRequest({
+                        request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
+                            + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
+                        cfg: {
+                            method: "POST"
+                        },
+                        on: {
+                            failure: Y.bind(this.defaultFailureHandler, this)
+                        }
+
+                    });
+                }, this));
             }, "button.yui3-button", this);
 
             this.handlers.response = this.dataSource.after("update", this.syncUI, this);
@@ -142,7 +145,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 cQuestion = questions[i];
                 cQuestionInstance = cQuestion.getInstance();
                 cReplyLabel = null;
-                if (cQuestion instanceof Y.Wegas.persistence.QuestionDescriptor
+                if (cQuestion instanceof Wegas.persistence.QuestionDescriptor
                     && cQuestionInstance.get("active")) {                   // If current question is active
 
                     if (cQuestionInstance.get("replies").length > 0) {          // Find the last selected replies
@@ -169,7 +172,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     tab.loaded = false;
                     tab.cQuestion = cQuestion;
                     this.tabView.add(tab);
-                } else if (cQuestion instanceof Y.Wegas.persistence.ListDescriptor) {
+                } else if (cQuestion instanceof Wegas.persistence.ListDescriptor) {
                     this.addQuestions(cQuestion.get("items"));
                 }
             }
@@ -184,7 +187,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             if (e.newVal && e.newVal.cQuestion
                 && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
-                Y.Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
+                Wegas.Facade.Variable.cache.getWithView(e.newVal.cQuestion, "Extended", {// Retrieve the question/choice description from the server
                     on: {
                         success: Y.bind(function(tab, e) {
                             var question = e.response.entity;
@@ -192,7 +195,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             this.renderTab(tab, question);
 
                             if (question.get("pictures").length > 0) {
-                                this.gallery = new Y.Wegas.util.FileLibraryGallery({
+                                this.gallery = new Wegas.util.FileLibraryGallery({
                                     selectedHeight: 150,
                                     selectedWidth: 235,
                                     gallery: Y.clone(question.get("pictures"))
@@ -261,12 +264,12 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
                     title = choiceDescriptor.get("title");
-                    ret.push('<div class="replyDiv ' + ((j=== cQuestionInstance.get("replies").length - 1 )? 'mostRecentReply' : 'olderReply') + '"><div class="reply"><div class="name">', title, '</div>',
-                            '<div>',
-                            (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
-                            '</div>',
-                            //'<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
-                            '<div style="clear:both"></div></div>');
+                    ret.push('<div class="replyDiv ' + ((j === cQuestionInstance.get("replies").length - 1) ? 'mostRecentReply' : 'olderReply') + '"><div class="reply"><div class="name">', title, '</div>',
+                        '<div>',
+                        (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
+                        '</div>',
+                        //'<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
+                        '<div style="clear:both"></div></div>');
 
                     if (reply.get("result").get("answer")) {
                         ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div></div>');
@@ -321,7 +324,6 @@ YUI.add('wegas-mcq-tabview', function(Y) {
     }, {
         EDITORNAME: "Question display",
         /** @lends Y.Wegas.MCQTabView */
-
         /**
          * @field
          * @static
@@ -338,7 +340,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "Question folder",
@@ -354,6 +356,5 @@ YUI.add('wegas-mcq-tabview', function(Y) {
             }
         }
     });
-    Y.Wegas.MCQTabView = MCQTabView;
-
+    Wegas.MCQTabView = MCQTabView;
 });

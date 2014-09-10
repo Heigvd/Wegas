@@ -12,21 +12,28 @@
 YUI.add('wegas-panel', function(Y) {
     "use strict";
 
-    Y.namespace("Wegas").Panel = Y.Base.create("wegas-panel", Y.Widget,
+    var Wegas = Y.namespace("Wegas");
+
+    Wegas.Panel = Y.Base.create("wegas-panel", Y.Widget,
         [Y.WidgetParent, Y.WidgetPosition, Y.WidgetStdMod, Y.WidgetButtons,
             Y.WidgetModality, Y.WidgetPositionAlign, Y.WidgetStack], {
         syncUI: function() {
             this.set("content", this.get("content"));
         },
         exit: function() {
-            this.get("boundingBox").hide(true);
-            Y.later(500, this, this.destroy);
+            this.destroy();
+            //this.get("boundingBox").hide(true);
+            //Y.later(500, this, this.destroy);
         }
     }, {
         CSS_PREFIX: "wegas-panel",
         ATTRS: {
-            align: {"transient": true},
-            alignOn: {"transient": true},
+            align: {
+                "transient": true
+            },
+            alignOn: {
+                "transient": true
+            },
             content: {
                 value: "",
                 type: "string",
@@ -44,34 +51,82 @@ YUI.add('wegas-panel', function(Y) {
             buttons: {
                 "transient": true,
                 value: {
-                    footer: [
-                        {
+                    footer: [{
                             name: 'proceed',
                             label: 'OK',
                             action: "exit"
-                        }
-                    ]
+                        }]
                 }
             },
             centered: {
                 value: true,
                 "transient": true
             },
-            defaultButton: {"transient": true},
-            fillHeight: {"transient": true},
-            focusOn: {"transient": true},
-            footerContent: {"transient": true},
-            headerContent: {"transient": true},
-            maskNode: {"transient": true},
-            modal: {
-                value: false,
-                type: "boolean"
+            defaultButton: {
+                "transient": true
             },
-            shim: {"transient": true},
-            x: {"transient": true},
-            xy: {"transient": true},
-            y: {"transient": true},
-            zIndex: {value: 100, "transient": true}
+            fillHeight: {
+                "transient": true
+            },
+            focusOn: {
+                "transient": true
+            },
+            footerContent: {
+                "transient": true
+            },
+            headerContent: {
+                "transient": true}, maskNode: {
+                "transient": true
+            },
+            modal: {
+                value: false, type: "boolean"
+            },
+            shim: {
+                "transient": true
+            },
+            x: {
+                "transient": true
+            },
+            xy: {
+                "transient": true
+            },
+            y: {
+                "transient": true
+            },
+            zIndex: {
+                value: 100,
+                "transient": true
+            }
+        },
+        confirm: function(msg, okCb, cancelCb) {
+            var panel = new Wegas.Panel({
+                bodyContent: "<div class='icon icon-info'>" + msg + "</div>",
+                modal: true,
+                width: 400,
+                buttons: {
+                    footer: [{
+                            label: 'OK',
+                            action: function() {
+                                panel.exit();
+                                okCb && okCb();
+                            }
+                        }, {
+                            label: 'Cancel',
+                            action: function() {
+                                panel.exit();
+                                cancelCb && cancelCb();
+                            }
+                        }]
+                }
+            }).render();
+            //bodyNode = panel.getStdModNode("body", true);
+        },
+        confirmPlayerAction: function(cb) {
+            if (!Y.fire("playerAction", {})) {
+                Wegas.Panel.confirm("This action will impact player data, proceed?", cb);
+            } else {
+                cb();
+            }
         }
     });
 });

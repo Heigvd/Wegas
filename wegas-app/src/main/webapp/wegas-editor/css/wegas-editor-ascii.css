@@ -78,7 +78,7 @@ body.wegas-ascii *:before {
 }
 .wegas-ascii .yui3-tab-label, .wegas-ascii .yui3-tab-label:focus, .wegas-ascii .yui3-tab-label:hover {
     background: black !important;    
-    padding: 5px !important;
+    padding: 11px 5px 5px !important;
     border-bottom: 1px solid !important;
 }
 .wegas-ascii .yui3-tab-selected .yui3-tab-label, .wegas-ascii .yui3-tab-selected .yui3-tab-label:focus, .wegas-ascii .yui3-tab-selected .yui3-tab-label:hover {
@@ -119,11 +119,19 @@ body.wegas-ascii *:before {
 .wegas-ascii .wegas-layout-hd .wegas-login img {
     display: none;
 }
+.wegas-ascii .wegas-removebutton,
 .wegas-ascii img.inputEx-ListField-delButton {
     background: none;
 }
+.wegas-ascii .wegas-removebutton:after,
 .wegas-ascii img.inputEx-ListField-delButton:after {
     content: "x";
+}
+.wegas-ascii .wegas-moveupbutton:after {
+    content: "^";
+}
+.wegas-ascii .wegas-movedownbutton:after {
+    content: "v";
 }
 .wegas-ascii input {
     border: 1px solid rgb(123, 224, 14) !important;
@@ -193,4 +201,13 @@ body.wegas-ascii *:before {
 }
 .wegas-ascii .wegas-toolbar-header {
     padding: .5em 0;
+}
+.wegas-ascii .wegas-tooltip-content,
+.wegas-ascii .yui3-tabview-panel,
+.wegas-ascii .wegas-toolbar,
+.wegas-ascii select,
+.wegas-ascii .wegas-layout-right,
+.wegas-ascii .ace-tm,
+.wegas-ascii .yui3-button {
+    background: black !important;
 }
