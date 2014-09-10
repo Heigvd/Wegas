@@ -54,6 +54,8 @@ abstract public class AbstractContentDescriptor implements Serializable {
     private String path;
     private String note = "";
     private String description = "";
+    private Boolean privateContent;
+    private Boolean inheritedPrivate;
     /**
      *
      */
@@ -71,6 +73,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector) {
+        this.privateContent = false;
         this.connector = contentConnector;
         this.parseAbsolutePath(absolutePath);
         this.buildNamespaceAbsolutePath();
@@ -84,6 +87,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
      */
     protected AbstractContentDescriptor(String absolutePath, ContentConnector contentConnector, String mimeType) {
         this(absolutePath, contentConnector);
+        this.privateContent = false;
         this.mimeType = mimeType;
     }
 
@@ -94,6 +98,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
      * @param contentConnector
      */
     protected AbstractContentDescriptor(String name, String path, ContentConnector contentConnector) {
+        this.privateContent = false;
         path = path.startsWith("/") ? path : "/" + path;
         this.connector = contentConnector;
         this.name = name.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
@@ -110,6 +115,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
      */
     protected AbstractContentDescriptor(String mimeType, String name, String path, ContentConnector contentConnector) {
         this(name, path, contentConnector);
+        this.privateContent = false;
         this.mimeType = mimeType;
     }
 
@@ -216,6 +222,14 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.description = description == null ? "" : description;
     }
 
+    public Boolean isPrivateContent() {
+        return privateContent;
+    }
+
+    public void setPrivateContent(Boolean privateContent) {
+        this.privateContent = privateContent;
+    }
+
     /**
      *
      * @return
@@ -227,8 +241,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
 
     /**
      *
-     * @return
-     * @throws RepositoryException
+     * @return @throws RepositoryException
      */
     @XmlTransient
     public boolean exist() throws RepositoryException {
@@ -237,8 +250,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
 
     /**
      *
-     * @return
-     * @throws RepositoryException
+     * @return @throws RepositoryException
      */
     @XmlTransient
     public boolean hasChildren() throws RepositoryException {
@@ -285,7 +297,11 @@ abstract public class AbstractContentDescriptor implements Serializable {
      * @return
      */
     public Long getBytes() {
-        return Long.valueOf(0);
+        return 0L;
+    }
+
+    public Boolean isInheritedPrivate() {
+        return this.inheritedPrivate;
     }
 
     /**
@@ -313,6 +329,8 @@ abstract public class AbstractContentDescriptor implements Serializable {
         this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
         this.note = connector.getNote(fileSystemAbsolutePath);
         this.description = connector.getDescription(fileSystemAbsolutePath);
+        this.privateContent = connector.isPrivate(fileSystemAbsolutePath);
+        this.inheritedPrivate = connector.isInheritedPrivate(fileSystemAbsolutePath);
     }
 
     /**
@@ -324,6 +342,7 @@ abstract public class AbstractContentDescriptor implements Serializable {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
         connector.setNote(fileSystemAbsolutePath, note);
         connector.setDescription(fileSystemAbsolutePath, description);
+        connector.setPrivate(fileSystemAbsolutePath, privateContent);
         connector.save();
     }
 
