@@ -477,7 +477,7 @@ Y.mix(persistence.ResourceDescriptor.prototype, {
 Y.use("wegas-inputex-variabledescriptorselect", function(){
     Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
         "PMGHelper.sendMessage": {
-            label: "[PMG] Send Message",
+            label: "PMG - Send Message",
             className: "wegas-method-sendmessage",
             "arguments": [
                 {
@@ -506,7 +506,7 @@ Y.use("wegas-inputex-variabledescriptorselect", function(){
                 }]
         },
     "PMGHelper.addImpactDuration" : {   // currently not working waiting for a new server deploy
-           label:"[PMG] impact reverse",
+           label:"PMG - Impact reverse",
            "arguments":[{
                 type: "string",
                 typeInvite: "factor",

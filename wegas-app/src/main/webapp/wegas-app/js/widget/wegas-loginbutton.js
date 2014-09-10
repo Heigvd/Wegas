@@ -115,7 +115,6 @@ YUI.add("wegas-loginbutton", function(Y) {
         }
     }, {
         /** @lends Y.Wegas.LoginButton */
-
         /**
          * @field
          * @static
@@ -157,7 +156,6 @@ YUI.add("wegas-loginbutton", function(Y) {
     });
     Wegas.LoginButton = LoginButton;
 
-
     /**
      * @name Y.Wegas.LoginButton
      * @extends Y.Wegas.Button
@@ -168,7 +166,6 @@ YUI.add("wegas-loginbutton", function(Y) {
      */
     UserLoginButton = Y.Base.create("wegas-login", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.LoginButton# */
-
         // *** Lifecycle Methods *** //
         /**
          * @function

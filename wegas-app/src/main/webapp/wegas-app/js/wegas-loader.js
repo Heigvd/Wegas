@@ -760,7 +760,7 @@ YUI().use(function(Y) {
             /** CEP **/
             "wegas-cep-folder": {
                 path: "wegas-cep/js/wegas-cep-folder-min.js",
-                requires: ["wegas-nodeformatter", "wegas-itemselector", "wegas-injector",
+                requires: ["wegas-nodeformatter", "wegas-itemselector",
                     "wegas-panel", "wegas-simpledialogue"],
                 ws_provides: "CEPFolder"
             }

@@ -75,11 +75,14 @@ YUI.add('wegas-panel', function(Y) {
                 "transient": true
             },
             headerContent: {
-                "transient": true}, maskNode: {
+                "transient": true
+            },
+            maskNode: {
                 "transient": true
             },
             modal: {
-                value: false, type: "boolean"
+                value: false,
+                type: "boolean"
             },
             shim: {
                 "transient": true
