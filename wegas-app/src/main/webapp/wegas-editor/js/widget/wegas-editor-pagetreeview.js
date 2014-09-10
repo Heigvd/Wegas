@@ -158,7 +158,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             node.add(treeNode);
         },
         buildIndex: function(index) {
-            var i, node, page = this.get("pageLoader")._pageId,
+            var i, node, page = -1,
                 twState,
                 pageFound = false,
                 buildSub = function(node, widget) {
@@ -176,7 +176,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         node.item(0).get("data.widget").onceAfter("*:addChild", this.getIndex, this);
                     }
                 };
-
+            if (this.get("pageLoader")) {
+                page = this.get("pageLoader")._pageId;
+            }
             this.showOverlay();
             this.treeView.destroyAll();
 
