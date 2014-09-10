@@ -27,7 +27,7 @@ function lookupBean(name) {
 /**
  * 
  */
-Y = Y || {};
+Y = {};
 Y.Array = {
     each: function(array, fn, thisObj) {
         if (array.toArray)
