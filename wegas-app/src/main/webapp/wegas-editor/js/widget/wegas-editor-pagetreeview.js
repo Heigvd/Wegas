@@ -217,7 +217,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         deletePage: function(pageId) {
             var treeNode, i;
-            if (confirm("You are removing a page, this can't be undone. Are you sure?")) {
+
+            Wegas.Panel.confirm("You are removing a page, this can't be undone. Are you sure?", Y.bind(function() {
                 this.treeView.some(function() {
                     if (+this.get("data.page") === +pageId) {
                         treeNode = this;
@@ -236,7 +237,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 }, this));
                 this.hideOverlay();
-            }
+            }, this));
         },
         duplicatePage: function(pageId) {
             DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {

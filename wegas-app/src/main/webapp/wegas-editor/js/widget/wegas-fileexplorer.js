@@ -446,7 +446,8 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     if (!this.isProcessing(node)) {
                         path = "delete" + node.path;
                         method = "DELETE";
-                        if (confirm("Delete : " + node.path + " ?")) {
+
+                        Wegas.Panel.confirm("Delete: " + node.path + "?", Y.bind(function() {
                             Wegas.Facade.File.sendRequest({
                                 request: path,
                                 cfg: {
@@ -459,7 +460,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                     failure: Y.bind(this._onDeleteFailure, this)
                                 }
                             });
-                        }
+                        }, this));
                     }
                     break;
                 default:
