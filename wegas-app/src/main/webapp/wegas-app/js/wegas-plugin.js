@@ -37,6 +37,9 @@ YUI.add("wegas-plugin", function(Y) {
         defaultFailureHandler: function(e) {
             this.get(HOST).defaultFailureHandler(e);
         },
+        showMessage: function() {
+            return this.get(HOST).showMessage.apply(this.get(HOST), arguments);
+        },
         showOverlay: function() {
             return this.get(HOST).showOverlay();
         },
@@ -65,9 +68,8 @@ YUI.add("wegas-plugin", function(Y) {
          * @description Get Class From plugin name. Hopefully a unique name ...
          */
         getPluginFromName: function(name) {
-            var i;
-            for (i in Y.Plugin) {
-                if (Y.Plugin[i].NAME === name) {
+            for (var i in Plugin) {
+                if (Plugin[i].NAME === name) {
                     return "" + i;
                 }
             }
@@ -84,7 +86,6 @@ YUI.add("wegas-plugin", function(Y) {
      */
     var Action = Y.Base.create("wegas-actionplugin", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Action */
-
         /**
          * @function
          * @private
@@ -107,8 +108,7 @@ YUI.add("wegas-plugin", function(Y) {
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
+            for (var i = 0; i < this.handlers.length; i += 1) {
                 if (this.handlers[i].detach) { // EventHandle
                     this.handlers[i].detach();
                 } else if (this.handlers[i].cancel) { //Timer
@@ -118,7 +118,6 @@ YUI.add("wegas-plugin", function(Y) {
         }
     }, {
         NS: "wegas",
-        NAME: "Action",
         ATTRS: {
             targetEvent: {
                 type: "string",
@@ -136,15 +135,11 @@ YUI.add("wegas-plugin", function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var OpenUrlAction = function() {
-        OpenUrlAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenUrlAction, Action, {
-        _getUrl: function() {
-            return this.get("url");
-        },
+    var OpenUrlAction = Y.Base.create("OpenUrlAction", Action, [], {
         execute: function() {
-            var url = this._getUrl();
+            this.open(this.get("url"));
+        },
+        open: function(url) {
             if (url.indexOf("http://") === -1) {
                 url = Wegas.app.get("base") + url;
             }
@@ -156,7 +151,6 @@ YUI.add("wegas-plugin", function(Y) {
         }
     }, {
         NS: "openurlaction",
-        NAME: "OpenUrlAction",
         ATTRS: {
             url: {
                 type: "string",
@@ -191,32 +185,26 @@ YUI.add("wegas-plugin", function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var PrintActionPlugin = function() {
-        PrintActionPlugin.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(PrintActionPlugin, Action, {
+    var PrintActionPlugin = Y.Base.create("PrintActionPlugin", Action, [], {
         execute: function() {
-            var outputType = this.get("outputType");
-            //var gameModelId = Wegas.Facade.GameModel.get("currentGameModelId");
-            var playerId = Y.Wegas.Facade.Game.get("currentPlayerId");
-            var root = this.get("root.evaluated").get("name");
-            var printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
+            var outputType = this.get("outputType"),
+                playerId = Wegas.Facade.Game.get("currentPlayerId"),
+                root = this.get("root.evaluated").get("name"),
+                printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
             window.open(printUrl);
         }
     }, {
         NS: "PrintActionPlugin",
-        NAME: "PrintActionPlugin",
         ATTRS: {
             root: {
                 /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Variable"/*,
-                     classFilter: ["ListDescriptor"]*/
+                    label: "Variable"
                 }
             },
             /**
@@ -225,13 +213,7 @@ YUI.add("wegas-plugin", function(Y) {
             outputType: {
                 type: "string",
                 value: "html",
-                choices: [{
-                        value: "html",
-                        label: "HTML"
-                    }, {
-                        value: "pdf",
-                        label: "PDF"
-                    }],
+                choices: ["html", "pdf"],
                 _inputex: {
                     label: "output type"
                 }
@@ -247,10 +229,7 @@ YUI.add("wegas-plugin", function(Y) {
      *  @module Wegas
      *  @constructor
      */
-    var OpenPageAction = function() {
-        OpenPageAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenPageAction, Action, {
+    var OpenPageAction = Y.Base.create("OpenPageAction", Action, [], {
         initializer: function() {
             this.afterHostEvent("render", function() {
                 var targetPageLoader = this._getTargetPageLoader();
@@ -295,9 +274,8 @@ YUI.add("wegas-plugin", function(Y) {
             return targetPageLoader;
         },
         _subpage: function() {
-            var variable;
             if (this.get("variable.content")) {
-                variable = this.get("variable.evaluated");
+                var variable = this.get("variable.evaluated");
                 if (variable) {
                     return variable.getInstance().get("value");
                 }
@@ -306,7 +284,6 @@ YUI.add("wegas-plugin", function(Y) {
         }
     }, {
         NS: "OpenPageAction",
-        NAME: "OpenPageAction",
         ATTRS: {
             subpageId: {
                 type: "string",
@@ -329,7 +306,7 @@ YUI.add("wegas-plugin", function(Y) {
                 }
             },
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 _inputex: {
                     _type: "variableselect",
@@ -339,16 +316,14 @@ YUI.add("wegas-plugin", function(Y) {
         }
     });
     Plugin.OpenPageAction = OpenPageAction;
+
     /**
      *  @class
      *  @name Y.Plugin.ExecuteScriptAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var ExecuteScriptAction = function() {
-        ExecuteScriptAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(ExecuteScriptAction, Action, {
+    var ExecuteScriptAction = Y.Base.create("ExecuteScriptAction", Action, [], {
         execute: function() {
             if (!this.get(HOST).get("disabled")) {
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
@@ -364,7 +339,6 @@ YUI.add("wegas-plugin", function(Y) {
         }
     }, {
         NS: "ExecuteScriptAction",
-        NAME: "ExecuteScriptAction",
         ATTRS: {
             onClick: {
                 _inputex: {
@@ -375,23 +349,22 @@ YUI.add("wegas-plugin", function(Y) {
         }
     });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
+
     /**
      *  @class
      *  @name Y.Plugin.SaveObjectAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var SaveObjectAction = function() {
-        SaveObjectAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(SaveObjectAction, Action, {
+    var SaveObjectAction = Y.Base.create("SaveObjectAction", Action, [], {
         execute: function(e) {
-            var overlayGuest,
+            var overlayGuest, i,
                 host = this.get(HOST),
                 guest = host.get("root"),
                 variable = this.get("variable.evaluated"),
                 data = variable.get("name") + ".properties",
-                script = this.get("clearStorage") ? data + ".clear();" : "", i;
+                script = this.get("clearStorage") ? data + ".clear();" : "";
+
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
                 overlayGuest.showOverlay();
@@ -403,29 +376,24 @@ YUI.add("wegas-plugin", function(Y) {
 
             Wegas.Facade.Variable.script.run(script, {
                 on: {
-                    success: function(r) {
-                        if (overlayGuest) {
-                            overlayGuest.hideOverlay();
-                        }
+                    success: function() {
+                        overlayGuest && overlayGuest.hideOverlay();
                     },
-                    failure: function(r) {
-                        if (overlayGuest) {
-                            overlayGuest.hideOverlay();
-                        }
+                    failure: function() {
+                        overlayGuest && overlayGuest.hideOverlay();
                     }
                 }
             });
         }
     }, {
         NS: "SaveObjectAction",
-        NAME: "SaveObjectAction",
         ATTRS: {
             variable: {
                 /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     legend: "Save to",

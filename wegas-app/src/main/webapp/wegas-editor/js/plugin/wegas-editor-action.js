@@ -140,9 +140,8 @@ YUI.add('wegas-editor-action', function(Y) {
      */
     var OpenEntityAction = Y.Base.create("OpenEntityAction", Plugin.OpenUrlAction, [], {
         /** @lends Y.Plugin.OpenEntityAction# */
-        _getUrl: function() {
-            var entity = this.get("entity");
-            return Y.Lang.sub(this.get("url"), entity.toJSON());
+        execute: function() {
+            this.open(Y.Lang.sub(this.get("url"), this.get("entity").toJSON()));
         }
     }, {
         NS: "OpenEntityAction",
@@ -189,8 +188,7 @@ YUI.add('wegas-editor-action', function(Y) {
             } else {
                 params = "gameId=" + entity.get("id");
             }
-            this.set("url", this.get("editorUrl") + params);
-            OpenGameAction.superclass.execute.call(this);
+            this.open(this.get("url") + params);
         }
     }, {
         /** @lends Y.Wegas.OpenGameAction */
@@ -198,7 +196,7 @@ YUI.add('wegas-editor-action', function(Y) {
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
-         *    <li>editorUrl: url of the editor page<i>default: edit.html?</i></li>
+         *    <li>url: url of the editor page<i>default: edit.html?</i></li>
          *    <li>entity: the team, game, gamemodel or player entity that will be opened</li>
          * </ul>
          *
@@ -206,7 +204,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @static
          */
         ATTRS: {
-            editorUrl: {
+            url: {
                 value: 'edit.html?'
             },
             entity: {}
@@ -323,7 +321,6 @@ YUI.add('wegas-editor-action', function(Y) {
      */
     Wegas.OpenTabButton = Y.Base.create("button", Wegas.Button, [], {
         /** @lends Y.Wegas.OpenTabButton# */
-
         /**
          * @function
          * @private
