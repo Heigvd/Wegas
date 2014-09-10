@@ -1040,7 +1040,6 @@
                         "fn": "PMGLineCompleteness"
                     }]
             }, {
-                "label": "",
                 "type": "Button",
                 "cssClass": "wegas-icon-pdf",
                 "plugins": [{
@@ -1052,15 +1051,6 @@
                                 "content": "Variable.find('tasks')"
                             },
                             "outputType": "html"
-                        }
-                    },
-                    {
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "bottom": "0px",
-                                "position": "absolute"
-                            }
                         }
                     }]
             }]
