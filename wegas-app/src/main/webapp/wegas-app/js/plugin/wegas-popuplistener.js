@@ -30,7 +30,7 @@ YUI.add('wegas-popuplistener', function(Y) {
                 },
                 modal: false,
                 centered: false,
-                width: "80%"
+                width: "400px"
             };
         },
         initializer: function() {
@@ -82,7 +82,7 @@ YUI.add('wegas-popuplistener', function(Y) {
             }
 
             if (e.level === "successPopup")
-                e.level = "success";                                       // @hack to create popups that will not be displayed in the toolbar
+                e.level = "success";                                            // @hack to create popups that will not be displayed in the toolbar
 
             if (e.level) {
                 e.content = "<div class='icon icon-" + e.level + "'>" + (e.content) + "</div>";
@@ -97,7 +97,7 @@ YUI.add('wegas-popuplistener', function(Y) {
 
             e.halt(true);
 
-            Y.later(5000, this, function() {
+            Y.later(8000, this, function() {
                 this.get(HOST).get(this.get("targetAttr")).all(".wegas-loading-overlay").addClass("wegas-loading-long");
             });
         },
