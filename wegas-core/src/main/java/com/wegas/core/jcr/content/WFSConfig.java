@@ -46,6 +46,10 @@ final public class WFSConfig {
      */
     protected static final String WFS_DESCRIPTION = WeGAS_FILE_SYSTEM_PREFIX + "description";
     /**
+     * WeGAS file system private property name
+     */
+    protected static final String WFS_PRIVATE = WeGAS_FILE_SYSTEM_PREFIX + "private";
+    /**
      * File size limit in bytes
      */
     protected static final Long MAX_FILE_SIZE = Long.valueOf(Helper.getWegasProperty("jcr.file.maxsize"));

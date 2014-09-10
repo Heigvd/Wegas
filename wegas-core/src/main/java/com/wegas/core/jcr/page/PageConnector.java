@@ -18,22 +18,27 @@ import org.slf4j.LoggerFactory;
 public class PageConnector {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(PageConnector.class);
+    private final Session session;
+
+    public PageConnector() throws RepositoryException {
+        this.session = SessionHolder.getSession("Pages");
+    }
 
     private Node getRootNode(String gameModelName) throws RepositoryException {
-        Node ret = null;
+        Node ret;
         try {
-            ret = this.getSession().getRootNode().getNode(gameModelName);
+            ret = this.session.getRootNode().getNode(gameModelName);
         } catch (PathNotFoundException ex) {
             logger.info("Could not retrieve node ({}), creating it.", ex.getMessage());
-            NodeIterator ni = this.getSession().getRootNode().getNodes();
+            NodeIterator ni = session.getRootNode().getNodes();
             while (ni.hasNext()) {
                 logger.debug(((Node) ni.next()).getPath());
             }
-            ret = this.getSession().getRootNode().addNode(gameModelName);
+            ret = session.getRootNode().addNode(gameModelName);
 
-        } finally {
-            return ret;
         }
+        return ret;
+
     }
 
     /**
@@ -76,7 +81,7 @@ public class PageConnector {
         Node root = this.getRootNode(gameModelName);
         if (!root.hasNode(name)) {
             Node node = root.addNode(name);
-            node.getSession().save();
+            session.save();
             return node;
         } else {
             return this.getChild(gameModelName, name);
@@ -106,10 +111,10 @@ public class PageConnector {
      * @throws RepositoryException
      */
     protected void deleteRoot(String gameModelName) throws RepositoryException {
-        Node root = this.getSession().getRootNode();
+        Node root = session.getRootNode();
         if (root.hasNode(gameModelName)) {
             root.getNode(gameModelName).remove();
-            root.getSession().save();
+            session.save();
         }
     }
 
@@ -118,7 +123,7 @@ public class PageConnector {
      * @throws RepositoryException
      */
     protected void save() throws RepositoryException {
-        getSession().save();
+        session.save();
     }
 
     /**
@@ -128,11 +133,11 @@ public class PageConnector {
      * @throws RepositoryException
      */
     protected boolean exist(String gameModelName) throws RepositoryException {
-        return this.getSession().getRootNode().hasNode(gameModelName);
+        return session.getRootNode().hasNode(gameModelName);
     }
 
-    private Session getSession() throws RepositoryException {
-        return SessionHolder.getSession("Pages");
-
+    public void close() throws RepositoryException {
+        session.save();
+        SessionHolder.closeSession(session);
     }
 }
