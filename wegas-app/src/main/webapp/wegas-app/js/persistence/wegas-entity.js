@@ -573,7 +573,7 @@ YUI.add("wegas-entity", function(Y) {
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
-                            editorUrl: "host.html?"
+                            url: "host.html?"
                         }
                     }]
             }, {
@@ -671,7 +671,7 @@ YUI.add("wegas-entity", function(Y) {
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
-                            editorUrl: "host.html?"
+                            url: "host.html?"
                         }
                     }]
             }, {
@@ -683,7 +683,7 @@ YUI.add("wegas-entity", function(Y) {
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
-                            editorUrl: "game-play.html?"
+                            url: "game-play.html?"
                         }
                     }]
             }, {
@@ -736,7 +736,7 @@ YUI.add("wegas-entity", function(Y) {
                 plugins: [{
                         fn: "OpenGameAction",
                         cfg: {
-                            editorUrl: "host.html?"
+                            url: "host.html?"
                         }
                     }]
             }, {

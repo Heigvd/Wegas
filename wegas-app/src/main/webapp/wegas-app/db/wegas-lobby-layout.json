@@ -120,7 +120,7 @@
                                                                         "plugins": [{
                                                                                 "fn": "OpenGameAction",
                                                                                 "cfg": {
-                                                                                    "editorUrl": "game-play.html?"
+                                                                                    "url": "game-play.html?"
                                                                                 }
                                                                             }]
                                                                     }, {
@@ -153,7 +153,7 @@
                                                     "plugins": [{
                                                             "fn": "OpenGameAction",
                                                             "cfg": {
-                                                                "editorUrl": "game-play.html?"
+                                                                "url": "game-play.html?"
                                                             }
                                                         }]
                                                 }, {
