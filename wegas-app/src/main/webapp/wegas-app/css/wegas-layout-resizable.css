@@ -30,13 +30,16 @@
     height: 100% !important;
     overflow: hidden;
 }
+.yui3-skin-sam .wegas-layout-right > .yui3-widget{
+     margin-left:8px;
+}
 .yui3-skin-sam .wegas-layout-left > .yui3-widget,
 .yui3-skin-sam .wegas-layout-center > .yui3-widget,
 .yui3-skin-sam .wegas-layout-right > .yui3-widget {
     position: relative;
 }
 .yui3-skin-sam .wegas-layout-center {
-    margin-right: 8px;
+    /* margin-right: 8px; */
     margin-left: 8px;
 }
 .yui3-skin-sam .wegas-layout-left {
@@ -44,7 +47,7 @@
     padding-right: 8px;
 }
 .yui3-skin-sam .wegas-layout-right {
-    padding-left: 8px;
+    /* padding-left: 8px; */
     /* width: 320px; */
     right: 0;
 }
