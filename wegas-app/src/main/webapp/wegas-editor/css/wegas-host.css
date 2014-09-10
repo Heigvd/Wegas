@@ -31,14 +31,15 @@
 
 /* Header toggle button */
 .yui3-skin-sam .host-switchmode {
-    margin-right: 10px;
+    /* margin-right: 10px; */
     padding: 3px 10px 3px 10px;
     background: transparent;
     color: white;
     line-height: 0.5em; 
-    position: absolute;
-    top: 12px;
-    right: 133px;
+    /* position: absolute; */
+    /* top: 12px; */
+    /* right: 133px; */
+    float: right;
 }
 .yui3-skin-sam .host-switchmode.yui3-button-selected {
     background: white;
