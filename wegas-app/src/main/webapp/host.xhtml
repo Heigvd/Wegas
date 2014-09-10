@@ -26,7 +26,7 @@
                         }).render(".wegas-layout-hd");
 
                     button.after("pressedChange", function(e) {
-                        body.addClass("wegas-loading-after");
+                        Y.Plugin.PopupListener.showOverlay(body);
                         button.get("boundingBox").remove();
                         Y.Wegas.Facade.Page.cache.clear();
                         Y.Wegas.Facade.Page.set("initialFullRequest",
@@ -46,7 +46,7 @@
                                         app.widget = Y.Wegas.Widget.create(widgetCfg).render();// Instantiate the root widget and render it
                                         app.fire("render");                     // Fire a render event for some eventual post processing
 
-                                        body.removeClass("wegas-loading-after");
+                                        Y.Plugin.PopupListener.hideOverlay(body);
                                         button.get("boundingBox").appendTo(".wegas-layout-hd");
                                     }));
                                 }

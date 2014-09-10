@@ -133,14 +133,13 @@ YUI.add("wegas-editor-treeview", function(Y) {
         }
     }, {
         /** @lends Y.Wegas.EditorTreeView */
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>includeClasses a list of entity classes names that will be included</li>
          *    <li>excludeClasses a list of entity classes that will be excluded</li>
          *    <li>emptyMessage string message to display if there are no entity
-         *    to display <i>default: "No data to display"</i></li>
+         *    to display <i>default: "Empty"</i></li>
          *    <li>dataSelector</li>
          *    <li>dataSource</li>
          *    <li>request</li>
@@ -151,7 +150,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
          */
         ATTRS: {
             emptyMessage: {
-                value: "No data to display"
+                value: "Empty"
             },
             dataSelector: {},
             dataSource: {
@@ -430,7 +429,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
     Plugin.EditorTVToggleClick = Y.Base.create("EditorTVToggleClick", Plugin.Base, [], {
         initializer: function() {
             this.onHostEvent("treenode:click", function(e) {
-                //this.collapseAll();
                 e.target.toggleTree();
             });
         }

@@ -50,7 +50,20 @@ body.wegas-ascii *:before {
     border: 1px solid rgb(123, 224, 14);
 }
 .wegas-ascii .wegas-icon {
-    display: none;
+    display: none !important;
+}
+.wegas-ascii .inputEx-wegas-UrlField .yui3-uploader-content button:before {
+    content: "u.";
+    margin-top: 4px;
+    display: block;
+}
+.wegas-ascii .wegas-icon-fileexplorer {
+    display:inline-block !important;
+}
+.wegas-ascii .wegas-icon-fileexplorer:after {
+    content:"e";
+    display: block;
+    margin-top: 3px;
 }
 .wegas-ascii .wegas-layout-left > .yui3-widget{
     border-right: 1px solid; 
@@ -103,14 +116,17 @@ body.wegas-ascii *:before {
     font-family: courier, monospace!important;
     line-height: 39px;
 }
-.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected {
+.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected,
+.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected .yui3-button {
     background: rgb(123, 224, 14) !important;
-    color: black !important
+    color: black !important;
+    border: 1px solid black !important;
 }
 .wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected * {
     color: black !important;
 }
 .wegas-ascii .wegas-panel-content {
+    border: 1px solid !important;
     background-color: black !important;
 }
 .wegas-ascii .uv-bubble-background {
@@ -135,12 +151,14 @@ body.wegas-ascii *:before {
 }
 .wegas-ascii input {
     border: 1px solid rgb(123, 224, 14) !important;
+    background: rgb(123, 224, 14) !important;
+    color: black!important;
 }
 .wegas-ascii input[type="checkbox"], .wegas-ascii input[type="radio"] {
     display: none;
 }
 .wegas-ascii input[type="checkbox"] + *:before, .wegas-ascii input[type="radio"] + *:before {
-    content: "o";
+    content: "x";
     border: 1px solid;
     color: black!important;
     padding: 0 3px;
@@ -149,11 +167,16 @@ body.wegas-ascii *:before {
 .wegas-ascii input[type="checkbox"]:checked  + *:before, .wegas-ascii input[type="radio"]:checked + *:before {
     color: rgb(123, 224, 14) !important;
 }
+.wegas-ascii input[type="checkbox"][disabled] + *:before, .wegas-ascii input[type="radio"][disabled] + *:before,
+.wegas-ascii input[type="checkbox"][disabled]:checked  + *:before, .wegas-ascii input[type="radio"][disabled]:checked + *:before{
+    border-color:  rgb(87, 141, 28) !important;
+    color:  rgb(87, 141, 28) !important;
+}
 .wegas-ascii .wegas-game-users .addkey button span, .wegas-ascii .wegas-game-keys .addkey button span {
-    background: none!important;
+    display: none;
 }
 .wegas-ascii .wegas-filter-input input {
-    background: none;
+    background: black !important;
     padding: 5px 3px;
 }
 .wegas-ascii .wegas-datatable-viewbuttons {
@@ -210,4 +233,15 @@ body.wegas-ascii *:before {
 .wegas-ascii .ace-tm,
 .wegas-ascii .yui3-button {
     background: black !important;
+}
+.wegas-ascii select {
+    background: rgb(123, 224, 14)!important;
+    color: black !important;
+}
+.wegas-ascii select * {
+    background: black !important;
+    color: rgb(123, 224, 14) !important;
+}
+.wegas-ascii .inputEx-valid .inputEx-CheckBox > input[disabled] + .inputEx-CheckBox-rightLabel {
+    color: rgb(87, 141, 28) !important;
 }

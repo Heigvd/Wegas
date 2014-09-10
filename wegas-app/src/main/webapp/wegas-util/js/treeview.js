@@ -235,7 +235,7 @@ YUI.add("treeview", function(Y) {
                 readOnly: true
             },
             emptyMsg: {
-                value: "empty",
+                value: "Empty",
                 setter: function(v) {
                     this.get(BOUNDING_BOX).all("." + classNames.emptyMSG).setHTML(v);
                     return v;
