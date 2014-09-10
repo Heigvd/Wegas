@@ -28,14 +28,16 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
          */
         initializer: function() {
             this.handlers = [];
+            var dtID = "#" + this.get("host").datatable.get("id");
+            this.currentTask = null;
             this.detailsOverlay = new Y.Overlay({
+                //srcNode: dtID,
                 zIndex: 100,
                 width: this.get("width"),
                 visible: false
             });
-            this.shown = false;
             this.detailsOverlay.get("contentBox").addClass("pmg-popup-overlay");
-            this.detailsOverlay.render();
+            this.detailsOverlay.render(this.get("host").datatable.get("contentBox"));
             this.bind();
             this.onceAfterHostEvent("render", this.sync);
             this.afterHostMethod("syncUI", this.sync);
@@ -46,13 +48,17 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             this.handlers.push(this.get("host").datatable.delegate("click", this.onClick, ".onclickpopup", this));
         },
         onClick: function(e) {
-            if (this.detailsOverlay.get('visible') === false) {
-                var taskDescriptor, key,
-                    fields = ["label", "description", 'requirements'],
-                    dt = this.get("host").datatable;
+                var dt = this.get("host").datatable,
+                taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
+            
+            if (this.detailsOverlay.get('visible') === false || taskDescriptor !== this.currentTask) {
+                this.currentTask = taskDescriptor;
+                var key,
+                    fields = ["label", "description", 'requirements'];
+                
                 this.detailsOverlay.show();
                 this.detailsOverlay.move(e.pageX + 10, e.pageY + 20);
-                taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
+                this.detailsOverlay.hide();
 
                 var requestedField = [];
 
@@ -69,6 +75,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 }
             } else {
                 this.detailsOverlay.hide();
+                this.currentTask = null;
             }
         },
         sync: function() {
