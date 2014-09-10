@@ -13,7 +13,8 @@
  */
 importPackage(javax.naming);
 
-var DEBUGMODE = false;
+var DEBUGMODE = false,
+    Y = Y || {};
 
 /**
  * get the specified wegas bean.
@@ -27,7 +28,6 @@ function lookupBean(name) {
 /**
  * 
  */
-Y = {};
 Y.Array = {
     each: function(array, fn, thisObj) {
         if (array.toArray)

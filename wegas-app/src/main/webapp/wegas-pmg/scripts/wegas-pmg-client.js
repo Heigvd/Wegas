@@ -504,7 +504,7 @@ Y.use("wegas-inputex-variabledescriptorselect", function(){
                         required: true
                     }
                 }]
-        }/*,
+        },
     "PMGHelper.addImpactDuration" : {   // currently not working waiting for a new server deploy
            label:"[PMG] impact reverse",
            "arguments":[{
@@ -528,7 +528,7 @@ Y.use("wegas-inputex-variabledescriptorselect", function(){
                 scriptType: "number",
                 required: true
             }]
-        }*/
+        }
     });
 });
 
