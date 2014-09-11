@@ -32,7 +32,7 @@ i18nTable.fr = {
         blockedByPredecessors: {
             from: "%employeeName%",
             subject: "Impossible de progresser sur la tâche: %task%",
-            content: 'Je suis venu %step% pour travailler sur la tâche "%task%" mais les tâches précedentes ne sont pas assez avancées. <br/> J\' perdu un peu de temps, mais je devrais rapidement trouvé quelque chose à faire sur le projet. <br/> Salutations <br/>%employeeName%<br/> %job%'
+            content: 'Je suis venu %step% pour travailler sur la tâche "%task%" mais les tâches précédentes ne sont pas assez avancées. <br/> J\' ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose à faire sur le projet. <br/> Salutations <br/>%employeeName%<br/> %job%'
         },
         skillCompleted: {
             from: "%skill%",
