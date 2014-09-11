@@ -9,7 +9,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-lobby-datatable', function(Y) {
+YUI.add("wegas-lobby-datatable", function(Y) {
     "use strict";
 
     /**
@@ -22,8 +22,8 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      * @description Allows just to join a team
      */
     var CONTENTBOX = "contentBox", DATASOURCE = "dataSource", NAME = "name",
-        RENDER = "render", HOST = "host", Wegas = Y.Wegas, Plugin = Y.Plugin,
-        GameDataTable;
+        RENDER = "render", HOST = "host", ENTITY = "entity", ID = "id",
+        Wegas = Y.Wegas, Plugin = Y.Plugin, GameDataTable;
 
     GameDataTable = Y.Base.create("wegas-lobby-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Private fields *** //
@@ -48,7 +48,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             this.table = new Y.DataTable(cfg)                                   // Render datatable
                 .addAttr("selectedRow", {value: null})
                 .render(this.get(CONTENTBOX))
-                .set('strings.emptyMessage', "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
+                .set("strings.emptyMessage", "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
 
@@ -67,29 +67,29 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
             }
 
-            this.table.delegate('click', function(e) {
+            this.table.delegate("click", function(e) {
                 if (e.target.ancestor(".yui3-datatable-col-menu"))
                     return;                                                     // @hack Prevent event on menu click
-                if (!this.getRecord(e.target).get("entity"))
+                if (!this.getRecord(e.target).get(ENTITY))
                     Y.log("Menu item has no target entity", "info", "Y.Plugin.EditorTVAdminMenu");
-                this.set('selectedRow', e.currentTarget);
-            }, '.yui3-datatable-data tr[data-yui3-record]', this.table);
+                this.set("selectedRow", e.currentTarget);
+            }, ".yui3-datatable-data tr[data-yui3-record]", this.table);
 
             this.table.on("selectedRowChange", function(e) {
                 this.get(CONTENTBOX).all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                 e.newVal.addClass("wegas-datatable-selected");
-                this.currentSelection = this.getRecord(e.newVal).get("entity").get("id");
+                this.currentSelection = this.getRecord(e.newVal).get(ENTITY).get(ID);
             });
 
             this.addedHandler = ds.after("added", function(e) {                 // When an entity is created
                 if (this.requestdt)
                     return;
 
-                var newEntityId = e.entity.get("id");                           // view it in the table
+                var newEntityId = e.entity.get(ID);                           // view it in the table
                 this.table.currentSelection = null;
                 Y.later(20, this, function() {
                     this.table.get("data").each(function(r) {
-                        if (newEntityId === r.get("entity").get("id")) {
+                        if (newEntityId === r.get(ENTITY).get(ID)) {
                             var row = this.table.getRow(r);
 
                             this.table.get("selectedRow") !== row
@@ -98,7 +98,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                                 && this.get("parent").set("selected", 2);       // @hack Ensure the parent tab is currently not visible befor displaying
 
                             row.scrollIntoView();
-
                             this.table.set("selectedRow", row);
                         }
                     }, this);
@@ -107,7 +106,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
 
             Y.Do.after(function() {
                 this.table.get("data").each(function(r) {
-                    if (this.currentSelection === r.get("entity").get("id")) {
+                    if (this.currentSelection === r.get(ENTITY).get(ID)) {
                         this.getRow(r).addClass("wegas-datatable-selected");
                     }
                 }, this.table);
@@ -160,10 +159,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         genEntityData: function(entity) {
             switch (entity.get("@class")) {
-                case 'DebugGame':
+                case "DebugGame":
                     break;
 
-                case 'Game':
+                case "Game":
                     return {
                         name: entity.get(NAME),
                         createdTime: entity.get("createdTime"),
@@ -177,18 +176,18 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     };
                     break;
 
-                case 'Team':
+                case "Team":
                     return {
                         name: entity.get(NAME),
                         token: entity.get("token")
                     };
 
-                case 'Player':
+                case "Player":
                     return {
                         name: entity.get(NAME)
                     };
 
-                case 'GameModel':
+                case "GameModel":
                     if (entity.get("canEdit")) {
                         return {
                             name: entity.get(NAME),
@@ -200,19 +199,19 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     }
                     break;
 
-                case 'User':
+                case "User":
                     return {
                         label: entity.get(NAME),
                         entity: entity.getMainAccount()
                     };
 
-                case 'Role':
+                case "Role":
                     return {
                         label: entity.get(NAME)
                     };
 
                 default:
-                    Y.log("Unable to generate data for entity " + entity.get("@class") + '(' + entity.get(NAME) + ")");
+                    Y.log("Unable to generate data for entity " + entity.get("@class") + "(" + entity.get(NAME) + ")");
                     return null;
             }
         }
@@ -285,9 +284,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     });
 
     Y.DataTable.BodyView.Formatters.icon = function(col) {
-        col.className = 'wegas-lobby-datatable-icon';
+        col.className = "wegas-lobby-datatable-icon";
         function makeUri(uri, o) {
-            return Plugin.Injector.getImageUri(uri, o.data.entity.get("gameModelId") || o.data.entity.get("id"));
+            return Plugin.Injector.getImageUri(uri, o.data.entity.get("gameModelId") || o.data.entity.get(ID));
         }
         return function(o) {
             return '<img class="wegas-lobby-icon" src="' + (makeUri(o.data.iconUri || o.data.imageUri, o) || "wegas-lobby/images/wegas-game-icon.png") + '" />'
@@ -317,14 +316,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      */
     Plugin.EditorDTMenu = Y.Base.create("admin-menu", Plugin.Base, [], {
         initializer: function() {
-            this.onceAfterHostEvent("render", function() {
-                this.get(HOST).table.after('selectedRowChange', this.onClick, this);
+            this.onceAfterHostEvent(RENDER, function() {
+                this.get(HOST).table.after("selectedRowChange", this.onClick, this);
             });
         },
         onClick: function(e) {
-            var host = this.get(HOST), button,
+            var host = this.get(HOST), button, tmp,
                 menuItems = this.get("children"),
-                entity = host.table.getRecord(e.newVal).get("entity"),
+                entity = host.table.getRecord(e.newVal).get(ENTITY),
                 data = {
                     entity: entity,
                     dataSource: host.get(DATASOURCE)
@@ -360,18 +359,18 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                     key: "menu",
                     label: " ",
                     sortable: false,
-                    className: 'wegas-datatable-menu'
-                }).delegate('mouseover', this.onMouseOver, '.yui3-datatable-data tr[data-yui3-record]', this);
+                    className: "wegas-datatable-menu"
+                }).delegate("mouseover", this.onMouseOver, ".yui3-datatable-data tr[data-yui3-record]", this);
             });
         },
         onMouseOver: function(e) {
             if (e.currentTarget.menu) {
                 return;
             }
-            var host = this.get(HOST),
+            var host = this.get(HOST), tmp,
                 rec = host.table.getRecord(e.currentTarget), // the current Record for the clicked TR
                 menuItems = this.get("children") || (host.menu && host.menu.get("children")),
-                entity = rec.get("entity"),
+                entity = rec.get(ENTITY),
                 data = {
                     entity: entity,
                     dataSource: host.get(DATASOURCE)
@@ -394,6 +393,11 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                     }
                 });
+
+                tmp = menuItems[0];                                             // Swap the 2 first element (aka place the open menu first
+                menuItems[0] = menuItems[1];
+                menuItems[1] = tmp;
+
                 e.currentTarget.menu = new Wegas.List({
                     children: menuItems
                 });
@@ -416,17 +420,17 @@ YUI.add('wegas-lobby-datatable', function(Y) {
     //            var host = this.get(HOST);
     //            host.table.delegate('click', function(e) {
     //                var rec = host.table.getRecord(e.currentTarget),
-    //                        entity = rec.get("entity"),
+    //                        entity = rec.get(ENTITY),
     //                        url = this.get("url");
     //
     //                if (entity instanceof Wegas.persistence.GameModel) {
-    //                    url += "gameModelId=" + entity.get("id");
+    //                    url += "gameModelId=" + entity.get(ID);
     //                } else if (entity instanceof Wegas.persistence.Player) {
-    //                    url += "id=" + entity.get("id");
+    //                    url += "id=" + entity.get(ID);
     //                } else if (entity instanceof Wegas.persistence.Team) {
-    //                    url += "teamId=" + entity.get("id");
+    //                    url += "teamId=" + entity.get(ID);
     //                } else {
-    //                    url += "gameId=" + entity.get("id");
+    //                    url += "gameId=" + entity.get(ID);
     //                }
     //                window.open(url);
     //                e.halt(true);
@@ -448,7 +452,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      */
     Plugin.ViewsDT = Y.Base.create("viewsdt", Plugin.Base, [], {
         initializer: function() {
-            this.onHostEvent("render", this.render);
+            this.onHostEvent(RENDER, this.render);
         },
         render: function() {
             var host = this.get(HOST);
@@ -456,14 +460,14 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             host.get(CONTENTBOX).addClass("wegas-datatable-list");
 
             if (host.toolbar) {
-                host.toolbar.get('header').append("<div class='wegas-datatable-viewbuttons'>"
+                host.toolbar.get("header").append("<div class='wegas-datatable-viewbuttons'>"
                     + "<button class='yui3-button button-grid'><span class='wegas-icon wegas-icon-gridview'></span></button>"
                     + "<button class='yui3-button button-list yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
                     + "<button class='yui3-button button-table'><span class='wegas-icon wegas-icon-tableview'></span></button>"
                     + "</div>");
                 this.buttonGroup = new Y.ButtonGroup({
-                    srcNode: host.toolbar.get('header').one(".wegas-datatable-viewbuttons"),
-                    type: 'radio',
+                    srcNode: host.toolbar.get("header").one(".wegas-datatable-viewbuttons"),
+                    type: "radio",
                     on: {
                         selectionChange: Y.bind(function(e) {
                             var button = e.target.getSelectedButtons()[0];
@@ -494,7 +498,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
      */
     Plugin.SearchDT = Y.Base.create("searchdatatable", Plugin.Base, [], {
         initializer: function() {
-            this.afterHostEvent("render", this.render);
+            this.afterHostEvent(RENDER, this.render);
             this.doAfter("syncUI", this.sync);
             this.data = new Y.ModelList();
             this.filterValue = "";
@@ -506,10 +510,10 @@ YUI.add('wegas-lobby-datatable', function(Y) {
             var host = this.get(HOST);
 
             if (host.toolbar) {
-                host.toolbar.get('header').append("<div class='wegas-filter-input wegas-datatable-search'><input placeholder='Search...' /></div>")
+                host.toolbar.get("header").append("<div class='wegas-filter-input wegas-datatable-search'><input placeholder='Search...' /></div>")
                     .one(".wegas-datatable-search input").on("valueChange", function(e) {
                     this.filterValue = e.newVal;
-                    host.table.set('strings.emptyMessage', "<em><center><br /><br />There are no records that match your search</center></em>");
+                    host.table.set("strings.emptyMessage", "<em><center><br /><br />There are no records that match your search</center></em>");
                     this.applyFilters();
                 }, this);
             }
@@ -522,9 +526,9 @@ YUI.add('wegas-lobby-datatable', function(Y) {
         },
         applyFilters: function() {
             var filter = Y.Lang.trim(this.filterValue);
-            this.get(HOST).table.set('data', this.data.filter(function(item) {  // Update the records in the table's Recordset with the results of
+            this.get(HOST).table.set("data", this.data.filter(function(item) {  // Update the records in the table's Recordset with the results of
                 return filter === ""
-                    || new RegExp(filter, "i").test(Y.Object.values(item.toJSON()).join('|'));// filtering the full data set by a substring search in all fields
+                    || new RegExp(filter, "i").test(Y.Object.values(item.toJSON()).join("|"));// filtering the full data set by a substring search in all fields
             }));
         }
     }, {
@@ -547,7 +551,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 tr = e.domEvent.target.ancestor("tr"), // the Node for the TR clicked ...
                 rec = host.table.getRecord(tr), // the current Record for the clicked TR
                 menuItems = this.get("children") || (host.menu && host.menu.get("children")),
-                entity = rec.get("entity"),
+                entity = rec.get(ENTITY),
                 data = {
                     entity: entity,
                     dataSource: host.get(DATASOURCE)
@@ -611,7 +615,7 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                             sortable: false,
                             width: "27px"
                         }, {
-                            key: "name",
+                            key: NAME,
                             label: "Name"
                         }, {
                             key: "gameModelName",
@@ -626,7 +630,6 @@ YUI.add('wegas-lobby-datatable', function(Y) {
                 emptyMessage: "No game available to play"
             });
             Wegas.PublicGameDataTable.superclass.renderUI.call(this);
-            //this.plug(Plugin.WidgetToolbar);
             this.plug(Plugin.RequestDT);
             this.plug(Plugin.EditorDTMenu, {
                 children: [{
