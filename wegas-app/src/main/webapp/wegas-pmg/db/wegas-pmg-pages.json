@@ -1333,7 +1333,7 @@
                 "tableCfg": {
                     "columns": [{
                             "key": "name",
-                            "label": ""
+                            "label": " "
                         }, {
                             "label": "Phase",
                             "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
