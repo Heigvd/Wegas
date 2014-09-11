@@ -698,7 +698,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     plannification: {
                         type: ARRAY,
                         _inputex: {
-                            _type: HIDDEN
+                            _type: HIDDEN,
+                            value : []
                         }
                     },
                     properties: {
