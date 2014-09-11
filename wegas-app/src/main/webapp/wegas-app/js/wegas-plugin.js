@@ -326,16 +326,21 @@ YUI.add("wegas-plugin", function(Y) {
     var ExecuteScriptAction = Y.Base.create("ExecuteScriptAction", Action, [], {
         execute: function() {
             if (!this.get(HOST).get("disabled")) {
-                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
-                    this.showOverlay();
-                    Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
-                        on: {
-                            success: Y.bind(this.hideOverlay, this),
-                            failure: Y.bind(this.defaultFailureHandler, this)
-                        }
-                    });
-                }, this));
+                if (this.get("isPlayerAction")) {
+                    Wegas.Panel.confirmPlayerAction(Y.bind(this.sendRequest, this));
+                } else {
+                    this.sendRequest();
+                }
             }
+        },
+        sendRequest: function() {
+            this.showOverlay();
+            Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
         }
     }, {
         NS: "ExecuteScriptAction",
@@ -344,6 +349,14 @@ YUI.add("wegas-plugin", function(Y) {
                 _inputex: {
                     _type: "script",
                     label: "On click"
+                }
+            },
+            isPlayerAction: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
+                    value: true
                 }
             }
         }

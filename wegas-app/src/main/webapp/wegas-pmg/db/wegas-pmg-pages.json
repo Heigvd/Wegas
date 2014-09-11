@@ -1149,7 +1149,8 @@
                                 "@class": "Script",
                                 "language": "JavaScript",
                                 "content": "if (Variable.find(gameModel, \"advancementLimit\").getValue(self)){\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, true);\n}"
-                            }
+                            },
+                            "isPlayerAction": false
                         }
                     },
                     {
@@ -1215,7 +1216,8 @@
                                 "@class": "Script",
                                 "language": "JavaScript",
                                 "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}"
-                            }
+                            },
+                            "isPlayerAction": false
                         }
                     }, {
                         "fn": "CSSPosition",
@@ -1255,7 +1257,8 @@
                                 "@class": "Script",
                                 "language": "JavaScript",
                                 "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}"
-                            }
+                            },
+                            "isPlayerAction": false
                         }
                     }, {
                         "fn": "CSSPosition",
@@ -1295,7 +1298,8 @@
                                 "@class": "Script",
                                 "language": "JavaScript",
                                 "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}"
-                            }
+                            },
+                            "isPlayerAction": false
                         }
                     }, {
                         "fn": "CSSPosition",
