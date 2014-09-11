@@ -1,5 +1,5 @@
 {
-	"label": "Actions",
+	"title": "Actions",
 	"@class": "ListDescriptor",
 	"scope": {
 		"@class": "TeamScope",
@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Collègues: Identifier la durée des tâches",
+					"title": "Collègues: Identifier la durée des tâches",
 					"name": "Collègues: Identifier la durée des tâches",
-					"editorLabel": "A001 - Collègues: Identifier durée tâches",
+					"label": "A001 - Collègues: Identifier durée tâches",
 					"description": "<p>Vous organisez une petite s&eacute;ance de travail avec deux coll&egrave;gues pressentis pour participer aux groupes de travail et passez un moment &agrave; estimer la dur&eacute;e des diff&eacute;rentes t&acirc;ches n&eacute;cessaires &agrave; la r&eacute;alisation du projet.</p><p>Co&ucirc;t: 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -37,8 +37,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -68,9 +68,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG : partage réflexions",
+					"title": "DG : partage réflexions",
 					"name": "DG : partage réflexions",
-					"editorLabel": "A005 - DG: partage réflexions",
+					"label": "A005 - DG: partage réflexions",
 					"description": "<p>Vous sollicitez un rendez-vous avec la DG afin de lui pr&eacute;senter l'&eacute;tat actuel de vos r&eacute;flexions et obtenir son avis.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -83,8 +83,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -134,9 +134,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG-PMO: Déposer le mandat de projet",
+					"title": "DG-PMO: Déposer le mandat de projet",
 					"name": "DG-PMO: Déposer le mandat de projet",
-					"editorLabel": "A007 - DG-PMO: Déposer mandat",
+					"label": "A007 - DG-PMO: Déposer mandat",
 					"description": "<p>Vous vous rendez aupr&egrave;s du PMO et de la direction g&eacute;n&eacute;rale afin de d&eacute;posez le mandat de projet.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -149,8 +149,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -185,9 +185,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Collègues: Identifier sommairement les tâches à réaliser",
+					"title": "Collègues: Identifier sommairement les tâches à réaliser",
 					"name": "Collègues: Identifier sommairement les tâches à réaliser",
-					"editorLabel": "A008 - Collègues: Identifier les tâches",
+					"label": "A008 - Collègues: Identifier les tâches",
 					"description": "<p>Vous provoquez un r&eacute;union avec deux coll&egrave;gues pressentis pour participer aux groupes de travail afin de sommairement identifier les activit&eacute;s n&eacute;cessaires &agrave; la r&eacute;alisation de la nouvelle structure m&eacute;dicale.</p><p>Co&ucirc;t: 3 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -200,8 +200,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -231,9 +231,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Effectuer les analyses de détails",
+					"title": "Effectuer les analyses de détails",
 					"name": "Effectuer les analyses de détails",
-					"editorLabel": "A020 - Analyses de détail",
+					"label": "A020 - Analyses de détail",
 					"description": "<p>Avant de vous lancer dans les analyses de d&eacute;tails, il faut d&eacute;finir dans quel ordre vous allez les effectuer.</p><p><strong>Vous ne pouvez effectuer cette action qu'apr&egrave;s avoir r&eacute;pondu au choix \"Ordre des analyses de d&eacute;tail\" dans l'onglet \"Choix\".<br /></strong></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -246,8 +246,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -267,9 +267,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Spécialistes: Effectuer les analyses de détails",
+					"title": "Spécialistes: Effectuer les analyses de détails",
 					"name": "Spécialistes: Effectuer les analyses de détails",
-					"editorLabel": "A021 - Analyses de détail - après choix",
+					"label": "A021 - Analyses de détail - après choix",
 					"description": "<p>Vous avez d&eacute;cid&eacute; d'effectuer les analyses de d&eacute;tail dans l'ordre suivant :</p><ul><li>Sp&eacute;cification des prestations</li><li>Sp&eacute;cification des infrastructures</li><li>Sp&eacute;cification de l'organisation</li><li>Sp&eacute;cification du financement</li></ul><p>La sp&eacute;cification des prestations sera r&eacute;alis&eacute;e par le groupe de travail \"Prestations\".</p><p>Mais vous avez la possibilit&eacute; de rencontrer quelques sp&eacute;cialistes pressentis pour participer aux groupes de travail infrastructure, organisation ou financement afin d'effectuer une analyse sommaire relativement aux infrastructures n&eacute;cessaires, &agrave; l'organisation et au financement.</p><p>Co&ucirc;ts:&nbsp; 3 cartes temps</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -282,8 +282,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -313,9 +313,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Conjoint: Rester travailler le soir",
+					"title": "Conjoint: Rester travailler le soir",
 					"name": "Conjoint: Rester travailler le soir",
-					"editorLabel": "A030B - Conjoint: travailler le soir",
+					"label": "A030B - Conjoint: travailler le soir",
 					"description": "<p>Vous informez votre conjoint(e) que vous restez travailler quelquefois plus tard car vous avez beaucoup &agrave; faire sur un projet important.</p><p>Ceci vous permet de gagner quelques cartes temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -328,8 +328,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -359,9 +359,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG : information stratégie",
+					"title": "DG : information stratégie",
 					"name": "DG : information stratégie",
-					"editorLabel": "A040 - Consulter DG : stratégie",
+					"label": "A040 - Consulter DG : stratégie",
 					"description": "<p>Vous allez rencontrer la direction g&eacute;n&eacute;rale de l'h&ocirc;pital afin d'obtenir des informations relatives &agrave; la strat&eacute;gie g&eacute;n&eacute;rale de d&eacute;veloppement de l'institution.<span style=\"white-space: pre;\"> </span></p><p><span style=\"white-space: pre;\">C</span>o&ucirc;t: 1 carte temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -374,8 +374,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -413,9 +413,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG: Déposer la proposition finale pour décision par les organes compétents",
+					"title": "DG: Déposer la proposition finale pour décision par les organes compétents",
 					"name": "DG: Déposer la proposition finale pour décision par les organes compétents",
-					"editorLabel": "P005 - DG: Déposer proposition finale pour décision",
+					"label": "P005 - DG: Déposer proposition finale pour décision",
 					"description": "<p>Vous mettez en forme les propositions des divers groupes de travail et adressez ce document &agrave; la direction g&eacute;n&eacute;rale de l'h&ocirc;pital, qui transmettra pour d&eacute;cision au conseil de fondation, puis au ministre r&eacute;gional de la sant&eacute; et &agrave; la municipalit&eacute; de Belleville.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -428,8 +428,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -459,9 +459,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Responsables des GT: avis sur estimation des durées",
+					"title": "Responsables des GT: avis sur estimation des durées",
 					"name": "Responsables des GT: avis sur estimation des durées",
-					"editorLabel": "P010 - Resp. GT : avis sur estimations",
+					"label": "P010 - Resp. GT : avis sur estimations",
 					"description": "<p>Vous r&eacute;unissez les responsables des diff&eacute;rents groupes de travail (GT) pour obtenir leur avis sur l'estimation des dur&eacute;es des diff&eacute;rentes t&acirc;ches.</p><p>Ceci vous permettra d'entendre les personnes qui r&eacute;aliseront ces activit&eacute;s.</p><p>Co&ucirc;ts:<br />Frais fixes projet: 2000<br />Cartes temps: 3</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -474,8 +474,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -500,9 +500,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Tous les acteurs: Organiser un quick off",
+					"title": "Tous les acteurs: Organiser un quick off",
 					"name": "Tous les acteurs: Organiser un quick off",
-					"editorLabel": "P085 - Tous les acteurs: kick off",
+					"label": "P085 - Tous les acteurs: kick off",
 					"description": "<p>Vous r&eacute;unissez tous les acteurs du projet afin de lancer officiellement le projet.</p><p>Ceci pourrait &ecirc;tre b&eacute;n&eacute;fique, mais cela pourrait aussi susciter des r&eacute;ticences puisque ce n'est pas (encore) l'usage au sein de l'h&ocirc;pital.</p><p>Budget temps : 2 cartes temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -515,8 +515,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -541,9 +541,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG: information sur la stratégie",
+					"title": "DG: information sur la stratégie",
 					"name": "DG: information sur la stratégie",
-					"editorLabel": "P007 - DG : info stratégie",
+					"label": "P007 - DG : info stratégie",
 					"description": "<p>Vous allez rencontrer la direction g&eacute;n&eacute;rale de l'h&ocirc;pital afin d'obtenir des informations relatives &agrave; la strat&eacute;gie de d&eacute;veloppement de l'institution.<span style=\"white-space: pre;\"> </span></p><p>Co&ucirc;ts : 1 carte temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -556,8 +556,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -587,9 +587,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Responsables des GT: coordination opérations",
+					"title": "Responsables des GT: coordination opérations",
 					"name": "Responsables des GT: coordination opérations",
-					"editorLabel": "P050 - Resp. GT: coordination opérations",
+					"label": "P050 - Resp. GT: coordination opérations",
 					"description": "<p>En fonction de l'avancement des travaux, vous r&eacute;unissez les responsables de groupe de travail (GT) afin de coordoner les op&eacute;rations et &eacute;changer sur l'avancement des diverses op&eacute;rations.</p><p>Co&ucirc;ts : 1 carte temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -602,8 +602,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -658,9 +658,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Groupes travail: heures supplémentaires",
+					"title": "Groupes travail: heures supplémentaires",
 					"name": "Groupes travail: heures supplémentaires",
-					"editorLabel": "P080 - GT: Faire des heures supplémentaires",
+					"label": "P080 - GT: Faire des heures supplémentaires",
 					"description": "<p>Vous demandez aux diff&eacute;rents acteurs impliqu&eacute;s dans le projet (en interne) de faire des heures suppl&eacute;mentaires. Le pr&eacute;sident du COPIL vous outient dans cette d&eacute;marche.</p><p>Ceci vous permettra d'obtenir quelques cartes temps suppl&eacute;mentaires.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -673,8 +673,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -709,9 +709,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "COPIL:  Organisation des prestations",
+					"title": "COPIL:  Organisation des prestations",
 					"name": "COPIL:  Organisation des prestations",
-					"editorLabel": "P091 - COPIL \"Prestations\"",
+					"label": "P091 - COPIL \"Prestations\"",
 					"description": "<p>Vous pr&eacute;sentez au COPIL l'&eacute;tat actuel de vos r&eacute;flexions concernant l'<strong>organisation des prestations</strong> &agrave; offrir par la nouvelle policlinique.</p><p>Ceci vous permettra de faire valider les principales d&eacute;cisions.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -724,8 +724,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -755,9 +755,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "COPIL:  Locaux",
+					"title": "COPIL:  Locaux",
 					"name": "COPIL:  Locaux",
-					"editorLabel": "P092 - COPIL \"Locaux\"",
+					"label": "P092 - COPIL \"Locaux\"",
 					"description": "<p>Vous pr&eacute;sentez au COPIL l'&eacute;tat actuel de vos r&eacute;flexions concernant les <strong>locaux</strong>.</p><p>Ceci vous permettra de faire valider les principales d&eacute;cisions.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -770,8 +770,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -811,9 +811,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "COPIL: Synthèse des travaux",
+					"title": "COPIL: Synthèse des travaux",
 					"name": "COPIL: Synthèse des travaux",
-					"editorLabel": "P093 - COPIL \"Final\"",
+					"label": "P093 - COPIL \"Final\"",
 					"description": "<p>Vous pr&eacute;sentez au COPIL la synth&egrave;se des travaux (fonctionnement futur, finances, RH, &eacute;quipements, etc.).</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -826,8 +826,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -870,9 +870,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"1. Négocier sous-traitance\"",
+					"title": "Analyser qualité \"1. Négocier sous-traitance\"",
 					"name": "Analyser qualité \"1. Négocier sous-traitance\"",
-					"editorLabel": "01 - R001 - An. qualité \"1. Négocier sous-traitance\"",
+					"label": "01 - R001 - An. qualité \"1. Négocier sous-traitance\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"N&eacute;gocier sous-traitance\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -885,8 +885,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -916,9 +916,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"2. Choisir et commander équipements\"",
+					"title": "Analyser qualité \"2. Choisir et commander équipements\"",
 					"name": "Analyser qualité \"2. Choisir et commander équipements\"",
-					"editorLabel": "02 - R002B - An. qualité \"2. Choisir et commander équipements\"",
+					"label": "02 - R002B - An. qualité \"2. Choisir et commander équipements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Choisir et commander &eacute;quipements\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -931,8 +931,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -967,9 +967,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"3. Aménager locaux\"",
+					"title": "Analyser qualité \"3. Aménager locaux\"",
 					"name": "Analyser qualité \"3. Aménager locaux\"",
-					"editorLabel": "03 - R003B - An. qualité \"3. Aménager locaux\"",
+					"label": "03 - R003B - An. qualité \"3. Aménager locaux\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'am&eacute;nagement des locaux et  analysez le travail effectu&eacute;. Vous v&eacute;rifiez que l'am&eacute;nagement des locaux  coresponde bien aux exigence et &agrave; la qualit&eacute; n&eacute;cessaire au centre  m&eacute;dical.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -982,8 +982,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1033,9 +1033,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"4. Installation équipements\"",
+					"title": "Analyser qualité \"4. Installation équipements\"",
 					"name": "Analyser qualité \"4. Installation équipements\"",
-					"editorLabel": "04 - R004B - Analyser qualité \"4. Installation équipements\"",
+					"label": "04 - R004B - Analyser qualité \"4. Installation équipements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'installation des &eacute;quipements et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1048,8 +1048,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1089,9 +1089,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"5. Tester équipements\"",
+					"title": "Analyser qualité \"5. Tester équipements\"",
 					"name": "Analyser qualité \"5. Tester équipements\"",
-					"editorLabel": "05 - R005 - An. qualité \"5. Tester équipements\"",
+					"label": "05 - R005 - An. qualité \"5. Tester équipements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Tester &eacute;quipements\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1104,8 +1104,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1135,9 +1135,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"6. Recruter collaborateurs\"",
+					"title": "Analyser qualité \"6. Recruter collaborateurs\"",
 					"name": "Analyser qualité \"6. Recruter collaborateurs\"",
-					"editorLabel": "06 - R006 - An. qualité \"6. Recruter collaborateurs\"",
+					"label": "06 - R006 - An. qualité \"6. Recruter collaborateurs\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Recruter collaborateurs\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1150,8 +1150,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1181,9 +1181,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"7. Intégrer et former collaborateurs\"",
+					"title": "Analyser qualité \"7. Intégrer et former collaborateurs\"",
 					"name": "Analyser qualité \"7. Intégrer et former collaborateurs\"",
-					"editorLabel": "07 - R007B - An. qualité \"7. Intégrer et former collaborateurs\"",
+					"label": "07 - R007B - An. qualité \"7. Intégrer et former collaborateurs\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Int&eacute;grer et former collaborateurs\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1196,8 +1196,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1232,9 +1232,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualité \"8. Préparer l'inauguration\"",
+					"title": "Analyser qualité \"8. Préparer l'inauguration\"",
 					"name": "Analyser qualité \"8. Préparer l'inauguration\"",
-					"editorLabel": "08 - R008 - An. qualité \"8. Préparer l'inauguration\"",
+					"label": "08 - R008 - An. qualité \"8. Préparer l'inauguration\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Pr&eacute;parer l'inauguration\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1247,8 +1247,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1288,9 +1288,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Partenaires: coordination",
+					"title": "Partenaires: coordination",
 					"name": "Partenaires: coordination",
-					"editorLabel": "R020B - Partenaires: coordination",
+					"label": "R020B - Partenaires: coordination",
 					"description": "<p>Organiser une r&eacute;union de coordination entre les diff&eacute;rents partenaires du projet (direction g&eacute;n&eacute;rale, municipalit&eacute;, repr&eacute;sentants de m&eacute;decins priv&eacute;s, responsables de l'am&eacute;nagement et de l'&eacute;quipement des locaux).</p><p>Apr&egrave;s pr&eacute;sentation de l'&eacute;tat g&eacute;n&eacute;ral du projet, vous ouvrez la discussion et cherchez &agrave; obtenir leur point de vue et un retour g&eacute;n&eacute;ral d'information.</p><p>Co&ucirc;ts:<br />3 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1303,8 +1303,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1354,9 +1354,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe de projet: réunion de coordination",
+					"title": "Equipe de projet: réunion de coordination",
 					"name": "Equipe de projet: réunion de coordination",
-					"editorLabel": "R030B - Equipe de projet: coordination",
+					"label": "R030B - Equipe de projet: coordination",
 					"description": "<p>Vous r&eacute;unissez les groupes de travail du projet (ou leurs repr&eacute;sentants) afin de faire le point sur les objectifs, la qualit&eacute; du travail r&eacute;alis&eacute; et les d&eacute;lais. <br />Vous terminez la r&eacute;union par la (re)d&eacute;finition du travail et des priorit&eacute;s.</p><p>Co&ucirc;t: <br />3 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1369,8 +1369,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "<p>Suite &agrave; la r&eacute;union, les priorit&eacute;s entre les diff&eacute;rentes activit&eacute;s ont &eacute;t&eacute; r&eacute;ajust&eacute;es. Quelques probl&egrave;mes de coordination ont &eacute;t&eacute; soulev&eacute;s, mais r&eacute;gl&eacute;s durant la s&eacute;ance.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1423,9 +1423,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Renégocier son cahier des charges",
+					"title": "Renégocier son cahier des charges",
 					"name": "Renégocier son cahier des charges",
-					"editorLabel": "T002 renégocier son cahier des charges",
+					"label": "T002 renégocier son cahier des charges",
 					"description": "<p>Si cette exp&eacute;rience vous a donn&eacute; le go&ucirc;t de poursuivre, demandez donc une entrevue avec la direction PMO pour vous profilez sur d'autres occasion, voire devenir chef de projet &agrave; plein temps.</p><p>Et pourquoi pas ren&eacute;gocier votre salaire ?</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1438,8 +1438,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1464,9 +1464,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Prendre des vacances",
+					"title": "Prendre des vacances",
 					"name": "Prendre des vacances",
-					"editorLabel": "T003 prendre des vacances",
+					"label": "T003 prendre des vacances",
 					"description": "",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1479,8 +1479,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
