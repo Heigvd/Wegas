@@ -49,7 +49,7 @@ var PMGSimulation = (function() {
         }
 
         debug("All Step Computed");
-        billUnworkedHoursForUselessResources();
+        closePeriod();
     }
 
     function getResourceDescriptors() {
@@ -66,23 +66,31 @@ var PMGSimulation = (function() {
         return getInstancesFromDescriptors(getResourceDescriptors());
     }
 
-    function getActiveResourceDescriptors() {
-        return getResourceDescriptors().filter(// Filter 
-            function(rd) {
-                return PMGHelper.isReservedToWork(rd, currentPeriodNumber);
-            }, this);
+    function cleanAssignments(resources) {
+        var i;
+        for (i = 0; i < resources.length; i++) {
+            removeAssignmentsFromCompleteTasks(resources[i].getInstance(self));
+        }
     }
 
-    function billUnworkedHoursForUselessResources() {
+    function closePeriod() {
+        var resources = getResourceDescriptors();
+        cleanAssignments(resources);
+        billUnworkedHoursForUselessResources(resources);
+    }
+
+    function billUnworkedHoursForUselessResources(resources) {
         debug(arguments.callee.name);
         if (!AUTOMATED_RESERVATION) {
-            Y.Array.each(getActiveResourceDescriptors(),
+            Y.Array.each(resources,
                 function(resourceDescriptor) {
-                    var resourceInstance = resourceDescriptor.getInstance(self);
-                    if (findActivitesByPeriod(resourceInstance, currentPeriodNumber).length === 0) {
-                        // Useless resources -> reserved + noWork
-                        addUnworkedHours(resourceInstance, 100); // for the whole period -> 100%
-                        sendPlanningProblemEmail(resourceInstance);
+                    if (PMGHelper.isReservedToWork(resourceDescriptor, currentPeriodNumber)) {
+                        var resourceInstance = resourceDescriptor.getInstance(self);
+                        if (findActivitesByPeriod(resourceInstance, currentPeriodNumber).length === 0) {
+                            // Useless resources -> reserved + noWork
+                            addUnworkedHours(resourceInstance, 100); // for the whole period -> 100%
+                            sendPlanningProblemEmail(resourceInstance);
+                        }
                     }
                 }, this);
         }
@@ -115,7 +123,7 @@ var PMGSimulation = (function() {
             t.setProperty("completeness", calculateTaskProgress(t));
             t.setProperty("quality", calculateTaskQuality(t));
             debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
-            if (t.getProperty("completeness") >= 100){
+            if (t.getProperty("completeness") >= 100) {
                 sendEndOfTaskMail(td, currentStep);
             }
         });
@@ -131,7 +139,7 @@ var PMGSimulation = (function() {
     function assignResources(currentStep) {
         debug(arguments.callee.name + "(currentStep: " + currentStep + ", currentPeriodNumber: " + currentPeriodNumber + ")");
         var activities = [],
-            i, resources = flattenList(Variable.findByName(gameModel, "employees"));
+            i, resources = getResourceDescriptors();
         if (!resources) {
             return [];
         }
@@ -231,7 +239,7 @@ var PMGSimulation = (function() {
                 }
             }
         }
-        //removeAssignmentsFromCompleteTasks(resourceInstance); // After each step 
+        removeAssignmentsFromCompleteTasks(resourceInstance);
         if (activity) {
             activity.setTime(currentPeriodNumber + currentStep / STEPS);
         }
@@ -247,12 +255,7 @@ var PMGSimulation = (function() {
      */
     function checkEnd(activities, currentStep) {
         debug(arguments.callee.name + "() step: " + currentStep);
-        var taskInst, taskDesc,
-            resources = flattenList(Variable.findByName(gameModel, "employees"));
-
-        for (i = 0; i < resources.length; i++) {
-            removeAssignmentsFromCompleteTasks(resources[i].getInstance(self));
-        }
+        var taskInst, taskDesc;
 
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             taskInst = r.getTaskInstance(),

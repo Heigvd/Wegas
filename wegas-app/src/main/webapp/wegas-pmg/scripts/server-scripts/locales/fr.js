@@ -17,42 +17,42 @@ i18nTable.fr = {
         startOnTask: {
             from: "%employeeName%",
             subject: "Tâche: %task%",
-            content: "J'ai commencé mon travail sur la tâche %task% %step%<br/> Salutations <br/>%employeeName%<br/> %job%"
+            content: "J'ai commencé mon travail sur la tâche \"%task%\" %step%<br/> Salutations <br /><br/>%employeeName%<br/> %job%"
         },
         endOfTask: {
             from: "Suivi de projet",
             subject: "Tâche %task%",
-            content: "Bonjour, <br /> <br /> Nous vous informons que la tâche numéro %task% a été terminée %step%"
+            content: "Bonjour, <br /> <br /> Nous vous informons que la tâche \"%task%\" a été terminée %step%"
         },
         endOfTaskSwitchToNew: {
             from: "%employeeName%",
             subject: "Fin de la tâche: %task%",
-            content: 'La tâche "%task%" est terminée depuis %step%, je passe à la tâche %nextTask% <br/> Salutations <br/>%employeeName%<br/> %job%'
+            content: "La tâche \"%task%\" est terminée. Depuis %step%, je travaille sur la tâche \"%nextTask%\".<br/> Salutations <br/ ><br />%employeeName%<br /> %job%"
         },
         endOfTaskOtherActivities: {
             from: "%employeeName%",
             subject: "Fin de la tâche: %task%",
-            content: 'La tâche "%task%" est terminée depuis %step%. Je retourne à mes activités traditionnelles. <br/> Salutations <br/>%employeeName%<br/> %job%'
+            content: "La tâche \"%task%\" est terminée. Je suis retourné à mes activités traditionnelles depuis %step%. <br/> Salutations <br /><br/>%employeeName%<br/> %job%"
         },
         blockedByPredecessors: {
             from: "%employeeName%",
             subject: "Impossible de progresser sur la tâche: %task%",
-            content: 'Je suis venu %step% pour travailler sur la tâche "%task%" mais les tâches précédentes ne sont pas assez avancées. <br/> J\' ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose à faire sur le projet. <br/> Salutations <br/>%employeeName%<br/> %job%'
+            content: "Je suis venu %step% pour travailler sur la tâche \"%task%\" mais les tâches précédentes ne sont pas assez avancées. <br/> J' ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose à faire sur le projet. <br/> Salutations <br /><br/>%employeeName%<br/> %job%"
         },
         skillCompleted: {
             from: "%skill%",
             subject: "Tâche: %task% en partie terminée",
-            content: 'Nous avons terminé la partie %skill% de la tâche %task% %step%. <br/> Salutations'
+            content: "Nous avons terminé la partie %skill% de la tâche \"%task% \"%step%. <br /><br/> Salutations"
         },
         notMyWork: {
             from: "%employeeName%",
             subject: "Impossible de progresser sur la tâche: %task%",
-            content: 'Je suis venu %step% pour travailler sur la tâche "%task%" mais je ne suis pas qualifié pour ce travail. <br /> Salutations <br/>%employeeName%<br/> %job%'
+            content: "Je suis venu %step% pour travailler sur la tâche \"%task%\" mais je ne suis pas qualifié pour ce travail. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
         },
         planningProblem: {
             from: "%employeeName%",
             subject: "Problème de planification",
-            content: "Bonjour, <br><br> Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /> Salutations <br/>%employeeName%<br/> %job%"
+            content: "Bonjour, <br><br> Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /> Salutations <br /><br/>%employeeName%<br/> %job%"
         }
     },
     date: {
