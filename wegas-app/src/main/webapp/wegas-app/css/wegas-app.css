@@ -147,18 +147,12 @@ font {
     margin-top:6px; 
     width:6px; 
     height:18px;
-    animation-duration: 1.2s;
-    animation-iteration-count: infinite;
-    animation-name: loadingbar;
-    -webkit-animation-duration: 1.2s;
-    -webkit-animation-iteration-count: infinite;
-    -webkit-animation-name: loadingbar;
-    -moz-animation-duration: 1.2s;
-    -moz-animation-iteration-count: infinite;
-    -moz-animation-name: loadingbar;
+    -webkit-animation:loadingbar 1.2s linear infinite, loadingbar2 1.2s linear infinite;
+    -moz-animation:loadingbar 1.2s linear infinite, loadingbar2 1.2s linear infinite;
+    animation:loadingbar 1.2s linear infinite, loadingbar2 1.2s linear infinite;
 }
 .wegas-loader .bar:nth-child(2) { 
-    animation-delay: 0.1s;                                                      /* Delay both the second and third bar at the start */
+    animation-delay: 0.1s;                                                      /* Delay both the second and third bar animation */
     -webkit-animation-delay: 0.1s; 
     -moz-animation-delay: 0.1s; 
 }
@@ -169,46 +163,70 @@ font {
 }
 @-webkit-keyframes loadingbar {
     0% { }
-    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
-    20% { margin-top:0px; height:28px; border-color:#d1d7e2; background-color:#c6ccda; }
-    30% { margin-top:1px; height:26px; border-color:#d1d8e6; background-color:#bac5db; }
-    40% { margin-top:3px; height:23px; }
-    50% { margin-top:5px; height:22px; }
-    60% { margin-top:6px; height:18px; }
+    10% { -webkit-transform: scaleY(1.2); }
+    20% { -webkit-transform: scaleY(1.55); }
+    30% { -webkit-transform: scaleY(1.45); }
+    40% { -webkit-transform: scaleY(1.2); }
+    60% { -webkit-transform: scaleY(1); }
     70% { }
     100% { }    /* Missing frames will cause the extra delay */
 }
 @-moz-keyframes loadingbar {
     0% { }
-    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
-    20% { margin-top:0px; height:32px; border-color:#d1d7e2; background-color:#c6ccda; }
-    30% { margin-top:1px; height:30px; border-color:#d1d8e6; background-color:#bac5db; }
-    40% { margin-top:3px; height:26px; }
-    50% { margin-top:5px; height:22px; }
-    60% { margin-top:6px; height:18px; }
+    10% { -moz-transform: scaleY(1.2); }
+    20% { -moz-transform: scaleY(1.55); }
+    30% { -moz-transform: scaleY(1.45); }
+    40% { -moz-transform: scaleY(1.2); }
+    60% { -moz-transform: scaleY(1); }
     70% { }
     100% { }    /* Missing frames will cause the extra delay */
 }
 @-o-keyframes loadingbar {
     0% { }
-    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
-    20% { margin-top:0px; height:32px; border-color:#d1d7e2; background-color:#c6ccda; }
-    30% { margin-top:1px; height:30px; border-color:#d1d8e6; background-color:#bac5db; }
-    40% { margin-top:3px; height:26px; }
-    50% { margin-top:5px; height:22px; }
-    60% { margin-top:6px; height:18px; }
+    10% { -o-transform: scaleY(1.2); }
+    20% { -o-transform: scaleY(1.55); }
+    30% { -o-transform: scaleY(1.45); }
+    40% { -o-transform: scaleY(1.2); }
+    60% { -o-transform: scaleY(1); }
     70% { }
     100% { }    /* Missing frames will cause the extra delay */
 }
 @keyframes loadingbar {
     0% { }
-    10% { margin-top:5px; height:22px; border-color:#d1d8e6; background-color:#bac5db; }
-    20% { margin-top:0px; height:32px; border-color:#d1d7e2; background-color:#c6ccda; }
-    30% { margin-top:1px; height:30px; border-color:#d1d8e6; background-color:#bac5db; }
-    40% { margin-top:3px; height:26px; }
-    50% { margin-top:5px; height:22px; }
-    60% { margin-top:6px; height:18px; }
+    10% { transform: scaleY(1.2); }
+    20% { transform: scaleY(1.55); }
+    30% { transform: scaleY(1.45); }
+    40% { transform: scaleY(1.2); }
+    60% { transform: scaleY(1); }
     70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-webkit-keyframes loadingbar2 {
+    0% { }
+    20% { border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { border-color:#d1d8e6; background-color:#bac5db; }
+    40% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-moz-keyframes loadingbar2 {
+    0% { }
+    20% { border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { border-color:#d1d8e6; background-color:#bac5db; }
+    40% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-o-keyframes loadingbar2 {
+    0% { }
+    20% { border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { border-color:#d1d8e6; background-color:#bac5db; }
+    40% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@keyframes loadingbar2 {
+    0% { }
+    20% { border-color:#d1d7e2; background-color:#c6ccda; }
+    30% { border-color:#d1d8e6; background-color:#bac5db; }
+    40% { }
     100% { }    /* Missing frames will cause the extra delay */
 }
 
