@@ -83,8 +83,9 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
                 } else {
                     for (ii = 0; ii < activitiesToAdd.length; ii++) {
                         if (activitiesToAdd[ii].get("taskDescriptorId") === taskActivities[i].get("taskDescriptorId") &&
-                            activitiesToAdd[ii].get("time") === taskActivities[i].get("time")) {
+                            parseInt(activitiesToAdd[ii].get("time")) === parseInt(taskActivities[i].get("time"))) {
                             exist = true;
+                            break;
                         }
                     }
                     if (!exist) {
