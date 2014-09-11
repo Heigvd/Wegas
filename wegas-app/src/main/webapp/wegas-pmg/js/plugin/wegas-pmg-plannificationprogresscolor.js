@@ -59,11 +59,10 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 for (taskId in this.taskTable) {
                     taskDesc = this.taskTable[taskId];
                     if (dt.getRecord(i).get("id") === taskDesc.get("id")) {
-                        var iMax = parseInt(taskDesc.end);
-                        for (ii = parseInt(taskDesc.startMax); ii <= iMax; ii++) {
-                            cell = host.schedule.getCell(i, ii);
+                        for (ii in taskDesc.planned) {
+                            cell = host.schedule.getCell(i, taskDesc.planned[ii]);
                             if (cell) {
-                                this.findCssClass(ii, taskDesc.startMax, taskDesc.end, cell);
+                                this.findCssClass(taskDesc.planned[ii], taskDesc.beginAt, taskDesc.endAt, cell);
                             }
                         }
                         break;
