@@ -42,7 +42,6 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             Y.log("bind()", "log", "Wegas.Taskonclickpopup");
             this.handlers.push(this.get("host").datatable.delegate("click", this.onClick, ".onclickpopup", this));
             this.handlers.push(Y.one("body").on("click", this.detailsOverlay.hide, this.detailsOverlay));
-
             this.onceAfterHostEvent("render", this.sync);
             this.afterHostMethod("syncUI", this.sync);
             this.get("host").datatable.after("sort", this.sync, this);
@@ -54,7 +53,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
 
             if (taskDescriptor !== this.currentTask) {
                 this.currentTask = taskDescriptor;
-                this.currentPos = [e.pageX + 10, e.pageY + 20]
+                this.currentPos = [e.pageX + 10, e.pageY + 20];
 
                 for (key in fields) {
                     if (fields[key] && !taskDescriptor.get(fields[key])) {
@@ -93,7 +92,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                             this.display(taskDescriptor);
                         },
                         failure: function() {
-                            this.get("host").showMessage("error", "An error occured");
+                            this.showMessage("error", "An error occured");
                         }
                     }, this)
                 });

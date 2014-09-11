@@ -40,22 +40,29 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                 time = dt.getColumn(e.currentTarget).time,
                 resource = dt.getRecord(e.currentTarget).get("descriptor").getInstance(),
                 assignment = Y.Array.find(resource.get("occupations"), function(o) {
-                    return o.get("time") === time;
+                    return o.get("time") === time && o.get("editable");
+                }),
+                notEditableAassignment = Y.Array.find(resource.get("occupations"), function(o) {
+                    return o.get("time") === time && !o.get("editable");
                 });
 
-            if (assignment || cell.one("span")) {                               // if the cell is full and there is no assignment, it means we are still waiting for server reply
-                if (assignment && assignment.get("editable")) {
-                    Wegas.Panel.confirmPlayerAction(function() {
-                        cell.setContent("");
-                        Wegas.Facade.Variable.sendQueuedRequest({
-                            request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
-                            cfg: {
-                                method: "DELETE",
-                                updateEvent: false
-                            }
-                        });
+            if (notEditableAassignment) {
+                return;
+            }
+            if (assignment) {
+                Wegas.Panel.confirmPlayerAction(function() {
+                    cell.setContent("");
+                    Wegas.Facade.Variable.sendQueuedRequest({
+                        request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
+                        cfg: {
+                            method: "DELETE",
+                            updateEvent: false
+                        }
                     });
-                }
+                });
+                return;
+            }
+            if (cell.one("span")) {                                             // if the cell is full and there is no assignment, it means we are still waiting for server reply
                 return;
             }
 
