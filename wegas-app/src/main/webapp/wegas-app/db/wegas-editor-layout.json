@@ -162,12 +162,10 @@
                                     }, {
                                         "fn": "Injector"
                                     }, {
-                                        "fn": "PopupListener",
-                                        "cfg": {
-                                            "showServerMessages": true
-                                        }
-                                    }
-                                ]
+                                        "fn": "PopupListener"
+                                    }, {
+                                        "fn": "ServerPopupListener"
+                                    }]
                             }]
                     }]
             }]

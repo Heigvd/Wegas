@@ -81,12 +81,10 @@
                                     }, {
                                         "fn": "BlockAction"
                                     }, {
-                                        "fn": "PopupListener",
-                                        "cfg": {
-                                            "showServerMessages": true
-                                        }
-                                    }
-                                ]
+                                        "fn": "PopupListener"
+                                    }, {
+                                        "fn": "ServerPopupListener"
+                                    }]
                             }]
                     }, {
                         "label": "Impact",

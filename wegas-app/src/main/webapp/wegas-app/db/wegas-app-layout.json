@@ -1,5 +1,4 @@
 {
-    "id": 2002,
     "type": "PageLoader",
     "defaultPageId": 1,
     "pageLoaderId": "previewPageLoader",
@@ -7,9 +6,8 @@
     "plugins": [{
             "fn": "Injector"
         }, {
-            "fn": "PopupListener",
-            "cfg": {
-                "showServerMessages": true
-            }
+            "fn": "PopupListener"
+        }, {
+            "fn": "ServerPopupListener"
         }]
 }
