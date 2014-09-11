@@ -240,6 +240,15 @@ public class ResourceInstance extends VariableInstance {
         return occupations;
     }
 
+    private Occupation getOccupation(double time){
+        for (Occupation o : getOccupations()){
+            if (o.getTime() == time){
+                return o;
+            }
+        }
+        return null;
+    }
+    
     /**
      * @param occupations
      */
@@ -252,6 +261,12 @@ public class ResourceInstance extends VariableInstance {
      * @param occupation
      */
     public void addOccupation(Occupation occupation) {
+        Occupation o = getOccupation(occupation.getTime());
+        // #789 & #788 prevent having several occupation for the same time
+        if (o != null){
+            occupations.remove(o);
+        }
+        
         occupations.add(occupation);
         occupation.setResourceInstance(this);
     }
