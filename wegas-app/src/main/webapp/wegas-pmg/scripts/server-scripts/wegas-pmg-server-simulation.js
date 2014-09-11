@@ -109,11 +109,15 @@ var PMGSimulation = (function() {
         });
 
         // Consolidate requirments progress & quality into tasks
-        Y.Array.each(getTasksFromActivities(activities), function(t) {
-            var oCompleteness = t.getProperty("completeness");
+        Y.Array.each(getTasksFromActivities(activities), function(td) {
+            var t = td.getInstance(self);
+            oCompleteness = t.getProperty("completeness");
             t.setProperty("completeness", calculateTaskProgress(t));
             t.setProperty("quality", calculateTaskQuality(t));
             debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
+            if (t.getProperty("completeness") >= 100){
+                sendEndOfTaskMail(td, currentStep);
+            }
         });
         checkEnd(activities, currentStep);
     }
@@ -341,7 +345,7 @@ var PMGSimulation = (function() {
      */
     function getTasksFromActivities(activities) {
         return Y.Array.unique(activities.map(function(a) {
-            return a.taskDescriptor.getInstance(self);
+            return a.taskDescriptor;
         }));
     }
 
@@ -421,6 +425,19 @@ var PMGSimulation = (function() {
         status["currentUnworkedHoursPercent"] += percentToBill;
         projectUh += getResourcePeriodWages(resourceInst) * percentToBill / 100;
         projectUHDesc.setValue(self, projectUh);
+    }
+
+    function sendEndOfTaskMail(task, currentStep) {
+        var key = "endOfTask";
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from"),
+            I18n.t("messages." + key + ".subject", {
+                task: task.label
+            }),
+            I18n.t("messages." + key + ".content", {
+                step: getStepName(currentStep),
+                task: task.label
+            }));
     }
 
     function sendGoToNextTaskMail(resourceInstance, currentStep, oldTask, newTask) {

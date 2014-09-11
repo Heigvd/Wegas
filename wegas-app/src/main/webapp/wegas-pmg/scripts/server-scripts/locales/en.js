@@ -19,6 +19,11 @@ i18nTable.en = {
             subject: "Task : %task%",
             content: "I've started to work on the task %task% on %step%.<br/> Regards <br/>%employeeName%<br/> %job%"
         },
+        endOfTask: {
+            from: "Project Tracking",
+            subject: "Task %task%",
+            content: "Hello, <br /> <br /> We inform you that task %task% has been completed on %at%"
+        },
         endOfTaskSwitchToNew: {
             from: "%employeeName%",
             subject: "Task %task% completed",
