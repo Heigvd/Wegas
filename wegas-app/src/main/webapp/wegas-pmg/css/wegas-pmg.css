@@ -535,16 +535,17 @@ h2{
     margin-left: 24px;
     margin-top: 15px;
 }
-.project-page .finances .wegas-pmg-slidepanel-content {
+.project-page .pmg-project-overview .wegas-pmg-slidepanel-content, .project-page .finances .wegas-pmg-slidepanel-content {
     margin-top: 15px;
     margin-left: 30px;
 }
-.project-page .projectFixedCost, .project-page .taskTotal {
+.project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
     font-size: 11pt;
     margin-top: 8px;
 }
-.project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours{
+.project-page .wages, .project-page .fixedCosts, .project-page .unworkedHours,
+.project-page .current-period, .project-page .current-stage {
     margin-left: 20px;
     margin-top: 5px;
 }
@@ -553,8 +554,15 @@ h2{
     font-size: 12pt;
     margin-top: 10px;
 }
-.project-page .wages .variableValue, .project-page .fixedCosts .variableValue, .project-page .unworkedHours .variableValue,
-.project-page .total .variableValue, .project-page .projectFixedCost .variableValue, .project-page .taskTotal .variableValue{
+.project-page .wages .variableValue, 
+.project-page .fixedCosts .variableValue, 
+.project-page .unworkedHours .variableValue,
+.project-page .total .variableValue, 
+.project-page .projectFixedCost .variableValue, 
+.project-page .taskTotal .variableValue,
+.project-page .projectCompleteness .variableValue,
+.project-page .current-period .variableValue,
+.project-page .current-stage .variableValue {
     float: right;
     margin-right: 280px;
 }

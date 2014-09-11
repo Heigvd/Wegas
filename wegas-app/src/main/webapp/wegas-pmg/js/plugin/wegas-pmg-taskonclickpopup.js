@@ -32,8 +32,8 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             this.detailsOverlay = new Y.Overlay({
                 zIndex: 100,
                 width: this.get("width"),
-                visible: false,
-                constrain: true
+                constrain: true,
+                visible: false
             }).render();
             this.detailsOverlay.get("contentBox").addClass("pmg-popup-overlay");
             this.bind();
@@ -48,23 +48,28 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             this.get("host").datatable.after("sort", this.sync, this);
         },
         onClick: function(e) {
-            var key, requestedField = [],
+            var key, requestedField = [], dt = this.get("host").datatable,
                 fields = ["label", "description", 'requirements'],
-                dt = this.get("host").datatable,
                 taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
 
-            this.currentPos = [e.pageX + 10, e.pageY + 20]
+            if (taskDescriptor !== this.currentTask) {
+                this.currentTask = taskDescriptor;
+                this.currentPos = [e.pageX + 10, e.pageY + 20]
 
-            for (key in fields) {
-                if (fields[key] && !taskDescriptor.get(fields[key])) {
-                    requestedField.push(fields[key]);
+                for (key in fields) {
+                    if (fields[key] && !taskDescriptor.get(fields[key])) {
+                        requestedField.push(fields[key]);
+                    }
                 }
-            }
 
-            if (requestedField.length > 0) {
-                this.request(taskDescriptor, requestedField);
+                if (requestedField.length > 0) {
+                    this.request(taskDescriptor, requestedField);
+                } else {
+                    this.display(taskDescriptor);
+                }
             } else {
-                this.display(taskDescriptor);
+                this.detailsOverlay.hide();
+                this.currentTask = null;
             }
 
             e.halt(true);

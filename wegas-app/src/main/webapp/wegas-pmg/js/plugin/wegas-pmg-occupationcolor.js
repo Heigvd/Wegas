@@ -58,8 +58,8 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                     cell.setContent("<span class='editable'></span>");
                 }
             } else {
-                cell.addClass("noteditable-period")
-                    .setContent("<span class='notEditable'></span>");
+                cell.addClass("noteditable-period");
+                cell.setContent("<span class='notEditable'></span>");
             }
         }
     }, {
@@ -99,8 +99,10 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                 for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
                     cell = host.schedule.getCell(i, currentPeriod + ii);
                     if (cell) {
-                        cell.setContent("<span class='engagementDelay'></span>")
-                            .getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
+                        if (!cell.getContent()) {
+                            cell.setContent("<span class='engagementDelay'></span>");
+                        }
+                        cell.getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
                     }
                 }
             }
