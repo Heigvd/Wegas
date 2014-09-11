@@ -50,7 +50,8 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
                 emitFacade: true
             });
             Y.on("playerAction", function(e) {
-                if (this.viewButton.get("pressed")) {
+                if (this.viewButton.get("pressed")
+                    && this.get("host").get("parent").get("selected")) {        // @hack the plugin is only active when the preview tab is selected
                     e.halt(true);
                 }
             }, this);
