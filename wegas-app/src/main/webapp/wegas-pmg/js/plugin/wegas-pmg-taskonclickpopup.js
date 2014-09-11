@@ -12,6 +12,7 @@
  */
 YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
     "use strict";
+
     var Wegas = Y.Wegas, Taskonclickpopup;
     /**
      *  @class add a popup on a table column
@@ -31,45 +32,42 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
             this.detailsOverlay = new Y.Overlay({
                 zIndex: 100,
                 width: this.get("width"),
-                visible: false
-            });
-            this.shown = false;
+                visible: false,
+                constrain: true
+            }).render();
             this.detailsOverlay.get("contentBox").addClass("pmg-popup-overlay");
-            this.detailsOverlay.render();
             this.bind();
-            this.onceAfterHostEvent("render", this.sync);
-            this.afterHostMethod("syncUI", this.sync);
-            this.get("host").datatable.after("sort", this.sync, this);
         },
         bind: function() {
             Y.log("bind()", "log", "Wegas.Taskonclickpopup");
             this.handlers.push(this.get("host").datatable.delegate("click", this.onClick, ".onclickpopup", this));
+            this.handlers.push(Y.one("body").on("click", this.detailsOverlay.hide, this.detailsOverlay));
+
+            this.onceAfterHostEvent("render", this.sync);
+            this.afterHostMethod("syncUI", this.sync);
+            this.get("host").datatable.after("sort", this.sync, this);
         },
         onClick: function(e) {
-            if (this.detailsOverlay.get('visible') === false) {
-                var taskDescriptor, key,
-                    fields = ["label", "description", 'requirements'],
-                    dt = this.get("host").datatable;
-                this.detailsOverlay.show();
-                this.detailsOverlay.move(e.pageX + 10, e.pageY + 20);
+            var key, requestedField = [],
+                fields = ["label", "description", 'requirements'],
+                dt = this.get("host").datatable,
                 taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
 
-                var requestedField = [];
+            this.currentPos = [e.pageX + 10, e.pageY + 20]
 
-                for (key in fields) {
-                    if (fields[key] && !taskDescriptor.get(fields[key])) {
-                        requestedField.push(fields[key]);
-                    }
+            for (key in fields) {
+                if (fields[key] && !taskDescriptor.get(fields[key])) {
+                    requestedField.push(fields[key]);
                 }
-
-                if (requestedField.length > 0) {
-                    this.request(taskDescriptor, requestedField, fields);
-                } else {
-                    this.display(taskDescriptor);
-                }
-            } else {
-                this.detailsOverlay.hide();
             }
+
+            if (requestedField.length > 0) {
+                this.request(taskDescriptor, requestedField);
+            } else {
+                this.display(taskDescriptor);
+            }
+
+            e.halt(true);
         },
         sync: function() {
             var i, dt = this.get("host").datatable;
@@ -77,7 +75,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 dt.getCell([i, this.get("column")]).addClass("onclickpopup");
             }
         },
-        request: function(taskDescriptor, requiredFields, fields) {
+        request: function(taskDescriptor, requiredFields) {
             if (requiredFields.length > 0) {
                 Wegas.Facade.Variable.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
                     on: Wegas.superbind({
@@ -99,9 +97,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
         getDescriptionToDisplay: function(descriptor) {
             var i, description = descriptor.get("description"),
                 requirements = descriptor.getInstance().get("requirements"),
-                dataToDisplay;
-
-            dataToDisplay = '<div class="field" style="padding:5px 10px">'
+                dataToDisplay = '<div class="field" style="padding:5px 10px">'
                 + '<p class="subtitle">Description</p><p>' + description
                 /*+ (description ?
                  description: "")*/
@@ -117,6 +113,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
         display: function(taskDescriptor) {
             this.detailsOverlay.set("headerContent", taskDescriptor.get("label"));
             this.detailsOverlay.setStdModContent('body', this.getDescriptionToDisplay(taskDescriptor));
+            this.detailsOverlay.move(this.currentPos[0], this.currentPos[1]);
             this.detailsOverlay.show();
         },
         /**
@@ -125,6 +122,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
          * @private
          */
         destructor: function() {
+            this.detailsOverlay.destroy();
             for (var i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].detach();
             }

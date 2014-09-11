@@ -31,7 +31,8 @@ YUI.add('wegas-pmg-tabletooltip', function(Y) {
                 //srcNode: "#" + this.get("host").get("contentBox")["_node"].id, // @fixme ugly...
                 zIndex: 100,
                 width: this.get("width"),
-                visible: false
+                visible: false,
+                constrain: true
             });
             this.shown = false;
             this.detailsOverlay.get("contentBox").addClass("pmg-popup-overlay");
@@ -51,8 +52,7 @@ YUI.add('wegas-pmg-tabletooltip', function(Y) {
 
             this.handlers.push(dt.delegate("mousemove", function(e) {
                 if (this.detailsOverlay.get('visible') === false) {
-                    this.detailsOverlay.show();
-                    this.detailsOverlay.move(e.pageX + 10, e.pageY + 20);
+                    this.currentPos = [e.pageX + 10, e.pageY + 20];
                     descriptor = dt.getRecord(e.currentTarget).get("descriptor");
 
                     var requestedField = [];
@@ -108,7 +108,6 @@ YUI.add('wegas-pmg-tabletooltip', function(Y) {
             }
         },
         display: function(header, body, footer) {
-            this.detailsOverlay.show();
             if (body) {
                 this.detailsOverlay.setStdModContent('body', '<div style="padding:5px 10px"><p>' + body + '</p></div>');
             } else {
@@ -117,6 +116,9 @@ YUI.add('wegas-pmg-tabletooltip', function(Y) {
             this.detailsOverlay.set("headerContent", header);
 
             this.detailsOverlay.set("footerContent", footer);
+
+            this.detailsOverlay.move(this.currentPos[0], this.currentPos[1]);
+            this.detailsOverlay.show();
         },
         /**
          * Destructor methods.
@@ -124,6 +126,7 @@ YUI.add('wegas-pmg-tabletooltip', function(Y) {
          * @private
          */
         destructor: function() {
+            this.detailsOverlay.destroy();
             for (var i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].detach();
             }

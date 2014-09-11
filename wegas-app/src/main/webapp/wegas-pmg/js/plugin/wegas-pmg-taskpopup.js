@@ -31,11 +31,11 @@ YUI.add('wegas-pmg-taskpopup', function(Y) {
             this.detailsOverlay = new Y.Overlay({
                 zIndex: 100,
                 width: this.get("width"),
-                visible: false
-            });
+                visible: false,
+                constrain: true
+            }).render();
             this.shown = false;
             this.detailsOverlay.get("contentBox").addClass("pmg-popup-overlay");
-            this.detailsOverlay.render();
             this.bind();
             this.onceAfterHostEvent("render", this.sync);
             this.afterHostMethod("syncUI", this.sync);
@@ -48,9 +48,8 @@ YUI.add('wegas-pmg-taskpopup', function(Y) {
                 dt = this.get("host").datatable;
 
             this.handlers.push(dt.delegate("mousemove", function(e) {
+                this.currentPos = [e.pageX + 10, e.pageY + 20];
                 if (this.detailsOverlay.get('visible') === false) {
-                    this.detailsOverlay.show();
-                    this.detailsOverlay.move(e.pageX + 10, e.pageY + 20);
                     taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
 
                     var requestedField = [];
@@ -123,6 +122,7 @@ YUI.add('wegas-pmg-taskpopup', function(Y) {
         display: function(taskDescriptor) {
             this.detailsOverlay.set("headerContent", taskDescriptor.get("label"));
             this.detailsOverlay.setStdModContent('body', this.getDescriptionToDisplay(taskDescriptor));
+            this.detailsOverlay.move(this.currentPos[0], this.currentPos[1]);
             this.detailsOverlay.show();
         },
         /**
@@ -131,6 +131,7 @@ YUI.add('wegas-pmg-taskpopup', function(Y) {
          * @private
          */
         destructor: function() {
+            this.detailsOverlay.destroy();
             for (var i = 0; i < this.handlers.length; i++) {
                 this.handlers[i].detach();
             }
