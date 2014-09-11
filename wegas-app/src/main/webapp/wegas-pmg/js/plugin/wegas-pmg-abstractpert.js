@@ -67,7 +67,7 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                     }
                     Y.log ("Pred " + taskTable[predecessorId].get("label"));
                     Y.log ("  endAt " + taskTable[predecessorId].endAt);
-                    // verifie si le pr�decesseur possede le debut pert
+                    // verifie si le prÃ©decesseur possede le debut pert
                     if (taskTable[predecessorId].endAt) {
                         if (minBeginAt < taskTable[predecessorId].endAt) {
                             minBeginAt = taskTable[predecessorId].endAt;
@@ -77,11 +77,11 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                         break;
                     }
                 }
-                // si tous les pr�decesseur on un debut pert alors on l'ajoute dans la liste
+                // si tous les prÃ©decesseur on un debut pert alors on l'ajoute dans la liste
                 if (allPredDefine) {
                     var taskInstance = taskDesc.getInstance(),
                         stillPlanned = taskInstance.get("plannification").filter(function(n) {
-                        return n >= currentPeriod;
+                        return n >= minBeginAt;
                     }, this).sort(Y.Array.numericSort);
 
                     delta = minBeginAt - parseInt(minBeginAt);
@@ -109,10 +109,11 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                         var deltaMissing = stillMissing - parseInt(stillMissing);
                         if (deltaMissing === 0) {
                             taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing));
-                            taskDesc.endAt = taskDesc.plannedtor    [taskDesc.planned.length - 1] + 1;
+                            taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] + 1;
                         } else {
-                            taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing));
-                            taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] + deltaMissing;
+                            taskDesc.planned = stillPlanned.slice(0, Math.ceil(stillMissing));
+                            taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] || taskDesc.beginAt;
+                            taskDesc.endAt += deltaMissing;
                         }
                     } else {
                         // not enough planned period
