@@ -12,52 +12,59 @@
 var i18nOrdinate = (function(module) { return module;}(i18nOrdinate || {})),
     i18nTable = (function(module) { return module;}(i18nTable || {}));
 
+
+
+/* 
+ * REGEX
+ * Accent detection : [^\w\s\d\{\}\[\],.%\*\/\(\)<>@.:\"\\=;|\'-+]
+ * 
+ */
 i18nTable.fr = {
     messages: {
         startOnTask: {
             from: "%employeeName%",
-            subject: "Tâche: %task%",
-            content: "J'ai commencé mon travail sur la tâche \"%task%\" %step%<br/> Salutations <br /><br/>%employeeName%<br/> %job%"
+            subject: "T&#226che: %task%",
+            content: "J'ai commenc&#233 mon travail sur la t&#226che \"%task%\" %step%<br/> Salutations <br /><br/>%employeeName%<br/> %job%"
         },
         endOfTask: {
             from: "Suivi de projet",
-            subject: "Tâche %task%",
-            content: "Bonjour, <br /> <br /> Nous vous informons que la tâche \"%task%\" a été terminée %step%"
+            subject: "T&#226che %task%",
+            content: "Bonjour, <br /> <br /> Nous vous informons que la t&#226che \"%task%\" a &#233t&#233 termin&#233e %step%"
         },
         endOfTaskSwitchToNew: {
             from: "%employeeName%",
-            subject: "Fin de la tâche: %task%",
-            content: "La tâche \"%task%\" est terminée. Depuis %step%, je travaille sur la tâche \"%nextTask%\".<br/> Salutations <br/ ><br />%employeeName%<br /> %job%"
+            subject: "Fin de la t&#226che: %task%",
+            content: "La t&#226che \"%task%\" est termin&#233e. Depuis %step%, je travaille sur la t&#226che \"%nextTask%\".<br/> Salutations <br/ ><br />%employeeName%<br /> %job%"
         },
         endOfTaskOtherActivities: {
             from: "%employeeName%",
-            subject: "Fin de la tâche: %task%",
-            content: "La tâche \"%task%\" est terminée. Je suis retourné à mes activités traditionnelles depuis %step%. <br/> Salutations <br /><br/>%employeeName%<br/> %job%"
+            subject: "Fin de la t&#226che: %task%",
+            content: "La t&#226che \"%task%\" est termin&#233e. Je suis retourn&#233 &#224 mes activit&#233s traditionnelles depuis %step%. <br/> Salutations <br /><br/>%employeeName%<br/> %job%"
         },
         blockedByPredecessors: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la tâche: %task%",
-            content: "Je suis venu %step% pour travailler sur la tâche \"%task%\" mais les tâches précédentes ne sont pas assez avancées. <br/> J' ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose à faire sur le projet. <br/> Salutations <br /><br/>%employeeName%<br/> %job%"
+            subject: "Impossible de progresser sur la t&#226che: %task%",
+            content: "Je suis venu %step% pour travailler sur la t&#226che \"%task%\" mais les t&#226ches pr&#233c&#233dentes ne sont pas assez avanc&#233es. <br/> J' ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose &#224 faire sur le projet. <br/> Salutations <br /><br/>%employeeName%<br/> %job%"
         },
         skillCompleted: {
             from: "%skill%",
-            subject: "Tâche: %task% en partie terminée",
-            content: "Nous avons terminé la partie %skill% de la tâche \"%task% \"%step%. <br /><br/> Salutations"
+            subject: "T&#226che: %task% en partie termin&#233e",
+            content: "Nous avons termin&#233 la partie %skill% de la t&#226che \"%task% \"%step%. <br /><br/> Salutations"
         },
         notMyWork: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la tâche: %task%",
-            content: "Je suis venu %step% pour travailler sur la tâche \"%task%\" mais je ne suis pas qualifié pour ce travail. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
+            subject: "Impossible de progresser sur la t&#226che: %task%",
+            content: "Je suis venu %step% pour travailler sur la t&#226che \"%task%\" mais je ne suis pas qualifi&#233 pour ce travail. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
         },
         planningProblem: {
             from: "%employeeName%",
-            subject: "Problème de planification",
-            content: "Bonjour, <br><br> Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /> Salutations <br /><br/>%employeeName%<br/> %job%"
+            subject: "Probl&eacute;e de planification",
+            content: "Bonjour, <br><br> Vous m'avez r&#233serv&#233 pour %wholePeriod%. Comme je n'avais aucune t&#226che &#224 effectuer sur le projet, je suis retourn&#233 &#224 mes autres activit&#233s. Malheureusement je suis oblig&#233 d'affecter quelques heures au projet. <br /> Salutations <br /><br/>%employeeName%<br/> %job%"
         }
     },
     date: {
         am: "matin",
-        pm: "après-midi",
+        pm: "apr&#232s-midi",
         weekday: {
             day1: "lundi",
             day2: "mardi",
@@ -69,17 +76,17 @@ i18nTable.fr = {
         },
         month: {
             month1: "janvier",
-            month2: "février",
+            month2: "f&#233vrier",
             month3: "mars",
             month4: "avril",
             month5: "mai",
             month6: "juin",
             month7: "juillet",
-            month8: "août",
+            month8: "ao&#251t",
             month9: "septembre",
             month10: "octobre",
             month11: "novembre",
-            month12: "décembre"
+            month12: "d&#233cembre"
         },
         formatter: {
             onDate: "le %day% %month%",
@@ -93,7 +100,7 @@ i18nTable.fr = {
     phase: {
         phase1: "Initiation",
         phase2: "Planification",
-        phase3: "Réalisation",
+        phase3: "R&#233alisation",
         phase4: "Terminaison"
     },
     question: {
@@ -107,6 +114,6 @@ i18nOrdinate.fr = (function(number) {
         case 1:
             return number + "er";
         default:
-            return number + "ème";
+            return number + "&#232me";
     }
 });
