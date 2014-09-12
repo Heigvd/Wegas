@@ -35,11 +35,13 @@ YUI.add('wegas-object-entities', function(Y) {
                     _type: HASHLIST,
                     keyField: NAME,
                     valueField: VALUE,
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
                     elementType: {
                         type: COMBINE,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE
@@ -68,7 +70,8 @@ YUI.add('wegas-object-entities', function(Y) {
                                 type: COMBINE,
                                 fields: [{
                                         name: NAME,
-                                        typeInvite: NAME
+                                        typeInvite: NAME,
+                                        size: 10
                                     }, {
                                         name: VALUE,
                                         typeInvite: VALUE
@@ -103,7 +106,7 @@ YUI.add('wegas-object-entities', function(Y) {
                         type: HIDDEN,
                         value: "self"
                     }, {
-                        value: "property name",
+                        typeInvite: NAME,
                         scriptType: STRING
                     }]
             },
@@ -113,10 +116,10 @@ YUI.add('wegas-object-entities', function(Y) {
                         type: HIDDEN,
                         value: "self"
                     }, {
-                        value: "property name",
+                        typeInvite: NAME,
                         scriptType: STRING
                     }, {
-                        value: VALUE,
+                        typeInvite: VALUE,
                         scriptType: STRING
                     }]
             }
@@ -142,7 +145,8 @@ YUI.add('wegas-object-entities', function(Y) {
                         type: COMBINE,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE
