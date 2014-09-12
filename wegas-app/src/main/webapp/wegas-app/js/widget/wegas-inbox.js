@@ -47,20 +47,20 @@ YUI.add('wegas-inbox', function(Y) {
             inbox: {
                 tab: Micro.compile("<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'>"
                     + "<div class='msg-firstLine'>" 
-                    + "<span class='msg-subject'><%=this.get('subject')%></span>"
-                    + "<% if (this.get('date')){ %><span class='msg-date'><%= this.get('date') %></span><% } %>"
+                    + "<span class='msg-subject'><%== this.get('subject')%></span>"
+                    + "<% if (this.get('date')){ %><span class='msg-date'><%== this.get('date') %></span><% } %>"
                     + "</div>" 
-                    + "<% if (this.get('from')){ %><div class='msg-from'><span><%= this.get('from') %></span></div><% } %>"),
+                    + "<% if (this.get('from')){ %><div class='msg-from'><span><%== this.get('from') %></span></div><% } %>"),
                 content: Micro.compile("<div class='msg-header msg-header-inbox'>" 
                     + "<div class='msg-firstLine'>" 
-                    + "<span class='msg-subject'><%=this.get('subject')%></span>"
+                    + "<span class='msg-subject'><%== this.get('subject')%></span>"
                     + "<% if (this.get('date')){ %><span class='msg-date'><%= this.get('date') %></span><% } %>"
                     + "</div>" 
-                    + "<% if (this.get('from')) { %><div><span class='msg-from'><%= this.get('from') %></span></div><% } %>"
+                    + "<% if (this.get('from')) { %><div><span class='msg-from'><%== this.get('from') %></span></div><% } %>"
                     + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
                     + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
                     + "<% } %></div>"
-                    + "<div class='msg-body'><%== this.get('body') %></div>")
+                    + "<div class='msg-body'> <%== this.get('body') %></div>")
             },
             /**
              * inbox without labels.
