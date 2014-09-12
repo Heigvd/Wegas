@@ -69,7 +69,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.publish("fileSelected", {
                 bubbles: true,
                 emitFacade: true,
-                defaultFn: this.openFileprivateConte
+                defaultFn: this.openFile
             });
             this.publish("directorySelected", {
                 bubbles: true,
