@@ -246,7 +246,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 page = Y.JSON.parse(this.jsonView.getValue());
                 page["@pageId"] = this.get("host").get("pageId");
             } catch (ex) {
-                host.get(BOUNDINGBOX).get("parentNode").emitDOMMessage("error", ex.toString());
+                Y.Widget.getByNode(host.get(BOUNDINGBOX).get("parentNode")).showMessage("error", ex.toString());
                 return;
             }
             this.sourceButton.set("pressed", false);

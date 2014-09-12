@@ -109,8 +109,8 @@
                                             return true;
                                         }
                                     });
-                                    joinedTable.showMessageBis("successPopup", "Game joined", 2000) // Toolbar: "successForce" type will not be displayed in the toolbar
-                                        .showMessageBis("success", "Game joined");// Popup
+                                    joinedTable.showMessage("successPopup", "Game joined", 2000) // Toolbar: "successForce" type will not be displayed in the toolbar
+                                        .showMessage("success", "Game joined");// Popup
 
                                     var tab = joinedTable.get("parent");
                                     if (!tab.get("selected", 2))

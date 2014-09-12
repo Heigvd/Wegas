@@ -98,7 +98,7 @@ YUI.add("wegas-inputex-url", function(Y) {
 
             this.uploader.on("uploaderror", function(e) {
                 Y.Widget.getByNode(this.fieldContainer).hideOverlay()
-                    .showMessageBis("error", e.statusText || "Error uploading file");
+                    .showMessage("error", e.statusText || "Error uploading file");
                 this.uploader.queue = null;                                     // @hack Otherwise file upload doesnt work after an error
                 this.uploader.set("enabled", true).set("fileList", []);
             }, this);

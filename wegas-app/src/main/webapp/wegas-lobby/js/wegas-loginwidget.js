@@ -270,7 +270,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     var data = this.loginForm.getValue();
                     this.login(data.email, data.password, data.remember);
                 } else {
-                    this.showMessageBis("error", "Invalid email, username or password", 4000);
+                    this.showMessage("error", "Invalid email, username or password", 4000);
                 }
             }, this);
 
@@ -278,7 +278,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 if (this.createAccountForm.validate()) {
                     this.createAccount(this.createAccountForm.getValue());
                 } else {
-                    this.showMessageBis("error", "Please correct form fields", 4000);
+                    this.showMessage("error", "Please correct form fields", 4000);
                 }
             }, this);
 

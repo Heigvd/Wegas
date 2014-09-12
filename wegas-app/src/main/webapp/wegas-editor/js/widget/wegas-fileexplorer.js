@@ -152,7 +152,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                             this.rootNode.set("rightWidget", menu);
                         }
                     }, this),
-                    failure: this.onRequestFailure
+                    failure: Y.bind(this.onRequestFailure, this)
                 }
             });
             this.treeView.render(cb);
@@ -223,7 +223,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                         try {
                             this.fileUploader.addFile(file);
                         } catch (e) {
-                            this.showMessageBis("error", e.message);
+                            this.showMessage("error", e.message);
                             file.treeLeaf.destroy();
                         }
                     }
@@ -270,7 +270,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 } else { //ROOT
                     this.listNodeData(n);
                 }
-                this.showMessageBis("success", "Folder successfully created");
+                this.showMessage("success", "Folder successfully created");
             }, this);
             this.uploader.after("fileselect", function(e) {
                 if (this.uploader.parentNode.get(LABEL) === "Filename") {
@@ -305,10 +305,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 var node = this.createNode(e.data);
                 if (node) {
                     e.file.treeLeaf.get("parent").add(node);
-                    this.showMessageBis("success", JSON.parse(e.data).name + " successfully uploaded");
+                    this.showMessage("success", JSON.parse(e.data).name + " successfully uploaded");
                 } else {
                     e.file.progressBar.set("color", "red");
-                    this.showMessageBis("error", "Erro uploading \"" + JSON.parse(e.data).name + "\"");
+                    this.showMessage("error", "Erro uploading \"" + JSON.parse(e.data).name + "\"");
                 }
                 try {
                     e.file.treeLeaf.destroy();
@@ -318,7 +318,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             this.fileUploader.on("fileuploaderror", function(e) {
                 e.file.progressBar.set("color", "red");
                 e.file.treeLeaf.set("loading", false);
-                this.showMessageBis("error", e.statusText);
+                this.showMessage("error", e.statusText);
                 try {
                     e.file.treeLeaf.destroy();
                 } catch (ex) {
@@ -359,7 +359,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     },
                     on: {
                         success: Y.bind(this.onListRequestSuccess, this, callback),
-                        failure: this.onRequestFailure
+                        failure: Y.bind(this.onRequestFailure, this)
                     }
                 });
             }
@@ -372,7 +372,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             try {
                 this.fileUploader.addFile(file);
             } catch (e) {
-                this.showMessageBis("error", e.message);
+                this.showMessage("error", e.message);
                 file.treeLeaf.remove();
             }
         },
@@ -401,10 +401,10 @@ YUI.add('wegas-fileexplorer', function(Y) {
                                 } else {
                                     menu = this.rootNode.get("rightWidget");
                                 }
-                                setupMenu(menu, e.response.results["privateContent"], 0)
+                                setupMenu(menu, e.response.results["privateContent"], 0);
                                 this.listNodeData(this.rootNode);
                             }, this),
-                            failure: this.onRequestFailure
+                            failure: Y.bind(this.onRequestFailure, this)
                         }
                     });
                     break;
@@ -432,7 +432,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                     if (name === null) {
                         return;
                     } else if (name === "") {
-                        this.showMessageBis("error", "Folder's name is required");
+                        this.showMessage("error", "Folder's name is required");
                     } else {
                         this.uploader.upload(this.fakeFile, path, {
                             name: name
@@ -509,7 +509,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
                 },
                 on: {
                     success: this.updateContent,
-                    failure: this.onRequestFailure
+                    failure: Y.bind(this.onRequestFailure, this)
                 }
             });
         },
@@ -617,7 +617,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
             return childNode;
         },
         removeNode: function(event) {
-            this.showMessageBis("success", "Item deleted");
+            this.showMessage("success", "Item deleted");
             event.cfg.node.destroy();
         },
         refresh: function(node) {
@@ -688,7 +688,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
         onRequestFailure: function(e) {
             Y.log("onDataSourceError(): Error retrieving data " + (e.response.results.exception || e), "error", "Wegas.FileExplorer");
             e.cfg.node.set("loading", false);
-            e.cfg.node.get(BOUNDING_BOX).emitDOMMessage("error", e.response.results.message);
+            this.showMessage("error", e.response.results.message);
         }
     }, {
         ATTRS: {

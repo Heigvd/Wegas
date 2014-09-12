@@ -111,14 +111,6 @@ YUI.add("wegas-widget", function(Y) {
             });
             return this;
         },
-        showMessageBis: function(level, txt, timeout) {
-            this.fire("wegas:message", {
-                level: level,
-                content: txt,
-                timeout: timeout
-            });
-            return this;
-        },
         rebuild: function() {
             var parent, index, cfg;
             if (this.isRoot()) {

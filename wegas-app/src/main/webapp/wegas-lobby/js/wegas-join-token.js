@@ -113,7 +113,7 @@ YUI.add('wegas-join-token', function(Y) {
                             //            &&
                             //        !(gm.get("properties.allowCreateTeam") || gm.get("properties.allowJoinTeam"))) {
                             if (!this.isInitialTokenTry) {
-                                this.showMessageBis("error", "No game found for this key");
+                                this.showMessage("error", "No game found for this key");
                             }
                             this.show();
                             return;
@@ -125,7 +125,7 @@ YUI.add('wegas-join-token', function(Y) {
                                 return;
                             } else if (e.response.entities[0].get("players").length !== 0) {// If the token is already in use
                                 this.show();
-                                this.showMessageBis("error",
+                                this.showMessage("error",
                                     "This team has already been created. You can contact it's members so they can join you in.");
                                 return;
                             }

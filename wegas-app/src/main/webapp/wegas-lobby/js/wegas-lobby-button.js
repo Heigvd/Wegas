@@ -64,13 +64,13 @@ YUI.add('wegas-lobby-button', function(Y) {
                 try {
                     Wegas.Facade.GameModel.cache._beforeDefDataFn(e);
                 } catch (e) {
-                    this.showMessageBis("success", "Error creating scenario");
+                    this.showMessage("success", "Error creating scenario");
                     return;
                 }
-                this.hideOverlay().showMessageBis("success", "Scenario imported");
+                this.hideOverlay().showMessage("success", "Scenario imported");
             }, this);
             this.uploader.on("uploaderror", function() {
-                this.hideOverlay().showMessageBis("error", "Error creating scenario");
+                this.hideOverlay().showMessage("error", "Error creating scenario");
                 this.uploader.set("enabled", true).set("fileList", []);
                 this.uploader.queue = null;                                     // @hack Otherwise file upload doesnt work after an error
             }, this);

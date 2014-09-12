@@ -124,7 +124,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                 prefix = game.get("token");
 
             if (!Y.Lang.isNumber(total)) {
-                this.showMessageBis("error", "Invalid number");
+                this.showMessage("error", "Invalid number");
                 return;
             }
 

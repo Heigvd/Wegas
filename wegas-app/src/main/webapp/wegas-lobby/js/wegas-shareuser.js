@@ -366,7 +366,7 @@ YUI.add('wegas-shareuser', function(Y) {
         /** @lends Y.inputEx.Wegas.UserPermissionList# */
 
         onDelete: function(e) {
-            this.currentWidget.showMessageBis("success", "Saving...");
+            this.currentWidget.showMessage("success", "Saving...");
             var elementDiv = e.target._node.parentNode, i,
                 subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
             for (i = 0; i < this.subFields.length; i += 1) {
@@ -386,10 +386,10 @@ YUI.add('wegas-shareuser', function(Y) {
                 },
                 on: {
                     success: Y.bind(function() {
-                        this.currentWidget.showMessageBis("success", "All changes saved");
+                        this.currentWidget.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function() {
-                        this.currentWidget.showMessageBis("error", "Error removing permissions");
+                        this.currentWidget.showMessage("error", "Error removing permissions");
                     }, this)
                 }
             });
@@ -409,7 +409,7 @@ YUI.add('wegas-shareuser', function(Y) {
     Y.extend(PermissionGroup, Y.inputEx.Group, {
         /** @lends Y.inputEx.Wegas.PermissionGroup# */
         onChange: function(fieldValue, fieldInstance) {
-            this.getParentField().currentWidget.showMessageBis("success", "Saving...");
+            this.getParentField().currentWidget.showMessage("success", "Saving...");
             if (fieldValue) {
                 this.addPermission(fieldInstance.options.value + ":" + this.parentField.targetEntityId, this.getValue().userId);
                 this.gameModelAddRight(fieldInstance.options.value);
@@ -427,11 +427,11 @@ YUI.add('wegas-shareuser', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
+                        this.getParentField().currentWidget.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {
                         if (e.response.results.exception !== "javax.persistence.NoResultException") {
-                            this.getParentField().currentWidget.showMessageBis("error", "Error removing permission");
+                            this.getParentField().currentWidget.showMessage("error", "Error removing permission");
                         }
                     }, this)
                 }
@@ -445,10 +445,10 @@ YUI.add('wegas-shareuser', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
+                        this.getParentField().currentWidget.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("error", "Error adding permission");
+                        this.getParentField().currentWidget.showMessage("error", "Error adding permission");
                     }, this)
                 }
             });
