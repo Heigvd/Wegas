@@ -4,7 +4,7 @@
 YUI.add("wegas-teaching-arrow", function(Y) {
     "use strict";
 
-    Y.TeachingArrow = function(cfg) {
+    Y.TeachingArrow = function() {
         Y.TeachingArrow.superclass.constructor.apply(this, arguments);
     };
 
@@ -35,7 +35,6 @@ YUI.add("wegas-teaching-arrow", function(Y) {
             if (tgt && Y.Lang.isFunction(tgt.addWire)) {
                 tgt.addWire(this);
             }
-
         },
         /**
          * @method bindUI
@@ -103,9 +102,9 @@ YUI.add("wegas-teaching-arrow", function(Y) {
 
             //line which connects the terminals: y=ax+b
             var W = src[0] - tgt[0],
-                    Wa = src[1] - tgt[1],
-                    Wb = src[0] * tgt[1] - src[1] * tgt[0],
-                    a, b, aProst, bProst;
+                Wa = src[1] - tgt[1],
+                Wb = src[0] * tgt[1] - src[1] * tgt[0],
+                a, b, aProst, bProst;
             if (W !== 0) {
                 a = Wa / W;
                 b = Wb / W;
