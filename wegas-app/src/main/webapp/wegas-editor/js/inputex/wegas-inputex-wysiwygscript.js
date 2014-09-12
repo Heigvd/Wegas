@@ -177,11 +177,11 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 on: {
                     success: Y.bind(function() {
                         parentWidget.hideOverlay();
-                        parentWidget.showMessageBis("success", "Impact executed successfully.");
+                        parentWidget.showMessage("success", "Impact executed successfully.");
                     }, this),
                     failure: Y.bind(function(e) {
                         parentWidget.hideOverlay();
-                        parentWidget.showMessageBis("error", "Error executing impact: <br /><br />"
+                        parentWidget.showMessage("error", "Error executing impact: <br /><br />"
                             + (e.response.results.exception || e.response));
                     }, this)
                 }

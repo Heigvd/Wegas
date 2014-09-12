@@ -131,7 +131,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             selection = treeview.get("selection") || new Y.ArrayList();
 
             if (!selection.size()) {
-                this.showMessageBis("info", (freeForAll)
+                this.showMessage("info", (freeForAll)
                     ? "No player is selected. This impact has not been run"
                     : "No team is selected. This impact has not been run");
             }

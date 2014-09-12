@@ -232,7 +232,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
          * @param {type} msg
          */
         showFormMessage: function(level, msg) {
-            EditEntityAction.form.showMessageBis(level, msg);
+            EditEntityAction.form.showMessage(level, msg);
         }
     });
     Plugin.EditEntityAction = EditEntityAction;

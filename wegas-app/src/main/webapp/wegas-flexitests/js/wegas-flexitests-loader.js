@@ -14,7 +14,7 @@ YUI.addGroup("wegas-flexitests", {
     modules: {
         'wegas-flexitests-controller': {
             requires: "wegas-layout-absolute",
-            ws_provides: ["FlexitestsController", "FlexiResponse"]
+            ws_provides: ["FlexitestsController", "FlexiResponse", "wegas-panel"]
         },
         'wegas-flexitests-mcqdisplay': {
             requires: ["wegas-widget", "template"],

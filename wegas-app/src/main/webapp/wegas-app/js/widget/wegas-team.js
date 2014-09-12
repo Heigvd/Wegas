@@ -162,7 +162,7 @@ YUI.add('wegas-team', function(Y) {
                 } else if (entity.get("players").length === 0) {                // and this team is empty, (first connectin to this team)
                     showTeamEdition = true;                                     // display team composition edition
                 } else {
-                    this.showMessageBis("error",
+                    this.showMessage("error",
                         "This team has already been created. You can contact it's members so they can join you in.");
                 }
             } else if (entity instanceof Wegas.persistence.Game && // If target entity is a game

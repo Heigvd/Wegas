@@ -100,7 +100,7 @@ YUI.add('wegas-editor-form', function(Y) {
             b.on = {
                 click: Y.bind(function(action) {                                // Push click event to the button, depending on their action field
                     if (!this.form.validate()) {
-                        this.showMessageBis("error", "Some fields are not valid");
+                        this.showMessage("error", "Some fields are not valid");
                         return;
                     }
                     this.fire(action, {
@@ -180,9 +180,9 @@ YUI.add('wegas-editor-form', function(Y) {
 
             this.on("update", function() {                                      // When the form is updated,
                 if (this.form.validate()) {                                     // display appropriate message in the toolbar
-                    this.showMessageBis("success", "Saving...");
+                    this.showMessage("success", "Saving...");
                 } else {
-                    this.showMessageBis("success", "Unable to save");
+                    this.showMessage("success", "Unable to save");
                 }
             });
             this.on("updateTimeOut", this.save);                                // 2 seconds after user has stopped updating, save changes
@@ -234,7 +234,7 @@ YUI.add('wegas-editor-form', function(Y) {
             this.get("dataSource").cache.put(this.get("value"), {
                 on: {
                     success: Y.bind(function() {
-                        this.showMessageBis("success", "All changes saved");
+                        this.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
@@ -278,7 +278,7 @@ YUI.add('wegas-editor-form', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.showMessageBis("success", "All changes saved");
+                        this.showMessage("success", "All changes saved");
                         this.get("entity").set("gameModelName", e.response.entity.get("name"))// @hack update the source event
                             .set("gameModel", e.response.entity)
                             .set("properties", e.response.entity.get("properties"));

@@ -151,7 +151,7 @@
                                 player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
 
                             if (!player) {
-                                this.showMessageBis("info", "This team is empty", 4000);
+                                this.showMessage("info", "This team is empty", 4000);
                             } else if (!e.currentTarget.treeView.treeviewselect) {//Check if click is with multiselect plugin (impact page)
                                 Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
                             }
