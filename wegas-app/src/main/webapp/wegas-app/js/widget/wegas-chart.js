@@ -125,7 +125,7 @@ YUI.add('wegas-chart', function(Y) {
                     yDisplayName: this.vdList[i].label
                 });
                 rawSeries.push(this.vdList[i].get("history"));
-
+                rawSeries[rawSeries.length -1].push(this.vdList[i].get("value"));
             }
             hStep = hStep > 0 ? hStep : 1;
 
