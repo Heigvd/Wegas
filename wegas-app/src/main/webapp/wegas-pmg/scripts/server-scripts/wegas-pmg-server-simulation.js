@@ -1102,9 +1102,15 @@ var PMGSimulation = (function() {
     /**
      * Calculate plannedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
      * history for variable the same variable and for costs, delay and quality.
+     * 
+     * @param {type} currentPhaseNum
+     * @param {type} currentPeriodNum
+     * @returns {undefined}
      */
     function updateVariables() {
         var i, task, employeesRequired,
+            currentPhaseNum = PMGHelper.getCurrentPhaseNumber(),
+            currentPeriodNum = PMGHelper.getCurrentPeriodNumber(),
             ev = 0, ac = 0, tasksQuality = 0, tasksScale = 0, qualityJaugeValue = 0,
             costs = Variable.findByName(gameModel, 'costs'),
             delay = Variable.findByName(gameModel, 'delay'),
@@ -1183,12 +1189,17 @@ var PMGSimulation = (function() {
         qualityJaugeValue = Math.min(Math.max(qualityJaugeValue, quality.minValueD), quality.maxValueD);
         quality.setValue(self, Math.round(qualityJaugeValue));
 
-        costs.getInstance(self).saveHistory();
-        delay.getInstance(self).saveHistory();
-        quality.getInstance(self).saveHistory();
-        //  plannedValue.getInstance(self).saveHistory();
-        earnedValue.getInstance(self).saveHistory();
-        actualCost.getInstance(self).saveHistory();
+        // #777 save EVM related histories only during execution
+        if (currentPhaseNum>= 3 && currentPeriodNum > 1) {
+            costs.getInstance(self).saveHistory();
+            delay.getInstance(self).saveHistory();
+            quality.getInstance(self).saveHistory();
+            //  plannedValue.getInstance(self).saveHistory();
+            earnedValue.getInstance(self).saveHistory();
+            actualCost.getInstance(self).saveHistory();
+        }
+
+        // TODO #777 SaveHistory each time those are uptaded
         Variable.findByName(gameModel, 'managementApproval').getInstance(self).saveHistory();
         Variable.findByName(gameModel, 'userApproval').getInstance(self).saveHistory();
     }
