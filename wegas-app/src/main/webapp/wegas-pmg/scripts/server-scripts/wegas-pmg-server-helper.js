@@ -224,7 +224,7 @@ var PMGHelper = (function() {
 
     function updateBAC(taskName, value) {
         Variable.findByName(self.getGameModel(), taskName).getInstance(self).setProperty('bac', value);
-        PMGSimulation.planedValueHistory();
+        PMGSimulation.plannedValueHistory();
     }
 
     /**
