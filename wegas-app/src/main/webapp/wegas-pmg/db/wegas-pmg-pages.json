@@ -251,7 +251,7 @@
                     }]
             }, {
                 "type": "GaugeDisplay",
-                "label": "Delay",
+                "label": "Schedule",
                 "maxValue": 200,
                 "variable": {
                     "name": "delay"
@@ -1359,7 +1359,7 @@
                             "script": "Variable.find(gameModel, 'costs').getValue(self)",
                             "formatter": "colored"
                         }, {
-                            "label": "Delay",
+                            "label": "Schedule",
                             "script": "Variable.find(gameModel, 'delay').getValue(self)",
                             "formatter": "colored"
                         }]
