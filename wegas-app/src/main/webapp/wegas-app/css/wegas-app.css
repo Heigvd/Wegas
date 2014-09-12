@@ -101,8 +101,51 @@ font {
 .wegas-loading {
     height: 100%;
 }
+@keyframes fadein {
+    from {
+        opacity: 0; 
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes fadein {
+    from { 
+        opacity: 0; 
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadein {
+    from { 
+        opacity: 0;
+    }
+    to   { 
+        opacity: 1; 
+    }
+}
+
+@-ms-keyframes fadein {
+    from {
+        opacity: 0; 
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+@-o-keyframes fadein {
+    from { 
+        opacity: 0;
+    }
+    to   { 
+        opacity: 1;
+    }
+}
 .wegas-loading-overlay {
-    background: rgba(255, 255, 255, 0.9);
+    background: rgba(255, 255, 255, 0.7);
     position: absolute;
     top: 0;
     bottom: 0;
@@ -110,6 +153,11 @@ font {
     right: 0;
     z-index: 10;
     overflow: hidden;
+    -webkit-animation: fadein 0.2s 0.1s 1;
+    -o-animation: fadein 0.2s 0.1s 1;
+    -ms-animation: fadein 0.2s 0.1s 1;
+    -moz-animation: fadein 0.2s 0.1s 1;
+    animation: fadein 0.2s 0.1s 1;
 }
 .wegas-loading-overlay:after {
     content: "A long-running process has been\a detected. Please wait....";

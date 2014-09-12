@@ -119,12 +119,15 @@ tbody .past .activity {
 }
 
 /* Assignment plugin CSS */
+.yui3-datatable-col-assignments {
+    white-space: nowrap;
+    vertical-align: middle;
+}
 .yui3-datatable-col-assignments .assignment{
     display:block;
     float: left;
     width: 17px;
     text-align: center;
-    margin-top: 1px;
 }
 .yui3-datatable-col-assignments .assignment span{
     display:block;
@@ -137,15 +140,11 @@ tbody .past .activity {
     background-image: url(../../wegas-pmg/images/add.png);
 }
 .yui3-datatable-col-assignments .tasks{
-    display:block;
-    float: left;
-    width:80%;
+    display:inline-block;
+    white-space: normal;
 }
 .yui3-datatable-col-assignments .task {
-    display: block;
-    float: left;
-    /* width: 15px; */
-    /*height: 40px;*/
+    display: inline-block;
     position: relative;
     margin: 0 1px;
 }
@@ -171,7 +170,8 @@ tbody .past .activity {
     display: none; 
     position: absolute;
     padding-top: 3px;
-    margin-top: 17px;
+    margin-top: 17px;   
+    z-index: 1;
     top: 0;  
     left: -10px;  
     width: 41px;
