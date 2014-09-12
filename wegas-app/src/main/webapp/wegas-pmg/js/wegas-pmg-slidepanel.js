@@ -192,6 +192,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                         }
                     });
                 }
+                panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
                 return panel;
             }, this);
         },
