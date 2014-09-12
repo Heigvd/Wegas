@@ -323,26 +323,29 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 currentStateNode.get(BOUNDING_BOX).addClass("currentState");
             }
         },
+        /**
+         * add a css class(unusedState) to unreachable nodes.
+         * Currently disabled.
+         * @returns {undefined}
+         */
         highlightUnusedStates: function() {
+            return;                                                             //disable
             var currentState, i,
                 initialNode = this.nodes[this.get(ENTITY).getInitialStateId()],
-                listStates = Y.Object.values(this.nodes), // Prepare data
+                listStates = Y.Object.keys(this.nodes), // Prepare data
                 listPath = initialNode ? [initialNode] : [];
             this.get(BOUNDING_BOX).all(".unusedState").removeClass("unusedState");
             // Follow the path
             while (listPath.length > 0) {
                 currentState = listPath.pop();
-                // Test if state has been already visited
-                if (listStates[currentState.get(SID)] !== undefined) {
-                    for (i in currentState.get(ENTITY).get("transitions")) {
-                        listPath.push(this.nodes[currentState.get(ENTITY).get("transitions")[i].get("nextStateId")]);
-                    }
+                for (i in currentState.get(ENTITY).get("transitions")) {
+                    listPath.push(this.nodes[currentState.get(ENTITY).get("transitions")[i].get("nextStateId")]);
                 }
-                delete listStates[currentState.get(SID)];
+                listStates.splice(Y.Array.indexOf(listStates, "" + currentState.get(SID)), 1);
             }
             // Highlight
             for (i in listStates) {
-                listStates[i].get(BOUNDING_BOX).addClass("unusedState");
+                this.nodes[listStates[i]].get(BOUNDING_BOX).addClass("unusedState");
             }
         }
     }, {
@@ -550,12 +553,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
          */
         deleteSelf: function() {
             var fsmViewer = this.get(PARENT);
-            Y.Array.each(this.transitionsTarget, function(t) {
-                try {
-                    t.disconnect();
-                } catch (e) {
-                    // GOTCHA: Transition may have allready been destroyed by the user and not removed from the array
-                }
+            Y.Array.each(this.transitionsTarget.slice(0), function(t) {
+                t.disconnect();
             });
             delete fsmViewer.get(ENTITY).get(STATES)[this.get(SID).toString()];
             delete fsmViewer.nodes[this.get(SID)];
