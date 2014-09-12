@@ -292,3 +292,7 @@ tbody .past .activity {
     font-weight: bold;
     padding: 5px 10px 0; 
 }
+
+.indicators-management .yui3-numericaxis + .yui3-numericaxis  {
+    display: none;
+}
