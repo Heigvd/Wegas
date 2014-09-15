@@ -72,52 +72,52 @@ function loadVariables() {
         /*
          * TASKS
          */
-        task01 = getVariableDescriptor("ChoixEnvironnementDéveloppement");
+        task01 = getVariableDescriptor("ChoixEnvironnementDÃ©veloppement");
         task02 = getVariableDescriptor("AnalyseExistant");
         task03 = getVariableDescriptor("AnalyseBesoins");
-        task04 = getVariableDescriptor("DossierSpécifications");
-        task05 = getVariableDescriptor("ModélisationDonnées");
-        task06 = getVariableDescriptor("ModélisationTraitements");
-        task07 = getVariableDescriptor("ModélisationIHM");
+        task04 = getVariableDescriptor("DossierSpÃ©cifications");
+        task05 = getVariableDescriptor("ModÃ©lisationDonnÃ©es");
+        task06 = getVariableDescriptor("ModÃ©lisationTraitements");
+        task07 = getVariableDescriptor("ModÃ©lisationIHM");
         task08 = getVariableDescriptor("ProgrammationBD");
         task09 = getVariableDescriptor("ProgrammationTraitements");
         task10 = getVariableDescriptor("ProgrammationIHM");
-        task11 = getVariableDescriptor("PromotionSystème");
+        task11 = getVariableDescriptor("PromotionSystÃ¨me");
         task12 = getVariableDescriptor("Tests");
         task13 = getVariableDescriptor("ImplantationMachine");
         task14_20 = getVariableDescriptor("PrototypeUtilisateur");
-        task15_60 = getVariableDescriptor("CorrectionModélisationTraitements");
+        task15_60 = getVariableDescriptor("CorrectionModÃ©lisationTraitements");
         task16_61 = getVariableDescriptor("CorrectionProgrammationTraitements");
         /*
          * EMPLOYEES
          */
         com_gaelle = getVariableDescriptor("Gaelle");
-        com_irene = getVariableDescriptor("Irène");
+        com_irene = getVariableDescriptor("IrÃ¨ne");
         com_yves = getVariableDescriptor("Yves");
-        com_rene = getVariableDescriptor("René");
+        com_rene = getVariableDescriptor("RenÃ©");
         com_claude = getVariableDescriptor("Claude");
         com_luc = getVariableDescriptor("Luc");
         it_jean = getVariableDescriptor("Jean");
         it_kurt = getVariableDescriptor("Kurt");
-        it_andre = getVariableDescriptor("André");
+        it_andre = getVariableDescriptor("AndrÃ©");
         hard_fabien = getVariableDescriptor("Fabien");
         hard_murielle = getVariableDescriptor("Murielle");
         hard_bastien = getVariableDescriptor("Bastien");
-        hard_herve = getVariableDescriptor("Hervé");
+        hard_herve = getVariableDescriptor("HervÃ©");
         hard_pierre = getVariableDescriptor("Pierre");
-        hard_zoe = getVariableDescriptor("Zoé");
+        hard_zoe = getVariableDescriptor("ZoÃ©");
         soft_philippe = getVariableDescriptor("Philippe");
         soft_tom = getVariableDescriptor("Tom");
         soft_diane = getVariableDescriptor("Diane");
-        soft_noemie = getVariableDescriptor("Noémie");
+        soft_noemie = getVariableDescriptor("NoÃ©mie");
         soft_urs = getVariableDescriptor("Urs");
         soft_xavier = getVariableDescriptor("Xavier");
         soft_yvonne = getVariableDescriptor("Yvonne");
-        soft_seb = getVariableDescriptor("Sébastien");
+        soft_seb = getVariableDescriptor("SÃ©bastien");
         monteur_quentin = getVariableDescriptor("Quentin");
         monteur_wolf = getVariableDescriptor("Wolf");
         web_karim = getVariableDescriptor("Karim");
-        web_valerie = getVariableDescriptor("Valérie");
+        web_valerie = getVariableDescriptor("ValÃ©rie");
         web_orianne = getVariableDescriptor("Orianne");
 
         debug("Variables Loaded");

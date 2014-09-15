@@ -15,7 +15,7 @@
                             "content": "Variable.find('week')"
                         },
                         "data": {
-                            "label": "Semaine N° : "
+                            "label": "Semaine NÂ° : "
                         }
                     }, {
                         "type": "Button",
@@ -47,7 +47,7 @@
                             "content": "Variable.find('teamMotivation')"
                         },
                         "data": {
-                            "label": "Motivation générale"
+                            "label": "Motivation gÃ©nÃ©rale"
                         }
                     },
                     {
@@ -103,7 +103,7 @@
                     {
                         "type": "Button",
                         "cssClass": "menu-email",
-                        "tooltip": "Réception e-mail",
+                        "tooltip": "RÃ©ception e-mail",
                         "plugins": [{
                                 "fn": "UnreadCount",
                                 "cfg": {
@@ -185,7 +185,7 @@
                         "label": "Nom : "
                     }, {
                         "name": "surname",
-                        "label": "Prénom : "
+                        "label": "PrÃ©nom : "
                     }, {
                         "name": "salary",
                         "label": "Salaire : "
@@ -206,7 +206,7 @@
                         "className": "titre"
                     }, {
                         "type": "position",
-                        "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 4 : Elle a conscience de l'énergie que vous avez dépensé pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sait ce que vous avez fait pour l'entreprise et travaillera à son tour pour la développer.</li><li>Niveau 2 : Elle suit vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 1 : Elle suit vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
+                        "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 5 : Elle voit en vous un modÃ¨le Ã  atteindre.</li><li>Niveau 4 : Elle a conscience de l'Ã©nergie que vous avez dÃ©pensÃ© pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 3 : Elle sait ce que vous avez fait pour l'entreprise et travaillera Ã  son tour pour la dÃ©velopper.</li><li>Niveau 2 : Elle suit vos directives car elle vous considÃ¨re et pense que vos choix sont justifiÃ©s.</li><li>Niveau 1 : Elle suit vos directives uniquement parce qu'elle en a le devoir.</li></ul>",
                         "selector": "li",
                         "name": "leadershipLevel",
                         "minVal": "1",
@@ -225,27 +225,27 @@
                         "label": "Confiance : ",
                         "maxValue": "100"
                     }, {
-                        "name": "Compétences : ",
+                        "name": "CompÃ©tences : ",
                         "className": "titre"
                     }, {
                         "type": "valueBox",
-                        "name": "Négociation",
-                        "label": "Négociation : ",
+                        "name": "NÃ©gociation",
+                        "label": "NÃ©gociation : ",
                         "maxValue": "100"
                     }, {
                         "type": "valueBox",
-                        "name": "Développement de base de données",
-                        "label": "Développement de base de données : ",
+                        "name": "DÃ©veloppement de base de donnÃ©es",
+                        "label": "DÃ©veloppement de base de donnÃ©es : ",
                         "maxValue": "100"
                     }, {
                         "type": "valueBox",
-                        "name": "Développement logiciel",
-                        "label": "Développement logiciel : ",
+                        "name": "DÃ©veloppement logiciel",
+                        "label": "DÃ©veloppement logiciel : ",
                         "maxValue": "100"
                     }, {
                         "type": "valueBox",
-                        "name": "Modélisation des traitements",
-                        "label": "Modélisation des traitements : ",
+                        "name": "ModÃ©lisation des traitements",
+                        "label": "ModÃ©lisation des traitements : ",
                         "maxValue": "100"
                     }, {
                         "type": "valueBox",

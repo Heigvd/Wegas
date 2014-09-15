@@ -72,7 +72,7 @@
             },
             "items": [{
                     "@class": "QuestionDescriptor",
-                    "name": "Sac poubelle n°5",
+                    "name": "Sac poubelle nÂ°5",
                     "defaultInstance": {
                         "@class": "QuestionInstance",
                         "replies": [],
@@ -97,7 +97,7 @@
                             "results": [{
                                     "@class": "Result",
                                     "name": "ED Good",
-                                    "answer": "Ca c'est bien passé.",
+                                    "answer": "Ca c'est bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -106,7 +106,7 @@
                                 }, {
                                     "@class": "Result",
                                     "name": "ED Bad",
-                                    "answer": "Ca ne c'est pas bien passé.",
+                                    "answer": "Ca ne c'est pas bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -129,7 +129,7 @@
                             "results": [{
                                     "@class": "Result",
                                     "name": "Fibres Good",
-                                    "answer": "Ca c'est bien passé.",
+                                    "answer": "Ca c'est bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -138,7 +138,7 @@
                                 }, {
                                     "@class": "Result",
                                     "name": "Fibres Bad",
-                                    "answer": "Ca ne c'est pas bien passé.",
+                                    "answer": "Ca ne c'est pas bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -161,7 +161,7 @@
                             "results": [{
                                     "@class": "Result",
                                     "name": "ADN Good",
-                                    "answer": "Ca c'est bien passé.",
+                                    "answer": "Ca c'est bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -170,7 +170,7 @@
                                 }, {
                                     "@class": "Result",
                                     "name": "ADN Bad",
-                                    "answer": "Ca ne c'est pas bien passé.",
+                                    "answer": "Ca ne c'est pas bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -180,7 +180,7 @@
                             "duration": 2
                         }, {
                             "@class": "ChoiceDescriptor",
-                            "name": "Prélèvement ADN",
+                            "name": "PrÃ©lÃ¨vement ADN",
                             "defaultInstance": {
                                 "@class": "ChoiceInstance",
                                 "active": true,
@@ -192,17 +192,17 @@
                             "description": "",
                             "results": [{
                                     "@class": "Result",
-                                    "name": "Prélèvement ADN Good",
-                                    "answer": "Ca c'est bien passé.",
+                                    "name": "PrÃ©lÃ¨vement ADN Good",
+                                    "answer": "Ca c'est bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
-                                        "content": "cost.value += 200;\nselectedChoice.setCurrentResultByIndex(1);\nthis[\"Sac poubelle n°5: Prélèvement ADN\"].activate();"
+                                        "content": "cost.value += 200;\nselectedChoice.setCurrentResultByIndex(1);\nthis[\"Sac poubelle nÂ°5: PrÃ©lÃ¨vement ADN\"].activate();"
                                     }
                                 }, {
                                     "@class": "Result",
-                                    "name": "Prélèvement ADN Bad",
-                                    "answer": "Ca ne c'est pas bien passé.",
+                                    "name": "PrÃ©lÃ¨vement ADN Bad",
+                                    "answer": "Ca ne c'est pas bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -216,7 +216,7 @@
                     "allowMultipleReplies": false
                 }, {
                     "@class": "QuestionDescriptor",
-                    "name": "Sac poubelle n°5: Prélèvement ADN",
+                    "name": "Sac poubelle nÂ°5: PrÃ©lÃ¨vement ADN",
                     "defaultInstance": {
                         "@class": "QuestionInstance",
                         "replies": [],
@@ -241,7 +241,7 @@
                             "results": [{
                                     "@class": "Result",
                                     "name": "ADN Good",
-                                    "answer": "Ca c'est bien passé. Le résultat est: ...",
+                                    "answer": "Ca c'est bien passÃ©. Le rÃ©sultat est: ...",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",
@@ -250,7 +250,7 @@
                                 }, {
                                     "@class": "Result",
                                     "name": "ADN Bad",
-                                    "answer": "Ca ne c'est pas bien passé.",
+                                    "answer": "Ca ne c'est pas bien passÃ©.",
                                     "impact": {
                                         "@class": "Script",
                                         "language": "JavaScript",

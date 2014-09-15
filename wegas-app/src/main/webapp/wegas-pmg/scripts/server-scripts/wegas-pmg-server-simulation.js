@@ -759,7 +759,7 @@ var PMGSimulation = (function() {
             sumActivityRate += activityRate;
             //Calculate ressource motivation factor
             employeesMotivationFactor = 1 + 0.05 * employeeInst.descriptor.getPropertyD("coef_moral") * (employeeInst.moral - 7);
-            //Calcul variables for needMotivationFactor (numérateur de la moyenne pondérée de facteur motivation besoin)
+            //Calcul variables for needMotivationFactor (numÃ©rateur de la moyenne pondÃ©rÃ©e de facteur motivation besoin)
             sumEmployeesMotivationXActivityRate += employeesMotivationFactor * activityRate;
             //debug("employeesMotivationFactor : " + employeesMotivationFactor);
 
@@ -768,9 +768,9 @@ var PMGSimulation = (function() {
                 skillsetFactor = (deltaLevel > 0) ? taskDesc.getPropertyD("competenceRatioSup") : taskDesc.getPropertyD("competenceRatioInf");
             employeeSkillsetFactor = Math.max(0, 1 + 0.05 * skillsetFactor * deltaLevel);
             //debug("calc skillset: activityRate:" + activityRate + ", skillsetFactor: " + skillsetFactor + "deltaLevel: " + deltaLevel);
-            sumEmployeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate; //Calcul variables for needSkillFactor (numérateur de la moyenne pondérée facteur compétence besoin)
+            sumEmployeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate; //Calcul variables for needSkillFactor (numÃ©rateur de la moyenne pondÃ©rÃ©e facteur compÃ©tence besoin)
 
-            //Calcul variable for needActivityFactor (numérateur de la moyenne pondérée facteur taux activité besoin)
+            //Calcul variable for needActivityFactor (numÃ©rateur de la moyenne pondÃ©rÃ©e facteur taux activitÃ© besoin)
             sumActivityCoefficientXActivityRate += employeeInst.descriptor.getPropertyD("coef_activity") * activityRate;
             //Calcul variable for learnFactor
             if (!haveCorrespondingActivityInPast(employeeInst, taskDesc)) {
@@ -784,10 +784,10 @@ var PMGSimulation = (function() {
         if (sumActivityRate !== 0) {
             stepAdvance *= sumEmployeesMotivationXActivityRate / sumActivityRate; //needMotivationFactor (facteur motivation besoin)
             debug("facteur motivation besoin: " + sumEmployeesMotivationXActivityRate / sumActivityRate + ", sumActivityRate:" + sumActivityRate + ", employeesMotivationXActivityRate: " + sumEmployeesMotivationXActivityRate);
-            stepAdvance *= sumEmployeesSkillsetXActivityRate / sumActivityRate; //needSkillsetFactor (facteur compétence besoin)  
+            stepAdvance *= sumEmployeesSkillsetXActivityRate / sumActivityRate; //needSkillsetFactor (facteur compÃ©tence besoin)  
             debug("facteur competence besoin : " + sumEmployeesSkillsetXActivityRate / sumActivityRate + ", employeeSkillsetFactor : " + employeeSkillsetFactor + ", sumEemployeesSkillsetXActivityRate: " + sumEmployeesSkillsetXActivityRate);
-            stepAdvance *= sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100); //activityNeedRateFactor (facteur taux activité besoin)
-            debug("facteur taux activité besoin : " + sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100) + ", sumActivityCoefficientXActivityRate : " + sumActivityCoefficientXActivityRate + ", ActivityNeedRateFactor : " + sumActivityCoefficientXActivityRate / sumActivityRate);
+            stepAdvance *= sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100); //activityNeedRateFactor (facteur taux activitÃ© besoin)
+            debug("facteur taux activitÃ© besoin : " + sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100) + ", sumActivityCoefficientXActivityRate : " + sumActivityCoefficientXActivityRate + ", ActivityNeedRateFactor : " + sumActivityCoefficientXActivityRate / sumActivityRate);
         }
 
 // calculate numberOfRessourcesFactor

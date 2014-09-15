@@ -329,7 +329,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                                 name: "angle",
                                 label: "arc angle",
                                 type: "number",
-                                typeInvite: "126° [0° - 180°]",
+                                typeInvite: "126Â° [0Â° - 180Â°]",
                                 required: true
                             }]
                     }

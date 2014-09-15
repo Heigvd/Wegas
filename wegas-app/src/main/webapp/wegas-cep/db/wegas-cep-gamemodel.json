@@ -32,7 +32,7 @@
             "items": [{
                     "@class": "NumberDescriptor",
                     "name": "organisationalmap-1",
-                    "label": "Élaborer la carte personnelle spontanée de l'organisation",
+                    "label": "Ã‰laborer la carte personnelle spontanÃ©e de l'organisation",
                     "defaultInstance": {
                         "@class": "NumberInstance",
                         "value": 1
@@ -58,7 +58,7 @@
                 }, {
                     "@class": "NumberDescriptor",
                     "name": "organisationalmap-3",
-                    "label": "Elaborer la carte systématique de l'organisation",
+                    "label": "Elaborer la carte systÃ©matique de l'organisation",
                     "defaultInstance": {
                         "@class": "NumberInstance",
                         "value": 1
@@ -97,7 +97,7 @@
         }, {
             "@class": "NumberDescriptor",
             "name": "period",
-            "label": "Période",
+            "label": "PÃ©riode",
             "defaultInstance": {
                 "@class": "NumberInstance",
                 "value": 1.0
@@ -109,7 +109,7 @@
             "maxValue": 10
         }, {
             "@class": "NumberDescriptor",
-            "label": "Motivation d'équipe",
+            "label": "Motivation d'Ã©quipe",
             "name": "teamMotivation",
             "defaultInstance": {
                 "@class": "NumberInstance",
@@ -288,7 +288,7 @@
                                     "results": [{
                                             "@class": "Result",
                                             "name": "Normal",
-                                            "answer": "Tout c'est bien passé.",
+                                            "answer": "Tout c'est bien passÃ©.",
                                             "impact": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
@@ -331,7 +331,7 @@
                                     "results": [{
                                             "@class": "Result",
                                             "name": "Normal",
-                                            "answer": "Tout c'est bien passé.",
+                                            "answer": "Tout c'est bien passÃ©.",
                                             "impact": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
@@ -519,7 +519,7 @@
             "label": "Texte d'accueil",
             "defaultInstance": {
                 "@class": "TextInstance",
-                "value": "Vous, Joël(le) Dorado, avez pris vos fonctions de responsable de Division des sports et loisirs (DISPOL) au sein de la Direction des prestations éducatives culturelles et environnementales (DIPECE), à Belleville.<br /><br />Vous êtes très attendu-e, tant par votre responsable que par votre équipe.<br /><br />Vous aurez à mener une négociation sans délai, pour assurer la maintenance des piscines.<br /><br />Prenez d'abord de temps de découvrir votre poste et votre nouvel environnement.<br /><br />Bonne chance !  <br /><br />Fichier joint: <a href=\"https://www.dropbox.com/l/ViCSd8NfIE7Xz8TRr9ewYd\">DISPOL - données de bases</a>"
+                "value": "Vous, JoÃ«l(le) Dorado, avez pris vos fonctions de responsable de Division des sports et loisirs (DISPOL) au sein de la Direction des prestations Ã©ducatives culturelles et environnementales (DIPECE), Ã  Belleville.<br /><br />Vous Ãªtes trÃ¨s attendu-e, tant par votre responsable que par votre Ã©quipe.<br /><br />Vous aurez Ã  mener une nÃ©gociation sans dÃ©lai, pour assurer la maintenance des piscines.<br /><br />Prenez d'abord de temps de dÃ©couvrir votre poste et votre nouvel environnement.<br /><br />Bonne chance !  <br /><br />Fichier joint: <a href=\"https://www.dropbox.com/l/ViCSd8NfIE7Xz8TRr9ewYd\">DISPOL - donnÃ©es de bases</a>"
             },
             "scope": {
                 "@class": "TeamScope"

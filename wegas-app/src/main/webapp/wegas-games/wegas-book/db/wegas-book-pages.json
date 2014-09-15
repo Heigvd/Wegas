@@ -47,7 +47,7 @@
         "children": [
             {
                 "type": "Text",
-                "content": "Bienvenue, ceci est la première page de ce tutoriel. La page (élément général existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre héros. Cette page est constituée également d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller à la sous-page suivante."
+                "content": "Bienvenue, ceci est la premiÃ¨re page de ce tutoriel. La page (Ã©lÃ©ment gÃ©nÃ©ral existant sur chaque 'interface' du jeu) contient un titre ainsi que la valeure de vigueur (stamina) et de combat (combat skill) de notre hÃ©ros. Cette page est constituÃ©e Ã©galement d'une sous-page (inteface changeante du jeu) contenant un widget 'list' qui contient un widget 'text' (ce texte) ainsi qu'un widget 'button' (le bouton ci-dessous). Cliquez sur ce dernier pour aller Ã  la sous-page suivante."
             }, {
                 "type": "List",
                 "direction": "vertical",
@@ -57,7 +57,7 @@
                     {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip": "Aller à la page 2",
+                        "tooltip": "Aller Ã  la page 2",
                         "label": "Suivant",
                         "plugins": [
                             {
@@ -90,7 +90,7 @@
         "children": [
             {
                 "type": "Text",
-                "content": "Cette deuxième sous-page contient un widget 'fight' créer exclusivement pour les scénarios de ce jeu. Cliquez sur combattre pour réduire la vigueur (stamina) de l'adversaire à 0"
+                "content": "Cette deuxiÃ¨me sous-page contient un widget 'fight' crÃ©er exclusivement pour les scÃ©narios de ce jeu. Cliquez sur combattre pour rÃ©duire la vigueur (stamina) de l'adversaire Ã  0"
             }, {
                 "type": "Fight",
                 "name": "Loup",
@@ -101,11 +101,11 @@
                 "success": [
                     {
                         "type": "Text",
-                        "content": "Victoire ! Vous pouvez passer à la page suivante."
+                        "content": "Victoire ! Vous pouvez passer Ã  la page suivante."
                     }, {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip": "Aller à la page 3",
+                        "tooltip": "Aller Ã  la page 3",
                         "label": "Continuer",
                         "plugins": [
                             {
@@ -134,7 +134,7 @@
                     }, {
                         "type": "Button",
                         "cssClass": "book-bouton",
-                        "tooltip": "Aller à la page 3",
+                        "tooltip": "Aller Ã  la page 3",
                         "label": "Fuire !",
                         "plugins": [
                             {
@@ -176,7 +176,7 @@
                         "disabled": false,
                         "plugins": [{
                                 "cfg": {
-                                    "content": "Aller à la page 1"
+                                    "content": "Aller Ã  la page 1"
                                 },
                                 "fn": "Tooltip"
                             }, {
@@ -209,7 +209,7 @@
         "children": [
             {
                 "type": "Text",
-                "content": "Créez maintenant vos propres sous-pages et widgets afin de créer un nouveau jeu !"
+                "content": "CrÃ©ez maintenant vos propres sous-pages et widgets afin de crÃ©er un nouveau jeu !"
             }
         ]
     },

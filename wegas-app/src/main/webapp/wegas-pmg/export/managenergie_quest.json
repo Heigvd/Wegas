@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Intégration Mme Benaroch ",
-					"name": "Intégration Mme Benaroch ",
-					"editorLabel": "AP1-C075 Intégration Mme Benaroch ",
+					"label": "IntÃ©gration Mme Benaroch ",
+					"name": "IntÃ©gration Mme Benaroch ",
+					"editorLabel": "AP1-C075 IntÃ©gration Mme Benaroch ",
 					"description": "<p><span id=\"internal-source-marker_0.23270311721584747\">Suite au e-mail de Mademoiselle Benaroch</span>, que d&eacute;cidez-vous relativement &agrave; son int&eacute;gration dans le projet ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -76,9 +76,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Ne pas intégrer RH",
-							"label": "3) Ne pas intégrer RH",
-							"editorLabel": "3) Ne pas intégrer RH",
+							"name": "3) Ne pas intÃ©grer RH",
+							"label": "3) Ne pas intÃ©grer RH",
+							"editorLabel": "3) Ne pas intÃ©grer RH",
 							"description": "<p><span id=\"internal-source-marker_0.23270311721584747\">Vous d&eacute;cidez de ne pas int&eacute;grer un repr&eacute;sentant des RH.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -98,9 +98,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Informations légales",
-					"name": "Informations légales",
-					"editorLabel": "AP1-C010 Informations légales",
+					"label": "Informations lÃ©gales",
+					"name": "Informations lÃ©gales",
+					"editorLabel": "AP1-C010 Informations lÃ©gales",
 					"description": "<p>Un de vos coll&egrave;gues vous propose de prendre contact avec le responsable juridique de la cha&icirc;ne de l&rsquo;h&ocirc;tel dans le but d&rsquo;&eacute;tablir une collaboration entre le responsable juridique et vous.</p><p>Que faites-vous ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -112,9 +112,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Contacter: informations sur les grands consommateur & évolutions juridiques",
-							"label": "1) Contacter: informations sur les grands consommateur & évolutions juridiques",
-							"editorLabel": "1) Contacter: informations sur les grands consommateur & évolutions juridiques",
+							"name": "1) Contacter: informations sur les grands consommateur & Ã©volutions juridiques",
+							"label": "1) Contacter: informations sur les grands consommateur & Ã©volutions juridiques",
+							"editorLabel": "1) Contacter: informations sur les grands consommateur & Ã©volutions juridiques",
 							"description": "<p>Vous d&eacute;cidez d'envoyer un e-mail au responsable juridique afin d&rsquo;&eacute;tablir un contact et esp&eacute;rez une collaboration informelle dans l&rsquo;avenir.</p><p>Dans cet e-mail, vous lui expliquez le projet et demandez de vous fournir plus d&rsquo;informations sur les grands consommateurs et, &agrave; l&rsquo;avenir, de vous tenir au courant des &eacute;volutions l&eacute;gales en mati&egrave;re d&rsquo;usage et de consommation de l&rsquo;&eacute;nergie.</p><p><em>Cartes temps : 1</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -132,9 +132,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Contacter: informations sur les évolutions juridiques",
-							"label": "2) Contacter: informations sur les évolutions juridiques",
-							"editorLabel": "2) Contacter: informations sur les évolutions juridiques",
+							"name": "2) Contacter: informations sur les Ã©volutions juridiques",
+							"label": "2) Contacter: informations sur les Ã©volutions juridiques",
+							"editorLabel": "2) Contacter: informations sur les Ã©volutions juridiques",
 							"description": "<p>Vous envoyez d'envoyer un e-mail au responsable l&eacute;gal afin d&rsquo;&eacute;tablir un contact et esp&eacute;rez une collaboration informelle dans l&rsquo;avenir.</p><p>Dans cet e-mail, vous expliquez le projet et lui demandez sa coop&eacute;ration dans le suivi des &eacute;volutions l&eacute;gales en mati&egrave;re d&rsquo;usage et de consommation de l&rsquo;&eacute;nergie.</p><p><em>Cartes temps : 1</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -174,9 +174,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Informations légales",
-					"name": "Informations légales",
-					"editorLabel": "AP1-C015 Informations légales 2",
+					"label": "Informations lÃ©gales",
+					"name": "Informations lÃ©gales",
+					"editorLabel": "AP1-C015 Informations lÃ©gales 2",
 					"description": "<p>Suite &agrave; la demande de la direction (c.f. mail J. Petit), quelle variante choisissez-vous pour la prise de contact avec le responsable juridique ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -188,9 +188,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Contacter: informations sur les grands consommateur & évolutions juridiques",
-							"label": "1) Contacter: informations sur les grands consommateur & évolutions juridiques",
-							"editorLabel": "1) Contacter: informations sur les grands consommateur & évolutions juridiques",
+							"name": "1) Contacter: informations sur les grands consommateur & Ã©volutions juridiques",
+							"label": "1) Contacter: informations sur les grands consommateur & Ã©volutions juridiques",
+							"editorLabel": "1) Contacter: informations sur les grands consommateur & Ã©volutions juridiques",
 							"description": "<p>Vous envoyez un e-mail au responsable juridique afin d&rsquo;&eacute;tablir un contact et esp&eacute;rez une collaboration informelle dans l&rsquo;avenir.</p><p>Dans cet e-mail, vous lui expliquez le projet et lui demandez de vous fournir plus d&rsquo;informations sur les grands consommateurs et, &agrave; l&rsquo;avenir, de vous tenir au courant des &eacute;volutions l&eacute;gales en mati&egrave;re d&rsquo;usage et de consommation de l&rsquo;&eacute;nergie.</p><p><em>Cartes temps : 1</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -208,9 +208,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Contacter: informations sur les évolutions juridiques",
-							"label": "2) Contacter: informations sur les évolutions juridiques",
-							"editorLabel": "2) Contacter: informations sur les évolutions juridiques",
+							"name": "2) Contacter: informations sur les Ã©volutions juridiques",
+							"label": "2) Contacter: informations sur les Ã©volutions juridiques",
+							"editorLabel": "2) Contacter: informations sur les Ã©volutions juridiques",
 							"description": "<p>Vous envoyez un e-mail au responsable l&eacute;gal afin d&rsquo;&eacute;tablir un contact et esp&eacute;rez une collaboration informelle dans l&rsquo;avenir. Dans cet e-mail, vous expliquez le projet et lui demandez sa coop&eacute;ration dans le suivi des &eacute;volutions l&eacute;gales en mati&egrave;re d&rsquo;usage et de consommation de l&rsquo;&eacute;nergie.</p><p><em>Cartes temps : 1</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -230,9 +230,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Politique énergétique",
-					"name": "Politique énergétique",
-					"editorLabel": "AP1-C020 Politique énergétique",
+					"label": "Politique Ã©nergÃ©tique",
+					"name": "Politique Ã©nergÃ©tique",
+					"editorLabel": "AP1-C020 Politique Ã©nergÃ©tique",
 					"description": "<p>Avec un coll&egrave;gue, vous &eacute;tudiez le mod&egrave;le de politique &eacute;nerg&eacute;tique qui vous a &eacute;t&eacute; envoy&eacute; par votre ami Fabrice (c.f. mail re&ccedil;u).</p><p>Apr&egrave;s analyse, que proposez-vous &agrave; votre coll&egrave;gue ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -286,9 +286,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Composition de l'équipe \"Management de l'énergie\"",
-					"name": "Composition de l'équipe \"Management de l'énergie\"",
-					"editorLabel": "AP1-C030 Composition équipe ME",
+					"label": "Composition de l'Ã©quipe \"Management de l'Ã©nergie\"",
+					"name": "Composition de l'Ã©quipe \"Management de l'Ã©nergie\"",
+					"editorLabel": "AP1-C030 Composition Ã©quipe ME",
 					"description": "<p>M. Petit, secr&eacute;taire g&eacute;n&eacute;ral de direction, vous propose de ne pas perdre trop de temps avec la composition de cette &eacute;quipe de management de l&rsquo;&eacute;nergie. D&rsquo;apr&egrave;s lui, cette &eacute;quipe aura un r&ocirc;le principalement consultatif (voire d&eacute;coratif) et sera certainement compos&eacute;e des membres du comit&eacute; de d&eacute;veloppement durable. Ceux-ci sont int&eacute;ress&eacute;s et il pourrait y avoir de bonnes synergies et &eacute;conomies de s&eacute;ances.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -342,9 +342,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Audit simplifié de management de l'énergie",
-					"name": "Audit simplifié de management de l'énergie",
-					"editorLabel": "AP1-C040 Audit simplifié mgt énergie",
+					"label": "Audit simplifiÃ© de management de l'Ã©nergie",
+					"name": "Audit simplifiÃ© de management de l'Ã©nergie",
+					"editorLabel": "AP1-C040 Audit simplifiÃ© mgt Ã©nergie",
 					"description": "<p>Vous avez &agrave; disposition dans vos documents un formulaire d&rsquo;<em>audit simplifi&eacute; de management de l&rsquo;&eacute;nergie </em>(ci-joint).</p><p>Un membre de la direction vous demande si vous avez l'intention d'effectuer cet audit simplifi&eacute; et d&rsquo;en int&eacute;grer les r&eacute;sultats lors de votre pr&eacute;sentation &agrave; la direction.</p><p>Pi&egrave;ce jointe : <a href=\"https://docs.google.com/file/d/0B269mDoc4aycMGlobFN0TTNDekE/edit\" target=\"_blank\">Audit simplifi&eacute;</a></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -356,9 +356,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Effectuer et présenter l'audit",
-							"label": "1) Effectuer et présenter l'audit",
-							"editorLabel": "1) Effectuer et présenter l'audit",
+							"name": "1) Effectuer et prÃ©senter l'audit",
+							"label": "1) Effectuer et prÃ©senter l'audit",
+							"editorLabel": "1) Effectuer et prÃ©senter l'audit",
 							"description": "<p>Vous lui r&eacute;pondez que vous allez effectuer un <em>audit simplifi&eacute; de management de l&rsquo;&eacute;nergie</em> et l&rsquo;int&eacute;grer &agrave; votre pr&eacute;sentation de la fin de l'&eacute;tape \"D&eacute;marrer\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -418,9 +418,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Périmètre d'action",
-					"name": "Périmètre d'action",
-					"editorLabel": "AP1-C050 Périmètre action",
+					"label": "PÃ©rimÃ¨tre d'action",
+					"name": "PÃ©rimÃ¨tre d'action",
+					"editorLabel": "AP1-C050 PÃ©rimÃ¨tre action",
 					"description": "<p>Lors d'un repas commun avec un coll&egrave;gue repr&eacute;sentant de l'association du personnel, vous parlez du projet \"management des &eacute;nergies\".</p><p>Il vous demande quel est le p&eacute;rim&egrave;tre du syst&egrave;me de gestion de l&rsquo;&eacute;nergie.&nbsp;</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -432,9 +432,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Bâtiments de la chaîne et transports",
-							"label": "1) Bâtiments de la chaîne et transports",
-							"editorLabel": "1) Bâtiments de la chaîne et transports",
+							"name": "1) BÃ¢timents de la chaÃ®ne et transports",
+							"label": "1) BÃ¢timents de la chaÃ®ne et transports",
+							"editorLabel": "1) BÃ¢timents de la chaÃ®ne et transports",
 							"description": "<p>Vous lui r&eacute;pondez que le p&eacute;rim&egrave;tre comprend tous les b&acirc;timents des sept h&ocirc;tels de la cha&icirc;ne, ainsi que les transports des collaborateurs.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -452,9 +452,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Bâtiments de la chaîne",
-							"label": "2) Bâtiments de la chaîne",
-							"editorLabel": "2) Bâtiments de la chaîne",
+							"name": "2) BÃ¢timents de la chaÃ®ne",
+							"label": "2) BÃ¢timents de la chaÃ®ne",
+							"editorLabel": "2) BÃ¢timents de la chaÃ®ne",
 							"description": "<p>Vous lui r&eacute;pondez que le p&eacute;rim&egrave;tre comprend tous les b&acirc;timents des sept h&ocirc;tels de la cha&icirc;ne.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -472,9 +472,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3)  Bâtiment de l'hôtel et transports",
-							"label": "3)  Bâtiment de l'hôtel et transports",
-							"editorLabel": "3)  Bâtiment de l'hôtel et transports",
+							"name": "3)  BÃ¢timent de l'hÃ´tel et transports",
+							"label": "3)  BÃ¢timent de l'hÃ´tel et transports",
+							"editorLabel": "3)  BÃ¢timent de l'hÃ´tel et transports",
 							"description": "<p>Vous lui r&eacute;pondez que le p&eacute;rim&egrave;tre comprend le b&acirc;timent de l'h&ocirc;tel ainsi que les transports des collaborateurs.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -492,9 +492,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "4) Bâtiment de l'hôtel uniquement",
-							"label": "4) Bâtiment de l'hôtel uniquement",
-							"editorLabel": "4) Bâtiment de l'hôtel uniquement",
+							"name": "4) BÃ¢timent de l'hÃ´tel uniquement",
+							"label": "4) BÃ¢timent de l'hÃ´tel uniquement",
+							"editorLabel": "4) BÃ¢timent de l'hÃ´tel uniquement",
 							"description": "<p>Vous lui r&eacute;pondez que le p&eacute;rim&egrave;tre comprend le b&acirc;timent de l'h&ocirc;tel uniquement.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -514,9 +514,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Tour de l'hôtel",
-					"name": "Tour de l'hôtel",
-					"editorLabel": "AP1-C060 Tour de l'hôtel",
+					"label": "Tour de l'hÃ´tel",
+					"name": "Tour de l'hÃ´tel",
+					"editorLabel": "AP1-C060 Tour de l'hÃ´tel",
 					"description": "<p>Vous connaissez bien s&ucirc;r l&rsquo;h&ocirc;tel, mais vous vous rendez compte que vous ne l&rsquo;avez jamais vraiment regard&eacute; avec un oeil &ldquo;management de l&rsquo;&eacute;nergie&rdquo;.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -528,9 +528,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Visiter l'hôtel",
-							"label": "1) Visiter l'hôtel",
-							"editorLabel": "1) Visiter l'hôtel",
+							"name": "1) Visiter l'hÃ´tel",
+							"label": "1) Visiter l'hÃ´tel",
+							"editorLabel": "1) Visiter l'hÃ´tel",
 							"description": "<p>Vous prenez une matin&eacute;e pour faire le tour de l&rsquo;h&ocirc;tel  avec un nouveau regard sur les lieux et profitez de parler des aspects  &eacute;nergies avec les diff&eacute;rentes personnes pr&eacute;sentes.</p><p><em>Cartes temps : 2</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -548,9 +548,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Tour rapide de l'hôtel",
-							"label": "2) Tour rapide de l'hôtel",
-							"editorLabel": "2) Tour rapide de l'hôtel",
+							"name": "2) Tour rapide de l'hÃ´tel",
+							"label": "2) Tour rapide de l'hÃ´tel",
+							"editorLabel": "2) Tour rapide de l'hÃ´tel",
 							"description": "<p>Vous prenez un moment pour un rapide tour de l&rsquo;h&ocirc;tel  avec un nouveau regard sur les lieux.</p><p><em>Cartes temps : 1<br /></em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -590,8 +590,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyse technique système chauffage",
-					"name": "Analyse technique système chauffage",
+					"label": "Analyse technique systÃ¨me chauffage",
+					"name": "Analyse technique systÃ¨me chauffage",
 					"editorLabel": "AP1-C080 Analyse techn. syst. chauffage",
 					"description": "<p><span id=\"internal-source-marker_0.28218992553091005\">Afin d&rsquo;avoir une base chiffr&eacute;e et quelques premi&egrave;res mesures quantitatives, vous avez la possibilit&eacute; de faire effectuer une analyse technique des syst&egrave;mes de chauffage.</span></p>",
 					"allowMultipleReplies": "false",
@@ -666,8 +666,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Invitation de l?équipe de maintenance",
-					"name": "Invitation de l?équipe de maintenance",
+					"label": "Invitation de l?Ã©quipe de maintenance",
+					"name": "Invitation de l?Ã©quipe de maintenance",
 					"editorLabel": "AP1-C090 Equipe maintenance",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-78e1-adef-8e58-ea8610347c2b\">Les membres du personnel de la maintenance vous proposent d&rsquo;aller boire un verre avec eux en fin de journ&eacute;e. Le probl&egrave;me est que vous n&rsquo;avez pas les m&ecirc;mes horaires. Ils commencent et finissent plus t&ocirc;t que vous. </span></p>",
 					"allowMultipleReplies": "false",
@@ -700,9 +700,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Décliner",
-							"label": "2) Décliner",
-							"editorLabel": "2) Décliner",
+							"name": "2) DÃ©cliner",
+							"label": "2) DÃ©cliner",
+							"editorLabel": "2) DÃ©cliner",
 							"description": "<p><span id=\"docs-internal-guid-09fdc1a7-78e2-c3e9-8eab-ba1c38bdff4a\">Vous d&eacute;clinez poliment l&rsquo;invitation.</span></p><p><em>Carte temps : 0&nbsp;</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -722,9 +722,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Découverte des ascenseurs",
-					"name": "Découverte des ascenseurs",
-					"editorLabel": "AP2-C010 Découverte des ascenseurs",
+					"label": "DÃ©couverte des ascenseurs",
+					"name": "DÃ©couverte des ascenseurs",
+					"editorLabel": "AP2-C010 DÃ©couverte des ascenseurs",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7988-db2d-8d90-89e189db18de\">S&eacute;bastien Dupont, chef d&rsquo;atelier vous informe qu&rsquo;un technicien doit passer prochainement pour faire la maintenance trimestrielle des ascenseurs et vous demande si vous souhaitez &ecirc;tre pr&eacute;sent lors de sa venue afin de mieux conna&icirc;tre cette installation.</span></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -832,9 +832,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Faire différemment",
-							"label": "3) Faire différemment",
-							"editorLabel": "3) Faire différemment",
+							"name": "3) Faire diffÃ©remment",
+							"label": "3) Faire diffÃ©remment",
+							"editorLabel": "3) Faire diffÃ©remment",
 							"description": "<p><span id=\"docs-internal-guid-09fdc1a7-799d-f4d9-3cf5-5e5bf550f950\">Vous lui dites que, en effet, ce n&rsquo;est pas une bonne id&eacute;e de mettre un stand de glace en plein soleil. Vous lui conseillez de laisser tomber cette id&eacute;e. Apr&egrave;s tout, il existe d&rsquo;autres alternatives que les glaces. Pourquoi ne pas proposer, par exemple, du chocolat suisse ?</span></p><p><em>Carte temps : 0</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -868,9 +868,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Accepter la GED \"énergie\"",
-							"label": "1) Accepter la GED \"énergie\"",
-							"editorLabel": "1) Accepter la GED \"énergie\"",
+							"name": "1) Accepter la GED \"Ã©nergie\"",
+							"label": "1) Accepter la GED \"Ã©nergie\"",
+							"editorLabel": "1) Accepter la GED \"Ã©nergie\"",
 							"description": "<p dir=\"ltr\">Vous lui dites que vous &ecirc;tes int&eacute;ress&eacute; et le mandatez pour la mise en place de cette GED.</p><p dir=\"ltr\"><em>Co&ucirc;t: </em><br /><em>10&rsquo;000 CHF pour la GED et atelier de formation des collaborateurs.</em><br /><em>Carte temps: 3</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -888,9 +888,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Dossier partagé",
-							"label": "2) Dossier partagé",
-							"editorLabel": "2) Dossier partagé",
+							"name": "2) Dossier partagÃ©",
+							"label": "2) Dossier partagÃ©",
+							"editorLabel": "2) Dossier partagÃ©",
 							"description": "<p>Vous le remerciez et lui r&eacute;pondez que vous n&rsquo;avez pas besoin d&rsquo;un syst&egrave;me aussi sophistiqu&eacute;. Vous vous occupez d&eacute;j&agrave; vous-m&ecirc;me de g&eacute;rer la documentation.</p><p>Vous d&eacute;cidez toutefois de cr&eacute;er un dossier partag&eacute; sur le r&eacute;seau informatique de l&rsquo;h&ocirc;tel, afin de pouvoir ensuite y cr&eacute;er des sous-dossiers qui permettront de g&eacute;rer l&rsquo;ensemble de la documentation.</p><p><em>Cartes temps: 2</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -984,9 +984,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Proposer \"Dossier partagé\"",
-							"label": "2) Proposer \"Dossier partagé\"",
-							"editorLabel": "2) Proposer \"Dossier partagé\"",
+							"name": "2) Proposer \"Dossier partagÃ©\"",
+							"label": "2) Proposer \"Dossier partagÃ©\"",
+							"editorLabel": "2) Proposer \"Dossier partagÃ©\"",
 							"description": "<p><span id=\"docs-internal-guid-7a90e5fa-3bc9-276b-f825-948d944dcac4\">Vous lui r&eacute;pondez que vous allez cr&eacute;er vous-m&ecirc;me un dossier partag&eacute; sur le r&eacute;seau informatique de l&rsquo;h&ocirc;tel, avec des sous-dossiers clairs pour la documentation. Puis vous tiendrez &agrave; jour ces dossiers.</span></p><p><em>Si le directeur accepte:<br /></em><em>Carte temps : 2&nbsp;</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1026,9 +1026,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Plan de mesures et vérifications",
-					"name": "Plan de mesures et vérifications",
-					"editorLabel": "AP2-C050 Plan de mesures et vérifications",
+					"label": "Plan de mesures et vÃ©rifications",
+					"name": "Plan de mesures et vÃ©rifications",
+					"editorLabel": "AP2-C050 Plan de mesures et vÃ©rifications",
 					"description": "<p>Vous allez boire un verre avec le chef d&rsquo;atelier apr&egrave;s le boulot. Vous discutez longtemps. Apr&egrave;s deux bi&egrave;res, le chef d&rsquo;atelier vous demande si vous pensez faire un plan de mesures et v&eacute;rifications (M&amp;V).</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1102,9 +1102,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Historiques consommation eau et énergie",
-					"name": "Historiques consommation eau et énergie",
-					"editorLabel": "AP2-C090 Rencontre chargé de clientèle fournisseur énergies&eau",
+					"label": "Historiques consommation eau et Ã©nergie",
+					"name": "Historiques consommation eau et Ã©nergie",
+					"editorLabel": "AP2-C090 Rencontre chargÃ© de clientÃ¨le fournisseur Ã©nergies&eau",
 					"description": "<p>Vous avez la possibilit&eacute; de rencontrer  le charg&eacute; de client&egrave;le de votre fournisseur d&rsquo;&eacute;nergies et eau pour obtenir des informations g&eacute;n&eacute;rales concernant le client \"Excellencia\" au SI.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1158,9 +1158,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Audit énergétique du bâtiment",
-					"name": "Audit énergétique du bâtiment",
-					"editorLabel": "AP2-C100 Audit énergétique du bâtiment",
+					"label": "Audit Ã©nergÃ©tique du bÃ¢timent",
+					"name": "Audit Ã©nergÃ©tique du bÃ¢timent",
+					"editorLabel": "AP2-C100 Audit Ã©nergÃ©tique du bÃ¢timent",
 					"description": "<p>La possibilit&eacute; vous est offerte de mandater un bureau d'&eacute;tude pour effectuer un audit &eacute;nerg&eacute;tique et technique des installations.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1172,9 +1172,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Audit préliminaire",
-							"label": "1) Audit préliminaire",
-							"editorLabel": "1) Audit préliminaire",
+							"name": "1) Audit prÃ©liminaire",
+							"label": "1) Audit prÃ©liminaire",
+							"editorLabel": "1) Audit prÃ©liminaire",
 							"description": "<p>Vous mandatez le bureau d'ing&eacute;nieur Moz&egrave;re SA, bureau d'ing&eacute;nieur, pour effectuer un audit pr&eacute;liminaire.</p><p>Cet audit vous apportera des informations g&eacute;n&eacute;rales sur les possibilit&eacute;s d'am&eacute;lioration de la performance &eacute;nerg&eacute;tique de l'h&ocirc;tel.</p><p>Il serait ensuite possible de commander un compl&eacute;ment afin d'obtenir les informations d'un audit approfondi.</p><p><em>Co&ucirc;t devis&eacute; 11&rsquo;000 CHF<br />Cartes temps: 2&nbsp;</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1212,9 +1212,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Pas nécessaire",
-							"label": "3) Pas nécessaire",
-							"editorLabel": "3) Pas nécessaire",
+							"name": "3) Pas nÃ©cessaire",
+							"label": "3) Pas nÃ©cessaire",
+							"editorLabel": "3) Pas nÃ©cessaire",
 							"description": "<p>Vous estimez que vous en savez assez et qu&rsquo;un audit du b&acirc;timent n&rsquo;est pas essentiel.</p><p>Vous d&eacute;cidez de ne pas faire d&rsquo;audit.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1344,9 +1344,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Rentrer plus tôt",
-							"label": "2) Rentrer plus tôt",
-							"editorLabel": "2) Rentrer plus tôt",
+							"name": "2) Rentrer plus tÃ´t",
+							"label": "2) Rentrer plus tÃ´t",
+							"editorLabel": "2) Rentrer plus tÃ´t",
 							"description": "<p><span id=\"docs-internal-guid-250bdaff-79c2-f7d7-e984-230bede20b47\">Vous d&eacute;cidez de travailler un petit peu, puis profitez pour rentrer chez vous &agrave; une heure moins tardive, passer du temps en famille et vous reposer.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1364,9 +1364,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Travailler sur d'autres tâches du projet",
-							"label": "3) Travailler sur d'autres tâches du projet",
-							"editorLabel": "3) Travailler sur d'autres tâches du projet",
+							"name": "3) Travailler sur d'autres tÃ¢ches du projet",
+							"label": "3) Travailler sur d'autres tÃ¢ches du projet",
+							"editorLabel": "3) Travailler sur d'autres tÃ¢ches du projet",
 							"description": "<p><span id=\"docs-internal-guid-6000fc0f-79c4-c83f-3559-046ff1a339e7\">Vous d&eacute;cidez de consacrer ce temps &agrave; d&rsquo;autres activit&eacute;s du projet et gagnez une carte temps.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1386,9 +1386,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Suite des opérations",
-					"name": "Suite des opérations",
-					"editorLabel": "AP2-C999 Suite opérations",
+					"label": "Suite des opÃ©rations",
+					"name": "Suite des opÃ©rations",
+					"editorLabel": "AP2-C999 Suite opÃ©rations",
 					"description": "<p><em>R&eacute;pondre &agrave; cette question lorsque vous avez effectu&eacute; l&rsquo;ensemble des actions et choix. Votre r&eacute;ponse &agrave; cette question marquera la fin de votre travail dans le logiciel pour les &eacute;tapes 2 et 3 du management de l'&eacute;nergie.</em></p><p>Ayant r&eacute;colt&eacute; l&rsquo;ensemble des informations indispensables &agrave; l&rsquo;&eacute;valuation des performances &eacute;nerg&eacute;tiques de votre h&ocirc;tel, vous r&eacute;unissez l&rsquo;Equipe de management de l&rsquo;&eacute;nergie. Un des membres de l&rsquo;&eacute;quipe vous demande comment vous envisagez de proc&eacute;der et quelle est votre vision des actions futures.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1440,9 +1440,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Régler les problèmes urgents",
-							"label": "3) Régler les problèmes urgents",
-							"editorLabel": "3) Régler les problèmes urgents",
+							"name": "3) RÃ©gler les problÃ¨mes urgents",
+							"label": "3) RÃ©gler les problÃ¨mes urgents",
+							"editorLabel": "3) RÃ©gler les problÃ¨mes urgents",
 							"description": "<p>Vous r&eacute;pondez que parmi les informations r&eacute;colt&eacute;es, vous avez relev&eacute; que les r&eacute;servoirs d&rsquo;ECS &eacute;taient surdimensionn&eacute;s. Ceci entra&icirc;ne des pertes d&rsquo;&eacute;nergie d&eacute;mesur&eacute;es et des risques sanitaires pr&eacute;judiciables &agrave; la r&eacute;putation d&rsquo;un h&ocirc;tel de ce rang.</p><p>Cela vous semble &ecirc;tre la premi&egrave;re chose &agrave; r&eacute;gler. Vous allez donc planifier sa mise en oeuvre.</p><p>Vous contacterez le directeur technique et le directeur g&eacute;n&eacute;ral afin qu&rsquo;ils valident le projet. Ensuite, vous &eacute;crirez au directeur financier pour qu&rsquo;il d&eacute;bloque les fonds. Vous pourrez ainsi corriger ce probl&egrave;me important dans un d&eacute;lai rapide.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1462,9 +1462,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Complément audit énergétique du bâtiment",
-					"name": "Complément audit énergétique du bâtiment",
-					"editorLabel": "AP2-C101 Complément Audit énergétique",
+					"label": "ComplÃ©ment audit Ã©nergÃ©tique du bÃ¢timent",
+					"name": "ComplÃ©ment audit Ã©nergÃ©tique du bÃ¢timent",
+					"editorLabel": "AP2-C101 ComplÃ©ment Audit Ã©nergÃ©tique",
 					"description": "<p>Vous pouvez compl&eacute;ter le rapport d'audit pr&eacute;liminaire afin d'obtenir un audit approfondi.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1496,9 +1496,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Pas nécessaire",
-							"label": "2) Pas nécessaire",
-							"editorLabel": "2) Pas nécessaire",
+							"name": "2) Pas nÃ©cessaire",
+							"label": "2) Pas nÃ©cessaire",
+							"editorLabel": "2) Pas nÃ©cessaire",
 							"description": "<p>Vous estimez que le rapport d'audit pr&eacute;liminaire est suffisant.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1565,9 +1565,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Organiser seulement la fête",
-							"label": "2) Organiser seulement la fête",
-							"editorLabel": "2) Organiser seulement la fête",
+							"name": "2) Organiser seulement la fÃªte",
+							"label": "2) Organiser seulement la fÃªte",
+							"editorLabel": "2) Organiser seulement la fÃªte",
 							"description": "<p><span id=\"docs-internal-guid-0fc482e2-4171-1cd1-182c-76eb97d39349\">Vous lui r&eacute;pondez que vous avez trouv&eacute; son id&eacute;e bonne. Cependant, vous allez la simplifier et organiser une f&ecirc;te &agrave; la fin des travaux.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1585,9 +1585,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Refuser l'idée",
-							"label": "3) Refuser l'idée",
-							"editorLabel": "3) Refuser l'idée",
+							"name": "3) Refuser l'idÃ©e",
+							"label": "3) Refuser l'idÃ©e",
+							"editorLabel": "3) Refuser l'idÃ©e",
 							"description": "<p><span id=\"docs-internal-guid-6a6ba716-4184-a818-490c-158a51024fb8\">Vous n&rsquo;avez pas trouv&eacute; son id&eacute;e bonne et le lui faites gentiment comprendre.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1607,9 +1607,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "APE \"Remplacement système production froid de climatisation\"",
-					"name": "APE \"Remplacement système production froid de climatisation\"",
-					"editorLabel": "P-C110 APE \"Remplt système production froid climatisation\"",
+					"label": "APE \"Remplacement systÃ¨me production froid de climatisation\"",
+					"name": "APE \"Remplacement systÃ¨me production froid de climatisation\"",
+					"editorLabel": "P-C110 APE \"Remplt systÃ¨me production froid climatisation\"",
 					"description": "<p>Souhaitez-vous effectuer l&rsquo;APE  \"<span id=\"docs-internal-guid-5ef17b95-b7e6-86fb-1354-381fd7932647\">Remplacement du syst&egrave;me de production de froid de climatisation</span>\"  selon le descriptif re&ccedil;u en annexe ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1663,9 +1663,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "APE \"Ventilation: réduction horaires fonctionnement\"",
-					"name": "APE \"Ventilation: réduction horaires fonctionnement\"",
-					"editorLabel": "P-C120 APE \"Ventilation: réduction horaires fonctionnement\"",
+					"label": "APE \"Ventilation: rÃ©duction horaires fonctionnement\"",
+					"name": "APE \"Ventilation: rÃ©duction horaires fonctionnement\"",
+					"editorLabel": "P-C120 APE \"Ventilation: rÃ©duction horaires fonctionnement\"",
 					"description": "<p>Souhaitez-vous effectuer l&rsquo;APE \"Ventilation: r&eacute;duction des horaires de fonctionnement\"  selon le descriptif re&ccedil;u en annexe ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1831,9 +1831,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "APE \"Remplacement des téléviseurs\"",
-					"name": "APE \"Remplacement des téléviseurs\"",
-					"editorLabel": "P-C150 APE \"Remplt téléviseurs\"",
+					"label": "APE \"Remplacement des tÃ©lÃ©viseurs\"",
+					"name": "APE \"Remplacement des tÃ©lÃ©viseurs\"",
+					"editorLabel": "P-C150 APE \"Remplt tÃ©lÃ©viseurs\"",
 					"description": "<p>Souhaitez-vous effectuer l&rsquo;APE \"Remplacement des t&eacute;l&eacute;viseurs\"&nbsp;selon le descriptif re&ccedil;u en annexe ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1999,9 +1999,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "APE \"Pré-audit de la régulation\"",
-					"name": "APE \"Pré-audit de la régulation\"",
-					"editorLabel": "P-C180 APE \"Pré-audit régulation\"",
+					"label": "APE \"PrÃ©-audit de la rÃ©gulation\"",
+					"name": "APE \"PrÃ©-audit de la rÃ©gulation\"",
+					"editorLabel": "P-C180 APE \"PrÃ©-audit rÃ©gulation\"",
 					"description": "<p>Souhaitez-vous effectuer l&rsquo;APE \"Pr&eacute;-audit de la r&eacute;gulation\"&nbsp;selon le descriptif re&ccedil;u en annexe ?</p><p><em>Cette APE est un pr&eacute;-requis aux APR \"Pr&eacute;c&eacute;dures maintenance et formation personnel\" et \"Audit cuisines\".</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2055,9 +2055,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "APE \"Procédures maintenance et formation collaborateurs\"",
-					"name": "APE \"Procédures maintenance et formation collaborateurs\"",
-					"editorLabel": "P-C190 APE \"Procédures maintenance et formation collaborateurs\"",
+					"label": "APE \"ProcÃ©dures maintenance et formation collaborateurs\"",
+					"name": "APE \"ProcÃ©dures maintenance et formation collaborateurs\"",
+					"editorLabel": "P-C190 APE \"ProcÃ©dures maintenance et formation collaborateurs\"",
 					"description": "<p>Souhaitez-vous effectuer l&rsquo;APE&nbsp;\"Proc&eacute;dures maintenance et formation collaborateurs\"&nbsp;selon le descriptif re&ccedil;u en annexe ?</p><p><em>Attention: cette APE n&eacute;cessite que le \"Pr&eacute;-audit r&eacute;gulation\" soit effectu&eacute; pr&eacute;alablement. Aussi, si vous choisissez cette APE, il est obligatoire de choisir le \"Pr&eacute;-audit r&eacute;gulation\".</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2355,9 +2355,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Entreprises \"Fournitures hôtellerie\"",
-					"name": "Entreprises \"Fournitures hôtellerie\"",
-					"editorLabel": "P-C960 Entreprises \"Fournitures hôtellerie\"",
+					"label": "Entreprises \"Fournitures hÃ´tellerie\"",
+					"name": "Entreprises \"Fournitures hÃ´tellerie\"",
+					"editorLabel": "P-C960 Entreprises \"Fournitures hÃ´tellerie\"",
 					"description": "<p>Plusieurs entreprises ont r&eacute;pondu &agrave; la soumission concernant les APE \"Remplacement des minibars\" et \"Remplacement des t&eacute;l&eacute;viseurs\".</p><p>Vous avez la possibilit&eacute; d'attribuer le mandat &agrave; une de ces entreprises.</p><p><em>Remarque: par soucis de simplification et de coordination des travaux, la direction vous demande qu'en cas de remplacement des TV et minibars, les deux APE soient donn&eacute;es &agrave; la m&ecirc;me entreprise.</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2431,9 +2431,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Sélection \"minibars\"",
-					"name": "Sélection \"minibars\"",
-					"editorLabel": "P-C961 Sélection minibars",
+					"label": "SÃ©lection \"minibars\"",
+					"name": "SÃ©lection \"minibars\"",
+					"editorLabel": "P-C961 SÃ©lection minibars",
 					"description": "<p>Suite &agrave; votre d&eacute;cision de travailler avec Minibars SA pour l&rsquo;agent commercial vos fait parvenir les informations suivantes:</p><p>\"Le top du top, ce sont les minibars &agrave; compresseur. Avec une &eacute;tiquette-&eacute;nergie A+++ ils ne consomment que 0.15 kWh/jour.<br />Quand aux minibars &agrave; absorption, il s&rsquo;agit de nouveaux mod&egrave;les tout-&agrave;-fait remarquables, qui consomment 0.7 kWh/jour.\"</p><p>Quel type de minibar choisissez-vous?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2567,9 +2567,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Entreprises \"Ingénierie en restauration\"",
-					"name": "Entreprises \"Ingénierie en restauration\"",
-					"editorLabel": "P-C970 Entreprises \"Ingénierie restauration\"",
+					"label": "Entreprises \"IngÃ©nierie en restauration\"",
+					"name": "Entreprises \"IngÃ©nierie en restauration\"",
+					"editorLabel": "P-C970 Entreprises \"IngÃ©nierie restauration\"",
 					"description": "<p>Deux entreprises ont r&eacute;pondu &agrave; la soumission concernant les APE \"Audit approfondi des cuisines\".</p><p>Vous avez la possibilit&eacute; d'attribuer le mandat &agrave; une de ces entreprises.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2623,9 +2623,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Consultants \"Procédures et et équipements de bâtiments\"",
-					"name": "Consultants \"Procédures et et équipements de bâtiments\"",
-					"editorLabel": "P-C990 Consultants \"Procédures et équipements de bâtiments",
+					"label": "Consultants \"ProcÃ©dures et et Ã©quipements de bÃ¢timents\"",
+					"name": "Consultants \"ProcÃ©dures et et Ã©quipements de bÃ¢timents\"",
+					"editorLabel": "P-C990 Consultants \"ProcÃ©dures et Ã©quipements de bÃ¢timents",
 					"description": "<p>Plusieurs entreprises ont r&eacute;pondu &agrave; la soumission concernant l'APE \"Proc&eacute;dure maintenance et formation collaborateurs\".</p><p>Vous avez la possibilit&eacute; d'attribuer le mandat &agrave; une de ces entreprises.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2782,9 +2782,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Accepter le décalage",
-							"label": "1) Accepter le décalage",
-							"editorLabel": "1) Accepter le décalage",
+							"name": "1) Accepter le dÃ©calage",
+							"label": "1) Accepter le dÃ©calage",
+							"editorLabel": "1) Accepter le dÃ©calage",
 							"description": "<p><span id=\"docs-internal-guid-5ef17b95-bd33-2196-6047-358ced4e504c\">Vous acceptez. L&rsquo;entreprise ne travaillera pas pour vous le mois prochain. </span></p><p><span id=\"docs-internal-guid-5ef17b95-bd33-2196-6047-358ced4e504c\">Proposition de rabais: 2000.-</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2824,9 +2824,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Nouveau système - pommes de douche lumineuses",
-					"name": "Nouveau système - pommes de douche lumineuses",
-					"editorLabel": "R-020 Nouveau système - pommes de douche lumineuses",
+					"label": "Nouveau systÃ¨me - pommes de douche lumineuses",
+					"name": "Nouveau systÃ¨me - pommes de douche lumineuses",
+					"editorLabel": "R-020 Nouveau systÃ¨me - pommes de douche lumineuses",
 					"description": "<p><span id=\"docs-internal-guid-24184e4e-bd59-e997-451e-a45d81a89c6d\">L&rsquo;entreprise  d&rsquo;installation des pommes de douche vous propose une variante design et  originale : une pomme de douche lumineuse (&eacute;quip&eacute;e de led &agrave; lumi&egrave;re  changeante).</span></p><p><span id=\"docs-internal-guid-24184e4e-bd59-e997-451e-a45d81a89c6d\">C&rsquo;est un peu plus cher, mais c&rsquo;est nouveau et plaisant. Cela peut apporter une valeur ajout&eacute;e &agrave; l&rsquo;h&ocirc;tel.</span></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2936,9 +2936,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Fêter la fin des travaux",
-					"name": "Fêter la fin des travaux",
-					"editorLabel": "R-C025 Confirmation organiser fête",
+					"label": "FÃªter la fin des travaux",
+					"name": "FÃªter la fin des travaux",
+					"editorLabel": "R-C025 Confirmation organiser fÃªte",
 					"description": "<p><span id=\"docs-internal-guid-41be0204-5609-f7eb-14c7-e711f0c58de9\">En d&eacute;but de projet, vous aviez d&eacute;cid&eacute; de repousser l'envoi des invitations pour la petite f&ecirc;te de fin des travaux.</span></p><p><span id=\"docs-internal-guid-41be0204-5609-f7eb-14c7-e711f0c58de9\">La fin des travaux est proche, confirmez-vous maintenant l&rsquo;ienvoi des invitations ? </span></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2970,9 +2970,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Annuler la fête",
-							"label": "2) Annuler la fête",
-							"editorLabel": "2) Annuler la fête",
+							"name": "2) Annuler la fÃªte",
+							"label": "2) Annuler la fÃªte",
+							"editorLabel": "2) Annuler la fÃªte",
 							"description": "<p><span id=\"docs-internal-guid-41be0204-560f-5c06-1ffe-0b6c8a9ad60b\">Vous avez d&eacute;j&agrave; beaucoup d&eacute;pass&eacute; les co&ucirc;ts et/ou les d&eacute;lais pr&eacute;vus. Vous &nbsp;n&rsquo;avez &nbsp;ni l&rsquo;argent, ni le temps d&rsquo;organiser cette f&ecirc;te.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2992,9 +2992,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Déjeuner- Sarah Benaroch",
-					"name": "Déjeuner- Sarah Benaroch",
-					"editorLabel": "R-C010 Déjeuner- Benaroch",
+					"label": "DÃ©jeuner- Sarah Benaroch",
+					"name": "DÃ©jeuner- Sarah Benaroch",
+					"editorLabel": "R-C010 DÃ©jeuner- Benaroch",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-41a3-eafe-0fbd-e8dcf41b50b3\">Acceptez-vous l'invitation &agrave; d&eacute;jeuner de Sarah Benaroch (c.f. e-mail) ?</span></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -3006,9 +3006,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Déjeuner avec Sarah Benaroch",
-							"label": "1) Déjeuner avec Sarah Benaroch",
-							"editorLabel": "1) Déjeuner avec Sarah Benaroch",
+							"name": "1) DÃ©jeuner avec Sarah Benaroch",
+							"label": "1) DÃ©jeuner avec Sarah Benaroch",
+							"editorLabel": "1) DÃ©jeuner avec Sarah Benaroch",
 							"description": "<p><span id=\"docs-internal-guid-09fdc1a7-41a4-d461-94bd-6112f21881a1\">Vous acceptez l'invitation et d&eacute;jeunez avec Sarah Benaroch.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3026,9 +3026,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Décliner l'invitation",
-							"label": "2) Décliner l'invitation",
-							"editorLabel": "2) Décliner l'invitation",
+							"name": "2) DÃ©cliner l'invitation",
+							"label": "2) DÃ©cliner l'invitation",
+							"editorLabel": "2) DÃ©cliner l'invitation",
 							"description": "<p>Vous d&eacute;clinez l'invitation et conservez un peu de temps pour travailler sur le projet (ou pour d&eacute;jeuner avec qui bon vous semble).</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3048,9 +3048,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Prod. froid climatisation: Formation de l?équipe maintenance",
-					"name": "Prod. froid climatisation: Formation de l?équipe maintenance",
-					"editorLabel": "R-C012 Syst.prod- froid clim.: formation équipe maintenance",
+					"label": "Prod. froid climatisation: Formation de l?Ã©quipe maintenance",
+					"name": "Prod. froid climatisation: Formation de l?Ã©quipe maintenance",
+					"editorLabel": "R-C012 Syst.prod- froid clim.: formation Ã©quipe maintenance",
 					"description": "<p>Vous recevez un coup de t&eacute;l&eacute;phone de l&rsquo;entreprise d&rsquo;installation CVC. Elle vous propose d&rsquo;ajouter au devis une prestation de formation de l&rsquo;&eacute;quipe de maintenance. Cette formation vise &agrave; d&eacute;velopper la capacit&eacute; &agrave; utiliser l&rsquo;&eacute;quipement de mani&egrave;re plus optimale, ce qui devrait induire une meilleure performance &eacute;nerg&eacute;tique. Cette formation durerait un apr&egrave;s-midi apr&egrave;s l'installation de la machine.</p><p>Mais comme elle ne faisait pas partie de la soumission initiale, elle serait factur&eacute;e en suppl&eacute;ment.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -3118,9 +3118,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Réaliser l'idée",
-							"label": "1) Réaliser l'idée",
-							"editorLabel": "1) Réaliser l'idée",
+							"name": "1) RÃ©aliser l'idÃ©e",
+							"label": "1) RÃ©aliser l'idÃ©e",
+							"editorLabel": "1) RÃ©aliser l'idÃ©e",
 							"description": "<p>Vous trouvez que c&rsquo;est une bonne id&eacute;e. Vous lui dites que vous allez en parler avec le directeur pour essayer de la r&eacute;aliser cette ann&eacute;e.</p><p dir=\"ltr\">Co&ucirc;t: 1 carte temps</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3138,9 +3138,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Garder l'idée pour plus tard",
-							"label": "2) Garder l'idée pour plus tard",
-							"editorLabel": "2) Garder l'idée pour plus tard",
+							"name": "2) Garder l'idÃ©e pour plus tard",
+							"label": "2) Garder l'idÃ©e pour plus tard",
+							"editorLabel": "2) Garder l'idÃ©e pour plus tard",
 							"description": "<p>Vous trouvez que c&rsquo;est une bonne id&eacute;e. Mais votre temps et votre budget sont limit&eacute;s. Vous lui dites que vous allez la garder et qu&rsquo;elle fera s&ucirc;rement partie du plan d&rsquo;action de l&rsquo;ann&eacute;e prochaine ou la suivante.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3158,9 +3158,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Refuser l'idée",
-							"label": "3) Refuser l'idée",
-							"editorLabel": "3) Refuser l'idée",
+							"name": "3) Refuser l'idÃ©e",
+							"label": "3) Refuser l'idÃ©e",
+							"editorLabel": "3) Refuser l'idÃ©e",
 							"description": "<p>Vous le remerciez de la proposition mais l&rsquo;id&eacute;e ne vous semble pas appropri&eacute;e.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3180,9 +3180,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Fête de fin de projet",
-					"name": "Fête de fin de projet",
-					"editorLabel": "R-C020 Fête de fin de projet",
+					"label": "FÃªte de fin de projet",
+					"name": "FÃªte de fin de projet",
+					"editorLabel": "R-C020 FÃªte de fin de projet",
 					"description": "<p><span id=\"docs-internal-guid-41be0204-558b-daa1-c7fa-94b63e0a1b26\">Un membre de l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie, vous demande si on pourrait d&eacute;j&agrave; penser &agrave; organiser une petite f&ecirc;te &agrave; laquelle on inviterait le personnel de l&rsquo;h&ocirc;tel pour c&eacute;l&eacute;brer la fin des travaux. </span></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -3234,9 +3234,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "3) Ne pas organiser la fête",
-							"label": "3) Ne pas organiser la fête",
-							"editorLabel": "3) Ne pas organiser la fête",
+							"name": "3) Ne pas organiser la fÃªte",
+							"label": "3) Ne pas organiser la fÃªte",
+							"editorLabel": "3) Ne pas organiser la fÃªte",
 							"description": "<p><span id=\"docs-internal-guid-41be0204-55fc-933f-eff1-608302d04099\">Vous n&rsquo;en voyez pas tellement le besoin. De plus, une f&ecirc;te engendre toujours des frais et vous n&rsquo;avez pas de budget pour cela.</span></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3256,9 +3256,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Déjeuner Brocard",
-					"name": "Déjeuner Brocard",
-					"editorLabel": "R-C030 Déjeuner Brocard",
+					"label": "DÃ©jeuner Brocard",
+					"name": "DÃ©jeuner Brocard",
+					"editorLabel": "R-C030 DÃ©jeuner Brocard",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-41a3-eafe-0fbd-e8dcf41b50b3\"><span id=\"docs-internal-guid-09fdc1a7-41a6-32e6-f7cf-7f7a012c7506\">Beno&icirc;t Brocard vous informe qu'il</span><span id=\"docs-internal-guid-09fdc1a7-41a6-32e6-f7cf-7f7a012c7506\">&nbsp;est aujourd&rsquo;hui de passage en ville. Il&nbsp;</span>vous propose de partager le repas de midi afin de faire le point sur le projet et la certification.</span></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -3290,9 +3290,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Décliner l'invitation",
-							"label": "2) Décliner l'invitation",
-							"editorLabel": "2) Décliner l'invitation",
+							"name": "2) DÃ©cliner l'invitation",
+							"label": "2) DÃ©cliner l'invitation",
+							"editorLabel": "2) DÃ©cliner l'invitation",
 							"description": "<p>Vous d&eacute;clinez l'invitation et ainsi conserver un peu de temps pour travailler sur le projet (ou pour parler d'autre choses).</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3326,9 +3326,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "1) Trop tôt pour communiquer",
-							"label": "1) Trop tôt pour communiquer",
-							"editorLabel": "1) Trop tôt pour communiquer",
+							"name": "1) Trop tÃ´t pour communiquer",
+							"label": "1) Trop tÃ´t pour communiquer",
+							"editorLabel": "1) Trop tÃ´t pour communiquer",
 							"description": "<p>Vous d&eacute;cidez qu&rsquo;il est trop t&ocirc;t pour communiquer &agrave; l&rsquo;externe et que vous verrez cela lorsque tout sera termin&eacute;.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3346,9 +3346,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "2) Site web et endroits stratégiques de l'hôtel",
-							"label": "2) Site web et endroits stratégiques de l'hôtel",
-							"editorLabel": "2) Site web et endroits stratégiques de l'hôtel",
+							"name": "2) Site web et endroits stratÃ©giques de l'hÃ´tel",
+							"label": "2) Site web et endroits stratÃ©giques de l'hÃ´tel",
+							"editorLabel": "2) Site web et endroits stratÃ©giques de l'hÃ´tel",
 							"description": "<p>Vous d&eacute;cidez de publier des informations &agrave; ce sujet sur le site Internet de l&rsquo;h&ocirc;tel, de diffuser les informations sur les &eacute;crans du hall d&rsquo;entr&eacute;e et d'&eacute;ventuellement d&eacute;poser des prospectus &agrave; ce sujet dans des endroits strat&eacute;giques de l&rsquo;h&ocirc;tel ainsi que si possible dans les chambres.</p><p>Pour  mettre en place cela vous allez aller rencontrer le directeur commercial et le directeur de l&rsquo;h&eacute;bergement pour avoir l&rsquo;autorisation de mettre les prospectus dans les chambres.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -3386,9 +3386,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "4) Ne pas communiquer à l'externe",
-							"label": "4) Ne pas communiquer à l'externe",
-							"editorLabel": "4) Ne pas communiquer à l'externe",
+							"name": "4) Ne pas communiquer Ã  l'externe",
+							"label": "4) Ne pas communiquer Ã  l'externe",
+							"editorLabel": "4) Ne pas communiquer Ã  l'externe",
 							"description": "<p>Vous d&eacute;cidez de ne pas faire de communication externe relativement &agrave; ce projet.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"

@@ -23,43 +23,43 @@ i18nTable.fr = {
     messages: {
         startOnTask: {
             from: "%employeeName%",
-            subject: "T&#226che \"%task%\"",
-            content: "Bonjour, <br /><br />J'ai commenc&#233 mon travail sur la t&#226che \"%task%\" %step%.<br /><br />Salutations<br />%employeeName%<br/> %job%"
+            subject: "Tâche \"%task%\"",
+            content: "Bonjour, <br /><br />J'ai commencé mon travail sur la tâche \"%task%\" %step%.<br /><br />Salutations<br />%employeeName%<br/> %job%"
         },
         endOfTask: {
             from: "Suivi de projet",
-            subject: "T&#226che \"%task%\"",
-            content: "Bonjour, <br /> <br /> Nous vous informons que la t&#226che \"%task%\" a &#233t&#233 termin&#233e %step%. <br /><br />Salutations"
+            subject: "Fin de la tâche \"%task%\"",
+            content: "Bonjour, <br /> <br /> Nous vous informons que la tâche \"%task%\" a été terminée %step%. <br /><br />Salutations"
         },
         endOfTaskSwitchToNew: {
             from: "%employeeName%",
-            subject: "Fin de la t&#226che \"%task%\"",
-            content: "Bonjour, <br /><br />La t&#226che \"%task%\" est termin&#233e. <br /><br />Depuis %step%, je travaille sur la t&#226che \"%nextTask%\".<br/> <br />Salutations <br />%employeeName%<br /> %job%"
+            subject: "Fin de la tâche \"%task%\"",
+            content: "Bonjour, <br /><br />La tâche \"%task%\" est terminée. <br /><br />Depuis %step%, je travaille sur la tâche \"%nextTask%\".<br/> <br />Salutations <br />%employeeName%<br /> %job%"
         },
         endOfTaskOtherActivities: {
             from: "%employeeName%",
-            subject: "Fin de la t&#226che: %task%",
-            content: "Bonjour, <br /><br />La t&#226che \"%task%\" est termin&#233e. <br /><br />Je suis retourn&#233 &#224 mes activit&#233s traditionnelles %step%. <br /><br /> Salutations <br />%employeeName%<br/> %job%"
+            subject: "Fin de la tâche: %task%",
+            content: "Bonjour, <br /><br />La tâche \"%task%\" est terminée. <br /><br />Je suis retourné à mes activités traditionnelles %step%. <br /><br /> Salutations <br />%employeeName%<br/> %job%"
         },
         blockedByPredecessors: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la t&#226che \"%task%\"",
-            content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la t&#226che \"%task%\" mais les t&#226ches pr&#233c&#233dentes ne sont pas assez avanc&#233es. <br /><br /> J'ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose &#224 faire sur le projet. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
+            subject: "Impossible de progresser sur la tâche \"%task%\"",
+            content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la tâche \"%task%\" mais les tâches précédentes ne sont pas assez avancées. <br /><br /> J'ai perdu un peu de temps, mais je devrais rapidement trouver quelque chose à faire sur le projet. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
         },
         notMyWork: {
             from: "%employeeName%",
-            subject: "Impossible de progresser sur la t&#226che \"%task%\"",
-            content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la t&#226che \"%task%\" mais je ne suis pas qualifi&#233 pour ce travail. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
+            subject: "Impossible de progresser sur la tâche \"%task%\"",
+            content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la tâche \"%task%\" mais je ne suis pas qualifié pour ce travail. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
         },
         planningProblem: {
             from: "%employeeName%",
-            subject: "Probl&#232me de planification",
-            content: "Bonjour, <br /><br />Vous m'avez r&#233serv&#233 pour %wholePeriod%. Comme je n'avais aucune t&#226che &#224 effectuer sur le projet, je suis retourn&#233 &#224 mes autres activit&#233s. Malheureusement je suis oblig&#233 d'affecter quelques heures au projet. <br /> Salutations <br />%employeeName%<br/> %job%"
+            subject: "Problème de planification",
+            content: "Bonjour, <br /><br />Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /> Salutations <br />%employeeName%<br/> %job%"
         }
     },
     date: {
         am: "matin",
-        pm: "apr&#232s-midi",
+        pm: "après-midi",
         weekday: {
             day1: "lundi",
             day2: "mardi",
@@ -71,17 +71,17 @@ i18nTable.fr = {
         },
         month: {
             month1: "janvier",
-            month2: "f&#233vrier",
+            month2: "février",
             month3: "mars",
             month4: "avril",
             month5: "mai",
             month6: "juin",
             month7: "juillet",
-            month8: "ao&#251t",
+            month8: "août",
             month9: "septembre",
             month10: "octobre",
             month11: "novembre",
-            month12: "d&#233cembre"
+            month12: "décembre"
         },
         formatter: {
             onDate: "le %day% %month%",
@@ -95,7 +95,7 @@ i18nTable.fr = {
     phase: {
         phase1: "Initiation",
         phase2: "Planification",
-        phase3: "R&#233alisation",
+        phase3: "Réalisation",
         phase4: "Terminaison"
     },
     question: {
@@ -109,6 +109,6 @@ i18nOrdinate.fr = (function(number) {
         case 1:
             return number + "er";
         default:
-            return number + "&#232me";
+            return number + "ème";
     }
 });

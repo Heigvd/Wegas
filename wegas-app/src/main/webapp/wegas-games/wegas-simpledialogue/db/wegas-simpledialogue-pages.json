@@ -11,7 +11,7 @@
                 "content": "Variable.find('icecream')"
             },
             "data": {
-                "label": "Glaces mangées"
+                "label": "Glaces mangÃ©es"
             }
         },{
             "type": "SimpleDialogue",

@@ -15,9 +15,9 @@ var taskTable, currentPeriod,
     DEBUGMODE = false,
     STEPS = 10,
     MINTASKDURATION = 0.1,
-    STEPNAMES = ["Lundi matin", "Lundi aprËs-midi", "Mardi matin", "Mardi aprËs-midi", "Mercredi matin",
-    "Mercredi aprËs-midi", "Jeudi matin", "Jeudi aprËs-midi", "Vendredi matin", "Vendredi aprËs-midi", "Samedi matin"];
-    MONTH = ["DÈcembre", "Janvier", "FÈvrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Ao˚t", "Septembre", "Octobre", "Novembre"];
+    STEPNAMES = ["Lundi matin", "Lundi apr√®s-midi", "Mardi matin", "Mardi apr√®s-midi", "Mercredi matin",
+    "Mercredi apr√®s-midi", "Jeudi matin", "Jeudi apr√®s-midi", "Vendredi matin", "Vendredi apr√®s-midi", "Samedi matin"];
+    MONTH = ["D√©cembre", "Janvier", "F√©vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Ao√ªt", "Septembre", "Octobre", "Novembre"];
 /**
  * Divide period in steps (see global variable).
  * Call function step at each step.
@@ -210,8 +210,8 @@ function assignRessources(currentStep) {
                     activity = employee.createActivity(assignables[0].taskDescriptor);
                 }
                 var req = selectRequirementFromActivity(activity);
-                if (req) {                                                      // Possible d'amÈliorer la performance en ne crÈant pas d'activity.
-                    activity.setRequirement(req);                               // Mais nÈcessite de crÈer une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
+                if (req) {                                                      // Possible d'am√©liorer la performance en ne cr√©ant pas d'activity.
+                    activity.setRequirement(req);                               // Mais n√©cessite de cr√©er une nouvelle fonction comme "selectRequirementFromActivity" en ne passant pas par une activity.
                     activity.setTime(period);
                     activities.push(activity);
                     debug("assignRessources(): Assigning employee" + employees[i] + " to " + req.work);
@@ -375,8 +375,8 @@ function getAssignables(assignments, currentStep) {
                 return a;
             } else {
                 // NOT MY WORK
-                sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la t‚che : ' + a.taskDescriptor.label,
-                    'Je suis censÈ travailler sur la t‚che "' + a.taskDescriptor.label + '" mais je ne suis pas qualifiÈ pour ce travail. <br/>'
+                sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la t√¢che : ' + a.taskDescriptor.label,
+                    'Je suis cens√© travailler sur la t√¢che "' + a.taskDescriptor.label + '" mais je ne suis pas qualifi√© pour ce travail. <br/>'
                     + ' Salutations <br/>' + a.resourceInstance.descriptor.label + '<br/> ' + a.resourceInstance.mainSkill,
                     a.resourceInstance.descriptor.label);
                 assignments.remove(index);
@@ -413,20 +413,20 @@ function checkAssignments(employeeInst, currentStep) {
         if (taskInst.getPropertyD("completeness") >= 100) {
             if (nextTasks[0]) {
                 // EndOfTask SWITCH 
-                sendMessage('(' + getStepName(currentStep) + ') Fin de la t‚che : ' + taskDesc.label,
-                    'La t‚che "' + taskDesc.label + '" est terminÈe, je passe ‡ la t‚che ' + nextTasks[0].taskDescriptor.label + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage('(' + getStepName(currentStep) + ') Fin de la t√¢che : ' + taskDesc.label,
+                    'La t√¢che "' + taskDesc.label + '" est termin√©e, je passe √† la t√¢che ' + nextTasks[0].taskDescriptor.label + ' <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             } else {
                 // EndOfTask OTHER ACTIVITIES
-                sendMessage('(' + getStepName(currentStep) + ') Fin de la t‚che : ' + taskDesc.label,
-                    'La t‚che "' + taskDesc.label + '" est terminÈe. Je retourne ‡ mes activitÈs traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
+                sendMessage('(' + getStepName(currentStep) + ') Fin de la t√¢che : ' + taskDesc.label,
+                    'La t√¢che "' + taskDesc.label + '" est termin√©e. Je retourne √† mes activit√©s traditionnelles. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                     employeeName);
             }
             assignments.remove(i);
             break;
         } else if (i === 0 && getPredecessorFactor(taskDesc) <= 0.2) {
-            sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la t‚che : ' + taskDesc.label,
-                'Je suis sensÈ travailler sur la t‚che "' + taskDesc.label + '" mais les t‚ches prÈcedentes ne sont pas assez avancÈes. <br/> Je retourne donc ‡ mes occupations habituelles. <br/>'
+            sendMessage('(' + getStepName(currentStep) + ') Impossible de progresser sur la t√¢che : ' + taskDesc.label,
+                'Je suis sens√© travailler sur la t√¢che "' + taskDesc.label + '" mais les t√¢ches pr√©cedentes ne sont pas assez avanc√©es. <br/> Je retourne donc √† mes occupations habituelles. <br/>'
                 + ' Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                 employeeName);
             assignments.remove(i);
@@ -552,7 +552,7 @@ function calculateActivityProgress(activity, allActivities) {
         sumActivityRate += activityRate;
         //Calculate ressource motivation factor
         employeesMotivationFactor = 1 + 0.05 * employeeInst.descriptor.getPropertyD("coef_moral") * (employeeInst.moral - 7);
-        //Calcul variables for needMotivationFactor (numÈrateur de la moyenne pondÈrÈe de facteur motivation besoin)
+        //Calcul variables for needMotivationFactor (num√©rateur de la moyenne pond√©r√©e de facteur motivation besoin)
         employeesMotivationXActivityRate += employeesMotivationFactor * activityRate;
         //debug("employeesMotivationFactor : " + employeesMotivationFactor);
 
@@ -562,9 +562,9 @@ function calculateActivityProgress(activity, allActivities) {
             skillsetFactor = (deltaLevel > 0) ? taskDesc.getPropertyD("competenceRatioSup") : taskDesc.getPropertyD("competenceRatioInf");
         employeeSkillsetFactor = Math.max(0, 1 + 0.05 * skillsetFactor * deltaLevel);
         //debug("calc skillset: activityRate:" + activityRate + ", skillsetFactor: " + skillsetFactor + "deltaLevel: " + deltaLevel);
-        employeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate;//Calcul variables for needSkillFactor (numÈrateur de la moyenne pondÈrÈe facteur compÈtence besoin)
+        employeesSkillsetXActivityRate += employeeSkillsetFactor * activityRate;//Calcul variables for needSkillFactor (num√©rateur de la moyenne pond√©r√©e facteur comp√©tence besoin)
 
-        //Calcul variable for needActivityFactor (numÈrateur de la moyenne pondÈrÈe facteur taux activitÈ besoin)
+        //Calcul variable for needActivityFactor (num√©rateur de la moyenne pond√©r√©e facteur taux activit√© besoin)
         activityCoefficientXActivityRate += employeeInst.descriptor.getPropertyD("coef_activity") * activityRate;
         //Calcul variable for learnFactor
         if (!haveCorrespondingActivityInPast(employeeInst, taskDesc)) {
@@ -579,11 +579,11 @@ function calculateActivityProgress(activity, allActivities) {
         stepAdvance *= employeesMotivationXActivityRate / sumActivityRate;      //needMotivationFactor (facteur motivation besoin)
         debug("facteur motivation besoin: " + employeesMotivationXActivityRate / sumActivityRate + ", sumActivityRate:" + sumActivityRate + ", employeesMotivationXActivityRate: " + employeesMotivationXActivityRate);
 
-        stepAdvance *= employeesSkillsetXActivityRate / sumActivityRate;        //needSkillsetFactor (facteur compÈtence besoin)  
+        stepAdvance *= employeesSkillsetXActivityRate / sumActivityRate;        //needSkillsetFactor (facteur comp√©tence besoin)  
         debug("facteur competence besoin : " + employeesSkillsetXActivityRate / sumActivityRate + ", employeeSkillsetFactor : " + employeeSkillsetFactor + ", employeesSkillsetXActivityRate: " + employeesSkillsetXActivityRate);
 
-        stepAdvance *= activityCoefficientXActivityRate / (sameNeedActivity.length * 100); //activityNeedRateFactor (facteur taux activitÈ besoin)
-        debug("facteur taux activitÈ besoin : " + activityCoefficientXActivityRate / (sameNeedActivity.length * 100) + ", activityCoefficientXActivityRate : " + activityCoefficientXActivityRate + ", ActivityNeedRateFactor : " + activityCoefficientXActivityRate / sumActivityRate);
+        stepAdvance *= activityCoefficientXActivityRate / (sameNeedActivity.length * 100); //activityNeedRateFactor (facteur taux activit√© besoin)
+        debug("facteur taux activit√© besoin : " + activityCoefficientXActivityRate / (sameNeedActivity.length * 100) + ", activityCoefficientXActivityRate : " + activityCoefficientXActivityRate + ", ActivityNeedRateFactor : " + activityCoefficientXActivityRate / sumActivityRate);
     }
 
     // calculate numberOfRessourcesFactor
@@ -749,12 +749,12 @@ function checkEnd(activities, currentStep) {
         } else if (taskInst.getPropertyD("completeness") < 100) {
             nextWork = selectFirstUncompletedWork(taskInst.requirements, employeeInst.mainSkill);
             if (activities[i].requirement.work != nextWork) {
-                sendMessage(getStepName(currentStep) + ') T‚che : ' + taskDesc.label + ' en partie terminÈe',
-                    'Nous avons terminÈ la partie ' + activities[i].requirement.work + ' de la t‚che ' + taskDesc.label
+                sendMessage(getStepName(currentStep) + ') T√¢che : ' + taskDesc.label + ' en partie termin√©e',
+                    'Nous avons termin√© la partie ' + activities[i].requirement.work + ' de la t√¢che ' + taskDesc.label
                     + '. <br/> Salutations <br/>' + employeeInst.descriptor.label + '<br/> ' + employeeInst.mainSkill,
                     employeeInst.descriptor.label);
-                //sendMessage(getStepName(currentStep) + ') T‚che : ' + taskDesc.label + ' en partie terminÈe',
-                //        'Nous avons terminÈ la partie ' + activities[i].requirement.work + ' de la t‚che ' + taskDesc.label + '. Je passe ‡ ' + nextWork 
+                //sendMessage(getStepName(currentStep) + ') T√¢che : ' + taskDesc.label + ' en partie termin√©e',
+                //        'Nous avons termin√© la partie ' + activities[i].requirement.work + ' de la t√¢che ' + taskDesc.label + '. Je passe √† ' + nextWork 
                 //        + '. <br/> Salutations <br/>' + employeeName + '<br/> ' + employeeJob,
                 //        employeeInst.descriptor.label);
             }

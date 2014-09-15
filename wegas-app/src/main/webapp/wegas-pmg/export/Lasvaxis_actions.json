@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer dÈveloppeur et commercial : durÈe t‚ches",
-					"name": "Rencontrer dÈveloppeur et commercial : durÈe t‚ches",
-					"editorLabel": "A01 - Rencontrer dev. et commercial : durÈe t‚ches",
+					"label": "Rencontrer d√©veloppeur et commercial : dur√©e t√¢ches",
+					"name": "Rencontrer d√©veloppeur et commercial : dur√©e t√¢ches",
+					"editorLabel": "A01 - Rencontrer dev. et commercial : dur√©e t√¢ches",
 					"description": "<p>Vous passez un moment avec un d&eacute;veloppeur et un responsable commercial pour estimer la  dur&eacute;e des diff&eacute;rentes t&acirc;ches n&eacute;cessaires &agrave; la r&eacute;alisation du projet.</p><p>Budget temps: 3</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -49,17 +49,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. si t‚ches pas identifiÈes",
+									"name": "1. si t√¢ches pas identifi√©es",
 									"answer": "<p>Vous constatez rapidement que vous ne pourrez estimer les dur&eacute;es des t&acirc;ches qu'une fois celles-ci identifi&eacute;es.</p><p>Vous ne consommez qu'une carte temps, mais n'obtenez pas vraiment de r&eacute;sultat.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. si t‚ches identifiÈes",
+									"name": "2. si t√¢ches identifi√©es",
 									"answer": "<p>Il est &agrave; ce stade encore difficile d'estimer la dur&eacute;e des t&acirc;ches, mais voici quelques informations.</p><ul><li>Analyse de l'existant : 2 semaines</li><li>Mod&eacute;lisation des donn&eacute;es, traitements, IHM : 3 semaines</li><li>Programmation : 3 semaines</li><li>Tests : 1 semaine</li><li>Mise en oeuvre : 2 semaines</li></ul>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. Si dÈj‡ fait.",
+									"name": "9. Si d√©j√† fait.",
 									"answer": "<p>Les t&acirc;ches ont d&eacute;j&agrave; &eacute;t&eacute; identifi&eacute;es.</p><p>Pas de budget temps consomm&eacute;.</p>"
 								}
 							]
@@ -68,9 +68,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer supÈrieur : temps supplÈmentaire",
-					"name": "Rencontrer supÈrieur : temps supplÈmentaire",
-					"editorLabel": "A02B - Rencontrer supÈrieur : temps supplÈmentaire",
+					"label": "Rencontrer sup√©rieur : temps suppl√©mentaire",
+					"name": "Rencontrer sup√©rieur : temps suppl√©mentaire",
+					"editorLabel": "A02B - Rencontrer sup√©rieur : temps suppl√©mentaire",
 					"description": "<p>Vous allez trouver votre sup&eacute;rieur hi&eacute;rarchique et lui demandez de vous accorder du temps suppl&eacute;mentaire pour la r&eacute;alisation de l'avant-projet. S'il accepte, ceci vous permettrait d'augmenter un peu votre budget temps.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -95,12 +95,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Si pas encore de temps supplÈmentaire accordÈ",
-									"answer": "Nous allons y rÈflÈchir et vous rÈpondrons d'ici peu."
+									"name": "1. Si pas encore de temps suppl√©mentaire accord√©",
+									"answer": "Nous allons y r√©fl√©chir et vous r√©pondrons d'ici peu."
 								},
 								{
 									"@class": "Result",
-									"name": "2. dÈj‡ accordÈ du temps une fois",
+									"name": "2. d√©j√† accord√© du temps une fois",
 									"answer": "<p>Vous avez d&eacute;j&agrave; eu du temps suppl&eacute;mentaire pour ce projet. Il faut que vous vous en sortiez avec le temps &agrave; disposition.</p>"
 								}
 							]
@@ -109,9 +109,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer dÈveloppeur et commercial: identifier t‚ches",
-					"name": "Rencontrer dÈveloppeur et commercial: identifier t‚ches",
-					"editorLabel": "A03B - Rencontrer dev. et commercial: identifier t‚ches",
+					"label": "Rencontrer d√©veloppeur et commercial: identifier t√¢ches",
+					"name": "Rencontrer d√©veloppeur et commercial: identifier t√¢ches",
+					"editorLabel": "A03B - Rencontrer dev. et commercial: identifier t√¢ches",
 					"description": "<p>Vous prenez du temps avec un d&eacute;veloppeur et un responsable commercial pour identifier sommairement la liste des t&acirc;ches &agrave; effectuer.</p><p>Budget temps: 2</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -136,12 +136,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. RÈponse de base",
+									"name": "1. R√©ponse de base",
 									"answer": "<p>Vous vous rendez compte qu'&agrave; ce stade du projet, il est  encore difficile de compl&egrave;tement estimer les t&acirc;ches. Vous avez toutefois obtenu une premi&egrave;re id&eacute;e de ce qui devrait &ecirc;tre r&eacute;alis&eacute;.</p><ul><li>Analyse de l'existant</li><li>Mod&eacute;lisation des donn&eacute;es, traitements, IHM</li><li>Programmation</li><li>Tests</li><li>Mise en oeuvre </li></ul>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. Si dÈj‡ effectuÈ",
+									"name": "9. Si d√©j√† effectu√©",
 									"answer": "<p>La liste des t&acirc;che a d&eacute;j&agrave; &eacute;t&eacute; identifi&eacute;e. Il n'y a rien de nouveau depuis la derni&egrave;re fois.</p><p>Vous ne consommez qu'un carte temps.</p>"
 								}
 							]
@@ -150,9 +150,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer dÈveloppeur, intÈgrateur et commercial : enjeux",
-					"name": "Rencontrer dÈveloppeur, intÈgrateur et commercial : enjeux",
-					"editorLabel": "A04B - Dev., intÈgrateur et commercial : enjeux",
+					"label": "Rencontrer d√©veloppeur, int√©grateur et commercial : enjeux",
+					"name": "Rencontrer d√©veloppeur, int√©grateur et commercial : enjeux",
+					"editorLabel": "A04B - Dev., int√©grateur et commercial : enjeux",
 					"description": "<p>Vous effectuez une s&eacute;ance de brainstorming avec un d&eacute;veloppeur, un int&eacute;grateur et un responsable commercial afin de mieux d&eacute;terminer les enjeux du projet.</p><p>Budget temps: 3</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -182,13 +182,13 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2. AprËs rencontre membre",
+									"name": "2. Apr√®s rencontre membre",
 									"answer": "<p>Selon ces trois personnes, ce projet semble tr&egrave;s prometteur et d'une grande importance. <br /> <br /> Selon le responsable commercial \"parce que cela permettra d'am&eacute;liorer  l'image de l'entreprise et de r&eacute;pondre &agrave; certaines demandes des clients\"  <br /> <br /> Selon l'int&eacute;grateur \"parce que cela permettra &agrave; nos clients  de diminuer des d&eacute;placements inutiles et nous &eacute;pargnera quelques  installation fastidieuses\". Toutefois, l'int&eacute;grateur n'est pas encore  convaincu de la possibilit&eacute; pratique de r&eacute;aliser le partage des  connaissances. <br /> <br /> Le d&eacute;veloppeur pense qu'il s'agit de la premi&egrave;re pierre d'un &eacute;difice prometteur.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. Si dÈj‡ effectuÈ",
-									"answer": "Rien de bien nouveau depuis la derniËre identification des enjeux.<br>Vous ne consommez qu'une carte temps."
+									"name": "9. Si d√©j√† effectu√©",
+									"answer": "Rien de bien nouveau depuis la derni√®re identification des enjeux.<br>Vous ne consommez qu'une carte temps."
 								}
 							]
 						}
@@ -196,8 +196,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer direction : prÈsentation projet",
-					"name": "Rencontrer direction : prÈsentation projet",
+					"label": "Rencontrer direction : pr√©sentation projet",
+					"name": "Rencontrer direction : pr√©sentation projet",
 					"editorLabel": "A04B - Rencontrer direction",
 					"description": "<p>Vous sollicitez une r&eacute;union formelle avec la direction de l'entreprise afin de parler de votre projet.</p><p>Vous pr&eacute;parez une petite pr&eacute;sentation de l'&eacute;tat actuel du projet. Ceci permettra de faire conna&icirc;tre le projet &agrave; la direction et d'avoir un premier retour ou soutient de sa part.</p><p>Budget temps: 3</p>",
 					"allowMultipleReplies": "true",
@@ -228,28 +228,28 @@
 								},
 								{
 									"@class": "Result",
-									"name": "1.1 AprËs enjeux, sans rencontre membre",
+									"name": "1.1 Apr√®s enjeux, sans rencontre membre",
 									"answer": "<p>En d&eacute;but de s&eacute;ance, aucun membre de la direction ne soutenant ce projet, il vous a fallu convaincre tout le monde &agrave; la fois, sans soutien. <br /> La pr&eacute;sentation s'est finalement assez bien d&eacute;roul&eacute;e.</p><p>Plusieurs questions ont &eacute;t&eacute; pos&eacute;es sur la pertinence et sur l'int&eacute;r&ecirc;t de r&eacute;aliser ce projet. Vos r&eacute;ponses ont convaincu.</p><p>La direction est int&eacute;ress&eacute;e et les enjeux de ce projet lui paraissent importants.</p><p>Lors de cette s&eacute;ance, vous avez aussi appris quel'alignement voir le d&eacute;passement de la concurrence sur les services  fournis en plus de l'ERP est l'objectif principal de ces deux prochaines  ann&eacute;es.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. AprËs rencontre membre, sans enjeux",
+									"name": "2. Apr√®s rencontre membre, sans enjeux",
 									"answer": "<p>La direction est int&eacute;ress&eacute;e, mais de nombreux points lui semblent encore flous. Notamment les enjeux de ce projet ne lui paraissent pas clairs.</p><p>Vous ne les avez pas vraiment convaincu, mais vous avez toutefois appris que l'alignement voir le d&eacute;passement de la concurrence sur les services  fournis en plus de l'ERP est l'objectif principal de ces deux prochaines  ann&eacute;es.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2.2 AprËs rencontre membre, sans enjeux, 2Ëme fois",
+									"name": "2.2 Apr√®s rencontre membre, sans enjeux, 2√®me fois",
 									"answer": "<p>Vous effectuez une nouvelle pr&eacute;sentation, mais vous ne r&eacute;ussissez pas &agrave; convaincre sur les enjeux de ce projet.</p><p>La pr&eacute;sentation &eacute;tant assez similaire &agrave; la pr&eacute;c&eacute;dente, vous faites perdre du temps et votre image aupr&egrave;s de la direction en souffre.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. AprËs rencontre membre, avec enjeux",
+									"name": "3. Apr√®s rencontre membre, avec enjeux",
 									"answer": "<p>La pr&eacute;sentation s'est bien d&eacute;roul&eacute;e, vous avez &eacute;t&eacute; soutenu par la personne que vous aviez rencontr&eacute;. Plusieurs questions ont &eacute;t&eacute; pos&eacute;es sur la pertinence et sur l'int&eacute;r&ecirc;t de r&eacute;aliser ce projet. Vos r&eacute;ponses ont convaincu.</p><p>La direction est int&eacute;ress&eacute;e et les enjeux de ce projet lui paraissent importants.</p><p>Lors de cette s&eacute;ance, vous apprenez que l'alignement voir le d&eacute;passement de la concurrence sur les services fournis en plus de l'ERP est l'objectif principal de ces deux prochaines ann&eacute;es.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. Si rencontre dÈj‡ effectuÈe",
-									"answer": "Vous nous avez dÈj‡ prÈsentÈ ce projet. On n'est pas encore frappÈ d'Alzheimer..."
+									"name": "9. Si rencontre d√©j√† effectu√©e",
+									"answer": "Vous nous avez d√©j√† pr√©sent√© ce projet. On n'est pas encore frapp√© d'Alzheimer..."
 								}
 							]
 						}
@@ -289,17 +289,17 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2. Rencontrer aprËs enjeux",
+									"name": "2. Rencontrer apr√®s enjeux",
 									"answer": "<p>Lors d'un caf&eacute;-croissant avec un des membres de la direction, vous avez parler de votre projet.</p><p>Son avis: \"Ce projet semble int&eacute;ressant. Et si, comme vous me le dites, des int&eacute;grateurs et responsables commerciaux sont convaincus des enjeux, je vous propose de venir faire une pr&eacute;sentation &agrave; la direction.\"</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. Rencontrer aprËs rencontre direction",
-									"answer": "\"Pourquoi me prÈsentez-vous ‡ nouveau ce projet que vous avez dÈj‡ prÈsentÈ en sÈance de direction ? \""
+									"name": "3. Rencontrer apr√®s rencontre direction",
+									"answer": "\"Pourquoi me pr√©sentez-vous √† nouveau ce projet que vous avez d√©j√† pr√©sent√© en s√©ance de direction ? \""
 								},
 								{
 									"@class": "Result",
-									"name": "9. Si nouvelle rencontre aprËs enjeux",
+									"name": "9. Si nouvelle rencontre apr√®s enjeux",
 									"answer": "<p>Vous avez pris un repas en commun. Ceci &eacute;tait sympathique, mais rien de nouveau depuis la derni&egrave;re fois.</p><p>Il vous a m&ecirc;me sembl&eacute; que comme il n'y avait rien de vraiment nouveau, votre interlocuteur a un peu eu l'impression de perdre son temps.</p>"
 								}
 							]
@@ -335,18 +335,18 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1Ëre fois",
+									"name": "1√®re fois",
 									"answer": "<p>En ordre, votre conjoint a &eacute;t&eacute; averti.<br /> Votre budget temps est augment&eacute; de 3.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
+									"name": "2√®me fois",
 									"answer": "<p>En ordre, votre conjoint a &eacute;t&eacute; averti.<br /> Votre budget temps est augment&eacute; de 3.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3Ëme fois",
-									"answer": "En ordre, votre conjoint a ÈtÈ averti."
+									"name": "3√®me fois",
+									"answer": "En ordre, votre conjoint a √©t√© averti."
 								}
 							]
 						}
@@ -394,13 +394,13 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. rÈponse",
+									"name": "1. r√©ponse",
 									"answer": "<p>Voici quelques informations obtenues lors de la discussion : <br /> Il est absolument n&eacute;cessaire d'affecter le nombre de personnes demand&eacute;. Une diminution de moiti&eacute; des ressources fait plus que doubler le temps de r&eacute;alisation. En effet, ces personnes ont l'habitude de travailler ensemble et se r&eacute;partissent bien le travail selon leurs comp&eacute;tences.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. dÈj‡ effectuÈ",
-									"answer": "Rien de nouveau depuis la derniËre fois."
+									"name": "9. d√©j√† effectu√©",
+									"answer": "Rien de nouveau depuis la derni√®re fois."
 								}
 							]
 						}
@@ -408,9 +408,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer ressources \"Analyses\" : estimation durÈes",
-					"name": "Rencontrer ressources \"Analyses\" : estimation durÈes",
-					"editorLabel": "P1B -  Rencontrer ressources \"Analyses\" : estimation durÈes",
+					"label": "Rencontrer ressources \"Analyses\" : estimation dur√©es",
+					"name": "Rencontrer ressources \"Analyses\" : estimation dur√©es",
+					"editorLabel": "P1B -  Rencontrer ressources \"Analyses\" : estimation dur√©es",
 					"description": "<p>Vous invitez une partie des ressources suppos&eacute;es travailler sur les analyses pr&eacute;liminaires (choix environnement d&eacute;veloppement, analyse existant, analyse besoins clients et int&eacute;grateurs, analyse de l'architecture logicielle si vous avez choisi de la faire, dossier sp&eacute;cification).</p><p>Avec ces personnes, vous cherchez &agrave; affiner l'estimation de la dur&eacute;e de ces diff&eacute;rentes t&acirc;ches et demandez leur avis sur la r&eacute;alisation de ces activit&eacute;s.</p><p>Budget temps: 3<br />Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -435,13 +435,13 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. RÈponse",
+									"name": "1. R√©ponse",
 									"answer": "<p>Apr&egrave;s une matin&eacute;e de travail avec les ressources concern&eacute;es, il ressort que:</p><ul><li> La dur&eacute;e de la t&acirc;che \"Choix de l'environnement de d&eacute;veloppement\" est bien d'une semaine. </li></ul><ul><li> Pour la t&acirc;che \"Analyse de l'existant\", la dur&eacute;e d'une semaine a &eacute;t&eacute; consid&eacute;r&eacute;e comme \"un peu challenge...\". Toutefois, apr&egrave;s discussion, les ressources concern&eacute;es se sont engag&eacute;es &agrave; essayer de r&eacute;aliser cette t&acirc;che en une semaine. </li></ul><ul><li> Pour l'\"Analyse des besoins clients et int&eacute;grateurs\", deux semaines sont consid&eacute;r&eacute;es comme correctes</li></ul><ul><li>Pour l'\"Analyse de l'achitecture logicielle\", si vous avez choisi cette option bien entendu, la dur&eacute;e d'une semaine semble tout &agrave; fait correcte.</li></ul><ul><li> Le \"Dossier de sp&eacute;cification\" devrait pouvoir &ecirc;tre r&eacute;alis&eacute; en une semaine.</li></ul>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. DÈj‡ effectuÈ",
-									"answer": "Rien de nouveau de puis la derniËre fois. <br>Vous ne consommez qu'une carte temps"
+									"name": "9. D√©j√† effectu√©",
+									"answer": "Rien de nouveau de puis la derni√®re fois. <br>Vous ne consommez qu'une carte temps"
 								}
 							]
 						}
@@ -449,9 +449,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer direction : information sur la stratÈgie",
-					"name": "Rencontrer direction : information sur la stratÈgie",
-					"editorLabel": "P2 - Rencontrer direction : information sur la stratÈgie",
+					"label": "Rencontrer direction : information sur la strat√©gie",
+					"name": "Rencontrer direction : information sur la strat√©gie",
+					"editorLabel": "P2 - Rencontrer direction : information sur la strat√©gie",
 					"description": "<p>Vous aller rencontrer la direction pour obtenir des informations relativement &agrave; la strat&eacute;gie de la soci&eacute;t&eacute;.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -476,12 +476,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. rÈponse",
+									"name": "1. r√©ponse",
 									"answer": "<p>En pr&eacute;ambule, la direction trouve que ce sont plut&ocirc;t des questions &agrave; se poser en phase d'avant-projet.</p><p>D'une mani&egrave;re g&eacute;n&eacute;rale, Losvaxis souhaite d&eacute;velopper la proximit&eacute; avec le client, r&eacute;pondre au plus pr&egrave;s &agrave; ses besoins.</p><p>D'un point de vue interne, l'alignement face &agrave; la concurrence sur les services &agrave; offrir en plus de l'ERP et la diminution des co&ucirc;ts de formation pour les utilisateurs finaux est un des point &agrave; am&eacute;liorer ces prochaines ann&eacute;es.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. DÈj‡ effectuÈ",
+									"name": "9. D√©j√† effectu√©",
 									"answer": "<p>La direction se demande pourquoi vous revenez avec cette question.</p><p>La strat&eacute;gie n'a pas chang&eacute; de puis la derni&egrave;re fois.</p>"
 								}
 							]
@@ -517,13 +517,13 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. rÈponse",
+									"name": "1. r√©ponse",
 									"answer": "<p>Les personnes responsables des tests vous informent que pour cette t&acirc;che, l'affectation de ressources suppl&eacute;mentaires &agrave; celles demand&eacute;es ne permettra pas de diminuer de beaucoup le temps de r&eacute;alisation.</p><p>En effet, des proc&eacute;dures types de tests sont tr&egrave;s pr&eacute;cises et le travail ne peut pas &ecirc;tre effectu&eacute; en parall&egrave;le.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. dÈj‡ effectuÈ",
-									"answer": "Rien de nouveau depuis la derniËre fois."
+									"name": "9. d√©j√† effectu√©",
+									"answer": "Rien de nouveau depuis la derni√®re fois."
 								}
 							]
 						}
@@ -544,9 +544,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"1. Choix environnement dÈveloppement\" : qualitÈ",
-					"name": "RÈunir Èquipe \"1. Choix environnement dÈveloppement\" : qualitÈ",
-					"editorLabel": "01 - R8B -  RÈunir Èquipe \"1. Choix environnement dÈveloppement\"",
+					"label": "R√©unir √©quipe \"1. Choix environnement d√©veloppement\" : qualit√©",
+					"name": "R√©unir √©quipe \"1. Choix environnement d√©veloppement\" : qualit√©",
+					"editorLabel": "01 - R8B -  R√©unir √©quipe \"1. Choix environnement d√©veloppement\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Choix environnement de d&eacute;veloppement\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2 <br /> Co&ucirc;ts: 500.- (frais fixes de la t&acirc;che)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -571,18 +571,18 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant que la t‚che ne dÈbute",
-									"answer": "L'analyse des besoins n'a pas dÈbutÈ. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. Avant que la t√¢che ne d√©bute",
+									"answer": "L'analyse des besoins n'a pas d√©but√©. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Des petites erreurs ont ÈtÈ dÈcouvertes et corrigÈes immÈdiatement. <br>La qualitÈ de la t‚che est augmentÈe."
+									"name": "1√®re fois - avancement entre 0 et 100%",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Des petites erreurs ont √©t√© d√©couvertes et corrig√©es imm√©diatement. <br>La qualit√© de la t√¢che est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Aucune erreur n'a ÈtÈ dÈcouverte."
+									"name": "2√®me fois",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Aucune erreur n'a √©t√© d√©couverte."
 								}
 							]
 						}
@@ -590,9 +590,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"2. Analyse existant\" : qualitÈ",
-					"name": "RÈunir Èquipe \"2. Analyse existant\" : qualitÈ",
-					"editorLabel": "02 - R9B - RÈunir Èquipe \"2. Analyse existant\"",
+					"label": "R√©unir √©quipe \"2. Analyse existant\" : qualit√©",
+					"name": "R√©unir √©quipe \"2. Analyse existant\" : qualit√©",
+					"editorLabel": "02 - R9B - R√©unir √©quipe \"2. Analyse existant\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Analyse existant\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> Co&ucirc;t: 300.- (frais fixes de la t&acirc;che)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -617,18 +617,18 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant que la t‚che ne dÈbute",
-									"answer": "L'analyse de l'existant n'a pas encore dÈbutÈ. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. Avant que la t√¢che ne d√©bute",
+									"answer": "L'analyse de l'existant n'a pas encore d√©but√©. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
+									"name": "1√®re fois - avancement entre 0 et 100%",
 									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Une erreur importante a &eacute;t&eacute; d&eacute;couverte. La nouvelle interface aurait pos&eacute; des probl&egrave;mes avec une partie du module \"vente\" de l'ERP.<br /> Sans analyse de qualit&eacute;, cette erreur n'aurait pas &eacute;t&eacute; d&eacute;couverte. Elle serait apparue lors des tests et aurait &eacute;t&eacute; bien plus difficile &agrave; corriger que maintenant. <br /> Augmentation de la qualit&eacute; de l'analyse de l'existant.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Aucune erreur n'a ÈtÈ dÈcouverte."
+									"name": "2√®me fois",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Aucune erreur n'a √©t√© d√©couverte."
 								}
 							]
 						}
@@ -636,9 +636,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"3. Analyse des besoins\" : qualitÈ",
-					"name": "RÈunir Èquipe \"3. Analyse des besoins\" : qualitÈ",
-					"editorLabel": "03 - R1B - RÈunir Èquipe \"3. Analyse des besoins\"",
+					"label": "R√©unir √©quipe \"3. Analyse des besoins\" : qualit√©",
+					"name": "R√©unir √©quipe \"3. Analyse des besoins\" : qualit√©",
+					"editorLabel": "03 - R1B - R√©unir √©quipe \"3. Analyse des besoins\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'\"Analyse des besoins\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"analyse des besoins\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -663,18 +663,18 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant que la t‚che ne dÈbute",
-									"answer": "L'analyse des besoins n'a pas dÈbutÈ. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. Avant que la t√¢che ne d√©bute",
+									"answer": "L'analyse des besoins n'a pas d√©but√©. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Une erreur a ÈtÈ dÈcouverte et corrigÈe. <br>La qualitÈ de l'analyse des besoins en est augmentÈe."
+									"name": "1√®re fois - avancement entre 0 et 100%",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Une erreur a √©t√© d√©couverte et corrig√©e. <br>La qualit√© de l'analyse des besoins en est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Aucune erreur n'a ÈtÈ dÈcouverte."
+									"name": "2√®me fois",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Aucune erreur n'a √©t√© d√©couverte."
 								}
 							]
 						}
@@ -682,9 +682,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"4. Dossier de spÈcifications\" : qualitÈ",
-					"name": "RÈunir Èquipe \"4. Dossier de spÈcifications\" : qualitÈ",
-					"editorLabel": "04 - RÈunir Èquipe \"4. Dossier de spÈcifications\"",
+					"label": "R√©unir √©quipe \"4. Dossier de sp√©cifications\" : qualit√©",
+					"name": "R√©unir √©quipe \"4. Dossier de sp√©cifications\" : qualit√©",
+					"editorLabel": "04 - R√©unir √©quipe \"4. Dossier de sp√©cifications\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable du \"Dossier de sp&eacute;cifications\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br />Co&ucirc;t: 500.- (frais fixes de la t&acirc;che)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -709,18 +709,18 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant que la t‚che ne dÈbute",
-									"answer": "Le dossier de spÈcification n'a pas dÈbutÈ. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. Avant que la t√¢che ne d√©bute",
+									"answer": "Le dossier de sp√©cification n'a pas d√©but√©. Rien de particulier pour  moment.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
-									"answer": "Quelques erreurs ont ÈtÈ dÈcouvertes et corrigÈes. Leur correction aurait certainement pris plus de temps si elles avaient ÈtÈ dÈcouvertes plus tard. <br>La qualitÈ de la t‚che est augmentÈe."
+									"name": "1√®re fois - avancement entre 0 et 100%",
+									"answer": "Quelques erreurs ont √©t√© d√©couvertes et corrig√©es. Leur correction aurait certainement pris plus de temps si elles avaient √©t√© d√©couvertes plus tard. <br>La qualit√© de la t√¢che est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
-									"answer": "Aucune nouvelle erreur n'a ÈtÈ dÈcouverte."
+									"name": "2√®me fois",
+									"answer": "Aucune nouvelle erreur n'a √©t√© d√©couverte."
 								}
 							]
 						}
@@ -728,9 +728,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"6. ModÈlisation des traitements\" : qualitÈ",
-					"name": "RÈunir Èquipe \"6. ModÈlisation des traitements\" : qualitÈ",
-					"editorLabel": "06 - R3B - RÈunir Èquipe  \"6. ModÈlisation des traitements\"",
+					"label": "R√©unir √©quipe \"6. Mod√©lisation des traitements\" : qualit√©",
+					"name": "R√©unir √©quipe \"6. Mod√©lisation des traitements\" : qualit√©",
+					"editorLabel": "06 - R3B - R√©unir √©quipe  \"6. Mod√©lisation des traitements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la mod&eacute;lisation des traitements et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"mod&eacute;lisation des traitements\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -755,18 +755,18 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
-									"answer": "Il n'y a pas de problËmes pour le moment. La t‚che n'a pas encore dÈbutÈ.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. Avant d√©but t√¢che",
+									"answer": "Il n'y a pas de probl√®mes pour le moment. La t√¢che n'a pas encore d√©but√©.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Quelques erreurs ont ÈtÈ dÈcouvertes et corrigÈes sur le moment. <br>Il reste quelques erreurs ‡ corriger. Ceci devrait prendre environ une demi journÈe de correction.<br>AprËs les corrections effectuÈes, l'Èquipe pourra continuer la modÈlisation.<br>La qualitÈ de la t‚che est augmentÈe."
+									"name": "1√®re fois - avancement entre 0 et 100%",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Quelques erreurs ont √©t√© d√©couvertes et corrig√©es sur le moment. <br>Il reste quelques erreurs √† corriger. Ceci devrait prendre environ une demi journ√©e de correction.<br>Apr√®s les corrections effectu√©es, l'√©quipe pourra continuer la mod√©lisation.<br>La qualit√© de la t√¢che est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Aucune erreur n'a ÈtÈ dÈcouverte."
+									"name": "2√®me fois",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Aucune erreur n'a √©t√© d√©couverte."
 								}
 							]
 						}
@@ -774,9 +774,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"9. Programmation des traitements\" : qualitÈ",
-					"name": "RÈunir Èquipe \"9. Programmation des traitements\" : qualitÈ",
-					"editorLabel": "09 - R4B - RÈunir Èquipe \"7. Programmation des traitements\"",
+					"label": "R√©unir √©quipe \"9. Programmation des traitements\" : qualit√©",
+					"name": "R√©unir √©quipe \"9. Programmation des traitements\" : qualit√©",
+					"editorLabel": "09 - R4B - R√©unir √©quipe \"7. Programmation des traitements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la \"Programmation des traitements\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"programmation des traitements\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -801,28 +801,28 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. avant dÈbut t‚che",
-									"answer": "Rien de particulier pour le moment. La t‚che n'a pas dÈbutÈ.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. avant d√©but t√¢che",
+									"answer": "Rien de particulier pour le moment. La t√¢che n'a pas d√©but√©.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "2. entre 0 et 50% - 1Ëre fois",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Quelques erreurs ont ÈtÈ dÈcouvertes et corrigÈes sur le moment. <br>Il reste quelques erreurs ‡ corriger. Ceci devrait prendre environ une demi journÈe de correction.<br>AprËs les corrections effectuÈes, l'Èquipe pourra continuer la programmation.<br>La qualitÈ de la t‚che est augmentÈe."
+									"name": "2. entre 0 et 50% - 1√®re fois",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Quelques erreurs ont √©t√© d√©couvertes et corrig√©es sur le moment. <br>Il reste quelques erreurs √† corriger. Ceci devrait prendre environ une demi journ√©e de correction.<br>Apr√®s les corrections effectu√©es, l'√©quipe pourra continuer la programmation.<br>La qualit√© de la t√¢che est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "2.1 entre 0 et 50% 2Ëme fois",
-									"answer": "Pas de nouvelles erreurs dÈcouvertes ‡ ce stade de la programmation."
+									"name": "2.1 entre 0 et 50% 2√®me fois",
+									"answer": "Pas de nouvelles erreurs d√©couvertes √† ce stade de la programmation."
 								},
 								{
 									"@class": "Result",
-									"name": "3. entre 50 et 100% - 1Ëre fois",
+									"name": "3. entre 50 et 100% - 1√®re fois",
 									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Quelques erreurs ont &eacute;t&eacute; d&eacute;couvertes et corrig&eacute;es sur le moment.</p><p>L'&eacute;quipe a relev&eacute; que ces erreurs n'auraient pas &eacute;t&eacute; d&eacute;couvertes sans l'analyse de qualit&eacute;. Leur correction aurait &eacute;t&eacute; assez longue si elles n'avaient &eacute;t&eacute; d&eacute;couvertes que lors des tests finaux.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3.1 entre 50 et 100% - 2Ëme fois",
-									"answer": "Pas de nouvelles erreurs dÈcouvertes ‡ ce stade de la programmation."
+									"name": "3.1 entre 50 et 100% - 2√®me fois",
+									"answer": "Pas de nouvelles erreurs d√©couvertes √† ce stade de la programmation."
 								}
 							]
 						}
@@ -830,9 +830,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"11. Promotion systËme\" : qualitÈ",
-					"name": "RÈunir Èquipe \"11. Promotion systËme\" : qualitÈ",
-					"editorLabel": "11 - R7B - RÈunir Èquipe \"11. Promotion systËme\"",
+					"label": "R√©unir √©quipe \"11. Promotion syst√®me\" : qualit√©",
+					"name": "R√©unir √©quipe \"11. Promotion syst√®me\" : qualit√©",
+					"editorLabel": "11 - R7B - R√©unir √©quipe \"11. Promotion syst√®me\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la promotion du syst&egrave;me et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"promotion syst&egrave;me\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -857,17 +857,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
-									"answer": "Il n'y a pas de problËmes pour le moment. La t‚che n'a pas encore dÈbutÈ.<br>Vous ne consommez qu'une carte temps."
+									"name": "1. Avant d√©but t√¢che",
+									"answer": "Il n'y a pas de probl√®mes pour le moment. La t√¢che n'a pas encore d√©but√©.<br>Vous ne consommez qu'une carte temps."
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
-									"answer": "L'analyse a pris une demi-journÈe. <br>Quelques rÈajustements ont ÈtÈ dÈcidÈs sur la maniËre de promouvoir le systËme d'une maniËre cordonnÈe entre les diffÈrents responsables marketing et commerciaux.<br>La qualitÈ de la t‚che est augmentÈe."
+									"name": "1√®re fois - avancement entre 0 et 100%",
+									"answer": "L'analyse a pris une demi-journ√©e. <br>Quelques r√©ajustements ont √©t√© d√©cid√©s sur la mani√®re de promouvoir le syst√®me d'une mani√®re cordonn√©e entre les diff√©rents responsables marketing et commerciaux.<br>La qualit√© de la t√¢che est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
+									"name": "2√®me fois",
 									"answer": "<p>L'analyse a pris une demi-journ&eacute;e. <br /> Tout semble se d&eacute;rouler comme pr&eacute;vu.</p>"
 								}
 							]
@@ -876,9 +876,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe \"11. Promotion systËme\" : qualitÈ",
-					"name": "RÈunir Èquipe \"11. Promotion systËme\" : qualitÈ",
-					"editorLabel": "11 - R7C - RÈunir Èquipe \"11. Promotion systËme\" sans maquette ni prototype",
+					"label": "R√©unir √©quipe \"11. Promotion syst√®me\" : qualit√©",
+					"name": "R√©unir √©quipe \"11. Promotion syst√®me\" : qualit√©",
+					"editorLabel": "11 - R7C - R√©unir √©quipe \"11. Promotion syst√®me\" sans maquette ni prototype",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la promotion du syst&egrave;me et  passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et  &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"promotion syst&egrave;me\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -903,17 +903,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Il n'y a pas de probl&egrave;mes pour le moment. La t&acirc;che n'a pas encore d&eacute;but&eacute;. <br /> Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "1Ëre fois - avancement entre 0 et 100%",
+									"name": "1√®re fois - avancement entre 0 et 100%",
 									"answer": "<p>La promotion du syst&egrave;me se passe tr&egrave;s mal. Les utilisateurs ne sont pas du tout satisfaits de l'interface, elle ne r&eacute;pond pas &agrave; leur besoins. Ils demandent pourquoi nous ne leur avons pas propos&eacute; de maquette ou de prototype. H&eacute;las, il est trop tard maintenant pour refondre cette interface. Il n'y a rien &agrave; faire et le projet risque de tr&egrave;s mal se terminer.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
+									"name": "2√®me fois",
 									"answer": "<p>Les doutes de l'&eacute;quipe de marketing qui se charge de la promotion se confirment. Les utilisateurs sont fortement insatisfaits du syst&egrave;me, et le promotion est un &eacute;chec. Le projet court &agrave; la catastrophe.</p>"
 								}
 							]
@@ -922,9 +922,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir Èquipe projet : point et coordination",
-					"name": "RÈunir Èquipe projet : point et coordination",
-					"editorLabel": "R5B - RÈunir l'Èquipe projet",
+					"label": "R√©unir √©quipe projet : point et coordination",
+					"name": "R√©unir √©quipe projet : point et coordination",
+					"editorLabel": "R5B - R√©unir l'√©quipe projet",
 					"description": "<p>Vous r&eacute;unissez toute l'&eacute;quipe des ressources travaillant sur le projet afin de faire le point sur les objectifs, la qualit&eacute; du travail r&eacute;alis&eacute; et les d&eacute;lais. <br /> Vous terminez la r&eacute;union par la (re)d&eacute;finition du travail et des priorit&eacute;s.</p><p>Budget temps: 3<br /> Co&ucirc;t: 1000.- (frais fixes projet)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -949,28 +949,28 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 1",
-									"answer": "Suite ‡ la rÈunion, les prioritÈs entre les diffÈrentes activitÈs ont ÈtÈ rÈajustÈes. Quelques problËmes de coordination ont ÈtÈ soulevÈs, mais rÈglÈs durant la sÈance."
+									"name": "R√©ponse de base 1",
+									"answer": "Suite √† la r√©union, les priorit√©s entre les diff√©rentes activit√©s ont √©t√© r√©ajust√©es. Quelques probl√®mes de coordination ont √©t√© soulev√©s, mais r√©gl√©s durant la s√©ance."
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 2",
-									"answer": "La sÈance s'est bien dÈroulÈe. La coordination des activitÈs n'a soulevÈ aucun problËme. Par contre, il a ÈtÈ nÈcessaire de redÈfinir les prioritÈs pour les livrables partiels de quelques t‚ches."
+									"name": "R√©ponse de base 2",
+									"answer": "La s√©ance s'est bien d√©roul√©e. La coordination des activit√©s n'a soulev√© aucun probl√®me. Par contre, il a √©t√© n√©cessaire de red√©finir les priorit√©s pour les livrables partiels de quelques t√¢ches."
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 3",
-									"answer": "La sÈance a ÈtÈ animÈe, particuliËrement concernant la coordination des activitÈs entre les t‚ches. En fin de sÈance, la plupart des problËmes sont rÈglÈs."
+									"name": "R√©ponse de base 3",
+									"answer": "La s√©ance a √©t√© anim√©e, particuli√®rement concernant la coordination des activit√©s entre les t√¢ches. En fin de s√©ance, la plupart des probl√®mes sont r√©gl√©s."
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 4",
-									"answer": "Les problËmes de coordination de la derniËre sÈance ont tous ÈtÈ rÈsolus. D'aprËs l'Èquipe: \"Tout roule !\""
+									"name": "R√©ponse de base 4",
+									"answer": "Les probl√®mes de coordination de la derni√®re s√©ance ont tous √©t√© r√©solus. D'apr√®s l'√©quipe: \"Tout roule !\""
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 5",
-									"answer": "AprËs discussions et replanification, la coordination est assurÈe pour la pÈriode ‡ venir."
+									"name": "R√©ponse de base 5",
+									"answer": "Apr√®s discussions et replanification, la coordination est assur√©e pour la p√©riode √† venir."
 								}
 							]
 						}
@@ -978,9 +978,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RÈunir intÈgrateurs : prÈsentation du travail",
-					"name": "RÈunir intÈgrateurs : prÈsentation du travail",
-					"editorLabel": "R6B - RÈunir intÈgrateurs: prÈsentation du travail",
+					"label": "R√©unir int√©grateurs : pr√©sentation du travail",
+					"name": "R√©unir int√©grateurs : pr√©sentation du travail",
+					"editorLabel": "R6B - R√©unir int√©grateurs: pr√©sentation du travail",
 					"description": "<p>Vous invitez quelques int&eacute;grateurs &agrave; une pr&eacute;sentation du travail r&eacute;alis&eacute; afin d'obtenir leur point de vue et un retour g&eacute;n&eacute;ral d'informations.</p><p>Budget temps: 2<br /> Co&ucirc;ts: 500.- (frais fixes du projet)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1005,58 +1005,58 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dossier spÈcification",
-									"answer": "Vous avez prÈsentÈ l'Ètat des travaux liÈs ‡ la phase prÈliminaire du projet.Le retour des futurs utilisateurs est globalement: <br>\"Pour le moment, ceci semble sur le bon chemin. <br>Nous nous rÈjouissons de voir comment les choses vont concrËtement se rÈaliser.\""
+									"name": "1. Avant dossier sp√©cification",
+									"answer": "Vous avez pr√©sent√© l'√©tat des travaux li√©s √† la phase pr√©liminaire du projet.Le retour des futurs utilisateurs est globalement: <br>\"Pour le moment, ceci semble sur le bon chemin. <br>Nous nous r√©jouissons de voir comment les choses vont concr√®tement se r√©aliser.\""
 								},
 								{
 									"@class": "Result",
-									"name": "1.2 Avant dossier spÈcification - 2Ëme fois",
-									"answer": "Retour global des utilisateurs: <br>\"Rien de bien nouveau depuis la derniËre fois.\""
+									"name": "1.2 Avant dossier sp√©cification - 2√®me fois",
+									"answer": "Retour global des utilisateurs: <br>\"Rien de bien nouveau depuis la derni√®re fois.\""
 								},
 								{
 									"@class": "Result",
-									"name": "2. Pendant dossier de spÈcification",
-									"answer": "AprËs avoir regardÈ le dossier de spÈcifications, quelques commentaires intÈressants ont ÈtÈ faits. Ceci a permis d'amÈliorer la qualitÈ du dossier de spÈcifications.<br> Ainsi, une correction a ÈtÈ effectuÈe sur une fonctionnalitÈ. <br>Cette erreur aurait pris passablement plus de temps ‡ corriger si elle avait ÈtÈ dÈcouverte en cours de programmation."
+									"name": "2. Pendant dossier de sp√©cification",
+									"answer": "Apr√®s avoir regard√© le dossier de sp√©cifications, quelques commentaires int√©ressants ont √©t√© faits. Ceci a permis d'am√©liorer la qualit√© du dossier de sp√©cifications.<br> Ainsi, une correction a √©t√© effectu√©e sur une fonctionnalit√©. <br>Cette erreur aurait pris passablement plus de temps √† corriger si elle avait √©t√© d√©couverte en cours de programmation."
 								},
 								{
 									"@class": "Result",
-									"name": "2.2 Pendant dossier de spÈcification - 2Ëme fois",
-									"answer": "Retour global: <br>\"Pas de grands changements depuis notre derniËre rencontre.\""
+									"name": "2.2 Pendant dossier de sp√©cification - 2√®me fois",
+									"answer": "Retour global: <br>\"Pas de grands changements depuis notre derni√®re rencontre.\""
 								},
 								{
 									"@class": "Result",
-									"name": "3. Pendant modÈlisation",
-									"answer": "Globalement, le retour des utilisateurs est : \"Ce que nous pouvons voir de la modÈlisation (et pour ce que nous y comprenons) nous semble correct.\"<br>Ils ont toutefois posÈs des questions et fait quelques remarques vous permettant d'amÈliorer la modÈlisation."
+									"name": "3. Pendant mod√©lisation",
+									"answer": "Globalement, le retour des utilisateurs est : \"Ce que nous pouvons voir de la mod√©lisation (et pour ce que nous y comprenons) nous semble correct.\"<br>Ils ont toutefois pos√©s des questions et fait quelques remarques vous permettant d'am√©liorer la mod√©lisation."
 								},
 								{
 									"@class": "Result",
-									"name": "3. Pendant modÈlisation - 2Ëme fois",
-									"answer": "Rien de vraiment nouveau relativement ‡ la modÈlisation."
+									"name": "3. Pendant mod√©lisation - 2√®me fois",
+									"answer": "Rien de vraiment nouveau relativement √† la mod√©lisation."
 								},
 								{
 									"@class": "Result",
-									"name": "4. Pendant programmation 1Ëre fois",
-									"answer": "Vous avez prÈsentÈ les premiers rÈsultats de la programmation. <br>Plusieurs questions ont ÈtÈ posÈes. Quelques remarques ont permis d'amÈliorer certaines fonctionnalitÈs. <br>D'une maniËre gÈnÈrale, les utilisateurs ont dit : <br>\"Ce que nous pouvons voir du rÈsultat de la programmation nous semble aller dans la direction de ce que nous souhaitons. Nous nous rÈjouissons de pouvoir utiliser ce systËme.\"<br>La qualitÈ de la programmation des traitements est augmentÈe."
+									"name": "4. Pendant programmation 1√®re fois",
+									"answer": "Vous avez pr√©sent√© les premiers r√©sultats de la programmation. <br>Plusieurs questions ont √©t√© pos√©es. Quelques remarques ont permis d'am√©liorer certaines fonctionnalit√©s. <br>D'une mani√®re g√©n√©rale, les utilisateurs ont dit : <br>\"Ce que nous pouvons voir du r√©sultat de la programmation nous semble aller dans la direction de ce que nous souhaitons. Nous nous r√©jouissons de pouvoir utiliser ce syst√®me.\"<br>La qualit√© de la programmation des traitements est augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "4.2 Pendant programmation 2Ëme fois",
-									"answer": "Suite ‡ la prÈsentation et aux remarques faites par les utilisateurs, quelques petites corrections ont pu Ítre effectuÈes. <br>La qualitÈ de la programmation des traitements est quelque peu augmentÈe."
+									"name": "4.2 Pendant programmation 2√®me fois",
+									"answer": "Suite √† la pr√©sentation et aux remarques faites par les utilisateurs, quelques petites corrections ont pu √™tre effectu√©es. <br>La qualit√© de la programmation des traitements est quelque peu augment√©e."
 								},
 								{
 									"@class": "Result",
-									"name": "4.3 Pendant programmation 3Ëme fois",
-									"answer": "Rien de vraiment nouveau depuis la derniËre fois."
+									"name": "4.3 Pendant programmation 3√®me fois",
+									"answer": "Rien de vraiment nouveau depuis la derni√®re fois."
 								},
 								{
 									"@class": "Result",
-									"name": "5. Pendant Tests 1Ëre fois",
+									"name": "5. Pendant Tests 1√®re fois",
 									"answer": "<p>Vous avez invit&eacute; quelques repr&eacute;sentants utilisateurs durant les tests.<br /> Globalement, leur remarques sont : <br /> \"Le produit nous convient bien.\"</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5.2. Pendant Tests 2Ëme fois",
-									"answer": "Vous avez invitÈ quelques reprÈsentants utilisateurs durant les tests.<br>Globalement, leur remarques sont : <br>\"Le produit nous convient bien. Nous nous rÈjouissons de l'utiliser.\"<br>"
+									"name": "5.2. Pendant Tests 2√®me fois",
+									"answer": "Vous avez invit√© quelques repr√©sentants utilisateurs durant les tests.<br>Globalement, leur remarques sont : <br>\"Le produit nous convient bien. Nous nous r√©jouissons de l'utiliser.\"<br>"
 								}
 							]
 						}

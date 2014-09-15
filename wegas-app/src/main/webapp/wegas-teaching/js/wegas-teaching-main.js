@@ -270,7 +270,7 @@ YUI.add("wegas-teaching-main", function(Y) {
             },
             availableLinkLabels: {
                 type: "array",
-                value: ["Est équivalent", "Utilise", "Spécialise", "Sous-ensemble", "Appartient"]
+                value: ["Est Ã©quivalent", "Utilise", "SpÃ©cialise", "Sous-ensemble", "Appartient"]
             }
         }
     });

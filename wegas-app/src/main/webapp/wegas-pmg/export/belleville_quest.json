@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Ordre des analyses de détail",
-					"name": "Ordre des analyses de détail",
-					"label": "A120 Ordre analyses de détail",
+					"title": "Ordre des analyses de dÃ©tail",
+					"name": "Ordre des analyses de dÃ©tail",
+					"label": "A120 Ordre analyses de dÃ©tail",
 					"description": "<p>Lors de l'avant-projet, vous allez effectuer un certain nombre d'analyses de d&eacute;tails.</p><p>La DG vous demande &agrave; quelles analyses allez-vous proc&eacute;der et dans quel ordre allez-vous les effectuer ?</p><p>Quelle est votre r&eacute;ponse ?</p><p>_______________________</p><p><em>Remarque: vous devez r&eacute;pondre &agrave; ce choix avant de pouvoir r&eacute;aliser l'action \"Effectuer les analyses de d&eacute;tail\".</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -132,9 +132,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) exploration par étapes",
-							"title": "b) exploration par étapes",
-							"label": "b) exploration par étapes",
+							"name": "b) exploration par Ã©tapes",
+							"title": "b) exploration par Ã©tapes",
+							"label": "b) exploration par Ã©tapes",
 							"description": "<div>Vous travaillez en deux &eacute;tapes:</div><p><strong>1. Consultations informelles</strong><br />Vous effectuez une analyse des besoins pr&eacute;liminaire, bas&eacute;e sur le postulat et quelques rencontres informelles (h&ocirc;pital g&eacute;n&eacute;ral, policlinique de Belleville, autorit&eacute;s, etc.), puis discutez du r&eacute;sultat avec la direction g&eacute;n&eacute;rale.</p><p><br /><strong>2. Groupe de travail \"Prestations\"</strong><br />Apr&egrave;s validation par la direction, vous coordonnez un groupe de travail \"Prestations\" d&eacute;di&eacute; &agrave; &eacute;tablir l'inventaire des prestations &agrave; d&eacute;velopper. Ce groupe sera compos&eacute; de repr&eacute;sentants  des directions m&eacute;dicales et des  soins, ainsi que du responsable de l'actuelle  policlinique.<br />En tant que coordinateur du groupe de travail, vous d&eacute;finirez comment int&eacute;grer les m&eacute;decins priv&eacute;s de Belleville.</p><p>Co&ucirc;t : 4 cartes temps</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -172,9 +172,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "d) séminaire avec parties prenantes",
-							"title": "d) séminaire avec parties prenantes",
-							"label": "d) séminaire avec parties prenantes",
+							"name": "d) sÃ©minaire avec parties prenantes",
+							"title": "d) sÃ©minaire avec parties prenantes",
+							"label": "d) sÃ©minaire avec parties prenantes",
 							"description": "<p>Vous organisez un \"workshop\" auquel vous invitez le syndic, la direction m&eacute;dicale l'h&ocirc;pital, le responsable de l'actuelle policlinique et le repr&eacute;sentant des m&eacute;decins en pratique priv&eacute;e de Belleville.</p><p>Le but est d'y d&eacute;finir les besoins et les prestations.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -248,9 +248,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) remettre l'identification des enjeux à plus tard",
-							"title": "c) remettre l'identification des enjeux à plus tard",
-							"label": "c) remettre l'identification des enjeux à plus tard",
+							"name": "c) remettre l'identification des enjeux Ã  plus tard",
+							"title": "c) remettre l'identification des enjeux Ã  plus tard",
+							"label": "c) remettre l'identification des enjeux Ã  plus tard",
 							"description": "<p>Vous pr&eacute;f&eacute;rez ne pas consacrer trop de temps &agrave; l'identification des enjeux du projet.</p><p>Ceci pourra &eacute;ventuellement &ecirc;tre effectu&eacute; lorsque la direction aura valid&eacute; le mandat de projet.</p><p>Co&ucirc;t: 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -304,9 +304,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) pas besoin de construire une organisation spécifique",
-							"title": "b) pas besoin de construire une organisation spécifique",
-							"label": "b) pas besoin de construire une organisation spécifique",
+							"name": "b) pas besoin de construire une organisation spÃ©cifique",
+							"title": "b) pas besoin de construire une organisation spÃ©cifique",
+							"label": "b) pas besoin de construire une organisation spÃ©cifique",
 							"description": "<p>Vous r&eacute;pondez que l'organigramme de l'h&ocirc;pital comporte tous les sp&eacute;cialistes et d&eacute;cideurs n&eacute;cessaires. Le projet ne n&eacute;cessite pas de complexifier l'organisation op&eacute;rationnelle.</p><p>Co&ucirc;ts: 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -346,9 +346,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Prévoir un appel d'offre marchés publics",
-					"name": "Prévoir un appel d'offre marchés publics",
-					"label": "A145 Marchés publics",
+					"title": "PrÃ©voir un appel d'offre marchÃ©s publics",
+					"name": "PrÃ©voir un appel d'offre marchÃ©s publics",
+					"label": "A145 MarchÃ©s publics",
 					"description": "<p>La direction vous demande si vous pensez que le projet Belleville n&eacute;cessitera de passer &agrave; un moment ou un autre par un appel d'offre ?</p><p>Vous pouvez faire un premier examen de la question sur le site web du canton de Vaud : <br /><a href=\"http://www.vd.ch/fr/themes/economie/marches-publics/guide-romand/\" target=\"_blank\">http://www.vd.ch/fr/themes/economie/marches-publics/guide-romand/</a></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -380,9 +380,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) peut-être",
-							"title": "b) peut-être",
-							"label": "b) peut-être",
+							"name": "b) peut-Ãªtre",
+							"title": "b) peut-Ãªtre",
+							"label": "b) peut-Ãªtre",
 							"description": "<p>Vous r&eacute;pondez : \"Ce n'est pas si simple. On ne peut pas r&eacute;pondre d&eacute;finitivement&nbsp; pour le moment.\"</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -422,9 +422,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Négocier son cahier des charges",
-					"name": "Négocier son cahier des charges",
-					"label": "A150 Négocier son cahier des charges",
+					"title": "NÃ©gocier son cahier des charges",
+					"name": "NÃ©gocier son cahier des charges",
+					"label": "A150 NÃ©gocier son cahier des charges",
 					"description": "<p>Lors d'une discussion avec votre sup&eacute;rieur relativement &agrave; votre emploi du temps, vous sentez qu'il pourrait &ecirc;tre le moment d'essayer de n&eacute;gocier sur comment mener de front le projet avec vos autres activit&eacute;s courantes.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -456,9 +456,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) ne pas demander à être déchargé",
-							"title": "b) ne pas demander à être déchargé",
-							"label": "b) ne pas demander à être déchargé",
+							"name": "b) ne pas demander Ã  Ãªtre dÃ©chargÃ©",
+							"title": "b) ne pas demander Ã  Ãªtre dÃ©chargÃ©",
+							"label": "b) ne pas demander Ã  Ãªtre dÃ©chargÃ©",
 							"description": "<p>Vous consid&eacute;rez que ce projet est une belle occasion de vous profiler. Vous n'allez donc pas demander &agrave; &ecirc;tre d&eacute;charg&eacute; de vos activit&eacute;s courantes et montrer que vous arrivez &agrave; g&eacute;rer un projet en parall&egrave;le &agrave; vos activit&eacute;s traditionnelles.</p><p>Co&ucirc;t: 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -476,9 +476,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) négocier avant de s'impliquer",
-							"title": "c) négocier avant de s'impliquer",
-							"label": "c) négocier avant de s'impliquer",
+							"name": "c) nÃ©gocier avant de s'impliquer",
+							"title": "c) nÃ©gocier avant de s'impliquer",
+							"label": "c) nÃ©gocier avant de s'impliquer",
 							"description": "<p>Pas question de vous laisser prendre de vitesse ou de sacrifier votre vie priv&eacute;e.</p><p>Vous abordez franchement le sujet et dites que vous ne ferez rien dans le projet tant que ce point ne sera pas clairement d&eacute;cid&eacute;.</p><p>Co&ucirc;t: 1 carte temps</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -498,9 +498,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Table des matières du mandat",
-					"name": "Table des matières du mandat",
-					"label": "A180 Table des matières du mandat",
+					"title": "Table des matiÃ¨res du mandat",
+					"name": "Table des matiÃ¨res du mandat",
+					"label": "A180 Table des matiÃ¨res du mandat",
 					"description": "<p>Le responsable du PMO vous &nbsp;demande quelles seront les rubriques principales du mandat de projet que vous allez d&eacute;poser aupr&egrave;s de la direction.</p><p>Que lui r&eacute;pondez-vous ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -650,9 +650,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Suite à donner à la protestation des médecins de Belleville",
-					"name": "Suite à donner à la protestation des médecins de Belleville",
-					"label": "A190 bis Suite à donner à protestation médecins de Belleville",
+					"title": "Suite Ã  donner Ã  la protestation des mÃ©decins de Belleville",
+					"name": "Suite Ã  donner Ã  la protestation des mÃ©decins de Belleville",
+					"label": "A190 bis Suite Ã  donner Ã  protestation mÃ©decins de Belleville",
 					"description": "<p>Suite &agrave; la protestation des m&eacute;decins (c.f. mail re&ccedil;u derni&egrave;rement), la direction de l'h&ocirc;pital vous contacte et demande quelle est votre position sur la r&eacute;ponse &agrave; apporter ?</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -733,9 +733,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) réponse immédiate et simple",
-							"title": "a) réponse immédiate et simple",
-							"label": "a) réponse immédiate et simple",
+							"name": "a) rÃ©ponse immÃ©diate et simple",
+							"title": "a) rÃ©ponse immÃ©diate et simple",
+							"label": "a) rÃ©ponse immÃ©diate et simple",
 							"description": "<p>Vous proposez de donner une r&eacute;ponse imm&eacute;diate et simple: Le but n'est pas diminuer les postes de travail mais bien de mieux servir la population.</p><p>Co&ucirc;t : 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -795,8 +795,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Benchmark de réalisations semblables",
-					"name": "Benchmark de réalisations semblables",
+					"title": "Benchmark de rÃ©alisations semblables",
+					"name": "Benchmark de rÃ©alisations semblables",
 					"label": "P120 Benchmark",
 					"description": "<p>Lors d'une discussion avec les responsables des groupes de travail, il a &eacute;t&eacute; relev&eacute; qu'un benchmark de projets semblables au v&ocirc;tre serait possible. Ceci permettrait peut-&ecirc;tre d'obtenir quelques informations et &eacute;viter quelques pi&egrave;ges. Deux r&eacute;alisations similaires seraient &agrave; visiter.</p><p>On vous demande de prendre position sur ce sujet.</p>",
 					"allowMultipleReplies": "false",
@@ -809,9 +809,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) visiter les réalisations similaires à ce que vous projetez",
-							"title": "a) visiter les réalisations similaires à ce que vous projetez",
-							"label": "a) visiter les réalisations similaires à ce que vous projetez",
+							"name": "a) visiter les rÃ©alisations similaires Ã  ce que vous projetez",
+							"title": "a) visiter les rÃ©alisations similaires Ã  ce que vous projetez",
+							"label": "a) visiter les rÃ©alisations similaires Ã  ce que vous projetez",
 							"description": "<p>Vous d&eacute;cidez que les responsables de GT, vous-m&ecirc;me et un membre du COPIL allez visiter les deux r&eacute;alisations semblables.</p><p>Co&ucirc;t : <br />3 cartes temps<br />Les frais de d&eacute;placements sont pris en charge dans le budget courant de l'h&ocirc;pital.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -829,9 +829,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) contacter par visio-conférence et études de documents",
-							"title": "b) contacter par visio-conférence et études de documents",
-							"label": "b) contacter par visio-conférence et études de documents",
+							"name": "b) contacter par visio-confÃ©rence et Ã©tudes de documents",
+							"title": "b) contacter par visio-confÃ©rence et Ã©tudes de documents",
+							"label": "b) contacter par visio-confÃ©rence et Ã©tudes de documents",
 							"description": "<p>Vous choisissez de faire deux visio-conf&eacute;rences avec les&nbsp;responsables de GT, vous-m&ecirc;me et un ou deux membres du COPIL.</p><p>Vos correspondants vous envoient des documents compl&eacute;mentaires.</p><p>Co&ucirc;t: 2 cartes temps</p><p>&nbsp;</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -849,9 +849,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) à voir plus tard",
-							"title": "c) à voir plus tard",
-							"label": "c) à voir plus tard",
+							"name": "c) Ã  voir plus tard",
+							"title": "c) Ã  voir plus tard",
+							"label": "c) Ã  voir plus tard",
 							"description": "<p>Vous r&eacute;pondez qu'il n'est pas n&eacute;cessaire d'effectuer un benchmark. Les attentes sont d&eacute;j&agrave; assez claires tant sur les buts que sur les moyens.</p><p>Pour f&ecirc;ter l'aboutissement du projet, ce serait sympathique, et il y aurait quelques id&eacute;es &agrave; prendre pour l'exploitation. A voir...</p><p>Co&ucirc;t: 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -961,9 +961,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) terminer chaque séance de COPIL par la mise à jour du plan de communication",
-							"title": "a) terminer chaque séance de COPIL par la mise à jour du plan de communication",
-							"label": "a) terminer chaque séance de COPIL par la mise à jour du plan de communication",
+							"name": "a) terminer chaque sÃ©ance de COPIL par la mise Ã  jour du plan de communication",
+							"title": "a) terminer chaque sÃ©ance de COPIL par la mise Ã  jour du plan de communication",
+							"label": "a) terminer chaque sÃ©ance de COPIL par la mise Ã  jour du plan de communication",
 							"description": "<p>Vous proposez que le dernier point de chaque ordre du jour du COPIL sera \"mesures de communications internes et externes\". Vous veillerez &agrave; apporter des propositions quand cela vous sera possible.</p><p>En cas de besoin dans l'intervalle, vous aviserez en coordination avec le pr&eacute;sident du COPIL.</p><p>Co&ucirc;t : 1 carte temps</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -981,9 +981,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) c'est votre affaire, vous proposerez au COPIL des communications selon l'actualité",
-							"title": "b) c'est votre affaire, vous proposerez au COPIL des communications selon l'actualité",
-							"label": "b) c'est votre affaire, vous proposerez au COPIL des communications selon l'actualité",
+							"name": "b) c'est votre affaire, vous proposerez au COPIL des communications selon l'actualitÃ©",
+							"title": "b) c'est votre affaire, vous proposerez au COPIL des communications selon l'actualitÃ©",
+							"label": "b) c'est votre affaire, vous proposerez au COPIL des communications selon l'actualitÃ©",
 							"description": "<p>Vous proposez de g&eacute;rer vous-m&ecirc;me le plan de communication et assortirez les diff&eacute;rentes d&eacute;cision d'une proposition de (non)communication.</p><p>Vous d&eacute;ciderez vous-m&ecirc;me du mode de communication (communiquer directement, indirectement, renvoyer &agrave; la direction g&eacute;n&eacute;rale).</p><p>Co&ucirc;t: 1 carte temps</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1001,9 +1001,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) trop tôt pour communiquer",
-							"title": "c) trop tôt pour communiquer",
-							"label": "c) trop tôt pour communiquer",
+							"name": "c) trop tÃ´t pour communiquer",
+							"title": "c) trop tÃ´t pour communiquer",
+							"label": "c) trop tÃ´t pour communiquer",
 							"description": "<p>Vous r&eacute;pondez que tant que le projet n'est pas approuv&eacute; par les autorit&eacute;s comp&eacute;tentes, ce n'est pas la peine de communiquer.&nbsp;</p><p>La communication peut se limiter &agrave; dire qu'un projet est &agrave; l'&eacute;tude et qu'une information sera donn&eacute;e plus tard aux parties prenantes.</p><p>Co&ucirc;t: 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1023,9 +1023,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Variantes aménagement locaux",
-					"name": "Variantes aménagement locaux",
-					"label": "P160 - Variantes aménagement locaux",
+					"title": "Variantes amÃ©nagement locaux",
+					"name": "Variantes amÃ©nagement locaux",
+					"label": "P160 - Variantes amÃ©nagement locaux",
 					"description": "<p>Pour la t&acirc;che \"am&eacute;nagement des locaux\", plusieurs variantes seraient possibles.</p><p>Laquelle choisissez-vous ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1037,9 +1037,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) réalisation interne d'une petite partie de l'aménagement",
-							"title": "a) réalisation interne d'une petite partie de l'aménagement",
-							"label": "a) réalisation interne d'une petite partie de l'aménagement",
+							"name": "a) rÃ©alisation interne d'une petite partie de l'amÃ©nagement",
+							"title": "a) rÃ©alisation interne d'une petite partie de l'amÃ©nagement",
+							"label": "a) rÃ©alisation interne d'une petite partie de l'amÃ©nagement",
 							"description": "<p>L'&eacute;quipe interne r&eacute;alise une petite partie de l'am&eacute;nagement.</p><p>Une nouvelle t&acirc;che de dur&eacute;e 3 mois, avec deux &eacute;quipementiers juniors est cr&eacute;&eacute;e.</p><p>Ceci permettrait de diminuer les frais des ma&icirc;tres d'&eacute;tat.</p><p>Co&ucirc;ts:<br />Cartes temps: 2<br />Economie sur les frais d'am&eacute;nagement des locaux: 45'000.-&nbsp;</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1057,9 +1057,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) réalisation interne d'une grande partie de l'aménagement",
-							"title": "b) réalisation interne d'une grande partie de l'aménagement",
-							"label": "b) réalisation interne d'une grande partie de l'aménagement",
+							"name": "b) rÃ©alisation interne d'une grande partie de l'amÃ©nagement",
+							"title": "b) rÃ©alisation interne d'une grande partie de l'amÃ©nagement",
+							"label": "b) rÃ©alisation interne d'une grande partie de l'amÃ©nagement",
 							"description": "<p>L'&eacute;quipe interne r&eacute;alise une grande partie de l'am&eacute;nagement.</p><p>Une nouvelle t&acirc;che d'une dur&eacute;e de 3 mois, avec deux &eacute;quipementiers juniors et deux &eacute;quipementiers seniors serait cr&eacute;&eacute;e.</p><p>Ceci permettrait de diminuer les frais des ma&icirc;tres d'&eacute;tat.</p><p>Co&ucirc;ts:<br />Cartes temps: 3<br /> Economie sur les frais d'am&eacute;nagement des locaux: 100'000.-&nbsp;</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1077,9 +1077,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) réalisation externe à 100%",
-							"title": "c) réalisation externe à 100%",
-							"label": "c) réalisation externe à 100%",
+							"name": "c) rÃ©alisation externe Ã  100%",
+							"title": "c) rÃ©alisation externe Ã  100%",
+							"label": "c) rÃ©alisation externe Ã  100%",
 							"description": "<p>Vous pr&eacute;f&eacute;rez conserver la variante initiale, qui consiste &agrave; confier l'entier de l'am&eacute;nagement &agrave; des entreprises externes.</p><p>Seule la supervision des travaux et quelques participations sont effectu&eacute;es par des internes.</p><p>Co&ucirc;t: 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1229,9 +1229,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) au COPIL de décider",
-							"title": "c) au COPIL de décider",
-							"label": "c) au COPIL de décider",
+							"name": "c) au COPIL de dÃ©cider",
+							"title": "c) au COPIL de dÃ©cider",
+							"label": "c) au COPIL de dÃ©cider",
 							"description": "<p>Vous demandez au COPIL de choisir entre les variantes a) et b), puis r&eacute;pondrez au responsable du GT.</p><p>Ce serait outrepasser les droits du chef de projet que de d&eacute;cider ce genre de choses.</p><p>Co&ucirc;t : 0</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1264,9 +1264,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Besoin Anne rapport activité",
-					"name": "Besoin Anne rapport activité",
-					"label": "R101B - Anne rapport activité",
+					"title": "Besoin Anne rapport activitÃ©",
+					"name": "Besoin Anne rapport activitÃ©",
+					"label": "R101B - Anne rapport activitÃ©",
 					"description": "<p>Le responsable de la r&eacute;daction du rapport d'activit&eacute; a absolument besoin d'Anne (Communication) pour toute la p&eacute;riode courante.</p><p>Si l'adh&eacute;sion de la direction &agrave; votre projet est bonne, vous pouvez essayer de demander qu'Anne reste &agrave; votre disposition.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1278,9 +1278,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) libérer Anne",
-							"title": "a) libérer Anne",
-							"label": "a) libérer Anne",
+							"name": "a) libÃ©rer Anne",
+							"title": "a) libÃ©rer Anne",
+							"label": "a) libÃ©rer Anne",
 							"description": "<p>Vous accepter qu'Anne soit affect&eacute;e &agrave; la r&eacute;daction du rapport d'activit&eacute;. Elle ne sera donc pas disponible pour la p&eacute;riode en cours.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1508,9 +1508,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Prises électriques",
-					"name": "Prises électriques",
-					"label": "R120B - Prises électriques",
+					"title": "Prises Ã©lectriques",
+					"name": "Prises Ã©lectriques",
+					"label": "R120B - Prises Ã©lectriques",
 					"description": "<p>L'entreprise s'occupant de l'installation &eacute;lectrique vous propose de remplacer les prises propos&eacute;es dans le devis (par l'architecte) par un mod&egrave;le plus r&eacute;sistant, mais un peu plus co&ucirc;teux.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1562,9 +1562,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) en référer au CoPil",
-							"title": "c) en référer au CoPil",
-							"label": "c) en référer au CoPil",
+							"name": "c) en rÃ©fÃ©rer au CoPil",
+							"title": "c) en rÃ©fÃ©rer au CoPil",
+							"label": "c) en rÃ©fÃ©rer au CoPil",
 							"description": "<p>Vous pr&eacute;f&eacute;rez en r&eacute;f&eacute;rer au CoPil. Vous transmettez donc l'information et attendez la r&eacute;ponse du CoPil.</p><p>Co&ucirc;ts<br />Cartes temps: 1</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1584,9 +1584,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Réfection fenêtres",
-					"name": "Réfection fenêtres",
-					"label": "R130B - Réfection des fenêtres",
+					"title": "RÃ©fection fenÃªtres",
+					"name": "RÃ©fection fenÃªtres",
+					"label": "R130B - RÃ©fection des fenÃªtres",
 					"description": "<p>L'&eacute;quipe de menuisiers vous a transmis l'information suivante :</p><p>\" Nous avons bien d&eacute;but&eacute; les travaux d'isolation. Ceux-ci comportent la r&eacute;fection de quelques fen&ecirc;tres. Mais nous nous rendons compte que la plupart des fen&ecirc;tres ne sont pas en vraiment bon &eacute;tat. Si nous les laissons dans l'&eacute;tat, les isolations thermiques et phoniques ne seront pas excellentes.&nbsp;</p><p>Aussi, nous vous proposons de changer toutes les fen&ecirc;tres durant la p&eacute;riode de travaux.</p><p>Ceci rallongerait l'am&eacute;nagement des locaux de deux semaines et provoquerait un surco&ucirc;t d'environ 25'000.-\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1638,9 +1638,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) en référer au CoPil",
-							"title": "c) en référer au CoPil",
-							"label": "c) en référer au CoPil",
+							"name": "c) en rÃ©fÃ©rer au CoPil",
+							"title": "c) en rÃ©fÃ©rer au CoPil",
+							"label": "c) en rÃ©fÃ©rer au CoPil",
 							"description": "<p>Vous pr&eacute;f&eacute;rez en r&eacute;f&eacute;rer au COPIL.</p><p>Vous transmettez une synth&egrave;se des informations au COPIL, avec votre position personnelle. Vous demandez au COPIL de valider le choix final.</p><p>Co&ucirc;ts:<br />Cartes temps: 1</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1828,8 +1828,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"title": "Heures supplémentaires inauguration",
-					"name": "Heures supplémentaires inauguration",
+					"title": "Heures supplÃ©mentaires inauguration",
+					"name": "Heures supplÃ©mentaires inauguration",
 					"label": "R125B - H. supp. inauguration",
 					"description": "<p>Vous avez la possibilit&eacute; de demander &agrave; l'&eacute;quipe qui s'occupera de l'inauguration de se pr&eacute;parer &agrave; effectuer  des heures suppl&eacute;mentaires pour de la r&eacute;alisation de cette t&acirc;che.&nbsp;</p>",
 					"allowMultipleReplies": "false",
@@ -1918,9 +1918,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) presque terminé",
-							"title": "b) presque terminé",
-							"label": "b) presque terminé",
+							"name": "b) presque terminÃ©",
+							"title": "b) presque terminÃ©",
+							"label": "b) presque terminÃ©",
 							"description": "<p>Vous r&eacute;pondez que tout sera presque termin&eacute; au terme du planning initial. Mais il y aura encore quelques endroits un peu en chantier.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1958,9 +1958,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "d) ne pas répondre",
-							"title": "d) ne pas répondre",
-							"label": "d) ne pas répondre",
+							"name": "d) ne pas rÃ©pondre",
+							"title": "d) ne pas rÃ©pondre",
+							"label": "d) ne pas rÃ©pondre",
 							"description": "<p>Vous pr&eacute;f&eacute;rez ne pas r&eacute;pondre &agrave; cette question.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1995,7 +1995,7 @@
 					"@class": "QuestionDescriptor",
 					"title": "Comment terminer le projet ?",
 					"name": "Comment terminer le projet ?",
-					"label": "T001 - clôre",
+					"label": "T001 - clÃ´re",
 					"description": "<p>Au lendemain de l'inauguration, vous d&eacute;cidez des derni&egrave;res op&eacute;rations de bouclement. Chacun est pr&ecirc;t &agrave; repartir dans ses activit&eacute;s courantes.</p><p>Quelle liste d'activit&eacute;s retenez-vous ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2007,9 +2007,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "T001 - version  très complète",
-							"title": "T001 - version  très complète",
-							"label": "T001 - version  très complète",
+							"name": "T001 - version  trÃ¨s complÃ¨te",
+							"title": "T001 - version  trÃ¨s complÃ¨te",
+							"label": "T001 - version  trÃ¨s complÃ¨te",
 							"description": "<p>Vous bouclez les d&eacute;comptes et comptes.</p><p>Vous r&eacute;unissez une derni&egrave;re fois les responsables de groupes de travail pour tirer les enseignements de cette exp&eacute;rience.</p><p>Vous faites envoyer une lettre de remerciement &agrave; chaque acteur sous signature de la DG.</p><p>Vous proposez un passage de t&eacute;moin formel &agrave; la personne responsable du nouveau centre, avec les repr&eacute;sentants des diff&eacute;rentes directions de l'h&ocirc;pital.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2047,9 +2047,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "T001 - version plus complète",
-							"title": "T001 - version plus complète",
-							"label": "T001 - version plus complète",
+							"name": "T001 - version plus complÃ¨te",
+							"title": "T001 - version plus complÃ¨te",
+							"label": "T001 - version plus complÃ¨te",
 							"description": "<p>Vous bouclez les d&eacute;comptes et comptes.</p><p>Vous r&eacute;unissez une derni&egrave;re fois les responsables de groupes de travail pour tirer les enseignements de cette exp&eacute;rience.</p><p>Vous faites envoyer une lettre de remerciement &agrave; chaque acteur sous signature de la DG.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"

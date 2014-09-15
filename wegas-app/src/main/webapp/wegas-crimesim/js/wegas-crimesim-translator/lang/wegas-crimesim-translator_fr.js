@@ -3,17 +3,17 @@ YUI.add("lang/wegas-crimesim-translator_fr", function(Y) {
             {
                 Analyse: "Analyse",
                 Analysis_in_progress: "Analyse en cours",
-                Analysis_planified: "Analyse planifiée",
-                Duration: "Durée ",
+                Analysis_planified: "Analyse planifiÃ©e",
+                Duration: "DurÃ©e ",
                 Empty: "Vide",
                 Evidence: "Preuve",
                 File: "Fichier",
                 Human_resources_needed: "Ressources humaines requises ",
-                Period: "Période",
-                No_data_to_display: "Aucune donnée à afficher.",
+                Period: "PÃ©riode",
+                No_data_to_display: "Aucune donnÃ©e Ã  afficher.",
                 No_description: "Aucune description",
                 No_file: "Pas de fichier",
-                Result: "Résultat",
+                Result: "RÃ©sultat",
                 Total_human_resources: "Ressources humaines totales"
             }
     );
