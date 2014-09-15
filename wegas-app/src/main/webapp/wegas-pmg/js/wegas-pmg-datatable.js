@@ -39,7 +39,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (ct[i].key && ct[i].key.indexOf(".") >= 0 || ct[i].key && ct[i].key.indexOf("%") >= 0) {  // @hack 
                     // Key with points issue... 
                     ct[i].key = ct[i].key.replace(/\./g, "%");  // @hack replace '.' by '%' @shame
-                    
+
                     recordTypes[ct[i].key] = {getter: function(i, key) {
                             var v = this.get(key.replace(/%/g, ".")); // @hack @shame
                             // Coerce to number if possible
@@ -149,6 +149,15 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     Wegas.PmgDatatable = Datatable;
 
     Y.mix(Y.DataTable.BodyView.Formatters, {
+        quality: function() {
+            return function(o) {
+                if (o.data.instance.properties.completeness <= 0) {
+                    return "-";
+                } else {
+                    return o.data.instance.properties.quality;
+                }
+            };
+        },
         requieredRessources: function() {
             return function(o) {
                 return TEMPLATES.requiredRessource(o.data.instance.requirements);
