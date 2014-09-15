@@ -219,6 +219,7 @@ tbody .past .activity {
 .yui3-button.pmg-menu-invalid { 
     opacity: 0.8;
     cursor: default;
+    font-style: italic;
 }
 
 /* --------------- SlidePanel css ------------------------------------*/
