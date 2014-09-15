@@ -15,7 +15,7 @@ YUI.add('wegas-fileexplorer', function(Y) {
         CONTENTBOX = 'contentBox', BOUNDING_BOX = "boundingBox", LABEL = "label",
         MAX_FILE_SIZE = 20000000,
         DEFAULTHEADERS = {
-            'Content-Type': 'application/json; charset=ISO-8859-1',
+            'Content-Type': 'application/json; charset=UTF-8',
             'Managed-Mode': false
         }, BASEMENU = [{
             label: "Lock",

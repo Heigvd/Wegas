@@ -1096,14 +1096,14 @@ YUI.add('wegas-proggame-level', function(Y) {
                 x: 402,
                 y: 510,
                 highlight: ".code",
-                bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'éditeur de code vous permet de contrôler votre avatar.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                bodyContent: "<div class='proggame-tuto-arrowbottom' style='float: left;'></div><div>L'Ã©diteur de code vous permet de contrÃ´ler votre avatar.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
                 height: 110,
                 width: 460,
                 x: 462,
                 y: 610,
                 highlight: ".proggame-buttons",
-                bodyContent: "<div class='proggame-tuto-arrowright'></div><div>Pour exécuter votre code, cliquez sur la flèche verte.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                bodyContent: "<div class='proggame-tuto-arrowright'></div><div>Pour exÃ©cuter votre code, cliquez sur la flÃ¨che verte.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
                 height: 115,
                 width: 600,
@@ -1124,14 +1124,14 @@ YUI.add('wegas-proggame-level', function(Y) {
                 x: 705,
                 y: 54,
                 highlight: ".proggame-button-shop",
-                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Le shop vous permet d'acheter des outils qui facilitront le développement.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Le shop vous permet d'acheter des outils qui facilitront le dÃ©veloppement.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }, {
                 height: 190,
                 width: 360,
                 x: 803,
                 y: 54,
                 highlight: ".proggame-button-courses",
-                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la théorie nécessaire pour chaque niveau dans la boîte mail.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
+                bodyContent: "<div class='proggame-tuto-arrowtop'></div><div>Vous recevez la thÃ©orie nÃ©cessaire pour chaque niveau dans la boÃ®te mail.<br /><br /></div><button class='yui3-button proggame-button'>Continuer</button>"
             }]
     });
     Wegas.ProgGameLevel = ProgGameLevel;

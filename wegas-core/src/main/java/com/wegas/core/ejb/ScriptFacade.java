@@ -16,11 +16,15 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -179,17 +183,23 @@ public class ScriptFacade implements Serializable {
 
         String[] files = new String[0];
         String scriptURI = evt.getPlayer().getGameModel().getProperties().getScriptUri();
-        if (scriptURI != null && ! scriptURI.equals("")){
+        if (scriptURI != null && !scriptURI.equals("")) {
             files = evt.getPlayer().getGameModel().getProperties().getScriptUri().split(";");
         }
 
         for (String f : getJavaScriptsRecursively(root, files)) {
             evt.getEngine().put(ScriptEngine.FILENAME, "Script file " + f); //@TODO: JAVA 8 filename in scope
             try {
-                evt.getEngine().eval(new java.io.FileReader(f));
+
+                java.io.FileInputStream fis = new FileInputStream(f);
+                java.io.InputStreamReader isr = new InputStreamReader(fis, "UTF8");
+
+                evt.getEngine().eval(isr);
                 logger.info("File " + f + " successfully injected");
             } catch (FileNotFoundException ex) {
                 logger.warn("File " + f + " was not found");
+            } catch (UnsupportedEncodingException ex) {
+                throw new com.wegas.core.exception.ScriptException(f, ex.getMessage());
             } catch (ScriptException ex) {
                 throw new com.wegas.core.exception.ScriptException(f, ex.getLineNumber(), ex.getMessage());
             }
@@ -200,8 +210,8 @@ public class ScriptFacade implements Serializable {
      * extract all javascript files from the files list. If one of the files is
      * a directory, recurse through it and fetch *.js.
      *
-     * Note: When iterating, if a script and its minified version stands in the directory, 
-     *       the minified is ignored (debugging purpose)
+     * Note: When iterating, if a script and its minified version stands in the
+     * directory, the minified is ignored (debugging purpose)
      *
      * @param root
      * @param files

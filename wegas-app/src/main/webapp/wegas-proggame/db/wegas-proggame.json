@@ -794,7 +794,7 @@
                     "data": {}
                 },
                 {
-                    "label": "Level 4: ItÈrations",
+                    "label": "Level 4: It√©rations",
                     "type": "Button",
                     "cssClass": "proggame-levelselection-button",
                     "plugins": [
@@ -847,7 +847,7 @@
                     "data": {}
                 },
                 {
-                    "label": "Level 5: ProcÈdures <em>(Pas encore disponible)</em>",
+                    "label": "Level 5: Proc√©dures <em>(Pas encore disponible)</em>",
                     "type": "Button",
                     "cssClass": "proggame-levelselection-button",
                     "plugins": [
@@ -953,7 +953,7 @@
                     "data": {}
                 },
                 {
-                    "label": "Level 7: RÈcursivitÈ <em>(Pas encore disponible)</em>",
+                    "label": "Level 7: R√©cursivit√© <em>(Pas encore disponible)</em>",
                     "type": "Button",
                     "cssClass": "proggame-levelselection-button",
                     "plugins": [
@@ -2137,7 +2137,7 @@
             "defaultCode": "",
             "invites": [
                 "He! Le password c'est 1234 !",
-                "Tu m'Ècoutes? 1234 je te dis !"
+                "Tu m'√©coutes? 1234 je te dis !"
             ],
             "maxTurns": "1",
             "@name": "Level 2.1"
@@ -4146,7 +4146,7 @@
                     }
                 ]
             ],
-            "intro": "Utilisez les fonctions de l'API pour d√©placer votre avatar jusqu'au personnage en jaune.",
+            "intro": "Utilisez les fonctions de l'API pour d√É¬©placer votre avatar jusqu'au personnage en jaune.",
             "@name": "Level 1.4 (not used)"
         }
     },
@@ -4363,7 +4363,7 @@
                                     },
                                     "preStateImpact": {
                                         "@class": "Script",
-                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"ThÈorie: Les variables\", \"<p>Les&nbsp;programmes traitent en g&eacute;n&eacute;ral une grande&nbsp;quantit&eacute; d'informations qu'il est n&eacute;cessaire de pouvoir stocker, traiter et r&eacute;cup&eacute;rer.</p>\\n<p>Les&nbsp;<strong><em>variables</em>&nbsp;</strong>permettent de stocker les&nbsp;informations.&nbsp;Une variable est une sorte de bo&icirc;te qui contient des informations dont la valeur peut &ecirc;tre modifi&eacute;e par le programme (c'est pour ceci qu'on les appellent \\\"variables\\\").</p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>Pour d&eacute;finir&nbsp;une variable on utilise&nbsp;le mot-cl&eacute;&nbsp;<strong>var&nbsp;</strong>suivi du nom que l'on souhaite donner &agrave; la variable. Par exemple pour d&eacute;finir&nbsp;une variable nomm&eacute;e &acirc;ge et&nbsp;y stocker une valeur on utilise&nbsp;</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">var age;<br /></span><span style=\\\"font-family: 'courier new', courier;\\\">age=22;</span></code></p>\\n<p>(Attention le nom d'une variable ne doit pas comporter&nbsp;d'espace, ni d&eacute;buter&nbsp;par un chiffre)</p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>Il est possible d'affecter &agrave; une variable la valeur retourn&eacute;e par une fonction de la mani&egrave;re suivante:</p>\\n<p><span style=\\\"font-family: 'courier new', courier;\\\">var nomVariable = read();</span></p>\\n<p>Ou d'utiliser une variable comme param&egrave;tre &agrave; une fonction:</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">say(nomVariable)</span></code></p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>On peut aussi effectuer des op&eacute;ration&nbsp;arithm&eacute;tiques avec les variables.</p>\\n<p><code>var longueur, largeur, surface;<br />longueur=5;<br />largeur=2;<br />surface=longeur*largeur;</code></p>\", [])",
+                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"Th√©orie: Les variables\", \"<p>Les&nbsp;programmes traitent en g&eacute;n&eacute;ral une grande&nbsp;quantit&eacute; d'informations qu'il est n&eacute;cessaire de pouvoir stocker, traiter et r&eacute;cup&eacute;rer.</p>\\n<p>Les&nbsp;<strong><em>variables</em>&nbsp;</strong>permettent de stocker les&nbsp;informations.&nbsp;Une variable est une sorte de bo&icirc;te qui contient des informations dont la valeur peut &ecirc;tre modifi&eacute;e par le programme (c'est pour ceci qu'on les appellent \\\"variables\\\").</p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>Pour d&eacute;finir&nbsp;une variable on utilise&nbsp;le mot-cl&eacute;&nbsp;<strong>var&nbsp;</strong>suivi du nom que l'on souhaite donner &agrave; la variable. Par exemple pour d&eacute;finir&nbsp;une variable nomm&eacute;e &acirc;ge et&nbsp;y stocker une valeur on utilise&nbsp;</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">var age;<br /></span><span style=\\\"font-family: 'courier new', courier;\\\">age=22;</span></code></p>\\n<p>(Attention le nom d'une variable ne doit pas comporter&nbsp;d'espace, ni d&eacute;buter&nbsp;par un chiffre)</p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>Il est possible d'affecter &agrave; une variable la valeur retourn&eacute;e par une fonction de la mani&egrave;re suivante:</p>\\n<p><span style=\\\"font-family: 'courier new', courier;\\\">var nomVariable = read();</span></p>\\n<p>Ou d'utiliser une variable comme param&egrave;tre &agrave; une fonction:</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">say(nomVariable)</span></code></p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>On peut aussi effectuer des op&eacute;ration&nbsp;arithm&eacute;tiques avec les variables.</p>\\n<p><code>var longueur, largeur, surface;<br />longueur=5;<br />largeur=2;<br />surface=longeur*largeur;</code></p>\", [])",
                                         "language": "JavaScript"
                                     },
                                     "nextStateId": 4
@@ -4393,7 +4393,7 @@
                                     },
                                     "preStateImpact": {
                                         "@class": "Script",
-                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"ThÈorie: Conditions & logique\", \"<p>Notre vie est remplie de d&eacute;cisions telles que \\\"si le feu est rouge, je m'arr&ecirc;te\\\" ou \\\"s'il fait chaud demain, j'irai &agrave; la piscine\\\". Ces d&eacute;cisions sont bas&eacute;es sur la r&eacute;alisation d'une condition (le feu est rouge, il fait chaud). En cas de r&eacute;alisation de cette condition, on effectue quelque chose (je m'arr&ecirc;te, aller &agrave; la piscine).</p>\\n<p>&nbsp;</p>\\n<p>Dans un programme, on peut introduire&nbsp;des d&eacute;cisions conditionnelles avec l'instruction&nbsp;<strong>if</strong><strong>.&nbsp;</strong>La structure de cette instruction est:</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">if (<em>condition r&eacute;alis&eacute;e</em>)</span>&nbsp; {<span style=\\\"font-family: 'courier new', courier;\\\">&nbsp;<br />&nbsp; &nbsp; <em>instructions</em><br /></span><span style=\\\"font-family: 'courier new', courier;\\\">}</span></code></p>\\n<p>&nbsp;</p>\\n<p>La condition peut par exemple &ecirc;tre&nbsp;que la variable temp&eacute;rature soit plus grande que 27&deg;.</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">if (temperature &gt; 27)&nbsp;</span>{<br /><span style=\\\"font-family: 'courier new', courier;\\\">&nbsp; &nbsp; demain=\\\"piscine\\\";<br /></span><span style=\\\"font-family: 'courier new', courier;\\\">}</span></code></p>\\n<p>&nbsp;</p>\\n<p>Les { } permettent de d&eacute;finir un&nbsp;<strong>bloc d'instructions,&nbsp;</strong>qui seront toutes ex&eacute;cut&eacute;es si la condition est vraie.</p>\\n<p>&nbsp;</p>\", [])",
+                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"Th√©orie: Conditions & logique\", \"<p>Notre vie est remplie de d&eacute;cisions telles que \\\"si le feu est rouge, je m'arr&ecirc;te\\\" ou \\\"s'il fait chaud demain, j'irai &agrave; la piscine\\\". Ces d&eacute;cisions sont bas&eacute;es sur la r&eacute;alisation d'une condition (le feu est rouge, il fait chaud). En cas de r&eacute;alisation de cette condition, on effectue quelque chose (je m'arr&ecirc;te, aller &agrave; la piscine).</p>\\n<p>&nbsp;</p>\\n<p>Dans un programme, on peut introduire&nbsp;des d&eacute;cisions conditionnelles avec l'instruction&nbsp;<strong>if</strong><strong>.&nbsp;</strong>La structure de cette instruction est:</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">if (<em>condition r&eacute;alis&eacute;e</em>)</span>&nbsp; {<span style=\\\"font-family: 'courier new', courier;\\\">&nbsp;<br />&nbsp; &nbsp; <em>instructions</em><br /></span><span style=\\\"font-family: 'courier new', courier;\\\">}</span></code></p>\\n<p>&nbsp;</p>\\n<p>La condition peut par exemple &ecirc;tre&nbsp;que la variable temp&eacute;rature soit plus grande que 27&deg;.</p>\\n<p><code><span style=\\\"font-family: 'courier new', courier;\\\">if (temperature &gt; 27)&nbsp;</span>{<br /><span style=\\\"font-family: 'courier new', courier;\\\">&nbsp; &nbsp; demain=\\\"piscine\\\";<br /></span><span style=\\\"font-family: 'courier new', courier;\\\">}</span></code></p>\\n<p>&nbsp;</p>\\n<p>Les { } permettent de d&eacute;finir un&nbsp;<strong>bloc d'instructions,&nbsp;</strong>qui seront toutes ex&eacute;cut&eacute;es si la condition est vraie.</p>\\n<p>&nbsp;</p>\", [])",
                                         "language": "JavaScript"
                                     },
                                     "nextStateId": 5
@@ -4423,7 +4423,7 @@
                                     },
                                     "preStateImpact": {
                                         "@class": "Script",
-                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"ThÈorie: ItÈrations\", \"<p>Les boucles sont des structures qui r&eacute;p&egrave;tent un bloc d'instruction tant qu'une condition est vraie.</p>\\n<p>&nbsp;</p>\\n<p><br />Une premi&egrave;re instruction permettant de d&eacute;finir une boucle est <strong>while</strong> (qui veut dire \\\"tant que\\\"). La structure d'une boucle while est:</p>\\n<p><code>while (<em><span style=\\\"text-decoration: underline;\\\">condition vraie</span></em>)&nbsp;{<br /> <em>instructions &agrave; r&eacute;p&ecirc;ter</em><br /> }</code></p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>On peut aussi it&eacute;rer un nombre d&eacute;fini de fois en utilisant le mot cl&eacute; <strong>for </strong>(pour tout):</p>\\n<p><code>for (var i = 0; i &lt; 10; i = i + 1)&nbsp;{<br /><em>&nbsp; instructions &agrave; r&eacute;p&ecirc;ter<br /></em>}</code></p>\\n<p>Dans ce cas, la condition est i&lt;10.</p>\\n<p>i=+1 signifie qu'&agrave; chaque r&eacute;p&eacute;tition de la boucle on ajoute 1 &agrave; la valeur de i.</p>\", [])",
+                                        "content": "Variable.find(gameModel, \"inbox\").sendMessage(self, \"Professeur\", \"Th√©orie: It√©rations\", \"<p>Les boucles sont des structures qui r&eacute;p&egrave;tent un bloc d'instruction tant qu'une condition est vraie.</p>\\n<p>&nbsp;</p>\\n<p><br />Une premi&egrave;re instruction permettant de d&eacute;finir une boucle est <strong>while</strong> (qui veut dire \\\"tant que\\\"). La structure d'une boucle while est:</p>\\n<p><code>while (<em><span style=\\\"text-decoration: underline;\\\">condition vraie</span></em>)&nbsp;{<br /> <em>instructions &agrave; r&eacute;p&ecirc;ter</em><br /> }</code></p>\\n<p>&nbsp;</p>\\n<p>&nbsp;</p>\\n<p>On peut aussi it&eacute;rer un nombre d&eacute;fini de fois en utilisant le mot cl&eacute; <strong>for </strong>(pour tout):</p>\\n<p><code>for (var i = 0; i &lt; 10; i = i + 1)&nbsp;{<br /><em>&nbsp; instructions &agrave; r&eacute;p&ecirc;ter<br /></em>}</code></p>\\n<p>Dans ce cas, la condition est i&lt;10.</p>\\n<p>i=+1 signifie qu'&agrave; chaque r&eacute;p&eacute;tition de la boucle on ajoute 1 &agrave; la valeur de i.</p>\", [])",
                                         "language": "JavaScript"
                                     },
                                     "nextStateId": 6

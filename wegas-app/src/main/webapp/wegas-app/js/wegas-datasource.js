@@ -75,7 +75,7 @@ YUI.add('wegas-datasource', function(Y) {
             request.on = request.on || {};
             request.on.failure = request.on.failure || Y.bind(this.fire, this, "failure");
             Y.mix(request.cfg.headers, {
-                'Content-Type': 'application/json;charset=ISO-8859-1',
+                'Content-Type': 'application/json;charset=UTF-8',
                 'Managed-Mode': 'true'
             });
             if (Lang.isObject(request.cfg.data)) {                              // Stringify data if required
@@ -1008,7 +1008,7 @@ YUI.add('wegas-datasource', function(Y) {
         /**
          * Server requests methods
          *
-         * @fixme Il y a peut-être un problème du au remove de cette fonction dans la class parent.
+         * @fixme Il y a peut-Ãªtre un problÃ¨me du au remove de cette fonction dans la class parent.
          * @deprecated
          *
          * @function
@@ -1021,7 +1021,7 @@ YUI.add('wegas-datasource', function(Y) {
             requestCfg.cfg.Page = requestCfg.cfg.Page || '';
             requestCfg.cfg.headers = requestCfg.cfg.headers || {};
             Y.mix(requestCfg.cfg.headers, {
-                'Content-Type': 'application/json;charset=ISO-8859-1',
+                'Content-Type': 'application/json;charset=UTF-8',
                 "Managed-Mode": "false"
             });
             return this.get(HOST).sendRequest(requestCfg);

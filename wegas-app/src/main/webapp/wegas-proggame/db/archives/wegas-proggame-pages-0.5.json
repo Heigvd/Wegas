@@ -638,7 +638,7 @@
                     }]
             }, {
                 "type": "Button",
-                "label": "Level 5: Itération",
+                "label": "Level 5: ItÃ©ration",
                 "cssClass": "proggame-levelselection-button",
                 "plugins": [{
                         "fn": "ConditionalDisable",
@@ -692,7 +692,7 @@
                     }]
             }, {
                 "type": "Button",
-                "label": "Level 7: Récursivité",
+                "label": "Level 7: RÃ©cursivitÃ©",
                 "cssClass": "proggame-levelselection-button",
                 "plugins": [{
                         "fn": "ConditionalDisable",
@@ -1142,7 +1142,7 @@
                 "y": 2,
                 "collides": false
             }],
-        "intro": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d'instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque 'API' à gauche de l'écran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalités de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction 'move' qui aura pour effet de déplacer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d'instructions complète afin d'atteindre l'autre personnage. Pour voir le résultat de l'exécution de votre code, cliquez sur la flèche verte."
+        "intro": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la sÃ©quence d'instructions nÃ©cessaire au dÃ©placement de votre avatar. Les instructions (fonctions) disponibles sont listÃ©es sous le bloque 'API' Ã  gauche de l'Ã©cran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalitÃ©s de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction 'move' qui aura pour effet de dÃ©placer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc rÃ©aliser la sÃ©quence d'instructions complÃ¨te afin d'atteindre l'autre personnage. Pour voir le rÃ©sultat de l'exÃ©cution de votre code, cliquez sur la flÃ¨che verte."
     },
     "12": {
         "@name": "Level 1.2",
@@ -1172,7 +1172,7 @@
                 "y": 1,
                 "collides": false
             }],
-        "intro": "La fonction \"move\" ne vous permettant pas de vous déplacer dans une autre direction que le sens de marche, il serait utile de pouvoir faire tourner votre avatar. Utiliser les nouvelles fonctions de l'API pour programmer la séquence d'instructions permettant à votre avatar d'atteindre l'autre personnage."
+        "intro": "La fonction \"move\" ne vous permettant pas de vous dÃ©placer dans une autre direction que le sens de marche, il serait utile de pouvoir faire tourner votre avatar. Utiliser les nouvelles fonctions de l'API pour programmer la sÃ©quence d'instructions permettant Ã  votre avatar d'atteindre l'autre personnage."
     },
     "13": {
         "@name": "Level 1.3",
@@ -1202,7 +1202,7 @@
                 "y": 2,
                 "collides": false
             }],
-        "intro": "Utilisez les fonctions de l'API pour déplacer votre avatar jusqu'au personnage en jaune."
+        "intro": "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune."
     },
     "5Unused": {
         "@name": "Level 1.4 (not used)",
@@ -1239,7 +1239,7 @@
             [{"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}, {"x": 21, "y": 5}],
             [{"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}, {"x": 21, "y": 17}]
         ],
-        "intro": "Utilisez les fonctions de l'API pour déplacer votre avatar jusqu'au personnage en jaune."
+        "intro": "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune."
     },
     "21": {
         "@name": "Level 2.1",
@@ -1277,7 +1277,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "intro": "Les fonctions utilisées lors des stages précédents ne possédaient aucun paramètre. Le nouvelle fonction de l'API nommée <em>say</em> prend un paramètre. Ce paramètre est une chaîne de caractère représentant le texte de ce que va dire votre avatar. Il vous permet ainsi d'agir sur le comportement de votre avatar de manière plus fine que les fonctions précédentes, mais vous devez en contrepartie fournir une information supplémentaire lors de l'appel de cette fonctionnalité.<br /><br />Dans le prochain niveau, une porte vous empêche de rejoindre le personnage en jaune. Elle est controlée par une commande vocal, vous pourrez donc utiliser la méthode <em>say</em> pour la contrôler. Le password pour ce niveau est 1234."
+        "intro": "Les fonctions utilisÃ©es lors des stages prÃ©cÃ©dents ne possÃ©daient aucun paramÃ¨tre. Le nouvelle fonction de l'API nommÃ©e <em>say</em> prend un paramÃ¨tre. Ce paramÃ¨tre est une chaÃ®ne de caractÃ¨re reprÃ©sentant le texte de ce que va dire votre avatar. Il vous permet ainsi d'agir sur le comportement de votre avatar de maniÃ¨re plus fine que les fonctions prÃ©cÃ©dentes, mais vous devez en contrepartie fournir une information supplÃ©mentaire lors de l'appel de cette fonctionnalitÃ©.<br /><br />Dans le prochain niveau, une porte vous empÃªche de rejoindre le personnage en jaune. Elle est controlÃ©e par une commande vocal, vous pourrez donc utiliser la mÃ©thode <em>say</em> pour la contrÃ´ler. Le password pour ce niveau est 1234."
     },
     "22": {
         "@name": "Level 2.2",
@@ -1324,7 +1324,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "intro": "Tout programme traite une certaine quantité d'informations, il est donc nécessaire de pouvoir récupérer ces informations avant traitement. Dans ce stage vous devez déplacer votre avatar jusqu'au panneau afin d'y lire ce qui s'y trouve. Pour cela, L'API offre une nouvelle fonctionnalité nommée 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont définies en utilisant le mot clé <b>var<b>. Vous pouvez créer une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est écrit sur le panneau. Déplacez votre avatar jusqu'au panneau, stockez ce qui y est écrit puis dites-le à haute voix."
+        "intro": "Tout programme traite une certaine quantitÃ© d'informations, il est donc nÃ©cessaire de pouvoir rÃ©cupÃ©rer ces informations avant traitement. Dans ce stage vous devez dÃ©placer votre avatar jusqu'au panneau afin d'y lire ce qui s'y trouve. Pour cela, L'API offre une nouvelle fonctionnalitÃ© nommÃ©e 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont dÃ©finies en utilisant le mot clÃ© <b>var<b>. Vous pouvez crÃ©er une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est Ã©crit sur le panneau. DÃ©placez votre avatar jusqu'au panneau, stockez ce qui y est Ã©crit puis dites-le Ã  haute voix."
     },
     "23": {
         "@name": "Level 2.3",
@@ -1377,7 +1377,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "intro": "Vous devez récupérer les valeurs écrites sur deux panneaux différents dans des variables. Faites la somme de ces valeurs, et communiquez le résultat de l'addition au personnage en jaune."
+        "intro": "Vous devez rÃ©cupÃ©rer les valeurs Ã©crites sur deux panneaux diffÃ©rents dans des variables. Faites la somme de ces valeurs, et communiquez le rÃ©sultat de l'addition au personnage en jaune."
     },
     "24": {
         "@name": "Level 2.4",
@@ -1422,7 +1422,7 @@
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}],
             [{"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}, {"x": 0, "y": 0}]
         ],
-        "intro": "Utilisez la fonction Math.round pour arrondir le nombre écri nombre au dixième"
+        "intro": "Utilisez la fonction Math.round pour arrondir le nombre Ã©cri nombre au dixiÃ¨me"
     },
     "31": {
         "@name": "Level 3.1",
