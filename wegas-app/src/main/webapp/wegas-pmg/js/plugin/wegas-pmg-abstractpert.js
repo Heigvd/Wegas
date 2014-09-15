@@ -67,7 +67,6 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                     }
                     Y.log ("Pred " + taskTable[predecessorId].get("label"));
                     Y.log ("  endAt " + taskTable[predecessorId].endAt);
-                    // verifie si le prÃ©decesseur possede le debut pert
                     if (taskTable[predecessorId].endAt) {
                         if (minBeginAt < taskTable[predecessorId].endAt) {
                             minBeginAt = taskTable[predecessorId].endAt;
@@ -77,7 +76,6 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                         break;
                     }
                 }
-                // si tous les prÃ©decesseur on un debut pert alors on l'ajoute dans la liste
                 if (allPredDefine) {
                     var taskInstance = taskDesc.getInstance(),
                         stillPlanned = taskInstance.get("plannification").filter(function(n) {
