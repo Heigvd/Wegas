@@ -355,6 +355,12 @@ h2{
 .history-page .wegas-text{
     height:27px;
 }
+.yui3-skin-sam .wegas-inbox,
+.yui3-skin-sam .wegas-mcqtabview{
+    position: absolute;
+    top: 25px;
+    bottom: 1px;
+}
 .yui3-skin-sam  .wegas-inbox .wegas-inbox-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;

@@ -18,6 +18,18 @@
 .yui3-skin-sam .wegas-inbox .yui3-tab-panel{
     padding: 0  10px;
 }
+.yui3-skin-sam .wegas-inbox .horizontal-tabview,
+.yui3-skin-sam .wegas-inbox .horizontal-tabview .yui3-tabview-content{
+    height:100%;
+}
+.yui3-skin-sam .wegas-inbox .horizontal-tabview ul.yui3-tabview-list,
+.yui3-skin-sam .wegas-inbox .horizontal-tabview div.yui3-tabview-panel{
+    height:100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100px;
+    padding-bottom: 1px;
+}
 .yui3-skin-sam .wegas-inbox .yui3-tab-label > div {
     padding: 0 10px;
 }

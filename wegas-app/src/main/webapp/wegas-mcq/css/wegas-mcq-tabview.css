@@ -53,6 +53,18 @@
     margin-top: 5px;
     color: #757575;
 }
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview,
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview .yui3-tabview-content{
+    height:100%;
+}
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview ul.yui3-tabview-list,
+.yui3-skin-sam .wegas-mcqtabview .horizontal-tabview div.yui3-tabview-panel{
+    height:100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 100px;
+    padding-bottom: 1px;
+}
 .wegas-mcqtabview .yui3-tab-panel > .content{
     padding-left: 20px;
 }
