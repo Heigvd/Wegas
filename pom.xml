@@ -205,7 +205,7 @@
             <!-- Embedded glassfish -->
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
-                <artifactId>glassfish-embedded-web</artifactId>
+                <artifactId>glassfish-embedded-all</artifactId>
                 <version>${glassfish.version}</version>
                 <scope>provided</scope>
             </dependency>
