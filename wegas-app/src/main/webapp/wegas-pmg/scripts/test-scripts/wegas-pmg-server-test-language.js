@@ -42,7 +42,7 @@ function testLanguage1() {
     language.setValue("en");
 
     ok = I18n.t(key, {step: "STEP", task: "T1", nextTask: "T2", employeeName: "John", job: "Job"});
-    exp_ok = "Hello <br /><br />I hereby inform you that I finished working on task \"T1\", and started working on task \"T2\" since STEP. <br /> <br />Regards<br />John <br /> Job";
+    exp_ok = "Hello <br /><br />I hereby inform you that I finished working on task \"T1\" and started working on task \"T2\" since STEP. <br /> <br />Regards<br />John <br /> Job";
     assertEquals(exp_ok, ok, "TestLanguage(): OK Failed");
 
     missingArgs = I18n.t(key, {task: "Task #1", nextTask: "Task #2"});
