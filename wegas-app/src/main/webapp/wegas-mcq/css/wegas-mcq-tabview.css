@@ -86,6 +86,10 @@
     border-bottom: 1px solid lightgray;
     margin-top: 10px;
 }
+.wegas-mcqtabview .replyDiv:last-child  {
+    border-bottom: none;
+}
+
 .wegas-mcqtabview .numberOfReplies{
     float:right;
 }
