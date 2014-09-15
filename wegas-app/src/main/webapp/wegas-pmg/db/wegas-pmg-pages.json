@@ -535,11 +535,6 @@
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
-                                "position": "absolute",
-                                "top": "120px",
-                                "bottom": "0px",
-                                "right": "59px",
-                                "left": "0px"
                             }
                         }
                     }, {
@@ -554,8 +549,6 @@
                         "fn": "CSSStyles",
                         "cfg": {
                             "styles": {
-                                "overflow-x": "hidden",
-                                "overflow-y": "auto"
                             }
                         }
                     }
@@ -872,7 +865,8 @@
                 "type": "InboxDisplay",
                 "variable": {
                     "name": "history"
-                }
+                },
+                "template" : "clean"
             }]
     },
     "10": {
@@ -893,19 +887,19 @@
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
                         "verticalGridlines": true,
-                        "hStart": "1",
+                        "hStart": "0",
                         "hMinEnd": {
                             "name": "executionPeriods"
                         },
                         "variables": [{
-                                "name": "actualCost",
-                                "label": "AC (Actual Cost)"
-                            }, {
                                 "name": "planedValue",
                                 "label": "PV (Planed Value)"
                             }, {
                                 "name": "earnedValue",
                                 "label": "EV (Earned Value)"
+                            }, { 
+                                "name": "actualCost",
+                                "label": "AC (Actual Cost)"
                             }]
                     }]
             }]
@@ -949,12 +943,13 @@
                         "sortable": true,
                         "allowHTML": true
                     }, {
-                        "label": "Realised %",
-                        "name": "Realized",
+                        "label": "Realised",
+                        "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness",
                         "sortable": true,
-                        "allowHTML": true
+                        "allowHTML": true,
+                        "className": "right"
                     }],
                 "defaultSort": null
             }, {
@@ -986,7 +981,7 @@
                         "key": "instance.duration",
                         "className": "right"
                     }, {
-                        "label": "Realised %",
+                        "label": "Realised",
                         "name": "Realised",
                         "width": "7%",
                         "key": "instance.properties.completeness",
@@ -1011,7 +1006,8 @@
                         "name": "Quality",
                         "label": "Quality",
                         "className": "right",
-                        "key": "instance.properties.quality"
+                        "key": "instance.properties.quality",
+                        "formatter": "quality"
                     }, {
                         "key": "requirements",
                         "label": "Resources",

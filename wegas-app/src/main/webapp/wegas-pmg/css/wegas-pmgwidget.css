@@ -283,7 +283,7 @@ tbody .past .activity {
     /* padding: 5px; */
 }
 .pmg-popup-overlay .yui3-widget-bd .subtitle{
-    color: rgb(68, 68, 68);
+    color: rgb(28, 28, 28);
     margin-bottom: 3px;
     font-weight: bold;
     font-size: 8.5pt;
@@ -292,6 +292,7 @@ tbody .past .activity {
     font-size: 9pt;
     font-weight: bold;
     padding: 5px 10px 0; 
+    color: rgb(28, 28, 28);
 }
 
 .indicators-management .yui3-numericaxis + .yui3-numericaxis  {

@@ -66,13 +66,14 @@ YUI.add('wegas-inbox', function(Y) {
              * inbox without labels.
              */
             clean: {
-                tab: Micro.compile("<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'><div class='left'><%= this.get('from') %> </div><div class='right'><%=this.get('subject')%></div></div>"),
-                content: Micro.compile("<div class='msg-header msg-header-clean'><div class='msg-subject'><%=this.get('subject')%></div>"
-                    + "<div class='msg-from'><%= this.get('from') %></div>"
-                    + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
-                    + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>'  target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div></div>"
-                    + "<% } %></div>"
-                    + "<div class='msg-body'><%== this.get('body') %></div>")
+                tab: Micro.compile("<div>"
+                    + "<div class='msg-firstLine'>" 
+                    + "<span class='msg-subject'><%== this.get('subject')%></span>"
+                    + "<% if (this.get('date')){ %><span class='msg-date'><%== this.get('date') %></span><% } %>"
+                    + "</div>" 
+                    + "<% if (this.get('from')){ %><div class='msg-from'><span><%== this.get('from') %></span></div><% } %>"),
+                content: Micro.compile(
+                    "<div class='msg-body'> <%== this.get('body') %></div>")
             }
         },
         // *** Lifecycle Methods *** //

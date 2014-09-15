@@ -127,7 +127,6 @@ var PMGSimulation = (function() {
                 sendEndOfTaskMail(td, currentStep);
             }
         });
-        checkEnd(activities, currentStep);
     }
 
     /**
@@ -245,27 +244,6 @@ var PMGSimulation = (function() {
         }
         debug("**************");
         return activity;
-    }
-
-
-    /**
-     * 
-     * @param {Array} activities an Array of Activity
-     * @param {Number} currentStep
-     */
-    function checkEnd(activities, currentStep) {
-        debug(arguments.callee.name + "() step: " + currentStep);
-        var taskInst, taskDesc;
-
-        Y.Array.each(getDistinctRequirements(activities), function(r) {
-            taskInst = r.getTaskInstance(),
-                taskDesc = taskInst.getDescriptor();
-            if (!PMGHelper.isTaskInstanceCompleted(taskInst)) {
-                if (isSkillCompleted(taskInst, r.work)) {
-                    sendSkillCompletedEmail(currentStep, taskDesc, r.work);
-                }
-            }
-        });
     }
 
 
@@ -1087,7 +1065,7 @@ var PMGSimulation = (function() {
     function calculatePlannedValue(period) {
         return Y.Array.sum(getActiveTasks(), function(t) {
             if (t.plannification.size() === 0) {                                    // If the user did not provide a planfication
-                return t.getPropertyD('bac');                                       // return budget at completion as it is
+                return t.getPropertyD('bac');                                       // return budget at completion as-is
 
             } else {                                                                // Otherwise
                 return Y.Array.sum(t.plannification, function(p) {                  // return a ratio of the bac and the already passed periods in plannification
@@ -1103,8 +1081,6 @@ var PMGSimulation = (function() {
      * Calculate plannedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
      * history for variable the same variable and for costs, delay and quality.
      * 
-     * @param {type} currentPhaseNum
-     * @param {type} currentPeriodNum
      * @returns {undefined}
      */
     function updateVariables() {

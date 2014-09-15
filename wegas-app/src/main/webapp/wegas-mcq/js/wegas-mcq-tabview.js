@@ -268,7 +268,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
                     reply = cQuestionInstance.get("replies")[j];
                     choiceDescriptor = reply.getChoiceDescriptor();
-                    title = choiceDescriptor.get("title");
+                    title = Y.Lang.trim(choiceDescriptor.get("title"));
 
                     ret.push('<div class="replyDiv ', ((j === cQuestionInstance.get("replies").length - 1) ? 'mostRecentReply' : 'olderReply'), '">');
                     if (title) {
