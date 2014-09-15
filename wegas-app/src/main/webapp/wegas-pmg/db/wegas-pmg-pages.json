@@ -130,13 +130,14 @@
                             }
                         }
                     }, {
-                        "fn": "ExecuteScriptAction",
+                        "fn": "ConfirmExecuteScriptAction",
                         "cfg": {
                             "onClick": {
                                 "@class": "Script",
                                 "language": "JavaScript",
                                 "content": "PMGSimulation.nextPeriod()"
                             },
+                            "message": "Are you sure you want to continue?",
                             "targetEvent": "click"
                         }
                     }, {
@@ -1365,7 +1366,8 @@
                         }]
                 }
             }]
-    },"Team": {
+    },
+    "Team": {
         "type": "EditTeam"
     },
     "UserPreferences": {

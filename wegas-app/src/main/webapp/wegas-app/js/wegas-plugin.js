@@ -349,6 +349,31 @@ YUI.add("wegas-plugin", function(Y) {
         }
     });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
+    /**
+     *  @class
+     *  @name Y.Plugin.ConfirmExecuteScriptAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var ConfirmExecuteScriptAction = Y.Base.create("ConfirmExecuteScriptAction", ExecuteScriptAction, [], {
+        execute: function() {
+            if (!this.get(HOST).get("disabled")) {
+                Wegas.Panel.confirm(this.get("message"), Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
+            }
+        }
+    }, {
+        NS: "ExecuteScriptAction",
+        ATTRS: {
+            message: {
+                type: "string",
+                value: "",
+                _inputex: {
+                    label: "message"
+                }
+            }
+        }
+    });
+    Plugin.ConfirmExecuteScriptAction = ConfirmExecuteScriptAction;
 
     /**
      *  @class
