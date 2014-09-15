@@ -35,24 +35,13 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                     ct[i].sortFn = Datatable.Sort[ct[i].sortFn](ct[i]);
                 }
 
-                // Add specific getter for deep properties
-                if (ct[i].key && ct[i].key.indexOf(".") >= 0) {
+                // Add specific getter for deep properties @hack : . and % are synonyms (@hack @shame)
+                if (ct[i].key && ct[i].key.indexOf(".") >= 0 || ct[i].key && ct[i].key.indexOf("%") >= 0) {  // @hack 
                     // Key with points issue... 
-                    ct[i].key = ct[i].key.replace(/\./g, "%");  // @hack replace '.' by '%'
-
+                    ct[i].key = ct[i].key.replace(/\./g, "%");  // @hack replace '.' by '%' @shame
+                    
                     recordTypes[ct[i].key] = {getter: function(i, key) {
-                            var v = this, k,
-                                keys = key.split("%");
-
-                            // Fetch the value TODO/@fixme more consise way ?
-                            for (k in keys) {
-                                var ke = keys[k];
-                                if (v[ke]) {
-                                    v = v[ke];
-                                } else {
-                                    v = v.get(ke);
-                                }
-                            }
+                            var v = this.get(key.replace(/%/g, ".")); // @hack @shame
                             // Coerce to number if possible
                             return (+v ? +v : v);
                         }
