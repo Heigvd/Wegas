@@ -48,7 +48,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
         },
         onClick: function(e) {
             var key, requestedField = [], dt = this.get("host").datatable,
-                fields = ["label", "description", 'requirements'],
+                fields = ["label", "description", 'requirements', 'duration'],
                 taskDescriptor = dt.getRecord(e.currentTarget).get("descriptor");
 
             if (taskDescriptor !== this.currentTask) {
@@ -105,7 +105,9 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 + '<p class="subtitle">Description</p><p>' + description
                 /*+ (description ?
                  description: "")*/
-                + '</p></div><div style="padding:5px 10px" class="requirements"><p class="subtitle">Requirements</p>';
+                + '</p></div><div style="padding:5px 10px" class="duration"><p><span class="subtitle">Duration: </span><span>' 
+                + descriptor.getInstance().get('duration') + ' </span></p></div>'
+                + '<div style="padding:5px 10px" class="requirements"><p class="subtitle">Requirements</p>';
 
             for (i = 0; i < requirements.length; i += 1) {
                 dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
