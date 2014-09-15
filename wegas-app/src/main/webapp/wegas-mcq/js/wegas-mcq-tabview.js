@@ -27,6 +27,7 @@ YUI.add('wegas-mcq-tabview', function(Y) {
     MCQTabView = Y.Base.create("wegas-mcqtabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.MCQTabView# */
         // *** Lifecycle Methods *** //
+        CONTENT_TEMPLATE: null,
         /**
          * @function
          * @private
