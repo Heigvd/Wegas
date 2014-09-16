@@ -254,6 +254,12 @@ h2{
     background-image: none;
 }
 
+
+/* ------ Overflow */
+.wegas-pageloader.scrollable {
+    overflow-y: auto;
+}
+
 /*---------------------------questions and actions----------------------------*/
 .questions-page .wegas-text,
 .actions-page .wegas-text{
@@ -567,7 +573,7 @@ td.yui3-datatable-col-Realised:after {
 }
 .project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
-    font-size: 11pt;
+    font-size: 10pt;
     margin-top: 8px;
     color: rgb(28, 28, 28);
 }
@@ -578,7 +584,7 @@ td.yui3-datatable-col-Realised:after {
 }
 .project-page .total {
     font-weight: bold;
-    font-size: 12pt;
+    font-size: 10pt;
     margin-top: 10px;
 }
 .project-page .wages .variableValue, 
