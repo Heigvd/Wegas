@@ -488,7 +488,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }]
             },
             sub: {
-                label: "remove",
+                label: "subtract",
                 "arguments": [{
                         type: HIDDEN,
                         value: SELF
