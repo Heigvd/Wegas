@@ -487,7 +487,7 @@ YUI.add("wegas-widget", function(Y) {
                                         },
                                         event: "mouseenter",
                                         children: [{
-                                                tyep: BUTTON,
+                                                type: BUTTON,
                                                 label: "Show after",
                                                 data: "ShowAfter"
                                             }, {
