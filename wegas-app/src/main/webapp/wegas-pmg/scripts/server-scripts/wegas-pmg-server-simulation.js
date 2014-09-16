@@ -118,8 +118,8 @@ var PMGSimulation = (function() {
 
         // Consolidate requirments progress & quality into tasks
         Y.Array.each(getTasksFromActivities(activities), function(td) {
-            var t = td.getInstance(self);
-            oCompleteness = t.getProperty("completeness");
+            var t = td.getInstance(self),
+                oCompleteness = t.getProperty("completeness");
             t.setProperty("completeness", calculateTaskProgress(t));
             t.setProperty("quality", calculateTaskQuality(t));
             debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
@@ -292,31 +292,6 @@ var PMGSimulation = (function() {
         }
         return (pastPeriods / taskInst.plannification.size()) * 100;
     }
-
-    /*
-     * @deprecated unused ???
-     * 
-     * return the delay based on the difference (in percent) between
-     *  plannifiedcompleteness and real completeness (completeness / planifiedCompleteness * 100)
-     * if given task isn't started then delay = completeness + 100
-     * planified completeness is based on function ''getPlannifiedCompleteness''
-     * @param {taskDescriptor} taskDesc
-     * @returns {Number} delay between 0 and 100
-     function getCurrentTaskDelay(taskDesc) {
-     var taskInst = taskDesc.getInstance(self),
-     completeness = taskInst.getPropertyD("completeness"),
-     planifiedCompleteness = getPlannifiedCompleteness(taskInst);
-     if (completeness > 0 && taskInst.plannification.length > 0) {
-     if (planifiedCompleteness <= 0) {
-     return completeness + 100;
-     } else {
-     return completeness / planifiedCompleteness * 100;
-     }
-     }
-     return 0;
-     }
-     */
-
 
     /**
      * Extract tasks from activities
@@ -1047,11 +1022,18 @@ var PMGSimulation = (function() {
 
 
     function plannedValueHistory() {
-        var len = Variable.find(gameModel, "executionPeriods").getValue(self),
-            history = Variable.find(gameModel, "planedValue").getInstance(self).getHistory();
+        var currentPeriod = Variable.find(gameModel, "periodPhase3").getValue(self),
+            initialMaximum = Variable.find(gameModel, "executionPeriods").getValue(self),
+            len = Math.max(currentPeriod, initialMaximum),
+            pv = Variable.find(gameModel, "planedValue"),
+            history = pv.getInstance(self).getHistory();
+
         history.clear();
         for (var i = 0; i < len; i++) {
             history.add(calculatePlannedValue(i + 1));
+        }
+        if (history.size() > 0) {
+            pv.setValue(self, history.get(history.size() - 1));
         }
     }
 
@@ -1166,7 +1148,7 @@ var PMGSimulation = (function() {
         quality.setValue(self, Math.round(qualityJaugeValue));
 
         // #777 save EVM related histories only during execution
-        if (currentPhaseNum>= 3 && currentPeriodNum > 1) {
+        if (currentPhaseNum >= 3 && currentPeriodNum > 1) {
             costs.getInstance(self).saveHistory();
             delay.getInstance(self).saveHistory();
             quality.getInstance(self).saveHistory();
