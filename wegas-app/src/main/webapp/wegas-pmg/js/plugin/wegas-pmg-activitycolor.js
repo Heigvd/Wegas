@@ -48,10 +48,11 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
         sync: function() {
             var time, host = this.get("host"),
                 currentPeriod = host.schedule.currentPeriod(),
-                activities;
+                activities, occupations;
 
             host.datatable.data.each(function(i, index) {
                 activities = this.getActivitiesByPeriod(i.get("descriptor").getInstance());
+                occupations = i.get("descriptor").getInstance().get("occupations");
                 for (time in activities){
                     if (time < currentPeriod){
                         host.schedule.getCell(index, +time).setContent("<span class='editable'>"
@@ -59,6 +60,14 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
                             + "</span>");
                     }
                 }
+                // detect past editable occupation without associated activities
+                Y.Array.each(occupations, function (o){
+                    time = o.get("time");
+                    if (o.get("editable") && time < currentPeriod && !activities[time]){
+                        host.schedule.getCell(index, +time).setContent("<span class='editable'></span>");
+                    }
+                }
+                , this);
             }, this);
         }
     }, {
