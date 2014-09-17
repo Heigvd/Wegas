@@ -220,7 +220,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
     };
     Y.extend(DeleteWidgetAction, WidgetAction, {
         execute: function() {
-            Wegas.Panel.confirm("Are your sure you want to delete this element?", Y.bind(function() {
+            Wegas.Panel.confirm("Are you sure you want to delete this element?", Y.bind(function() {
                 var targetWidget = this.get("widget"),
                     root = targetWidget.get("root");
                 if (Plugin.EditEntityAction.currentEntity === targetWidget) {
@@ -254,7 +254,7 @@ YUI.add('wegas-editor-widgetaction', function(Y) {
             if (root === targetWidget) {
                 Y.Widget.getByNode(".wegas-page-editor").deletePage(root.get("@pageId"));
             } else {
-                Wegas.Panel.confirm("Are your sure your want to delete this widget and all of its content?", Y.bind(function() {
+                Wegas.Panel.confirm("Are you sure you want to delete this widget and all of its content?", Y.bind(function() {
                     targetWidget.destroy();
                     this.get("dataSource").cache.patch(root.toObject());
                 }, this));
