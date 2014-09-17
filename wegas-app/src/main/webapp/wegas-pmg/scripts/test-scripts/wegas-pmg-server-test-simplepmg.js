@@ -249,10 +249,10 @@ function testActivityFactor() {
     reserve(informaticien1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    checkProperty(task1, 'completeness', 13, arguments.callee.name); //ancien 12
+    checkProperty(task1, 'completeness', 13, arguments.callee.name); //ancien 12   @fixme @diff 
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 100, arguments.callee.name); //ancien 100
-    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 98
+    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 98   @fixme @diff
 }
 function testCoordinationRatioInf() {
     debug(arguments.callee.name);
@@ -338,7 +338,7 @@ function testCoordinationRatioInfDiffWorks3() {
     reserve(designer2, 1, 2);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    checkProperty(task6, 'completeness', 80, arguments.callee.name); //ancien 81%
+    checkProperty(task6, 'completeness', 80, arguments.callee.name); //ancien 81%   @fixme @diff
     checkProperty(task6, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task6, 'wages', 1500, arguments.callee.name); //ancien 1500
     checkProperty(task6, 'quality', 100, arguments.callee.name); //ancien 100
@@ -396,10 +396,10 @@ function testCoordinationRatioDiffLevel() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    checkProperty(task2, 'completeness', 87, arguments.callee.name); //ancien 84%
+    checkProperty(task2, 'completeness', 87, arguments.callee.name); //ancien 84%  @fixme @diff
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task2, 'quality', 102, arguments.callee.name); //ancien 101
+    checkProperty(task2, 'quality', 102, arguments.callee.name); //ancien 101   // @fixme @diff
 }
 function testCoordinationRatioSup() {
     debug(arguments.callee.name);
@@ -438,7 +438,7 @@ function testCompetenceRatioInf() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    checkProperty(task2, 'completeness', 40, arguments.callee.name); //ancien 42%
+    checkProperty(task2, 'completeness', 40, arguments.callee.name); //ancien 42%  @fixme diff
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'quality', 96, arguments.callee.name); //ancien 96
