@@ -602,7 +602,6 @@
                         "legendPosition": "bottom",
                         "type": "Chart",
                         "verticalGridlines": true,
-                        "hStart": "1",
                         "hMinEnd": {
                             "name": "executionPeriods"
                         },
@@ -630,7 +629,6 @@
                         "legendPosition": "bottom",
                         "type": "Chart",
                         "verticalGridlines": true,
-                        "hStart": "0",
                         "hMinEnd": {
                             "name": "executionPeriods"
                         },
@@ -893,7 +891,6 @@
                         "horizontalGridlines": true,
                         "legendPosition": "bottom",
                         "verticalGridlines": true,
-                        "hStart": "0",
                         "hMinEnd": {
                             "name": "executionPeriods"
                         },

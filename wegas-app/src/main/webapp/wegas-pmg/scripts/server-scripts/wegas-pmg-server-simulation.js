@@ -949,6 +949,8 @@ var PMGSimulation = (function() {
         if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
             runSimulation();
 
+            updateVariables();
+
             currentPeriod.add(self, 1);
             if (PMGHelper.checkEndOfProject()) {                                              // If the project is over
                 currentPhase.add(self, 1);
@@ -972,9 +974,10 @@ var PMGSimulation = (function() {
             currentPeriod.add(self, 1);
             Event.fire("nextWeek");
         }
-        if (currentPhase.getValue(self) > 1) {
-            updateVariables();
-        }
+
+        // TODO #777 shall SaveHistory each time value changed rather than store once by period (ok for the time...)
+        Variable.findByName(gameModel, 'managementApproval').getInstance(self).saveHistory();
+        Variable.findByName(gameModel, 'userApproval').getInstance(self).saveHistory();
     }
 
     /**
@@ -1047,8 +1050,8 @@ var PMGSimulation = (function() {
     function calculatePlannedValue(period) {
         return Y.Array.sum(getActiveTasks(), function(t) {
             if (t.plannification.size() === 0) {                                    // If the user did not provide a planfication
-                return t.getPropertyD('bac');                                       // return budget at completion as-is
-
+                return 0;
+                //return t.getPropertyD('bac');                                       // return budget at completion as-is
             } else {                                                                // Otherwise
                 return Y.Array.sum(t.plannification, function(p) {                  // return a ratio of the bac and the already passed periods in plannification
                     if (parseInt(p) < period) {
@@ -1060,106 +1063,100 @@ var PMGSimulation = (function() {
         });
     }
     /**
-     * Calculate plannedValue, earnedValue, actualCost, projectCompleteness, cpi, spi, save
-     * history for variable the same variable and for costs, delay and quality.
+     * Calculate earnedValue, actualCost, projectCompleteness, cpi, spi.
+     * save histories for variable the same variable and for costs, delay and quality.
      * 
      * @returns {undefined}
      */
     function updateVariables() {
+        // #777 save EVM related histories only during execution
         var i, task, employeesRequired,
-            currentPhaseNum = PMGHelper.getCurrentPhaseNumber(),
-            currentPeriodNum = PMGHelper.getCurrentPeriodNumber(),
-            ev = 0, ac = 0, tasksQuality = 0, tasksScale = 0, qualityJaugeValue = 0,
-            costs = Variable.findByName(gameModel, 'costs'),
-            delay = Variable.findByName(gameModel, 'delay'),
-            quality = Variable.findByName(gameModel, 'quality'),
-            plannedValue = Variable.findByName(gameModel, 'planedValue'),
-            earnedValue = Variable.findByName(gameModel, 'earnedValue'),
-            actualCost = Variable.findByName(gameModel, 'actualCost'),
+            sumCompletenessXdurationXnbr = 0, // nbr => numberOfRequiredResources
+            sumDurationXnbr = 0, // nbr => idem
+            sumRealised = 0,
+            sumQualityXrealised = 0,
+            costs = Variable.findByName(gameModel, 'costs'), costValue,
+            delay = Variable.findByName(gameModel, 'delay'), delayValue,
+            quality = Variable.findByName(gameModel, 'quality'), effectiveQuality = 100,
+            earnedValue = Variable.findByName(gameModel, 'earnedValue'), ev = 0,
+            actualCost = Variable.findByName(gameModel, 'actualCost'), ac = 0,
+            cpi = 100, spi = 100,
             projectUnworkedHours = Variable.findByName(gameModel, 'projectUnworkedHours'),
+            projectComp = Variable.findByName(gameModel, 'projectCompleteness'), projectCompleteness = 0,
             tasks = getActiveTasks(),
+            completeness,
             pv = calculatePlannedValue(Variable.findByName(gameModel, 'periodPhase3').getValue(self));// pv = for each task, sum -> bac * task completeness / 100
 
         for (i = 0; i < tasks.length; i++) {
             task = tasks[i];
-            //debug("calc ev: " + task.getPropertyD('bac') + "*" + task.getPropertyD('completeness'));
-            ev += task.getPropertyD('bac') * task.getPropertyD('completeness') / 100;
-            //pv += parseInt(task.getProperty('bac')) * (getPlannifiedCompleteness(v) / 100);
-            //ac += parseInt(task.getProperty('wages')) + (parseInt(task.getProperty('completeness')) / 100) * parseInt(task.getProperty('fixedCosts')) + parseInt(task.getProperty('unworkedHoursCosts'));
-
-            tasksScale += task.duration * Y.Array.sum(task.requirements, function(r) {
-                return r.quantity;
-            });
-
+            completeness = task.getPropertyD('completeness');
+            ev += task.getPropertyD('bac') * completeness / 100;
+            //debug("ev: " + task.getPropertyD('bac') + "*" + completeness);
             employeesRequired = Y.Array.sum(task.requirements, function(r) {
                 return r.quantity;
             });
             task.setProperty("wages", Math.round(task.getPropertyD("wages")));
-            if (task.getPropertyD('completeness') > 0) {                            //...and started
-                //debug("calc ac" + task + "*" + task.getPropertyD('wages') + "*" + task.getPropertyD('fixedCosts') + "*" + task.getPropertyD('unworkedHoursCosts'))
+            if (completeness > 0) {
+                // Actual cost only cares about started tasks
                 ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
-                tasksQuality += task.getPropertyD('quality') * task.duration * employeesRequired; //TO check
-            } else {
-                tasksQuality += (100 + task.getPropertyD('quality')) * task.duration * employeesRequired;
             }
+
+            /* For project quality & completeness */
+            sumCompletenessXdurationXnbr += completeness * task.duration * employeesRequired;
+            sumDurationXnbr += task.duration * employeesRequired;
+            sumRealised += completeness;
+            sumQualityXrealised += completeness * Math.ceil(task.getPropertyD('quality'));
         }
 
-        Variable.findByName(gameModel, 'projectCompleteness')
-            .setValue(self, Y.Array.sum(tasks, function(t) {
-                return t.getPropertyD('completeness');
-            }) / tasks.length);                                                     // completness = average of all task's completeness in %
+        if (sumDurationXnbr > 0) {
+            projectCompleteness = Math.floor(sumCompletenessXdurationXnbr / sumDurationXnbr);
+        }
+
+        // Quality
+        if (sumRealised > 0) {
+            effectiveQuality = sumQualityXrealised / sumRealised;
+            // Include quality impact
+            effectiveQuality += Variable.findByName(gameModel, 'qualityImpacts').getValue(self) / 2;   // "/ 2" ??? @wtf
+            effectiveQuality = Math.round(Math.min(Math.max(effectiveQuality, quality.minValueD), quality.maxValueD));
+        }
 
         ac += projectUnworkedHours.getValue(self);
 
-        plannedValue.setValue(self, pv);
-
-        earnedValue.setValue(self, ev);                                             // ev = for each task, sum -> bac * planified task completeness / 100
-
-        actualCost.setValue(self, ac);                                              // ac = project fixe costs + for each task, sum -> wages + (completeness / 100) * fixed costs + unworkedHoursCosts
-        //actualCost.setValue(self, ac + parseInt(projectFixCosts.getValue(self)));
 
         debug("updateVariables(): pv: " + pv + ", ac: " + ac + ", ev: " + ev);
 
         // Costs
-        var cpi = 100;
         if (ac > 0) {
             cpi = ev / ac * 100;                                                    // cpi = ev / ac * 100
         }
-        costs.setValue(self, Math.min(Math.max(Math.round(cpi), costs.minValueD), costs.maxValueD));
-        Variable.findByName(gameModel, 'cpi').setValue(self, cpi);
+        costValue = Math.min(Math.max(Math.round(cpi), costs.minValueD), costs.maxValueD);
 
         // Delay
-        var spi = 100;
         if (pv > 0) {
-            var spi = ev / pv * 100;                                                // spi = ev / pv * 100
+            spi = ev / pv * 100;                                                // spi = ev / pv * 100
         }
-        delay.setValue(self, Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD));
+        delayValue = Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD);
+
+
+        projectComp.setValue(self, projectCompleteness);
+        Variable.findByName(gameModel, 'cpi').setValue(self, cpi);
         Variable.findByName(gameModel, 'spi').setValue(self, spi);
 
-        // Quality
-        if (tasksScale > 0) {
-            qualityJaugeValue = tasksQuality / tasksScale;                          //with weighting of task's scale = sum each task -> task quality / task scale
-        }
-        //if (activeTasks > 0) {
-        //    qualityJaugeValue = tasksQuality / activeTasks;                       //whitout weighting of task's scale
-        //}
-        qualityJaugeValue += Variable.findByName(gameModel, 'qualityImpacts').getValue(self) / 2;
-        qualityJaugeValue = Math.min(Math.max(qualityJaugeValue, quality.minValueD), quality.maxValueD);
-        quality.setValue(self, Math.round(qualityJaugeValue));
+        // save history of previous value and set the new one for quality, costs, delay, ev & ac
+        quality.getInstance(self).saveHistory();
+        quality.setValue(self, effectiveQuality);
 
-        // #777 save EVM related histories only during execution
-        if (currentPhaseNum >= 3 && currentPeriodNum > 1) {
-            costs.getInstance(self).saveHistory();
-            delay.getInstance(self).saveHistory();
-            quality.getInstance(self).saveHistory();
-            //  plannedValue.getInstance(self).saveHistory();
-            earnedValue.getInstance(self).saveHistory();
-            actualCost.getInstance(self).saveHistory();
-        }
+        costs.getInstance(self).saveHistory();
+        costs.setValue(self, costValue);
 
-        // TODO #777 SaveHistory each time those are uptaded
-        Variable.findByName(gameModel, 'managementApproval').getInstance(self).saveHistory();
-        Variable.findByName(gameModel, 'userApproval').getInstance(self).saveHistory();
+        delay.getInstance(self).saveHistory();
+        delay.setValue(self, delayValue);
+
+        earnedValue.getInstance(self).saveHistory();
+        earnedValue.setValue(self, ev);
+
+        actualCost.getInstance(self).saveHistory();
+        actualCost.setValue(self, ac);
     }
 
     return {
