@@ -35,7 +35,7 @@ YUI.add('wegas-chart', function(Y) {
                     },
                     category: {
                         type: "numeric",
-                        minimum: this.get("hStart")
+                        minimum: +this.get("hStart")
 //                        calculateEdgeOffset: true
                     }
                 },
@@ -107,15 +107,13 @@ YUI.add('wegas-chart', function(Y) {
             }));
         },
         /**
-         * Creat a YUI3 Charts combospline' with values of a resource's moral and confidence historic values.
-         * If any resource is given, the chart will be not created.
-         * @ Param NumberDescriptor numberDescriptor, the source of chart's values
+         * Creat a YUI3 Charts combospline' from given 'variables'
          */
         updateChart: function() {
             var i, cb = this.get(CONTENTBOX),
                 seriesCollection = [],
                 rawSeries = [], data, axis,
-                hStep = this.get("hStep") || 1,
+                hStep = this.get("hStep"),
                 vStep = this.get("vStepValue"),
                 max = -Infinity, j, n;
 
@@ -123,31 +121,41 @@ YUI.add('wegas-chart', function(Y) {
                 return;
             }
 
+            /* Create a serie for each given variable */
             for (i = 0; i < this.vdList.length; i++) {
+                // name of serie
                 seriesCollection.push({
                     yDisplayName: this.vdList[i].label
                 });
+
+                /* Serie values are history + currentValue */
                 rawSeries.push(this.vdList[i].get("history"));
                 rawSeries[rawSeries.length - 1].push(this.vdList[i].get("value"));
+
+                // For auto Y-axis ticks adjustment, compute all variables maximum
                 for (j = 0; j < rawSeries[rawSeries.length - 1].length; j++) {
                     max = Math.max(max, rawSeries[rawSeries.length - 1][j]);
                 }
             }
 
+
             if (!vStep) {
+                // Default vStep is 10% of maximum value -> 11 ticks
                 vStep = max / 10;
             }
 
-            axis = this.chart.getAxisByKey("values");
-            n = Math.ceil(max / vStep);
+            axis = this.chart.getAxisByKey("values");  // i.e. Y-axis
+            n = Math.ceil(max / vStep); // how many ticks fit within 'maximum'
             if (n === max / vStep) {
-                n++;
+                n++; // maximum reached => add a step
             }
-            max = n * vStep;
+            max = n * vStep; // New maximum is a whole multiple of vStep
 
             if (max > axis.get("maximum")) {
+                // Override defailt maximum value
                 axis.set("maximum", max);
             } else {
+                // set max to default one
                 max = axis.get("maximum");
                 n = Math.ceil(max / vStep);
             }
@@ -207,10 +215,11 @@ YUI.add('wegas-chart', function(Y) {
          * @param Array rawSeries, an array of array of Integer.
          */
         getChartValues: function(numberOfValues, rawSeries) {
-            var i, j, fitSeries = [], serieRawData = [], serieFitData = [];
+            var i, j, fitSeries = [], serieRawData = [], serieFitData = [],
+                dx = +this.get("hStart");
 
             for (i = 0; i < numberOfValues; i++) {
-                serieFitData.push(i + 1);
+                serieFitData.push(i + dx);
             }
 
             fitSeries.push(serieFitData.slice());
@@ -260,6 +269,7 @@ YUI.add('wegas-chart', function(Y) {
             hStart: {
                 optional: true,
                 type: "number",
+                value: 0,
                 _inputex: {
                     label: "Horizontal start value"
                 }
@@ -267,6 +277,7 @@ YUI.add('wegas-chart', function(Y) {
             hStep: {
                 optional: true,
                 type: "number",
+                value: 1,
                 _inputex: {
                     label: "Horizontal steps"
                 }
