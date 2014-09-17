@@ -31,7 +31,7 @@ YUI.add('wegas-chart', function(Y) {
                     values: {
                         minimum: this.get("minValue"),
                         maximum: this.get("maxValue"),
-                        calculateEdgeOffset: true
+                        calculateEdgeOffset: false
                     },
                     category: {
                         type: "numeric",
@@ -114,7 +114,10 @@ YUI.add('wegas-chart', function(Y) {
         updateChart: function() {
             var i, cb = this.get(CONTENTBOX),
                 seriesCollection = [],
-                rawSeries = [], data, axis, hStep = this.get("hStep") || 1;
+                rawSeries = [], data, axis,
+                hStep = this.get("hStep") || 1,
+                vStep = this.get("vStepValue"),
+                max = -Infinity, j, n;
 
             if (this.vdList.length < 1) {
                 return;
@@ -125,9 +128,35 @@ YUI.add('wegas-chart', function(Y) {
                     yDisplayName: this.vdList[i].label
                 });
                 rawSeries.push(this.vdList[i].get("history"));
-                rawSeries[rawSeries.length -1].push(this.vdList[i].get("value"));
+                rawSeries[rawSeries.length - 1].push(this.vdList[i].get("value"));
+                for (j = 0; j < rawSeries[rawSeries.length - 1].length; j++) {
+                    max = Math.max(max, rawSeries[rawSeries.length - 1][j]);
+                }
             }
-            hStep = hStep > 0 ? hStep : 1;
+
+            if (!vStep) {
+                vStep = max / 10;
+            }
+
+            axis = this.chart.getAxisByKey("values");
+            n = Math.ceil(max / vStep);
+            if (n === max / vStep) {
+                n++;
+            }
+            max = n * vStep;
+
+            if (max > axis.get("maximum")) {
+                axis.set("maximum", max);
+            } else {
+                max = axis.get("maximum");
+                n = Math.ceil(max / vStep);
+            }
+
+            this.chart.getAxisByKey("values").set("styles", {
+                majorUnit: {
+                    count: n + 1
+                }
+            });
 
             this.chart.set("dataProvider", this.getChartValues(this.findNumberOfValue(rawSeries), rawSeries));
             axis = this.chart.getAxisByKey("category");
@@ -135,11 +164,13 @@ YUI.add('wegas-chart', function(Y) {
                 data = axis.get("data");
                 this.chart.getAxisByKey("category").set("maximum", Math.max(data[data.length - 1], this.get("hMinEnd.evaluated").getValue(), 2/*minimum 2 points (width...)*/));
             }
+            hStep = hStep > 0 ? hStep : 1;
             this.chart.getAxisByKey("category").set("styles", {
                 majorUnit: {
                     count: (axis.get("maximum") - axis.get("minimum")) / hStep + 1
                 }
             });
+
             if (!this.chart.get("rendered")) {
                 this.chart.set("legend", {
                     styles: {
@@ -263,6 +294,15 @@ YUI.add('wegas-chart', function(Y) {
                     _type: "integer",
                     label: "Max. value",
                     negative: true
+                }
+            },
+            vStepValue: {
+                optional: true,
+                type: "number",
+                _inputex: {
+                    _type: "integer",
+                    label: "vertical steps",
+                    negative: false
                 }
             },
             width: {
