@@ -94,7 +94,7 @@ YUI.add("wegas-teaching-main", function(Y) {
                 .set("xy", [(Y.DOM.winWidth() / 2) - 300, 100]);
         },
         showArrowEditor: function(arrow) {
-            var direction = arrow.get("orientation") ? "horizontal" : "vertical",
+            var direction = arrow.get("orientation") ? "vertical" : "horizontal",
                 directions = ["normal", "inverse", "double", "none"],
                 buttons = this.buttonGroup.getButtons();
 
