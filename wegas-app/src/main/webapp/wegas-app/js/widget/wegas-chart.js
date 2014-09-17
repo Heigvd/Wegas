@@ -115,7 +115,8 @@ YUI.add('wegas-chart', function(Y) {
                 rawSeries = [], data, axis,
                 hStep = this.get("hStep"),
                 vStep = this.get("vStepValue"),
-                max = -Infinity, j, n;
+                max = -Infinity, min = Infinity,
+                range, j, n;
 
             if (this.vdList.length < 1) {
                 return;
@@ -132,37 +133,55 @@ YUI.add('wegas-chart', function(Y) {
                 rawSeries.push(this.vdList[i].get("history"));
                 rawSeries[rawSeries.length - 1].push(this.vdList[i].get("value"));
 
-                // For auto Y-axis ticks adjustment, compute all variables maximum
+                // For auto Y-axis ticks adjustment, fetch min and max values
                 for (j = 0; j < rawSeries[rawSeries.length - 1].length; j++) {
                     max = Math.max(max, rawSeries[rawSeries.length - 1][j]);
+                    min = Math.min(min, rawSeries[rawSeries.length - 1][j]);
                 }
             }
 
+            // Y-Axis scale
+            axis = this.chart.getAxisByKey("values");  // i.e. Y-axis
 
             if (!vStep) {
-                // Default vStep is 10% of maximum value -> 11 ticks
-                vStep = max / 10;
+                // Default vStep is 10% of range value -> 11 ticks
+                vStep = (max - min) / 10;
             }
 
-            axis = this.chart.getAxisByKey("values");  // i.e. Y-axis
-            n = Math.ceil(max / vStep); // how many ticks fit within 'maximum'
-            if (n === max / vStep) {
-                n++; // maximum reached => add a step
-            }
-            max = n * vStep; // New maximum is a whole multiple of vStep
-
-            if (max > axis.get("maximum")) {
-                // Override defailt maximum value
+            if (max >= axis.get("maximum")) {
+                if (max !== 0) {
+                    max += vStep; // reserve some room
+                }
                 axis.set("maximum", max);
             } else {
-                // set max to default one
                 max = axis.get("maximum");
-                n = Math.ceil(max / vStep);
             }
+
+            if (min <= axis.get("minimum")) {
+                if (min !== 0) {
+                    min -= vStep; // reserve some room too but avoid goind bellow zero
+                }
+                axis.set("minimum", min);
+            } else {
+                min = axis.get("minimum");
+            }
+
+            range = max - min;
+
+            n = range / vStep; // how many ticks fit within 'maximum'
+
+            // Math.log10(x) =~ Math.log(x)/Math.LN10...
+            n = Math.ceil(n / Math.pow(10, Math.ceil(Math.log(n) / Math.LN10) - 1)); // let n an integer \in ]1;10] 
+
+            if (n === range / vStep) {
+                n++; // need an extra tick
+            }
+
+            range = n * vStep; // New range is a whole multiple of vStep
 
             this.chart.getAxisByKey("values").set("styles", {
                 majorUnit: {
-                    count: n + 1
+                    count: n
                 }
             });
 
