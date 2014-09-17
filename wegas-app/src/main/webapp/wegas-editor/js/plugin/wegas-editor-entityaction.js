@@ -506,7 +506,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         execute: function() {
             var entity = this.get(ENTITY), i;
 
-            Wegas.Panel.confirm("Are your sure your want to delete this " + entity.getType().toLowerCase() + "?", Y.bind(function() {
+            Wegas.Panel.confirm("Are you sure you want to delete this " + entity.getType().toLowerCase() + "?", Y.bind(function() {
                 this.showOverlay();
                 this.confirmDelete = true;
                 this.get(DATASOURCE).cache.deleteObject(entity, {
