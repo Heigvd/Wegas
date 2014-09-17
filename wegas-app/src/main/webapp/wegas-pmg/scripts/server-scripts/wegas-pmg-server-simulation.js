@@ -687,7 +687,7 @@ var PMGSimulation = (function() {
             };
             //keep the highest limit of all limits from each kind of work needed
             work.maxLimit = Math.max(work.maxLimit, req.limit);
-            work.quantity += req.quantity;f
+            work.quantity += req.quantity;
             work.completeness += req.completeness;
             work.completenessXquantity += req.quantity * req.completeness;
         }
