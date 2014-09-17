@@ -256,7 +256,7 @@ h2{
 
 
 /* ------ Page loader Overflow */
-.wegas-pageloader {
+.body {
     overflow-y: auto;
     overflow-x: hidden;
 }
