@@ -255,9 +255,10 @@ h2{
 }
 
 
-/* ------ Overflow */
-.wegas-pageloader.scrollable {
+/* ------ Page loader Overflow */
+.wegas-pageloader {
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 /*---------------------------questions and actions----------------------------*/
@@ -267,13 +268,13 @@ h2{
 }
 
 /* TabView Styles */
-.yui3-skin-sam  .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
+.yui3-skin-sam .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-list {
     display: inline-block;
     float:left;
     border: none;
     width: 50%;
 }
-.yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
+.yui3-skin-sam .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel {
     display:inline-block;
     width:50%;
     float:left;
@@ -601,6 +602,10 @@ td.yui3-datatable-col-Realised:after {
 }
 
 /*---------------------------- Resources page ---------------------*/
+.wegas-pmg-resourcespanels-content .pmg-legend {
+    /* margin: 10px 0 0 0; */
+    /* padding: 10px 0px 10px 0px; */
+}
 .resources-page .wegas-pmg-slidepanel {
     border-bottom: 1px solid lightgray;
 }
