@@ -895,7 +895,7 @@
                             "name": "executionPeriods"
                         },
                         "minValue" : 0,
-                        "vStepValue" : 2500,
+                        "vStepValue" : 1000,
                         "variables": [{
                                 "name": "planedValue",
                                 "label": "PV (Planed Value)"
