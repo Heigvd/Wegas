@@ -75,8 +75,10 @@ var PMGSimulation = (function() {
 
     function closePeriod() {
         var resources = getResourceDescriptors();
+
         cleanAssignments(resources);
         billUnworkedHoursForUselessResources(resources);
+        updateVariables();
     }
 
     function billUnworkedHoursForUselessResources(resources) {
@@ -685,7 +687,7 @@ var PMGSimulation = (function() {
             };
             //keep the highest limit of all limits from each kind of work needed
             work.maxLimit = Math.max(work.maxLimit, req.limit);
-            work.quantity += req.quantity;
+            work.quantity += req.quantity;f
             work.completeness += req.completeness;
             work.completenessXquantity += req.quantity * req.completeness;
         }
@@ -949,8 +951,6 @@ var PMGSimulation = (function() {
         if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
             runSimulation();
 
-            updateVariables();
-
             currentPeriod.add(self, 1);
             if (PMGHelper.checkEndOfProject()) {                                              // If the project is over
                 currentPhase.add(self, 1);
@@ -1033,7 +1033,7 @@ var PMGSimulation = (function() {
 
         history.clear();
         for (var i = 0; i < len; i++) {
-            history.add(calculatePlannedValue(i + 1));
+            history.add(calculatePlannedValue(i));
         }
         if (history.size() > 0) {
             pv.setValue(self, history.get(history.size() - 1));
@@ -1051,10 +1051,9 @@ var PMGSimulation = (function() {
         return Y.Array.sum(getActiveTasks(), function(t) {
             if (t.plannification.size() === 0) {                                    // If the user did not provide a planfication
                 return 0;
-                //return t.getPropertyD('bac');                                       // return budget at completion as-is
             } else {                                                                // Otherwise
                 return Y.Array.sum(t.plannification, function(p) {                  // return a ratio of the bac and the already passed periods in plannification
-                    if (parseInt(p) < period) {
+                    if (parseInt(p) <= period) {
                         return t.getPropertyD('bac') / t.plannification.size();
                     } else
                         return 0;
@@ -1085,7 +1084,7 @@ var PMGSimulation = (function() {
             projectComp = Variable.findByName(gameModel, 'projectCompleteness'), projectCompleteness = 0,
             tasks = getActiveTasks(),
             completeness,
-            pv = calculatePlannedValue(Variable.findByName(gameModel, 'periodPhase3').getValue(self));// pv = for each task, sum -> bac * task completeness / 100
+            pv = calculatePlannedValue(Variable.findByName(gameModel, 'periodPhase3').getValue(self));
 
         for (i = 0; i < tasks.length; i++) {
             task = tasks[i];
