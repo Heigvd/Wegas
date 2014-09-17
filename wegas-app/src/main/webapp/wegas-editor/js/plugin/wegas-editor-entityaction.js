@@ -364,7 +364,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     }, this));
                     break;
                 case "delete":
-                    Wegas.Panel.confirm("Are your sure your want to delete this item?", Y.bind(function() {
+                    Wegas.Panel.confirm("Are you sure you want to delete this item?", Y.bind(function() {
                         targetArray = descriptor.get(this.get("attributeKey"));
                         Y.Array.find(targetArray, function(e, i, a) {
                             if (e.get(ID) === entity.get(ID)) {
