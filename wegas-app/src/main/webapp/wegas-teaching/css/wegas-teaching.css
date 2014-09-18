@@ -18,9 +18,10 @@
 }
 .title {
     font-size: 36px;
-    text-shadow: 2px 3px 1px white;
+    text-shadow: 2px 3px 1px #d1cfc7;
     margin: 6px;
     font-weight: bold;
+    color: #2b2a29;
 }
 .yui3-wegas-teaching-rectangle {
     position: absolute;
@@ -56,8 +57,10 @@ svg {
     width: 0px;
     height: 0px;
 }
-.icon {
+.arrow-buttons .icon {
     background-repeat: no-repeat;
+    /* background-color: pink; */
+    /* box-shadow : 1px 1px 10px purple; */
     display: inline-block;
     height: 32px;
     vertical-align: middle;
@@ -252,4 +255,7 @@ svg {
 .yui3-skin-sam .yui3-panel .yui3-widget-hd {
     border-bottom: none;
     background: #edf5ff;
+    color: #6b6865;
+    font-weight: bolder;
+    font-style: inherit;
 }
