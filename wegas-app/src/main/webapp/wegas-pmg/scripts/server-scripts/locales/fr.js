@@ -38,7 +38,7 @@ i18nTable.fr = {
         },
         endOfTaskOtherActivities: {
             from: "%employeeName%",
-            subject: "Fin de la tâche: %task%",
+            subject: "Fin de la tâche \"%task%\"",
             content: "Bonjour, <br /><br />La tâche \"%task%\" est terminée. <br /><br />Je suis retourné à mes activités traditionnelles %step%. <br /><br /> Salutations <br />%employeeName%<br/> %job%"
         },
         blockedByPredecessors: {
@@ -54,7 +54,7 @@ i18nTable.fr = {
         planningProblem: {
             from: "%employeeName%",
             subject: "Problème de planification",
-            content: "Bonjour, <br /><br />Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /> Salutations <br />%employeeName%<br/> %job%"
+            content: "Bonjour, <br /><br />Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /><br /> Salutations <br />%employeeName%<br/> %job%"
         }
     },
     date: {
