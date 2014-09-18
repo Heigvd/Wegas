@@ -370,7 +370,7 @@ YUI.add('wegas-team', function(Y) {
         onSaveButtonClick: function() {
             var playerToAdd = Y.Array.filter(this.teamEdition.getAccounts(), function(account) {
                 return !Y.Array.find(this.joinedAccounts, function(joinedAccount) {
-                    return account.email === joinedAccount.get("email");
+                    return account.id === joinedAccount.get("id");
                 });
             }, this);
             this.showOverlay();

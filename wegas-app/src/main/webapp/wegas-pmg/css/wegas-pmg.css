@@ -261,6 +261,11 @@ h2{
     overflow-x: hidden;
 }
 
+/* ------------------ TEAM EDITION -----------------*/
+.teamselection .title {
+    float: none;
+}
+
 /*---------------------------questions and actions----------------------------*/
 .questions-page .wegas-text,
 .actions-page .wegas-text{
