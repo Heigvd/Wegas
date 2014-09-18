@@ -419,17 +419,20 @@ YUI.add('wegas-editor-action', function(Y) {
 
             if (entity instanceof Wegas.persistence.Team) { // 1st case: clicked on an team
                 if (findInTeam(Wegas.Facade.RegisteredGames.cache.findById(entity.get("id")))) {
-                    this.set("label", "Resume playing")
-                        .plug(OpenGameAction);
+                    this.set("label", "Open as Player")
+                        .plug(OpenGameAction, {
+                            url: "game-play.html?"
+                        });
                     return;
                 } else if (findInGame(Wegas.Facade.RegisteredGames.cache.findById(entity.get("gameId")))) {
                     this.set("disabled", true);
                     return;
                 }
             } else if (findInGame(Wegas.Facade.RegisteredGames.cache.findById(entity.get("id")))) {
-                this.set("label", "Resume playing")
+                this.set("label", "Open as Player")
                     .plug(OpenGameAction, {
-                        entity: entity
+                        entity: entity,
+                        url: "game-play.html?"
                     });
                 return;
             }

@@ -610,7 +610,7 @@ YUI.add("wegas-entity", function(Y) {
                                         }]
                                 }, {
                                     type: "JoinOrResumeButton",
-                                    label: "Join as a player"
+                                    label: "Join as Player"
                                 }, {
                                     type: BUTTON,
                                     label: "Create a scenario based on this game",
