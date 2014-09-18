@@ -53,7 +53,9 @@ public class SessionHolder {
      * @param session
      */
     public static void closeSession(Session session) {
-        session.logout();
+        if (session.isLive()) {
+            session.logout();
+        }
         SessionHolder.sessionList.remove(session);
     }
 
