@@ -49,12 +49,12 @@ i18nTable.fr = {
         notMyWork: {
             from: "%employeeName%",
             subject: "Impossible de progresser sur la tâche \"%task%\"",
-            content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la tâche \"%task%\" mais je ne suis pas qualifié pour ce travail. <br /><br /> Salutations <br/>%employeeName%<br/> %job%"
+            content: "Bonjour, <br /><br />Je suis venu %step% pour travailler sur la tâche \"%task%\" mais je ne suis pas qualifié pour ce travail. <br /><br />J'ai perdu un peu de temps et j'ai retiré cette tâche de ma liste.<br /><br /> Salutations <br/>%employeeName%<br /> %job%"
         },
         planningProblem: {
             from: "%employeeName%",
             subject: "Problème de planification",
-            content: "Bonjour, <br /><br />Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement je suis obligé d'affecter quelques heures au projet. <br /><br /> Salutations <br />%employeeName%<br/> %job%"
+            content: "Bonjour, <br /><br />Vous m'avez réservé pour %wholePeriod%. Comme je n'avais aucune tâche à effectuer sur le projet, je suis retourné à mes autres activités. Malheureusement, je suis obligé d'affecter quelques heures au projet. <br /><br /> Salutations <br />%employeeName%<br/> %job%"
         }
     },
     date: {

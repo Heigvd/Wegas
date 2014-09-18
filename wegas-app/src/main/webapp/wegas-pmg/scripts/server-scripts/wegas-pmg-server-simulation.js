@@ -178,26 +178,25 @@ var PMGSimulation = (function() {
                 var taskDesc = currentAssignment.taskDescriptor;
                 // Only cares about uncompleted tasks
                 if (!PMGHelper.isTaskCompleted(taskDesc)) {
-                    if (notBlockedByPredecessors(taskDesc)) {
-                        var req = selectRequirement(taskDesc.getInstance(self), resourceInstance);
-                        if (req) {
+                    var req = selectRequirement(taskDesc.getInstance(self), resourceInstance);
+                    if (req) {
+                        if (notBlockedByPredecessors(taskDesc)) {
                             activity = getActivity(resourceInstance, taskDesc,
-                                currentPeriodNumber + currentStep / STEPS,
-                                req);
+                                currentPeriodNumber + currentStep / STEPS, req);
                             debug("   -> Activity");
                         } else {
-                            debug("   -> NOT MY WORK req not found...");
-                            sendNotMyWorkMail(resourceInstance, currentStep, taskDesc);
-                            allAssignments.remove(i);
-                            // dont work this step -> bill
-                            addUnworkedHours(resourceInstance, 10); // Limit 10% -> a step
-                            break; // stop looking for an activity
+                            debug("    -> BLOCKED BY PREDECESSORS");
+                            if (currentStep === 0) {
+                                sendBlockedByPredecessorsMail(resourceInstance, currentStep, taskDesc);
+                            }
                         }
                     } else {
-                        debug("    -> BLOCKED BY PREDECESSORS");
-                        if (currentStep === 0) {
-                            sendBlockedByPredecessorsMail(resourceInstance, currentStep, taskDesc);
-                        }
+                        debug("   -> NOT MY WORK req not found...");
+                        sendNotMyWorkMail(resourceInstance, currentStep, taskDesc);
+                        allAssignments.remove(i);
+                        // dont work this step -> bill
+                        addUnworkedHours(resourceInstance, 10); // Limit 10% -> a step
+                        break; // stop looking for an activity
                     }
                 } else {
                     debug("    -> COMPLETED TASK");
