@@ -85,6 +85,8 @@
 .wegas-mcqtabview .replyDiv {
     border-bottom: 1px solid lightgray;
     margin-top: 10px;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
 }
 .wegas-mcqtabview .replyDiv:last-child  {
     border-bottom: none;

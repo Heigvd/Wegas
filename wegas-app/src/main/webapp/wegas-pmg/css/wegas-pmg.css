@@ -408,7 +408,18 @@ h2{
     top: 0;
     text-align: justify;
 }
-
+.wegas-inbox .replies > div {
+    color : #bbb;
+    border-bottom: 1px solid lightgray;
+    margin-bottom: 5px;
+    padding-bottom: 5px;
+}
+.wegas-inbox .replies > div:first-child {
+    color : black;
+}
+.wegas-inbox .replies > div:last-child {
+    border-bottom: none;
+}
 /*----------------------------------Datatable---------------------------------*/
 .body .yui3-datatable table{
     width:100%;
