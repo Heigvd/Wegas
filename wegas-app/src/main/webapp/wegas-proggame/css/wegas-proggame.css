@@ -368,6 +368,7 @@ html, .editor-preview {
     position: absolute;
     top: 99px;
     left: 46px;
+    max-width: 180px;
 } 
 .proggame-api .selected>div>.yui3-treeleaf-content-header,
 .proggame-api .selected>.yui3-treenode-content-header {
