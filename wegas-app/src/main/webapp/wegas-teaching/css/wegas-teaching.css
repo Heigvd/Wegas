@@ -49,6 +49,10 @@
     /* border: 1px solid lightgray; */
     /* width: 100%; */
     width: auto;
+    min-height: 150px;
+}
+#editor iframe{
+    height:100%;
 }
 svg {
     cursor: pointer;
