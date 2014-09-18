@@ -209,8 +209,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         //Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace. 
         // @fx Why remove files? The may be referenced in other workspaces
-        try {
-            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId());
+        try(ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {           
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
             System.err.println(ex);

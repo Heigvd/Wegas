@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.wegas.core.jcr.JackrabbitConnector;
 import com.wegas.core.jcr.SessionHolder;
 import java.io.*;
 import java.util.Calendar;
@@ -372,15 +373,12 @@ public class ContentConnector implements AutoCloseable {
     public void deleteWorkspace() throws RepositoryException {
         //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
         String name = session.getWorkspace().getName();
-        SessionHolder.closeSession(session);
         Session adminSession = SessionHolder.getSession(null);
         try {
             adminSession.getWorkspace().deleteWorkspace(name);
         } catch (UnsupportedRepositoryOperationException ex) {
-            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace. Further : improve to remove workspace");
-            Session localSession = SessionHolder.getSession(workspace);
+            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace.");
             this.clearWorkspace();
-            SessionHolder.closeSession(localSession);
         } finally {
             SessionHolder.closeSession(adminSession);
         }
@@ -392,14 +390,22 @@ public class ContentConnector implements AutoCloseable {
      * @throws RepositoryException
      */
     public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
-        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId);
-        NodeIterator it = connector.listChildren("/");
-        String path;
-        while (it.hasNext()) {
-            path = it.nextNode().getPath();
-            session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
+        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId)) {
+            NodeIterator it = connector.listChildren("/");
+
+            String path;
+            while (it.hasNext()) {
+                path = it.nextNode().getPath();
+                session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
+            }
+            PropertyIterator propertyIterator = connector.getNode("/").getProperties(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
+            Property prop;
+            while (propertyIterator.hasNext()) {
+                prop = propertyIterator.nextProperty();
+                session.getRootNode().setProperty(prop.getName(), prop.getValue());
+            }
+            session.save();
         }
-        session.save();
     }
 
     /**
@@ -408,6 +414,8 @@ public class ContentConnector implements AutoCloseable {
      */
     public void clearWorkspace() throws RepositoryException {
         NodeIterator it = this.listChildren("/");
+        String name = session.getWorkspace().getName();
+        
         while (it.hasNext()) {
             it.nextNode().remove();
         }
