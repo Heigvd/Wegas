@@ -2220,8 +2220,8 @@
                 },
                 {
                     "@class": "NumberDescriptor",
-                    "name": "periodPhase1_4",
-                    "label": "periodPhase1_4",
+                    "name": "periodPhase4",
+                    "label": "periodPhase4",
                     "title": null,
                     "defaultInstance": {
                         "@class": "NumberInstance",
