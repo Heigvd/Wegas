@@ -462,8 +462,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      * @return the pages
      */
     public Map<String, JsonNode> getPages() {
-        try {
-            final Pages pagesDAO = new Pages(this.id.toString());
+        try (final Pages pagesDAO = new Pages(this.id.toString())) {
             return pagesDAO.getPages();
         } catch (RepositoryException ex) {
             return new HashMap<>();
@@ -512,8 +511,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @PostPersist
     private void storePages() {
         if (this.pages != null) {
-            try {
-                Pages pagesDAO = new Pages(this.id.toString());
+            try (final Pages pagesDAO = new Pages(this.id.toString())) {
                 pagesDAO.delete();                                              // Remove existing pages
                 for (Entry<String, JsonNode> p : this.pages.entrySet()) {       // Add all pages
                     pagesDAO.store(new Page(p.getKey(), p.getValue()));

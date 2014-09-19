@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement: contact et intérêt",
-					"name": "Directeur hébergement: contact et intérêt",
-					"editorLabel": "AP1-A010 Dir. hébergt: prise contact",
+					"label": "Directeur hÃ©bergement: contact et intÃ©rÃªt",
+					"name": "Directeur hÃ©bergement: contact et intÃ©rÃªt",
+					"editorLabel": "AP1-A010 Dir. hÃ©bergt: prise contact",
 					"description": "<p>Vous allez voir Michel Renault, directeur de l&rsquo;h&eacute;bergement, pour parler de la place de l&rsquo;&eacute;nergie dans son d&eacute;partement et pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentant de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em><em></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -54,7 +54,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Pourquoi revenez-vous me prendre du temps? Il n&rsquo;y a rien de nouveau depuis la derni&egrave;re fois.</p>"
 								}
 							]
@@ -63,8 +63,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directrice restauration: contact et intérêt",
-					"name": "Directrice restauration: contact et intérêt",
+					"label": "Directrice restauration: contact et intÃ©rÃªt",
+					"name": "Directrice restauration: contact et intÃ©rÃªt",
 					"editorLabel": "AP1-A020 Dir. restau: prise contact",
 					"description": "<p>Vous allez voir Dorine Herbier, directrice de la restauration, pour parler de la place de l&rsquo;&eacute;nergie dans son d&eacute;partement et pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentante de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
@@ -95,7 +95,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Mme Herbier vous r&eacute;pond \"Je suis toujours tr&egrave;s int&eacute;ress&eacute;e par votre projet. Cela me fait plaisir de vous revoir, mais je n&rsquo;ai malheureusement pas plus d&rsquo;information &agrave; vous donner pour l&rsquo;instant.\"</p>"
 								}
 							]
@@ -104,8 +104,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directrice RH : contact et intérêt",
-					"name": "Directrice RH : contact et intérêt",
+					"label": "Directrice RH : contact et intÃ©rÃªt",
+					"name": "Directrice RH : contact et intÃ©rÃªt",
 					"editorLabel": "AP1-A030 Dir. RH: prise contact",
 					"description": "<p>Vous allez voir Teresa Fernandez, directrice des RH, pour discuter de la place donn&eacute;e aux questions &eacute;nerg&eacute;tiques dans la formation et le syst&egrave;me de gratifications du personnel, ainsi que pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentante de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
@@ -136,7 +136,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Pourquoi revenez-vous me prendre du temps? Il n&rsquo;y a rien de nouveau depuis la derni&egrave;re fois.</p>"
 								}
 							]
@@ -145,8 +145,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur technique : contact et intérêt",
-					"name": "Directeur technique : contact et intérêt",
+					"label": "Directeur technique : contact et intÃ©rÃªt",
+					"name": "Directeur technique : contact et intÃ©rÃªt",
 					"editorLabel": "AP1-A040 Dir. technique : prise contact",
 					"description": "<p>Vous allez rencontrer Christophe Lampion, directeur technique, pour cr&eacute;er un contact, obtenir des informations relativement &agrave; son domaine et &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentant de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
@@ -177,7 +177,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Ravi de pouvoir encore discuter avec vous. Il n&rsquo;y a malheureusement rien de plus &agrave; vous apprendre actuellement.</p>"
 								}
 							]
@@ -186,8 +186,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur commercial : contact et intérêt",
-					"name": "Directeur commercial : contact et intérêt",
+					"label": "Directeur commercial : contact et intÃ©rÃªt",
+					"name": "Directeur commercial : contact et intÃ©rÃªt",
 					"editorLabel": "AP1-A050 Dir. commercial : prise contact",
 					"description": "<p>Vous allez voir Bertrand Lanoit, directeur commercial, pour parler de la place de l&rsquo;&eacute;nergie dans l&rsquo;activit&eacute; commerciale et pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentant de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
@@ -218,7 +218,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Je suis d&eacute;sol&eacute; mais je n&rsquo;ai vraiment pas le temps et nous avons d&eacute;j&agrave; parl&eacute; de cela la derni&egrave;re fois. Il me semble que rien de nouveau ne n&eacute;cessite de perdre du temps avec cette histoire d'&eacute;nergie.</p>"
 								}
 							]
@@ -227,8 +227,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur financier : contact et procédures investissements",
-					"name": "Directeur financier : contact et procédures investissements",
+					"label": "Directeur financier : contact et procÃ©dures investissements",
+					"name": "Directeur financier : contact et procÃ©dures investissements",
 					"editorLabel": "AP1-A060 Dir financier : contact",
 					"description": "<p>Vous allez &agrave; B&acirc;le pour rencontrer Marc Zimmerman, directeur financier, afin d&rsquo;&eacute;tablir un contact, parler de votre projet et obtenir des informations sur les allocations de budget et les proc&eacute;dures de choix d&rsquo;investissements.</p><p><em>Cartes temps: 3</em></p>",
 					"allowMultipleReplies": "true",
@@ -259,7 +259,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Le directeur financier n&rsquo;avait aucune plage horaire &agrave; vous consacrer et n&rsquo;a pas pu vous recevoir. Vous ne perdez qu&rsquo;une carte temps.</p>"
 								}
 							]
@@ -268,9 +268,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : Opportunité politique énergétique",
-					"name": "Directeur général : Opportunité politique énergétique",
-					"editorLabel": "AP1-A080 Dir. général: opportunité politique én.",
+					"label": "Directeur gÃ©nÃ©ral : OpportunitÃ© politique Ã©nergÃ©tique",
+					"name": "Directeur gÃ©nÃ©ral : OpportunitÃ© politique Ã©nergÃ©tique",
+					"editorLabel": "AP1-A080 Dir. gÃ©nÃ©ral: opportunitÃ© politique Ã©n.",
 					"description": "<p>Vous allez trouver le directeur g&eacute;n&eacute;ral pour lui demander son avis sur l&rsquo;opportunit&eacute; d&rsquo;&eacute;laborer une politique &eacute;nerg&eacute;tique. Ceci permettrait d'am&eacute;liorer vos contacts avec la direction g&eacute;n&eacute;rale et garantir son soutien au projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -300,7 +300,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Le directeur vous fait transmettre qu&rsquo;il n&rsquo;a pas de temps pour vous en ce moment.</p>"
 								}
 							]
@@ -341,7 +341,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Aucune lettre de r&eacute;ponse ne vous parvient.</p>"
 								}
 							]
@@ -350,9 +350,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Groupe développement durable : contact",
-					"name": "Groupe développement durable : contact",
-					"editorLabel": "AP1-A100 Groupe dévpt durable : contact",
+					"label": "Groupe dÃ©veloppement durable : contact",
+					"name": "Groupe dÃ©veloppement durable : contact",
+					"editorLabel": "AP1-A100 Groupe dÃ©vpt durable : contact",
 					"description": "<p><span id=\"internal-source-marker_0.008807166504133157\">Vous demandez un entretien avec le groupe d&eacute;veloppement durable afin de parler de management de l&rsquo;&eacute;nergie et de certification ISO 50001. Vous esp&eacute;rez &eacute;tablir avec eux un bon contact en vue d&rsquo;&eacute;ventuels projets en commun.</span></p><p><em>Cartes temps: 2</em>&nbsp; <span>&nbsp;</span></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -377,12 +377,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p><span id=\"internal-source-marker_0.008807166504133157\">La discussion est agr&eacute;able. Vous apprenez que le groupe est &eacute;videmment motiv&eacute; par les &eacute;conomies d&rsquo;&eacute;nergie et trouve int&eacute;ressant le projet de certification ISO 50001.</span></p><p><span id=\"internal-source-marker_0.008807166504133157\">Lors de la discussion, M. Mollin, coordinateur du groupe du d&eacute;veloppement durable (manager du restaurant Plaisance) indique qu&rsquo;il esp&egrave;re vivement votre participation aux activit&eacute;s de travail social. </span></p><p><span id=\"internal-source-marker_0.008807166504133157\">M. Dupont, chef d&rsquo;atelier se montre particuli&egrave;rement int&eacute;ress&eacute; &agrave; votre projet et propose son soutien.&nbsp;<br /></span></p><p>De plus, ils vous apprennent qu&rsquo;ils ont mis en place une bo&icirc;te &agrave; id&eacute;e &agrave; disposition du personnel et que s&rsquo;il y a des id&eacute;es concernant l&rsquo;&eacute;nergie, ils vous les transmettront.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.008807166504133157\">Vous parlez &agrave; nouveau de vos projets r&eacute;ciproques. Le groupe continue de se montrer int&eacute;ress&eacute; et parle longuement&nbsp; de ses id&eacute;es en mati&egrave;re de d&eacute;veloppement durable.</span></p><p><span id=\"internal-source-marker_0.008807166504133157\">Mais, pour votre part, vous n&rsquo;apprenez rien de vraiment nouveau depuis la derni&egrave;re fois.</span></p>"
 								}
 							]
@@ -391,9 +391,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel : présenter projet",
-					"name": "Personnel : présenter projet",
-					"editorLabel": "AP1-A110 Personnel : présenter projet",
+					"label": "Personnel : prÃ©senter projet",
+					"name": "Personnel : prÃ©senter projet",
+					"editorLabel": "AP1-A110 Personnel : prÃ©senter projet",
 					"description": "<p>La r&eacute;union du personnel a lieu ce mois-ci (p&eacute;riode 1).</p><p>Vous pr&eacute;parez une pr&eacute;sentation, puis participez &agrave; la r&eacute;union afin d'y pr&eacute;senter le projet de management des &eacute;nergies et de certification ISO 50001.</p><p><em>Cartes temps: 3</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -418,12 +418,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1ère fois",
+									"name": "1Ã¨re fois",
 									"answer": "<p>La s&eacute;ance se passe bien. Les collaborateurs sont attentifs. Plusieurs questions sont&nbsp; pos&eacute;es et comme votre connaissance du projet est bonne, vous r&eacute;pondez de mani&egrave;re convaincante.</p><p dir=\"ltr\">Quelques jours apr&egrave;s cette r&eacute;union, M. Mollin du groupe de d&eacute;veloppement durable vous transmet un mot d&eacute;pos&eacute; pour vous dans la bo&icirc;te &agrave; id&eacute;es &agrave; disposition du personnel :</p><p dir=\"ltr\"><em>&ldquo;Monsieur,</em></p><p dir=\"ltr\"><em>Je suis femme de chambre depuis longtemps dans cet h&ocirc;tel. Lors de votre pr&eacute;sentation, vous avez valoris&eacute; ce que faisait d&eacute;j&agrave; l&rsquo;h&ocirc;tel au niveau de l&rsquo;&eacute;nergie et de l&rsquo;environnement. Vous avez notamment mentionn&eacute; l&rsquo;exemple des serviettes de bain que les clients peuvent laisser sur le porte-serviette pour les r&eacute;utiliser et des &eacute;conomies d&rsquo;&eacute;nergie potentielles que cela pouvait repr&eacute;senter.</em></p><p dir=\"ltr\"><em>Ne vous faites pas trop d&rsquo;illusion, cette directive n&rsquo;est pas appliqu&eacute;e dans la r&eacute;alit&eacute;. Au d&eacute;but, certaines d&rsquo;entre nous le faisaient. Mais depuis le jour o&ugrave; une de mes coll&egrave;gues s&rsquo;est fait rabrouer par un client car elle n&rsquo;avait &ldquo;pas mis sa serviette au sale&rdquo; et qu&rsquo;il s&rsquo;en est plaint &agrave; la direction, nous mettons sans exception tous les linges de toilette &agrave; la lessive.</em></p><p dir=\"ltr\"><em>Nous sommes dans un h&ocirc;tel de luxe avec tout ce que cela implique...</em></p><p dir=\"ltr\"><em>Signature : anonyme.&rdquo;</em></p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2ème fois",
+									"name": "2Ã¨me fois",
 									"answer": "<p>Les participants semblent un peu endormis. Une personne fait remarquer qu&rsquo;il n&rsquo;y a pas vraiment de nouvelles informations depuis la derni&egrave;re s&eacute;ance.</p>"
 								}
 							]
@@ -459,12 +459,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p><span id=\"internal-source-marker_0.28218992553091005\">L&rsquo;entretien t&eacute;l&eacute;phonique est cordial, la responsable du d&eacute;partement \"h&ocirc;tels\", vous indique qu&rsquo;elle accueillera volontiers des id&eacute;es de collaborations dans le futur.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.28218992553091005\">La responsable du d&eacute;partement h&ocirc;tel ne&nbsp; comprend </span><span id=\"internal-source-marker_0.28218992553091005\">pas </span><span id=\"internal-source-marker_0.28218992553091005\">pourquoi vous la rappelez, car vous n&rsquo;avez pas plus d&rsquo;information &agrave; lui donner ou &agrave; lui demander. Elle vous dit cependant qu&rsquo;elle est toujours pr&ecirc;te &agrave; accueillir vos id&eacute;es de collaboration.</span></p>"
 								}
 							]
@@ -505,7 +505,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-7932-fd20-c6e1-15b519162329\">La rencontre est sympathique et Benoit Brocard vous offre une bi&egrave;re. Vous parlez de management de l&rsquo;&eacute;nergie ainsi que de son implication dans les d</span><span id=\"docs-internal-guid-09fdc1a7-7932-fd20-c6e1-15b519162329\">ivers projets de l&rsquo;h&ocirc;tel.</span></p>"
 								}
 							]
@@ -514,9 +514,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Brocard : Avis sur la politique énergétique",
-					"name": "Brocard : Avis sur la politique énergétique",
-					"editorLabel": "AP1-A140 Brocard: Avis politique énergétique",
+					"label": "Brocard : Avis sur la politique Ã©nergÃ©tique",
+					"name": "Brocard : Avis sur la politique Ã©nergÃ©tique",
+					"editorLabel": "AP1-A140 Brocard: Avis politique Ã©nergÃ©tique",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7936-f928-5e3b-8514ae35f62c\">Vous contactez Beno&icirc;t Brocard, consultant ISO 50001 affili&eacute; &agrave; l&rsquo;h&ocirc;tel, pour lui demander ce qu&rsquo;il pense de la politique &eacute;nerg&eacute;tique envoy&eacute;e par votre ami Fabrice et obtenir quelques conseils.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -541,17 +541,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1.1) 1er fois, si Brocard rencontré",
+									"name": "1.1) 1er fois, si Brocard rencontrÃ©",
 									"answer": "<p>M. Brocard est content de vous revoir.</p><p>Apr&egrave;s avoir examin&eacute; attentivement le document, Beno&icirc;t Brocard vous dit que dans la politique &eacute;nerg&eacute;tique donn&eacute;e par votre ami, il y a de tr&egrave;s bons &eacute;l&eacute;ments mais qu&rsquo;elle ne sera jamais accept&eacute;e par un certificateur ISO 50001. Il y manque les points indispensables suivants :</p><p dir=\"ltr\">- absence d&rsquo;engagement d&rsquo;am&eacute;lioration continue (art. 4.1.c de la norme)</p><p dir=\"ltr\">- cr&eacute;ation d&rsquo;une &eacute;quipe de management de l&rsquo;&eacute;nergie (art. 4.2.1. b de la norme).</p><p dir=\"ltr\">- absence d&rsquo;engagements sur les ressources n&eacute;cessaires pour atteindre les objectifs et cibles (art. 4.3.c de la norme ),</p><p>Par contre, il trouve particuli&egrave;rement bien &eacute;crite l&rsquo;introduction qui met en valeur tant l&rsquo;activit&eacute; h&ocirc;teli&egrave;re que la volont&eacute; de l&rsquo;h&ocirc;tel &agrave; s&rsquo;engager dans une am&eacute;lioration de sa performance &eacute;nerg&eacute;tique. Les autres parties sont aussi bien dans l&rsquo;ensemble, mais il faut y rajouter les &eacute;l&eacute;ments manquants.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "1.2) 1er fois, si Brocard non rencontré",
+									"name": "1.2) 1er fois, si Brocard non rencontrÃ©",
 									"answer": "<p>Vous commencez la discussion par une premi&egrave;re prise de contact. M. Brocard est heureux de faire votre connaissance. Il se r&eacute;jouit de votre nomination et du fait que l&rsquo;h&ocirc;tel se lance dans un projet de management de l&rsquo;&eacute;nergie. Il vous informe qu&rsquo;il suivra personnellement ce projet.</p><p>Apr&egrave;s avoir examin&eacute; attentivement le document, Beno&icirc;t Brocard vous dit que dans la politique &eacute;nerg&eacute;tique donn&eacute;e par votre ami, il y a de tr&egrave;s bons &eacute;l&eacute;ments mais qu&rsquo;elle ne sera jamais accept&eacute;e par un certificateur ISO 50001. Il y manque les points indispensables suivants :</p><p>- absence d&rsquo;engagement d&rsquo;am&eacute;lioration continue (art. 4.1.c de la norme)</p><p dir=\"ltr\">- manque la cr&eacute;ation d&rsquo;une &eacute;quipe de management de l&rsquo;&eacute;nergie (art. 4.2.1. b de la norme).</p><p dir=\"ltr\">- absence d&rsquo;engagements sur les ressources n&eacute;cessaires pour atteindre les objectifs et cibles (art. 4.3.c de la norme ),</p><p dir=\"ltr\">Par contre, il trouve particuli&egrave;rement bien &eacute;crite l&rsquo;introduction qui met en valeur tant l&rsquo;activit&eacute; h&ocirc;teli&egrave;re que la volont&eacute; de l&rsquo;h&ocirc;tel &agrave; s&rsquo;engager dans une am&eacute;lioration de sa performance &eacute;nerg&eacute;tique. Les autres parties sont correctes dans l&rsquo;ensemble, mais il faudra y ajouter les &eacute;l&eacute;ments manquants.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-794d-4126-63e1-d6858b38aece\">&ldquo;Je ne saurais vous en dire plus que la derni&egrave;re fois &agrave; ce sujet...&rdquo;</span></p>"
 								}
 							]
@@ -560,9 +560,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur technique : lumières salles de conférence",
-					"name": "Directeur technique : lumières salles de conférence",
-					"editorLabel": "AP1-A150 Dir technique, lumières salles conf.",
+					"label": "Directeur technique : lumiÃ¨res salles de confÃ©rence",
+					"name": "Directeur technique : lumiÃ¨res salles de confÃ©rence",
+					"editorLabel": "AP1-A150 Dir technique, lumiÃ¨res salles conf.",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7a26-9129-6264-61d6eab0f033\">Vous rencontrez le directeur technique pour parler du fait que les lumi&egrave;res sont souvent allum&eacute;es dans les salles de conf&eacute;rences m&ecirc;me lorsque celles-ci sont vides. Vous souhaitez discuter avec lui des possibilit&eacute;s d&rsquo;un syst&egrave;me automatique d&rsquo;extinction des lumi&egrave;res.</span></p><p><em>Carte temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -592,7 +592,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-7a28-f0cc-dae1-75db76ea5844\">\"Je crois vous avoir tout dit &agrave; ce sujet.\"</span> <span id=\"docs-internal-guid-09fdc1a7-7a28-198f-8a16-82bdf8be499d\"> </span></p>"
 								}
 							]
@@ -633,7 +633,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>\"Je vous ai d&eacute;j&agrave; &eacute;crit un e-mail pour vous dire que je n&rsquo;ai rien trouv&eacute;! Vous n&rsquo;avez qu&rsquo;&agrave; chercher sur internet, vous verrez vous-m&ecirc;me! Il existe certes des formations pour des sp&eacute;cialistes de l&rsquo;&eacute;nergie &nbsp;mais pas pour les professions de l&rsquo;h&ocirc;tellerie.\"</p>"
 								}
 							]
@@ -642,9 +642,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG: demander budget temps \"Démarrer\"",
-					"name": "DG: demander budget temps \"Démarrer\"",
-					"editorLabel": "AP1-A170 - DG: budget temps \"Démarrer\"",
+					"label": "DG: demander budget temps \"DÃ©marrer\"",
+					"name": "DG: demander budget temps \"DÃ©marrer\"",
+					"editorLabel": "AP1-A170 - DG: budget temps \"DÃ©marrer\"",
 					"description": "<p>Vous envoyez un mail &agrave; la direction pour demandez de vous accorder du temps suppl&eacute;mentaire pour la r&eacute;alisation de la phase \"D&eacute;marrer\". Vous justifiez en insistant sur l'importance de consacrer du temps dans les phases amont d'un tel projet.</p><p>Si la demande est accept&eacute;e, ceci vous permettrait d'augmenter un peu votre budget temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -669,12 +669,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. si pas encore accordé",
+									"name": "1. si pas encore accordÃ©",
 									"answer": "<p>La Direction vous r&eacute;pondra par mail tr&egrave;s prochainement.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. si déjà accordé",
+									"name": "2. si dÃ©jÃ  accordÃ©",
 									"answer": "<p>Le directeur g&eacute;n&eacute;ral me demande de vous transmettre que, selon ses mots, \"vous avez d&eacute;j&agrave; eu du temps suppl&eacute;mentaire pour ce projet. Il faut que vous vous en sortiez avec le temps &agrave; disposition.\"</p>"
 								}
 							]
@@ -683,9 +683,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement : représentation",
-					"name": "Directeur hébergement : représentation",
-					"editorLabel": "AP2-A010 Dir. l?hébergement: représentation",
+					"label": "Directeur hÃ©bergement : reprÃ©sentation",
+					"name": "Directeur hÃ©bergement : reprÃ©sentation",
+					"editorLabel": "AP2-A010 Dir. l?hÃ©bergement: reprÃ©sentation",
 					"description": "<p><span id=\"internal-source-marker_0.28218992553091005\">Vous allez voir Michel Renault, directeur de l&rsquo;h&eacute;bergement, pour lui demander s&rsquo;il peut d&eacute;signer une personne de son d&eacute;partement pour le repr&eacute;senter au sein de l&rsquo;&eacute;quipe management &eacute;nergie. Vous lui expliquez qu&rsquo;il est important pour tout le monde que son d&eacute;partement soit repr&eacute;sent&eacute; (pour son d&eacute;partement lui-m&ecirc;me ainsi que pour la r&eacute;alisation du projet de certification de l&rsquo;h&ocirc;tel). </span></p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -710,12 +710,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p><span id=\"internal-source-marker_0.28218992553091005\">Le directeur de l&rsquo;h&eacute;bergement vous r&eacute;pond qu&rsquo;il n'est en tout cas pas personnellement int&eacute;ress&eacute; et a autre chose &agrave; faire. Mais il va en discuter avec ses collaborateurs et voir si l&rsquo;un d&rsquo;entre eux serait int&eacute;ress&eacute; &agrave; repr&eacute;senter le d&eacute;partement.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.28218992553091005\">Je vous ai d&eacute;j&agrave; envoy&eacute; un e-mail &agrave; ce sujet.</span></p>"
 								}
 							]
@@ -751,12 +751,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p>La rencontre se passe bien. Le directeur technique vous confirme qu&rsquo;en cas de changement d&rsquo;&eacute;quipement, l&rsquo;achat d&rsquo;appareils efficaces &eacute;nerg&eacute;tiquement est une &eacute;vidence pour lui aussi. Vous n&rsquo;avez donc pas de soucis &agrave; vous faire de ce c&ocirc;t&eacute; l&agrave;.</p><p dir=\"ltr\">Monsieur Lampion vous dit qu&rsquo;un relev&eacute; d&eacute;taill&eacute; des &eacute;quipements de l&rsquo;h&ocirc;tel, caract&eacute;ristiques techniques, usages, etc., est &agrave; faire. Il vous enverra les informations dont il dispose &agrave; ce jour. Il vous promet de vous envoyer aussi le tableau r&eacute;capitulatif de la consommation d&rsquo;eau et d&rsquo;&eacute;nergies ainsi que les co&ucirc;ts associ&eacute;s pour les ann&eacute;es 2009-2012. Par contre, il n&rsquo;a pas de chiffres pour les ann&eacute;es ant&eacute;rieures, ni d&rsquo;information sur la prime de puissance.</p><p dir=\"ltr\">En parlant de l&rsquo;&eacute;quipe de maintenance, Monsieur Lampion dit en &ecirc;tre satisfait. Il vous informe qu&rsquo;ils travaillent bien mais qu&rsquo;ils ne sont pas aussi sensibilis&eacute;s aux &eacute;conomies d&rsquo;&eacute;nergie qu&rsquo;il le souhaiterait. Il pense qu&rsquo;une formation de l&rsquo;&eacute;quipe serait importante.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.9033698044296252\">Vous discutez de nouveau de votre passion commune. Monsieur Lampion vous parle &agrave; nouveau du fonctionnement de l'&eacute;quipe de maintenance et de la qualit&eacute; du travail effectu&eacute;.</span></p>"
 								}
 							]
@@ -765,8 +765,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur commercial: informations salles conférences",
-					"name": "Directeur commercial: informations salles conférences",
+					"label": "Directeur commercial: informations salles confÃ©rences",
+					"name": "Directeur commercial: informations salles confÃ©rences",
 					"editorLabel": "AP2-A050 Dir. commercial: info salles conf",
 					"description": "<p><span id=\"internal-source-marker_0.9033698044296252\">Vous allez voir le directeur commercial afin obtenir les taux d&rsquo;occupation des salles de conf&eacute;rence et la contribution de cette activit&eacute; au chiffre d&rsquo;affaire de l&rsquo;h&ocirc;tel. Vous aimeriez aussi savoir si les conf&eacute;renciers sont dans l&rsquo;ensemble satisfaits du confort des salles mises &agrave; leur disposition (mobilier et installations informatiques et de communication, mais aussi la qualit&eacute; de l&rsquo;&eacute;clairage, du chauffage, de la climatisation et de la ventilation).</span></p><p><em>Cartes temps : 2&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
@@ -792,12 +792,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p><span id=\"internal-source-marker_0.9033698044296252\">M. Lanoit vous r&eacute;pond \"Bon, je vais vous faire parvenir les infos sur le taux d&rsquo;occupation et l&rsquo;importance de l&rsquo;activit&eacute; &ldquo;congr&egrave;s et conf&eacute;rences&rdquo; dans le chiffre d&rsquo;affaire global. Dans l&rsquo;ensemble, les conf&eacute;renciers semblent satisfaits des salles mises &agrave; leur disposition. Je ne vois pas en quoi nous pourrions am&eacute;liorer la qualit&eacute; de notre offre &agrave; cet &eacute;gard\".</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.9033698044296252\">\"Il me semble que nous avons d&eacute;j&agrave; discut&eacute; de tout cela.\"</span></p>"
 								}
 							]
@@ -806,8 +806,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : Information avancement projet",
-					"name": "Directeur général : Information avancement projet",
+					"label": "Directeur gÃ©nÃ©ral : Information avancement projet",
+					"name": "Directeur gÃ©nÃ©ral : Information avancement projet",
 					"editorLabel": "AP2-A080 DG: Info avt projet",
 					"description": "<p><span id=\"internal-source-marker_0.9033698044296252\">Vous allez voir le directeur g&eacute;n&eacute;ral pour l&rsquo;informer sur l&rsquo;avancement du projet.</span></p><p><em>Carte temps: 1<br /></em></p>",
 					"allowMultipleReplies": "true",
@@ -838,12 +838,12 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.9033698044296252\">Le directeur g&eacute;n&eacute;ral vous remercie pour les information. Il vous fait aussi remarquer qu&rsquo;il lui semble que le changement n'est pas &eacute;norme depuis la derni&egrave;re fois et qu&rsquo;il n&rsquo;a pas plus de temps &agrave; vous consacrer.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3) 3ème fois",
+									"name": "3) 3Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.9033698044296252\">Le directeur g&eacute;n&eacute;ral vous fait remarquer que vous &ecirc;tes d&eacute;j&agrave; venu le voir deux fois sans avoir de nouvelles informations &agrave; lui donner. Vous le sentez agac&eacute;.</span></p>"
 								}
 							]
@@ -852,9 +852,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel: évolution du projet",
-					"name": "Personnel: évolution du projet",
-					"editorLabel": "AP2-A110 Personnel : évol. projet ",
+					"label": "Personnel: Ã©volution du projet",
+					"name": "Personnel: Ã©volution du projet",
+					"editorLabel": "AP2-A110 Personnel : Ã©vol. projet ",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-3bff-0e4a-5416-6e3925b1fda7\">Vous r&eacute;unissez le personnel de l&rsquo;h&ocirc;tel afin de leur parler de l&rsquo;&eacute;volution du projet. Vous leur pr&eacute;senter la politique &eacute;nerg&eacute;tique de l&rsquo;h&ocirc;tel, ainsi que l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie.</span></p><p><em>Cartes temps : 3<br /></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -884,7 +884,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-3c01-1e63-635b-29108e89ad4f\">Lors de cette pr&eacute;sentation, beaucoup moins de monde est pr&eacute;sent. Les participants semblent un peu endormis. </span></p><p><span id=\"docs-internal-guid-09fdc1a7-3c01-1e63-635b-29108e89ad4f\">Une personne fait remarquer qu&rsquo;il n&rsquo;y a pas vraiment de nouvelles informations depuis la derni&egrave;re s&eacute;ance et elle ne comprend pas pourquoi vous leur redites la m&ecirc;me chose que la derni&egrave;re fois. Ils font remarquer qu&rsquo;ils ont compris ce qu&rsquo;&eacute;tait la politique &eacute;nerg&eacute;tique. </span></p>"
 								}
 							]
@@ -893,9 +893,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe ME: Réunion de démarrage",
-					"name": "Equipe ME: Réunion de démarrage",
-					"editorLabel": "AP2-A130 Equipe ME : démarrage",
+					"label": "Equipe ME: RÃ©union de dÃ©marrage",
+					"name": "Equipe ME: RÃ©union de dÃ©marrage",
+					"editorLabel": "AP2-A130 Equipe ME : dÃ©marrage",
 					"description": "<p><span id=\"internal-source-marker_0.11373222931549598\">Vous organisez une r&eacute;union de l'&eacute;quipe \"Management de l'&eacute;nergie\" afin de remercier les membres pour leur contribution &agrave; venir.</span> Vous profitez de les inciter &agrave; discuter avec leurs collaborateurs et &agrave; promouvoir le projet de certification ISO 50001.</p><p><em>Cartes temps : 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -920,17 +920,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1.1) 1ère fois, Dir. hébérgement non rencontré",
+									"name": "1.1) 1Ã¨re fois, Dir. hÃ©bÃ©rgement non rencontrÃ©",
 									"answer": "<p>La r&eacute;union s&rsquo;est bien d&eacute;roul&eacute;e.</p><p>En d&eacute;but de r&eacute;union, vous relevez toutefois qu'il manque un repr&eacute;sentant de l'h&eacute;bergement. Sarah Benaroch, assistante RH, qui s'entend bien avec la responsable des femmes de chambre (Josiane Balasquaut), propose de la contacter.</p><p>Ensuite, vous rappelez le but et l&rsquo;importance de l&rsquo;Equipe de management de l&rsquo;&eacute;nergie. En leur distribuant l&rsquo;ordre du jour, vous expliquez comment fonctionnera l&rsquo;Equipe &eacute;nergie (p&eacute;riodicit&eacute; des r&eacute;unions, ordre du jour, etc.).&nbsp;</p><p><span id=\"docs-internal-guid-09fdc1a7-3bad-0270-441e-e96d54d06061\">Vous remettez &agrave; chaque membre un exemplaire de la norme ISO 50001 afin qu&rsquo;il puisse en prendre connaissance.</span>&nbsp;</p><p>Vous demandez ensuite de r&eacute;fl&eacute;chir aux &eacute;l&eacute;ments qui pourraient &ecirc;tre am&eacute;lior&eacute;s dans leurs services r&eacute;ciproques, d'en parler avec leurs collaborateurs. Ceci permettra de les familiariser avec le projet de certification qui doit, &agrave; terme, devenir le projet de tout le personnel et pas seulement celui de l&rsquo;Equipe de management de l&rsquo;&eacute;nergie.</p><p>Vous encouragez vos co-&eacute;quipiers &agrave; parler du projet avec leurs coll&egrave;gues et &agrave; susciter leur int&eacute;r&ecirc;t. Ils doivent &ecirc;tre les &ldquo;champions du changement&rdquo;, relais et porteurs du projet Management de l&rsquo;&eacute;nergie et certification ISO 50001.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "1.2) 1ère fois, Dir. hébérgement rencontré",
+									"name": "1.2) 1Ã¨re fois, Dir. hÃ©bÃ©rgement rencontrÃ©",
 									"answer": "<p>La r&eacute;union s&rsquo;est bien d&eacute;roul&eacute;e.</p><p class=\"p1\">Vous leur pr&eacute;sentez Josiane Balasquaut (Responsable des femmes de chambres) qui repr&eacute;sente le d&eacute;partement h&eacute;bergement.</p><p class=\"p1\">Vous annoncez avec satisfaction que l&rsquo;&eacute;quipe est au complet et pourra accomplir ses t&acirc;ches de fa&ccedil;on efficace.</p><p class=\"p1\">Ensuite, vous rappelez le but et l&rsquo;importance de l&rsquo;Equipe de management de l&rsquo;&eacute;nergie. En distribuant l&rsquo;ordre du jour, vous expliquez comment fonctionnera l&rsquo;Equipe &eacute;nergie (p&eacute;riodicit&eacute; des r&eacute;unions, ordre du jour, etc.).</p><p class=\"p1\">Vous&nbsp;remettez &agrave; chaque membre&nbsp;un exemplaire de la norme ISO 50001, afin qu&rsquo;il puisse en prendre connaissance.</p><p class=\"p1\">Vous leur demandez de r&eacute;fl&eacute;chir aux &eacute;l&eacute;ments qui pourraient &ecirc;tre am&eacute;lior&eacute;s dans leurs services r&eacute;ciproques et d'en parler avec leurs collaborateurs. Ceci permettra de les familiariser avec le projet de certification qui doit, &agrave; terme, devenir le projet de tout le personnel de l&rsquo;h&ocirc;tel et pas seulement celui de l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie.</p><p class=\"p1\">Vous encouragez vos co-&eacute;quipiers &agrave; parler du projet avec leurs coll&egrave;gues et &agrave; susciter leur int&eacute;r&ecirc;t. Ils doivent &ecirc;tre les &ldquo;champions du changement&rdquo;, relais et porteurs du projet Management de l&rsquo;&eacute;nergie et certification ISO 50001.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3) 2ème fois",
+									"name": "3) 2Ã¨me fois",
 									"answer": "<p>Cette fois-ci, votre &eacute;quipe n&rsquo;&eacute;tait pas au complet. Mademoiselle  <span id=\"docs-internal-guid-09fdc1a7-3bb0-ee3d-d42c-085e2e537bf6\">Benaroch </span> &nbsp;(d&eacute;partement RH) s&rsquo;est excus&eacute;e de son absence et vous n&rsquo;avez pas de nouvelles de &nbsp;Monsieur Ducoli (d&eacute;partement commercial). Vous exposez &agrave; votre &eacute;quipe ce que vous avez fait de nouveau depuis la derni&egrave;re fois.  <span id=\"docs-internal-guid-09fdc1a7-3bb2-03b5-af20-4b1cb487c7c5\">Le chef d&rsquo;atelier, Monsieur Dupont, informe l&rsquo;&eacute;quipe qu&rsquo;il a beaucoup parl&eacute; du projet autour de lui et que ses coll&egrave;gues approuvent le projet.</span></p>"
 								}
 							]
@@ -939,9 +939,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement : nuitées",
-					"name": "Directeur hébergement : nuitées",
-					"editorLabel": "AP2-A015 Dir. l?hébergement: nuitées",
+					"label": "Directeur hÃ©bergement : nuitÃ©es",
+					"name": "Directeur hÃ©bergement : nuitÃ©es",
+					"editorLabel": "AP2-A015 Dir. l?hÃ©bergement: nuitÃ©es",
 					"description": "<p><span id=\"internal-source-marker_0.28218992553091005\">Vous allez voir Michel Renault, directeur de l&rsquo;h&eacute;bergement,</span><span id=\"internal-source-marker_0.28218992553091005\">&nbsp;</span>pour avoir des informations sur le nombre de nuit&eacute;es de l&rsquo;h&ocirc;tel. (1 carte temps).</p><p><em>Cartes temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -966,12 +966,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p><span id=\"docs-internal-guid-31931126-19fb-0501-7145-c73cb041503e\">Monsieur Renault, directeur de l&rsquo;h&eacute;bergement est press&eacute; et pue disponible. Il vous dit qu&rsquo;il ne conna&icirc;t pas les chiffres par coeur et qu&rsquo;il vous enverra un e-mail &agrave; ce sujet.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.28218992553091005\">Je vous ai d&eacute;j&agrave; envoy&eacute; un e-mail &agrave; ce sujet.</span></p>"
 								}
 							]
@@ -982,7 +982,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Directrice restauration : repas",
 					"name": "Directrice restauration : repas",
-					"editorLabel": "AP2-A030 Dir. l?hébergement: repas",
+					"editorLabel": "AP2-A030 Dir. l?hÃ©bergement: repas",
 					"description": "<p><span id=\"docs-internal-guid-31931126-1a20-56d8-6e95-1049a1897ed3\">Vous allez voir le Directrice restauration pour avoir des informations sur le nombre de repas distribu&eacute;s par l&rsquo;h&ocirc;tel de l&rsquo;h&ocirc;tel. (1 carte temps).</span></p><p><em>Cartes temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1007,12 +1007,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p dir=\"ltr\">Dorine Herbier, la directrice de la restauration est tr&egrave;s contente de vous voir. Vous discutez un bon moment.</p><p><span id=\"docs-internal-guid-31931126-1a21-04af-0f48-e89efafa20ca\">En r&eacute;ponse &agrave; votre question, elle vous dit que cette ann&eacute;e le nombre de repas clients s&rsquo;&eacute;levait presque &agrave; 400&rsquo;000 couverts par an avec une majorit&eacute; de petits-d&eacute;jeuners. Au niveau des repas du personnel, l&rsquo;h&ocirc;tel atteint les 14'400 repas par an. Elle vous enverra un mail avec plus de pr&eacute;cisions.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"internal-source-marker_0.28218992553091005\">Je vous ai d&eacute;j&agrave; envoy&eacute; un e-mail &agrave; ce sujet.</span></p>"
 								}
 							]
@@ -1034,9 +1034,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel: Présentation évolution projet ",
-					"name": "Personnel: Présentation évolution projet ",
-					"editorLabel": "P-A010 Personnel : Prés. évol. projet ",
+					"label": "Personnel: PrÃ©sentation Ã©volution projet ",
+					"name": "Personnel: PrÃ©sentation Ã©volution projet ",
+					"editorLabel": "P-A010 Personnel : PrÃ©s. Ã©vol. projet ",
 					"description": "<p>Vous profitez de la r&eacute;union du personnel pour le tenir au courant de l&rsquo;&eacute;volution du projet. Vous pr&eacute;sentez les r&eacute;sultats de l'&eacute;valuation de la performance &eacute;nerg&eacute;tique et parlez du plan d&rsquo;action.</p><p><em>Carte temps : 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1066,7 +1066,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois ",
+									"name": "2) 2Ã¨me fois ",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-3c24-88a5-9131-9fa31255aad3\">Moins de monde est pr&eacute;sent et les participants semblent un peu endormis. Une personne fait remarquer qu&rsquo;il n&rsquo;y a pas vraiment de nouvelles informations depuis la derni&egrave;re s&eacute;ance.</span></p>"
 								}
 							]
@@ -1075,8 +1075,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général: info. plan actions",
-					"name": "Directeur général: info. plan actions",
+					"label": "Directeur gÃ©nÃ©ral: info. plan actions",
+					"name": "Directeur gÃ©nÃ©ral: info. plan actions",
 					"editorLabel": "P-A020 DG: info. plan actions",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-4067-7f9f-4c3e-e04794b8f26b\">Lors d&rsquo;une rencontre informelle, vous prenez le temps d&rsquo;informer le directeur g&eacute;n&eacute;ral des derniers choix effectu&eacute;s pour le plan d&rsquo;action.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
@@ -1107,7 +1107,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-406e-3843-5aa5-800a7e1e64e2\">Le directeur g&eacute;n&eacute;ral ne peut pas vous recevoir, il n&rsquo;a pas le temps.</span></p>"
 								}
 							]
@@ -1148,7 +1148,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-4078-a534-68d4-9e3888fe28cb\">La responsable de l&rsquo;office du tourisme ne semble pas comprendre pourquoi vous la rappelez. Ne lui avez-vous pas d&eacute;j&agrave; dit tout cela?</span></p>"
 								}
 							]
@@ -1157,8 +1157,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe de management de l?énergie : communication",
-					"name": "Equipe de management de l?énergie : communication",
+					"label": "Equipe de management de l?Ã©nergie : communication",
+					"name": "Equipe de management de l?Ã©nergie : communication",
 					"editorLabel": "P-A040 Equipe ME : communication",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-408d-2673-7281-17c4bfc14d77\">Vous conviez l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie afin de r&eacute;fl&eacute;chir ensemble sur la strat&eacute;gie g&eacute;n&eacute;rale de communication interne et externe.</span></p><p><em>Carte temps : 2</em></p>",
 					"allowMultipleReplies": "true",
@@ -1184,12 +1184,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) 1ère fois",
+									"name": "1) 1Ã¨re fois",
 									"answer": "<p>La r&eacute;union se passe bien et est tr&egrave;s dynamique. Toute l&rsquo;&eacute;quipe est d&rsquo;accord sur l&rsquo;importance de la communication autant interne qu'externe. Pour ce qui est de la communication externe, vous d&eacute;cidez de demander &agrave; avoir une page sur l&rsquo;intranet de l&rsquo;h&ocirc;tel. Toutes les informations relatives &agrave; la certification et son &eacute;volution ainsi que les r&eacute;ussites seraient r&eacute;pertori&eacute;es sur cette page.</p><p>Au niveau de la communication interne plusieurs id&eacute;es ont &eacute;merg&eacute; de la discussion. S&eacute;bastien Dupont (chef d&rsquo;atelier) propose une r&eacute;union tous les 3 mois avec l&rsquo;Equipe de maintenance et le manager de l&rsquo;&eacute;nergie, pour faire un point technique.</p><p>Sarah Benaroch (assistante RH) donne deux id&eacute;es qu&rsquo;elle a eues en lisant la norme ISO 50001. La premi&egrave;re est de cr&eacute;er un grand panneau sur lequel tous les d&eacute;partements seraient repr&eacute;sent&eacute;s et &eacute;valu&eacute;s en fonction de leurs r&eacute;sultats &eacute;nerg&eacute;tiques ou de leurs implications. L&rsquo;&eacute;valuation serait faite au moyen de smileys de couleur (vert, orange, rouge) accompagn&eacute;s &eacute;ventuellement de quelques commentaires. &nbsp;Le panneau serait affich&eacute; &agrave; toutes les r&eacute;unions du personnel pour que tout le monde en prenne connaissance.</p><p>Sa deuxi&egrave;me id&eacute;e est d&rsquo;impliquer le personnel en lui faisant prendre conscience de ce que repr&eacute;sente l&rsquo;&eacute;nergie dans leur lieu de travail. Pour cela, elle propose d&rsquo;inviter les collaborateurs de l&rsquo;h&ocirc;tel &agrave; visiter &ldquo;les faces cach&eacute;es de l&rsquo;h&ocirc;tel&rdquo;. En effet, elle fait remarquer que bon nombre d&rsquo;entre eux n&rsquo;ont jamais vu ni la chaufferie, ni m&ecirc;me les cuisines. Cette visite serait aussi l&rsquo;occasion de leur expliquer les changements qui seront effectu&eacute;s et ce qu&rsquo;ils impliquent. Bien s&ucirc;r, la visite se terminerait par un ap&eacute;ritif. Dans un deuxi&egrave;me temps, lorsque les actions auront &eacute;t&eacute; r&eacute;alis&eacute;es, les membres du personnel pourraient &ecirc;tre invit&eacute;s &agrave; faire un deuxi&egrave;me tour de l&rsquo;h&ocirc;tel pour voir les nouveaux &eacute;quipements. Cette fois la visite pourrait &ecirc;tre suivie d&rsquo;une f&ecirc;te pour marquer la &nbsp;r&eacute;ussite.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-09fdc1a7-4090-6a8a-f526-f9501684854b\">Cette fois-ci, votre &eacute;quipe n&rsquo;est pas au complet. Josiane Balasquaut (d&eacute;partement h&eacute;bergement) et Monsieur Ducoli (d&eacute;partement commercial) se sont excus&eacute;s de leur absence. Vous perfectionnez le plan communication avec les membres de l&rsquo;&eacute;quipe qui sont pr&eacute;sents. Le r&eacute;sultat final est jug&eacute; de bonne qualit&eacute; par les participants et vous-m&ecirc;me.</span></p>"
 								}
 							]
@@ -1198,8 +1198,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : info. avancement planification",
-					"name": "Directeur général : info. avancement planification",
+					"label": "Directeur gÃ©nÃ©ral : info. avancement planification",
+					"name": "Directeur gÃ©nÃ©ral : info. avancement planification",
 					"editorLabel": "P-A070 DG : info. avancement planification",
 					"description": "<p>Vous prenez rendez-vous avec Simon Mistral, le directeur g&eacute;n&eacute;ral, pour l&rsquo;informer sur l&rsquo;avancement des travaux relativement &agrave; la planification du projet.</p><p><em>Cartes temps: 1<br /></em></p>",
 					"allowMultipleReplies": "true",
@@ -1230,12 +1230,12 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Le directeur g&eacute;n&eacute;ral vous dit qu&rsquo;il lui semble que vous avez d&eacute;j&agrave; discut&eacute; de tout cela et qu&rsquo;il n&rsquo;a pas plus de temps &agrave; vous consacrer.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3) 3ème fois",
+									"name": "3) 3Ã¨me fois",
 									"answer": "<p>Le directeur g&eacute;n&eacute;ral vous fait remarquer que vous &ecirc;tes d&eacute;j&agrave; venu le voir deux fois sans avoir de nouvelles informations &agrave; lui donner. Vous le sentez agac&eacute;.</p>"
 								}
 							]
@@ -1289,12 +1289,12 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-41be0204-4533-95b6-5d2f-77385e944ddb\">Vous recevez 4 e-mails de la part de collaborateurs vous remerciant pour les informations.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3) 3ème fois",
+									"name": "3) 3Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-41be0204-4533-f78d-d2dd-ee46bd54b938\">Vore e-mail d'information est parti. Vous ne recevez que deux feedbacks.<br /></span></p>"
 								}
 							]
@@ -1335,7 +1335,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-41be0204-557c-d0d4-dc0b-c2e9f7e0aaf8\">La responsable vous remercie pour vos informations et vous souhaite bonne chance pour la fin de votre projet. </span> <span id=\"docs-internal-guid-41be0204-54e5-901d-633f-4868c357cfdb\"><br /></span></p>"
 								},
 								{
@@ -1349,8 +1349,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : info. avancement projet",
-					"name": "Directeur général : info. avancement projet",
+					"label": "Directeur gÃ©nÃ©ral : info. avancement projet",
+					"name": "Directeur gÃ©nÃ©ral : info. avancement projet",
 					"editorLabel": "R-A030 DG : info avct projet",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-54fe-5dba-5ad4-60e576bb77ff\">Vous informez le directeur g&eacute;n&eacute;ral de l&rsquo;avancement du projet.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
@@ -1386,12 +1386,12 @@
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p>Simon Mistral est content d'apprendre que le projet avance. Il compte sur vous pour faire en sorte que le planning et les budgets initiaux soient respect&eacute;s au mieux en fin de projet.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3) 3ème fois",
+									"name": "3) 3Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-41be0204-550a-905f-67a2-2c0c1507f8b9\">Le directeur g&eacute;n&eacute;ral vous remercie pour les informations. Il est content de savoir o&ugrave; en est la r&eacute;alisation du plan d&rsquo;action. Il se r&eacute;jouit de la fin des travaux et de vous &eacute;couter au Comit&eacute; de direction.</span></p><p><span>En fin de r&eacute;union, il vous engage &agrave; poursuivre le suivi de ce  projet de mani&egrave;re rigoureuse afin de garantir un respect de la qualit&eacute;,  des co&ucirc;ts et des d&eacute;lais.</span></p>"
 								},
 								{
@@ -1432,17 +1432,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1.1) si tâche pas débutée",
+									"name": "1.1) si tÃ¢che pas dÃ©butÃ©e",
 									"answer": "<p>La s&eacute;ance s&rsquo;est bien pass&eacute;e. En d&eacute;but de s&eacute;ance, il y a eu quelques discussions dues &agrave; une incompatibilit&eacute; entre les demandes des deux directeurs, mais vous avez trouv&eacute; une solution pour des emplacements id&eacute;aux de ces appareils.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "1.2) si tâche débutée",
+									"name": "1.2) si tÃ¢che dÃ©butÃ©e",
 									"answer": "<p dir=\"ltr\">En d&eacute;but de s&eacute;ance, il y a eu une premi&egrave;re remarque du directeur technique &ldquo;Est-ce que cette s&eacute;ance n&rsquo;aurait pas d&ucirc; &ecirc;tre effectu&eacute;e avant le d&eacute;but des travaux?&rdquo;</p><p>Puis la discussion est pass&eacute;e &agrave; l&rsquo;essentiel: l&rsquo;emplacement des appareils. Il y a eu quelques difficult&eacute;s dues &agrave; une incompatibilit&eacute; entre les demandes des deux directeurs, mais vous avez trouv&eacute; une solution pour des emplacements id&eacute;aux de ces appareils.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) 2ème fois",
+									"name": "2) 2Ã¨me fois",
 									"answer": "<p dir=\"ltr\">Les deux directeurs refusent la s&eacute;ance. Ils estiment avoir r&eacute;gl&eacute; le probl&egrave;me.</p>"
 								}
 							]
@@ -1478,17 +1478,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1ère fois",
+									"name": "1Ã¨re fois",
 									"answer": "<p>La r&eacute;union s&rsquo;est bien d&eacute;roul&eacute;e, presque tout le monde &eacute;tait pr&eacute;sent. Au niveau de la communication interne, l&rsquo;id&eacute;e de la f&ecirc;te a &eacute;t&eacute; approuv&eacute;e par tout le monde. Toute l&rsquo;&eacute;quipe s&rsquo;en r&eacute;jouit et ce qui semble renforcer l&rsquo;implication des membres.</p><p>Au niveau de la communication de vos actions &agrave; l&rsquo;externe, tous les membres de l&rsquo;&eacute;quipe pense qu&rsquo;il est important de mettre en avant les efforts de l&rsquo;h&ocirc;tel vis-&agrave;-vis des clients.  Diff&eacute;rentes possibilit&eacute;s sont &eacute;voqu&eacute;es : publication au niveau du site internet, projection sur les e?crans de diffusion, circulaires, informations &agrave; l&rsquo;office du tourisme. Vous esp&eacute;rez ainsi pouvoir donner une meilleure image de l'entreprise et favoriser une meilleure fide?lit&eacute; d&rsquo;une certaine  part de la cliente?le.</p><p><em>Suite &agrave; cette s&eacute;ance, un nouveau choix vous permet de d&eacute;cidez ce que vous souhaitez mettre en oeuvre relativement &agrave; la communication externe.</em></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2ème fois",
+									"name": "2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-0395c0ac-1d5b-643a-334c-4a0f1046fc6f\">Lors de cette deuxi&egrave;me r&eacute;union, vous parlez beaucoup de l&rsquo;organisation de la f&ecirc;te. Tout le monde semble se r&eacute;jouir et plusieurs id&eacute;es nouvelles apparaissent.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3ème fois",
+									"name": "3Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-0395c0ac-1d5b-643a-334c-4a0f1046fc6f\">Moins de personnes sont pr&eacute;sentes &agrave; la r&eacute;union. L'ambiance est sympathique, mais peu de r&eacute;sultats concrets sont obtenus.</span></p>"
 								}
 							]
@@ -1524,7 +1524,7 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1ère fois",
+									"name": "1Ã¨re fois",
 									"answer": "<p><span id=\"docs-internal-guid-5e2c3285-1de8-04d1-9b7c-1499f1685335\">Monsieur Lanoit semble press&eacute; et peu dispos&eacute; &agrave; vous rencontrer. Il est cordial mais la rencontre n&rsquo;est pas tr&egrave;s sympathique. </span></p><p><span id=\"docs-internal-guid-5e2c3285-1de8-04d1-9b7c-1499f1685335\">&ldquo;Vous et votre &eacute;nergie&rdquo;. Le directeur commercial vous fait remarquer que ce n&rsquo;est pas un th&egrave;me tr&egrave;s vendeur pour un h&ocirc;tel. Il est cependant d&rsquo;accord pour que vous mettiez une information &agrave; ce sujet sur le site Internet de l&rsquo;h&ocirc;tel.&nbsp;</span>&ldquo;Quelque part sur la m&ecirc;me page qui mentionne l&rsquo;implication de l&rsquo;h&ocirc;tel quant au d&eacute;veloppement durable&rdquo;.</p><p>Concernant les &eacute;crans du hall d&rsquo;entr&eacute;e, il n&rsquo;y est pas tr&egrave;s favorable. Cependant, il pr&eacute;cise que si une fois, ils n&rsquo;ont rien de mieux &agrave; mettre, ils le feront.</p>"
 								}
 							]
@@ -1533,9 +1533,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement: prospectus chambres",
-					"name": "Directeur hébergement: prospectus chambres",
-					"editorLabel": "R-A070 Dir.  héb.: propectus chambres",
+					"label": "Directeur hÃ©bergement: prospectus chambres",
+					"name": "Directeur hÃ©bergement: prospectus chambres",
+					"editorLabel": "R-A070 Dir.  hÃ©b.: propectus chambres",
 					"description": "<p><span id=\"docs-internal-guid-5e2c3285-1dea-908c-a8f5-01570dd21389\">Vous prenez contact avec Michel Renault le directeur de l&rsquo;h&eacute;bergement pour lui demander si vous pouvez ajouter un prospectus dans la documentation &agrave; disposition dans les chambres des clients. </span></p><p><span id=\"docs-internal-guid-5e2c3285-1dea-908c-a8f5-01570dd21389\">Ce dernier contiendrait des informations quant &agrave; certaines d&eacute;marches mise en place et &agrave; l&rsquo;implication de l&rsquo;h&ocirc;tel quant &agrave; la bonne gestion de l&rsquo;&eacute;nergie.</span></p><p><em>Budget temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1560,12 +1560,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1ère fois",
+									"name": "1Ã¨re fois",
 									"answer": "<p><span id=\"docs-internal-guid-5e2c3285-1deb-22c5-7970-e1a3f9d59e7c\">Michel Renault vous dit qu&rsquo;il n&rsquo;y voit pas d&rsquo;inconv&eacute;nient. Il vous renvoie vers un de ses assistants pour les d&eacute;tails.</span></p><p><span>Vous prenez contact avec l'assistant. Les prospectus seront tr&egrave;s prochainement int&eacute;gr&eacute;s &agrave; la documentation des chambres.</span></p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2ème fois",
+									"name": "2Ã¨me fois",
 									"answer": "<p><span id=\"docs-internal-guid-5e2c3285-1def-3cc1-01c8-18f73af716fc\">Le directeur de l&rsquo;h&eacute;bergement est tr&egrave;s occup&eacute; et n&rsquo;a pas pu vous rencontr&eacute;.</span></p>"
 								}
 							]

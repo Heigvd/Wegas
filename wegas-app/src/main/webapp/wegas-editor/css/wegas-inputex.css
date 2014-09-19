@@ -121,14 +121,28 @@ div.inputEx-description {
 }
 /* Wegas Url Field styles */
 .inputEx-wegas-UrlField {
-    padding-right:40px;
+    padding-right: 69px;
+}
+.inputEx-wegas-UrlField .yui3-uploader {
+    display: inline-block;
+    float: right;
+    margin-right: -40px;
+    padding: 2px 4px 0px 6px;
+    vertical-align: top;
+    margin-top: -2px;
+}
+.inputEx-wegas-UrlField .yui3-uploader input {
+    display: none;
 }
 .inputEx-wegas-UrlField button {
     float: right;
-    margin-right: -40px;
-    padding: 5px 7px 1px;
+    padding: 1px 4px 1px 6px;
     vertical-align: top;
-    margin-top: -4px;
+    margin-top: -2px;
+    display: inline-block;
+}
+.inputEx-wegas-UrlField > button {
+    margin-right: -69px;
 }
 
 /* wegas-inputex-ace styles */
@@ -319,6 +333,7 @@ img.inputEx-ListField-delButton {
     z-index: 5;
     top: 4px;
     left: -20px;
+    /*background: transparent url(../../wegas-app/images/wegas-app-sprite.png) no-repeat scroll 0px -1006px !important;*/
 }
 .inputEx-ListField-ArrowUp {
     left: -50px;
@@ -415,4 +430,11 @@ div.inputEx-RadioField-choice input[type="radio"] {
 .inputEx-focused .inputEx-ComboBox .inputex-combobox-select,
 .inputEx-ComboBox:hover .inputex-combobox-select{
     display:inline;
+}
+
+/* Uneditable field */
+.inputEx-uneditableField .inputEx-Field {
+    border: 1px solid lightgray;
+    padding: 2px;
+    background: #fafafa;
 }

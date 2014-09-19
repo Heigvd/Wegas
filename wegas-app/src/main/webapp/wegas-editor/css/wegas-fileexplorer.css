@@ -202,5 +202,5 @@
 .wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li span{
     display: inline-block;
     vertical-align: middle;
-    margin: 0 2px 0 0;
+    margin: -3px 2px 0 0;
 }

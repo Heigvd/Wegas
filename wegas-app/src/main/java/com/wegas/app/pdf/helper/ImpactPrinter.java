@@ -137,7 +137,13 @@ public class ImpactPrinter {
                     if ("sendMessage".equals(operator)) { // e-mail like message
                         String[] args;
                         args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
-                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], args[2], null);
+                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[1], null, args[2], null);
+                                                              // TO           FROM     SUBJECT  DATE    BODY
+                    } else if ("sendDatedMessage".equals(operator)) { // dated e-mail like message
+                        String[] args;
+                        args = value.split("(?s)[,](?=(?:(?:.*?(?<!\\\\)\"){2})*[^\"]*$)"); // arg separation
+                        UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null);
+                                                              // TO           FROM     SUBJECT  DATE    BODY
                     } else {
                         String var;
                         String op;

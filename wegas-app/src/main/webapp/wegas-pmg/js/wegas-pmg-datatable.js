@@ -18,13 +18,14 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
             object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
             requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
-            assignedRessource: micro.compile('<% var gras=false, currentPeriode = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase3").getInstance().get("value"); for(var i = 0; i < this.length; i+=1){ gras=false; var occupations = this[i].ressourceInstance.get("occupations"); for(var oi = 0; oi<occupations.length; oi++) { if(occupations[oi].get("time")==currentPeriode && occupations[oi].get("editable")){gras=true; break;}} for (var j in this[i].ressourceInstance.get("skillsets")){ if (gras) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
+            assignedResource: micro.compile('<% var bold=false; for(var i = 0; i < this.length; i+=1){ bold = this[i].ressourceDescriptor.isPlannedForCurrentPeriod(this[i].taskDescriptor); for (var j in this[i].ressourceInstance.get("skillsets")){ if (bold) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
         };
 
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Lifecycle Methods *** //
         initializer: function() {
-            var i, ct = this.get("columnsCfg");
+            var i, ct = this.get("columnsCfg"),
+                recordTypes = {};
             for (i = 0; i < ct.length; i += 1) {                                //construct Datatable's columns
                 Y.mix(ct[i], {
                     sortable: true,
@@ -33,11 +34,25 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (Y.Lang.isString(ct[i].sortFn)) {
                     ct[i].sortFn = Datatable.Sort[ct[i].sortFn](ct[i]);
                 }
+
+                // Add specific getter for deep properties @hack : . and % are synonyms (@hack @shame)
+                if (ct[i].key && ct[i].key.indexOf(".") >= 0 || ct[i].key && ct[i].key.indexOf("%") >= 0) {  // @hack 
+                    // Key with points issue... 
+                    ct[i].key = ct[i].key.replace(/\./g, "%");  // @hack replace '.' by '%' @shame
+
+                    recordTypes[ct[i].key] = {getter: function(i, key) {
+                            var v = this.get(key.replace(/%/g, ".")); // @hack @shame
+                            // Coerce to number if possible
+                            return (+v ? +v : v);
+                        }
+                    };
+                }
             }
 
             this.datatable = new Y.DataTable({//Using simple database
-                bodyView: Wegas.PMGBodyView,
-                columns: ct
+                //bodyView: Wegas.PMGBodyView,
+                columns: ct,
+                recordType: recordTypes
                     //recordType: PMGDatatableModel,
                     //sortable: true
             });
@@ -62,8 +77,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         },
         //*** Private Methods ***/
         getData: function() {
-            var oneRowDatas,
-                variables = this.get('variable.evaluated'),
+            var variables = this.get('variable.evaluated'),
                 data = [];
             if (!variables) {
                 this.showMessage("error", "Could not find variable");
@@ -74,10 +88,10 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             }
             Y.Array.each(variables.get("items"), function(item) {
                 if (item.getInstance().get("active")) {
-                    oneRowDatas = item.toJSON();
-                    oneRowDatas.descriptor = item;
-                    oneRowDatas.instance = item.getInstance().toJSON();
-                    data.push(oneRowDatas);
+                    data.push(Y.mix(item.toJSON(), {
+                        descriptor: item,
+                        instance: item.getInstance().toJSON()
+                    }));
                 }
             });
             return data;
@@ -135,22 +149,31 @@ YUI.add("wegas-pmg-datatable", function(Y) {
     Wegas.PmgDatatable = Datatable;
 
     Y.mix(Y.DataTable.BodyView.Formatters, {
-        requieredRessources: function(o) {
+        quality: function() {
+            return function(o) {
+                if (o.data.instance.properties.completeness <= 0) {
+                    return "-";
+                } else {
+                    return o.data.instance.properties.quality;
+                }
+            };
+        },
+        requieredRessources: function() {
             return function(o) {
                 return TEMPLATES.requiredRessource(o.data.instance.requirements);
             };
         },
-        assignedRessources: function(o) {
+        assignedRessources: function() {
             return function(o) {
-                var assignedRessources = o.data.descriptor.findAssociatedRessources("assignments"),
-                    data = TEMPLATES.assignedRessource(assignedRessources);
+                var assignedResources = o.data.descriptor.findAssociatedRessources("assignments"),
+                    data = TEMPLATES.assignedResource(assignedResources);
                 if (!data) {
                     data = " - ";
                 }
                 return data;
             };
         },
-        template: function(o) {
+        template: function() {
             return function(o) {
                 var data;
                 o.data._field = o.column.field;
@@ -194,134 +217,6 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 }
                 return data;
             };
-        }
-//        "instance": function(o) {
-//            return function(o) {
-//                return o.data.instance[o.column.field];
-//            }
-//        },
-//        "map": function(o) {
-//            return function(o) {
-//                var i, names = o.column.key.split("."),
-//                    data = o.data;
-//                for (var i = 0; i < names.length; i += 1) {
-//                    data = data[names[i]];
-//                }
-//
-//                if (!data)
-//                    data = " - ";
-//                return data;
-//            };
-//        }
-    });
-
-    //var PMGDatatableModel = Y.Base.create('pmgdatatablemodel', Y.Model, [], {
-    //    get: function(a) {
-    //        console.log("get", a);
-    //        return PMGDatatableModel.superclass.get.apply(this, arguments);
-    //    }
-    //}, {
-    //    ATTRS: {}
-    //});
-    //Wegas.PMGDatatableModel = PMGDatatableModel;
-
-    Wegas.PMGBodyView = Y.Base.create("pmg-bodyview", Y.DataTable.BodyView, [], {
-        _createRowHTML: function(model, index, columns) {
-            var data = model.toJSON(),
-                clientId = model.get('clientId'),
-                values = {
-                    rowId: this._getRowId(clientId),
-                    clientId: clientId,
-                    rowClass: (index % 2) ? this.CLASS_ODD : this.CLASS_EVEN
-                },
-            host = this.host || this,
-                i, len, col, token, value, formatterData;
-            for (i = 0, len = columns.length; i < len; ++i) {
-                col = columns[i];
-                value = (col.key) ? model.get(col.key) : null; // @modified
-                //value = data[col.key];
-                token = col._id || col.key;
-                values[token + '-className'] = '';
-                if (col._formatterFn) {
-                    formatterData = {
-                        value: value,
-                        data: data,
-                        column: col,
-                        record: model,
-                        className: '',
-                        rowClass: '',
-                        rowIndex: index
-                    };
-                    value = col._formatterFn.call(host, formatterData); // Formatters can either return a value
-                    if (value === undefined) {// or update the value property of the data obj passed
-                        value = formatterData.value;
-                    }
-                    values[token + '-className'] = formatterData.className;
-                    values.rowClass += ' ' + formatterData.rowClass;
-                }
-                if (!values.hasOwnProperty(token) || data.hasOwnProperty(col.key)) {// if the token missing OR is the value a legit value
-                    if (value === undefined || value === null || value === '') {
-                        value = col.emptyCellValue || '';
-                    }
-                    values[token] = col.allowHTML ? value : Y.Escape.html(value);
-                }
-            }
-            values.rowClass = values.rowClass.replace(/\s+/g, ' '); // replace consecutive whitespace with a single space
-            return Y.Lang.sub(this._rowTemplate, values); // @modified
-        },
-        refreshCell: function(cell, model, col) {
-            var content,
-                formatterFn,
-                formatterData,
-                data = model.toJSON();
-            cell = this.getCell(cell);
-            model || (model = this.getRecord(cell));
-            col || (col = this.getColumn(cell));
-            if (col.nodeFormatter) {
-                formatterData = {
-                    cell: cell.one('.' + this.getClassName('liner')) || cell,
-                    column: col,
-                    data: data,
-                    record: model,
-                    rowIndex: this._getRowIndex(cell.ancestor('tr')),
-                    td: cell,
-                    value: model.get(col.key)                                       // @Modified
-                        //value: data[col.key]
-                };
-                keep = col.nodeFormatter.call("host", formatterData);
-                if (keep === false) {
-                    cell.destroy(true);
-                }
-            } else if (col.formatter) {
-                if (!col._formatterFn) {
-                    col = this._setColumnsFormatterFn([col])[0];
-                }
-                formatterFn = col._formatterFn || null;
-                if (formatterFn) {
-                    formatterData = {
-                        value: model.get(col.key), // @Modified
-                        //value: data[col.key],
-                        data: data,
-                        column: col,
-                        record: model,
-                        className: '',
-                        rowClass: '',
-                        rowIndex: this._getRowIndex(cell.ancestor('tr'))
-                    };
-                    content = formatterFn.call(this.get('host'), formatterData); // Formatters can either return a value ...
-                    if (content === undefined) {// ... or update the value property of the data obj passed
-                        content = formatterData.value;
-                    }
-                }
-                if (content === undefined || content === null || content === '') {
-                    content = col.emptyCellValue || '';
-                }
-            } else {
-                content = model.get(col.key) || col.emptyCellValue || '';
-            }
-
-            cell.setHTML(col.allowHTML ? content : Y.Escape.html(content));
-            return this;
         }
     });
 });

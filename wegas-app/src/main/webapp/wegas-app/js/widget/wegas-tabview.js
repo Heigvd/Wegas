@@ -222,8 +222,8 @@ YUI.add('wegas-tabview', function(Y) {
     }
 
     //Y.extend(Parent, Y.WidgetParent);
-    Y.mix(Parent, Y.WidgetParent);
-    Y.augment(Parent, Y.WidgetParent);
+    Y.mix(Parent.prototype, Y.WidgetParent.prototype);
+//    Y.augment(Parent, Y.WidgetParent);
     Parent.ATTRS = {};
     Y.mix(Parent.ATTRS, Y.WidgetParent.ATTRS);
     delete Parent.ATTRS.selected;
@@ -467,7 +467,7 @@ YUI.add('wegas-tabview', function(Y) {
                     Wegas.app.widget.hidePosition("right");
                 }
             }, this);
-            this.afterHostEvent("removeChild", function() {
+            this.afterHostMethod("destroyAll", function() {
                 Y.later(100, this, function() {
                     if (this.get("host").isEmpty()) {
                         Wegas.app.widget.hidePosition("right");

@@ -31,10 +31,10 @@
                     }, {
                         "disabled": false,
                         "type": "Button",
-                        "label": "Période suivante",
+                        "label": "PÃ©riode suivante",
                         "plugins": [{
                                 "cfg": {
-                                    "content": "Avancer à la période suivante"
+                                    "content": "Avancer Ã  la pÃ©riode suivante"
                                 },
                                 "fn": "Tooltip"
                             }, {
@@ -111,7 +111,7 @@
                     }, {
                         "type": "Button",
                         "disabled": false,
-                        "label": "Pièces",
+                        "label": "PiÃ¨ces",
                         "cssClass": "menu-button",
                         "plugins": [
                             {
@@ -126,7 +126,7 @@
                     }, {
                         "type": "Button",
                         "disabled": false,
-                        "label": "Résultat des analyses",
+                        "label": "RÃ©sultat des analyses",
                         "cssClass": "menu-button",
                         "plugins": [
                             {

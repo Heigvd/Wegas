@@ -41,4 +41,40 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
     }, {
         NS: "preview"
     });
+
+    Y.Plugin.BlockAction = Y.Base.create("wegas-preview-fullscreen", Y.Plugin.Base, [], {
+        initializer: function() {
+            this.afterHostEvent("render", this.render);
+
+            Y.publish("playerAction", {
+                emitFacade: true
+            });
+            Y.on("playerAction", function(e) {
+                if (this.viewButton.get("pressed")
+                    && this.get("host").get("parent").get("selected")) {        // @hack the plugin is only active when the preview tab is selected
+                    e.halt(true);
+                }
+            }, this);
+        },
+        render: function() {
+            var host = this.get('host');
+
+            if (host.toolbar) {
+                this.viewButton = host.toolbar.add({
+                    type: "ToggleButton",
+                    pressed: true
+                }).item(0);
+
+                this.viewButton.after("pressedChange", this.sync, this);
+                this.sync();
+            }
+        },
+        sync: function() {
+            this.viewButton.set("label", this.viewButton.get("pressed") ?
+                "<span class='wegas-icon wegas-icon-lock'></span>Block actions"
+                : "<span class='wegas-icon wegas-icon-unlock'></span>Allow actions");
+        }
+    }, {
+        NS: "BlockAction"
+    });
 });

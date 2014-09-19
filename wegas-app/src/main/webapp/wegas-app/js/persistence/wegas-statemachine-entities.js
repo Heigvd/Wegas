@@ -277,7 +277,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             preStateImpact: {
-                optional:true,
+                optional: true,
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Impact'
@@ -345,7 +345,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             },
             triggerEvent: {
-                optional:true,
+                optional: true,
                 _inputex: {
                     _type: SCRIPT,
                     label: 'Condition',

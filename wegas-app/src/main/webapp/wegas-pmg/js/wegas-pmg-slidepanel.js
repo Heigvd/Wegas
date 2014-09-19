@@ -11,7 +11,8 @@
 YUI.add("wegas-pmg-slidepanel", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", SlidePanel, Wegas = Y.Wegas;
+    var CONTENTBOX = "contentBox",
+        SlidePanel, Wegas = Y.Wegas;
 
     SlidePanel = Y.Base.create("wegas-pmg-slidepanel", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
         BOUNDING_TEMPLATE: "<div><div class='slidepanel-title' style='position:relative;'><h2></h2></div></div>",
@@ -28,21 +29,21 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 width: "100%"
             });
 
-            if (this.get("animation")) {                                        // Slide animation
+            if (this.get("animation")) { // Slide animation
                 this.animation = cb.plug(Y.Plugin.NodeFX, {
                     from: {
                         height: 0
                     },
                     to: {
-                        height: function(node) {                                // dynamic in case of change
-                            return node.get('scrollHeight');                    // get expanded height (offsetHeight may be zero)
+                        height: function(node) { // dynamic in case of change
+                            return node.get('scrollHeight'); // get expanded height (offsetHeight may be zero)
                         }
                     },
                     easing: Y.Easing.easeOut,
                     duration: 0.5
                 }, this);
 
-                this.cleaner = cb.ancestor().one(".slidepanel-cleaner").plug(Y.Plugin.NodeFX, {//compensates the non-height of the content's absolute position.
+                this.cleaner = cb.ancestor().one(".slidepanel-cleaner").plug(Y.Plugin.NodeFX, { //compensates the non-height of the content's absolute position.
                     from: {
                         height: 0
                     },
@@ -64,20 +65,21 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
                 if (this.get('animation')) {
                     this.animation.fx.set('reverse', !this.animation.fx.get('reverse')) // toggle reverse
-                        .run();
+                    .run();
                     this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')) // toggle reverse
-                        .run();
+                    .run();
                 }
             }, this);
         },
         syncUI: function() {
             var cb = this.get(CONTENTBOX);
-            if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled")) {
+            if (!cb.get("parentElement").hasClass("wegas-slidepanel-toggled") && cb.get('scrollHeight') > 0) {
                 cb.ancestor().one(".slidepanel-cleaner").setStyle('height', cb.get('scrollHeight')); //compensates the non-height of the content's absolute position.
             }
         },
         destructor: function() {
-            for (var k in this.handlers) {
+            var k;
+            for (k in this.handlers) {
                 this.handlers[k].detach();
             }
             if (this.get('animation')) {
@@ -112,95 +114,97 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
      */
     Wegas.PmgResourcesPanels = Y.Base.create("wegas-pmg-resourcespanels", Y.Widget, [Y.WidgetParent, Y.WidgetChild, Wegas.Editable, Wegas.Parent], {
         renderUI: function() {
-            var resourceFoldes = Wegas.Facade.Variable.cache.find("name", "employees");
+            var panel, resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
+                autoDesc = Wegas.Facade.Variable.cache.find("name", "autoReservation"),
+                autoReserve = autoDesc && autoDesc.getInstance().get("value"), // Ensure variable exists
+                currentPhase = Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
 
-            this.panels = Y.Array.map(resourceFoldes.get("items"), function(vd) {
-                var autoDesc = Y.Wegas.Facade.Variable.cache.find("name", "autoReservation"), // Ensure variable exists
-                    autoReserve = autoDesc && autoDesc.getInstance().get("value"),
-                    pmgPanel,
-                    currentPhase = Y.Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
-
-
-                pmgPanel = new Wegas.PmgSlidePanel({
+            this.panels = Y.Array.map(resourceFolder.get("items"), function(vd) {
+                panel = new Wegas.PmgSlidePanel({
                     title: vd.get("label"),
                     children: [{
-                            type: "PmgDatatable",
-                            plugins: [{
-                                    fn: "ScheduleDT",
-                                    cfg: {
-                                        variable: {
-                                            name: "periodPhase3"
-                                        },
-                                        autoReservation: autoReserve
+                        type: "PmgDatatable",
+                        plugins: [{
+                                fn: "ScheduleDT",
+                                cfg: {
+                                    variable: {
+                                        name: "periodPhase3"
                                     }
+                                }
                                 }, {
-                                    fn: "Assignment",
-                                    cfg: {
-                                        taskList: {
-                                            name: "tasks"
-                                        },
-                                        columnPosition: 5
-                                    }
+                                fn: "Assignment",
+                                cfg: {
+                                    taskList: {
+                                        name: "tasks"
+                                    },
+                                    columnPosition: 5
+                                }
                                 }, {
-                                    fn: "Reservation"
+                                fn: "OccupationColor",
+                                cfg: {
+                                    autoReservation: autoReserve
+                                }
                                 }, {
-                                    fn: "OccupationColor",
-                                    cfg: {
-                                        autoReservation: autoReserve
-                                    }
+                                fn: "ActivityColor"
+                                }
+                            ],
+                        variable: {
+                            name: vd.get("name")
+                        },
+                        columnsCfg: [{
+                            key: "label",
+                            label: "Name",
+                            sortable: true
                                 }, {
-                                    fn: "ActivityColor"
+                            label: "Grade",
+                            formatter: "skillLevel",
+                            key: "instance.skillsets",
+                            sortable: true,
+                            allowHTML: true
+                                }, {
+                            label: "Monthly wages",
+                            key: "instance.properties.wage",
+                            sortable: true
+                                }, {
+                            label: "Rate",
+                            key: "instance.properties.activityRate",
+                            sortable: true
+                                }, {
+                            label: "Motiv.",
+                            key: "instance.moral",
+                            sortable: true
                                 }],
-                            variable: {
-                                name: vd.get("name")
-                            },
-                            columnsCfg: [{
-                                    key: "label",
-                                    label: "Name",
-                                    sortable: true,
-                                    allowHTML: true
-                                }, {
-                                    name: "grade",
-                                    label: "Grade",
-                                    formatter: "skillLevel",
-                                    key: "instance.skillsets",
-                                    sortable: true,
-                                    allowHTML: true
-                                }, {
-                                    name: "Wage",
-                                    label: "Monthly wages",
-                                    key: "instance.properties.wage",
-                                    sortable: true,
-                                    allowHTML: true
-                                }, {
-                                    name: "Rate",
-                                    label: "Rate",
-                                    key: "instance.properties.activityRate",
-                                    sortable: true,
-                                    allowHTML: true
-                                }, {
-                                    name: "Motiv",
-                                    label: "Motiv.",
-                                    key: "instance.moral",
-                                    sortable: true,
-                                    allowHTML: true
-                                }],
-                            defaultSort: null
+                        defaultSort: null
                         }, {
-                            type: "Text",
-                            content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nAway</div>\n</div>"
+                        type: "Text",
+                        content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nNot Available</div>\n</div>"
                         }]
                 }).render(this.get(CONTENTBOX));
+                if (!autoReserve) {
+                    panel.item(0).plug(Y.Plugin.Reservation); // Player can click cell to reserve
+                    panel.item(0).plug(Y.Plugin.EngagmentDelay);
+                    panel.item(0).plug(Y.Plugin.PMGLineFilter, {
+                        filterFn: function(data, node) {
+                            var instance = data.get("instance"),
+                                assignments = instance.assignments && instance.assignments.length > 0,
+                                currentPeriod = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase3").getValue(),
+                                occupations = Y.Array.some(instance.occupations, function(i) {
+                                    return i.get("editable") && currentPeriod < i.get("time") + 1;
+                                });
+                            node.toggleClass("resourcepanel-warn", occupations !== assignments);
+                        }
+                    });
+                }
 
                 if (autoReserve && currentPhase === 3) {
-                    pmgPanel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                    panel.item(0).plug(Y.Plugin.AutoReservationColor, {
                         taskList: {
                             name: "tasks"
                         }
                     });
                 }
-
-                return pmgPanel;
+                panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
+                return panel;
             }, this);
         },
         destructor: function() {
@@ -209,5 +213,4 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
             });
         }
     });
-
 });

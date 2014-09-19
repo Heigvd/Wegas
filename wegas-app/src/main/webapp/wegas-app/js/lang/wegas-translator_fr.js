@@ -13,7 +13,7 @@ YUI.add("lang/wegas-translator_fr", function(Y) {
         Delete: "Supprimer",
         Empty: "Vide",
         No_description: "Aucune description",
-        Unanswered: "non répondu",
-        NotDone: "non effectué"
+        Unanswered: "non rÃ©pondu",
+        NotDone: "non effectuÃ©"
     });
 });

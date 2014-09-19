@@ -83,18 +83,18 @@ YUI.add('wegas-pageeditor', function(Y) {
                     visible: false
                 }).item(0);
                 this.addButton.plug(Y.Plugin.WidgetMenu);
-                    this.addButton.menu.on("menuOpen", function() {
-                        var menu = host.get("widget").getMenuCfg({
-                            targetwidget: host.get("widget")
-                        }), addElement = Y.Array.find(menu, function(o) {           /* search "Add" menu */
-                            return o.label.indexOf("Add") > -1;
-                        });
-                        if (addElement) {
-                            this.set("children", addElement.plugins[0].cfg.children);// And place it'
-                        } else {
-                            this.set("children", []);
-                        }
+                this.addButton.menu.on("menuOpen", function() {
+                    var menu = host.get("widget").getMenuCfg({
+                        targetwidget: host.get("widget")
+                    }), addElement = Y.Array.find(menu, function(o) {           /* search "Add" menu */
+                        return o.label.indexOf("Add") > -1;
                     });
+                    if (addElement) {
+                        this.set("children", addElement.plugins[0].cfg.children);// And place it'
+                    } else {
+                        this.set("children", []);
+                    }
+                });
 
                 /** Refresh **/
                 this.refreshButton = host.toolbar.add({
@@ -246,7 +246,7 @@ YUI.add('wegas-pageeditor', function(Y) {
                 page = Y.JSON.parse(this.jsonView.getValue());
                 page["@pageId"] = this.get("host").get("pageId");
             } catch (ex) {
-                host.get(BOUNDINGBOX).get("parentNode").emitDOMMessage("error", ex.toString());
+                Y.Widget.getByNode(host.get(BOUNDINGBOX).get("parentNode")).showMessage("error", ex.toString());
                 return;
             }
             this.sourceButton.set("pressed", false);
@@ -358,13 +358,6 @@ YUI.add('wegas-pageeditor', function(Y) {
             }
 
             this.detachHandlers();
-            if (this.overlayMask) {
-                this.overlayMask.destroy(true);
-            }
-            if (this.highlightOverlay) {
-                this.hideOverlay();
-                this.highlightOverlay.destroy(true);
-            }
             if (this.shownOverlay) {
                 if (this.shownOverlay._widget && this.shownOverlay._widget._peDHandle) {
                     this.shownOverlay._widget._peDHandle.detach();
@@ -372,6 +365,15 @@ YUI.add('wegas-pageeditor', function(Y) {
                 }
                 this.shownOverlay.destroy(true);
             }
+            if (this.highlightOverlay) {
+                this.hideOverlay();
+                this.highlightOverlay.destroy(true);
+            }
+            if (this.overlayMask) {
+                this.overlayMask.destroy(true);
+            }
+
+
             for (var i = 0; i < this.fixedHandlers.length; i += 1) {
                 this.fixedHandlers[i].detach();
             }

@@ -45,46 +45,99 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
             }
         },
         computePert: function(taskTable, currentPeriod) {
-            var predecessors, taskId, taskDesc, i, maxPert, predecessorDuration,
-                allPredDefine, countPertValue = 0, treated = [], predecessorId;
+            var predecessors, taskId, taskDesc, i, minBeginAt, delta,
+                allPredDefine, predecessorId, stillMissing,
+                queue = [];
 
-            while (countPertValue < Y.Object.size(taskTable)) {
-                for (taskId in taskTable) {
-                    taskDesc = taskTable[taskId];
+            for (taskId in taskTable) {
+                queue.push(taskId);
+            }
+            while (taskId = queue.shift()) {
+                taskDesc = taskTable[taskId];
+                Y.log("PERT pop: " + taskDesc.get("label"));
 
-                    if (Y.Array.indexOf(treated, taskId) > -1) {
+                minBeginAt = currentPeriod;
+                allPredDefine = true;
+                predecessors = taskDesc.get("predecessors");
+
+                for (i = 0; i < predecessors.length; i++) {
+                    predecessorId = predecessors[i].get("id");
+                    if (!taskTable[predecessorId]) {
                         continue;
                     }
-
-                    maxPert = currentPeriod;
-                    allPredDefine = true;
-                    predecessors = taskDesc.get("predecessors");
-
-                    for (i = 0; i < predecessors.length; i++) {
-                        predecessorId = predecessors[i].get("id");
-                        if (!taskTable[predecessorId]) {
-                            continue;
+                    Y.log ("Pred " + taskTable[predecessorId].get("label"));
+                    Y.log ("  endAt " + taskTable[predecessorId].endAt);
+                    if (taskTable[predecessorId].endAt) {
+                        if (minBeginAt < taskTable[predecessorId].endAt) {
+                            minBeginAt = taskTable[predecessorId].endAt;
                         }
-                        // verifie si le prédecesseur possede le debut pert
-                        if (taskTable[predecessorId].startPert) {
-                            // defini la durée du prédecesseur
-                            predecessorDuration = taskTable[predecessorId].startPert + taskTable[predecessorId].timeSolde;
-                            // verifie si la durée du prédecesseur et la plus grande
-                            if (predecessorDuration > maxPert) {
-                                maxPert = predecessorDuration;
-                            }
+                    } else {
+                        allPredDefine = false;
+                        break;
+                    }
+                }
+                if (allPredDefine) {
+                    var taskInstance = taskDesc.getInstance(),
+                        stillPlanned = taskInstance.get("plannification").filter(function(n) {
+                        return n >= minBeginAt;
+                    }, this).sort(Y.Array.numericSort);
+
+                    delta = minBeginAt - parseInt(minBeginAt);
+                    stillMissing = this.timeSolde(taskDesc);
+
+
+                    // postpone task that could start in the second part of period
+                    if (minBeginAt - parseInt(minBeginAt) > 0.50) {
+                        minBeginAt = parseInt(minBeginAt) + 1;
+                    } else {
+                        minBeginAt = parseInt(minBeginAt);
+                        stillMissing += delta;
+                    }
+                    if (stillPlanned.length > 0 && stillPlanned[0] > minBeginAt) {
+                        minBeginAt = stillPlanned[0];
+                        stillMissing -= delta;
+                    }
+                    taskDesc.beginAt = minBeginAt;
+
+                    if (stillMissing === 0) {
+                        taskDesc.endAt = minBeginAt;
+                        taskDesc.planned = [];
+                    } else if (stillPlanned.length >= stillMissing) {
+                        // enough or too many planned period
+                        var deltaMissing = stillMissing - parseInt(stillMissing);
+                        if (deltaMissing === 0) {
+                            taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing));
+                            taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] + 1;
                         } else {
-                            allPredDefine = false;
+                            taskDesc.planned = stillPlanned.slice(0, Math.ceil(stillMissing));
+                            taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] || taskDesc.beginAt;
+                            taskDesc.endAt += deltaMissing;
+                        }
+                    } else {
+                        // not enough planned period
+                        var lastPlanned, i, max;
+                        taskDesc.planned = stillPlanned.slice();
+                        if (stillPlanned.length === 0){
+                            lastPlanned = minBeginAt -1;
+                            // nothing planned -> stack
+                            taskDesc.endAt = minBeginAt + stillMissing;
+                        } else {
+                            lastPlanned = stillPlanned[stillPlanned.length -1];
+                            taskDesc.endAt = lastPlanned + stillMissing - stillPlanned.length + 1;
+                        }
+                        max = Math.ceil(stillMissing) - stillPlanned.length;
+                        for (i=0; i<max; i++){
+                            taskDesc.planned.push(lastPlanned + i + 1);
                         }
                     }
-                    // si tous les prédecesseur on un debut pert alors on l'ajoute dans la liste
-                    if (allPredDefine) {
-                        treated.push(taskId);
-                        taskDesc.startPert = maxPert;
-                        taskDesc.startMax = Math.max(taskDesc.startPert, taskDesc.startPlannif);
-                        taskDesc.end = taskDesc.startMax + taskDesc.timeSolde;
-                        countPertValue++;
-                    }
+
+                    Y.log("TASK PREVISION ("+ taskDesc.get("label") + ")");
+                    Y.log(" -beginAt: " + taskDesc.beginAt);
+                    Y.log(" -endAt: " + taskDesc.endAt);
+                    Y.log(" -planned: " + taskDesc.planned);
+
+                } else {
+                    queue.push(taskId);
                 }
             }
         }

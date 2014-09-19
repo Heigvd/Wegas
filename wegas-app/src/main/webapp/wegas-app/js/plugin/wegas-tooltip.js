@@ -33,14 +33,15 @@ YUI.add('wegas-tooltip', function(Y) {
          * @private
          */
         initializer: function() {
-            Tooltip.getInstance().addTriggerNode(this.get("host").get("boundingBox"),
-                this.get("content"));
+            var host = this.get("host");
+            this.node = host.get("boundingBox") || host;
+            Tooltip.getInstance().addTriggerNode(this.node, this.get("content"));
         },
         /**
          * 
          */
         destructor: function() {
-            Tooltip.getInstance().removeTriggerNode(this.get("host").get("boundingBox"));
+            Tooltip.getInstance().removeTriggerNode(this.node);
         }
     }, {
         /** @lends Y.Plugin.Tooltip */
@@ -60,8 +61,7 @@ YUI.add('wegas-tooltip', function(Y) {
                 type: "string",
                 format: "html",
                 setter: function(val) {
-                    Tooltip.getInstance().addTriggerNode(this.get("host").
-                        get("boundingBox"), val);
+                    Tooltip.getInstance().addTriggerNode(this.node, val);
                     return val;
                 },
                 _inputex: {
@@ -157,17 +157,17 @@ YUI.add('wegas-tooltip', function(Y) {
          * @private
          */
         setTriggerContent: function(content) {
-            var i, contentBox = this.get("contentBox");
-            contentBox.set("innerHTML", "");
+            var i, cb = this.get("contentBox");
+            cb.setHTML("");
 
             if (content) {
                 if (content instanceof Node) {
                     for (i = 0; i < content.size(); ++i) {
-                        contentBox.appendChild(content.item(i));
+                        cb.appendChild(content.item(i));
                     }
                 } else if (Lang.isString(content)) {
-                    contentBox.set("innerHTML", content);
-                    contentBox.all("img").once("load", function() {
+                    cb.set("innerHTML", content);
+                    cb.all("img").once("load", function() {
                         this.constrain();
                     }, this);
                 }
@@ -342,8 +342,9 @@ YUI.add('wegas-tooltip', function(Y) {
             var x = this._currTrigger.mouseX, y = this._currTrigger.mouseY;
 
             this.move(x + Tooltip.OFFSET_X, y + Tooltip.OFFSET_Y);
-
-            this.show();
+            if (this.get("contentBox").getContent()) {
+                this.show();
+            }
             this._clearTimers();
 
             this._timers.hide = Y.later(this.get("autoHideDelay"), this, this._hideTooltip);
@@ -573,5 +574,4 @@ YUI.add('wegas-tooltip', function(Y) {
         }
     });
     Wegas.Tooltip = Tooltip;
-
 });

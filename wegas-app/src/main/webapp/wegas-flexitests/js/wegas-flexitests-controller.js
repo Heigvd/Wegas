@@ -148,7 +148,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
             if (this.get("popupAfter") > 0 &&
                 (this.maxSize - this.questionToDo.length) !== 1 &&
                 ((this.maxSize - this.questionToDo.length - 1) % this.get("popupAfter")) === 0) {
-                this.get("boundingBox").emitDOMMessage("showPopup", {
+                new Y.Wegas.Panel({
                     content: this.get("popupContent"),
                     buttons: [{
                             label: "Ok",
@@ -157,7 +157,7 @@ YUI.add("wegas-flexitests-controller", function(Y) {
                                 onSuccess();
                             }
                         }]
-                });
+                }).render();
             } else {
                 onSuccess();
             }

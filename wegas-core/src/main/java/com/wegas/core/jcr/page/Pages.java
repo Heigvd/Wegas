@@ -25,12 +25,12 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @XmlRootElement
-public class Pages implements Serializable {
+public class Pages implements Serializable, AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
-    private String gameModelId;
+    private final String gameModelId;
     @XmlTransient
-    private PageConnector connector;
+    private final PageConnector connector;
 
     /**
      *
@@ -111,10 +111,9 @@ public class Pages implements Serializable {
             //Well Stored String is wrong
             logger.error(ex.getMessage());
 
-        } finally {
-            //this.connector.close();
-            return ret;
         }
+        return ret;
+
     }
 
     /**
@@ -131,7 +130,7 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public void store(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelId, page.getId().toString());
+        Node n = this.connector.addChild(this.gameModelId, page.getId());
         n.setProperty("content", page.getContent().toString());
         this.setMeta(page);
     }
@@ -142,11 +141,10 @@ public class Pages implements Serializable {
      * @throws RepositoryException
      */
     public void setMeta(Page page) throws RepositoryException {
-        Node n = this.connector.addChild(this.gameModelId, page.getId().toString());
+        Node n = this.connector.addChild(this.gameModelId, page.getId());
         if (page.getName() != null) {
             n.setProperty("pageName", page.getName());
         }
-        this.connector.save();
     }
 
     /**
@@ -164,5 +162,10 @@ public class Pages implements Serializable {
      */
     public void delete() throws RepositoryException {
         this.connector.deleteRoot(this.gameModelId);
+    }
+
+    @Override
+    public void close() throws RepositoryException {
+        this.connector.close();
     }
 }

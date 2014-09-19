@@ -18,98 +18,72 @@ YUI.add('wegas-pmg-reservation', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var Wegas = Y.Wegas,
-        Reservation;
+    var Wegas = Y.Wegas, Reservation;
 
     Reservation = Y.Base.create("wegas-pmg-reservation", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Reservation */
-
         /**
          * Lifecycle methods
          * @function
          * @private
          */
         initializer: function() {
-                this.get("host").datatable.delegate("click", function(e, a) {
-                    var dt = this.get("host").datatable,
-                        id = dt.getRecord(e.target).get("id"),
-                        columnsCfg = dt.get('columns')[dt.getCell(e.target).get("cellIndex")];
-
-                    this.checkCache(id, columnsCfg.time);
-                }, "tbody .editable-period, tbody .editable-period", this);
-        },
-        checkCache: function(descriptorId, periode) {
-            var vd = Y.Wegas.Facade.Variable.cache.find("id", descriptorId),
-                i, abstractAssignement, type = this.get("type"), data;
-
-            for (i = 0; i < vd.getInstance().get(type).length; i++) {
-                abstractAssignement = vd.getInstance().get(type)[i];
-                if (abstractAssignement.get("time") === periode && abstractAssignement.get("editable")) {
-                    this.remove(abstractAssignement.get("id"), type);
-                    return;
-                } else if (abstractAssignement.get("time") === periode) {
-                    return;
-                }
-            }
-
-            if (type === "occupations") {
-                data = this.dataOccupation(periode);
-            } else {
-                data = this.dataActivity(periode);
-            }
-
-            this.add(vd.getInstance().get("id"), data);
-        },
-        dataOccupation: function(periode) {
-            return {
-                "@class": "Occupation",
-                editable: true,
-                time: periode
-            };
-        },
-        dataActivity: function(periode) {
-            return {
-                "@class": "Activity",
-                editable: true,
-                time: periode
-            };
-        },
-        add: function(ressourceId, data) {
-            Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/AbstractAssign/" + ressourceId,
-                cfg: {
-                    method: "POST",
-                    data: data
-                }
+            this.onceAfterHostEvent("render", function() {
+                var host = this.get("host");
+                host.datatable.delegate("click", this.onClick, ".present, .futur", this);
+                host.get("contentBox").addClass("wegas-pmg-reservation");
             });
         },
-        remove: function(abstractAssignementId, type) {
-            Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/AbstractRemove/" + abstractAssignementId + "/" + type,
-                cfg: {
-                    method: "DELETE"
-                }
+        onClick: function(e) {
+            var dt = this.get("host").datatable,
+                cell = dt.getCell(e.currentTarget),
+                time = dt.getColumn(e.currentTarget).time,
+                resource = dt.getRecord(e.currentTarget).get("descriptor").getInstance(),
+                assignment = Y.Array.find(resource.get("occupations"), function(o) {
+                    return o.get("time") === time && o.get("editable");
+                }),
+                notEditableAassignment = Y.Array.find(resource.get("occupations"), function(o) {
+                    return o.get("time") === time && !o.get("editable");
+                });
+
+            if (notEditableAassignment) {
+                return;
+            }
+            if (assignment) {
+                Wegas.Panel.confirmPlayerAction(function() {
+                    cell.setContent("");
+                    Wegas.Facade.Variable.sendQueuedRequest({
+                        request: "/ResourceDescriptor/AbstractRemove/" + assignment.get("id") + "/occupations",
+                        cfg: {
+                            method: "DELETE",
+                            updateEvent: false
+                        }
+                    });
+                });
+                return;
+            }
+            if (cell.one("span")) {                                             // if the cell is full and there is no assignment, it means we are still waiting for server reply
+                return;
+            }
+
+            Wegas.Panel.confirmPlayerAction(function() {
+                cell.append('<span class="editable"></span>');
+                Wegas.Facade.Variable.sendQueuedRequest({
+                    request: "/ResourceDescriptor/AbstractAssign/" + resource.get("id"),
+                    cfg: {
+                        method: "POST",
+                        updateEvent: false,
+                        data: {
+                            "@class": "Occupation",
+                            editable: true,
+                            time: time
+                        }
+                    }
+                });
             });
-        },
-        /**
-         * Destructor methods.
-         * @function
-         * @private
-         */
-        destructor: function() {
         }
     }, {
-        ATTRS: {
-            type: {
-                value: "occupations",
-                choices: ['occupations', 'activities'],
-                _inputex: {
-                    value: "occupations"
-                }
-            }
-        },
-        NS: "reservation",
-        NAME: "Reservation"
+        NS: "reservation"
     });
     Y.Plugin.Reservation = Reservation;
 });

@@ -1,5 +1,4 @@
 {
-    "id": 2003,
     "type": "ResizableLayout",
     "top": {
         "children": [{
@@ -66,7 +65,7 @@
             }]
     },
     "center": {
-        "width": 840,
+        "width": 850,
         "children": [{
                 "id": "centerTabView",
                 "type": "TabView",
@@ -82,7 +81,6 @@
                                 "emptyMessage": "You have not joined any game yet",
                                 "dataTableCfg": {
                                     "columns": [{
-                                            "key": "iconCSS",
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
@@ -109,18 +107,31 @@
                                 "plugins": [{
                                         "fn": "EditorDTMenu",
                                         "cfg": {
-                                            "childrenf": [{
-                                                    "type": "Button",
-                                                    "plugins": [{
-                                                            "fn": "OpenGameAction",
-                                                            "cfg": {
-                                                                "editorUrl": "game-play.html?"
-                                                            }
-                                                        }]
-                                                }],
                                             "children": [{
                                                     "type": "Button",
+                                                    "label": "Edit",
+                                                    "cssClass": "wegas-button-edit",
                                                     "plugins": [{
+                                                            "fn": "ToolbarMenu",
+                                                            "cfg": {
+                                                                "children": [{
+                                                                        "type": "Button",
+                                                                        "label": "Open",
+                                                                        "plugins": [{
+                                                                                "fn": "OpenGameAction",
+                                                                                "cfg": {
+                                                                                    "url": "game-play.html?"
+                                                                                }
+                                                                            }]
+                                                                    }, {
+                                                                        "type": "Button",
+                                                                        "label": "Leave",
+                                                                        "plugins": [{
+                                                                                "fn": "LeaveGameAction"
+                                                                            }]
+                                                                    }]
+                                                            }
+                                                        }, {
                                                             "fn": "OpenTabAction",
                                                             "cfg": {
                                                                 "tabSelector": "#rightTabView",
@@ -131,22 +142,32 @@
                                                                         "children": [{
                                                                                 "type": "GameInformation",
                                                                                 "cssClass": "open-game-tab"
-                                                                            }, {
-                                                                                "type": "Button",
-                                                                                "cssClass": "editor-button-resume",
-                                                                                "label": "Open game",
-                                                                                "plugins": [{
-                                                                                        "fn": "OpenGameAction",
-                                                                                        "cfg": {
-                                                                                            "editorUrl": "game-play.html?"
-                                                                                        }
-                                                                                    }]
                                                                             }]
                                                                     }]
                                                             }
                                                         }]
+                                                }, {
+                                                    "type": "Button",
+                                                    "label": "Open",
+                                                    "cssClass": "wegas-button-open",
+                                                    "plugins": [{
+                                                            "fn": "OpenGameAction",
+                                                            "cfg": {
+                                                                "url": "game-play.html?"
+                                                            }
+                                                        }]
+                                                }, {
+                                                    "type": "Button",
+                                                    "label": "Leave",
+                                                    "plugins": [{
+                                                            "fn": "LeaveGameAction"
+                                                        }]
                                                 }]
                                         }
+                                    }, {
+                                        "fn": "EditorDTMouseOverMenu"
+                                    }, {
+                                        "fn": "EditorDTContextMenu"
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
@@ -162,6 +183,7 @@
                                                                         "plugins": [{
                                                                                 "fn": "OpenTabAction",
                                                                                 "cfg": {
+                                                                                    "label": "Join",
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
                                                                                     "wchildren": [{
@@ -210,6 +232,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
+                                                    "showEditionAfterRequest": false,
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
                                                     "targetClass": "Game",
                                                     "dataSource": "Game",
@@ -250,7 +273,6 @@
                                 "emptyMessage": "You have not created any scenario yet",
                                 "dataTableCfg": {
                                     "columns": [{
-                                            "key": "iconCSS",
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
@@ -282,6 +304,7 @@
                                         "cfg": {
                                             "children": [{
                                                     "type": "NewEntityButton",
+                                                    "showEditionAfterRequest": false,
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New scenario",
                                                     "targetClass": "GameModel",
                                                     "dataSource": "GameModel",
@@ -310,6 +333,9 @@
                                                                 "showMsg": true
                                                             }]
                                                     }
+                                                }, {
+                                                    "type": "UploadFileButton",
+                                                    "label": "<span class='wegas-icon wegas-icon-newfile'></span>Upload"
                                                 }]
                                         }
                                     }]

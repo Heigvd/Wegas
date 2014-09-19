@@ -133,7 +133,7 @@ YUI.add('wegas-dashboard', function(Y) {
         return function(o) {
             var color = o.value < 75 ? "#FFF1B3" : (o.value > 125 ? "#C1FFB3" : "#E7FFB3");
             //var color = o.value < 95 ? "rgba(255, 0, 0, 0.5)" : (o.value > 105 ? "rgba(255, 204, 0, 0.5)" : "rgba(97, 186, 9, 0.5)");
-            return "<span style='background-color: " + color + "'>" + o.value + "</span>";
+            return "<span style='background-color: " + color + "'>" + (o.value || "-") + "</span>";
         };
     };
 });

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.content;
 
+import com.wegas.core.jcr.JackrabbitConnector;
 import com.wegas.core.jcr.SessionHolder;
 import java.io.*;
 import java.util.Calendar;
@@ -33,9 +34,11 @@ import org.xml.sax.SAXException;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class ContentConnector {
+public class ContentConnector implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
+    final private Session session;
+    private String workspace = null;
 
     /**
      *
@@ -51,8 +54,6 @@ public class ContentConnector {
         String prefix = ("KMGTPE").charAt(exponent - 1) + "";
         return String.format("%.1f%sB", bytes / Math.pow(unit, exponent), prefix);
     }
-    private Session session;
-    private String workspace = null;
 
     /**
      *
@@ -183,7 +184,12 @@ public class ContentConnector {
      * @throws RepositoryException
      */
     protected String getMimeType(String absolutePath) throws RepositoryException {
-        return this.getProperty(absolutePath, WFSConfig.WFS_MIME_TYPE).getString();
+        try {
+            return this.getProperty(absolutePath, WFSConfig.WFS_MIME_TYPE).getString();
+        } catch (NullPointerException ex) {
+            //root
+            return DirectoryDescriptor.MIME_TYPE;
+        }
     }
 
     /**
@@ -245,6 +251,56 @@ public class ContentConnector {
         description = description == null ? "" : description;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_DESCRIPTION, description);
 
+    }
+
+    /**
+     *
+     * @param absolutePath
+     * @return
+     * @throws RepositoryException
+     */
+    protected Boolean isPrivate(String absolutePath) throws RepositoryException {
+        try {
+            return this.getProperty(absolutePath, WFSConfig.WFS_PRIVATE).getBoolean();
+        } catch (NullPointerException ex) {
+            return false;
+        }
+    }
+
+    /**
+     *
+     * @param absolutePath
+     * @param priv
+     * @throws RepositoryException
+     */
+    protected void setPrivate(String absolutePath, Boolean priv) throws RepositoryException {
+        this.getNode(absolutePath).setProperty(WFSConfig.WFS_PRIVATE, priv);
+    }
+
+    /**
+     * Check the entire path for a private property set to true
+     *
+     * @param absolutePath
+     * @return
+     */
+    protected Boolean isInheritedPrivate(String absolutePath) {
+        Boolean ret = false;
+        Node node;
+        try {
+            node = this.getNode(absolutePath);
+            while (!ret && !isRoot(node)) {
+                try {
+                    ret = node.getProperty(WFSConfig.WFS_PRIVATE).getBoolean();
+                } catch (PathNotFoundException e) {
+                    ret = false;
+                }
+                node = node.getParent();
+            }
+            ret = ret || (node.hasProperty(WFSConfig.WFS_PRIVATE) && node.getProperty(WFSConfig.WFS_PRIVATE).getBoolean());
+        } catch (RepositoryException | NullPointerException ex) {
+            return false;
+        }
+        return ret;
     }
 
     /**
@@ -317,15 +373,14 @@ public class ContentConnector {
     public void deleteWorkspace() throws RepositoryException {
         //throw new UnsupportedOperationException("Jackrabbit: There is currently no programmatic way to delete workspaces. You can delete a workspace by manually removing the workspace directory when the repository instance is not running.");
         String name = session.getWorkspace().getName();
-        SessionHolder.closeSession(workspace);
-        Session s = SessionHolder.getSession(null);
+        Session adminSession = SessionHolder.getSession(null);
         try {
-            s.getWorkspace().deleteWorkspace(name);
+            adminSession.getWorkspace().deleteWorkspace(name);
         } catch (UnsupportedRepositoryOperationException ex) {
-            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace. Further : improve to remove workspace");
-            session = SessionHolder.getSession(workspace);
+            logger.warn("UnsupportedRepositoryOperationException : fallback to clear workspace.");
             this.clearWorkspace();
-            SessionHolder.closeSession(workspace);
+        } finally {
+            SessionHolder.closeSession(adminSession);
         }
     }
 
@@ -335,14 +390,22 @@ public class ContentConnector {
      * @throws RepositoryException
      */
     public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
-        ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId);
-        NodeIterator it = connector.listChildren("/");
-        String path;
-        while (it.hasNext()) {
-            path = it.nextNode().getPath();
-            session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
+        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId)) {
+            NodeIterator it = connector.listChildren("/");
+
+            String path;
+            while (it.hasNext()) {
+                path = it.nextNode().getPath();
+                session.getWorkspace().clone("GM_" + oldGameModelId, path, path, true);
+            }
+            PropertyIterator propertyIterator = connector.getNode("/").getProperties(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "*");
+            Property prop;
+            while (propertyIterator.hasNext()) {
+                prop = propertyIterator.nextProperty();
+                session.getRootNode().setProperty(prop.getName(), prop.getValue());
+            }
+            session.save();
         }
-        session.save();
     }
 
     /**
@@ -351,6 +414,8 @@ public class ContentConnector {
      */
     public void clearWorkspace() throws RepositoryException {
         NodeIterator it = this.listChildren("/");
+        String name = session.getWorkspace().getName();
+        
         while (it.hasNext()) {
             it.nextNode().remove();
         }
@@ -440,5 +505,21 @@ public class ContentConnector {
                 session.getWorkspace().getNamespaceRegistry().registerNamespace(prefix, WFSConfig.namespaces.get(prefix));
             }
         }
+    }
+
+    private static Boolean isRoot(Node node) throws RepositoryException {
+        try {
+            node.getParent();
+        } catch (ItemNotFoundException ex) {
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void close() {
+        this.save();
+        SessionHolder.closeSession(session);
+
     }
 }

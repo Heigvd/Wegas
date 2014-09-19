@@ -49,7 +49,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
                     this.panel = null;
                 } else {
                     this.panel.get(CONTENTBOX).one(".leaderway-team-picture")
-                            .setContent('<img data-file="' + this.currentItem.getInstance().get("properties.picture") + '" />');
+                        .setContent('<img data-file="' + this.currentItem.getInstance().get("properties.picture") + '" />');
                 }
             }
             cb.all(".leaderway-team-talk").remove(true);
@@ -70,8 +70,8 @@ YUI.add('wegas-leaderway-team', function(Y) {
             variables = Y.Array.map(variables.get('items'), function(employeeFolder) {
                 return employeeFolder instanceof Wegas.persistence.ListDescriptor &&
                     Y.Array.find(employeeFolder.get('items'), function(vd) {
-                    return vd instanceof Wegas.persistence.ResourceDescriptor;
-                });
+                        return vd instanceof Wegas.persistence.ResourceDescriptor;
+                    });
             });
 
             return  Y.Array.filter(variables, function(vd) {
@@ -81,7 +81,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
         findDialogues: function(variable) {
             return Y.Array.filter(variable.parentDescriptor.get("items"), function(vd) {
                 return vd instanceof Wegas.persistence.DialogueDescriptor
-                        && vd.getInstance().get("enabled");
+                    && vd.getInstance().get("enabled");
             }, this);
         },
         showDialogue: function(dialogue) {
@@ -90,7 +90,6 @@ YUI.add('wegas-leaderway-team', function(Y) {
                 modal: true,
                 width: 980,
                 height: 400,
-                render: true,
                 cssClass: "leaderway-team-panel",
                 buttons: {
                     header: [{
@@ -99,7 +98,7 @@ YUI.add('wegas-leaderway-team', function(Y) {
                             action: "exit"
                         }]
                 }
-            });
+            }).render();
 
             panel.get("boundingBox").addClass("leaderway-team-panel");
             panel.plug(Y.Plugin.Injector);
@@ -107,9 +106,8 @@ YUI.add('wegas-leaderway-team', function(Y) {
             new Wegas.SimpleDialogue({
                 dialogueVariable: {
                     content: "Variable.find('" + dialogue.get("name") + "')"
-                },
-                render: panel.getStdModNode("body", true)
-            });
+                }
+            }).render(panel.getStdModNode("body", true));
             this.currentDialogue = dialogue;
             this.panel = panel;
         }

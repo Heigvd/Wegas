@@ -55,8 +55,8 @@
                 </div>
                 <div>
                     <wegas:GameModel 
-                        value="#{gameController.currentGameModel}" 
-                        player="#{gameController.getCurrentPlayer()}" 
+                        value="#{printController.gameModel}" 
+                        player="#{printController.currentPlayer}" 
                         root="#{request.getParameter('root')}" 
                         mode="#{request.getParameter('mode')}"
                         defaultValues="#{request.getParameter('defaultValues')}"

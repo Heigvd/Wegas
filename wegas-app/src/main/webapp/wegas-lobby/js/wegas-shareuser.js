@@ -11,9 +11,9 @@
  */
 YUI.add('wegas-shareuser', function(Y) {
     'use strict';
-    var CONTENTBOX = 'contentBox', ShareUser;
+    var CONTENTBOX = 'contentBox', ShareUser, Wegas = Y.Wegas;
 
-    ShareUser = Y.Base.create("wegas-shareuser", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
+    ShareUser = Y.Base.create("wegas-shareuser", Y.Widget, [Y.WidgetChild, Wegas.Editable, Wegas.Widget], {
         /**
          *
          */
@@ -53,7 +53,7 @@ YUI.add('wegas-shareuser', function(Y) {
 
             this.userList.currentWidget = this;
 
-            if (e instanceof Y.Wegas.persistence.GameModel) {
+            if (e instanceof Wegas.persistence.GameModel) {
                 this.userList.targetEntityId = "gm" + e.get("id");
             } else {
                 this.userList.targetEntityId = "g" + e.get("id");
@@ -94,22 +94,20 @@ YUI.add('wegas-shareuser', function(Y) {
                 }
             });
 
-            this.saveButton = new Y.Wegas.Button({
-                label: "Add",
-                render: el.one(".wegas-adduser")
-            });
+            this.saveButton = new Wegas.Button({
+                label: "Add"
+            }).render(el.one(".wegas-adduser"));
 
             this.loadPermissions();
         },
         autocompleteRequest: function(query, callback) {
-            var data = {
-                rolesList: this.get("roleList")
-            };
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/AutoComplete/" + query,
                 cfg: {
                     method: "POST",
-                    data: data
+                    data: {
+                        rolesList: this.get("roleList")
+                    }
                 },
                 on: {
                     success: Y.bind(function(e) {
@@ -192,7 +190,7 @@ YUI.add('wegas-shareuser', function(Y) {
             }, this);
         },
         findAccountsByEmail: function(emailList) {
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/FindAccountsByEmailValues/",
                 headers: {
                     'Managed-Mode': 'false'
@@ -208,7 +206,7 @@ YUI.add('wegas-shareuser', function(Y) {
                         Y.Array.each(e.response.results.entities, function(account) {
                             this.addToUserlist(account.get("val.value"), account.get("val.label"));
                         }, this);
-                        notAddedAccounts = Y.Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
+                        notAddedAccounts = Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
                         this.notAddedToUserlist(notAddedAccounts);
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
@@ -216,7 +214,7 @@ YUI.add('wegas-shareuser', function(Y) {
             });
         },
         findAccountsByName: function(valueList) {
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/FindAccountsByName/",
                 headers: {
                     'Managed-Mode': 'true'
@@ -232,7 +230,7 @@ YUI.add('wegas-shareuser', function(Y) {
                         Y.Array.each(e.response.results.entities, function(account) {
                             this.addToUserlist(account.get("id"), account.get("name"));
                         }, this);
-                        notAddedAccounts = Y.Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
+                        notAddedAccounts = Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
                         this.notAddedToUserlist(notAddedAccounts);
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
@@ -278,7 +276,7 @@ YUI.add('wegas-shareuser', function(Y) {
             this.userList.destroy();
         },
         loadPermissions: function() {
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/FindAccountPermissionByInstance/" + this.userList.targetEntityId,
                 on: {
                     success: Y.bind(function(e) {
@@ -352,7 +350,7 @@ YUI.add('wegas-shareuser', function(Y) {
             }
         }
     });
-    Y.Wegas.ShareUser = ShareUser;
+    Wegas.ShareUser = ShareUser;
 
     /**
      * @name Y.inputEx.Wegas.UserPermissionList
@@ -368,7 +366,7 @@ YUI.add('wegas-shareuser', function(Y) {
         /** @lends Y.inputEx.Wegas.UserPermissionList# */
 
         onDelete: function(e) {
-            this.currentWidget.showMessageBis("success", "Saving...");
+            this.currentWidget.showMessage("success", "Saving...");
             var elementDiv = e.target._node.parentNode, i,
                 subFieldEl = elementDiv.childNodes[this.options.useButtons ? 1 : 0];
             for (i = 0; i < this.subFields.length; i += 1) {
@@ -381,17 +379,17 @@ YUI.add('wegas-shareuser', function(Y) {
             UserPermissionList.superclass.onDelete.apply(this, arguments);
         },
         deletePermission: function(entityId, userId) {
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/DeleteAccountPermissionByInstanceAndAccount/" + entityId + "/" + userId,
                 cfg: {
                     method: "DELETE"
                 },
                 on: {
                     success: Y.bind(function() {
-                        this.currentWidget.showMessageBis("success", "All changes saved");
+                        this.currentWidget.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function() {
-                        this.currentWidget.showMessageBis("error", "Error removing permissions");
+                        this.currentWidget.showMessage("error", "Error removing permissions");
                     }, this)
                 }
             });
@@ -411,7 +409,7 @@ YUI.add('wegas-shareuser', function(Y) {
     Y.extend(PermissionGroup, Y.inputEx.Group, {
         /** @lends Y.inputEx.Wegas.PermissionGroup# */
         onChange: function(fieldValue, fieldInstance) {
-            this.getParentField().currentWidget.showMessageBis("success", "Saving...");
+            this.getParentField().currentWidget.showMessage("success", "Saving...");
             if (fieldValue) {
                 this.addPermission(fieldInstance.options.value + ":" + this.parentField.targetEntityId, this.getValue().userId);
                 this.gameModelAddRight(fieldInstance.options.value);
@@ -422,35 +420,35 @@ YUI.add('wegas-shareuser', function(Y) {
             PermissionGroup.superclass.onChange.apply(this, arguments);
         },
         removePermission: function(permission, userId) {
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/DeleteAccountPermissionByPermissionAndAccount/" + permission + "/" + userId,
                 cfg: {
                     method: "DELETE"
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
+                        this.getParentField().currentWidget.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {
                         if (e.response.results.exception !== "javax.persistence.NoResultException") {
-                            this.getParentField().currentWidget.showMessageBis("error", "Error removing permission");
+                            this.getParentField().currentWidget.showMessage("error", "Error removing permission");
                         }
                     }, this)
                 }
             });
         },
         addPermission: function(permission, userId) {
-            Y.Wegas.Facade.User.sendRequest({
+            Wegas.Facade.User.sendRequest({
                 request: "/addAccountPermission/" + permission + "/" + userId,
                 cfg: {
                     method: "POST"
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("success", "All changes saved");
+                        this.getParentField().currentWidget.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(function(e) {
-                        this.getParentField().currentWidget.showMessageBis("error", "Error adding permission");
+                        this.getParentField().currentWidget.showMessage("error", "Error adding permission");
                     }, this)
                 }
             });

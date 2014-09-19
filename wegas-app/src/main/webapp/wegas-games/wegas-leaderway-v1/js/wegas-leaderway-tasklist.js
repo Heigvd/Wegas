@@ -40,23 +40,23 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                     },
                     {
                         key: "skill",
-                        label: "Compétence",
+                        label: "CompÃ©tence",
                         allowHTML: true,
                         sortable: true
                     },
                     {
                         key: "duration",
-                        label: "Durée",
+                        label: "DurÃ©e",
                         sortable: true
                     },
                     {
                         key: "term",
-                        label: "Echéance",
+                        label: "EchÃ©ance",
                         sortable: true
                     },
                     {
                         key: "salary",
-                        label: "Remunération",
+                        label: "RemunÃ©ration",
                         sortable: true
                     },
                     {
@@ -66,7 +66,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                     },
                     {
                         key: "worker",
-                        label: "Employé",
+                        label: "EmployÃ©",
                         sortable: true
                     }
                 ]
@@ -148,7 +148,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
             var cb = this.get(CONTENTBOX);
             if (this.resourceDescriptor) {
                 cb.addClass('modePicking');
-                cb.one('.resourceName p').setHTML('Assigner un mandat à ' + this.resourceDescriptor.getInstance().get('properties').surname);
+                cb.one('.resourceName p').setHTML('Assigner un mandat Ã  ' + this.resourceDescriptor.getInstance().get('properties').surname);
                 cb.one('.resourceName').show();
                 cb.one('.footer').show();
             }
@@ -181,7 +181,7 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
                     if (taskDescriptor.get('properties').comment)
                         comment.push(taskDescriptor.get('properties').comment);
                     if (taskDescriptor.get('properties').workWithLeader == 'true')
-                        comment.push("S'effectue en coopération avec le leader.");
+                        comment.push("S'effectue en coopÃ©ration avec le leader.");
                     if (comment.length <= 0)
                         comment.push("-");
                     if (workers.length <= 0)
@@ -276,10 +276,10 @@ YUI.add('wegas-leaderway-tasklist', function(Y) {
             Y.one('.leaderway-feedback').setStyle('display', 'block'); //yes "Y.one" because we want the feed back on each widgets.
             if (success) { // useless, players expect a success
 //                Y.one('.leaderway-feedback').one('p').addClass('green');
-//                Y.one('.leaderway-feedback').one('p').insert("Le mandat à été délégué !");
+//                Y.one('.leaderway-feedback').one('p').insert("Le mandat Ã  Ã©tÃ© dÃ©lÃ©guÃ© !");
             } else {
                 Y.one('.leaderway-feedback').one('p').addClass('red');
-                Y.one('.leaderway-feedback').one('p').insert("Le mandat n'a pas pu être délégué.");
+                Y.one('.leaderway-feedback').one('p').insert("Le mandat n'a pas pu Ãªtre dÃ©lÃ©guÃ©.");
             }
             setTimeout(function() {
                 Y.one('.leaderway-feedback').setHTML('<p></p>');

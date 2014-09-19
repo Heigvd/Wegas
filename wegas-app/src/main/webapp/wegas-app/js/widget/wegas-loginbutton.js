@@ -24,7 +24,6 @@ YUI.add("wegas-loginbutton", function(Y) {
      */
     LoginButton = Y.Base.create("wegas-login", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.LoginButton# */
-
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -116,7 +115,6 @@ YUI.add("wegas-loginbutton", function(Y) {
         }
     }, {
         /** @lends Y.Wegas.LoginButton */
-
         /**
          * @field
          * @static
@@ -158,7 +156,6 @@ YUI.add("wegas-loginbutton", function(Y) {
     });
     Wegas.LoginButton = LoginButton;
 
-
     /**
      * @name Y.Wegas.LoginButton
      * @extends Y.Wegas.Button
@@ -169,7 +166,6 @@ YUI.add("wegas-loginbutton", function(Y) {
      */
     UserLoginButton = Y.Base.create("wegas-login", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.LoginButton# */
-
         // *** Lifecycle Methods *** //
         /**
          * @function
@@ -206,6 +202,22 @@ YUI.add("wegas-loginbutton", function(Y) {
                             }
                         }]
                 }, {
+                    label: "Ascii mode",
+                    on: {
+                        click: function() {
+                            Y.one("body").toggleClass("wegas-ascii");
+                            Y.use("cookie", "wegas-editor-asciicss", function(Y) {
+                                if (Y.one("body.wegas-ascii")) {
+                                    var audio = new Audio(Wegas.app.get("base") + "wegas-app/images/wegas-mexican.mp3");
+                                    audio.play();
+                                    Y.Cookie.set("asciimode", "wegas-ascii");
+                                } else {
+                                    Y.Cookie.remove("asciimode");
+                                }
+                            });
+                        }
+                    }
+                }, {
                     type: "Button",
                     label: "Logout",
                     plugins: [{
@@ -232,7 +244,7 @@ YUI.add("wegas-loginbutton", function(Y) {
 
             if (mainAccount) {
                 name = "<img src=\"http://www.gravatar.com/avatar/" + mainAccount.get("hash") + "?s=28&d=mm\" />" + name;
-            } 
+            }
             this.set("label", name);
         },
         destructor: function() {

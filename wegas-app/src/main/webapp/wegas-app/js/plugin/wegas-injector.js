@@ -35,8 +35,8 @@ YUI.add("wegas-injector", function(Y) {
             // Add required events to Y.Node 
             Y.mix(Y.Node.DOM_EVENTS, {
                 DOMNodeInserted: true
-                        //DOMNodeRemoved: true,
-                        //DOMCharacterDataModified: true
+                    //DOMNodeRemoved: true,
+                    //DOMCharacterDataModified: true
             });
 
             // data-file attribute injection
@@ -73,7 +73,7 @@ YUI.add("wegas-injector", function(Y) {
             // Load gallery on .light-picture click
             this.handlers.push(Y.one("body").delegate("click", function(e) {
                 var gallery = [], index,
-                        link = e.target.get("href") || e.target.get("src");
+                    link = e.target.get("href") || e.target.get("src");
                 e.halt(true);
                 if (e.target.hasAttribute("data-gallery")) {                    // Group same data-gallery together 
                     Y.all("[data-gallery='" + e.target.getAttribute("data-gallery") + "']").each(function(item, i) {
@@ -138,7 +138,18 @@ YUI.add("wegas-injector", function(Y) {
 
             if (!element.hasAttribute(attr) || !element.getAttribute(attr).match("^(https?://)")) {
                 element.set(attr, Y.Wegas.Facade.File.get("source") + "read" + element.getAttribute("data-file"))
-                        .removeAttribute("data-file");
+                    .removeAttribute("data-file");
+            }
+        },
+        getImageUri: function(uri, gameModelId) {
+            if (uri && uri.indexOf("/") === 0) {
+                if (gameModelId) {
+                    return Y.Wegas.app.get("base") + "rest/GameModel/" + gameModelId + "/File/read" + uri;
+                } else {
+                    return Y.Wegas.Facade.File.get("source") + "read" + uri;
+                }
+            } else {
+                return uri;
             }
         }
     });

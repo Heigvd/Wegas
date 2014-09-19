@@ -162,7 +162,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
             taskRequirementKey = listTaskRequirement.get(j).getWork();
             taskRequirementValue = parseInt(listTaskRequirement.get(j).getLevel());
             workerSkillsetValue = parseInt(workerInstance.getSkillsets().get(taskRequirementKey));
-            //calculate experience gÈnÈral (totalExperienceGained) part 1/2
+            //calculate experience g√©n√©ral (totalExperienceGained) part 1/2
             if (workerSkillsetValue < taskRequirementValue) {
                 totalExperience += (taskRequirementValue - workerSkillsetValue) * taskDuration / workersDescriptor.length;
             }
@@ -174,7 +174,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
             //calculate work Quality part 1/4
             workPartSkillsQuality.push((workerSkillsetValue - taskRequirementValue + 100) / 2);
         }
-        //calculate experience gÈnÈral (totalExperienceGained) part 2/2
+        //calculate experience g√©n√©ral (totalExperienceGained) part 2/2
         workerInstance.setProperty('totalExperienceGained', parseInt(workerInstance.getProperty('totalExperienceGained')) + totalExperience);
         //calculate work Quality part 2/4
         for (j = 0; j < workPartSkillsQuality.length; j++) {
@@ -267,19 +267,19 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
     content.push('- vient de se terminer. Le client ');
     switch (true) {
         case workQuality < 20 :
-            content.push('est totalement instatisfait par notre travail. Aucune chance de dÈcrocher un autre mandate auprËs de ce client. ');
+            content.push('est totalement instatisfait par notre travail. Aucune chance de d√©crocher un autre mandate aupr√®s de ce client. ');
             break;
         case workQuality < 40 :
-            content.push('a dÈclarÈ Ítre instatisfait de notre travail. Il est vrai que certaine erreurs ont ÈtÈ commises. ');
+            content.push('a d√©clar√© √™tre instatisfait de notre travail. Il est vrai que certaine erreurs ont √©t√© commises. ');
             break;
         case workQuality < 60 :
-            content.push('est moyennement satisfait. La qualitÈ est faible mais le projet est satisfaisant. ');
+            content.push('est moyennement satisfait. La qualit√© est faible mais le projet est satisfaisant. ');
             break;
         case workQuality < 80 :
-            content.push('est content du travail rÈalisÈ. Il pense nous recontacter pour de futurs mandats. ');
+            content.push('est content du travail r√©alis√©. Il pense nous recontacter pour de futurs mandats. ');
             break;
         default :
-            content.push('est ravi par le travail rÈalisÈ. La qualitÈ est au-del‡ de ses espÈrences et sera fidËle ‡ notre entreprise. ');
+            content.push('est ravi par le travail r√©alis√©. La qualit√© est au-del√† de ses esp√©rences et sera fid√®le √† notre entreprise. ');
             break;
     }
     content.push('<br />');
@@ -288,7 +288,7 @@ function doTaskEnd(workersDescriptor, taskDescriptor) {
         content.push(taskDescriptor.getProperty('bonus'));
         content.push('.-');
     }
-    content.push('<br /> Bonne journÈe. <br />');
+    content.push('<br /> Bonne journ√©e. <br />');
     content.push(from.join(', '));
     this.sendMessage('Fin de mandat', content.join(''), workersDescriptor[0].getProperty('surname'));
     //desactivate Task
@@ -468,23 +468,23 @@ function checkMoral() {
             switch (true) {
                 case moral < 10 :
                     if (randomNumber < 0.33) {
-                        this.sendMessage('Changement de dÈpartement', 'Bonjour,<br /> Je vous informe que ma lettre de dÈmission est sur votre bureau. Le travail me plaisait mais vos mÈthodes ne me conviennent pas du tout et je prÈfËre changer de team avant que la situation ne dÈgÈnËre.<br /> Avec mes sincËres salutations.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
+                        this.sendMessage('Changement de d√©partement', 'Bonjour,<br /> Je vous informe que ma lettre de d√©mission est sur votre bureau. Le travail me plaisait mais vos m√©thodes ne me conviennent pas du tout et je pr√©f√®re changer de team avant que la situation ne d√©g√©n√®re.<br /> Avec mes sinc√®res salutations.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         resourceInstance.setActive(false);
                     }
                     else {
-                        this.sendMessage('CongÈ maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon mÈdecin me conseille de rester chez moi au moins pour les deux semaines ‡ venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
+                        this.sendMessage('Cong√© maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon m√©decin me conseille de rester chez moi au moins pour les deux semaines √† venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         sickenResource(resourceDescriptor, 2);
                     }
                     break;
                 case moral < 20 :
                     if (randomNumber < 0.66) {
-                        this.sendMessage('CongÈ maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon mÈdecin me conseille de rester chez moi au moins pour les deux semaines ‡ venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
+                        this.sendMessage('Cong√© maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien du tout. Mon m√©decin me conseille de rester chez moi au moins pour les deux semaines √† venir.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         sickenResource(resourceDescriptor, 2);
                     }
                     break;
                 case moral < 30 :
                     if (randomNumber < 0.33) {
-                        this.sendMessage('CongÈ maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien trËs bien, je crois que je tombe malade. Je prÈfËre rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
+                        this.sendMessage('Cong√© maladie', 'Bonjour,<br /> Je ne me sens actuellement pas bien tr√®s bien, je crois que je tombe malade. Je pr√©f√®re rester chez moi cette semaine mais reviendrai en forme la semaine prochaine.<br /> Bonne semaine.<br />' + resourceDescriptor.getProperty('surname'), resourceDescriptor.getProperty('surname'));
                         sickenResource(resourceDescriptor, 1);
                     }
                     break;
@@ -558,16 +558,16 @@ function sendScore() {
     content.push(newScore);
     content.push('<br />');
     if (oldScore <= newScore) {
-        content.push('Vous avez donc gagnÈ ');
+        content.push('Vous avez donc gagn√© ');
         content.push(newScore - oldScore);
     }
     else {
         content.push('Vous avez donc perdu ');
         content.push(oldScore - newScore);
     }
-    content.push(' points depuis la derniËre semaine.');
+    content.push(' points depuis la derni√®re semaine.');
     content.push('<br /><br />');
-    content.push('Nous vous rappelons que votre score est calculÈ ‡ partir de votre budget actuel, de votre taux de satisfaction clientËle ainsi sur le moral de votre personnel.');
+    content.push('Nous vous rappelons que votre score est calcul√© √† partir de votre budget actuel, de votre taux de satisfaction client√®le ainsi sur le moral de votre personnel.');
     content.push('<br /><br />');
     content.push('A la semaine prochaine.');
     content.push('<br />');
@@ -716,14 +716,14 @@ function doIntroduction() {
             budgetvalue = budgetDescriptor.getInstance(self).getValue(), mail = new Array();
     mail.push('Bonjour');
     mail.push('<br /><br />');
-    mail.push('Je vous fÈlicite pour votre promotion. Sauf erreur de ma part, vous ne connissez pas encore avec vos Èquipiers. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.');
+    mail.push('Je vous f√©licite pour votre promotion. Sauf erreur de ma part, vous ne connissez pas encore avec vos √©quipiers. Aussi vous ais-je remis les dossiers de chaque personne dont vous avez la charge. Je sais que vous en ferai bon usage.');
     mail.push('<br /><br />');
-    mail.push('La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos rÈsultats sont bons, les mandats deviendront de plus en plus intÈressants. Vous avez Ègalement la possibilitÈ de dÈcrocher une promotion. Si cela devait arriver, je pense donner la responsabilitÈ de votre Èquipe ‡ un de ses membres actuels.');
+    mail.push('La concurrence est rude, je vous demanderais donc de ne pas trop tarder avant de prendre en main votre service. Si vos r√©sultats sont bons, les mandats deviendront de plus en plus int√©ressants. Vous avez √©galement la possibilit√© de d√©crocher une promotion. Si cela devait arriver, je pense donner la responsabilit√© de votre √©quipe √† un de ses membres actuels.');
     mail.push('<br /><br />');
-    mail.push('Je vous souhaite le meilleur dÈpart possible.');
+    mail.push('Je vous souhaite le meilleur d√©part possible.');
     mail.push('<br />');
     mail.push('Daniel.');
-    this.sendMessage('Promotion au niveau de cadre.', mail.join(''), 'Daniel M¸ster.');
+    this.sendMessage('Promotion au niveau de cadre.', mail.join(''), 'Daniel M√ºster.');
     this.finishCurrentWeek();
     budgetDescriptor.getInstance(self).setValue(budgetvalue);
 }

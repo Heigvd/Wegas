@@ -14,12 +14,12 @@ YUI.add('wegas-object-entities', function(Y) {
 
     var STRING = "string", HIDDEN = "hidden", NAME = "name", HTML = "html",
         VALUE = "value", HASHLIST = "hashlist", COMBINE = "combine",
-        Wegas = Y.Wegas;
+        persistence = Y.Wegas.persistence;
 
     /**
      * ObjectDescriptor mapper
      */
-    Wegas.persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", Wegas.persistence.VariableDescriptor, [], {
+    persistence.ObjectDescriptor = Y.Base.create("ObjectDescriptor", persistence.VariableDescriptor, [], {
         getProperty: function(player, key) {
             return this.getInstance(player).get("properties." + key);
         }
@@ -35,11 +35,13 @@ YUI.add('wegas-object-entities', function(Y) {
                     _type: HASHLIST,
                     keyField: NAME,
                     valueField: VALUE,
+                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
                     elementType: {
                         type: COMBINE,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE
@@ -68,7 +70,8 @@ YUI.add('wegas-object-entities', function(Y) {
                                 type: COMBINE,
                                 fields: [{
                                         name: NAME,
-                                        typeInvite: NAME
+                                        typeInvite: NAME,
+                                        size: 10
                                     }, {
                                         name: VALUE,
                                         typeInvite: VALUE
@@ -98,12 +101,12 @@ YUI.add('wegas-object-entities', function(Y) {
             },
             getProperty: {
                 label: "property equals",
-                returns: "string",
+                returns: STRING,
                 arguments: [{
                         type: HIDDEN,
                         value: "self"
                     }, {
-                        value: "property name",
+                        typeInvite: NAME,
                         scriptType: STRING
                     }]
             },
@@ -113,10 +116,10 @@ YUI.add('wegas-object-entities', function(Y) {
                         type: HIDDEN,
                         value: "self"
                     }, {
-                        value: "property name",
+                        typeInvite: NAME,
                         scriptType: STRING
                     }, {
-                        value: VALUE,
+                        typeInvite: VALUE,
                         scriptType: STRING
                     }]
             }
@@ -126,7 +129,7 @@ YUI.add('wegas-object-entities', function(Y) {
     /**
      * ObjectInstance mapper
      */
-    Wegas.persistence.ObjectInstance = Y.Base.create("ObjectInstance", Wegas.persistence.VariableInstance, [], {}, {
+    persistence.ObjectInstance = Y.Base.create("ObjectInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
                 value: "ObjectInstance"
@@ -142,7 +145,8 @@ YUI.add('wegas-object-entities', function(Y) {
                         type: COMBINE,
                         fields: [{
                                 name: NAME,
-                                typeInvite: NAME
+                                typeInvite: NAME,
+                                size: 10
                             }, {
                                 name: VALUE,
                                 typeInvite: VALUE

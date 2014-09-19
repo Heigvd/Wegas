@@ -30,7 +30,7 @@ YUI.add('wegas-menu', function(Y) {
                 bubbles: true
             });
         },
-        renderUI: function() {
+        syncUI: function() {
             this.buildMenu(this.get("items"), this.get(CONTENT_BOX));
 
         },
@@ -54,6 +54,10 @@ YUI.add('wegas-menu', function(Y) {
         },
         buildMenu: function(items, node) {
             var listItem, item, content = Y.Node.create("<ul></ul>");
+            for (var n in this.nodeInstances) {
+                this.nodeInstances[n].destroy();
+            }
+            node.empty();
             for (var i in items) {
                 item = items[i];
 

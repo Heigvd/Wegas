@@ -100,7 +100,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "User Prototype Presentation",
 					"name": "User Prototype Presentation",
-					"editorLabel": "A103 - Présentation prototype utilisateurs",
+					"editorLabel": "A103 - PrÃ©sentation prototype utilisateurs",
 					"description": "<p>One of the engineers approaches you with a suggestion:</p><p>\"We could design a small system prototype and present it to future users.</p><p>The prototype and the specification document could be developed simultanously. I should say that this really could help to improve the quality of the feedback we get from the future user!</p><p>The prototype development would take approximately 2 weeks work for 2 people.</p><p><br />What do you think about it? \"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -232,7 +232,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Feasibility Analyses",
 					"name": "Feasibility Analyses",
-					"editorLabel": "A112 - Analyses de faisabilité",
+					"editorLabel": "A112 - Analyses de faisabilitÃ©",
 					"description": "<p>Mr Dupuis, Head of R&amp;D, approaches you with the following question:</p><p>\"If we carry out feasibility analyses during the pre-project phase, then in what order would you suggest doing so?\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -384,7 +384,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Market Feasibility Study",
 					"name": "Market Feasibility Study",
-					"editorLabel": "A151 - Faisabilité de marché",
+					"editorLabel": "A151 - FaisabilitÃ© de marchÃ©",
 					"description": "<p>The marketing division suggests refining the so far only rough feasibility assessment presented in the status report and, in doing so, focusing more on the profit chance related to the implementation of the prospective e-assistance system.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -460,7 +460,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Complementary Market Feasibility Assessment",
 					"name": "Complementary Market Feasibility Assessment",
-					"editorLabel": "A151 - Faisabilité de marché -  complément d'étude",
+					"editorLabel": "A151 - FaisabilitÃ© de marchÃ© -  complÃ©ment d'Ã©tude",
 					"description": "<p>You've conducted a brief market study. The Marketing Division nonetheless suggests making a complementary analysis in order to obtain full information.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -516,7 +516,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Technical Feasibility Study",
 					"name": "Technical Feasibility Study",
-					"editorLabel": "A152B - Faisabilité technique",
+					"editorLabel": "A152B - FaisabilitÃ© technique",
 					"description": "<p>An engineer from the R&amp;D department suggests to run a technical feasibility analysis.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -572,7 +572,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Repair types",
 					"name": "Repair types",
-					"editorLabel": "A153 - Types de réparation",
+					"editorLabel": "A153 - Types de rÃ©paration",
 					"description": "<p>You might want to discuss with the repairers in order to get more information on the different types of repair to be effected on the customers machines.&nbsp;</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -648,7 +648,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "A free afternoon",
 					"name": "A free afternoon",
-					"editorLabel": "A154 - Un après-midi à choix",
+					"editorLabel": "A154 - Un aprÃ¨s-midi Ã  choix",
 					"description": "<p>You have an open time-slot in your schedule this afternoon.</p><p>How do you wish to use it?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -813,7 +813,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Development environment training",
 					"name": "Development environment training",
-					"editorLabel": "P102B - Séminaire environnement développement",
+					"editorLabel": "P102B - SÃ©minaire environnement dÃ©veloppement",
 					"description": "<p>A collaborator responsible for choosing the development environment happened to hear of a training on new developing environments, which will take place in Zurich next week. He asks you whether or not he may participate in it.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -869,7 +869,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Video-conference and remote control testing",
 					"name": "Video-conference and remote control testing",
-					"editorLabel": "P103B - Visio-conférence et prise de contrôle à distance",
+					"editorLabel": "P103B - Visio-confÃ©rence et prise de contrÃ´le Ã  distance",
 					"description": "<p>An engineer suggests to integrate a 'video-conference' function, which provides Artos repairmen with instant contact to customers as well as with remote control of downtime workstations.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1001,7 +1001,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "New promotion strategy",
 					"name": "New promotion strategy",
-					"editorLabel": "P105 - Type de promotion du système",
+					"editorLabel": "P105 - Type de promotion du systÃ¨me",
 					"description": "<p>You are presented two new ways of promoting the system.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1090,7 +1090,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Said: \"Activity report writing\" project",
 					"name": "Said: \"Activity report writing\" project",
-					"editorLabel": "R104B- Yves - projet \"réd. rapp. activité\"",
+					"editorLabel": "R104B- Yves - projet \"rÃ©d. rapp. activitÃ©\"",
 					"description": "<p>Said is firmly asked to support the 'activity report' team as of this week for the next 3 weeks. <br /><br />If management's support of your project is good and you need Said during this time, you can negotiate that he works only 50% on the activity report and can still go on working 50% on the project.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1258,7 +1258,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "User interface enhancement proposal",
 					"name": "User interface enhancement proposal",
-					"editorLabel": "R101B - Proposition d'amélioration IHM",
+					"editorLabel": "R101B - Proposition d'amÃ©lioration IHM",
 					"description": "<p>One of the fitters heard about the project and dropped in to see state of the arts.</p><p>He suggests improving the system by adding another functionality:&nbsp;</p><p>\"It would be interesting to being able to browse through the plans with the XR5 system. It's a lot more pleasant. I've met the User-Interface programmers and they have told me that this is possible.&nbsp;In my opinion, it seems that as an impact this would increase programming costs by 1000 with no impact on time\".&nbsp;</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1354,7 +1354,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "XR5 browsing system",
 					"name": "XR5 browsing system",
-					"editorLabel": "R101B - Système de navigation XR5",
+					"editorLabel": "R101B - SystÃ¨me de navigation XR5",
 					"description": "<p>After having thought about it, you inform the fitters and the User-Interface team on your decision on the proposed XR5 system.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1430,7 +1430,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Ayla needed on strategic project",
 					"name": "Ayla needed on strategic project",
-					"editorLabel": "R105B - Valérie autre projet",
+					"editorLabel": "R105B - ValÃ©rie autre projet",
 					"description": "<p>A strategic project needs Ayla (web designer) at 50% for 3 weeks, as from the following week. <br /> You can try to refuse this decision if management's support is very good.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1486,7 +1486,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "User Interface Specifications",
 					"name": "User Interface Specifications",
-					"editorLabel": "R109B - Spécifications IHM",
+					"editorLabel": "R109B - SpÃ©cifications IHM",
 					"description": "<p>A software computer specialist suggests that you reassess the User Interface specifications. It seems indeed that the latter is \"over-sized\" and that it is well possible to get along with a simpler interface.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1598,7 +1598,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Yvonne ? assigned to another project",
 					"name": "Yvonne ? assigned to another project",
-					"editorLabel": "R106B - Yvonne - affectée autre projet",
+					"editorLabel": "R106B - Yvonne - affectÃ©e autre projet",
 					"description": "<p>A parallel project needs Yvonne (software specialist) for two weeks, starting next week.</p><p>If management's support of your project is weak, you take the risk of even worsening things if you refuse.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1710,7 +1710,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Armine needs a break",
 					"name": "Armine needs a break",
-					"editorLabel": "R112B - Noémie besoin Break",
+					"editorLabel": "R112B - NoÃ©mie besoin Break",
 					"description": "<p>Armine (software specialist) confesses:&nbsp;\"I'd really need a break. I have not had holidays for about two years and my sister really needs my help&nbsp;now. I definitely need to take one week off!\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {

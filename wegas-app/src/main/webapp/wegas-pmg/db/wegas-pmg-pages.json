@@ -3,31 +3,69 @@
         "@name": "Main",
         "type": "AbsoluteLayout",
         "cssClass": "layout",
-        "children": [{
-                "type": "Image",
-                "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png",
-                "plugins": [{
+        "children": [
+            {
+                "type": "Text",
+                "plugins": [
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "20px",
-                                "left": "7px"
+                                "top": "0px",
+                                "left": "56px"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
+                            "styles": {}
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
                             "styles": {
-                                "position": "absolute",
-                                "height": "53px"
+                                "color": "#3C3C3C",
+                                "fontSize": "24px",
+                                "fontStyle": "italic",
+                                "textAlign": ""
                             }
                         }
-                    }, {
-                        "fn": "Tooltip",
+                    },
+                    {
+                        "fn": "CSSStyles",
                         "cfg": {
-                            "content": "Artos Inc. - Project Management Game"
+                            "styles": {
+                                "font-variant": "small-caps"
+                            }
                         }
+                    }
+
+                ],
+                "content": "<p>Project Management Game</p>"
+            },
+            {
+                "type": "Image",
+                "url": " http://wegas.albasim.ch/wegas-pmg/images/pmg-logo-1.png",
+                "plugins": [{
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "20px",
+                            "left": "7px"
+                        }
+                    }
+                    }, {
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "height": "53px"
+                        }
+                    }
                     }]
             }, {
                 "type": "PmgBreadcrumb",
@@ -39,82 +77,92 @@
                 ],
                 "variable": "currentPhase",
                 "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "25px",
-                                "left": "72px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "25px",
+                            "left": "72px"
                         }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "The current phase of your project"
-                        }
+                    }
                     }]
             }, {
                 "type": "Template",
-                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'), phase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').get('value'); if (phase != 3) {maxVal = this.value} else if (this.value >= exec) { maxVal = this.value; maxVal++} else { maxVal = exec} %><% for(var i=+this.minValue; i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +this.value ? ' wegas-template-valuebox-previous' : '' %><%= +i === +this.value ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
+                "custom": "<div class='wegas-template-valuebox'><% if(this.label){ %><label><%= this.label %></label><% } %><div class='wegas-template-valuebox-units'><% var maxVal, phase = this.value, currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').get('items')[phase -1]; if (phase != 3) {maxVal = currentPeriod.getMaxValue()} else { var exec = Y.Wegas.Facade.Variable.cache.find('name', 'executionPeriods').get('value'); if (currentPeriod.getValue() >= exec) { maxVal = currentPeriod.getValue(); maxVal++} else { maxVal = exec}} %><% for(var i=+currentPeriod.getMinValue(); i < +maxVal + 1; i+=1){%><div class='wegas-template-valuebox-unit <%= +i < +currentPeriod.getValue() ? ' wegas-template-valuebox-previous' : '' %><%= +i === +currentPeriod.getValue() ? ' wegas-template-valuebox-selected' : '' %>'><%= ''+i %></div> <% } %></span></div></div>",
                 "cssClass": "pmg-period",
                 "data": {},
                 "variable": {
-                    "content": "Variable.find('currentPeriod').item(currentPhase.value-1)"
+                    "content": "Variable.find('currentPhase')"
                 },
                 "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "50px",
-                                "left": "72px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "50px",
+                            "left": "72px"
                         }
-                    }, {
-                        "fn": "Tooltip",
-                        "cfg": {
-                            "content": "The current week of your project"
-                        }
+                    }
                     }]
             }, {
                 "type": "Button",
-                "label": "Pass week",
+                "label": "",
                 "cssClass": "pmg-nextweek",
                 "disabled": false,
-                "tooltip": "Advance to next week",
                 "plugins": [{
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "nextPeriod()"
-                            },
-                            "targetEvent": "click"
-                        }
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase - 1);return  (phase != 3 && period.getMaxValue() == period.getValue(self)) || (phase == 3 && Variable.find(gameModel, 'projectCompleteness').getValue(self) >= 100);",
+                            "language": "JavaScript"
+                        },
+                        "attribute": "cssClass",
+                        "value": "passPhase"
+                    }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "23px",
-                                "left": "445px"
-                            }
+                    "fn": "ConditionalDisable2",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase-1).getValue(self), advancement = Variable.find(gameModel, 'advancementLimit').getValue(self),phaseLimit = Variable.find(gameModel, 'phaseLimit').getValue(self),periodLimit = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return (advancement && !(phase === 3 && period > executionPeriods) && phase >= phaseLimit && period >= periodLimit)",
+                            "language": "JavaScript"
                         }
+                    }
                     }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "height": "46px"
-                            }
-                        }
+                    "fn": "ConfirmExecuteScriptAction",
+                    "cfg": {
+                        "onClick": {
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "PMGSimulation.nextPeriod()"
+                        },
+                        "message": "Are you sure you want to continue?",
+                        "targetEvent": "click"
+                    }
                     }, {
-                        "fn": "CSSBackground",
-                        "cfg": {
-                            "styles": {
-                                "backgroundColor": "#0981A9"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "23px",
+                            "left": "445px"
                         }
+                    }
+                    }, {
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {
+                            "height": "46px"
+                        }
+                    }
+                    }, {
+                    "fn": "CSSBackground",
+                    "cfg": {
+                        "styles": {
+                            "backgroundColor": "#0981A9"
+                        }
+                    }
                     }]
             }, {
                 "type": "GaugeDisplay",
@@ -124,14 +172,14 @@
                     "name": "managementApproval"
                 },
                 "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "550px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "4px",
+                            "left": "550px"
                         }
+                    }
                     }]
             }, {
                 "type": "GaugeDisplay",
@@ -141,17 +189,16 @@
                     "name": "userApproval"
                 },
                 "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "616px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "4px",
+                            "left": "616px"
                         }
+                    }
                     }]
-            },
-            {
+            }, {
                 "type": "GaugeDisplay",
                 "label": "Quality",
                 "maxValue": 200,
@@ -159,26 +206,25 @@
                     "name": "quality"
                 },
                 "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<3",
-                                "language": "JavaScript"
-                            }
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<3",
+                            "language": "JavaScript"
                         }
+                    }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "719px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "4px",
+                            "left": "719px"
                         }
+                    }
                     }]
-            },
-            {
+            }, {
                 "type": "GaugeDisplay",
                 "label": "Costs",
                 "maxValue": 200,
@@ -186,49 +232,49 @@
                     "name": "costs"
                 },
                 "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<3",
-                                "language": "JavaScript"
-                            }
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<3",
+                            "language": "JavaScript"
                         }
+                    }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "784px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "4px",
+                            "left": "784px"
                         }
+                    }
                     }]
             }, {
                 "type": "GaugeDisplay",
-                "label": "Delay",
+                "label": "Schedule",
                 "maxValue": 200,
                 "variable": {
                     "name": "delay"
                 },
                 "plugins": [{
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<3",
-                                "language": "JavaScript"
-                            }
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<3",
+                            "language": "JavaScript"
                         }
+                    }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "4px",
-                                "left": "852px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "4px",
+                            "left": "852px"
                         }
+                    }
                     }]
             }, {
                 "cssClass": "pmg-timevariable",
@@ -240,284 +286,246 @@
                     "content": "Variable.find('timeCards')"
                 },
                 "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "10px",
-                                "right": "10px"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "10px",
+                            "right": "10px"
                         }
+                    }
                     }]
             }, {
                 "type": "List",
                 "direction": "horizontal",
                 "cssClass": "horizontal-menu",
                 "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "90px",
-                                "left": "0",
-                                "right": "0"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "90px",
+                            "left": "0",
+                            "right": "0"
                         }
+                    }
                     }],
                 "children": [{
-                        "type": "Button",
-                        "label": "Home",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 15,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
-                                }
+                    "type": "Button",
+                    "label": "Home",
+                    "disabled": false,
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 15,
+                            "targetPageLoaderId": "maindisplayarea",
+                            "targetEvent": "click"
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "label": "Project",
+                    "disabled": false,
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 2,
+                            "targetPageLoaderId": "maindisplayarea",
+                            "targetEvent": "click"
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "label": "Tasks",
+                    "disabled": false,
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 13,
+                            "targetPageLoaderId": "maindisplayarea",
+                            "targetEvent": "click"
+                        }
+                            }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                "language": "JavaScript"
                             }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Project",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 2,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
-                                }
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "label": "Gantt",
+                    "disabled": false,
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 14,
+                            "targetPageLoaderId": "maindisplayarea",
+                            "targetEvent": "click"
+                        }
+                            }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                "language": "JavaScript"
                             }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Tasks",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 13,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
-                                }
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "label": "Resources",
+                    "disabled": false,
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 5,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
+                                "language": "JavaScript"
+                            }
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "label": "EVM",
+                    "disabled": false,
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 10,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }, {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
+                                "language": "JavaScript"
                             },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Gantt",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 14,
-                                    "targetPageLoaderId": "maindisplayarea",
-                                    "targetEvent": "click"
-                                }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "Resources",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 5,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "Variable.find(gameModel, 'currentPhase').getValue(self)<2",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "label": "EVM",
-                        "disabled": false,
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 10,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            },
-                            {
-                                "fn": "ConditionalDisable",
-                                "cfg": {
-                                    "condition": {
-                                        "@class": "Script",
-                                        "content": "Variable.find(gameModel, \"currentPhase\").getValue(self)<2 || !Variable.find(gameModel, \"evm\").getValue(self)",
-                                        "language": "JavaScript"
-                                    }
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "cssClass": "menu-loginbutton",
-                        "disabled": false,
-                        "targetPageLoader": "maindisplayarea",
-                        "type": "LoginButton"
-                    }
-                ]
+                            "attribute": "cssClass",
+                            "value": "hidden-button"
+                        }
+                            }]
+                    }, {
+                    "cssClass": "menu-loginbutton",
+                    "disabled": false,
+                    "targetPageLoader": "maindisplayarea",
+                    "type": "LoginButton"
+                    }]
             }, {
                 "type": "List",
                 "direction": "vertical",
                 "cssClass": "vertical-menu",
                 "plugins": [{
-                        "fn": "CSSPosition",
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "120px",
+                            "right": "0px",
+                            "bottom": "0px"
+                        }
+                    }
+                    }],
+                "children": [{
+                    "type": "Button",
+                    "cssClass": "actions",
+                    "disabled": false,
+                    "label": "",
+                    "tooltip": "Actions",
+                    "plugins": [{
+                        "fn": "OpenPageAction",
                         "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "120px",
-                                "right": "0px",
-                                "bottom": "0px"
+                            "subpageId": 6,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "cssClass": "questions",
+                    "disabled": false,
+                    "label": "",
+                    "tooltip": "Questions",
+                    "plugins": [{
+                        "fn": "UnreadCount",
+                        "cfg": {
+                            "variable": {
+                                "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
                             }
                         }
-                    }],
-                "children": [
-                    {
-                        "type": "Button",
-                        "cssClass": "actions",
-                        "disabled": false,
-                        "label": "",
-                        "tooltip": "Actions",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 6,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "cssClass": "questions",
-                        "disabled": false,
-                        "label": "",
-                        "tooltip": "Questions",
-                        "plugins": [
-                            {
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": {
-                                        "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 7,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "cssClass": "inbox",
-                        "setToReadAfter": 0,
-                        "tooltip": "Mailbox",
-                        "disabled": false,
-                        "label": "",
-                        "plugins": [
-                            {
-                                "fn": "UnreadCount",
-                                "cfg": {
-                                    "variable": {
-                                        "name": "inbox"
-                                    }
-                                }
-                            },
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 8,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
-                    },
-                    {
-                        "type": "Button",
-                        "cssClass": "history",
-                        "disabled": false,
-                        "label": "",
-                        "tooltip": "History",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 9,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
-                            }
-                        ]
+                            }, {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 7,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }]
                     }, {
-                        "type": "Button",
-                        "cssClass": "help",
-                        "disabled": false,
-                        "label": "",
-                        "plugins": [
-                            {
-                                "fn": "OpenPageAction",
-                                "cfg": {
-                                    "subpageId": 10,
-                                    "targetEvent": "click",
-                                    "targetPageLoaderId": "maindisplayarea"
-                                }
+                    "type": "Button",
+                    "cssClass": "inbox",
+                    "setToReadAfter": 0,
+                    "tooltip": "Mailbox",
+                    "disabled": false,
+                    "label": "",
+                    "plugins": [{
+                        "fn": "UnreadCount",
+                        "cfg": {
+                            "variable": {
+                                "name": "inbox"
                             }
-                        ]
-                    }
-                ]
+                        }
+                            }, {
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 8,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "cssClass": "history",
+                    "disabled": false,
+                    "label": "",
+                    "tooltip": "History",
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 9,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }]
+                    }, {
+                    "type": "Button",
+                    "cssClass": "help",
+                    "disabled": false,
+                    "label": "",
+                    "plugins": [{
+                        "fn": "OpenPageAction",
+                        "cfg": {
+                            "subpageId": 10,
+                            "targetEvent": "click",
+                            "targetPageLoaderId": "maindisplayarea"
+                        }
+                            }]
+                    }]
             }, {
                 "type": "PageLoader",
                 "pageLoaderId": "maindisplayarea",
@@ -526,13 +534,7 @@
                 "plugins": [{
                         "fn": "CSSPosition",
                         "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "120px",
-                                "bottom": "0px",
-                                "right": "59px",
-                                "left": "0px"
-                            }
+                            "styles": {}
                         }
                     }, {
                         "fn": "CSSBackground",
@@ -541,682 +543,503 @@
                                 "backgroundColor": "#ffffff"
                             }
                         }
-                    }]
-            }
-        ]
+                    },
+                    {
+                        "fn": "CSSStyles",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }
+                ]
+            }]
     },
     "2": {
         "@name": "Project",
         "cssClass": "project-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgSlidePanel",
-                "title": "Finances",
-                "cssClass": "finances",
-                "animation": false,
-                "children": [
-                    {
-                        "type": "Template",
-                        "data": {},
-                        "custom": "<%  var fixedCosts=0, wages=0, unworked=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); unworked = unworked + parseFloat(properties.unworkedHoursCosts); } taskTotal = wages + fixedCosts + unworked; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= unworked %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
-                        "variable": {
-                            "name": "tasks"
-                        }
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "title": "EVM",
-                "cssClass": "evm",
-                "animation": false,
-                "children": [
-                    {
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "hStart": "1",
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "variables": [
-                            {
-                                "name": "actualCost",
-                                "label": "AC (Actual Cost)"
-                            },
-                            {
-                                "name": "planedValue",
-                                "label": "PV (Planed Value)"
-                            },
-                            {
-                                "name": "earnedValue",
-                                "label": "EV (Earned Value)"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "title": "Indicators History: Management and Users",
-                "cssClass": "indicators-management",
-                "animation": false,
-                "children": [
-                    {
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "hStart": "1",
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "variables": [
-                            {
-                                "name": "managementApproval",
-                                "label": "Management"
-                            },
-                            {
-                                "name": "userApproval",
-                                "label": "Users"
-                            }
-                        ]
-                    }
-                ]
-            },
-            {
-                "type": "PmgSlidePanel",
-                "title": "Indicators History: Quality, Costs, and Shedule",
-                "cssClass": "indicators-quality",
-                "animation": false,
-                "children": [
-                    {
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "hStart": "1",
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "variables": [
-                            {
-                                "name": "costs",
-                                "label": "Costs"
-                            },
-                            {
-                                "name": "delay",
-                                "label": "Shedule"
-                            },
-                            {
-                                "name": "quality",
-                                "label": "Quality"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
+        "children": [{
+            "type": "PmgSlidePanel",
+            "title": "Project Overview",
+            "cssClass": "pmg-project-overview",
+            "animation": false,
+            "children": [{
+                "type": "Template",
+                "data": {},
+                "custom": "<%  var names = ['Initiation', 'Planning', 'Executing', 'Closing'], projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>\n<div class=\"current-time\">\n<span class='label'>Current Time</span></div>\n<div class='current-stage'><span class='label'>- Phase</span><span class='variableValue'><%= names[currentPhase -1] %></span></div>\n<div class='current-period'><span class='label'>- Period</span><span class='variableValue'><%= currentPeriod %></span></div>\n\n",
+                "variable": {
+                    "name": "currentPhase"
+                }
+                    }]
+            }, {
+            "type": "PmgSlidePanel",
+            "title": "Finances",
+            "cssClass": "finances",
+            "animation": false,
+            "children": [{
+                "type": "Template",
+                "data": {},
+                "custom": "<%  var fixedCosts=0, wages=0, total=0, taskTotal=0, projectFixedCost = Y.Wegas.Facade.Variable.cache.find('name', 'projectFixedCosts').getInstance().get('value'), projectUnworkedHours = Y.Wegas.Facade.Variable.cache.find('name', 'projectUnworkedHours').getInstance().get('value'); for(var i=0; i<this.variable.get('items').length; i++) { var properties = this.variable.get('items')[i].getInstance().get('properties'); wages = wages + parseFloat(properties.wages); if (properties.completeness > 0) fixedCosts = fixedCosts + parseFloat(properties.fixedCosts); } taskTotal = wages + fixedCosts + projectUnworkedHours; total = taskTotal + projectFixedCost; %><div class='projectFixedCost'><span class='label'>Project Fixed Costs</span><span class='variableValue'><%= projectFixedCost %></span></div><div class='tasks'><div class='taskTotal'><span class='label'>Tasks</span><span class='variableValue'><%= taskTotal %></span></div><div class='wages'><span class='label'>- Wages</span><span class='variableValue'><%= wages %></span></div><div class='fixedCosts'><span class='label'>- Fixed Costs</span><span class='variableValue'><%= fixedCosts %></span></div><div class='unworkedHours'><span class='label'>- Unworked Hours</span><span class='variableValue'><%= projectUnworkedHours %></span></div></div><div class='total'><span class='label'>TOTAL</span><span class='variableValue'><%= total %></span></div>",
+                "variable": {
+                    "name": "tasks"
+                }
+                    }]
+
+            }, {
+            "type": "PmgSlidePanel",
+            "title": "Indicators History: Management and Users",
+            "cssClass": "indicators-management",
+            "animation": false,
+            "children": [{
+                "height": "200px",
+                "chartType": "combo",
+                "width": "90%",
+                "horizontalGridlines": true,
+                "legendPosition": "bottom",
+                "type": "Chart",
+                "verticalGridlines": true,
+                "hMinEnd": {
+                    "name": "executionPeriods"
+                },
+                "minValue": 0,
+                "maxValue": 200,
+                "vStepValue": 25,
+                "variables": [{
+                    "name": "managementApproval",
+                    "label": "Management"
+                            }, {
+                    "name": "userApproval",
+                    "label": "Users"
+                            }]
+                    }]
+            }, {
+            "type": "PmgSlidePanel",
+            "title": "Indicators History: Quality, Costs, and Shedule",
+            "cssClass": "indicators-quality",
+            "animation": false,
+            "children": [{
+                "height": "200px",
+                "chartType": "combo",
+                "width": "90%",
+                "horizontalGridlines": true,
+                "legendPosition": "bottom",
+                "type": "Chart",
+                "verticalGridlines": true,
+                "hMinEnd": {
+                    "name": "executionPeriods"
+                },
+                "minValue": 0,
+                "maxValue": 200,
+                "vStepValue": 25,
+                "variables": [{
+                    "name": "costs",
+                    "label": "Costs"
+                            }, {
+                    "name": "delay",
+                    "label": "Shedule"
+                            }, {
+                    "name": "quality",
+                    "label": "Quality"
+                            }]
+                    }]
+            }]
     },
     "3": {
         "@name": "Tasks (Planning phase)",
         "cssClass": "task-plannification-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "variable": {
-                    "name": "tasks"
-                },
-                "defaultSort": null,
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No"
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name"
-                    },
-                    {
-                        "label": "Estimated</br>duration",
-                        "width": "54px",
-                        "name": "Estimatedduration",
-                        "key": "instance.duration"
-                    },
-                    {
-                        "label": "Realised %",
-                        "name": "Realised",
-                        "width": "7%",
-                        "key": "instance.properties.completeness"
-                    },
-                    {
-                        "label": "Fixed costs",
-                        "name": "Fixedcosts",
-                        "key": "instance.properties.fixedCosts",
-                        "className": "right",
-                        "formatter": "rounded"
-                    },
-                    {
-                        "name": "Wages",
-                        "label": "Wages",
-                        "key": "instance.properties.wages"
-                    },
-                    {
-                        "name": "Quality",
-                        "label": "Quality",
-                        "key": "instance.properties.quality"
-                    },
-                    {
-                        "key": "requirements",
-                        "label": "Ressources",
-                        "formatter": "requieredRessources",
-                        "sortable": false
-                    },
-                    {
-                        "allowHTML": true,
-                        "label": "Assigned resources",
-                        "name": "assignedResources",
-                        "formatter": "assignedRessources",
-                        "sortable": false
-                    }
-                ],
-                "plugins": [
-                    {
-                        "fn": "Bac",
-                        "cfg": {
-                            "columnPosition": 4
-                        }
-                    },
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
-                    }
-                ]
+        "children": [{
+            "type": "PmgDatatable",
+            "variable": {
+                "name": "tasks"
+            },
+            "defaultSort": null,
+            "columnsCfg": [{
+                "key": "index",
+                "label": "No"
+                    }, {
+                "key": "label",
+                "label": "Name"
+                    }, {
+                "label": "Estimated</br>duration",
+                "width": "54px",
+                "name": "Estimatedduration",
+                "key": "instance.duration",
+                "className": "right"
+                    }, {
+                "label": "Fixed costs",
+                "name": "Fixedcosts",
+                "key": "instance.properties.fixedCosts",
+                "className": "right",
+                "formatter": "rounded"
+                    }, {
+                "key": "requirements",
+                "label": "Ressources",
+                "formatter": "requieredRessources",
+                "sortable": false
+                    }, {
+                "allowHTML": true,
+                "label": "Assigned resources",
+                "name": "assignedResources",
+                "formatter": "assignedRessources",
+                "sortable": false
+                    }],
+            "plugins": [{
+                "fn": "Bac",
+                "cfg": {
+                    "columnPosition": 4
+                }
+                    }, {
+                "fn": "Taskonclickpopup"
+                    }]
             }, {
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('tasks')"
-                            },
-                            "outputType": "html"
-                        }
-                    }
-                ]
-            }
-        ]
+            "type": "Button",
+            "cssClass": "wegas-icon-pdf",
+            "plugins": [{
+                "fn": "PrintActionPlugin",
+                "cfg": {
+                    "targetEvent": "click",
+                    "root": {
+                        "@class": "Script",
+                        "content": "Variable.find('tasks')"
+                    },
+                    "outputType": "html"
+                }
+                    }]
+            }]
     },
     "4": {
         "@name": "Gantt (Planning phase)",
         "type": "List",
         "cssClass": "gantt-plannification-page",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "plugins": [
-                    {
-                        "fn": "ScheduleDT",
-                        "cfg": {
-                            "variable": {
-                                "name": "periodPhase3"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "Planification",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "Plannificationcolor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
+        "children": [{
+            "type": "PmgDatatable",
+            "plugins": [{
+                "fn": "ScheduleDT",
+                "cfg": {
+                    "variable": {
+                        "name": "periodPhase3"
                     }
-                ],
-                "variable": {
-                    "name": "tasks"
-                },
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No",
-                        "sortable": true,
-                        "allowHTML": true
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name",
-                        "sortable": true,
-                        "allowHTML": true
-                    }
-                ],
-                "defaultSort": null
-            }
-        ]
+                }
+                    }, {
+                "fn": "Planification"
+                    }, {
+                "fn": "Plannificationcolor"
+                    }, {
+                "fn": "Taskonclickpopup"
+                    }],
+            "variable": {
+                "name": "tasks"
+            },
+            "columnsCfg": [{
+                "key": "index",
+                "label": "No",
+                "sortable": true,
+                "allowHTML": true
+                    }, {
+                "key": "label",
+                "label": "Name",
+                "sortable": true,
+                "allowHTML": true
+                    }],
+            "defaultSort": null
+            }]
     },
     "5": {
         "@name": "Resources",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgResourcesPanels",
-                "cssClass": "resources-page"
-            },
-            {
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('employees')"
-                            },
-                            "outputType": "html"
-                        }
-                    }
-                ],
-                "data": {}
-            }
-        ]
+        "children": [{
+            "type": "PmgResourcesPanels",
+            "cssClass": "resources-page"
+            }]
     },
     "6": {
         "@name": "Actions",
         "cssClass": "actions-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
-            },
-            {
-                "type": "MCQTabView",
-                "showUnanswered": false,
-                "variable": {
-                    "content": "Variable.find('actions').item(currentPhase.value-1)"
-                }
+        "children": [{
+            "type": "Text",
+            "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
             }, {
-                "label": "",
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('actions').item(currentPhase.value -1)"
-                            },
-                            "outputType": "html"
+            "type": "MCQTabView",
+            "showUnanswered": false,
+            "variable": {
+                "content": "Variable.find('actions').item(currentPhase.value-1)"
+            }
+            }, {
+            "label": "",
+            "type": "Button",
+            "cssClass": "wegas-icon-pdf",
+            "plugins": [{
+                    "fn": "PrintActionPlugin",
+                    "cfg": {
+                        "targetEvent": "click",
+                        "root": {
+                            "@class": "Script",
+                            "content": "Variable.find('actions').item(currentPhase.value -1)"
+                        },
+                        "outputType": "html"
+                    }
+                    },
+                {
+                    "fn": "CSSStyles",
+                    "cfg": {
+                        "styles": {
+                            "bottom": "0px",
+                            "position": "absolute"
                         }
                     }
-                ],
-                "data": {}
-            }
-        ]
+                    }],
+            "data": {}
+            }]
     },
     "7": {
         "@name": "Questions",
         "cssClass": "questions-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
-            },
-            {
-                "type": "MCQTabView",
-                "variable": {
-                    "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
-                }
+        "children": [{
+            "type": "Text",
+            "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
             }, {
-                "label": "",
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [{
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
-                            },
-                            "outputType": "html"
-                        }
-                    }],
-                "data": {}
+            "type": "MCQTabView",
+            "variable": {
+                "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
             }
-        ]
+            }, {
+            "label": "",
+            "type": "Button",
+            "cssClass": "wegas-icon-pdf",
+            "plugins": [{
+                    "fn": "PrintActionPlugin",
+                    "cfg": {
+                        "targetEvent": "click",
+                        "root": {
+                            "@class": "Script",
+                            "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
+                        },
+                        "outputType": "html"
+                    }
+                    },
+                {
+                    "fn": "CSSStyles",
+                    "cfg": {
+                        "styles": {
+                            "bottom": "0px",
+                            "position": "absolute"
+                        }
+                    }
+                    }],
+            "data": {}
+            }]
     },
     "8": {
         "@name": "Mailbox",
         "cssClass": "inbox-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Messages</h2></div>"
-            },
-            {
-                "type": "InboxDisplay",
-                "variable": {
-                    "name": "inbox"
-                }
-
+        "children": [{
+            "type": "Text",
+            "content": "<div class='title'><h2>Mailbox</h2></div><div class='title'><h2>Message</h2></div>"
             }, {
-                "label": "",
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('inbox')"
-                            },
-                            "outputType": "html"
-                        }
-                    }
-                ]
+            "type": "InboxDisplay",
+            "variable": {
+                "name": "inbox"
             }
-        ]
+
+            }]
     },
     "9": {
         "@name": "History",
         "cssClass": "history-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "Text",
-                "content": "<div class='title'><h2>History</h2></div><div class='title'><h2>Details</h2></div>"
-            },
-            {
-                "type": "InboxDisplay",
-                "template": "clean",
-                "variable": {
-                    "name": "history"
-                }
+        "children": [{
+            "type": "Text",
+            "content": "<div class='title'><h2>History</h2></div><div class='title'><h2>Details</h2></div>"
             }, {
-                "label": "",
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('inbox')"
-                            },
-                            "outputType": "html"
-                        }
-                    }
-                ]
-            }
-        ]
+            "type": "InboxDisplay",
+            "variable": {
+                "name": "history"
+            },
+            "template": "clean"
+            }]
     },
     "10": {
         "@name": "EVM",
         "cssClass": "evm-page",
         "direction": "vertical",
         "type": "List",
-        "children": [
-            {
-                "type": "PmgSlidePanel",
-                "title": "EVM",
-                "cssClass": "evm",
-                "animation": false,
-                "children": [
-                    {
-                        "type": "Chart",
-                        "width": "90%",
-                        "height": "400px",
-                        "chartType": "combo",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "verticalGridlines": true,
-                        "hStart": "1",
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "variables": [
-                            {
-                                "name": "actualCost",
-                                "label": "AC (Actual Cost)"
-                            },
-                            {
-                                "name": "planedValue",
-                                "label": "PV (Planed Value)"
-                            },
-                            {
-                                "name": "earnedValue",
-                                "label": "EV (Earned Value)"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
+        "children": [{
+            "type": "PmgSlidePanel",
+            "title": "EVM",
+            "cssClass": "evm",
+            "animation": false,
+            "children": [{
+                "type": "Chart",
+                "width": "90%",
+                "height": "400px",
+                "chartType": "combo",
+                "horizontalGridlines": true,
+                "legendPosition": "bottom",
+                "verticalGridlines": true,
+                "hMinEnd": {
+                    "name": "executionPeriods"
+                },
+                "minValue": 0,
+                "vStepValue": 1000,
+                "variables": [{
+                    "name": "planedValue",
+                    "label": "PV (Planed Value)"
+                            }, {
+                    "name": "earnedValue",
+                    "label": "EV (Earned Value)"
+                            }, {
+                    "name": "actualCost",
+                    "label": "AC (Actual Cost)"
+                            }]
+                    }]
+            }]
     },
     "11": {
         "@name": "Gantt (Execution phase)",
         "type": "List",
         "cssClass": "gantt-execution-page",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "plugins": [
-                    {
-                        "fn": "ScheduleDT",
-                        "cfg": {
-                            "variable": {
-                                "name": "periodPhase3"
-                            }
-                        }
-                    },
-                    {
-                        "fn": "Plannificationcolor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "PlannificationActivityColor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "PlannificationProgressColor",
-                        "cfg": {
-                        }
-                    },
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
+        "children": [{
+            "type": "PmgDatatable",
+            "plugins": [{
+                "fn": "ScheduleDT",
+                "cfg": {
+                    "variable": {
+                        "name": "periodPhase3"
+                    }
+                }
                     }, {
-                        "fn": "PMGLineCompleteness"
-                    }
-                ],
-                "variable": {
-                    "name": "tasks"
-                },
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No",
-                        "sortable": true,
-                        "allowHTML": true
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name",
-                        "sortable": true,
-                        "allowHTML": true
-                    },
-                    {
-                        "label": "Realised %",
-                        "name": "Realized",
-                        "width": "7%",
-                        "key": "instance.properties.completeness",
-                        "sortable": true,
-                        "allowHTML": true
-                    }
-                ],
-                "defaultSort": null
+                "fn": "Plannificationcolor"
+                    }, {
+                "fn": "PlannificationActivityColor"
+                    }, {
+                "fn": "PlannificationProgressColor"
+                    }, {
+                "fn": "Taskonclickpopup"
+                    }, {
+                "fn": "PMGLineCompleteness"
+                    }],
+            "variable": {
+                "name": "tasks"
             },
-            {
-                "type": "Text",
-                "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"planification\">&nbsp;</div>\nPlanified</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nDue</div>\n</div>"
-            }
-        ]
+            "columnsCfg": [{
+                "key": "index",
+                "label": "No",
+                "sortable": true,
+                "allowHTML": true
+                    }, {
+                "key": "label",
+                "label": "Name",
+                "sortable": true,
+                "allowHTML": true
+                    }, {
+                "label": "Realised",
+                "name": "Realised",
+                "width": "7%",
+                "key": "instance.properties.completeness",
+                "sortable": true,
+                "allowHTML": true,
+                "className": "right"
+                    }],
+            "defaultSort": null
+            }, {
+            "type": "Text",
+            "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"planification\">&nbsp;</div>\nPlanified</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nDue</div>\n</div>"
+            }]
     },
     "12": {
         "@name": "Tasks (Execution phase)",
         "cssClass": "task-execution-page",
         "type": "List",
         "direction": "vertical",
-        "children": [
-            {
-                "type": "PmgDatatable",
-                "variable": {
-                    "name": "tasks"
-                },
-                "defaultSort": null,
-                "columnsCfg": [
-                    {
-                        "key": "index",
-                        "label": "No"
-                    },
-                    {
-                        "key": "label",
-                        "label": "Name"
-                    },
-                    {
-                        "label": "Estimated</br>duration",
-                        "width": "54px",
-                        "name": "Estimatedduration",
-                        "key": "instance.duration"
-                    },
-                    {
-                        "label": "Realised %",
-                        "name": "Realised",
-                        "width": "7%",
-                        "key": "instance.properties.completeness"
-                    },
-                    {
-                        "label": "Fixed costs",
-                        "name": "Fixedcosts",
-                        "formatter": "rounded",
-                        "className": "right",
-                        "key": "instance.properties.fixedCosts"
-                    },
-                    {
-                        "label": "BAC",
-                        "name": "bac",
-                        "key": "instance.properties.bac"
-                    },
-                    {
-                        "label": "Wages",
-                        "name": "Wages",
-                        "key": "instance.properties.wages"
-                    },
-                    {
-                        "name": "Quality",
-                        "label": "Quality",
-                        "key": "instance.properties.quality"
-                    },
-                    {
-                        "key": "requirements",
-                        "label": "Ressources",
-                        "formatter": "requieredRessources",
-                        "sortable": false
-                    },
-                    {
-                        "label": "Assigned resources",
-                        "name": "assignedResources",
-                        "formatter": "assignedRessources",
-                        "sortable": false
-                    }
-                ],
-                "plugins": [
-                    {
-                        "fn": "Tablepopup",
-                        "cfg": {
-                            "width": "250px",
-                            "field": "description",
-                            "column": 1
-                        }
+        "children": [{
+            "type": "PmgDatatable",
+            "variable": {
+                "name": "tasks"
+            },
+            "defaultSort": null,
+            "columnsCfg": [{
+                "key": "index",
+                "label": "No"
                     }, {
-                        "fn": "PMGLineCompleteness"
-                    }
-                ]
+                "key": "label",
+                "label": "Name"
+                    }, {
+                "label": "Estimated</br>duration",
+                "width": "54px",
+                "name": "Estimatedduration",
+                "key": "instance.duration",
+                "className": "right"
+                    }, {
+                "label": "Realised",
+                "name": "Realised",
+                "width": "7%",
+                "key": "instance.properties.completeness",
+                "className": "right"
+                    }, {
+                "label": "Fixed costs",
+                "name": "Fixedcosts",
+                "formatter": "rounded",
+                "className": "right",
+                "key": "instance.properties.fixedCosts"
+                    }, {
+                "label": "BAC",
+                "name": "bac",
+                "className": "right",
+                "key": "instance.properties.bac"
+                    }, {
+                "label": "Wages",
+                "name": "Wages",
+                "className": "right",
+                "key": "instance.properties.wages"
+                    }, {
+                "name": "Quality",
+                "label": "Quality",
+                "className": "right",
+                "key": "instance.properties.quality",
+                "formatter": "quality"
+                    }, {
+                "key": "requirements",
+                "label": "Resources",
+                "formatter": "requieredRessources",
+                "sortable": false
+                    }, {
+                "label": "Assigned resources",
+                "name": "assignedResources",
+                "formatter": "assignedRessources",
+                "sortable": false
+                    }],
+            "plugins": [{
+                "fn": "Taskonclickpopup"
+                    }, {
+                "fn": "PMGLineCompleteness"
+                    }]
             }, {
-                "label": "",
-                "type": "Button",
-                "cssClass": "wegas-icon-pdf",
-                "plugins": [
-                    {
-                        "fn": "PrintActionPlugin",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "root": {
-                                "@class": "Script",
-                                "content": "Variable.find('tasks')"
-                            },
-                            "outputType": "html"
-                        }
-                    }
-                ]
-
-            }
-        ]
+            "type": "Button",
+            "cssClass": "wegas-icon-pdf",
+            "plugins": [{
+                "fn": "PrintActionPlugin",
+                "cfg": {
+                    "targetEvent": "click",
+                    "root": {
+                        "@class": "Script",
+                        "content": "Variable.find('tasks')"
+                    },
+                    "outputType": "html"
+                }
+                    }]
+            }]
     },
     "13": {
         "type": "PageLoader",
@@ -1238,72 +1061,72 @@
         "@name": "Home",
         "type": "AbsoluteLayout",
         "children": [{
-                "type": "Template",
-                "custom": "<%== this.value || 'Unable to find welcome text' %>",
-                "data": {},
-                "variable": {
-                    "name": "homeText"
-                },
-                "plugins": [{
-                        "fn": "CSSStyles",
-                        "cfg": {
-                            "styles": {
-                                "padding": "2%"
-                            }
-                        }
+            "type": "Template",
+            "custom": "<%== this.value || 'Unable to find welcome text' %>",
+            "data": {},
+            "variable": {
+                "name": "homeText"
+            },
+            "plugins": [{
+                "fn": "CSSStyles",
+                "cfg": {
+                    "styles": {
+                        "padding": "2%"
+                    }
+                }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "0px",
-                                "left": "0px"
-                            }
-                        }
+                "fn": "CSSPosition",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "top": "0px",
+                        "left": "0px"
+                    }
+                }
                     }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "46%%"
-                            }
-                        }
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "46%%"
+                    }
+                }
                     }]
             }, {
-                "type": "Text",
-                "content": "<div class='title'><h2>News</h2></div></div>",
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "21px",
-                                "left": "50%"
-                            }
-                        }
+            "type": "Text",
+            "content": "<div class='title'><h2>News</h2></div></div>",
+            "plugins": [{
+                "fn": "CSSPosition",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "top": "21px",
+                        "left": "50%"
+                    }
+                }
                     }]
             }, {
-                "type": "InboxList",
-                "variable": {
-                    "name": "news"
-                },
-                "plugins": [{
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "50px",
-                                "right": "0px"
-                            }
-                        }
+            "type": "InboxList",
+            "variable": {
+                "name": "news"
+            },
+            "plugins": [{
+                "fn": "CSSPosition",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "top": "50px",
+                        "right": "0px"
+                    }
+                }
                     }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "width": "50%"
-                            }
-                        }
+                "fn": "CSSSize",
+                "cfg": {
+                    "styles": {
+                        "position": "absolute",
+                        "width": "50%"
+                    }
+                }
                     }]
             }]
     },
@@ -1314,167 +1137,240 @@
         "children": [{
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
-                "label": "<span class='checkbox'>Autoreservation</span>",
-                "plugins": [{
+                "label": "<span class='checkbox'>Advancement limit</span>",
+                "plugins": [
+                    {
                         "fn": "ExecuteScriptAction",
                         "cfg": {
                             "targetEvent": "click",
                             "onClick": {
                                 "@class": "Script",
                                 "language": "JavaScript",
-                                "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}"
+                                "content": "if (Variable.find(gameModel, \"advancementLimit\").getValue(self)){\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, true);\n}"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "60px",
-                                "left": "83px",
-                                "zIndex": "10"
+                                "top": "28px",
+                                "left": "83px"
                             }
                         }
-                    }, {
+                    },
+                    {
                         "fn": "CSSSize",
                         "cfg": {
                             "styles": {}
                         }
-                    }, {
+                    },
+                    {
                         "fn": "ConditionalDisable",
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "Variable.find(gameModel, 'autoReservation').getValue(self)",
+                                "content": "Variable.find(gameModel, 'advancementLimit').getValue(self)",
                                 "language": "JavaScript"
                             },
                             "attribute": "cssClass",
                             "value": "selected"
                         }
+                    }
+                ]
+            },
+            {
+                "type": "AdvancementLimit",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "60px",
+                                "left": "83px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "Button",
+                "cssClass": "pmg-properties-button",
+                "label": "<span class='checkbox'>Autoreservation</span>",
+                "plugins": [{
+                    "fn": "ExecuteScriptAction",
+                    "cfg": {
+                        "targetEvent": "click",
+                        "onClick": {
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "if (Variable.find(gameModel, \"autoReservation\").getValue(self)){\n    Variable.find(gameModel, \"autoReservation\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"autoReservation\").setValue(self, true);\n}"
+                        }
+                    }
+                    }, {
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "190px",
+                            "left": "83px"
+                        }
+                    }
+                    }, {
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {}
+                    }
+                    }, {
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "Variable.find(gameModel, 'autoReservation').getValue(self)",
+                            "language": "JavaScript"
+                        },
+                        "attribute": "cssClass",
+                        "value": "selected"
+                    }
                     }]
             }, {
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>Force question replies</span>",
                 "plugins": [{
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}"
-                            }
+                    "fn": "ExecuteScriptAction",
+                    "cfg": {
+                        "targetEvent": "click",
+                        "onClick": {
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "if (Variable.find(gameModel, \"forceQuestionReplies\").getValue(self)){\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"forceQuestionReplies\").setValue(self, true);\n}"
                         }
+                    }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "100px",
-                                "left": "83px",
-                                "zIndex": "10"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "230px",
+                            "left": "83px"
                         }
+                    }
                     }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {}
-                        }
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {}
+                    }
                     }, {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, 'forceQuestionReplies').getValue(self)",
-                                "language": "JavaScript"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "Variable.find(gameModel, 'forceQuestionReplies').getValue(self)",
+                            "language": "JavaScript"
+                        },
+                        "attribute": "cssClass",
+                        "value": "selected"
+                    }
                     }]
             }, {
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>EVM</span>",
                 "plugins": [{
-                        "fn": "ExecuteScriptAction",
-                        "cfg": {
-                            "targetEvent": "click",
-                            "onClick": {
-                                "@class": "Script",
-                                "language": "JavaScript",
-                                "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}"
-                            }
+                    "fn": "ExecuteScriptAction",
+                    "cfg": {
+                        "targetEvent": "click",
+                        "onClick": {
+                            "@class": "Script",
+                            "language": "JavaScript",
+                            "content": "if (Variable.find(gameModel, \"evm\").getValue(self)){\n    Variable.find(gameModel, \"evm\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"evm\").setValue(self, true);\n}"
                         }
+                    }
                     }, {
-                        "fn": "CSSPosition",
-                        "cfg": {
-                            "styles": {
-                                "position": "absolute",
-                                "top": "140px",
-                                "left": "83px",
-                                "zIndex": "10"
-                            }
+                    "fn": "CSSPosition",
+                    "cfg": {
+                        "styles": {
+                            "position": "absolute",
+                            "top": "270px",
+                            "left": "83px"
                         }
+                    }
                     }, {
-                        "fn": "CSSSize",
-                        "cfg": {
-                            "styles": {}
-                        }
+                    "fn": "CSSSize",
+                    "cfg": {
+                        "styles": {}
+                    }
                     }, {
-                        "fn": "ConditionalDisable",
-                        "cfg": {
-                            "condition": {
-                                "@class": "Script",
-                                "content": "Variable.find(gameModel, 'evm').getValue(self)",
-                                "language": "JavaScript"
-                            },
-                            "attribute": "cssClass",
-                            "value": "selected"
-                        }
+                    "fn": "ConditionalDisable",
+                    "cfg": {
+                        "condition": {
+                            "@class": "Script",
+                            "content": "Variable.find(gameModel, 'evm').getValue(self)",
+                            "language": "JavaScript"
+                        },
+                        "attribute": "cssClass",
+                        "value": "selected"
+                    }
                     }]
-            }
-        ]
+            }]
     },
     "17": {
         "@name": "Dashboard",
         "type": "AbsoluteLayout",
         "children": [{
-                "type": "Dashboard",
-                "tableCfg": {
-                    "columns": [{
-                            "key": "name"
+            "type": "Dashboard",
+            "tableCfg": {
+                "columns": [{
+                    "key": "name",
+                    "label": " "
                         }, {
-                            "label": "Phase",
-                            "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
+                    "label": "Phase",
+                    "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
                         }, {
-                            "label": "Period",
-                            "script": "Variable.find(gameModel, 'currentPeriod').item(currentPhase.value-1).getValue(self)"
+                    "label": "Period",
+                    "script": "Variable.find(gameModel, 'currentPeriod').item(currentPhase.value-1).getValue(self)"
                         }, {
-                            "label": "Choices"
+                    "label": "Choices"
                         }, {
-                            "label": "Management",
-                            "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
-                            "formatter": "colored"
+                    "label": "Management",
+                    "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
+                    "formatter": "colored"
                         }, {
-                            "label": "User",
-                            "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
-                            "formatter": "colored"
+                    "label": "User",
+                    "script": "Variable.find(gameModel, 'userApproval').getValue(self)",
+                    "formatter": "colored"
                         }, {
-                            "label": "Quality",
-                            "script": "Variable.find(gameModel, 'quality').getValue(self)",
-                            "formatter": "colored"
+                    "label": "Quality",
+                    "script": "Variable.find(gameModel, 'quality').getValue(self)",
+                    "formatter": "colored"
                         }, {
-                            "label": "Cost",
-                            "script": "Variable.find(gameModel, 'costs').getValue(self)",
-                            "formatter": "colored"
+                    "label": "Cost",
+                    "script": "Variable.find(gameModel, 'costs').getValue(self)",
+                    "formatter": "colored"
                         }, {
-                            "label": "Delay",
-                            "script": "Variable.find(gameModel, 'delay').getValue(self)",
-                            "formatter": "colored"
+                    "label": "Schedule",
+                    "script": "Variable.find(gameModel, 'delay').getValue(self)",
+                    "formatter": "colored"
                         }]
-                }
+            }
+            }]
+    },
+    "Team": {
+        "type": "EditTeam"
+    },
+    "UserPreferences": {
+        "type": "Form",
+        "plugins": [{
+            "fn": "UserPreferences"
             }]
     }
 }

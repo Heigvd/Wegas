@@ -30,7 +30,7 @@
         "states": {
             "1": {
                 "@class": "DialogueState",
-                "text": "Bonjour, ça va?",
+                "text": "Bonjour, Ã§a va?",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Oui",
@@ -53,7 +53,7 @@
             },
             "2": {
                 "@class": "DialogueState",
-                "text": "A bientôt!",
+                "text": "A bientÃ´t!",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Au revoir",
@@ -85,7 +85,7 @@
             },
             "4": {
                 "@class": "DialogueState",
-                "text": "Ça va mieux?",
+                "text": "Ã‡a va mieux?",
                 "transitions": [{
                     "@class": "DialogueTransition",
                     "actionText": "Oui",

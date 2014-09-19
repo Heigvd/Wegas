@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets">
@@ -18,18 +18,16 @@
                 <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
             </ui:repeat>
 
-            <!--<meta name="google-translate-customization" content="gameController.currentGameModel.getProperty('googleTranslateId')" />-->
-
         </ui:define>
 
         <ui:define name="body">
-            
+
             <!-- Client script (game model specific) -->
             <ui:repeat rendered="#{gameController.currentGameModel.properties.clientScriptUri != ''}"
                        var="o" value="#{gameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
                 <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
             </ui:repeat>
-            
+
             <script type="text/javascript">
                 YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
                     var app = new Y.Wegas.App({
@@ -136,7 +134,6 @@
                     app.render();                                               // Render app
                 });
             </script>
-
 
         </ui:define>
 

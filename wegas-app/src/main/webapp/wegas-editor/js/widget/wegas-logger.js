@@ -43,10 +43,10 @@ YUI.add('wegas-logger', function(Y) {
                 plugins: [Y.Plugin.ConsoleFilters],
                 width: '100%',
                 style: 'block'                                                  // 'inline'
-                        //height: '300px',
-                        //height: '98%',
-                        //newestOnTop: false,
-                        //logLevel :'log'
+                    //height: '300px',
+                    //height: '98%',
+                    //newestOnTop: false,
+                    //logLevel :'log'
             }).render(node);
         }
     });

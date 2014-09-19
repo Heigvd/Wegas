@@ -12,13 +12,15 @@
  */
 YUI.add('wegas-helper', function(Y) {
     "use strict";
+
+    var Wegas = Y.namespace("Wegas"), Helper;
+
     /**
      * @name Y.Wegas.Helper
      * @class
      * @constructor
      */
-
-    var Helper = {
+    Helper = {
         /**
          * Generate ID an unique id based on current time.
          * @function
@@ -71,6 +73,10 @@ YUI.add('wegas-helper', function(Y) {
             div.innerHTML = html;
             return div.textContent || div.innerText || "";
         },
+        trimLength: function(string, length, after) {
+            after = after || "...";
+            return string.length > length ? string.substring(0, length - after.length) + after : string.substring(0, length);
+        },
         /**
          * Format a date, using provided format string.
          *
@@ -122,7 +128,7 @@ YUI.add('wegas-helper', function(Y) {
          * @argument {Number} timestamp
          * @return {String} The formatted time
          */
-        smartDate: function(timestamp) {
+        smartDate: function(timestamp, prefix) {
             var date = new Date(timestamp),
                 now = new Date(),
                 diffN = now.getTime() - timestamp,
@@ -142,13 +148,12 @@ YUI.add('wegas-helper', function(Y) {
                 return  Math.round(diffN / oneMinute) + " minutes ago";
             } else if (diffN < oneDay
                 && now.getDay() === date.getDay()) {                            // Today
-                return Helper.formatDate(timestamp, "%H:%i");
+                return (prefix ? "at " : "") + Helper.formatDate(timestamp, "%H:%i");
             } else if (date.getYear() === now.getYear()) {                      // This year
-                return Helper.formatDate(timestamp, "%d %M");
+                return (prefix ? "the " : "") + Helper.formatDate(timestamp, "%d %M");
             } else {                                                             // Older
-                return Helper.formatDate(timestamp, "%d %M %Y");
+                return (prefix ? "the " : "") + Helper.formatDate(timestamp, "%d %M %Y");
             }
-
         },
         /**
          * Java hashCode implementation
@@ -218,34 +223,38 @@ YUI.add('wegas-helper', function(Y) {
             }
         }
     };
-    Y.namespace("Wegas").Helper = Helper;
-    Y.namespace("Wegas").superbind = Helper.superbind;
+    Wegas.Helper = Helper;
+    Wegas.superbind = Helper.superbind;
 
     /**
      * 
      */
-    Y.namespace("Wegas").Timer = Y.Base.create("wegas-timer", Y.Base, [], {
+    Wegas.Timer = Y.Base.create("wegas-timer", Y.Base, [], {
         start: function() {
             if (!this.handler) {
                 this.handler = Y.later(this.get("duration"), this, this.timeOut);
             }
+            return this;
         },
         reset: function() {
-            if (this.handler) {
-                this.handler.cancel();
-            }
+            this.cancel();
             this.handler = Y.later(this.get("duration"), this, this.timeOut);
+            return this;
         },
-        timeOut: function() {
-            this.handler = null;
-            this.fire("timeOut");
-        },
-        destructor: function() {
+        cancel: function() {
             if (this.handler) {
-                this.fire("timeOut");
                 this.handler.cancel();
                 this.handler = null;
             }
+            return this;
+        },
+        timeOut: function() {
+            this.cancel();
+            this.fire("timeOut");
+            return this;
+        },
+        destructor: function() {
+            this.cancel();
         }
     }, {
         ATTRS: {

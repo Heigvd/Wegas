@@ -1,5 +1,5 @@
 {
-	"label": "Actions",
+	"title": "Actions",
 	"@class": "ListDescriptor",
 	"scope": {
 		"@class": "TeamScope",
@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "CollËgues: Identifier la durÈe des t‚ches",
-					"name": "CollËgues: Identifier la durÈe des t‚ches",
-					"editorLabel": "A001 - CollËgues: Identifier durÈe t‚ches",
+					"title": "Coll√®gues: Identifier la dur√©e des t√¢ches",
+					"name": "Coll√®gues: Identifier la dur√©e des t√¢ches",
+					"label": "A001 - Coll√®gues: Identifier dur√©e t√¢ches",
 					"description": "<p>Vous organisez une petite s&eacute;ance de travail avec deux coll&egrave;gues pressentis pour participer aux groupes de travail et passez un moment &agrave; estimer la dur&eacute;e des diff&eacute;rentes t&acirc;ches n&eacute;cessaires &agrave; la r&eacute;alisation du projet.</p><p>Co&ucirc;t: 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -37,8 +37,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -49,17 +49,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Si objectifs et/ou t‚ches non spÈcifiÈs",
+									"name": "1. Si objectifs et/ou t√¢ches non sp√©cifi√©s",
 									"answer": "<p>Apr&egrave;s peu de temps de travail, vous vous rendez compte qu'il est difficile d'identifier la dur&eacute;e des t&acirc;ches si les t&acirc;ches n'ont pas encore &eacute;t&eacute; identifi&eacute;es.&nbsp;</p><p>Vous ne consommez qu'une carte temps, mais n'obtenez pas vraiment de r&eacute;sultat.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. si t‚ches identifiÈes",
+									"name": "2. si t√¢ches identifi√©es",
 									"answer": "<p>Bien qu'il soit &agrave; ce stade encore difficile d'estimer la dur&eacute;e des t&acirc;ches, vous obtenez tout de m&ecirc;me quelques informations (qui seront &agrave; pr&eacute;ciser en planification):</p><ul><li>choix et adaptation des locaux : 4 mois</li><li>recrutement et formation du personnel : 3 mois</li><li>commande et installation des &eacute;quipements : 5 mois</li><li>mise en oeuvre collaboration avec m&eacute;decins priv&eacute;s : 2 mois</li></ul>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. si dÈj‡ fait",
+									"name": "9. si d√©j√† fait",
 									"answer": "<p>Vos coll&egrave;gues vous font remarquer que la dur&eacute;e des t&acirc;ches a d&eacute;j&agrave; &eacute;t&eacute; identifi&eacute;es et qu'il n'y a rien de nouveau depuis la derni&egrave;re fois.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								}
 							]
@@ -68,9 +68,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG : partage rÈflexions",
-					"name": "DG : partage rÈflexions",
-					"editorLabel": "A005 - DG: partage rÈflexions",
+					"title": "DG : partage r√©flexions",
+					"name": "DG : partage r√©flexions",
+					"label": "A005 - DG: partage r√©flexions",
 					"description": "<p>Vous sollicitez un rendez-vous avec la DG afin de lui pr&eacute;senter l'&eacute;tat actuel de vos r&eacute;flexions et obtenir son avis.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -83,8 +83,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -95,32 +95,32 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. trop tÙt",
+									"name": "1. trop t√¥t",
 									"answer": "<p>Le secr&eacute;tariat vous informe que la direction n'est pas disponible pour vous recevoir pour le moment.</p><p>Cette derni&egrave;re vous invite &agrave; la consulter une fois que vous aurez un peu progress&eacute; dans le projet.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2.2 AprËs identification enjeux",
+									"name": "2.2 Apr√®s identification enjeux",
 									"answer": "<p>La direction valide les enjeux du projet et en fait un projet prioritaire.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2.3 aprËs A130 Èvaluation besoins",
+									"name": "2.3 apr√®s A130 √©valuation besoins",
 									"answer": "<p>La direction valide votre premi&egrave;re analyse des besoins et vous propose de la consulter &agrave; nouveau, si vous en voyez l'utilit&eacute;,&nbsp;quand vous disposerez d'une analyse d&eacute;taill&eacute;e des prestations.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. AprËs rÈponse a) ou c) ‡ A190 Analyse des prestations",
+									"name": "3. Apr√®s r√©ponse a) ou c) √† A190 Analyse des prestations",
 									"answer": "<p>La direction g&eacute;n&eacute;rale vous remercie (ainsi que le groupe) pour la proposition de prestations.</p><p>Elle valide cette proposition et vous laisse poursuivre vos travaux pour produire un mandat de projet qu'elle se r&eacute;jouit de lire.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. bis AprËs rÈponse b) ‡ A190 Analyse prestations",
+									"name": "3. bis Apr√®s r√©ponse b) √† A190 Analyse prestations",
 									"answer": "<p>La direction g&eacute;n&eacute;rale insiste pour que vous pensiez syst&eacute;matiquement &agrave; la n&eacute;cessit&eacute; de travailler avec les partenaires au bon moment.&nbsp;</p><p>Pour le reste, elle attend prioritairement que vous donniez suite &agrave; la protestation des m&eacute;decins de Belleville.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "4. AprËs rÈponse b) ‡ A190 et RÈaction ‡ protestation",
+									"name": "4. Apr√®s r√©ponse b) √† A190 et R√©action √† protestation",
 									"answer": "<p>La direction g&eacute;n&eacute;rale valide la propostion de prestations effectu&eacute;e par le groupe de travail \"Prestations\". Elle vous laisse poursuivre vos travaux pour produire un mandat de projet qu'elle se r&eacute;jouit de lire.</p><p>Elle vous rappelle de penser &agrave; syst&eacute;matiquement inclure les partenaires au bon moment.</p>"
 								},
 								{
@@ -134,9 +134,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG-PMO: DÈposer le mandat de projet",
-					"name": "DG-PMO: DÈposer le mandat de projet",
-					"editorLabel": "A007 - DG-PMO: DÈposer mandat",
+					"title": "DG-PMO: D√©poser le mandat de projet",
+					"name": "DG-PMO: D√©poser le mandat de projet",
+					"label": "A007 - DG-PMO: D√©poser mandat",
 					"description": "<p>Vous vous rendez aupr&egrave;s du PMO et de la direction g&eacute;n&eacute;rale afin de d&eacute;posez le mandat de projet.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -149,8 +149,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -161,22 +161,22 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. trop tÙt",
+									"name": "1. trop t√¥t",
 									"answer": "<p>Vous d&eacute;posez le mandat maintenant ???</p><p>Il manque trop d'informations !</p><p>Vous devez effectuer d'autres choix et actions avant de pouvoir d&eacute;poser le mandat.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. si choix partiellement rÈpondus",
+									"name": "2. si choix partiellement r√©pondus",
 									"answer": "<p>Le PMO a bien re&ccedil;u votre document. Il vous fait toutefois remarquer que celui-ci n&eacute;cessite encore quelques pr&eacute;cisions.</p><p>______________________</p><p>Remarque:</p><p>Il semble que les choix et actions que vous avez effectu&eacute;s ne permettent pas encore de remplir totalement le mandat.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. si tous les choix rÈpondus",
+									"name": "3. si tous les choix r√©pondus",
 									"answer": "<p>En ordre. Votre proposition a &eacute;t&eacute; d&eacute;pos&eacute;e.</p><p>La DG vous transmettra sa r&eacute;ponse prochainement.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. si nouveau dÈpÙt",
+									"name": "9. si nouveau d√©p√¥t",
 									"answer": "<p>Vous avez d&eacute;j&agrave; d&eacute;pos&eacute; le mandat et il semble qu'il n'y ait pas eu bien des changements depuis la derni&egrave;re fois.</p>"
 								}
 							]
@@ -185,9 +185,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "CollËgues: Identifier sommairement les t‚ches ‡ rÈaliser",
-					"name": "CollËgues: Identifier sommairement les t‚ches ‡ rÈaliser",
-					"editorLabel": "A008 - CollËgues: Identifier les t‚ches",
+					"title": "Coll√®gues: Identifier sommairement les t√¢ches √† r√©aliser",
+					"name": "Coll√®gues: Identifier sommairement les t√¢ches √† r√©aliser",
+					"label": "A008 - Coll√®gues: Identifier les t√¢ches",
 					"description": "<p>Vous provoquez un r&eacute;union avec deux coll&egrave;gues pressentis pour participer aux groupes de travail afin de sommairement identifier les activit&eacute;s n&eacute;cessaires &agrave; la r&eacute;alisation de la nouvelle structure m&eacute;dicale.</p><p>Co&ucirc;t: 3 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -200,8 +200,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -217,12 +217,12 @@
 								},
 								{
 									"@class": "Result",
-									"name": "1. aprËs Analyse besoins ou RencontrÈ DG",
+									"name": "1. apr√®s Analyse besoins ou Rencontr√© DG",
 									"answer": "<p>Evidemment qu'&agrave; ce stade du projet, il est  encore  difficile de parfaitement d&eacute;finir les t&acirc;ches. Vous avez toutefois obtenu  une premi&egrave;re id&eacute;e de ce qui devrait &ecirc;tre r&eacute;alis&eacute; :</p><ul><li>choix et adaptation des locaux</li><li>recrutement et formation du personnel</li><li>commande et installation des &eacute;quipements</li><li>mise en oeuvre collaboration avec m&eacute;decins priv&eacute;s. </li></ul><p>Ceci devra &eacute;videmment &ecirc;tre affin&eacute; en phase de planification.</p><ul></ul>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. si 2Ëme fois",
+									"name": "2. si 2√®me fois",
 									"answer": "<p>Vos coll&egrave;gues vous font rapidement remarquer qu'il n'y a rien de vraiment nouveau. La liste des t&acirc;ches obtenue pr&eacute;c&eacute;demment ne peut pas &ecirc;tre affin&eacute;e pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								}
 							]
@@ -231,9 +231,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Effectuer les analyses de dÈtails",
-					"name": "Effectuer les analyses de dÈtails",
-					"editorLabel": "A020 - Analyses de dÈtail",
+					"title": "Effectuer les analyses de d√©tails",
+					"name": "Effectuer les analyses de d√©tails",
+					"label": "A020 - Analyses de d√©tail",
 					"description": "<p>Avant de vous lancer dans les analyses de d&eacute;tails, il faut d&eacute;finir dans quel ordre vous allez les effectuer.</p><p><strong>Vous ne pouvez effectuer cette action qu'apr&egrave;s avoir r&eacute;pondu au choix \"Ordre des analyses de d&eacute;tail\" dans l'onglet \"Choix\".<br /></strong></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -246,8 +246,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -258,7 +258,7 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. si pas rÈpondu au choix",
+									"name": "1. si pas r√©pondu au choix",
 									"answer": "<p>Le chef du PMO vous demande de passer vers lui.</p><p>Il se pose la question de votre capacit&eacute; &agrave; lire une consigne ;-)</p><p>R&eacute;pondez au choix relatif &agrave; l'ordre des analyses de d&eacute;tail avant d'effectuer cette action !!</p>"
 								}
 							]
@@ -267,9 +267,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "SpÈcialistes: Effectuer les analyses de dÈtails",
-					"name": "SpÈcialistes: Effectuer les analyses de dÈtails",
-					"editorLabel": "A021 - Analyses de dÈtail - aprËs choix",
+					"title": "Sp√©cialistes: Effectuer les analyses de d√©tails",
+					"name": "Sp√©cialistes: Effectuer les analyses de d√©tails",
+					"label": "A021 - Analyses de d√©tail - apr√®s choix",
 					"description": "<p>Vous avez d&eacute;cid&eacute; d'effectuer les analyses de d&eacute;tail dans l'ordre suivant :</p><ul><li>Sp&eacute;cification des prestations</li><li>Sp&eacute;cification des infrastructures</li><li>Sp&eacute;cification de l'organisation</li><li>Sp&eacute;cification du financement</li></ul><p>La sp&eacute;cification des prestations sera r&eacute;alis&eacute;e par le groupe de travail \"Prestations\".</p><p>Mais vous avez la possibilit&eacute; de rencontrer quelques sp&eacute;cialistes pressentis pour participer aux groupes de travail infrastructure, organisation ou financement afin d'effectuer une analyse sommaire relativement aux infrastructures n&eacute;cessaires, &agrave; l'organisation et au financement.</p><p>Co&ucirc;ts:&nbsp; 3 cartes temps</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -282,8 +282,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -294,12 +294,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. trop tÙt",
+									"name": "1. trop t√¥t",
 									"answer": "<p>Vous vous rendez compte qu'il est encore difficile d'effectuer les analyses de d&eacute;tails. Il faudrait au moins conna&icirc;tre les r&eacute;sultats de l'analyse des besoins avant de se lancer dans les analyses de d&eacute;tail.</p><p>Vous ne consommez qu'une carte temps</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. AprËs A130 Analyse des besoins",
+									"name": "2. Apr√®s A130 Analyse des besoins",
 									"answer": "<p>Les analyses de d&eacute;tail ont permis d'obtenir les r&eacute;sultats suivants:</p><p>Infrastructure:</p><ul><li> l'emplacement id&eacute;al serait pr&egrave;s de la gare ferroviaire et routi&egrave;re.  Mais une premi&egrave;re analyse laisse supposer que les prix de ce type  d'emplacement pourrait &ecirc;tre &eacute;lev&eacute;.</li><li>Une surface de 1'400 m2 est le minimum n&eacute;cessaire, 1'800 seraient agr&eacute;ables.</li><li>Les locaux de l'actuelle policlinique ne sont pas adapt&eacute;s (700 m2). Il faudrait donc quitter le b&acirc;timent actuel et trouver de nouveaux locaux.</li></ul><p>Organisation:</p><ul><li> l'efficience passe par une synergie &eacute;troite avec des m&eacute;decins de ville capable d'assurer un r&ocirc;le d'expert de proximit&eacute; et de reprendre les traitements de moyenne et longue dur&eacute;e.</li></ul><p>Financement:</p><ul><li>Estimation globale des co&ucirc;ts du projet: 1&rsquo;500&rsquo;000.- &agrave; 1&rsquo;700&rsquo;000.-</li><li>Ces co&ucirc;ts comprennent une estimation de l'am&eacute;nagement de nouveaux locaux (qui sont encore &agrave; trouver).</li></ul><p>Du point de vue du budget d'exploitation:</p><ul><li>Le co&ucirc;t unitaire des prestations devrait rester stable. </li><li>Il est probable que le nombre des prestations augmente dans la nouvelle policlinique, mais il devrait diminuer &agrave; l&rsquo;h&ocirc;pital central.</li><li>On devrait ainsi avoir un transfert de budget d&rsquo;exploitation de l&rsquo;h&ocirc;pital central &agrave; la policlinique: environ 1 million, tant en charges qu&rsquo;en produits.</li></ul><p>Il faudra certainement affiner ces analyses durant la phase de planification.</p><ul></ul>"
 								},
 								{
@@ -313,9 +313,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Conjoint: Rester travailler le soir",
+					"title": "Conjoint: Rester travailler le soir",
 					"name": "Conjoint: Rester travailler le soir",
-					"editorLabel": "A030B - Conjoint: travailler le soir",
+					"label": "A030B - Conjoint: travailler le soir",
 					"description": "<p>Vous informez votre conjoint(e) que vous restez travailler quelquefois plus tard car vous avez beaucoup &agrave; faire sur un projet important.</p><p>Ceci vous permet de gagner quelques cartes temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -328,8 +328,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -340,17 +340,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1Ëre fois",
+									"name": "1√®re fois",
 									"answer": "<p>En ordre, votre conjoint a &eacute;t&eacute; averti.</p><p>Vous obtenez 3 cartes temps suppl&eacute;mentaires.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2Ëme fois",
+									"name": "2√®me fois",
 									"answer": "<p>En ordre, votre conjoint a &eacute;t&eacute; averti.</p><p>Vous obtenez 2 cartes temps suppl&eacute;mentaires.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3Ëme fois",
+									"name": "3√®me fois",
 									"answer": "<p>En ordre, votre conjoint a &eacute;t&eacute; averti.</p><p>&nbsp;</p>"
 								}
 							]
@@ -359,9 +359,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG : information stratÈgie",
-					"name": "DG : information stratÈgie",
-					"editorLabel": "A040 - Consulter DG : stratÈgie",
+					"title": "DG : information strat√©gie",
+					"name": "DG : information strat√©gie",
+					"label": "A040 - Consulter DG : strat√©gie",
 					"description": "<p>Vous allez rencontrer la direction g&eacute;n&eacute;rale de l'h&ocirc;pital afin d'obtenir des informations relatives &agrave; la strat&eacute;gie g&eacute;n&eacute;rale de d&eacute;veloppement de l'institution.<span style=\"white-space: pre;\"> </span></p><p><span style=\"white-space: pre;\">C</span>o&ucirc;t: 1 carte temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -374,8 +374,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -386,12 +386,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. rÈponse de base",
+									"name": "1. r√©ponse de base",
 									"answer": "<p>La discussion vous a permis d'obtenir les informations suivantes:</p><p>La strat&eacute;gie de l'h&ocirc;pital est bien de rester l'acteur principal de prestations de soins de la r&eacute;gion en fournissant des prestations les plus efficientes aux patients et en collaboration &eacute;troite avec le r&eacute;seau de m&eacute;decins priv&eacute;s. D'autre part, le DG souhaite d&eacute;velopper au maximum les synergies entre les prestations de soins et la recherche acad&eacute;mique men&eacute;e par les professeurs.</p><p>Vous n'avez pas pu obtenir plus que ces informations g&eacute;n&eacute;rales.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. 2Ëme fois",
+									"name": "2. 2√®me fois",
 									"answer": "<p>La DG se demande pourquoi vous revenez avec cette question qui a d&eacute;j&agrave; &eacute;t&eacute; trait&eacute;e.</p><p>La strat&eacute;gie ne change pas toutes les semaines...</p>"
 								}
 							]
@@ -413,9 +413,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG: DÈposer la proposition finale pour dÈcision par les organes compÈtents",
-					"name": "DG: DÈposer la proposition finale pour dÈcision par les organes compÈtents",
-					"editorLabel": "P005 - DG: DÈposer proposition finale pour dÈcision",
+					"title": "DG: D√©poser la proposition finale pour d√©cision par les organes comp√©tents",
+					"name": "DG: D√©poser la proposition finale pour d√©cision par les organes comp√©tents",
+					"label": "P005 - DG: D√©poser proposition finale pour d√©cision",
 					"description": "<p>Vous mettez en forme les propositions des divers groupes de travail et adressez ce document &agrave; la direction g&eacute;n&eacute;rale de l'h&ocirc;pital, qui transmettra pour d&eacute;cision au conseil de fondation, puis au ministre r&eacute;gional de la sant&eacute; et &agrave; la municipalit&eacute; de Belleville.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -428,8 +428,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -440,12 +440,12 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. trop tÙt",
+									"name": "1. trop t√¥t",
 									"answer": "<p>La direction g&eacute;n&eacute;rale vous retourne votre document, &eacute;tonn&eacute;s de voir quelque chose d'inabouti.</p><p>_______________________</p><p>Remarque: il y a d'autres choix et actions &agrave; effectuer avant de pouvoir r&eacute;diger la proposition finale.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. trop tÙt, 2Ëme fois",
+									"name": "2. trop t√¥t, 2√®me fois",
 									"answer": "<p>La direction g&eacute;n&eacute;rale vous retourne votre document. Il n'est toujours pas assez abouti.</p><p>_______________________</p><p>Remarque: il y a encore probablement quelques autres choix et actions &agrave; effectuer avant de pouvoir r&eacute;diger la proposition finale.</p>"
 								},
 								{
@@ -459,9 +459,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Responsables des GT: avis sur estimation des durÈes",
-					"name": "Responsables des GT: avis sur estimation des durÈes",
-					"editorLabel": "P010 - Resp. GT : avis sur estimations",
+					"title": "Responsables des GT: avis sur estimation des dur√©es",
+					"name": "Responsables des GT: avis sur estimation des dur√©es",
+					"label": "P010 - Resp. GT : avis sur estimations",
 					"description": "<p>Vous r&eacute;unissez les responsables des diff&eacute;rents groupes de travail (GT) pour obtenir leur avis sur l'estimation des dur&eacute;es des diff&eacute;rentes t&acirc;ches.</p><p>Ceci vous permettra d'entendre les personnes qui r&eacute;aliseront ces activit&eacute;s.</p><p>Co&ucirc;ts:<br />Frais fixes projet: 2000<br />Cartes temps: 3</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -474,8 +474,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -491,7 +491,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "9. si effectuÈ une nouvelle fois",
+									"name": "9. si effectu√© une nouvelle fois",
 									"answer": "<p>Les ressources vous r&eacute;pondent qu'elles ont d&eacute;j&agrave; pass&eacute; suffisamment de temps sur ce sujet et qu'il n'y a rien de nouveau depuis la derni&egrave;re rencontre.</p>"
 								}
 							]
@@ -500,9 +500,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Tous les acteurs: Organiser un quick off",
+					"title": "Tous les acteurs: Organiser un quick off",
 					"name": "Tous les acteurs: Organiser un quick off",
-					"editorLabel": "P085 - Tous les acteurs: kick off",
+					"label": "P085 - Tous les acteurs: kick off",
 					"description": "<p>Vous r&eacute;unissez tous les acteurs du projet afin de lancer officiellement le projet.</p><p>Ceci pourrait &ecirc;tre b&eacute;n&eacute;fique, mais cela pourrait aussi susciter des r&eacute;ticences puisque ce n'est pas (encore) l'usage au sein de l'h&ocirc;pital.</p><p>Budget temps : 2 cartes temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -515,8 +515,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -532,7 +532,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "b) 2Ëme kick off",
+									"name": "b) 2√®me kick off",
 									"answer": "<p>Le pr&eacute;sident du COPIL vous a signal&eacute; qu'il attendait surtout des avanc&eacute;es concr&egrave;tes &agrave; ce stade. Il vous remercie de ne pas effectuer de 2&egrave;me kick off.</p><p>Pourquoi pas une verr&eacute;e lors de la remise du mandat de projet &agrave; la direction g&eacute;n&eacute;rale ?</p>"
 								}
 							]
@@ -541,9 +541,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG: information sur la stratÈgie",
-					"name": "DG: information sur la stratÈgie",
-					"editorLabel": "P007 - DG : info stratÈgie",
+					"title": "DG: information sur la strat√©gie",
+					"name": "DG: information sur la strat√©gie",
+					"label": "P007 - DG : info strat√©gie",
 					"description": "<p>Vous allez rencontrer la direction g&eacute;n&eacute;rale de l'h&ocirc;pital afin d'obtenir des informations relatives &agrave; la strat&eacute;gie de d&eacute;veloppement de l'institution.<span style=\"white-space: pre;\"> </span></p><p>Co&ucirc;ts : 1 carte temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -556,8 +556,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -568,17 +568,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. rÈponse de base",
+									"name": "1. r√©ponse de base",
 									"answer": "<p>En pr&eacute;ambule, la direction trouve que ce sont plut&ocirc;t des questions que vous auriez d&ucirc; poser en phase d'avant-projet.</p><p>Mais la discussion vous permet d'obtenir certaines informations. La strat&eacute;gie de l'h&ocirc;pital reste de devenir l'acteur principal de prestations de soins de la r&eacute;gion en fournissant des prestations plus efficientes aux patients et en collaboration &eacute;troite avec le r&eacute;seau de m&eacute;decins priv&eacute;s. D'autre part, le DG souhaite d&eacute;velopper au maximum les synergies entre les prestations de soins et la recherche acad&eacute;mique men&eacute;e par les professeurs.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Si dÈj‡ effectuÈ en avant-projet",
+									"name": "2. Si d√©j√† effectu√© en avant-projet",
 									"answer": "<p>Vous &ecirc;tes d&eacute;j&agrave; venu en parler lors de l'avant-projet. Il n'y a rien de vraiment nouveau depuis.</p><p>Nous ne red&eacute;finissons pas la strat&eacute;gie chaque mois.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. 2Ëme fois",
+									"name": "9. 2√®me fois",
 									"answer": "<p>La DG se demande pourquoi vous revenez avec cette question qui a d&eacute;j&agrave; &eacute;t&eacute; trait&eacute;e.</p><p>La strat&eacute;gie ne change pas toutes les semaines !</p>"
 								}
 							]
@@ -587,9 +587,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Responsables des GT: coordination opÈrations",
-					"name": "Responsables des GT: coordination opÈrations",
-					"editorLabel": "P050 - Resp. GT: coordination opÈrations",
+					"title": "Responsables des GT: coordination op√©rations",
+					"name": "Responsables des GT: coordination op√©rations",
+					"label": "P050 - Resp. GT: coordination op√©rations",
 					"description": "<p>En fonction de l'avancement des travaux, vous r&eacute;unissez les responsables de groupe de travail (GT) afin de coordoner les op&eacute;rations et &eacute;changer sur l'avancement des diverses op&eacute;rations.</p><p>Co&ucirc;ts : 1 carte temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -602,8 +602,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -614,37 +614,37 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. trop tÙt",
+									"name": "1. trop t√¥t",
 									"answer": "<p>Les responsables de groupe estiment que la r&eacute;union est pr&eacute;matur&eacute;e.</p><p>Quelles sont les d&eacute;cisions, questions ou faits nouveaux qui devraient &ecirc;tre analys&eacute;s en commun ?</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2a). AprËs choix prestations",
+									"name": "2a). Apr√®s choix prestations",
 									"answer": "<p>Vous avez pu transmettre les informations concernant l'organisation des prestations.</p><p>Les responsables des groupes de travail appr&eacute;cient de s'accorder sur la fa&ccedil;on de prendre en compte les nouveaux &eacute;l&eacute;ments du projet.</p><p>La qualit&eacute; du projet est globalement am&eacute;lior&eacute;e.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2b). AprËs Copil prestations",
+									"name": "2b). Apr√®s Copil prestations",
 									"answer": "<p>Vous avez pu transmettre les d&eacute;cisions du Copil concernant l'organisation des prestations.</p><p>Les responsables des groupes de travail appr&eacute;cient de s'accorder sur la fa&ccedil;on de prendre en compte les nouveaux &eacute;l&eacute;ments du projet.</p><p>La qualit&eacute; du projet est globalement am&eacute;lior&eacute;e.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3a). AprËs choix locaux",
+									"name": "3a). Apr√®s choix locaux",
 									"answer": "<p>Vous avez pu transmettre les informations concernant le choix des locaux.</p><p>Les responsables des groupes de travail appr&eacute;cient la mani&egrave;re dont vous les tenez au courant des d&eacute;cisions prises.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3b). AprËs Copil locaux",
+									"name": "3b). Apr√®s Copil locaux",
 									"answer": "<p>Vous avez pu transmettre les d&eacute;cisions du Copil concernant le choix des locaux.</p><p>Les responsables des groupes de travail appr&eacute;cient la mani&egrave;re dont vous les tenez au courant des d&eacute;cisions prises.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "4b). AprËs variantes amÈnagements et inauguration",
+									"name": "4b). Apr√®s variantes am√©nagements et inauguration",
 									"answer": "<p>Vous avez pu transmettre les d&eacute;cisions concernant les variantes choisies pour l'am&eacute;nagement des locaux et l'inauguration.</p><p>Ceci permettra aux responsables des groupes de travail d'en tenir compte dans leur planification du travail.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "6. AprËs P005 DÈposer proposition 5. au bon moment",
+									"name": "6. Apr√®s P005 D√©poser proposition 5. au bon moment",
 									"answer": "<p>Vous avez pu communiquer l'information concernant l'acceptation du projet par la direction.</p><p>Et &ccedil;a a aussi &eacute;t&eacute; l'occasion d'organiser un petit ap&eacute;ritif pour f&ecirc;ter ceci !</p>"
 								},
 								{
@@ -658,9 +658,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Groupes travail: heures supplÈmentaires",
-					"name": "Groupes travail: heures supplÈmentaires",
-					"editorLabel": "P080 - GT: Faire des heures supplÈmentaires",
+					"title": "Groupes travail: heures suppl√©mentaires",
+					"name": "Groupes travail: heures suppl√©mentaires",
+					"label": "P080 - GT: Faire des heures suppl√©mentaires",
 					"description": "<p>Vous demandez aux diff&eacute;rents acteurs impliqu&eacute;s dans le projet (en interne) de faire des heures suppl&eacute;mentaires. Le pr&eacute;sident du COPIL vous outient dans cette d&eacute;marche.</p><p>Ceci vous permettra d'obtenir quelques cartes temps suppl&eacute;mentaires.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -673,8 +673,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -700,7 +700,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "4Ë fois",
+									"name": "4√® fois",
 									"answer": "<p>impossible ! vous vous mettez trop de monde &agrave; dos.</p><p>La direction g&eacute;n&eacute;rale a mis son veto.</p>"
 								}
 							]
@@ -709,9 +709,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "COPIL:  Organisation des prestations",
+					"title": "COPIL:  Organisation des prestations",
 					"name": "COPIL:  Organisation des prestations",
-					"editorLabel": "P091 - COPIL \"Prestations\"",
+					"label": "P091 - COPIL \"Prestations\"",
 					"description": "<p>Vous pr&eacute;sentez au COPIL l'&eacute;tat actuel de vos r&eacute;flexions concernant l'<strong>organisation des prestations</strong> &agrave; offrir par la nouvelle policlinique.</p><p>Ceci vous permettra de faire valider les principales d&eacute;cisions.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -724,8 +724,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -736,7 +736,7 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1a) trop tÙt pour prestations",
+									"name": "1a) trop t√¥t pour prestations",
 									"answer": "<p>Le pr&eacute;sident du COPIL pr&eacute;f&egrave;re attendre avant d'organiser une s&eacute;ance du COPIL relativement &agrave; l'organisation des prestations.</p><p>Convoquez un COPIL lorsque des avancements plus significatifs auront &eacute;t&eacute; effectu&eacute;s.</p><p>Vous ne consommez qu'une carte temps.</p><p>&nbsp;</p>"
 								},
 								{
@@ -746,7 +746,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "3) si demande sÈance supplÈmentaire",
+									"name": "3) si demande s√©ance suppl√©mentaire",
 									"answer": "<p>Il a &eacute;t&eacute; d&eacute;cid&eacute; qu'il n'&eacute;tait pas n&eacute;cessaire d'effectuer une s&eacute;ance suppl&eacute;mentaire. Le COPIL pr&eacute;f&egrave;re que vous organisiez une s&eacute;ance si il y a vraiment de nouveaux &eacute;l&eacute;ments &agrave; discuter.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								}
 							]
@@ -755,9 +755,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "COPIL:  Locaux",
+					"title": "COPIL:  Locaux",
 					"name": "COPIL:  Locaux",
-					"editorLabel": "P092 - COPIL \"Locaux\"",
+					"label": "P092 - COPIL \"Locaux\"",
 					"description": "<p>Vous pr&eacute;sentez au COPIL l'&eacute;tat actuel de vos r&eacute;flexions concernant les <strong>locaux</strong>.</p><p>Ceci vous permettra de faire valider les principales d&eacute;cisions.</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -770,8 +770,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -782,7 +782,7 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) trop tÙt",
+									"name": "1) trop t√¥t",
 									"answer": "<p>Le pr&eacute;sident du COPIL pr&eacute;f&egrave;re attendre avant d'organiser une s&eacute;ance relative aux locaux.</p><p>Il vous propose de convoquer un COPIL lorsque de vraies d&eacute;cisions concernant les locaux seront &agrave; prendre.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
@@ -802,7 +802,7 @@
 								},
 								{
 									"@class": "Result",
-									"name": "3) si nouvelle prÈsentation",
+									"name": "3) si nouvelle pr√©sentation",
 									"answer": "<p>Le COPIL trouve qu'il n'y a pas vraiment eu du nouveau concernant les locaux.</p><p>Il vous remercie de convoquer le COPIL lorsqu'il y a de vraies nouvelles d&eacute;cisions &agrave; prendre.</p>"
 								}
 							]
@@ -811,9 +811,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "COPIL: SynthËse des travaux",
-					"name": "COPIL: SynthËse des travaux",
-					"editorLabel": "P093 - COPIL \"Final\"",
+					"title": "COPIL: Synth√®se des travaux",
+					"name": "COPIL: Synth√®se des travaux",
+					"label": "P093 - COPIL \"Final\"",
 					"description": "<p>Vous pr&eacute;sentez au COPIL la synth&egrave;se des travaux (fonctionnement futur, finances, RH, &eacute;quipements, etc.).</p><p>Co&ucirc;t : 2 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -826,8 +826,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -838,17 +838,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1) trop tÙt pour financement",
+									"name": "1) trop t√¥t pour financement",
 									"answer": "<p>Le pr&eacute;sident du COPIL vous propose de remettre &agrave; plus tard cette s&eacute;ance de COPIL.</p><p>Il souhaite que vous ayez pris position sur plus de points&nbsp; avant de r&eacute;unir le COPIL final.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2) PrÈsentation financement",
+									"name": "2) Pr√©sentation financement",
 									"answer": "<p>La s&eacute;ance avec le COPIL a permis de passer en revue l'ensemble des actions de la phase de planification.&nbsp;</p><p>Le proc&egrave;s-verbal de la s&eacute;ance sera envoy&eacute; par mail.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3) si demande sÈance supplÈmentaire",
+									"name": "3) si demande s√©ance suppl√©mentaire",
 									"answer": "<p>Il avait &eacute;t&eacute; d&eacute;cid&eacute; qu'il n&eacute;tait pas n&eacute;cessaire d'effectuer une s&eacute;ance suppl&eacute;mentaire.</p>"
 								}
 							]
@@ -870,9 +870,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"1. NÈgocier sous-traitance\"",
-					"name": "Analyser qualitÈ \"1. NÈgocier sous-traitance\"",
-					"editorLabel": "01 - R001 - An. qualitÈ \"1. NÈgocier sous-traitance\"",
+					"title": "Analyser qualit√© \"1. N√©gocier sous-traitance\"",
+					"name": "Analyser qualit√© \"1. N√©gocier sous-traitance\"",
+					"label": "01 - R001 - An. qualit√© \"1. N√©gocier sous-traitance\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"N&eacute;gocier sous-traitance\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -885,8 +885,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -897,17 +897,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 100%)",
+									"name": "2. Durant t√¢che (entre 0 et 100%)",
 									"answer": "<p>L'analyse de qualit&eacute; a montr&eacute; que le travail semble actuellement se d&eacute;rouler correctement.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5. 2Ëme fois",
+									"name": "5. 2√®me fois",
 									"answer": "<p>Apr&egrave;s une demi-journ&eacute;e, il resssort qu'il n'y a rien de vraiment nouveau depuis la derni&egrave;re fois.</p>"
 								}
 							]
@@ -916,9 +916,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"2. Choisir et commander Èquipements\"",
-					"name": "Analyser qualitÈ \"2. Choisir et commander Èquipements\"",
-					"editorLabel": "02 - R002B - An. qualitÈ \"2. Choisir et commander Èquipements\"",
+					"title": "Analyser qualit√© \"2. Choisir et commander √©quipements\"",
+					"name": "Analyser qualit√© \"2. Choisir et commander √©quipements\"",
+					"label": "02 - R002B - An. qualit√© \"2. Choisir et commander √©quipements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Choisir et commander &eacute;quipements\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -931,8 +931,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -943,17 +943,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 100%)",
+									"name": "2. Durant t√¢che (entre 0 et 100%)",
 									"answer": "<p>Lors de la revue de qualit&eacute;, une erreur importante a &eacute;t&eacute; d&eacute;couverte. Un des &eacute;quipements choisi par une partie de l'&eacute;quipe n'&eacute;tait pas compatible avec un syst&egrave;me choisi par l'autre partie.</p><p>Sans analyse de qualit&eacute;, cette erreur n'aurait pas &eacute;t&eacute; d&eacute;couverte. Elle serait apparue lors de l'installation des &eacute;quipements. Le probl&egrave;me aurait &eacute;t&eacute; alors bien plus difficile &agrave; corriger.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5. 2Ëme fois",
+									"name": "5. 2√®me fois",
 									"answer": "<p>Apr&egrave;s une demi-journ&eacute;e, il resssort qu'il n'y a rien de vraiment nouveau depuis la derni&egrave;re fois.</p>"
 								},
 								{
@@ -967,9 +967,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"3. AmÈnager locaux\"",
-					"name": "Analyser qualitÈ \"3. AmÈnager locaux\"",
-					"editorLabel": "03 - R003B - An. qualitÈ \"3. AmÈnager locaux\"",
+					"title": "Analyser qualit√© \"3. Am√©nager locaux\"",
+					"name": "Analyser qualit√© \"3. Am√©nager locaux\"",
+					"label": "03 - R003B - An. qualit√© \"3. Am√©nager locaux\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'am&eacute;nagement des locaux et  analysez le travail effectu&eacute;. Vous v&eacute;rifiez que l'am&eacute;nagement des locaux  coresponde bien aux exigence et &agrave; la qualit&eacute; n&eacute;cessaire au centre  m&eacute;dical.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -982,8 +982,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -994,37 +994,37 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "01. Avant dÈbut t‚che",
+									"name": "01. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "02. Durant t‚che (entre 0 et 50%) 1Ëre fois ",
+									"name": "02. Durant t√¢che (entre 0 et 50%) 1√®re fois ",
 									"answer": "<p>La revue de qualit&eacute; montre que globalement les travaux avancent bien. Toutefois, apr&egrave;s quelques discussions, la partie &laquo;&nbsp;r&eacute;fection &eacute;lectrique&nbsp;&raquo; a &eacute;t&eacute; analys&eacute;e plus en d&eacute;tail. Il en est ressorti que l&rsquo;ancienne installation n&rsquo;est pas en autant bon &eacute;tat que ce qu&rsquo;on pouvait imaginer. Ceci implique quelques modifications dans le travail des installateurs &eacute;lectriciens. Cette modification augmente d&rsquo;environ 5'000.- les frais fixes de l&rsquo;am&eacute;nagement des locaux.</p><p class=\"MsoNormal\">Comme le probl&egrave;me a &eacute;t&eacute; d&eacute;couvert assez vite (gr&acirc;ce &agrave; l&rsquo;analyse de qualit&eacute;), il est possible de le r&eacute;soudre sans modifier la dur&eacute;e de la t&acirc;che.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "03. Durant t‚che (entre 0 et 50%) 2Ëme fois ",
+									"name": "03. Durant t√¢che (entre 0 et 50%) 2√®me fois ",
 									"answer": "<p>Apr&egrave;s un tour des locaux et une analyse du travail effectu&eacute;, les  repr&eacute;sentants des diff&eacute;rents corps de m&eacute;tiers se sont exprim&eacute;s. Une  discussion g&eacute;n&eacute;rale a suscit&eacute; diverses questions.</p><p>En synth&egrave;se, tout le monde est d'accord que pour le moment le travail  r&eacute;alis&eacute; pour l'am&eacute;nagement des locaux semble &ecirc;tre de bonne qualit&eacute;.</p><p>Mais le travail n'en est pas encore &agrave; la moiti&eacute;...</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "05. Durant t‚che (entre 50 et 100%) 1Ëre fois ",
+									"name": "05. Durant t√¢che (entre 50 et 100%) 1√®re fois ",
 									"answer": "<p>Suite &agrave; la visite des locaux et &agrave; l'inspection de la qualit&eacute; des am&eacute;nagements, un probl&egrave;me est ressorti.</p><p>Le travail r&eacute;alis&eacute; par les menuisiers est de bonne qualit&eacute;, mais posera un probl&egrave;me aux &eacute;lectriciens. Afin que ceux-ci puissent effectuer certaines installations relatives &agrave; l'&eacute;clairage, il est n&eacute;cessaire d'effectuer quelques modifications de menuiserie.</p><p>Ceci sera fait d&egrave;s que possible et ralentira un peu l'avancement des travaux durant la prochaine p&eacute;riode.</p><p>Cette correction permet d'augmenter la qualit&eacute; de l'am&eacute;nagement des locaux.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "06. Durant t‚che (entre 50 et 100%) 2Ëme fois",
+									"name": "06. Durant t√¢che (entre 50 et 100%) 2√®me fois",
 									"answer": "<p>Le probl&egrave;me entre les menuisiers et les &eacute;lectriciens a pu &ecirc;tre r&eacute;gl&eacute; et aucun autre probl&egrave;me n'a &eacute;t&eacute; rencontr&eacute;.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "10. AprËs fin des travaux - si pas de revue qualitÈ",
+									"name": "10. Apr√®s fin des travaux - si pas de revue qualit√©",
 									"answer": "<p>L'am&eacute;nagement des locaux est termin&eacute;.</p><p>La visite des locaux termin&eacute;s montre qu'il existe tout un ensemble de probl&egrave;me de qualit&eacute;. Aucune revue de qualit&eacute; n'a &eacute;t&eacute; faite durant les travaux et ces probl&egrave;mes n'ont donc pas &eacute;t&eacute; d&eacute;couvert avant. Il est maintenant n&eacute;cessaire de les corriger. Il ne sagit pas de d&eacute;faut cach&eacute;s, mais de non compr&eacute;hension entre les attentes du ma&icirc;tre d'ouvrage et du ma&icirc;tre d'oeuvre.</p><p>Vous devez faire appel aux ma&icirc;tres d'&eacute;tat pour un montant de 10'000.-</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "11. aprËs travaux si revues effectuÈes",
+									"name": "11. apr√®s travaux si revues effectu√©es",
 									"answer": "<p>La visite des locaux termin&eacute;s confirme la bonne qualit&eacute; du travail.</p>"
 								}
 							]
@@ -1033,9 +1033,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"4. Installation Èquipements\"",
-					"name": "Analyser qualitÈ \"4. Installation Èquipements\"",
-					"editorLabel": "04 - R004B - Analyser qualitÈ \"4. Installation Èquipements\"",
+					"title": "Analyser qualit√© \"4. Installation √©quipements\"",
+					"name": "Analyser qualit√© \"4. Installation √©quipements\"",
+					"label": "04 - R004B - Analyser qualit√© \"4. Installation √©quipements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'installation des &eacute;quipements et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1048,8 +1048,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1060,27 +1060,27 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 50%)",
+									"name": "2. Durant t√¢che (entre 0 et 50%)",
 									"answer": "<p>L'analyse a permis de d&eacute;couvrir une petite erreur.</p><p>L'installation d'un appareil &eacute;tait en train d'&ecirc;tre install&eacute; quelques centim&egrave;tres trop pr&egrave;s d'un mur, ce qui n'aurait pas laiss&eacute; assez de place pour l'installation d'un autre appareil (entre le premier et le mur).</p><p>Ce point a &eacute;t&eacute; corrig&eacute; sur le moment.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. 2Ëme fois (entre 0 et 50%)",
+									"name": "3. 2√®me fois (entre 0 et 50%)",
 									"answer": "<p>Apr&egrave;s analyse, tout semble se passer pour le mieux et, pour le moment, aucun probl&egrave;me de qualit&eacute; n'est per&ccedil;u sur cette activit&eacute;.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "7. Durant t‚che (entre 50 et 100%)",
+									"name": "7. Durant t√¢che (entre 50 et 100%)",
 									"answer": "<p>L'analyse a permis de d&eacute;couvrir quelques petites modifications de d&eacute;tails qui pouvaient apporter une meilleure ergonomie globale.</p><p>La qualit&eacute; de l'installation en est augment&eacute;e.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "8. 2Ëme fois (entre 50 et 100%)",
+									"name": "8. 2√®me fois (entre 50 et 100%)",
 									"answer": "<p>Apr&egrave;s analyse, tout semble se passer pour le mieux et aucun probl&egrave;me de qualit&eacute; n'est per&ccedil;u sur cette activit&eacute;.</p>"
 								}
 							]
@@ -1089,9 +1089,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"5. Tester Èquipements\"",
-					"name": "Analyser qualitÈ \"5. Tester Èquipements\"",
-					"editorLabel": "05 - R005 - An. qualitÈ \"5. Tester Èquipements\"",
+					"title": "Analyser qualit√© \"5. Tester √©quipements\"",
+					"name": "Analyser qualit√© \"5. Tester √©quipements\"",
+					"label": "05 - R005 - An. qualit√© \"5. Tester √©quipements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Tester &eacute;quipements\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.</p><p>Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1104,8 +1104,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1116,17 +1116,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 100%)",
+									"name": "2. Durant t√¢che (entre 0 et 100%)",
 									"answer": "<p>L'analyse de qualit&eacute; a montr&eacute; que le travail r&eacute;alis&eacute; lors des tests g&eacute;n&eacute;raux des &eacute;quipements est d'excellente qualit&eacute;.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5. 2Ëme fois",
+									"name": "5. 2√®me fois",
 									"answer": "<p>Tout semble en ordre et l'analyse de qualit&eacute; montre que les tests des &eacute;quipements se d&eacute;roulent de mani&egrave;re ad&eacute;quate.</p>"
 								}
 							]
@@ -1135,9 +1135,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"6. Recruter collaborateurs\"",
-					"name": "Analyser qualitÈ \"6. Recruter collaborateurs\"",
-					"editorLabel": "06 - R006 - An. qualitÈ \"6. Recruter collaborateurs\"",
+					"title": "Analyser qualit√© \"6. Recruter collaborateurs\"",
+					"name": "Analyser qualit√© \"6. Recruter collaborateurs\"",
+					"label": "06 - R006 - An. qualit√© \"6. Recruter collaborateurs\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Recruter collaborateurs\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1150,8 +1150,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1162,17 +1162,17 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 100%)",
+									"name": "2. Durant t√¢che (entre 0 et 100%)",
 									"answer": "<p>Le recrutement semble actuellement se d&eacute;rouler correctement.</p><p>Il a toutefois &eacute;t&eacute; n&eacute;cessaire de pr&eacute;ciser un point relatif au processus de s&eacute;lection afin d'harmoniser la d&eacute;marche de recrutement.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5. 2Ëme fois",
+									"name": "5. 2√®me fois",
 									"answer": "<p>Apr&egrave;s une demi-journ&eacute;e, il resssort qu'il n'y a rien de vraiment nouveau depuis la derni&egrave;re fois.</p>"
 								}
 							]
@@ -1181,9 +1181,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"7. IntÈgrer et former collaborateurs\"",
-					"name": "Analyser qualitÈ \"7. IntÈgrer et former collaborateurs\"",
-					"editorLabel": "07 - R007B - An. qualitÈ \"7. IntÈgrer et former collaborateurs\"",
+					"title": "Analyser qualit√© \"7. Int√©grer et former collaborateurs\"",
+					"name": "Analyser qualit√© \"7. Int√©grer et former collaborateurs\"",
+					"label": "07 - R007B - An. qualit√© \"7. Int√©grer et former collaborateurs\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Int&eacute;grer et former collaborateurs\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1196,8 +1196,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1208,22 +1208,22 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 100%)",
+									"name": "2. Durant t√¢che (entre 0 et 100%)",
 									"answer": "<p>Lors de la revue de qualit&eacute;, il est ressorti que l'int&eacute;gration des collaborateurs se passait bien sauf pour les collaborateurs administratifs. En effet, ceux-ci se sentent actuellement peu int&eacute;gr&eacute;s au reste de l'organisation.</p><p>Diff&eacute;rentes mesures ont &eacute;t&eacute; prises entre les responsables des d&eacute;partements afin d'essayer de r&eacute;gler ce probl&egrave;me.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. 2Ëme fois",
+									"name": "3. 2√®me fois",
 									"answer": "<p>Les mesures prisent relativement &agrave; l'int&eacute;gration des collaborateurs administratifs portent leurs fruits et les difficult&eacute;s semblent se r&eacute;soudre.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5. 3Ëme fois",
+									"name": "5. 3√®me fois",
 									"answer": "<p>En synth&egrave;se, tout se passe bien pour le moment.</p>"
 								}
 							]
@@ -1232,9 +1232,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyser qualitÈ \"8. PrÈparer l'inauguration\"",
-					"name": "Analyser qualitÈ \"8. PrÈparer l'inauguration\"",
-					"editorLabel": "08 - R008 - An. qualitÈ \"8. PrÈparer l'inauguration\"",
+					"title": "Analyser qualit√© \"8. Pr√©parer l'inauguration\"",
+					"name": "Analyser qualit√© \"8. Pr√©parer l'inauguration\"",
+					"label": "08 - R008 - An. qualit√© \"8. Pr√©parer l'inauguration\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Pr&eacute;parer l'inauguration\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, v&eacute;rifier que le travail effectu&eacute; corresponde bien aux objectifs fix&eacute;s.<br />Co&ucirc;t:<span>&nbsp;</span><br />2 cartes temps<br />Frais fixes de la t&acirc;che: 1000</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1247,8 +1247,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1259,27 +1259,27 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "1. Avant dÈbut t‚che",
+									"name": "1. Avant d√©but t√¢che",
 									"answer": "<p>Hum, cette activit&eacute; n'a pas encore d&eacute;but&eacute; et il est donc difficile d'analyser la qualit&eacute; du travail effectu&eacute; pour le moment.</p><p>Vous ne consommez qu'une carte temps.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "2. Durant t‚che (entre 0 et 100%)",
+									"name": "2. Durant t√¢che (entre 0 et 100%)",
 									"answer": "<p>Lors de la revue de qualit&eacute;, il a &eacute;t&eacute; relev&eacute; que le flyer d'invitation &agrave; l'inauguration pourrait &ecirc;tre mal interp&eacute;t&eacute;, du type \"on esp&egrave;re qu'il y aura plus d'accidents\".</p><p>Suite &agrave; cette discussion, il a &eacute;t&eacute; d&eacute;cid&eacute; de modifier le design et une partie du texte des flyers d'invitation &agrave; l'inauguration. Toute l'&eacute;quipe est d'accord que cette remise en question a probablement &eacute;vit&eacute; un probl&egrave;me de communication entre la future policlinique et la population.</p><p>&nbsp;</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "3. 2Ëme fois",
+									"name": "3. 2√®me fois",
 									"answer": "<p>La nouvelle proposition faite par le publiciste fait l'unanimit&eacute;.</p><p>La revue de qualit&eacute; confirme que tout semble se mettre en place pour une inauguration r&eacute;ussie.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "5. 3Ëme fois",
+									"name": "5. 3√®me fois",
 									"answer": "<p>Apr&egrave;s une demi-journ&eacute;e, il resssort qu'il n'y a rien de vraiment nouveau depuis la derni&egrave;re fois.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "9. Si t‚che terminÈe",
+									"name": "9. Si t√¢che termin√©e",
 									"answer": "<p>La pr&eacute;paration de l'inauguration est termin&eacute;e.</p><p>Tout semble pr&ecirc;t !</p>"
 								}
 							]
@@ -1288,9 +1288,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Partenaires: coordination",
+					"title": "Partenaires: coordination",
 					"name": "Partenaires: coordination",
-					"editorLabel": "R020B - Partenaires: coordination",
+					"label": "R020B - Partenaires: coordination",
 					"description": "<p>Organiser une r&eacute;union de coordination entre les diff&eacute;rents partenaires du projet (direction g&eacute;n&eacute;rale, municipalit&eacute;, repr&eacute;sentants de m&eacute;decins priv&eacute;s, responsables de l'am&eacute;nagement et de l'&eacute;quipement des locaux).</p><p>Apr&egrave;s pr&eacute;sentation de l'&eacute;tat g&eacute;n&eacute;ral du projet, vous ouvrez la discussion et cherchez &agrave; obtenir leur point de vue et un retour g&eacute;n&eacute;ral d'information.</p><p>Co&ucirc;ts:<br />3 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1303,8 +1303,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1315,37 +1315,37 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "01. avant \"installer Èqu.\" 1Ëre fois",
+									"name": "01. avant \"installer √©qu.\" 1√®re fois",
 									"answer": "<p>La r&eacute;union a suscit&eacute; beaucoup de discussions, parfois anim&eacute;es et passionn&eacute;es.</p><p>Plus sp&eacute;cifiquement:</p><ul><li>La municipalit&eacute; se pr&eacute;occupe beaucoup de la perception du projet par la population.</li><li>Les m&eacute;decins priv&eacute;s se demande comment int&eacute;grer cette nouvelle concurrence potentielle.</li></ul><p>La r&eacute;union a permis de r&eacute;pondre en partie &agrave; leurs questions et de diminuer leurs craintes.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "02. avant \"installer Èqu.\" 2Ëme fois",
+									"name": "02. avant \"installer √©qu.\" 2√®me fois",
 									"answer": "<p>La r&eacute;union s'est bien d&eacute;roul&eacute;e, mais il n'en ressort rien de vraiment nouveau depuis la derni&egrave;re fois.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "05. pendant \"installer Èqu.\" 1Ëre fois",
+									"name": "05. pendant \"installer √©qu.\" 1√®re fois",
 									"answer": "<p>La r&eacute;union a permis de clarifier des diff&eacute;rences de point de vue entre les m&eacute;decins priv&eacute;s, la municipalit&eacute; et la direction g&eacute;n&eacute;rale de l'h&ocirc;pital.</p><p>Apr&egrave;s une discussion anim&eacute;e, un accord semble avoir &eacute;t&eacute; trouv&eacute; (pour le moment en tout cas).</p><p>Sans cette s&eacute;ance de coordination, il est probable que des tensions entre la municipalit&eacute; et les m&eacute;decins se seraient d&eacute;velopp&eacute;es.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "06. pendant \"installer Èqu.\" 2Ëme fois",
+									"name": "06. pendant \"installer √©qu.\" 2√®me fois",
 									"answer": "<p>Les tensions de la derni&egrave;re r&eacute;union semblent avoir diminu&eacute;.</p><p>Le projet est bien accept&eacute; et per&ccedil;u par les diff&eacute;rents partenaires.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "07. pendant \"installer Èqu.\" 3Ëme fois",
+									"name": "07. pendant \"installer √©qu.\" 3√®me fois",
 									"answer": "<p>La r&eacute;union de coordination &eacute;tait plut&ocirc;t calme. Rien de vraiment nouveau depuis la derni&egrave;re fois.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "10. aprËs \"installer Èqu.\" 1Ëre fois",
+									"name": "10. apr√®s \"installer √©qu.\" 1√®re fois",
 									"answer": "<p>Lors de la s&eacute;ance, vous avez pr&eacute;sent&eacute; l'&eacute;tat du projet, entre autre concernant les &eacute;quipements m&eacute;dicaux install&eacute;s.</p><p>Suite &agrave; cette pr&eacute;sentation, un m&eacute;decin priv&eacute; a fortement r&eacute;agi. Il lui semble que les &eacute;quipements permettent de fournir des prestations allant au-del&agrave; de ce qui avait &eacute;t&eacute; pr&eacute;vu au d&eacute;part du projet.</p><p>La direction g&eacute;n&eacute;rale a fourni des compl&eacute;ments d'informations concernant les prestations qui seront fournies. Ceci a permis de revenir &agrave; un climat serein.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "11. aprËs \"installer Èqu.\" 2Ëme fois",
+									"name": "11. apr√®s \"installer √©qu.\" 2√®me fois",
 									"answer": "<p>La r&eacute;union confirme l'adh&eacute;sion au projet des diff&eacute;rentes parties prenantes.</p>"
 								}
 							]
@@ -1354,9 +1354,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe de projet: rÈunion de coordination",
-					"name": "Equipe de projet: rÈunion de coordination",
-					"editorLabel": "R030B - Equipe de projet: coordination",
+					"title": "Equipe de projet: r√©union de coordination",
+					"name": "Equipe de projet: r√©union de coordination",
+					"label": "R030B - Equipe de projet: coordination",
 					"description": "<p>Vous r&eacute;unissez les groupes de travail du projet (ou leurs repr&eacute;sentants) afin de faire le point sur les objectifs, la qualit&eacute; du travail r&eacute;alis&eacute; et les d&eacute;lais. <br />Vous terminez la r&eacute;union par la (re)d&eacute;finition du travail et des priorit&eacute;s.</p><p>Co&ucirc;t: <br />3 cartes temps</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1369,8 +1369,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "<p>Suite &agrave; la r&eacute;union, les priorit&eacute;s entre les diff&eacute;rentes activit&eacute;s ont &eacute;t&eacute; r&eacute;ajust&eacute;es. Quelques probl&egrave;mes de coordination ont &eacute;t&eacute; soulev&eacute;s, mais r&eacute;gl&eacute;s durant la s&eacute;ance.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1381,27 +1381,27 @@
 							"results": [
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 1",
+									"name": "R√©ponse de base 1",
 									"answer": "<p>Suite &agrave; la r&eacute;union, les priorit&eacute;s entre les diff&eacute;rentes activit&eacute;s ont &eacute;t&eacute; r&eacute;ajust&eacute;es. Quelques probl&egrave;mes de coordination ont &eacute;t&eacute; soulev&eacute;s, mais r&eacute;gl&eacute;s durant la s&eacute;ance.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 2",
+									"name": "R√©ponse de base 2",
 									"answer": "<p>La s&eacute;ance s'est bien d&eacute;roul&eacute;e. La coordination des activit&eacute;s n'a soulev&eacute; aucun probl&egrave;me. Par contre, il a &eacute;t&eacute; n&eacute;cessaire de red&eacute;finir les priorit&eacute;s pour les livrables partiels de quelques t&acirc;ches.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 3",
+									"name": "R√©ponse de base 3",
 									"answer": "<p>La s&eacute;ance a &eacute;t&eacute; anim&eacute;e, particuli&egrave;rement concernant la coordination des activit&eacute;s entre les t&acirc;ches. En fin de s&eacute;ance, la plupart des probl&egrave;mes sont r&eacute;gl&eacute;s.</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 4",
+									"name": "R√©ponse de base 4",
 									"answer": "<p>Les probl&egrave;mes de coordination de la derni&egrave;re s&eacute;ance ont tous &eacute;t&eacute; r&eacute;solus. D'apr&egrave;s l'&eacute;quipe: \"Tout roule !\"</p>"
 								},
 								{
 									"@class": "Result",
-									"name": "RÈponse de base 5",
+									"name": "R√©ponse de base 5",
 									"answer": "<p>Apr&egrave;s discussions et replanification, la coordination est assur&eacute;e pour la p&eacute;riode &agrave; venir.</p>"
 								}
 							]
@@ -1423,9 +1423,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "RenÈgocier son cahier des charges",
-					"name": "RenÈgocier son cahier des charges",
-					"editorLabel": "T002 renÈgocier son cahier des charges",
+					"title": "Ren√©gocier son cahier des charges",
+					"name": "Ren√©gocier son cahier des charges",
+					"label": "T002 ren√©gocier son cahier des charges",
 					"description": "<p>Si cette exp&eacute;rience vous a donn&eacute; le go&ucirc;t de poursuivre, demandez donc une entrevue avec la direction PMO pour vous profilez sur d'autres occasion, voire devenir chef de projet &agrave; plein temps.</p><p>Et pourquoi pas ren&eacute;gocier votre salaire ?</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1438,8 +1438,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1464,9 +1464,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Prendre des vacances",
+					"title": "Prendre des vacances",
 					"name": "Prendre des vacances",
-					"editorLabel": "T003 prendre des vacances",
+					"label": "T003 prendre des vacances",
 					"description": "",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1479,8 +1479,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"

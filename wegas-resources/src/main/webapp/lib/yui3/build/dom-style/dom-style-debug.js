@@ -1,5 +1,5 @@
 /*
-YUI 3.16.0 (build 76f0e08)
+YUI 3.17.2 (build 9c3c78e)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -29,16 +29,16 @@ var DOCUMENT_ELEMENT = 'documentElement',
 
     Y_DOM = Y.DOM,
 
-    TRANSFORM = 'transform',
-    TRANSFORMORIGIN = 'transformOrigin',
+    TRANSFORM,
+    TRANSFORMORIGIN,
     VENDOR_TRANSFORM = [
         'WebkitTransform',
         'MozTransform',
         'OTransform',
-        'msTransform'
+        'msTransform',
+        'transform'
     ],
 
-    re_color = /color$/i,
     re_unit = /width|height|top|left|right|bottom|margin|padding/i;
 
 Y.Array.each(VENDOR_TRANSFORM, function(val) {
@@ -160,21 +160,6 @@ if (DOCUMENT[DOCUMENT_ELEMENT][STYLE][CSS_FLOAT] !== undefined) {
     Y_DOM.CUSTOM_STYLES[FLOAT] = STYLE_FLOAT;
 }
 
-// fix opera computedStyle default color unit (convert to rgb)
-if (Y.UA.opera) {
-    Y_DOM[GET_COMPUTED_STYLE] = function(node, att) {
-        var view = node[OWNER_DOCUMENT][DEFAULT_VIEW],
-            val = view[GET_COMPUTED_STYLE](node, '')[att];
-
-        if (re_color.test(att)) {
-            val = Y.Color.toRGB(val);
-        }
-
-        return val;
-    };
-
-}
-
 // safari converts transparent to rgba(), others use "transparent"
 if (Y.UA.webkit) {
     Y_DOM[GET_COMPUTED_STYLE] = function(node, att) {
@@ -245,25 +230,27 @@ Y.DOM._getOffset = function(node) {
 
 };
 
-Y_DOM.CUSTOM_STYLES.transform = {
-    set: function(node, val, style) {
-        style[TRANSFORM] = val;
-    },
+if (TRANSFORM) {
+    Y_DOM.CUSTOM_STYLES.transform = {
+        set: function(node, val, style) {
+            style[TRANSFORM] = val;
+        },
 
-    get: function(node) {
-        return Y_DOM[GET_COMPUTED_STYLE](node, TRANSFORM);
-    }
-};
+        get: function(node) {
+            return Y_DOM[GET_COMPUTED_STYLE](node, TRANSFORM);
+        }
+    };
 
-Y_DOM.CUSTOM_STYLES.transformOrigin = {
-    set: function(node, val, style) {
-        style[TRANSFORMORIGIN] = val;
-    },
+    Y_DOM.CUSTOM_STYLES.transformOrigin = {
+        set: function(node, val, style) {
+            style[TRANSFORMORIGIN] = val;
+        },
 
-    get: function(node) {
-        return Y_DOM[GET_COMPUTED_STYLE](node, TRANSFORMORIGIN);
-    }
-};
+        get: function(node) {
+            return Y_DOM[GET_COMPUTED_STYLE](node, TRANSFORMORIGIN);
+        }
+    };
+}
 
 
-}, '3.16.0', {"requires": ["dom-base", "color-base"]});
+}, '3.17.2', {"requires": ["dom-base"]});

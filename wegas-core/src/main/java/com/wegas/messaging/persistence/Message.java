@@ -47,10 +47,15 @@ public class Message extends NamedEntity {
     @JsonView(Views.ExtendedI.class)
     private String body;
     /**
-     *
+     * real world time for sorting purpose 
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date sentTime = new Date();
+
+    /**
+     * Simulation date, for display purpose 
+     */
+    private String date;
     /**
      *
      */
@@ -111,6 +116,39 @@ public class Message extends NamedEntity {
         this.attachements = attachements;
     }
 
+
+    /**
+     *
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     */
+    public Message(String from, String subject, String body, String date) {
+        this.from = from;
+        this.subject = subject;
+        this.body = body;
+        this.date = date;
+    }
+
+    /**
+     *
+     * @param from
+     * @param subject
+     * @param body
+     * @param date
+     * @param attachements
+     */
+    public Message(String from, String subject, String body, String date, List<String> attachements) {
+        this.from = from;
+        this.subject = subject;
+        this.body = body;
+        this.date = date;
+        this.attachements = attachements;
+    }
+
+
+
     /**
      *
      * @param a
@@ -122,6 +160,7 @@ public class Message extends NamedEntity {
         this.setBody(other.getBody());
         this.setUnread(other.getUnread());
         this.setTime(other.getTime());
+        this.setDate(other.getDate());
         this.setSubject(other.getSubject());
         this.setAttachements(other.attachements);
     }
@@ -223,6 +262,22 @@ public class Message extends NamedEntity {
         this.inboxInstance = inboxInstance;
     }
 
+    /**
+     * return the date
+     * @return 
+     */
+    public String getDate() {
+        return date;
+    }
+
+    /**
+     * set the date
+     * @param date 
+     */
+    public void setDate(String date) {
+        this.date = date;
+    }
+    
     /**
      * @return the startTime
      */

@@ -13,7 +13,7 @@ YUI.add('wegas-editor-action', function(Y) {
     "use strict";
 
     var Linkwidget, Plugin = Y.Plugin, Action = Plugin.Action, Wegas = Y.Wegas,
-        CONTENTBOX = 'contentBox';
+        CONTENTBOX = "contentBox", OpenTabAction, OpenTabActionSec;
 
     /**
      *  @name Y.Plugin.ResetAction
@@ -21,10 +21,7 @@ YUI.add('wegas-editor-action', function(Y) {
      *  @class Reset the target game model
      *  @constructor
      */
-    var ResetAction = function() {
-        ResetAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(ResetAction, Action, {
+    var ResetAction = Y.Base.create("ResetAction", Action, [], {
         /** @lends Y.Plugin.ResetAction# */
         /**
          * @function
@@ -32,20 +29,18 @@ YUI.add('wegas-editor-action', function(Y) {
          */
         execute: function() {
             //if (confirm("This will restart for every player. Are you sure?")) {
-            var host = this.get("host");
-            host.showOverlay();
+            this.showOverlay();
             Wegas.Facade.Variable.sendRequest({
                 request: '/Reset/',
                 on: {
-                    success: Y.bind(host.hideOverlay, host),
-                    failure: Y.bind(host.defaultFailureHandler, host)
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
             //}
         }
     }, {
-        NS: "wegas",
-        NAME: "ResetAction"
+        NS: "reset"
     });
     Plugin.ResetAction = ResetAction;
 
@@ -55,10 +50,7 @@ YUI.add('wegas-editor-action', function(Y) {
      *  @class Reset the target game model
      *  @constructor
      */
-    var OpenTabAction = function() {
-        OpenTabAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenTabAction, Action, {
+    OpenTabAction = Y.Base.create(OpenTabAction, Action, [], {
         /** @lends Y.Plugin.OpenTabAction# */
         /**
          * @function
@@ -79,13 +71,11 @@ YUI.add('wegas-editor-action', function(Y) {
                 tab.set("selected", 2);
             }
 
-            tab.plug(Y.Plugin.Removeable);
+            tab.plug(Plugin.Removeable);
         }
     }, {
         /** @lends Y.Plugin.OpenTabAction */
-
         NS: "wegas",
-        NAME: "OpenTabAction",
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -117,36 +107,29 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Plugin.OpenTabAction = OpenTabAction;
+
     /**
      * Duplicate the plugin to allow multiple tab creation
      * @returns {undefined}
      */
-    Plugin.OpenTabActionSec = function() {
-        Plugin.OpenTabActionSec.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Plugin.OpenTabActionSec, Plugin.OpenTabAction, {}, {
+    OpenTabActionSec = Y.Base.create("OpenTabActionSec", OpenTabAction, [], {}, {
         /** @lends Y.Plugin.OpenTabAction */
         NS: "OpenTabActionSec",
-        NAME: "OpenTabActionSec",
         ATTRS: {
             selected: {
                 value: 0
             }
         }
     });
-    Plugin.OpenTabActionThi = function() {
-        Plugin.OpenTabActionThi.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Plugin.OpenTabActionThi, Plugin.OpenTabActionSec, {}, {
-        NS: "OpenTabActionThi",
-        NAME: "OpenTabActionThi"
+    Plugin.OpenTabActionSec = OpenTabActionSec;
+    Plugin.OpenTabActionThi = Y.Base.create("OpenTabActionThi", OpenTabActionSec, [], {}, {
+        NS: "OpenTabActionThi"
     });
-    Plugin.OpenTabActionFou = function() {
-        Plugin.OpenTabActionFou.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(Plugin.OpenTabActionFou, Plugin.OpenTabActionSec, {}, {
-        NS: "OpenTabActionFou",
-        NAME: "OpenTabActionFou"
+    Plugin.OpenTabActionFou = Y.Base.create("OpenTabActionFou", OpenTabActionSec, [], {}, {
+        NS: "OpenTabActionFou"
+    });
+    Plugin.OpenTabActionFiv = Y.Base.create("OpenTabActionFiv", OpenTabActionSec, [], {}, {
+        NS: "OpenTabActionFiv"
     });
 
     /**
@@ -155,14 +138,10 @@ YUI.add('wegas-editor-action', function(Y) {
      *  @class Open a game in the editor
      *  @constructor
      */
-    var OpenEntityAction = function() {
-        OpenEntityAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenEntityAction, Plugin.OpenUrlAction, {
+    var OpenEntityAction = Y.Base.create("OpenEntityAction", Plugin.OpenUrlAction, [], {
         /** @lends Y.Plugin.OpenEntityAction# */
-        _getUrl: function() {
-            var entity = this.get("entity");
-            return this.get("url").replace("{id}", entity.get("id"));
+        execute: function() {
+            this.open(Y.Lang.sub(this.get("url"), this.get("entity").toJSON()));
         }
     }, {
         NS: "OpenEntityAction",
@@ -191,61 +170,33 @@ YUI.add('wegas-editor-action', function(Y) {
      *  @class Open a game in the editor
      *  @constructor
      */
-    var OpenGameAction = function() {
-        OpenGameAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenGameAction, Plugin.OpenUrlAction, {
+    var OpenGameAction = Y.Base.create("OpenGameAction", Plugin.OpenUrlAction, [], {
         /** @lends Y.Plugin.OpenGameAction# */
-
         /**
          * @function
          * @private
          */
         execute: function() {
             var params, entity = this.get("entity");
-            //        testPlayer = function(game) {
-            //    var teams = game.get("teams"), i, ret = false;
-            //    for (i = 0; i < teams.length; i += 1) {
-            //        ret = teams[i].get("players").length > 0;
-            //        if (ret) {
-            //            break;
-            //        }
-            //    }
-            //    return ret;
-            //};
 
             if (entity instanceof Wegas.persistence.GameModel) {
                 params = "gameModelId=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Player) {
                 params = "id=" + entity.get("id");
             } else if (entity instanceof Wegas.persistence.Team) {
-                //if (entity.get("players").length < 1) {
-                //    alert("Team " + entity.get("name") + " has no player");
-                //    return;
-                //}
                 params = "teamId=" + entity.get("id");
             } else {
-                //if (entity.get("teams").length < 1) {
-                //    alert("Game " + entity.get("name") + " has no Team");
-                //    return;
-                //}
-                //else if (!testPlayer(entity)) {
-                //    alert("Game " + entity.get("name") + " has no player");
-                //    return;
-                //}
                 params = "gameId=" + entity.get("id");
             }
-            this.set("url", this.get("editorUrl") + params);
-            OpenGameAction.superclass.execute.call(this);
+            this.open(this.get("url") + params);
         }
     }, {
         /** @lends Y.Wegas.OpenGameAction */
         NS: "wegas",
-        NAME: "OpenGameAction",
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
-         *    <li>editorUrl: url of the editor page<i>default: edit.html?</i></li>
+         *    <li>url: url of the editor page<i>default: edit.html?</i></li>
          *    <li>entity: the team, game, gamemodel or player entity that will be opened</li>
          * </ul>
          *
@@ -253,7 +204,7 @@ YUI.add('wegas-editor-action', function(Y) {
          * @static
          */
         ATTRS: {
-            editorUrl: {
+            url: {
                 value: 'edit.html?'
             },
             entity: {}
@@ -267,10 +218,7 @@ YUI.add('wegas-editor-action', function(Y) {
      *  @class print the current entity
      *  @constructor
      */
-    var PrintAction = function() {
-        PrintAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(PrintAction, Plugin.OpenUrlAction, {
+    var PrintAction = Y.Base.create("PrintAction", Plugin.OpenUrlAction, [], {
         /** @lends Y.Plugin.PrintAction# */
 
         /**
@@ -285,7 +233,7 @@ YUI.add('wegas-editor-action', function(Y) {
             } else if (entity instanceof Wegas.persistence.Game) {
                 params = "gameModelId=" + entity.get("gameModelId");
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
-                params = "id=" + Y.Wegas.Facade.Game.get("currentPlayerId");
+                params = "id=" + Wegas.Facade.Game.get("currentPlayerId");
                 params += "&root=" + entity.get("name");
             } else {
                 // @ TODO ERROR
@@ -299,8 +247,7 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.PrintAction */
-        NS: "wegas",
-        NAME: "PrintAction",
+        NS: "printaction",
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -374,7 +321,6 @@ YUI.add('wegas-editor-action', function(Y) {
      */
     Wegas.OpenTabButton = Y.Base.create("button", Wegas.Button, [], {
         /** @lends Y.Wegas.OpenTabButton# */
-
         /**
          * @function
          * @private
@@ -420,16 +366,15 @@ YUI.add('wegas-editor-action', function(Y) {
          * @private
          */
         syncUI: function() {
-            var game = this.get("entity");
-            if (!game) {
-                game = Y.Wegas.Facade.Game.cache.getCurrentGame();
-            }
-            var url = Wegas.app.get("base") + "game.html?token=" + game.get("token");
+            var game = this.get("entity") || Wegas.Facade.Game.cache.getCurrentGame(),
+                url = Wegas.app.get("base") + "game.html?token=" + game.get("token");
             this.textField.setValue(url);
+        },
+        destructor: function() {
+            this.textField.destroy();
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -465,30 +410,33 @@ YUI.add('wegas-editor-action', function(Y) {
             var entity = this.get("entity"),
                 findInTeam = function(team) {
                     return Y.Array.find(team.get("players"), function(p) {
-                        return p.get("userId") === Y.Wegas.Facade.User.get("currentUserId");
+                        return p.get("userId") === Wegas.Facade.User.get("currentUserId");
                     });
                 },
                 findInGame = function(game) {
-                    return Y.Array.find(game.get("teams"), findInTeam);
+                    return game && Y.Array.find(game.get("teams"), findInTeam);
                 };
 
-            if (entity instanceof Y.Wegas.persistence.Team) { // 1st case: clicked on an team
-                if (findInTeam(entity)) {
-                    this.set("label", "Resume");
-                    this.plug(Y.Plugin.OpenGameAction);
+            if (entity instanceof Wegas.persistence.Team) { // 1st case: clicked on an team
+                if (findInTeam(Wegas.Facade.RegisteredGames.cache.findById(entity.get("id")))) {
+                    this.set("label", "Open as Player")
+                        .plug(OpenGameAction, {
+                            url: "game-play.html?"
+                        });
                     return;
-                } else if (findInGame(Y.Wegas.Facade.Game.cache.findById(entity.get("gameId")))) {
+                } else if (findInGame(Wegas.Facade.RegisteredGames.cache.findById(entity.get("gameId")))) {
                     this.set("disabled", true);
                     return;
                 }
-            } else if (findInGame(entity)) {
-                this.set("label", "Resume");
-                this.plug(Y.Plugin.OpenGameAction, {
-                    entity: this.get("entity")
-                });
+            } else if (findInGame(Wegas.Facade.RegisteredGames.cache.findById(entity.get("id")))) {
+                this.set("label", "Open as Player")
+                    .plug(OpenGameAction, {
+                        entity: entity,
+                        url: "game-play.html?"
+                    });
                 return;
             }
-            this.plug(Y.Plugin.OpenTabAction, {
+            this.plug(OpenTabAction, {
                 tabSelector: "#rightTabView",
                 emptyTab: true,
                 wchildren: [{
@@ -499,7 +447,6 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     }, {
         /** @lends Y.Wegas.Linkwidget */
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
@@ -514,4 +461,66 @@ YUI.add('wegas-editor-action', function(Y) {
         }
     });
     Wegas.JoinOrResumeButton = JoinOrResumeButton;
+
+    /**
+     *  @name Y.Plugin.LeaveGameAction
+     *  @extends Y.Plugin.Action
+     *  @class Open a game in the editor
+     *  @constructor
+     */
+    Plugin.LeaveGameAction = Y.Base.create("LeaveGameAction", Plugin.Action, [], {
+        /** @lends Y.Plugin.LeaveGameAction# */
+        /**
+         * @function
+         * @private
+         */
+        execute: function() {
+            Wegas.Panel.confirm("Are you sure you want to leave this game?", Y.bind(function() {
+                var entity = this.get("entity"),
+                    player;
+
+                this.showOverlay();
+
+                Y.Array.find(entity.get("teams"), function(t) {
+                    player = Y.Array.find(t.get("players"), function(p) {
+                        return p.get("userId") === Wegas.Facade.User.cache.get("currentUserId");
+                    });
+                    return player;
+                });
+
+                Wegas.Facade.Game.cache.deleteObject(player, {
+                    cfg: {
+                        updateCache: false
+                    },
+                    on: {
+                        success: Y.bind(function() {
+                            this.hideOverlay();
+                            Wegas.Facade.RegisteredGames.sendInitialRequest();      // Refresh the list of games
+                            Y.Widget.getByNode(".wegas-joinedgamesdatatable")
+                                .showMessage("successPopup", "Game left", 2000)  // Popup
+                                .showMessage("success", "Game left");            // toolbar
+
+                            Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
+                        }, this),
+                        failure: Y.bind(this.defaultFailureHandler, this)
+                    }
+                });
+            }, this));
+        }
+    }, {
+        /** @lends Y.Wegas.LeaveGameAction */
+        NS: "LeaveGameAction",
+        /**
+         * <p><strong>Attributes</strong></p>
+         * <ul>
+         *    <li>entity: the game entity that will be left</li>
+         * </ul>
+         *
+         * @field
+         * @static
+         */
+        ATTRS: {
+            entity: {}
+        }
+    });
 });

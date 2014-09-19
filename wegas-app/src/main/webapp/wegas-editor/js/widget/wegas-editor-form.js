@@ -12,7 +12,7 @@ YUI.add('wegas-editor-form', function(Y) {
     "use strict";
 
     var CONTENTBOX = "contentBox", inputEx = Y.inputEx, Lang = Y.Lang,
-            Wegas = Y.Wegas, Form, EditEntityForm;
+        Wegas = Y.Wegas, Form, EditEntityForm;
 
     /**
      * @name Y.Wegas.Form
@@ -100,7 +100,7 @@ YUI.add('wegas-editor-form', function(Y) {
             b.on = {
                 click: Y.bind(function(action) {                                // Push click event to the button, depending on their action field
                     if (!this.form.validate()) {
-                        this.showMessageBis("error", "Some fields are not valid");
+                        this.showMessage("error", "Some fields are not valid");
                         return;
                     }
                     this.fire(action, {
@@ -164,13 +164,11 @@ YUI.add('wegas-editor-form', function(Y) {
                 value: 1000
             },
             buttons: {
-                value: [
-                    {
+                value: [{
                         type: "Button",
                         action: "submit",
                         label: "<span class=\"wegas-icon wegas-icon-save\" ></span>Save"
-                    }
-                ]
+                    }]
             }
         }
     });
@@ -182,9 +180,9 @@ YUI.add('wegas-editor-form', function(Y) {
 
             this.on("update", function() {                                      // When the form is updated,
                 if (this.form.validate()) {                                     // display appropriate message in the toolbar
-                    this.showMessageBis("success", "Saving...");
+                    this.showMessage("success", "Saving...");
                 } else {
-                    this.showMessageBis("success", "Unable to save");
+                    this.showMessage("success", "Unable to save");
                 }
             });
             this.on("updateTimeOut", this.save);                                // 2 seconds after user has stopped updating, save changes
@@ -199,11 +197,11 @@ YUI.add('wegas-editor-form', function(Y) {
             var entity = this.get("entity");
 
             if ((Wegas.persistence.VariableDescriptor &&
-                    (entity instanceof Wegas.persistence.VariableDescriptor
-                            || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
-                    || entity instanceof Wegas.persistence.JpaAccount
-                    || entity instanceof Wegas.persistence.GameModel
-                    || entity instanceof Wegas.persistence.Game) {              // @fixme we may get extended mode for any entities, just need to check if it causes bugs
+                (entity instanceof Wegas.persistence.VariableDescriptor
+                    || entity instanceof Wegas.persistence.VariableInstance))// Those classes may not be loaded
+                || entity instanceof Wegas.persistence.JpaAccount
+                || entity instanceof Wegas.persistence.GameModel
+                || entity instanceof Wegas.persistence.Game) {                  // @fixme we may get extended mode for any entities, just need to check if it causes bugs
                 this.showOverlay();
                 this.get("dataSource").cache.getWithView(entity, "EditorExtended", {// Retrieve the entity from the source
                     on: {
@@ -216,34 +214,17 @@ YUI.add('wegas-editor-form', function(Y) {
             } else {                                                            // Otherwise,
                 this.showUpdateForm(entity);                                    // render the form directy
             }
+
+
+            // @hack allow use of FileLibrary by setting the source
+            if (entity instanceof Wegas.persistence.GameModel
+                || entity instanceof Wegas.persistence.Game) {
+                Wegas.Facade.File.set("source", "rest/GameModel/" + (entity.get("gameModelId") || entity.get("id")) + "/File/");
+            }
         },
         showUpdateForm: function(entity) {
             this.set("value", entity.toObject());                               // Set the form value of the form,
             this.set("cfg", this.get("cfg") || entity.getFormCfg());            // and then its fields
-
-            // Add entity menu items to toolbar
-            //var menuItems = entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1);
-            ////var menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: this.get("dataSource")}).slice(1), function(i) {
-            ////    return (!i.label || (i.label.indexOf("New") < 0 && i.label.indexOf("Edit") < 0));
-            ////});                                                               // Retrieve menu and remove the first item
-            //
-            //Y.Array.each(menuItems, function(i) {                               // @hack Add icons to some buttons
-            //    switch (i.label) {
-            //        case "Delete":
-            //        case "New":
-            //        case "New element":
-            //        case "Copy":
-            //        case "View":
-            //        case "Open in editor":
-            //        case "Open":
-            //        case "Edit":
-            //            i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
-            //    }
-            //});
-            //Y.soon(Y.bind(function() {
-            //    this.get("parent").get("parent").get("parent").get("parent").toolbar.add(menuItems);
-            //    this.get("parent").toolbar.add(menuItems);                          // Add menu items to the form
-            //}, this));
         },
         save: function() {
             if (!this.form.validate()) {
@@ -253,7 +234,7 @@ YUI.add('wegas-editor-form', function(Y) {
             this.get("dataSource").cache.put(this.get("value"), {
                 on: {
                     success: Y.bind(function() {
-                        this.showMessageBis("success", "All changes saved");
+                        this.showMessage("success", "All changes saved");
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
@@ -276,4 +257,37 @@ YUI.add('wegas-editor-form', function(Y) {
         }
     });
     Wegas.EditEntityForm = EditEntityForm;
+
+    /**
+     * 
+     */
+    Wegas.EditParentGameModelForm = Y.Base.create("wegas-form", EditEntityForm, [], {
+        showUpdateForm: function(entity) {
+            Y.later(100, this, function() {                                     // @hack Minor optim, since the parent tab is always unselected by default...
+                Wegas.EditParentGameModelForm.superclass.showUpdateForm.call(this, entity.get("gameModel"));// Display the game model edit form instead of the game's
+            });
+        },
+        save: function() {
+            if (!this.form.validate()) {
+                return;
+            }
+
+            Wegas.Facade.GameModel.cache.put(this.get("value"), {
+                cfg: {
+                    updateCache: false
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        this.showMessage("success", "All changes saved");
+                        this.get("entity").set("gameModelName", e.response.entity.get("name"))// @hack update the source event
+                            .set("gameModel", e.response.entity)
+                            .set("properties", e.response.entity.get("properties"));
+                        this.get("dataSource").fire("update");                  // and trigger the update event manually
+                    }, this),
+                    failure: Y.bind(this.defaultFailureHandler, this)
+                }
+            });
+        }
+    });
+
 });

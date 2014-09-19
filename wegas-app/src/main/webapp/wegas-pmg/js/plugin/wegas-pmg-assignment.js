@@ -22,12 +22,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         Wegas = Y.Wegas, Assignment;
 
     Assignment = Y.Base.create("wegas-pmg-assignment", Y.Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
-        handlers: null,
-        menu: null,
-        menuDetails: null,
-        sortable: null,
         /** @lends Y.Plugin.Assignment */
-
         /**
          * Lifecycle methods
          * @function
@@ -37,106 +32,140 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.handlers = {};
             this.sortable = [];
 
-            this.addAssignmentColumn();
+            this.get(HOST).datatable.addColumn({
+                key: 'assignments',
+                label: "Assignments",
+                formatter: this.formatAssignment,
+                allowHTML: true
+            }, this.get("columnPosition"));
 
             this.onceAfterHostEvent("render", function() {
-                this.sync();
                 this.bind();
+                this.sync();
             });
         },
         bind: function() {
-            this.handlers.update = Y.Wegas.Facade.Variable.after("update", this.sync, this);
+            var table = this.get(HOST).datatable;
 
-            this.handlers.createMenu = this.get(HOST).datatable.delegate('click', function(e) {            // fill the "add" menu on click
-                this.createMenu(e, true);
-            }, '.yui3-datatable-data .assignment .assign', this);
-            this.handlers.showDelete = this.get(HOST).datatable.delegate('hover', function(e) {
-                e.currentTarget.all(".remove").show();
-            }, function(e) {
-                e.currentTarget.all(".remove").hide();
-            }, '.tasks .task', this);
+            this.handlers.update = Wegas.Facade.Variable.after("update", this.sync, this);
 
-            this.handlers.remove = this.get(HOST).datatable.delegate('click', function(e) {
-                var node = e.target.getDOMNode().parentElement;
-                Wegas.Facade.Variable.sendRequest({
-                    request: "/ResourceDescriptor/RemoveAssignment/" + node.getAttribute("assignmentid"),
-                    cfg: {
-                        method: "DELETE"
-                    }
-                });
+            this.handlers.createMenu = table.delegate('click', this.createMenu, // fill the "add" menu on click
+                '.yui3-datatable-data .assignment .assign', this);
+
+            this.handlers.remove = table.delegate('click', function(e) {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    var node = e.target.get("parentNode").get("parentNode");
+                    Wegas.Facade.Variable.sendQueuedRequest({
+                        request: "/ResourceDescriptor/RemoveAssignment/" + node.getAttribute("assignmentid"),
+                        cfg: {
+                            method: "DELETE",
+                            updateEvent: false
+                        },
+                        on: {
+                            success: Y.bind(this.syncHost, this),
+                            failure: Y.bind(this.defaultFailureHandler, this)
+                        }
+                    });
+                    //this.destroySortables();
+                    //node.remove(true);
+                    //this.sync();
+                }, this));
             }, '.task .remove', this);
 
-            this.get("host").datatable.after("sort", this.sync, this);
+            this.handlers.moveLeft = table.delegate('click', function(e) {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    var node = e.target.get("parentNode").get("parentNode");
+                    node.swap(node.previous());
+                    this.savePosition(node);
+                }, this));
+            }, '.task .dirleft', this);
+
+            this.handlers.moveRight = table.delegate('click', function(e) {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    var node = e.target.get("parentNode").get("parentNode");
+                    node.swap(node.next());
+                    this.savePosition(node);
+                }, this));
+            }, '.task .dirright', this);
+
+            this.handlers.sort = table.after("sort", this.sync, this);
+            this.beforeHostMethod("syncUI", this.destroySortables);
+            this.afterHostMethod("syncUI", this.sync);
         },
-        /**
-         * Destructor methods.
-         * @function
-         * @private
-         */
         sync: function() {
-            Y.log("sync()", "log", "Wegas.Assignment");
-            this.addButtonsAssignment();
-            this.syncSortable();
+            this.destroySortables();
+
+            this.get("host").get("contentBox").all(".tasks").each(function(n) {
+                var sort = new Y.Sortable({
+                    container: n,
+                    nodes: '.task',
+                    opacity: '.1'
+                });
+                sort.delegate.after('drag:end', this.onDragEnd, this);
+                this.sortable.push(sort);
+            }, this);
         },
-        addAssignmentColumn: function() {
-            this.get(HOST).datatable.addColumn({
-                key: 'assignments',
-                label: "Assignments"
-            }, this.get("columnPosition"));
+        syncHost: function() {
+            this.hideOverlay();
+            Y.later(10, this.get("host"), this.get("host").syncUI);
         },
-        addButtonsAssignment: function() {
-            var cb = this.get(HOST).get(CONTENTBOX);
-            cb.all(".yui3-datatable-data tr .yui3-datatable-col-assignments").each(function(node) {
-                node.append("<div class='assignment'></div>");
-                node.one('.assignment').append("<span class='assign'></span>");
-//                node.addClass('noDescription');
-            });
+        formatAssignment: function(o) {
+            var i, taskDesc,
+                assignments = o.data.descriptor.getInstance().get("assignments"), // get assignments
+                node = ["<div class='assignment'><span class='assign'></span></div>", // "Add assignments" menu;
+                    "<div class='tasks'>"];
+            for (i = 0; i < assignments.length; i += 1) {
+                taskDesc = Wegas.Facade.Variable.cache.find("id", assignments[i].get("taskDescriptorId"));
+                node.push("<em class='task' assignmentid=", assignments[i].get("id"), ">",
+                    "<span class='label'>", taskDesc.get("index"), "</span>",
+                    "<div class='menu'><span class='dirleft'></span>",
+                    "<span class='remove'></span>",
+                    "<span class='dirright'></span></div>",
+                    "</em>");
+            }
+            node.push("</div>");
+            return node.join("");
         },
         createMenu: function(e) {
-            var i, tasks, resources, resourceDesc, resourceId;
-            resourceId = this.get(HOST).datatable.getRecord(e.target).get("id");
-            resources = Y.Wegas.Facade.Variable.cache.find("name", this.get(HOST).get('variable'));
-            for (i = 0; i < resources.get('items').length; i += 1) {
-                if (resources.get('items')[i].get('id') === resourceId) {
-                    resourceDesc = resources.get('items')[i];
-                    break;
-                }
-            }
-            if (this.menu === null) {
-                this.menu = new Y.Wegas.Menu();
-                this.menuDetails = new Y.Wegas.Menu({
+            var resourceDesc = this.get(HOST).datatable.getRecord(e.target).get("descriptor"),
+                tasks = this.getTasks(resourceDesc);
+
+            if (!this.menu) {
+                var task;
+                this.menu = new Wegas.Menu();
+                this.menuDetails = new Wegas.Menu({
                     width: "250px"
                 });
+                this.timer = new Wegas.Timer({
+                    duration: "500"
+                });
+                this.timer.on("timeOut", function() {
+                    this.menuDetails.show();
+                    this.getTaskDescription(task);
+                }, this);
 
-                this.handlers.moveMenu = this.menu.on("button:mouseenter", function(e) {           // align the menu
-                    var timer;
+                this.menu.on("button:mouseenter", function(e) {                 // align the menu
                     this.menuDetails.hide();
                     this.menuDetails.set("align", {
                         node: this.menu.get("boundingBox"),
                         points: (e.details[0].domEvent.clientX > Y.DOM.winWidth() / 2) ?
                             ["tr", "tl"] : ["tl", "tr"]
                     });
-                    timer = new Y.Wegas.Timer({
-                        duration: "500"
-                    });
-                    timer.on("timeOut", function() {
-                        this.menuDetails.show();
-                        this.getTaskDescription(e.target.get("data").assignement.taskDescriptor);
-                    }, this);
-                    timer.start();
+                    task = e.target.get("data").assignement.taskDescriptor;
+                    this.timer.reset();
                 }, this);
 
-                this.handlers.hideMenu = this.menu.on("visibleChange", function(e) {                 // When the menu is hidden, hide the details panel
+                this.menu.on("visibleChange", function(e) {                     // When the menu is hidden, hide the details panel
                     if (!e.newVal) {
                         this.menuDetails.hide();
+                        this.timer.cancel();
                     }
                 }, this);
 
-                this.handlers.assignTask = this.menu.on("button:click", this.onTaskMenuClick, this);
+                this.menu.on("button:click", this.onTaskMenuClick, this);
             }
             this.menu.destroyAll();
-            tasks = this.getTasks(resourceDesc);
-            if (!tasks || tasks.lenght <= 0) {
+            if (!tasks || tasks.length <= 0) {
                 return;
             }
             this.menu.add(tasks);
@@ -146,26 +175,23 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             //add is a boolean to determine if target is remove or add a task
             //you can only add a task which isn't already added.
             //you can only remove a task which is added.
-            var i, tasks, items, taskDesc, label, array = [], no, taskExist,
-                assignments = resourceDesc.getInstance().get("assignments"),
-                taskExistence = function(item) {
-                    return taskDesc.get("id") === item.get("taskDescriptorId");
-                };
+            var i, tasks, taskDesc, label, array = [], taskExist,
+                assignments = resourceDesc.getInstance().get("assignments");
+
             if (!this.get("taskList")) {
                 return;
             }
-            tasks = Y.Wegas.Facade.Variable.cache.find("name", this.get("taskList"));
-            items = tasks.get('items');
-            for (i = 0; i < items.length; i += 1) {
-                taskExist = false;
-                taskDesc = items[i];
-                taskExist = Y.Array.find(assignments, taskExistence);
-                if (!taskExist && taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
-                    no = taskDesc.get("index");
-                    label = (taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined");
+            tasks = Wegas.Facade.Variable.cache.find("name", this.get("taskList")).get('items');
+            for (i = 0; i < tasks.length; i += 1) {
+                taskDesc = tasks[i];
+                taskExist = Y.Array.find(assignments, function(item) {
+                    return taskDesc.get("id") === item.get("taskDescriptorId");
+                });
+                if (taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
+                    label = taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined";
                     array.push({
                         type: "Button",
-                        label: no + ". " + label,
+                        label: taskDesc.get("index") + ". " + label,
                         data: {
                             assignement: {
                                 "@class": "Assignment",
@@ -173,116 +199,100 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                             },
                             resourceDesc: resourceDesc
                         },
-                        cssClass: taskDesc.getInstance().get("properties.completeness") > 0 ? "pmg-line-completeness-started" : ""
+                        cssClass: (taskDesc.getInstance().get("properties.completeness") > 0 ? "pmg-line-completeness-started " : "")
+                            + (taskExist ? "pmg-menu-invalid" : "")
                     });
                 }
             }
             return array;
         },
         onTaskMenuClick: function(e) {
-            var data = e.target.get("data");
-            Wegas.Facade.Variable.sendRequest({
-                request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
-                cfg: {
-                    method: "POST",
-                    data: data.assignement
-                }
-            });
+            this.menuDetails.hide();
+            if (e.target.get("boundingBox").hasClass("pmg-menu-invalid")) {
+                return;
+            }
+
+            Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                var data = e.target.get("data");
+
+                this.showOverlay();
+
+                Wegas.Facade.Variable.sendQueuedRequest({
+                    request: "/ResourceDescriptor/AbstractAssign/" + data.resourceDesc.getInstance().get("id"),
+                    cfg: {
+                        method: "POST",
+                        data: data.assignement,
+                        updateEvent: false
+                    },
+                    on: {
+                        success: Y.bind(this.syncHost, this),
+                        failure: Y.bind(this.defaultFailureHandler, this)
+                    }
+                });
+            }, this));
         },
         getTaskDescription: function(taskDescriptor) {
             if (taskDescriptor.get("description")) {
                 this.descriptionToDisplay(taskDescriptor, taskDescriptor.get("description"));
                 return;
             }
-            Y.Wegas.Facade.Variable.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
-                on: Y.Wegas.superbind({
+            Wegas.Facade.Variable.cache.getWithView(taskDescriptor, "Extended", {// Retrieve the object from the server in Export view
+                on: Wegas.superbind({
                     success: function(e) {
                         taskDescriptor.set("description", e.response.entity.get("description"));
                         this.descriptionToDisplay(taskDescriptor, e.response.entity.get("description"));
                     },
-                    failure: function(e) {
+                    failure: function() {
                         this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>Error loading description</i></div>');
                     }
                 }, this)
             });
         },
         descriptionToDisplay: function(descriptor, fieldValue) {
-            var dataToDisplay, i, requirements, progress;
-            progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Progress:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "";
-            dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
-            requirements = descriptor.getInstance().get("requirements");
+            var i, requirements = descriptor.getInstance().get("requirements"),
+                progress = descriptor.getInstance().get("properties.completeness") > 0 ? '<div style="float:right;">Realised:' + descriptor.getInstance().get("properties.completeness") + '%</div>' : "",
+                dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
+
             for (i = 0; i < requirements.length; i += 1) {
                 dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
-                    + " " + Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
+                    + " " + Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
             }
             dataToDisplay = dataToDisplay + "</div>";
             this.menuDetails.get(CONTENTBOX).setHTML(dataToDisplay);
         },
-        syncSortable: function() {
-            var i, node, dt = this.get(HOST).datatable, assignments,
-                resourceDesc, resourceInstance, iResource, iAssign, taskDesc, assignementCell;
-
-            //the drag and drop feature to reorganise tasks.
-            for (i = 0; i < this.sortable.length; i += 1) {
-                this.sortable[i].destroy();
-            }
-
-            // get assignments
-            for (iResource = 0; iResource < dt.data._items.length; iResource += 1) {
-                resourceDesc = Y.Wegas.Facade.Variable.cache.find("id", dt.data._items[iResource].get("id"));
-                resourceInstance = resourceDesc.getInstance();
-                assignments = resourceInstance.get("assignments");
-                node = "<div class='tasks'>";
-                for (iAssign = 0; iAssign < assignments.length; iAssign += 1) {
-                    taskDesc = Y.Wegas.Facade.Variable.cache.find("id", assignments[iAssign].get("taskDescriptorId"));
-                    node = node + "<em class='task' assignmentid=" + assignments[iAssign].get("id") + "><span class='remove' style='display:none'></span><span>" + taskDesc.get("index") + "</span></em>";
-                }
-                node = node + "</div>";
-                assignementCell = dt.getCell([iResource, this.get("columnPosition")]);
-                assignementCell.append(node);
-                this.sortable.push(new Y.Sortable({
-                    container: assignementCell.one(".tasks"),
-                    nodes: '.task',
-                    opacity: '.1'
-                }));
-            }
-
-            for (i = 0; i < this.sortable.length; i += 1) {
-                this.sortable[i].delegate.after('drag:end', this.setPosition, this);
-            }
+        onDragEnd: function(e) {
+            this.savePosition(e.currentTarget.get("currentNode"));
         },
-        setPosition: function(e) {
-            var node = e.currentTarget.get("currentNode"), i = node.get("parentNode").get("children").indexOf(node);
-            Wegas.Facade.Variable.sendRequest({
+        savePosition: function(node) {
+            var i = node.get("parentNode").get("children").indexOf(node);
+            Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/ResourceDescriptor/MoveAssignment/" + node.getAttribute("assignmentid") + "/" + i,
                 cfg: {
-                    method: "POST"
+                    method: "POST",
+                    updateEvent: false
                 }
             });
         },
         destructor: function() {
-            Y.log("destructor()", "log", "Wegas.Assignment");
-            var k, i;
-            for (k in this.handlers) {
-                if (this.handlers.hasOwnProperty(k)) {
-                    this.handlers[k].detach();
-                }
-            }
-            if (this.menu) {
-                this.menu.destroy();
-            }
-            if (this.menuDetails) {
-                this.menuDetails.destroy();
-            }
-
-            for (i = 0; i < this.sortable.length; i += 1) {
-                this.sortable[i].destroy();
-            }
+            //Y.log("destructor()", "log", "Wegas.Assignment");
+            Y.Object.each(this.handlers, function(h) {
+                h.detach();
+            });
+            this.menu && this.menu.destroy();
+            this.timer && this.timer.destroy();
+            this.menuDetails && this.menuDetails.destroy();
+            this.destroySortables();
+        },
+        destroySortables: function() {
+            Y.Array.each(this.sortable, function(s) {
+                s.destroy();
+            });
+            this.sortable = [];
         }
     }, {
         ATTRS: {
             taskList: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     label: "Task list"
@@ -296,8 +306,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 }
             }
         },
-        NS: "assignment",
-        NAME: "Assignment"
+        NS: "assignment"
     });
     Y.Plugin.Assignment = Assignment;
 });

@@ -19,7 +19,6 @@ YUI.add("wegas-slideshow", function(Y) {
      * @extends Y.Plugin.Base
      */
     var SlideShow = Y.Base.create("SlideShow", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
-        _timer: null,
         initializer: function() {
             if (!this.get("host") instanceof Y.Wegas.ChoiceList) {
                 Y.log("Host should be a ChoiceList", "warn", "Y.Plugin.SlideShow");

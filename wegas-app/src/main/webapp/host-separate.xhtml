@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets" >
@@ -151,7 +151,7 @@
                                 player = (entity instanceof Y.Wegas.persistence.Team) ? entity.get("players")[0] : entity;
 
                             if (!player) {
-                                this.showMessageBis("info", "This team is empty", 4000);
+                                this.showMessage("info", "This team is empty", 4000);
                             } else if (!e.currentTarget.treeView.treeviewselect) {//Check if click is with multiselect plugin (impact page)
                                 Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
                             }

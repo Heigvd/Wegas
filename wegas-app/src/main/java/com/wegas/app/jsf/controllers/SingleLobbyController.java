@@ -78,7 +78,7 @@ public class SingleLobbyController implements Serializable {
                     // Nothing to do. stay on current page so player will choose his team
                 }
 
-                //} else {                                                            // 2nd case: token is associated with a team
+                //} else {                                                      // 2nd case: token is associated with a team
                 //    final Team currentTeam = teamFacade.findByToken(token);
                 //    if (currentTeam != null) {
                 //        try {

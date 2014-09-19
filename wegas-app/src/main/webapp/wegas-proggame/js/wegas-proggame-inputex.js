@@ -38,8 +38,8 @@ YUI.add('wegas-proggame-inputex', function(Y) {
         renderComponent: function() {
             inputEx.ProgGameMap.superclass.renderComponent.call(this);
 
-            var node = new Y.Node(this.divEl),
-                addButtonNode = new Y.Node(this.addButton);                 // The add column link
+            var node = Y.one(this.divEl),
+                addButtonNode = Y.one(this.addButton);                          // The add column link
 
             node.append("<div class=\"add-col\"><img />Add column</div>");
             node.one(".add-col").on("click", function() {

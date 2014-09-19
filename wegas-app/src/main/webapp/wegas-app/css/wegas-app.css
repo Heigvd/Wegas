@@ -10,34 +10,40 @@
  */
 
 /* Override default browser styles and counter YUI's cssreset. */
+html, body {
+    height: 100%;
+}
+body {
+    overflow: hidden;
+}
 select {
     margin: 0;
 }
-strong{
+strong {
     font-weight: 700;
 }
-em{
+em {
     font-style: italic;
 }
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
 }
-h1{
+h1 {
     font-size: 2.2em;
 }
-h2{
+h2 {
     font-size: 1.8em;
 }
-h3{
+h3 {
     font-size: 1.4em;
 }
-h4{
+h4 {
     font-size: 1.3em;
 }
-h5{
+h5 {
     font-size: 1.2em;
 }
-h6{
+h6 {
     font-size: 1.1em;
 }
 input, input[type="text"], input[type="password"] {
@@ -50,80 +56,202 @@ input[type="submit"], input[type="reset"] {
 *:focus {
     outline: none; /* Remove chrome focus outline */
 }
-
-html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
-    height: 100%;
+font {
+    background: transparent !important;
+    color: inherit !important;
 }
-/* DISABLED RULES */
+
+/* Disabled widgets (.yui3-button-disabled, etc.) */
 [class*="-disabled"]{
     opacity:0.8;
 }
-/* HIDDEN RULES */
+/* Hidden widgets (.yui3-button-hidden, etc.) */
 [class*="-hidden"]{
     display: none;
 }
-/* Widget */
-/*.wegas-playerview .wegas-widget {
-    overflow: hidden
-}*/
-
-/* Wegas styles */
-/* Wegas loading (overlay on content) */
-.wegas-loading {
-    /*position: relative;*/
-    height: 100%;
+.yui3-overlay-hidden {
+    display: block !important;
 }
-.wegas-loading-overlay {
-    background: rgba(255, 255, 255, 0.8) url(../../wegas-app/images/loading.gif) center center no-repeat;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-}
-/* Wegas loading (a different way of displaying a loading, as a background */
-.wegas-loading-div {
-    background: transparent url(../../wegas-app/images/loading.gif) center center no-repeat;
-    min-height: 80px;
-}
-
-/* Wegas loading (a different way of displaying a loading, as a :after element */
-.wegas-loading-after:after {
-    content: "";
-    background: rgba(255,255,255,0.8) url(../../wegas-app/images/loading.gif) center center no-repeat;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 1000;
-}
-
-/** App loading */
+/* App loading */
 .wegas-loading-app {
     position: fixed;
     top: 50%;
     left: 50%;
     width: 80px;
-    height: 40px;
-    margin-top: -20px;
+    height: 70px;
+    margin-top: -50px;
     margin-left: -40px;
-    background: white url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
+    background: transparent url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat;
 }
 .wegas-loading-app > div {
     width: auto;
-    height: 2px;
-    background-color: #ededed;
     margin-top: 37px;
-    margin-left: 9px;
+    background: #b5b5b5;
+    margin-left: 6px;
     margin-right: 1px;
+    height: 0.25em;
 }
 .wegas-loading-app > div > div {
     height: 100%;
     width: 0%;
     background-color: #072644;
 }
+
+/* Wegas loading (overlay on content) */
+.wegas-loading {
+    height: 100%;
+}
+@keyframes fadein {
+    from {
+        opacity: 0; 
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+
+@-moz-keyframes fadein {
+    from { 
+        opacity: 0; 
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadein {
+    from { 
+        opacity: 0;
+    }
+    to   { 
+        opacity: 1; 
+    }
+}
+
+@-ms-keyframes fadein {
+    from {
+        opacity: 0; 
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+@-o-keyframes fadein {
+    from { 
+        opacity: 0;
+    }
+    to   { 
+        opacity: 1;
+    }
+}
+.wegas-loading-overlay {
+    background: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    overflow: hidden;
+    -webkit-animation: fadein 0.2s 0.1s 1;
+    -o-animation: fadein 0.2s 0.1s 1;
+    -ms-animation: fadein 0.2s 0.1s 1;
+    -moz-animation: fadein 0.2s 0.1s 1;
+    animation: fadein 0.2s 0.1s 1;
+}
+.wegas-loading-overlay:after {
+    //content: "A long-running process has been\a detected. Please wait...";
+    content: "Please wait...";
+    text-shadow: 0 0 3px white;
+    font-style: italic;
+    position:absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: 2.2em;
+    margin-left: -3em;
+    font-size: .8em;
+    white-space: pre;
+    text-align: center;
+    opacity: 0;
+    -webkit-transition: opacity 0.5s ease-in-out;
+    -moz-transition: opacity 0.5s ease-in-out;
+    transition: opacity 0.5s ease-in-out;
+}
+.wegas-loading-overlay.wegas-loading-long:after {
+    opacity: 1;
+}
+.wegas-loader { 
+    width: 36px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -15px;
+    margin-left: -16px;
+}
+.wegas-loader .bar {
+    background-color: #072644;
+    border: 1px solid #072644;
+    float:left;
+    margin-right:4px; 
+    margin-top:6px; 
+    width:6px; 
+    height:18px;
+    -webkit-animation:loadingbar 1.2s linear infinite;
+    -moz-animation:loadingbar 1.2s linear infinite;
+    animation:loadingbar 1.2s linear infinite;
+}
+.wegas-loader .bar:nth-child(2) { 
+    animation-delay: 0.1s;                                                      /* Delay both the second and third bar animation */
+    -webkit-animation-delay: 0.1s; 
+    -moz-animation-delay: 0.1s; 
+}
+.wegas-loader .bar:nth-child(3) { 
+    animation-delay: 0.2s;
+    -webkit-animation-delay: 0.2s; 
+    -moz-animation-delay: 0.2s; 
+}
+@-webkit-keyframes loadingbar {
+    0% { }
+    10% { -webkit-transform: scaleY(1.2); }
+    20% { -webkit-transform: scaleY(1.55); opacity:0.3; }
+    30% { -webkit-transform: scaleY(1.45); opacity:0.2; }
+    40% { -webkit-transform: scaleY(1.2); }
+    60% { -webkit-transform: scaleY(1); }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-moz-keyframes loadingbar {
+    0% { }
+    10% { -moz-transform: scaleY(1.2); }
+    20% { -moz-transform: scaleY(1.55); opacity:0.3; }
+    30% { -moz-transform: scaleY(1.45); opacity:0.2; }
+    40% { -moz-transform: scaleY(1.2); }
+    60% { -moz-transform: scaleY(1); }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@-o-keyframes loadingbar {
+    0% { }
+    10% { -o-transform: scaleY(1.2); }
+    20% { -o-transform: scaleY(1.55); opacity:0.3; }
+    30% { -o-transform: scaleY(1.45); opacity:0.2; }
+    40% { -o-transform: scaleY(1.2); }
+    60% { -o-transform: scaleY(1); }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+@keyframes loadingbar {
+    0% { }
+    10% { transform: scaleY(1.2); }
+    20% { transform: scaleY(1.55); opacity:0.3; }
+    30% { transform: scaleY(1.45); opacity:0.2; }
+    40% { transform: scaleY(1.2); }
+    60% { transform: scaleY(1); }
+    70% { }
+    100% { }    /* Missing frames will cause the extra delay */
+}
+
 /* */
 .wegas-smallmessage {
     padding: 20px;
@@ -140,16 +268,21 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
 }
 .wegas-list-content:empty:before,
 .wegas-choicelist-content:empty:before{
-    content:"Empty list"
+    content: "Empty";
 }
 
 /* Progress bar */
 .yui3-wegas-progressbar-hidden{
     display:none !important;
 }
+
 /* Tooltip */
 .wegas-tooltip {
     position:absolute;
+    display: block !important;
+}
+.wegas-tooltip-hidden {
+    visibility: hidden;
 }
 .wegas-tooltip-content {
     background: white;
@@ -157,15 +290,11 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     padding: 5px;
     box-shadow: 1px 2px 4px #6D6D6D;
     font-size: 0.8em;
-    text-align: center;
-    /*font-style: italic;*/
+    max-width: 460px;
 }
 .wegas-tooltip-content img {
     max-height: 300px;
     max-width: 300px;
-}
-.wegas-tooltip-hidden {
-    visibility:hidden;
 }
 
 /* Toggle button */
@@ -180,14 +309,17 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     -khtml-opacity: 0.55;
     -moz-opacity: 0.55;
     opacity: 0.55;
-    -webkit-box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
-    -moz-box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
     box-shadow: 0 0 0 1px rgba(0,0,0, 0.25) inset;
 }
 
 /** Page loader styles */
+.wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
+    height: 100%;
+}
+.wegas-playerview{
+    overflow: auto;
+}
 .wegas-playerview .wegas-pageloader {
-    /*overflow: auto;*/
     min-height: 50px;
     min-width: 50px;
 }
@@ -199,37 +331,8 @@ html, body, .wegas-playerview, .wegas-playerview > .wegas-pageloader-content {
     width: inherit;
     height: inherit;
 }
-/*body, html, body > .wegas-pageloader, body > .wegas-pageloader > .wegas-pageloader-content{
-    width:100%;
-    height:100%;
-}*/
 
-/* Google translate */
-.wegas-translate {
-    float: right;
-    padding: 14px 10px 0;
-}
-.goog-te-gadget-simple {
-    border:none !important;
-}
-.goog-te-menu-value span {
-    color: black !important;
-    border-left: none !important;
-    font-weight: bold !important;
-    font-size: 11px !important;
-    color: #6E6E6E !important;
-}
-/*.goog-te-banner-frame,.goog-te-balloon-frame{
-    display:none !important;
-}*/
-font {
-    background: transparent !important;
-    color: inherit !important;
-}
-
-/*
-* Visibility plugin
-*/
+/* Visibility plugin */
 .timed-hidden-node{
     visibility: hidden;
 }
@@ -290,8 +393,6 @@ font {
     right: 5px;
     margin: 0;
 }
-
-/* Chat styles */
 .wegas-chat  div.inputEx-fieldWrapper {
     padding:0;
 }

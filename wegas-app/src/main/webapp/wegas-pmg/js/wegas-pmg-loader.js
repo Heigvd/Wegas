@@ -17,32 +17,32 @@ YUI.addGroup("wegas-pmg", {
         "wegas-scheduledatatable": {
             ws_provides: 'ScheduleDT'
         },
-        'wegas-pmgwidget-css': {
+        "wegas-pmgwidget-css": {
             path: 'css/wegas-pmgwidget-min.css',
             type: 'css'
         },
-        'wegas-pmg-breadcrumb': {
+        "wegas-pmg-breadcrumb": {
             ws_provides: "PmgBreadcrumb"
         },
-        'wegas-pmg-datatable': {
+        "wegas-pmg-datatable": {
             requires: ['datatable', 'datatable-mutable', "template"],
             ws_provides: "PmgDatatable"
         },
-        'wegas-pmg-slidepanel': {
+        "wegas-pmg-slidepanel": {
             requires: ['anim', 'wegas-pmgwidget-css', "wegas-pmg-datatable", "wegas-pmg-reservation",
                 "wegas-pmg-occupationcolor", "wegas-pmg-activitycolor", "wegas-pmg-assignment",
-                "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color"],
+                "wegas-scheduledatatable", "wegas-text", "wegas-pmg-autoreservation-color", "wegas-pmg-linefilter"],
             ws_provides: ["PmgSlidePanel", "PmgResourcesPanels"]
         },
         "wegas-pmg-reservation": {
             path: 'js/plugin/wegas-pmg-reservation-min.js',
             ws_provides: 'Reservation'
         },
-       "wegas-pmg-abstractpert": {
+        "wegas-pmg-abstractpert": {
             path: 'js/plugin/wegas-pmg-abstractpert-min.js',
             ws_provides: 'AbstractPert'
         },
-       "wegas-pmg-autoreservation-color": {
+        "wegas-pmg-autoreservation-color": {
             path: 'js/plugin/wegas-pmg-autoreservation-color-min.js',
             requires: ['wegas-pmgwidget-css', 'wegas-pmg-abstractpert'],
             ws_provides: 'AutoReservationColor'
@@ -80,7 +80,7 @@ YUI.addGroup("wegas-pmg", {
             path: 'js/plugin/wegas-pmg-plannificationactivitycolor-min.js',
             requires: 'wegas-pmgwidget-css',
             ws_provides: 'PlannificationActivityColor'
-        }, 
+        },
         "wegas-pmg-plannificationprogresscolor": {
             path: 'js/plugin/wegas-pmg-plannificationprogresscolor-min.js',
             requires: ['wegas-pmgwidget-css', 'wegas-pmg-abstractpert'],
@@ -94,6 +94,26 @@ YUI.addGroup("wegas-pmg", {
             path: 'js/plugin/wegas-pmg-tablepopup-min.js',
             requires: 'wegas-widgetmenu',
             ws_provides: 'Tablepopup'
+        },
+        "wegas-pmg-tabletooltip": {
+            path: 'js/plugin/wegas-pmg-tabletooltip-min.js',
+            requires: ['overlay', 'wegas-pmgwidget-css'],
+            ws_provides: 'Tabletooltip'
+        },
+        "wegas-pmg-taskpopup": {
+            path: 'js/plugin/wegas-pmg-taskpopup-min.js',
+            requires: ['overlay', 'wegas-pmgwidget-css'],
+            ws_provides: 'Taskpopup'
+        },
+        "wegas-pmg-taskonclickpopup": {
+            path: 'js/plugin/wegas-pmg-taskonclickpopup-min.js',
+            requires: ['overlay', 'wegas-pmgwidget-css'],
+            ws_provides: 'Taskonclickpopup'
+        },
+        "wegas-pmg-advancementlimit": {
+            path: 'js/wegas-pmg-advancementlimit-min.js',
+            requires: [],
+            ws_provides: "AdvancementLimit"
         }
     }
 });

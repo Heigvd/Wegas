@@ -14,10 +14,6 @@ YUI.add('wegas-chat', function(Y) {
 
     Chat = Y.Base.create("wegas-chat", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         CONTENT_TEMPLATE: "<div class='conversation'><div class='wegas-chat-msgs'></div></div>",
-        initializer: function() {
-            this.field = null;
-            this.send = null;
-        },
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
 
@@ -26,13 +22,10 @@ YUI.add('wegas-chat', function(Y) {
                 typeInvite: "Type here to chat",
                 size: this.get("size")
             });
-            cb.append(this.field);
             this.send = new Y.Wegas.Button({
                 label: "Send",
                 cssClass: "wegas-chat-send",
-                render: cb
-            });
-            cb.append(this.send);
+            }).render(cb);
         },
         bindUI: function() {
             this.send.on("click", function() {

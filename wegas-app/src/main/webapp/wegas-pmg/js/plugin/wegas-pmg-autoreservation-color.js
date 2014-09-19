@@ -66,7 +66,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
             var i,
                 dt = this.get("host").datatable,
                 resourceDesc, resourceInst,
-                assignments, assignment, aId, first,
+                assignments, assignment, aId,
                 taskDescId, taskTableId,
                 taskDesc,
                 periods, period,
@@ -80,8 +80,6 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                 assignments = resourceInst.get("assignments");
                 periods = [];
 
-
-                first = null;
                 // foreach assigned task
                 for (aId in assignments) {
                     assignment = assignments[aId];
@@ -90,35 +88,26 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                     // Find the task in taskTable
                     for (taskTableId in this.taskTable) {
                         taskDesc = this.taskTable[taskTableId];
-                        if (aId === "0") {
-                            first = taskDesc.get("index");
-                        }
                         if (taskDesc.get("id") === taskDescId) {
-                            var start = taskDesc.startMax,
-                                end = taskDesc.end;
-
-                            if (start - parseInt(start) === 0 && end - parseInt(end) === 0) {
-                                end--;
-                            }
-
-                            for (period = start; period <= end; period++) {
-                                periods.push(period);
+                            var p;
+                            for (p in taskDesc.planned){
+                                periods.push(taskDesc.planned[p]);
                             }
                             break;
                         }
                     }
                 }
-                for (period in periods.sort()) {
-                    this.addColor(HOST.schedule.getCell(i, periods[period]), (period === "0" ? first : ""));
+                for (period in periods) {
+                    this.addColor(HOST.schedule.getCell(i, periods[period]));
                 }
             }
         },
-        addColor: function(cell, text) {
+        addColor: function(cell) {
             // Do not add a span if one already exists. This may occurs when:
             //   1) several assigned tasks are "planned" at the same time
             //   2) An uneditable occupation has been added previously
             if (cell && !cell.hasChildNodes()) {
-                cell.append("<span class='editable'>" + (text ? text : "") + "</span>");
+                cell.append("<span class='editable'></span>");
             }
         }
     }, {

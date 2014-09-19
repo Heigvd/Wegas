@@ -77,7 +77,7 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                         occupation = "Libre";
                         break;
                     case 1 :
-                        occupation = "Occupé";
+                        occupation = "OccupÃ©";
                         break;
                     default :
                         occupation = "Malade";
@@ -183,19 +183,19 @@ YUI.add('wegas-leaderway-folder', function(Y) {
                     occupation.push('<div class="task-name"><span class= class"task-name-label">Mandat : </span><span= class"task-name-value">');
                     occupation.push(occupationObject.taskDescriptor.get('name'));
                     occupation.push('</span></div>');
-                    occupation.push('<ul class="task-skill"><span class="task-skill-label">Compétence demandée : </span>');
+                    occupation.push('<ul class="task-skill"><span class="task-skill-label">CompÃ©tence demandÃ©e : </span>');
                     occupation.push(this.getRequirements(taskInstance));
                     occupation.push('</ul></div>');
-                    occupation.push('<div class="task-salary"><span class="task-salary-label">Rémunération : </span><span class="task-salary-value">');
+                    occupation.push('<div class="task-salary"><span class="task-salary-label">RÃ©munÃ©ration : </span><span class="task-salary-value">');
                     occupation.push(taskDescriptor.get('properties').salary);
                     occupation.push('</span></div>');
-                    occupation.push('<div class="task-duration"><span class="task-duration-label">Durée de travail restant : </span><span class="task-duration-value">');
+                    occupation.push('<div class="task-duration"><span class="task-duration-label">DurÃ©e de travail restant : </span><span class="task-duration-value">');
                     occupation.push(taskInstance.get('duration'));
                     occupation.push('</span></div>');
                     occupation.push("</div>");
                     break;
                 default :
-                    occupation.push('Arrêt maladie (revient dans ');
+                    occupation.push('ArrÃªt maladie (revient dans ');
                     occupation.push(taskInstance.get('duration'));
                     (taskInstance.get('duration') > 1) ? occupation.push(' semaines).') : occupation.push(' semaine).');
             }

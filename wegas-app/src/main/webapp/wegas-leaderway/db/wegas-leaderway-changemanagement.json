@@ -796,7 +796,7 @@
                             "label": "Description : "
                         }, {
                             "type": "position",
-                            "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modèle �  atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sait ce que vous avez fait pour l'entreprise et travaillera �  son tour pour la développer.</li><li>Niveau 1 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos méthodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
+                            "html": "<p>Votre niveau de leadership avec cette personne est : </p><ul><li>Niveau 4 : Elle voit en vous un modèle à atteindre.</li><li>Niveau 3 : Elle se rend compte de toute l'énergie que vous avez dépensé pour elle et veut donner l'envie aux autres de se battre pour l'entreprise. </li><li>Niveau 2 : Elle sait ce que vous avez fait pour l'entreprise et travaillera à son tour pour la développer.</li><li>Niveau 1 : Elle suis vos directives car elle vous considère et pense que vos choix sont justifiés.</li><li>Niveau 0 : Elle suis vos directives uniquement parce qu'elle en a le devoir.</li><li>Niveau -1 : Elle ne supporte pas vos méthodes et fera tout pour vous mettre des batons dans les roues.</li></ul>",
                             "selector": "li",
                             "name": "leadershipLevel",
                             "invert": "true",
@@ -1273,8 +1273,8 @@
                             "items": [{
                                     "@class": "QuestionDescriptor",
                                     "name": "question_2",
-                                    "label": "Demander du temps �  la direction",
-                                    "title": "Demander du temps �  la direction",
+                                    "label": "Demander du temps à la direction",
+                                    "title": "Demander du temps à la direction",
                                     "defaultInstance": {
                                         "@class": "QuestionInstance",
                                         "replies": [],

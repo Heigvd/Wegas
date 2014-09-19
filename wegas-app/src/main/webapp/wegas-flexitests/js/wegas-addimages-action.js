@@ -36,7 +36,7 @@ YUI.add("wegas-addimages-action", function(Y) {
                     request: "list" + path,
                     cfg: {
                         headers: {
-                            'Content-Type': 'application/json; charset=ISO-8859-1',
+                            'Content-Type': 'application/json; charset=UTF-8',
                             'Managed-Mode': false
                         }
                     },

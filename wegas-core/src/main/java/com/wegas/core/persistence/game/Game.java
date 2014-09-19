@@ -31,9 +31,10 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints = { //    @UniqueConstraint(columnNames = {"name"}), //@UniqueConstraint(columnNames = {"token"}),
-//    @UniqueConstraint(columnNames = {"wkey"})
-})
+//@Table(uniqueConstraints = {
+//    @UniqueConstraint(columnNames = {"name"}), 
+//    @UniqueConstraint(columnNames = {"token"})
+//})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity {
 
@@ -58,13 +59,6 @@ public class Game extends NamedEntity {
     @Basic(optional = false)
     // @Pattern(regexp = "^\\w+$")
     private String token;
-    /**
-     *
-     */
-    @Basic(fetch = FetchType.LAZY)
-    @Lob
-    @JsonView(Views.ExtendedI.class)
-    private String description;
     /**
      *
      */
@@ -101,7 +95,6 @@ public class Game extends NamedEntity {
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "gamemodelid", nullable = false)
-    // @JsonBackReference
     private GameModel gameModel;
     /**
      *
@@ -202,7 +195,6 @@ public class Game extends NamedEntity {
     @Override
     public void merge(AbstractEntity a) {
         Game other = (Game) a;
-        this.setDescription(other.getDescription());
         super.merge(a);
         this.setAccess(other.getAccess());
         this.setToken(other.getToken());
@@ -220,7 +212,7 @@ public class Game extends NamedEntity {
                 this.accountkeys.add(other.accountkeys.get(i));
             }
         }
-//        ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
+        //ListUtils.mergeLists(this.getAccountkeys(), other.getAccountkeys());
     }
 
     /**
@@ -448,20 +440,6 @@ public class Game extends NamedEntity {
         for (GameAccountKey k : this.accountkeys) {
             k.setGame(this);
         }
-    }
-
-    /**
-     * @return the description
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * @param description the description to set
-     */
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     /**

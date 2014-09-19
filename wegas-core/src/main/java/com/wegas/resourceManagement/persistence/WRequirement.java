@@ -17,6 +17,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.xml.bind.annotation.XmlTransient;
@@ -53,6 +54,12 @@ public class WRequirement extends AbstractEntity implements Serializable {
      */
     @Column(name = "wlevel")
     private Integer level = 0;
+    /**
+     * 
+     */
+    @ManyToOne
+    @JoinColumn(name = "requirements_variableinstance_id")
+    private TaskInstance taskInstance;
     /*
      *
      */
@@ -197,6 +204,16 @@ public class WRequirement extends AbstractEntity implements Serializable {
         this.quality = quality;
     }
 
+    @XmlTransient
+    public TaskInstance getTaskInstance(){
+        return taskInstance;
+    }
+
+    @XmlTransient
+    public void setTaskInstance(TaskInstance taskInstance){
+        this.taskInstance = taskInstance;
+    }
+
     /**
      *
      * @param variable
@@ -246,6 +263,6 @@ public class WRequirement extends AbstractEntity implements Serializable {
 
     @Override
     public String toString() {
-        return "Requirement(" + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
+        return "Requirement(" + this.id + ", " + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
     }
 }

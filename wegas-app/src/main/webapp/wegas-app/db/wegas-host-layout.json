@@ -79,12 +79,12 @@
                                     }, {
                                         "fn": "Injector"
                                     }, {
-                                        "fn": "PopupListener",
-                                        "cfg": {
-                                            "showServerMessages": true
-                                        }
-                                    }
-                                ]
+                                        "fn": "BlockAction"
+                                    }, {
+                                        "fn": "PopupListener"
+                                    }, {
+                                        "fn": "ServerPopupListener"
+                                    }]
                             }]
                     }, {
                         "label": "Impact",

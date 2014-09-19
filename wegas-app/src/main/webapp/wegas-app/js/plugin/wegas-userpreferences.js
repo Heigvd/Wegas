@@ -13,21 +13,22 @@ YUI.add("wegas-userpreferences", function(Y) {
 
     var UserPreferences = Y.Base.create("wegas-userpreferences", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         initializer: function() {
-            this.get("host").get("boundingBox").addClass("userPreferences");
             this.afterHostEvent("render", function() {
                 var k, entity = Y.Wegas.Facade.User.get("currentUser").getMainAccount(),
-                        host = this.get("host"),
-                        fieldsToIgnore = [];
+                    host = this.get("host"),
+                    fieldsToIgnore = [];
+
+                host.get("boundingBox").addClass("userPreferences");
 
                 for (k in entity.toObject()) {                                  //hide ineditable fields
                     if (k !== 'firstname' && k !== 'lastname' && k !== 'username'
-                            && k !== 'password' && k !== 'submit') {
+                        && k !== 'password' && k !== 'submit') {
                         fieldsToIgnore.push(k);
                     }
                 }
 
-                host.set("cfg", entity.getFormCfg(fieldsToIgnore));
-                host.set("values", entity.toObject());
+                host.set("cfg", entity.getFormCfg(fieldsToIgnore))
+                    .set("values", entity.toObject());
             });
 
             this.onHostEvent("submit", function(e) {
@@ -37,8 +38,8 @@ YUI.add("wegas-userpreferences", function(Y) {
         },
         sendUpdate: function() {
             var user = Y.Wegas.Facade.User.get("currentUser").getMainAccount().toObject(),
-                    host = this.get("host"),
-                    updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
+                host = this.get("host"),
+                updatedAccount = Y.mix(host.get('form').getValue(), user);//need to send an "JpAccount", thus merge account and updates
 
             Y.Wegas.Facade.User.sendRequest({
                 request: "/Account/" + updatedAccount.id,
@@ -59,9 +60,7 @@ YUI.add("wegas-userpreferences", function(Y) {
             });
         }
     }, {
-        NAME: "UserPreferences",
         NS: "UserPreferences"
     });
-
     Y.Plugin.UserPreferences = UserPreferences;
 });

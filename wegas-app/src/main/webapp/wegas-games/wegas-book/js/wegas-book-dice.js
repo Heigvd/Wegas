@@ -82,7 +82,7 @@ YUI.add("wegas-book-dice", function(Y) {
             },
             label: {
                 type: "String",
-                value: "Lancer le dé"
+                value: "Lancer le dÃ©"
             },
             tooltip: {
                 type: "String",

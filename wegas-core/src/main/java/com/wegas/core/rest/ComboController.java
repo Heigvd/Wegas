@@ -9,7 +9,6 @@ package com.wegas.core.rest;
 
 import com.wegas.core.Helper;
 import com.wegas.core.rest.util.CacheManagerHolder;
-import com.wegas.core.rest.util.MediaType;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import java.io.IOException;
 import java.io.InputStream;
@@ -53,6 +52,16 @@ import org.slf4j.LoggerFactory;
 @Path("combo")
 public class ComboController {
 
+    /**
+     *
+     */
+    final static public String MediaTypeCss = "text/css; charset=UTF-8";
+
+    /**
+     *
+     */
+    final static public String MediaTypeJs = "text/javascript; charset=UTF-8";
+
     @EJB
     private CacheManagerHolder cacheManagerHolder;
 
@@ -77,7 +86,7 @@ public class ComboController {
      * @throws IOException
      */
     @GET
-    @Produces({MediaType.APPLICATION_JS, MediaType.APPLICATION_JS})
+    @Produces({MediaTypeJs, MediaTypeCss})
     @CacheMaxAge(time = 3, unit = TimeUnit.HOURS)
     public Response index(@Context Request req) throws IOException {
         Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
@@ -101,7 +110,7 @@ public class ComboController {
             files.remove("v");
             files.remove("version");
             final String mediaType = (files.iterator().next().endsWith("css"))
-                    ? MediaType.TEXT_CSS : MediaType.APPLICATION_JS;            // Select the content-type based on the first file extension
+                    ? MediaTypeCss : MediaTypeJs;            // Select the content-type based on the first file extension
             comboCache = new CacheObject(this.getCombinedFile(files, mediaType), mediaType);
             cache.put(new Element(hash, comboCache));
 
@@ -131,7 +140,7 @@ public class ComboController {
                 //String content = new Scanner(fis, Helper.getWegasProperty("encoding"))
                 //.useDelimiter("\\A").next();                                  // Use a fake delimiter to read all lines at once
 
-                if (mediaType.equals(MediaType.TEXT_CSS)) {                     // @hack for css files, we correct the path
+                if (mediaType.equals(MediaTypeCss)) {                     // @hack for css files, we correct the path
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(\"?\'?([^:\\)\"\']+)\"?\'?\\)",
                             "url(" + servletContext.getContextPath()

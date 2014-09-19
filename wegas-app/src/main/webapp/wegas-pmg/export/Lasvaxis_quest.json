@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Evaluation des besoins des intégrateurs",
-					"name": "Evaluation des besoins des intégrateurs",
-					"editorLabel": "A102B - Evaluation des besoins des intégrateurs",
+					"label": "Evaluation des besoins des intÃ©grateurs",
+					"name": "Evaluation des besoins des intÃ©grateurs",
+					"editorLabel": "A102B - Evaluation des besoins des intÃ©grateurs",
 					"description": "<p>Souhaitez-vous effectuer une enqu&ecirc;te aupr&egrave;s des int&eacute;grateurs afin de parler de leurs besoins relatifs au projet ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -56,9 +56,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) rencontre brève",
-							"label": "b) rencontre brève",
-							"editorLabel": "b) rencontre brève",
+							"name": "b) rencontre brÃ¨ve",
+							"label": "b) rencontre brÃ¨ve",
+							"editorLabel": "b) rencontre brÃ¨ve",
 							"description": "<p>Vous rencontrez bri&egrave;vement les int&eacute;grateurs afin de parler de leurs attentes. Vous obtiendrez une liste d'informations sur leurs besoins.  <br /> Budget temps: 1<br />Co&ucirc;ts: 3000.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -98,9 +98,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Présentation prototype utilisateurs",
-					"name": "Présentation prototype utilisateurs",
-					"editorLabel": "A103 - Présentation prototype utilisateurs",
+					"label": "PrÃ©sentation prototype utilisateurs",
+					"name": "PrÃ©sentation prototype utilisateurs",
+					"editorLabel": "A103 - PrÃ©sentation prototype utilisateurs",
 					"description": "<p>Un d&eacute;veloppeur vous fait la proposition suivante :</p><p>\"Lors de la r&eacute;alisation du projet, nous pourrions r&eacute;aliser un mini prototype du syst&egrave;me et pr&eacute;senter celui-ci aux futurs utilisateurs. <br />Le prototype se r&eacute;aliserait parall&egrave;lement &agrave; la r&eacute;alisation du dossier de sp&eacute;cification. Ceci permettrait d'obtenir les remarques des futurs utilisateurs sur le syst&egrave;me &agrave; d&eacute;velopper.<br />La r&eacute;alisation du prototype demanderait environ 2 semaines de travail &agrave; 2 personnes.<br />Qu'en pensez-vous ? \"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -168,9 +168,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) effectuer l'évaluation",
-							"label": "a) effectuer l'évaluation",
-							"editorLabel": "a) effectuer l'évaluation",
+							"name": "a) effectuer l'Ã©valuation",
+							"label": "a) effectuer l'Ã©valuation",
+							"editorLabel": "a) effectuer l'Ã©valuation",
 							"description": "<p>Vous r&eacute;pondez que vous &ecirc;tes int&eacute;ress&eacute; et souhaitez effectuer l'&eacute;valuation.<br />Budget temps: 3<br /> Co&ucirc;ts: 4500.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -188,9 +188,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) évaluation sommaire",
-							"label": "b) évaluation sommaire",
-							"editorLabel": "b) évaluation sommaire",
+							"name": "b) Ã©valuation sommaire",
+							"label": "b) Ã©valuation sommaire",
+							"editorLabel": "b) Ã©valuation sommaire",
 							"description": "<p>Vous r&eacute;pondez que vous &ecirc;tes int&eacute;ress&eacute; et souhaitez effectuer une &eacute;valuation. Mais vous demandez de r&eacute;aliser une &eacute;valuation sommaire au lieu de l'&eacute;valuation compl&egrave;te. <br /> Budget temps: 1<br /> Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -230,8 +230,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Création d'une maquette",
-					"name": "Création d'une maquette",
+					"label": "CrÃ©ation d'une maquette",
+					"name": "CrÃ©ation d'une maquette",
 					"editorLabel": "A111 - Maquette",
 					"description": "<p>Un int&eacute;grateur vous informe que la cr&eacute;ation d'une maquette est n&eacute;cessaire pour votre projet.</p><p>La cr&eacute;ation d'une maquette permet aux utilisateurs de relever les &eacute;ventuels probl&egrave;mes de conception de l'application et d'augmenter la qualit&eacute; de celle-ci.</p>",
 					"allowMultipleReplies": "false",
@@ -244,9 +244,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) Accepter la création d'une maquette",
-							"label": "a) Accepter la création d'une maquette",
-							"editorLabel": "a) Accepter la création d'une maquette",
+							"name": "a) Accepter la crÃ©ation d'une maquette",
+							"label": "a) Accepter la crÃ©ation d'une maquette",
+							"editorLabel": "a) Accepter la crÃ©ation d'une maquette",
 							"description": "<p>Vous acceptez la cr&eacute;ation d'une maquette. La cr&eacute;ation d'une maquette prendra environ 1 semaine &agrave; deux d&eacute;veloppeurs, un junior et un s&eacute;nior.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -264,9 +264,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) Refuser la création d'une maquette",
-							"label": "b) Refuser la création d'une maquette",
-							"editorLabel": "b) Refuser la création d'une maquette",
+							"name": "b) Refuser la crÃ©ation d'une maquette",
+							"label": "b) Refuser la crÃ©ation d'une maquette",
+							"editorLabel": "b) Refuser la crÃ©ation d'une maquette",
 							"description": "<p>Vous refusez la cr&eacute;ation d'une maquette. Aucune nouvelle t&acirc;che ne sera ajout&eacute;e &agrave; la phase de planification.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -286,9 +286,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyses de faisabilité",
-					"name": "Analyses de faisabilité",
-					"editorLabel": "A112 - Analyses de faisabilité",
+					"label": "Analyses de faisabilitÃ©",
+					"name": "Analyses de faisabilitÃ©",
+					"editorLabel": "A112 - Analyses de faisabilitÃ©",
 					"description": "<p>M. Dupuis, responsable de la R&amp;D, vous pose la question suivante : <br /> \"Lors de la phase d'avant-projet, si vous effectuez des analyses de faisabilit&eacute;, dans quel ordre les effectuez-vous ?\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -300,9 +300,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) Marché - Technique - Financière",
-							"label": "a) Marché - Technique - Financière",
-							"editorLabel": "a) Marché - Technique - Financière",
+							"name": "a) MarchÃ© - Technique - FinanciÃ¨re",
+							"label": "a) MarchÃ© - Technique - FinanciÃ¨re",
+							"editorLabel": "a) MarchÃ© - Technique - FinanciÃ¨re",
 							"description": "<p>Vous r&eacute;pondez que vous effectueriez l'analyse de faisabilit&eacute; de march&eacute;, suivie de l'analyse de faisabilit&eacute; technique, puis termineriez par l'analyse de faisabilit&eacute; financi&egrave;re.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -320,9 +320,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) Technique - Financière - Marché",
-							"label": "b) Technique - Financière - Marché",
-							"editorLabel": "b) Technique - Financière - Marché",
+							"name": "b) Technique - FinanciÃ¨re - MarchÃ©",
+							"label": "b) Technique - FinanciÃ¨re - MarchÃ©",
+							"editorLabel": "b) Technique - FinanciÃ¨re - MarchÃ©",
 							"description": "<p>Vous lui r&eacute;pondez que vous effectueriez l'analyse de faisabilit&eacute; technique, suivie de l'analyse de faisabilit&eacute; financi&egrave;re, puis termineriez par l'analyse de march&eacute;.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -340,9 +340,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) Financière - Technique - Marché",
-							"label": "c) Financière - Technique - Marché",
-							"editorLabel": "c) Financière - Technique - Marché",
+							"name": "c) FinanciÃ¨re - Technique - MarchÃ©",
+							"label": "c) FinanciÃ¨re - Technique - MarchÃ©",
+							"editorLabel": "c) FinanciÃ¨re - Technique - MarchÃ©",
 							"description": "<p>Vous lui r&eacute;pondez que vous effectueriez l'analyse de faisabilit&eacute; financi&egrave;re, suivie de l'analyse de faisabilit&eacute; technique, puis termineriez par l'analyse de march&eacute;.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -363,7 +363,7 @@
 							"name": "d) Ne sais pas",
 							"label": "d) Ne sais pas",
 							"editorLabel": "d) Ne sais pas",
-							"description": "Vous répondez que vous ne savez pas.",
+							"description": "Vous rÃ©pondez que vous ne savez pas.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -374,7 +374,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "C'est mieux que de dire n'importe quoi, mais vous n'avez pas vraiment convaincu sur vos compétences en matière de gestion de projet. <br>Le soutien de M. Dupuis à votre égard diminue."
+									"answer": "C'est mieux que de dire n'importe quoi, mais vous n'avez pas vraiment convaincu sur vos compÃ©tences en matiÃ¨re de gestion de projet. <br>Le soutien de M. Dupuis Ã  votre Ã©gard diminue."
 								}
 							]
 						}
@@ -494,9 +494,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Faisabilité de marché",
-					"name": "Faisabilité de marché",
-					"editorLabel": "A151 - Faisabilité de marché",
+					"label": "FaisabilitÃ© de marchÃ©",
+					"name": "FaisabilitÃ© de marchÃ©",
+					"editorLabel": "A151 - FaisabilitÃ© de marchÃ©",
 					"description": "<p>Le service marketing vous propose d'affiner l'estimation de base fournie par le responsable marketing dans le document \"&eacute;tat de situation\" et d'analyser l'int&eacute;r&ecirc;t commercial de la r&eacute;alisation du syst&egrave;me.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -508,9 +508,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) réaliser l'étude",
-							"label": "a) réaliser l'étude",
-							"editorLabel": "a) réaliser l'étude",
+							"name": "a) rÃ©aliser l'Ã©tude",
+							"label": "a) rÃ©aliser l'Ã©tude",
+							"editorLabel": "a) rÃ©aliser l'Ã©tude",
 							"description": "<p>Vous acceptez la proposition. Vous obtiendrez des informations suppl&eacute;mentaires et plus pr&eacute;cises concernant le potentiel de clients int&eacute;ress&eacute;s et le prix qu'ils seraient pr&ecirc;ts &agrave; payer pour ce syst&egrave;me. <br /> Budget temps: 3<br />Co&ucirc;ts: 4000.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -528,9 +528,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) réaliser une étude sommaire",
-							"label": "b) réaliser une étude sommaire",
-							"editorLabel": "b) réaliser une étude sommaire",
+							"name": "b) rÃ©aliser une Ã©tude sommaire",
+							"label": "b) rÃ©aliser une Ã©tude sommaire",
+							"editorLabel": "b) rÃ©aliser une Ã©tude sommaire",
 							"description": "<p>Vous acceptez la proposition, mais proposez de faire une &eacute;tude sommaire. Vous obtiendrez des informations g&eacute;n&eacute;rales  concernant le potentiel de clients int&eacute;ress&eacute;s, ainsi que sur le prix de vente de cette option. <br /> Budget temps: 2<br />Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -548,9 +548,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) ne pas réaliser l'étude",
-							"label": "c) ne pas réaliser l'étude",
-							"editorLabel": "c) ne pas réaliser l'étude",
+							"name": "c) ne pas rÃ©aliser l'Ã©tude",
+							"label": "c) ne pas rÃ©aliser l'Ã©tude",
+							"editorLabel": "c) ne pas rÃ©aliser l'Ã©tude",
 							"description": "<p>Vous r&eacute;pondez que vous conservez l'estimation de base fournie par le responsable marketing.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -570,9 +570,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Faisabilité de marché - complément",
-					"name": "Faisabilité de marché - complément",
-					"editorLabel": "A151 - Faisabilité de marché -  complément d'étude",
+					"label": "FaisabilitÃ© de marchÃ© - complÃ©ment",
+					"name": "FaisabilitÃ© de marchÃ© - complÃ©ment",
+					"editorLabel": "A151 - FaisabilitÃ© de marchÃ© -  complÃ©ment d'Ã©tude",
 					"description": "<p>Vous avez r&eacute;alis&eacute; un &eacute;tude de march&eacute; sommaire. Le service marketing vous propose d'effectuer un compl&eacute;ment &agrave; cette &eacute;tude afin d'obtenir les informations compl&egrave;tes.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -584,9 +584,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) réaliser le complément d'étude",
-							"label": "a) réaliser le complément d'étude",
-							"editorLabel": "a) réaliser le complément d'étude",
+							"name": "a) rÃ©aliser le complÃ©ment d'Ã©tude",
+							"label": "a) rÃ©aliser le complÃ©ment d'Ã©tude",
+							"editorLabel": "a) rÃ©aliser le complÃ©ment d'Ã©tude",
 							"description": "<p>Vous acceptez la proposition. <br />Vous obtiendrez des informations suppl&eacute;mentaires et plus pr&eacute;cises concernant le potentiel de clients int&eacute;ress&eacute;s et le prix qu'ils sont pr&ecirc;ts &agrave; payer pour ce syst&egrave;me. <br /> Budget temps: 2<br />Co&ucirc;ts: 2500.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -604,9 +604,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) ne pas réaliser de complément",
-							"label": "b) ne pas réaliser de complément",
-							"editorLabel": "b) ne pas réaliser de complément",
+							"name": "b) ne pas rÃ©aliser de complÃ©ment",
+							"label": "b) ne pas rÃ©aliser de complÃ©ment",
+							"editorLabel": "b) ne pas rÃ©aliser de complÃ©ment",
 							"description": "<p>Vous r&eacute;pondez que vous &ecirc;tes satisfait avec les r&eacute;sultats de l'&eacute;tude sommaire.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -626,9 +626,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Faisabilité technique",
-					"name": "Faisabilité technique",
-					"editorLabel": "A152B - Faisabilité technique",
+					"label": "FaisabilitÃ© technique",
+					"name": "FaisabilitÃ© technique",
+					"editorLabel": "A152B - FaisabilitÃ© technique",
 					"description": "<p>Un d&eacute;veloppeur du d&eacute;partement R&amp;D vous propose de r&eacute;aliser  une &eacute;tude de faisabilit&eacute; technique.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -640,9 +640,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) réaliser l'étude",
-							"label": "a) réaliser l'étude",
-							"editorLabel": "a) réaliser l'étude",
+							"name": "a) rÃ©aliser l'Ã©tude",
+							"label": "a) rÃ©aliser l'Ã©tude",
+							"editorLabel": "a) rÃ©aliser l'Ã©tude",
 							"description": "<p>Vous acceptez la proposition.<br />Une pr&eacute;-&eacute;tude sera r&eacute;alis&eacute;e par un ing&eacute;nieur d&eacute;veloppeur. Il pourra vous donner des informations sur la faisabilit&eacute; technique du syst&egrave;me.<br /> Budget temps: 2<br />Co&ucirc;t: 3000.- (frais fixes du projet)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -660,10 +660,10 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) ne pas réaliser l'étude",
-							"label": "b) ne pas réaliser l'étude",
-							"editorLabel": "b) ne pas réaliser l'étude",
-							"description": "Vous préférez ne pas réaliser l'étude.",
+							"name": "b) ne pas rÃ©aliser l'Ã©tude",
+							"label": "b) ne pas rÃ©aliser l'Ã©tude",
+							"editorLabel": "b) ne pas rÃ©aliser l'Ã©tude",
+							"description": "Vous prÃ©fÃ©rez ne pas rÃ©aliser l'Ã©tude.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -674,7 +674,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "Vous réaliserez donc le projet en prenant le risque d'une éventuelle incompatibilité technique, qui ne sera aperçue qu'en cours ou fin de développement."
+									"answer": "Vous rÃ©aliserez donc le projet en prenant le risque d'une Ã©ventuelle incompatibilitÃ© technique, qui ne sera aperÃ§ue qu'en cours ou fin de dÃ©veloppement."
 								}
 							]
 						}
@@ -696,9 +696,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) effectuer l'enquête",
-							"label": "a) effectuer l'enquête",
-							"editorLabel": "a) effectuer l'enquête",
+							"name": "a) effectuer l'enquÃªte",
+							"label": "a) effectuer l'enquÃªte",
+							"editorLabel": "a) effectuer l'enquÃªte",
 							"description": "<p>Vous effectuez l'enqu&ecirc;te aupr&egrave;s de l'ensemble des clients. Vous obtiendrez ainsi des informations sur les diff&eacute;rents cas d'utilisation de l'ERP et, quelques int&eacute;grateurs ayant pr&eacute;alablement travaill&eacute; chez la concurrence,  sur la position de ExpertIdee face aux autres ERP du m&ecirc;me march&eacute;.<br /> Budget temps: 4</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -716,9 +716,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) effectuer une enquête sommaire",
-							"label": "b) effectuer une enquête sommaire",
-							"editorLabel": "b) effectuer une enquête sommaire",
+							"name": "b) effectuer une enquÃªte sommaire",
+							"label": "b) effectuer une enquÃªte sommaire",
+							"editorLabel": "b) effectuer une enquÃªte sommaire",
 							"description": "<p>Vous effectuez une enqu&ecirc;te sommaire aupr&egrave;s de quelques clients et int&eacute;grateurs ayant pr&eacute;alablement travaill&eacute; chez la concurrence. Vous obtiendrez ainsi quelques informations sur la position d'ExpertIdee face aux autres ERP du m&ecirc;me domaine.<br /> Budget temps: 2</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -736,9 +736,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) ne pas effectuer l'enquête",
-							"label": "c) ne pas effectuer l'enquête",
-							"editorLabel": "c) ne pas effectuer l'enquête",
+							"name": "c) ne pas effectuer l'enquÃªte",
+							"label": "c) ne pas effectuer l'enquÃªte",
+							"editorLabel": "c) ne pas effectuer l'enquÃªte",
 							"description": "<p>Vous pr&eacute;f&eacute;rez ne pas effectuer l'enqu&ecirc;te.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -758,9 +758,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Un après-midi à choix",
-					"name": "Un après-midi à choix",
-					"editorLabel": "A154 - Un après-midi à choix",
+					"label": "Un aprÃ¨s-midi Ã  choix",
+					"name": "Un aprÃ¨s-midi Ã  choix",
+					"editorLabel": "A154 - Un aprÃ¨s-midi Ã  choix",
 					"description": "<p>Vous avez un apr&egrave;s-midi de libre dans votre agenda.</p><p>Comment voulez-vous utiliser ce temps disponible ?</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -792,9 +792,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) direction : informations sur délais",
-							"label": "b) direction : informations sur délais",
-							"editorLabel": "b) direction : informations sur délais",
+							"name": "b) direction : informations sur dÃ©lais",
+							"label": "b) direction : informations sur dÃ©lais",
+							"editorLabel": "b) direction : informations sur dÃ©lais",
 							"description": "<p>Vous essayez d'obtenir aupr&egrave;s de la direction des informations sur les d&eacute;lais possibles pour la r&eacute;alisation du projet.<br /> Budget temps: 1</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -812,9 +812,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) direction : information sur la stratégie",
-							"label": "c) direction : information sur la stratégie",
-							"editorLabel": "c) direction : information sur la stratégie",
+							"name": "c) direction : information sur la stratÃ©gie",
+							"label": "c) direction : information sur la stratÃ©gie",
+							"editorLabel": "c) direction : information sur la stratÃ©gie",
 							"description": "<p>Vous essayez d'obtenir aupr&egrave;s d'un des membres de la direction des informations relatives &agrave; la strat&eacute;gie de Losvaxis, en lien avec votre projet.<br /> Budget temps: 1</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -832,9 +832,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "d) prendre congé",
-							"label": "d) prendre congé",
-							"editorLabel": "d) prendre congé",
+							"name": "d) prendre congÃ©",
+							"label": "d) prendre congÃ©",
+							"editorLabel": "d) prendre congÃ©",
 							"description": "<p>Vous vous reposez.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -867,9 +867,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Analyse besoins clients et intégrateurs",
-					"name": "Analyse besoins clients et intégrateurs",
-					"editorLabel": "P101B - Analyse besoins clients et intégrateurs",
+					"label": "Analyse besoins clients et intÃ©grateurs",
+					"name": "Analyse besoins clients et intÃ©grateurs",
+					"editorLabel": "P101B - Analyse besoins clients et intÃ©grateurs",
 					"description": "<p>Un d&eacute;veloppeur vous propose de ne pas faire participer la ressource \"int&eacute;grateur\" pour la r&eacute;alisation de la t&acirc;che \"Analyse des besoins\". Il dit que l'on sait d&eacute;j&agrave; quels sont les besoins des int&eacute;grateurs. Ceci permettrait une &eacute;conomie substantielle:  2 personnes*semaines de co&ucirc;ts salariaux.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -923,9 +923,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Séminaire environnement développement",
-					"name": "Séminaire environnement développement",
-					"editorLabel": "P102B - Séminaire environnement développement",
+					"label": "SÃ©minaire environnement dÃ©veloppement",
+					"name": "SÃ©minaire environnement dÃ©veloppement",
+					"editorLabel": "P102B - SÃ©minaire environnement dÃ©veloppement",
 					"description": "<p>Un collaborateur qui travaillera sur le choix de l'environnement de d&eacute;veloppement a entendu parl&eacute; d'un s&eacute;minaire sur les nouveaux environnements de d&eacute;veloppement qui aura lieu &agrave; la HEG Arc &agrave; Neuch&acirc;tel la semaine prochaine. Il vous demande s'il peut y participer.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -937,9 +937,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) accepter la participation au séminaire",
-							"label": "a) accepter la participation au séminaire",
-							"editorLabel": "a) accepter la participation au séminaire",
+							"name": "a) accepter la participation au sÃ©minaire",
+							"label": "a) accepter la participation au sÃ©minaire",
+							"editorLabel": "a) accepter la participation au sÃ©minaire",
 							"description": "<p>Vous acceptez. <br />La participation au s&eacute;minaire augmentera les frais fixes de la t&acirc;che \"&eacute;valuation environnement de d&eacute;veloppement\" de 1000.- (les co&ucirc;ts salariaux sont support&eacute;s par l'entreprise, mais les frais du s&eacute;minaire sont &agrave; la charge du projet). <br /> La dur&eacute;e de la t&acirc;che ne devrait pas diminuer de mani&egrave;re significative, mais sa qualit&eacute; pourrait en &ecirc;tre sensiblement augment&eacute;e.<br /> Budget temps: 1</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -993,9 +993,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) introduire cette possibilité",
-							"label": "a) introduire cette possibilité",
-							"editorLabel": "a) introduire cette possibilité",
+							"name": "a) introduire cette possibilitÃ©",
+							"label": "a) introduire cette possibilitÃ©",
+							"editorLabel": "a) introduire cette possibilitÃ©",
 							"description": "<p>Vous acceptez la proposition.<br />La nouvelle interface web sera dot&eacute;e d'une aide contextuelle pour chaque champ. Le contenu des messages d'aide sera copi&eacute; de l'aide de l'application lourde.<br /> Ceci augmentera d'une semaine la dur&eacute;e de la t&acirc;che \"programmation des traitements\" <br /> Budget temps: 2</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1016,7 +1016,7 @@
 							"name": "b) refuser",
 							"label": "b) refuser",
 							"editorLabel": "b) refuser",
-							"description": "Vous préférez ne pas introduire cette fonctionnalité.",
+							"description": "Vous prÃ©fÃ©rez ne pas introduire cette fonctionnalitÃ©.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1027,7 +1027,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "en ordre. Les personnes concernées seront averties de votre choix."
+									"answer": "en ordre. Les personnes concernÃ©es seront averties de votre choix."
 								}
 							]
 						}
@@ -1111,10 +1111,10 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Type de promotion du système",
-					"name": "Type de promotion du système",
-					"editorLabel": "P105 - Type de promotion du système",
-					"description": "Pour la promotion du système, deux alternatives à la variante actuelle vous sont proposées.",
+					"label": "Type de promotion du systÃ¨me",
+					"name": "Type de promotion du systÃ¨me",
+					"editorLabel": "P105 - Type de promotion du systÃ¨me",
+					"description": "Pour la promotion du systÃ¨me, deux alternatives Ã  la variante actuelle vous sont proposÃ©es.",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
 						"@class": "QuestionInstance"
@@ -1200,10 +1200,10 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Yves - projet \"rédaction du rapport d'activité\"",
-					"name": "Yves - projet \"rédaction du rapport d'activité\"",
-					"editorLabel": "R104B- Yves - projet \"réd. rapp. activité\"",
-					"description": "La rédaction du rapport d'activité a absolument besoin d'Yves (commercial) dès cette semaine et pour 3 semaines. <br /><br>Si l'adhésion de la direction à votre projet est bonne, et que vous avez besoin d'Yves durant cette période, vous pouvez négocier qu'Yves ne travaille qu'à 50% pour le rapport d'activité.",
+					"label": "Yves - projet \"rÃ©daction du rapport d'activitÃ©\"",
+					"name": "Yves - projet \"rÃ©daction du rapport d'activitÃ©\"",
+					"editorLabel": "R104B- Yves - projet \"rÃ©d. rapp. activitÃ©\"",
+					"description": "La rÃ©daction du rapport d'activitÃ© a absolument besoin d'Yves (commercial) dÃ¨s cette semaine et pour 3 semaines. <br /><br>Si l'adhÃ©sion de la direction Ã  votre projet est bonne, et que vous avez besoin d'Yves durant cette pÃ©riode, vous pouvez nÃ©gocier qu'Yves ne travaille qu'Ã  50% pour le rapport d'activitÃ©.",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
 						"@class": "QuestionInstance"
@@ -1214,10 +1214,10 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) libérer à 50% seulement",
-							"label": "a) libérer à 50% seulement",
-							"editorLabel": "a) libérer à 50% seulement",
-							"description": "Vous proposez de ne libérer Yves qu'à 50% pour le rapport d'activité et de le conserver à 50% pour le projet.",
+							"name": "a) libÃ©rer Ã  50% seulement",
+							"label": "a) libÃ©rer Ã  50% seulement",
+							"editorLabel": "a) libÃ©rer Ã  50% seulement",
+							"description": "Vous proposez de ne libÃ©rer Yves qu'Ã  50% pour le rapport d'activitÃ© et de le conserver Ã  50% pour le projet.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1228,16 +1228,16 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "En ordre. Votre demande sera transmise à la direction."
+									"answer": "En ordre. Votre demande sera transmise Ã  la direction."
 								}
 							]
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) libérer Yves à 100%",
-							"label": "b) libérer Yves à 100%",
-							"editorLabel": "b) libérer Yves à 100%",
-							"description": "Yves ne sera plus disponible dès cette semaine et pour 3 semaines.",
+							"name": "b) libÃ©rer Yves Ã  100%",
+							"label": "b) libÃ©rer Yves Ã  100%",
+							"editorLabel": "b) libÃ©rer Yves Ã  100%",
+							"description": "Yves ne sera plus disponible dÃ¨s cette semaine et pour 3 semaines.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1256,8 +1256,8 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Fonctionnalité \"Module de formation\"",
-					"name": "Fonctionnalité \"Module de formation\"",
+					"label": "FonctionnalitÃ© \"Module de formation\"",
+					"name": "FonctionnalitÃ© \"Module de formation\"",
 					"editorLabel": "R102B - Module formation",
 					"description": "<p>L'&eacute;quipe de projet vous propose d'ajouter une nouvelle fonctionnalit&eacute; permettant d'int&eacute;grer des modules de formation dans le syst&egrave;me. Ceci permettrait aux utilisateurs  de suivre une petite vid&eacute;o de formation &agrave; une op&eacute;ration particuli&egrave;re sur le module de l'ERP.</p>",
 					"allowMultipleReplies": "false",
@@ -1312,9 +1312,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Proposition d'amélioration de l'interface web",
-					"name": "Proposition d'amélioration de l'interface web",
-					"editorLabel": "R101B - Proposition d'amélioration interface web",
+					"label": "Proposition d'amÃ©lioration de l'interface web",
+					"name": "Proposition d'amÃ©lioration de l'interface web",
+					"editorLabel": "R101B - Proposition d'amÃ©lioration interface web",
 					"description": "<p>Un des int&eacute;grateurs qui a entendu parler du projet est pass&eacute; pour voir l'&eacute;tat actuel du d&eacute;veloppement. <br /> Il propose d'am&eacute;liorer le syst&egrave;me par l'ajout d'une fonctionnalit&eacute;. <br /> \"Il serait int&eacute;ressant de pouvoir naviguer entre les &eacute;crans avec un syst&egrave;me &agrave; onglet plut&ocirc;t qu'un menu. C'est vraiment plus agr&eacute;able. J'ai rencontr&eacute; les d&eacute;veloppeurs de l'interface web qui m'ont dit que c'&eacute;tait possible.\"<br /> A son avis, il semble que ceci aurait comme impact d'augmenter d'environ 1000 les co&ucirc;ts de la programmation de l'interface web, sans impact sur la dur&eacute;e.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1366,9 +1366,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) demander un délai de réflexion",
-							"label": "c) demander un délai de réflexion",
-							"editorLabel": "c) demander un délai de réflexion",
+							"name": "c) demander un dÃ©lai de rÃ©flexion",
+							"label": "c) demander un dÃ©lai de rÃ©flexion",
+							"editorLabel": "c) demander un dÃ©lai de rÃ©flexion",
 							"description": "<p>Vous demandez un d&eacute;lai de r&eacute;flexion et proposez de r&eacute;pondre d'ici une semaine. <br /> Vous envoyez un mail aux d&eacute;veloppeurs de l'interface web pour leur demander leur avis sur l'utilit&eacute; et l'impact de ce changement.<br /> Budget temps: 1</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1408,9 +1408,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Système de navigation par onglets",
-					"name": "Système de navigation par onglets",
-					"editorLabel": "R101B - Système de navigation par onglets",
+					"label": "SystÃ¨me de navigation par onglets",
+					"name": "SystÃ¨me de navigation par onglets",
+					"editorLabel": "R101B - SystÃ¨me de navigation par onglets",
 					"description": "<p>Apr&egrave;s r&eacute;flexion, vous r&eacute;pondez aux int&eacute;grateurs et &agrave; l'&eacute;quipe de d&eacute;veloppement de l'interface web concernant le syst&egrave;me de navigation par onglets.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1484,10 +1484,10 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Besoin de Valérie pour projet stratégique",
-					"name": "Besoin de Valérie pour projet stratégique",
-					"editorLabel": "R105B - Valérie autre projet",
-					"description": "Un projet stratégique a besoin de Valérie (web designer) à 50% pour 3 semaines, dès la semaine suivante. <br />Vous pouvez essayer de refuser cette décision si l'adhésion de la direction est très bonne.",
+					"label": "Besoin de ValÃ©rie pour projet stratÃ©gique",
+					"name": "Besoin de ValÃ©rie pour projet stratÃ©gique",
+					"editorLabel": "R105B - ValÃ©rie autre projet",
+					"description": "Un projet stratÃ©gique a besoin de ValÃ©rie (web designer) Ã  50% pour 3 semaines, dÃ¨s la semaine suivante. <br />Vous pouvez essayer de refuser cette dÃ©cision si l'adhÃ©sion de la direction est trÃ¨s bonne.",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
 						"@class": "QuestionInstance"
@@ -1501,7 +1501,7 @@
 							"name": "a) accepter",
 							"label": "a) accepter",
 							"editorLabel": "a) accepter",
-							"description": "Vous libérez Valérie.",
+							"description": "Vous libÃ©rez ValÃ©rie.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1512,7 +1512,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "Valérie sera donc affectée à 50% au projet stratégique et son taux d'activité disponible pour votre projet diminue donc de 50%.<br>La direction vous remercie de l'avoir libérée."
+									"answer": "ValÃ©rie sera donc affectÃ©e Ã  50% au projet stratÃ©gique et son taux d'activitÃ© disponible pour votre projet diminue donc de 50%.<br>La direction vous remercie de l'avoir libÃ©rÃ©e."
 								}
 							]
 						},
@@ -1540,9 +1540,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Spécifications IHM",
-					"name": "Spécifications IHM",
-					"editorLabel": "R109B - Spécifications interface web",
+					"label": "SpÃ©cifications IHM",
+					"name": "SpÃ©cifications IHM",
+					"editorLabel": "R109B - SpÃ©cifications interface web",
 					"description": "<p>Un d&eacute;veloppeur logiciel vous propose de revoir les sp&eacute;cifications de l'interface web. Il lui semble en effet que celui-ci est \"surdimensionn&eacute;\", que l'on peut tout-&agrave;-fait s'en sortir avec un interface bien plus simple.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1554,9 +1554,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) revoir les spécifications à la baisse",
-							"label": "a) revoir les spécifications à la baisse",
-							"editorLabel": "a) revoir les spécifications à la baisse",
+							"name": "a) revoir les spÃ©cifications Ã  la baisse",
+							"label": "a) revoir les spÃ©cifications Ã  la baisse",
+							"editorLabel": "a) revoir les spÃ©cifications Ã  la baisse",
 							"description": "<p>Vous suivez le conseil du d&eacute;veloppeur logiciel est red&eacute;finissez les sp&eacute;cifications de l'interface web &agrave; la baisse. Ceci vous permet diminuer d'un quart (une semaine) la dur&eacute;e de la programmation de l'interface web et donc de dimunuer dans la m&ecirc;me proportion les co&ucirc;ts salariaux.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1574,10 +1574,10 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) conserver les spécifications actuelles",
-							"label": "b) conserver les spécifications actuelles",
-							"editorLabel": "b) conserver les spécifications actuelles",
-							"description": "Vous préférez conserver les spécifications actuelles.",
+							"name": "b) conserver les spÃ©cifications actuelles",
+							"label": "b) conserver les spÃ©cifications actuelles",
+							"editorLabel": "b) conserver les spÃ©cifications actuelles",
+							"description": "Vous prÃ©fÃ©rez conserver les spÃ©cifications actuelles.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1599,7 +1599,7 @@
 					"label": "Formation web design",
 					"name": "Formation web design",
 					"editorLabel": "R110B - Formation web design",
-					"description": "Karim (web designer) souhaite suivre une formation d'une semaine dans ce domaine. La formation débute la semaine prochaine. <br>Les coûts salariaux seraient à la charge de l'entreprise. Les coûts de la formation seraient partiellement à la charge du projet.",
+					"description": "Karim (web designer) souhaite suivre une formation d'une semaine dans ce domaine. La formation dÃ©bute la semaine prochaine. <br>Les coÃ»ts salariaux seraient Ã  la charge de l'entreprise. Les coÃ»ts de la formation seraient partiellement Ã  la charge du projet.",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
 						"@class": "QuestionInstance"
@@ -1652,9 +1652,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Yvonne - affectée à un autre projet",
-					"name": "Yvonne - affectée à un autre projet",
-					"editorLabel": "R106B - Yvonne - affectée autre projet",
+					"label": "Yvonne - affectÃ©e Ã  un autre projet",
+					"name": "Yvonne - affectÃ©e Ã  un autre projet",
+					"editorLabel": "R106B - Yvonne - affectÃ©e autre projet",
 					"description": "<p>Un projet parall&egrave;le au v&ocirc;tre a besoin d'Yvonne (d&eacute;veloppeuse logicielle) pour 2 semaines, d&egrave;s la semaine prochaine. <br /> Si l'adh&eacute;sion de la direction a votre projet est faible, vous prenez un risque de refuser.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1669,7 +1669,7 @@
 							"name": "a) accepter",
 							"label": "a) accepter",
 							"editorLabel": "a) accepter",
-							"description": "Vous préférez ne pas essayer d'aller contre cette décision (ou n'avez pas besoin d'Yvonne pour le moment) et acceptez donc l'affectation.",
+							"description": "Vous prÃ©fÃ©rez ne pas essayer d'aller contre cette dÃ©cision (ou n'avez pas besoin d'Yvonne pour le moment) et acceptez donc l'affectation.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1700,7 +1700,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "La direction et le responsable de l'autre projet ont été avertis de votre décision."
+									"answer": "La direction et le responsable de l'autre projet ont Ã©tÃ© avertis de votre dÃ©cision."
 								}
 							]
 						}
@@ -1708,9 +1708,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Heures supp. intégration ERP",
-					"name": "Heures supp. intégration ERP",
-					"editorLabel": "R108B - H. supp. intégration ERP",
+					"label": "Heures supp. intÃ©gration ERP",
+					"name": "Heures supp. intÃ©gration ERP",
+					"editorLabel": "R108B - H. supp. intÃ©gration ERP",
 					"description": "<p>Vous avez la possibilit&eacute; de demander &agrave; l'&eacute;quipe qui s'occupera de l'int&eacute;gration du syst&egrave;me &agrave; l'ERP de se pr&eacute;parer &agrave; effectuer des heures suppl&eacute;mentaires pour de la r&eacute;alisation de cette t&acirc;che.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1764,9 +1764,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Noémie demande un break",
-					"name": "Noémie demande un break",
-					"editorLabel": "R112B - Noémie besoin Break",
+					"label": "NoÃ©mie demande un break",
+					"name": "NoÃ©mie demande un break",
+					"editorLabel": "R112B - NoÃ©mie besoin Break",
 					"description": "<p>No&eacute;mie (d&eacute;veloppeuse logicielle) vous demande <br /> \"J'aurais vraiment besoin d'un break. Je suis surmen&eacute;e ces temps et ai aussi quelques probl&egrave;mes personnels. Est-ce qu'il serait possible de prendre cong&eacute; cette semaine ?\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1781,7 +1781,7 @@
 							"name": "a) accepter",
 							"label": "a) accepter",
 							"editorLabel": "a) accepter",
-							"description": "Vous répondez à Noémie : \"En ordre, prenez une semaine de pause et revenez en forme la semaine prochaine.\"",
+							"description": "Vous rÃ©pondez Ã  NoÃ©mie : \"En ordre, prenez une semaine de pause et revenez en forme la semaine prochaine.\"",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1801,7 +1801,7 @@
 							"name": "b) accepter sous conditions",
 							"label": "b) accepter sous conditions",
 							"editorLabel": "b) accepter sous conditions",
-							"description": "Vous répondez à Noémie : \"En ordre pour prendre congé cette semaine, mais il faudrait juste passer un moment lundi pour transmettre les informations nécessaires au bon déroulement du projet cette semaine.\"",
+							"description": "Vous rÃ©pondez Ã  NoÃ©mie : \"En ordre pour prendre congÃ© cette semaine, mais il faudrait juste passer un moment lundi pour transmettre les informations nÃ©cessaires au bon dÃ©roulement du projet cette semaine.\"",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1812,7 +1812,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "En ordre. Noémie sera donc absente cette semaine. Toutefois elle passera lundi pour transmettre les informations relatives au projet."
+									"answer": "En ordre. NoÃ©mie sera donc absente cette semaine. Toutefois elle passera lundi pour transmettre les informations relatives au projet."
 								}
 							]
 						},
@@ -1821,7 +1821,7 @@
 							"name": "c) refuser",
 							"label": "c) refuser",
 							"editorLabel": "c) refuser",
-							"description": "Vous répondez : \"Ce n'est vraiment pas le moment. Nous avons absolument besoin de vous dans le projet. Par contre vous pourrez prendre congé dès que nous aurons avancé dans ce projet.\"",
+							"description": "Vous rÃ©pondez : \"Ce n'est vraiment pas le moment. Nous avons absolument besoin de vous dans le projet. Par contre vous pourrez prendre congÃ© dÃ¨s que nous aurons avancÃ© dans ce projet.\"",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1857,7 +1857,7 @@
 							"name": "a) possible",
 							"label": "a) possible",
 							"editorLabel": "a) possible",
-							"description": "Vous leur répondez que le système sera mis en oeuvre d'ici 2 semaines.",
+							"description": "Vous leur rÃ©pondez que le systÃ¨me sera mis en oeuvre d'ici 2 semaines.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1877,7 +1877,7 @@
 							"name": "b) un peu de patience",
 							"label": "b) un peu de patience",
 							"editorLabel": "b) un peu de patience",
-							"description": "Vous leur répondez qu'il faudra un peu plus de deux semaines, mais que normalement dans 3 ou 4 semaines tout devrait être en place.",
+							"description": "Vous leur rÃ©pondez qu'il faudra un peu plus de deux semaines, mais que normalement dans 3 ou 4 semaines tout devrait Ãªtre en place.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1897,7 +1897,7 @@
 							"name": "c) beaucoup de patience",
 							"label": "c) beaucoup de patience",
 							"editorLabel": "c) beaucoup de patience",
-							"description": "Vous leur répondez que le développement n'est pas une petite affaire et qu'il leur faudra attendre plusieurs semaines avant de voir le système mis en oeuvre.",
+							"description": "Vous leur rÃ©pondez que le dÃ©veloppement n'est pas une petite affaire et qu'il leur faudra attendre plusieurs semaines avant de voir le systÃ¨me mis en oeuvre.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1914,9 +1914,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "d) pas de réponse",
-							"label": "d) pas de réponse",
-							"editorLabel": "d) pas de réponse",
+							"name": "d) pas de rÃ©ponse",
+							"label": "d) pas de rÃ©ponse",
+							"editorLabel": "d) pas de rÃ©ponse",
 							"description": "<p>Vous pr&eacute;f&eacute;rez ne pas leur r&eacute;pondre pour le moment.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1973,7 +1973,7 @@
 							"name": "b) refuser",
 							"label": "b) refuser",
 							"editorLabel": "b) refuser",
-							"description": "Aucun coûts affecté au projet. Urs continuera de travailler avec son ancienne machine.",
+							"description": "Aucun coÃ»ts affectÃ© au projet. Urs continuera de travailler avec son ancienne machine.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -1984,7 +1984,7 @@
 								{
 									"@class": "Result",
 									"name": "Default",
-									"answer": "En ordre. Urs sera informé dans ce sens."
+									"answer": "En ordre. Urs sera informÃ© dans ce sens."
 								}
 							]
 						}
@@ -1995,7 +1995,7 @@
 					"label": "Date fin du projet ?",
 					"name": "Date fin du projet ?",
 					"editorLabel": "R114B - Date fin du projet",
-					"description": "La direction vous pose la question :<br>\"Il semble que ce projet devrait arriver à terme. Où en êtres-vous ? Vous pouvez mettre les ressources nécessaires, mais nous souhaitons voir se projet arriver à terme. Peut-on compter sur un système opérationnel d'ici la semaine prochaine ?\"",
+					"description": "La direction vous pose la question :<br>\"Il semble que ce projet devrait arriver Ã  terme. OÃ¹ en Ãªtres-vous ? Vous pouvez mettre les ressources nÃ©cessaires, mais nous souhaitons voir se projet arriver Ã  terme. Peut-on compter sur un systÃ¨me opÃ©rationnel d'ici la semaine prochaine ?\"",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
 						"@class": "QuestionInstance"
@@ -2009,7 +2009,7 @@
 							"name": "a) ok semaine prochaine",
 							"label": "a) ok semaine prochaine",
 							"editorLabel": "a) ok semaine prochaine",
-							"description": "Vous leur répondez que le système sera opérationnel d'ici la semaine prochaine.",
+							"description": "Vous leur rÃ©pondez que le systÃ¨me sera opÃ©rationnel d'ici la semaine prochaine.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -2029,7 +2029,7 @@
 							"name": "b) encore deux semaines",
 							"label": "b) encore deux semaines",
 							"editorLabel": "b) encore deux semaines",
-							"description": "Vous leur répondez qu'il faudra plutôt deux semaines pour voir le système en fonction.",
+							"description": "Vous leur rÃ©pondez qu'il faudra plutÃ´t deux semaines pour voir le systÃ¨me en fonction.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -2066,9 +2066,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "d) pas de réponse",
-							"label": "d) pas de réponse",
-							"editorLabel": "d) pas de réponse",
+							"name": "d) pas de rÃ©ponse",
+							"label": "d) pas de rÃ©ponse",
+							"editorLabel": "d) pas de rÃ©ponse",
 							"description": "<p>Vous pr&eacute;f&eacute;rez ne pas leur r&eacute;pondre pour le moment.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2125,7 +2125,7 @@
 							"name": "b) accepter pour une visite",
 							"label": "b) accepter pour une visite",
 							"editorLabel": "b) accepter pour une visite",
-							"description": "Vous lui répondez \"Nous sommes actuellement bien chargé, mais il serait possible de vous recevoir pour une visite d'un après-midi. <br>Coûts:<br>3 cartes temps<br>Perturbation du travail pendant une demi-journée",
+							"description": "Vous lui rÃ©pondez \"Nous sommes actuellement bien chargÃ©, mais il serait possible de vous recevoir pour une visite d'un aprÃ¨s-midi. <br>CoÃ»ts:<br>3 cartes temps<br>Perturbation du travail pendant une demi-journÃ©e",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -2145,7 +2145,7 @@
 							"name": "c) refuser",
 							"label": "c) refuser",
 							"editorLabel": "c) refuser",
-							"description": "Vous répondez que vous êtes désolé, mais que vous n'avez vraiment pas la disponibilité pour ces visites.<br>Pas de coûts.",
+							"description": "Vous rÃ©pondez que vous Ãªtes dÃ©solÃ©, mais que vous n'avez vraiment pas la disponibilitÃ© pour ces visites.<br>Pas de coÃ»ts.",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
 							},
@@ -2177,9 +2177,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rédaction d'un rapport",
-					"name": "Rédaction d'un rapport",
-					"editorLabel": "T100B - Rédaction d'un rapport",
+					"label": "RÃ©daction d'un rapport",
+					"name": "RÃ©daction d'un rapport",
+					"editorLabel": "T100B - RÃ©daction d'un rapport",
 					"description": "<p>Un collaborateur, chef d'un autre projet, vous vante les m&eacute;rites de la r&eacute;daction d'un rapport sur votre projet pour l'am&eacute;lioration continue de la gestion des projets au sein de l'enteprise.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2191,9 +2191,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) Rédiger un rapport complet",
-							"label": "a) Rédiger un rapport complet",
-							"editorLabel": "a) Rédiger un rapport complet",
+							"name": "a) RÃ©diger un rapport complet",
+							"label": "a) RÃ©diger un rapport complet",
+							"editorLabel": "a) RÃ©diger un rapport complet",
 							"description": "<p>S&eacute;duit par cette id&eacute;e, vous d&eacute;cidez de r&eacute;diger un rapport complet sur la gestion de tout le projet que vous soumettez &agrave; la direction (3 cartes temps)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2211,9 +2211,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) Rédiger un rapport succint",
-							"label": "b) Rédiger un rapport succint",
-							"editorLabel": "b) Rédiger un rapport succint",
+							"name": "b) RÃ©diger un rapport succint",
+							"label": "b) RÃ©diger un rapport succint",
+							"editorLabel": "b) RÃ©diger un rapport succint",
 							"description": "<p>Vous &ecirc;tes s&eacute;duits par l'id&eacute;e mais peu convaincu d'un rapport &eacute;toff&eacute;. Vous d&eacute;cidez de r&eacute;diger un rapport succint en soulignant les points forts de votre projet et les am&eacute;liorations qu'il aurait &eacute;t&eacute; possible d'apporter &agrave; votre projet (1 carte temps).</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2231,9 +2231,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) Ne pas rédiger de rapport",
-							"label": "c) Ne pas rédiger de rapport",
-							"editorLabel": "c) Ne pas rédiger de rapport",
+							"name": "c) Ne pas rÃ©diger de rapport",
+							"label": "c) Ne pas rÃ©diger de rapport",
+							"editorLabel": "c) Ne pas rÃ©diger de rapport",
 							"description": "<p>Vous n'&ecirc;tes pas convaincu de la pertinance d'un rapport &agrave; cet instant. Vous pr&eacute;f&egrave;rez ne pas en r&eacute;digre du tout.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2253,9 +2253,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Organisation d'un apéritif",
-					"name": "Organisation d'un apéritif",
-					"editorLabel": "T110B - Apéritif",
+					"label": "Organisation d'un apÃ©ritif",
+					"name": "Organisation d'un apÃ©ritif",
+					"editorLabel": "T110B - ApÃ©ritif",
 					"description": "<p>Les employ&eacute;s ayant travaill&eacute;s sur votre projet vous propose d'organiser un petit ap&eacute;ritif pour f&ecirc;ter la fin du projet.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -2267,9 +2267,9 @@
 					"items": [
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "a) Organiser un apéritif important",
-							"label": "a) Organiser un apéritif important",
-							"editorLabel": "a) Organiser un apéritif important",
+							"name": "a) Organiser un apÃ©ritif important",
+							"label": "a) Organiser un apÃ©ritif important",
+							"editorLabel": "a) Organiser un apÃ©ritif important",
 							"description": "<p>Enjou&eacute; par la r&eacute;ussite retentissante (au moins !) de votre projet, vous d&eacute;cidez d'organiser un ap&eacute;ritif dont les employ&eacute;s de Losvaxis se souviendront : ap&eacute;ritif dinatoire avec suffisament d'alcool pour rendre KO un troupeau de gnou tout entier. L'ap&eacute;ritif commence &agrave; 11h et va certainement se prolonger jusqu'au bout de la nuit (2 cartes temps)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2287,9 +2287,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "b) Organiser un petit apéritif",
-							"label": "b) Organiser un petit apéritif",
-							"editorLabel": "b) Organiser un petit apéritif",
+							"name": "b) Organiser un petit apÃ©ritif",
+							"label": "b) Organiser un petit apÃ©ritif",
+							"editorLabel": "b) Organiser un petit apÃ©ritif",
 							"description": "<p>L'id&eacute;e vous s&eacute;duit et vous d&eacute;cider d'organiser un petit ap&eacute;ritif \"standard\" un soir de semaine, pour remercier vos collaborateurs (1 carte temps)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -2307,9 +2307,9 @@
 						},
 						{
 							"@class": "SingleResultChoiceDescriptor",
-							"name": "c) Pas d'apéritif",
-							"label": "c) Pas d'apéritif",
-							"editorLabel": "c) Pas d'apéritif",
+							"name": "c) Pas d'apÃ©ritif",
+							"label": "c) Pas d'apÃ©ritif",
+							"editorLabel": "c) Pas d'apÃ©ritif",
 							"description": "<p>Vous d&eacute;cidez que non, Losvaxis est une entreprise s&eacute;rieuse, pas d'ap&eacute;ritif en ses murs. A la rigueur, un jus d'orange &agrave; la pause &agrave; la caf&eacute;t&eacute;ria, mais on ne plaisante pas avec &ccedil;a (0 cartes temps)</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"

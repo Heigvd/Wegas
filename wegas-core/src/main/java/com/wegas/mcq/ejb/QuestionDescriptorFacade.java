@@ -13,6 +13,7 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.exception.ConstraintViolationException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
@@ -53,7 +54,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     @EJB
     private ScriptFacade scriptManager;
     /**
-     * 
+     *
      */
     @EJB
     private RequestFacade requestFacade;
@@ -168,10 +169,11 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @throws ScriptException
      */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) throws ScriptException {
-        Reply reply = this.selectChoice(choiceId, playerFacade.find(playerId), Long.valueOf(0));
+        Player player = playerFacade.find(playerId);
+        Reply reply = this.selectChoice(choiceId, player, Long.valueOf(0));
         try {
-            this.validateReply(playerId, reply.getId());
-        } catch (ScriptException e) {
+            this.validateReply(player, reply.getId());
+        } catch (Exception e) {// Could be a catch on (ScriptException | ConstraintViolationException | WegasException)
             this.cancelReply(playerId, reply.getId());
             throw e;
         }
@@ -179,8 +181,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * FOR TEST USAGE ONLY 
-     * 
+     * FOR TEST USAGE ONLY
+     *
      * @param choiceId
      * @param playerId
      * @return
@@ -200,7 +202,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     }
 
     /**
-     * FOR TEST USAGE ONLY 
+     * FOR TEST USAGE ONLY
      *
      * @param choiceId
      * @param player
@@ -219,8 +221,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         return reply;
     }
 
-
-    
     /**
      *
      * @param playerId

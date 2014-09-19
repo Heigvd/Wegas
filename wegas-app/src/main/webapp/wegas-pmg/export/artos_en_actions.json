@@ -24,7 +24,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Meet up with engineer and sales person: tasks duration",
 					"name": "Meet up with engineer and sales person: tasks duration",
-					"editorLabel": "A01 - Rencontrer Ing. et commercial : durÈe t‚ches",
+					"editorLabel": "A01 - Rencontrer Ing. et commercial : dur√©e t√¢ches",
 					"description": "<p>You spend a bit of time with an engineer and a sales manager in order to estimate the duration of the different tasks necessary to carry out the project.</p><p>Time Budget: 3</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -70,7 +70,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Meet up with superior: extra time",
 					"name": "Meet up with superior: extra time",
-					"editorLabel": "A02B - Rencontrer supÈrieur : temps supplÈmentaire",
+					"editorLabel": "A02B - Rencontrer sup√©rieur : temps suppl√©mentaire",
 					"description": "<p>You go to meet your superior and ask him to provide you with more time for the pre-project. If he accepts, your time budget would be considerably increased.</p><p>Time Budget: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -111,7 +111,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Meet up with Engineer and sales person : identify tasks",
 					"name": "Meet up with Engineer and sales person : identify tasks",
-					"editorLabel": "A03B - Rencontrer Ing. et commercial: identifier t‚ches",
+					"editorLabel": "A03B - Rencontrer Ing. et commercial: identifier t√¢ches",
 					"description": "<p>You spend some time with an engineer and a sales manager in order to roughly list project tasks.</p><p>Time Budget : 2</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -410,7 +410,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Meet \"Analyses\" resources : duration assessment",
 					"name": "Meet \"Analyses\" resources : duration assessment",
-					"editorLabel": "P1B -  Rencontrer ressources \"Analyses\" : estimation durÈes",
+					"editorLabel": "P1B -  Rencontrer ressources \"Analyses\" : estimation dur√©es",
 					"description": "<p>You welcome the teams responsible for the preliminary analyses (choice of the development environment, analysis of the current situation, customer's and fitters' needs' analyses, specification document).</p><p>You ask for their opinions and jointly define the prospective tasks' durations.</p><p>Time Budget : 3<br />Costs: 2000.- (projects' fixed costs)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -451,7 +451,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Meeting management : information about strategy",
 					"name": "Meeting management : information about strategy",
-					"editorLabel": "P2 - Rencontrer direction : information sur la stratÈgie",
+					"editorLabel": "P2 - Rencontrer direction : information sur la strat√©gie",
 					"description": "<p>You meet with the management in order to obtain information on the corporate strategies.</p><p>Time Budget: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -546,7 +546,7 @@
 					"@class": "QuestionDescriptor",
 					"label": " Bring together  \"1. Development environment choice\" team : quality",
 					"name": " Bring together  \"1. Development environment choice\" team : quality",
-					"editorLabel": "01 - R8B -  RÈunir Èquipe \"1. Choix environnement dÈveloppement\"",
+					"editorLabel": "01 - R8B -  R√©unir √©quipe \"1. Choix environnement d√©veloppement\"",
 					"description": "<p>You convene a meeting of the <em>development environment choice</em> team and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget : 2 <br /> Costs: 500.- (task's fixed costs)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -592,7 +592,7 @@
 					"@class": "QuestionDescriptor",
 					"label": " Bring together  \"2. Analysis of the current situation\" team: quality",
 					"name": " Bring together  \"2. Analysis of the current situation\" team: quality",
-					"editorLabel": "02 - R9B - RÈunir Èquipe \"2. Analyse existant\"",
+					"editorLabel": "02 - R9B - R√©unir √©quipe \"2. Analyse existant\"",
 					"description": "<p>You convene a meeting of the&nbsp;<em>analysis of the current situation&nbsp;team</em> and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget : 2<br /> Cost: 300.- (task's fixed costs)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -638,7 +638,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together \"3. Needs Analysis\" team : quality",
 					"name": "Bring together \"3. Needs Analysis\" team : quality",
-					"editorLabel": "03 - R1B - RÈunir Èquipe \"3. Analyse des besoins\"",
+					"editorLabel": "03 - R1B - R√©unir √©quipe \"3. Analyse des besoins\"",
 					"description": "<p>You convene a meeting of the&nbsp;<em>needs analysis </em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget : 2<br />Half a day's work for the needs analysis team</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -684,7 +684,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together \"4. specification document\" team : quality",
 					"name": "Bring together \"4. specification document\" team : quality",
-					"editorLabel": "04 - RÈunir Èquipe \"4. Dossier de spÈcifications\"",
+					"editorLabel": "04 - R√©unir √©quipe \"4. Dossier de sp√©cifications\"",
 					"description": "<p>You convene a meeting of the&nbsp;<em>specification document&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br />Cost: 500.- (task's fixed costs)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -730,7 +730,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together \"5. Data modeling\" team : quality",
 					"name": "Bring together \"5. Data modeling\" team : quality",
-					"editorLabel": "05 - RB2 - RÈunir Èquipe \"5. ModÈlisation des donnÈes\"",
+					"editorLabel": "05 - RB2 - R√©unir √©quipe \"5. Mod√©lisation des donn√©es\"",
 					"description": "<p>You convene a meeting of the&nbsp;<em>data modeling&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br /> 1/2 day's work for the data modeling team.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -776,7 +776,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together  \"6. Processing Modeling\" team : quality",
 					"name": "Bring together  \"6. Processing Modeling\" team : quality",
-					"editorLabel": "06 - R3B - RÈunir Èquipe  \"6. ModÈlisation des traitements\"",
+					"editorLabel": "06 - R3B - R√©unir √©quipe  \"6. Mod√©lisation des traitements\"",
 					"description": "<p>You convene a meeting of the&nbsp;<em>processing modeling&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br /> 1/2 day's work for the processing modeling team.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -822,7 +822,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together team \"9. Processing Programming\" : quality",
 					"name": "Bring together team \"9. Processing Programming\" : quality",
-					"editorLabel": "09 - R4B - RÈunir Èquipe \"7. Programmation des traitements\"",
+					"editorLabel": "09 - R4B - R√©unir √©quipe \"7. Programmation des traitements\"",
 					"description": "<p>You convene a meeting of the <em>processing programming&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2</p><p>1/2 day's work for the  \"Processing Programming\" team</p><p>&nbsp;</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -878,7 +878,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together  \"11. System Promotion\" team : quality",
 					"name": "Bring together  \"11. System Promotion\" team : quality",
-					"editorLabel": "11 - R7B - RÈunir Èquipe \"11. Promotion systËme\"",
+					"editorLabel": "11 - R7B - R√©unir √©quipe \"11. Promotion syst√®me\"",
 					"description": "<p>You convene a meeting of the&nbsp;<em>system promotion&nbsp;</em>team&nbsp;and spend half a day on checking&nbsp;previous work on bugs and possible fixes.</p><p>Time Budget: 2<br />1/2 day's work for the system promotion team</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -924,7 +924,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together project team: brief and coordination",
 					"name": "Bring together project team: brief and coordination",
-					"editorLabel": "R5B - RÈunir l'Èquipe projet",
+					"editorLabel": "R5B - R√©unir l'√©quipe projet",
 					"description": "<p>You convene a meeting of the&nbsp;<em>entire&nbsp;</em>team&nbsp;and give them&nbsp;a brief update on goals, quality issues and deadlines.<br />You end the meeting by (re)defining workloads and priorities.</p><p>Time Budget : 3<br /> Costs: 1000.- (project's fixed costs)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -980,7 +980,7 @@
 					"@class": "QuestionDescriptor",
 					"label": "Bring together fitters and repairers : presentation of the work",
 					"name": "Bring together fitters and repairers : presentation of the work",
-					"editorLabel": "R6B - RÈunir monteurs et rÈparateurs: prÈsentation du travail",
+					"editorLabel": "R6B - R√©unir monteurs et r√©parateurs: pr√©sentation du travail",
 					"description": "<p>You convene a meeting of selected fitters and repairers, give an overview of the project&nbsp;and listen to their feedback.&nbsp;</p><p>Time budget: 2<br /> Costs: 500.- (project's fixed costs)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {

@@ -61,9 +61,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
         String newUri = cr.getUriInfo().getRequestUri().toASCIIString();
         String firstPathSeg = cr.getUriInfo().getPathSegments().get(0).getPath();
 
-        logger.error("initial URI: " + newUri);
-        logger.error("firstPath: " + firstPathSeg);
-        
         switch (firstPathSeg) {
             case "Private":
             case "EditorPrivate":
@@ -134,6 +131,5 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             default:
                 return Views.Public.class;
         }
-
     }
 }

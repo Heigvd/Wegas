@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.Game_;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.game.Team_;
@@ -62,7 +61,7 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param name
      * @return
      */
-    public Team findByName(Long gameModelId, String name) {
+    private Team findByName(Long gameModelId, String name) {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<Team> game = cq.from(Team.class);
@@ -84,7 +83,7 @@ public class TeamFacade extends BaseFacade<Team> {
             //&& t.getName() == null ) {
             t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
         }
-        
+
         try {
             this.findByName(gameId, t.getName());                               // If the provided name is already in use,
             t.setName(null);                                                    // reset so it will be generated
@@ -97,7 +96,7 @@ public class TeamFacade extends BaseFacade<Team> {
         while (t.getName() == null) {                                           // If no name is provided,
             String name = baseName + "-" + suffix;                              // generate one
             try {
-                this.findByName(gameId, t.getName());
+                this.findByName(gameId, name);
                 suffix++;
             } catch (NoResultException e) {
                 t.setName(name);

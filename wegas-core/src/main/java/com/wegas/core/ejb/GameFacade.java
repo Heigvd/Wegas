@@ -404,7 +404,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @param team
      * @param player
      */
-    private void joinTeam(Team team, Player player) {
+    public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
         em.persist(player);
 

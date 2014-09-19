@@ -33,13 +33,14 @@ public class DescriptorFactory {
         try {
             nodePath = node.getPath();
             if (nodePath.equals("/")) {
-                return new DirectoryDescriptor(nodePath, contentConnector);     //Root Node
+                abstractContentDescriptor = new DirectoryDescriptor(nodePath, contentConnector);     //Root Node
+            } else {
+                mimeType = node.getProperty(WFSConfig.WFS_MIME_TYPE).getString();
+                abstractContentDescriptor
+                        = DirectoryDescriptor.MIME_TYPE.equals(mimeType)
+                        ? new DirectoryDescriptor(nodePath, contentConnector)
+                        : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
             }
-            mimeType = node.getProperty(WFSConfig.WFS_MIME_TYPE).getString();
-            abstractContentDescriptor =
-                    DirectoryDescriptor.MIME_TYPE.equals(mimeType)
-                    ? new DirectoryDescriptor(nodePath, contentConnector)
-                    : new FileDescriptor(nodePath, mimeType, node.getProperty(WFSConfig.WFS_LAST_MODIFIED).getDate(), node.getProperty(WFSConfig.WFS_DATA).getBinary().getSize(), contentConnector);
             if (abstractContentDescriptor.exist()) {
                 abstractContentDescriptor.getContentFromRepository();
             }
@@ -57,7 +58,8 @@ public class DescriptorFactory {
      * @throws RepositoryException
      */
     public static AbstractContentDescriptor getDescriptor(String absolutePath, ContentConnector contentConnector) throws RepositoryException {
-        AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {};
+        AbstractContentDescriptor abstractContentDescriptor = new AbstractContentDescriptor(absolutePath, contentConnector) {
+        };
         Node node;
 
         node = contentConnector.getNode(abstractContentDescriptor.fileSystemAbsolutePath);

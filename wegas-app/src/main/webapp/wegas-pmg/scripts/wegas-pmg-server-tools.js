@@ -11,40 +11,40 @@
  */
 // Functions for addArtosPredecessor
 function addArtosPredecessor() {
-    // ChoixEnvironnementDéveloppement predecessor
-    addPredecessor('DossierSpécifications',
-        ['ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins']);
+    // ChoixEnvironnementDÃ©veloppement predecessor
+    addPredecessor('DossierSpÃ©cifications',
+        ['ChoixEnvironnementDÃ©veloppement', 'AnalyseExistant', 'AnalyseBesoins']);
 
-    // ModélisationDonnées predecessor
-    addPredecessor('ModélisationDonnées', ['DossierSpécifications', 'PrototypeUtilisateur']);
+    // ModÃ©lisationDonnÃ©es predecessor
+    addPredecessor('ModÃ©lisationDonnÃ©es', ['DossierSpÃ©cifications', 'PrototypeUtilisateur']);
 
-    // ModélisationTraitements predecessor
-    addPredecessor('ModélisationTraitements', ['DossierSpécifications', 'PrototypeUtilisateur']);
+    // ModÃ©lisationTraitements predecessor
+    addPredecessor('ModÃ©lisationTraitements', ['DossierSpÃ©cifications', 'PrototypeUtilisateur']);
 
-    // ModélisationIHM predecessor
-    addPredecessor('ModélisationIHM', ['DossierSpécifications', 'PrototypeUtilisateur']);
+    // ModÃ©lisationIHM predecessor
+    addPredecessor('ModÃ©lisationIHM', ['DossierSpÃ©cifications', 'PrototypeUtilisateur']);
 
     // ProgrammationBD predecessor
-    addPredecessor('ProgrammationBD', ['ModélisationDonnées']);
+    addPredecessor('ProgrammationBD', ['ModÃ©lisationDonnÃ©es']);
 
     // ProgrammationTraitements predecessor
-    addPredecessor('ProgrammationTraitements', ['ModélisationDonnées', 'ModélisationTraitements']);
+    addPredecessor('ProgrammationTraitements', ['ModÃ©lisationDonnÃ©es', 'ModÃ©lisationTraitements']);
 
     // ProgrammationIHM predecessor
-    addPredecessor('ProgrammationIHM', ['ModélisationIHM']);
+    addPredecessor('ProgrammationIHM', ['ModÃ©lisationIHM']);
 
-    // PromotionSystème predecessor
-    addPredecessor('PromotionSystème', ['DossierSpécifications']);
+    // PromotionSystÃ¨me predecessor
+    addPredecessor('PromotionSystÃ¨me', ['DossierSpÃ©cifications']);
 
     // Tests predecessor
     addPredecessor('Tests',
-        ['ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModélisationTraitements', 'CorrectionProgrammationTraitements']);
+        ['ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM', 'CorrectionModÃ©lisationTraitements', 'CorrectionProgrammationTraitements']);
 
     // ImplantationMachine predecessor
     addPredecessor('ImplantationMachine', ['ProgrammationBD', 'ProgrammationTraitements', 'ProgrammationIHM']);
 
     // PrototypeUtilisateur predecessor
-    addPredecessor('PrototypeUtilisateur', ['ChoixEnvironnementDéveloppement', 'AnalyseExistant', 'AnalyseBesoins']);
+    addPredecessor('PrototypeUtilisateur', ['ChoixEnvironnementDÃ©veloppement', 'AnalyseExistant', 'AnalyseBesoins']);
 }
 
 // Functions for addArtosOccupation
@@ -62,8 +62,8 @@ function addArtosOccupation() {
     addOccupation("Luc", 11);
     addOccupation("Luc", 12);
 
-    addOccupation("André", 10);
-    addOccupation("André", 11);
+    addOccupation("AndrÃ©", 10);
+    addOccupation("AndrÃ©", 11);
 
     addOccupation("Pierre", 6);
 

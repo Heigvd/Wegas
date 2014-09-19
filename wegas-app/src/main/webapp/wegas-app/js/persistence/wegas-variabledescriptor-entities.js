@@ -391,7 +391,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         value: SELF
                     }],
                 localEval: function(player) {
-                    return this.getInstance(player).get("value");
+                    return this.getInstance(player).get(VALUE);
                 }
             }
         }
@@ -414,7 +414,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     /**
      * NumberDescriptor mapper
      */
-    persistence.NumberDescriptor = Base.create("NumberDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
+    persistence.NumberDescriptor = Base.create("NumberDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {
+        getMaxValue: function() {
+            return this.get("maxValue");
+        },
+        getMinValue: function() {
+            return this.get("minValue");
+        }
+    }, {
         ATTRS: {
             "@class": {
                 value: "NumberDescriptor"
@@ -437,7 +444,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "transient": true,
                 getter: function() {
                     if (this.getInstance()) {
-                        return this.getInstance().get("value");
+                        return this.getInstance().get(VALUE);
                     } else {
                         return null;
                     }
@@ -481,7 +488,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     }]
             },
             sub: {
-                label: "remove",
+                label: "subtract",
                 "arguments": [{
                         type: HIDDEN,
                         value: SELF
@@ -608,8 +615,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                     _type: HIDDEN
                 },
                 setter: function(val) {
-                    var i;
-                    for (i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
+                    for (var i = 0; i < val.length; i = i + 1) {                // We set up a back reference to the parent
                         val[i].parentDescriptor = this;
                     }
                     return val;
@@ -819,6 +825,41 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                         type: "list",
                         label: "",
                         scriptType: STRING,
+                        elementType: {
+                            type: "wegasurl",
+                            label: "",
+                            required: true
+                        }
+                    }]
+            },
+            sendDatedMessage: {
+                label: "send dated message",
+                className: "wegas-method-sendmessage",
+                "arguments": [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: STRING,
+                        label: "From",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Date",
+                        scriptType: STRING
+                    }, {
+                        type: STRING,
+                        label: "Subject",
+                        scriptType: STRING,
+                        required: true
+                    }, {
+                        type: HTML,
+                        label: "Body",
+                        scriptType: STRING,
+                        required: true
+                    }, {
+                        type: "list",
+                        label: "",
+                        scriptType: STRING,
                         /*sortable: true*/
                         elementType: {
                             type: "wegasurl",
@@ -847,11 +888,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     persistence.InboxInstance = Base.create("InboxInstance", persistence.VariableInstance, [], {}, {
         ATTRS: {
             "@class": {
-                value: "InboxInstance",
-                _inputex: {
-                    disabled: true,
-                    label: "Nothing to edit"
-                }
+                value: "InboxInstance"
             },
             messages: {
                 type: ARRAY,
@@ -881,6 +918,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 type: BOOLEAN
             },
             from: {},
+            date: {},
             attachements: {}
         }
     });
@@ -942,20 +980,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "transient": true
             },
             "@class": {
-                value: "Script",
-                type: STRING
+                value: "Script"
             },
-            //language: {
-            //    value: "JavaScript",
-            //    type: STRING,
-            //    choices: [{
-            //            value: "JavaScript"
-            //        }],
-            //    _inputex: {
-            //        //type:"select",
-            //        _type: HIDDEN
-            //    }
-            //},
             content: {
                 type: STRING,
                 format: TEXT,
@@ -994,7 +1020,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 "transient": true,
                 getter: function() {
                     if (this.getInstance()) {
-                        return this.getInstance().get("value");
+                        return this.getInstance().get(VALUE);
                     } else {
                         return null;
                     }
