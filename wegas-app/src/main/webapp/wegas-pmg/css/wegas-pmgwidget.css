@@ -295,7 +295,8 @@ tbody .past .activity {
     color: rgb(28, 28, 28);
 }
 .wegas-pmg-resourcespanels-content .resourcepanel-warn .yui3-datatable-col-label {
-    border-left: 2px solid red !important;
+    border-left: 3px solid rgb(201, 0, 0) !important;
+    border-radius:  7px 0px 0px 7px;
 }
 .indicators-management .yui3-numericaxis + .yui3-numericaxis {
     display: none;
