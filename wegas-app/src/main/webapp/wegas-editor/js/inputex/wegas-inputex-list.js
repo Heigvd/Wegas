@@ -12,7 +12,7 @@
 YUI.add("wegas-inputex-list", function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx;
+    var inputEx = Y.inputEx, ListField, EditableList, PluginList;
 
     /**
      *  Adds a method that retrieves the value of each input in the group
@@ -33,7 +33,7 @@ YUI.add("wegas-inputex-list", function(Y) {
      * @extends inputEx.Group
      * @param {Object} options InputEx definition object
      */
-    var ListField = function(options) {
+    ListField = function(options) {
         ListField.superclass.constructor.call(this, options);
 
         //parentNode.insert(this.addButton.get("boundingBox").remove(), 1);
@@ -66,10 +66,10 @@ YUI.add("wegas-inputex-list", function(Y) {
          *
          */
         destroy: function() {
-            var i, length, field;
+            var i, length;
             this.addButton.destroy();
 
-            for (i = 0, length = this.inputs.length; i < length; i++) {
+            for (i = 0, length = this.inputs.length; i < length; i += 1) {
                 this._purgeField(this.inputs[i]);
 
             }
@@ -147,13 +147,13 @@ YUI.add("wegas-inputex-list", function(Y) {
             this.inputs.splice(i, 1);
             this.fireUpdatedEvt();
         },
-        onAdd: function(e) {
+        onAdd: function() {
             this.addField(Y.Lang.isString(this.options.addType) ? {type: this.options.addType} : this.options.addType);
             this.fireUpdatedEvt();
         },
         _purgeField: function(field) {
             var i;
-            for (i = 0; i < field._handlers.length; i++) {
+            for (i = 0; i < field._handlers.length; i += 1) {
                 if (field._handlers[i].destroy) {
                     field._handlers[i].destroy();
                 } else if (field._handlers[i].detach) {
@@ -175,7 +175,7 @@ YUI.add("wegas-inputex-list", function(Y) {
      * @extends Y.Wegas.ListField
      * @param {Object} options InputEx definition object
      */
-    var EditableList = function(options) {
+    EditableList = function(options) {
         EditableList.superclass.constructor.call(this, options);
     };
     Y.extend(EditableList, ListField, {
@@ -196,9 +196,9 @@ YUI.add("wegas-inputex-list", function(Y) {
                 this.addPluginField(value[i].fn, value[i].cfg, fireUpdatedEvent);
             }
 
-            if (fireUpdatedEvent) {
+          /*  if (fireUpdatedEvent) {
                 //this.fireUpdatedEvent();
-            }
+            }*/
         },
         /**
          * Handle the click event on the add button
@@ -231,7 +231,7 @@ YUI.add("wegas-inputex-list", function(Y) {
      * @extends Y.Wegas.EditableList
      * @param {Object} options InputEx definition object
      */
-    var PluginList = function(options) {
+    PluginList = function(options) {
         PluginList.superclass.constructor.call(this, options);
     };
     Y.extend(PluginList, EditableList, {
@@ -252,8 +252,8 @@ YUI.add("wegas-inputex-list", function(Y) {
          * @returns {Array}
          */
         getValue: function() {
-            var f = [];
-            for (var e = 0; e < this.inputs.length; e += 1) {
+            var f = [], e;
+            for (e = 0; e < this.inputs.length; e += 1) {
                 f.push({
                     fn: this.inputs[e].options.name,
                     cfg: this.inputs[e].getValue()
