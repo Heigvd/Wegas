@@ -46,7 +46,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
         },
         setValue: function(value, fireUpdateEvent) {
             if ((!value || value === "")
-                    && !!Y.Plugin.EditorDTMenu.currentGameModel) {
+                && !!Y.Plugin.EditorDTMenu.currentGameModel) {
                 value = Y.Plugin.EditorDTMenu.currentGameModel.get("id");
             }
             GameModelSelect.superclass.setValue.call(this, value, fireUpdateEvent);
@@ -80,7 +80,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                     }, {
                         name: "key",
                         type: "uneditable"
-                                //type: "string"
+                            //type: "string"
                     }, {
                         name: "used",
                         value: false,
@@ -91,14 +91,13 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             EnrolmentKeyList.superclass.setOptions.call(this, options);
         },
         addElement: function(value) {
-            var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
-                    node = new Y.Node(subfield.divEl);
+            var subfield = EnrolmentKeyList.superclass.addElement.call(this, value);
 
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
-            //(new Y.Node(this.divEl)).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
+            Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
+            //Y.one(this.divEl).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
 
             if (value.used) {
-                node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
+                Y.one(subfield.divEl).all(".inputEx-Field").setStyle("textDecoration", "line-through");// strike through used tokens
             }
             return subfield;
         },
@@ -107,8 +106,8 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
          */
         renderComponent: function() {
             EnrolmentKeyList.superclass.renderComponent.call(this);
-            (new Y.Node(this.addButton)).hide();
-            var container = (new Y.Node(this.fieldContainer));
+            Y.one(this.addButton).hide();
+            var container = Y.one(this.fieldContainer);
             container.append("<div class='addkey' >Add <input value='1'/> <span class='label'>enrolment keys</span> <button class='yui3-button'><span></span>Add</button>");
             container.one("button").on("click", this.onAddButton, this);
         },
@@ -119,13 +118,13 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
          */
         onAddButton: function(e) {
             e.halt();
-            var i, total = parseInt((new Y.Node(this.fieldContainer)).one('.addkey input ').get("value")),
-                    game = this.parentField.parentWidget.get("entity"),
-                    teamCount = this.subFields.length + 1,
-                    prefix = game.get("token");
+            var i, total = parseInt(Y.one(this.fieldContainer).one('.addkey input ').get("value")),
+                game = this.parentField.parentWidget.get("entity"),
+                teamCount = this.subFields.length + 1,
+                prefix = game.get("token");
 
             if (!Y.Lang.isNumber(total)) {
-                this.showMessageBis("error", "Invalid number");
+                this.showMessage("error", "Invalid number");
                 return;
             }
 
@@ -167,7 +166,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                     }, {
                         name: "key",
                         type: "uneditable"
-                                //type: "string"
+                            //type: "string"
                     }, {
                         name: "used",
                         value: false,
@@ -178,17 +177,17 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
         },
         renderComponent: function() {
             AccountKeyList.superclass.renderComponent.call(this);
-            (new Y.Node(this.fieldContainer)).one(".label").setContent("usernames/passwords");
+            Y.one(this.fieldContainer).one(".label").setContent("usernames/passwords");
         },
         addElement: function(value) {
             var subfield = EnrolmentKeyList.superclass.addElement.call(this, value),
-                    node = new Y.Node(subfield.divEl);
+                node = Y.one(subfield.divEl);
 
             node.all(".inputEx-Field").each(function(n) {
                 n.setContent("<p class='wegas-accountkey'><span class='wegas-accountkeyUser'>User: </span><span>" + n.getContent() + "</span>\n\
                                 <span class='wegas-accountkeyPass'>Pwd: </span><span>" + n.getContent() + "</span></p>");
             });
-            (new Y.Node(this.divEl)).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
+            Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
 
             if (value.used) {
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens

@@ -687,8 +687,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la séquence d'instructions nécessaire au déplacement de votre avatar. Les instructions (fonctions) disponibles sont listées sous le bloque 'API' à gauche de l'écran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalités de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction 'move' qui aura pour effet de déplacer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc réaliser la séquence d'instructions complète afin d'atteindre l'autre personnage. Pour voir le résultat de l'exécution de votre code, cliquez sur la flèche verte.",
-                    "globalObjective": "Programmer la séquence d'instructions pour rejoindre Jaune"
+                    "fullObjective": "Votre avatar, le personnage de gauche, doit atteindre le personnage de droite. Pour ce faire, vous devez programmer la sÃ©quence d'instructions nÃ©cessaire au dÃ©placement de votre avatar. Les instructions (fonctions) disponibles sont listÃ©es sous le bloque 'API' Ã  gauche de l'Ã©cran. l'API (Application Programming Interface) de ce jeu vous proposera les fonctionnalitÃ©s de base pour interagir avec votre avatar. Pour ce stage, il n'y en a qu'une, la fonction 'move' qui aura pour effet de dÃ©placer votre avatar d'une case en avant dans le sens de marche. Il vous faut donc rÃ©aliser la sÃ©quence d'instructions complÃ¨te afin d'atteindre l'autre personnage. Pour voir le rÃ©sultat de l'exÃ©cution de votre code, cliquez sur la flÃ¨che verte.",
+                    "globalObjective": "Programmer la sÃ©quence d'instructions pour rejoindre Jaune"
                 }
             }]
     },
@@ -722,8 +722,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "La fonction \"move\" ne vous permettant pas de vous déplacer dans une autre direction que le sens de marche, il serait utile de pouvoir faire tourner votre avatar. Utiliser les nouvelles fonctions de l'API pour programmer la séquence d'instructions permettant à votre avatar d'atteindre l'autre personnage.  ",
-                    "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
+                    "fullObjective": "La fonction \"move\" ne vous permettant pas de vous dÃ©placer dans une autre direction que le sens de marche, il serait utile de pouvoir faire tourner votre avatar. Utiliser les nouvelles fonctions de l'API pour programmer la sÃ©quence d'instructions permettant Ã  votre avatar d'atteindre l'autre personnage.  ",
+                    "globalObjective": "Programmer la sÃ©quence d'instructions pour dÃ©placer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
@@ -757,8 +757,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Utilisez les fonctions de l'API pour déplacer votre avatar jusqu'au personnage en jaune.",
-                    "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
+                    "fullObjective": "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune.",
+                    "globalObjective": "Programmer la sÃ©quence d'instructions pour dÃ©placer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
@@ -799,8 +799,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Utilisez les fonctions de l'API pour déplacer votre avatar jusqu'au personnage en jaune.",
-                    "globalObjective": "Programmer la séquence d'instructions pour déplacer votre avatar jusqu'au personnage de droite"
+                    "fullObjective": "Utilisez les fonctions de l'API pour dÃ©placer votre avatar jusqu'au personnage en jaune.",
+                    "globalObjective": "Programmer la sÃ©quence d'instructions pour dÃ©placer votre avatar jusqu'au personnage de droite"
                 }
             }]
     },
@@ -843,8 +843,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Les fonctions utilisées lors des stages précédents ne possédaient aucun paramètre. Le nouvelle fonction de l'API nommée <em>say</em> prend un paramètre. Ce paramètre est une chaîne de caractère représentant le texte de ce que va dire votre avatar. Il vous permet ainsi d'agir sur le comportement de votre avatar de manière plus fine que les fonctions précédentes, mais vous devez en contrepartie fournir une information supplémentaire lors de l'appel de cette fonctionnalité.<br /><br />Dans le prochain niveau, une porte vous empêche de rejoindre le personnage en jaune. Elle est controlée par une commande vocal, vous pourrez donc utiliser la méthode <em>say</em> pour la contrôler. Le password pour ce niveau est 1234.",
-                    "globalObjective": "Dire le mot de passe \"1234\" à haute voix."
+                    "fullObjective": "Les fonctions utilisÃ©es lors des stages prÃ©cÃ©dents ne possÃ©daient aucun paramÃ¨tre. Le nouvelle fonction de l'API nommÃ©e <em>say</em> prend un paramÃ¨tre. Ce paramÃ¨tre est une chaÃ®ne de caractÃ¨re reprÃ©sentant le texte de ce que va dire votre avatar. Il vous permet ainsi d'agir sur le comportement de votre avatar de maniÃ¨re plus fine que les fonctions prÃ©cÃ©dentes, mais vous devez en contrepartie fournir une information supplÃ©mentaire lors de l'appel de cette fonctionnalitÃ©.<br /><br />Dans le prochain niveau, une porte vous empÃªche de rejoindre le personnage en jaune. Elle est controlÃ©e par une commande vocal, vous pourrez donc utiliser la mÃ©thode <em>say</em> pour la contrÃ´ler. Le password pour ce niveau est 1234.",
+                    "globalObjective": "Dire le mot de passe \"1234\" Ã  haute voix."
                 }
             }]
     },
@@ -895,8 +895,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Tout programme traite une certaine quantité d'informations, il est donc nécessaire de pouvoir récupérer ces informations avant traitement. Dans ce stage vous devez déplacer votre avatar jusqu'au panneau afin d'y lire ce qui s'y trouve. Pour cela, L'API offre une nouvelle fonctionnalité nommée 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont définies en utilisant le mot clé <b>var<b>. Vous pouvez créer une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est écrit sur le panneau. Déplacez votre avatar jusqu'au panneau, stockez ce qui y est écrit puis dites-le à haute voix.",
-                    "globalObjective": "Stocker la valeur écrite sur le panneau et l'utiliser pour ouvrir la porte."
+                    "fullObjective": "Tout programme traite une certaine quantitÃ© d'informations, il est donc nÃ©cessaire de pouvoir rÃ©cupÃ©rer ces informations avant traitement. Dans ce stage vous devez dÃ©placer votre avatar jusqu'au panneau afin d'y lire ce qui s'y trouve. Pour cela, L'API offre une nouvelle fonctionnalitÃ© nommÃ©e 'read'. Comme cette fonction retourne une valeur, il est essentiel de la stocker dans une variable afin de pouvoir la traiter par la suite. En Javascript les variables sont dÃ©finies en utilisant le mot clÃ© <b>var<b>. Vous pouvez crÃ©er une variable comme ceci: <div class=\"wegas-proggame-code\">var myVar = \"unechainedecharacteres\";</div> Dans ce niveau, la mot de passe est Ã©crit sur le panneau. DÃ©placez votre avatar jusqu'au panneau, stockez ce qui y est Ã©crit puis dites-le Ã  haute voix.",
+                    "globalObjective": "Stocker la valeur Ã©crite sur le panneau et l'utiliser pour ouvrir la porte."
                 }
             }]
     },
@@ -953,8 +953,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective": "Vous devez récupérer les valeurs écrites sur deux panneaux différents dans des variables. Faites la somme de ces valeurs, et communiquez le résultat de l'addition au personnage en jaune.",
-                    "globalObjective": "Sommer les deux valeurs des panneaux et communiquer le résultat au personnage en jaune"
+                    "fullObjective": "Vous devez rÃ©cupÃ©rer les valeurs Ã©crites sur deux panneaux diffÃ©rents dans des variables. Faites la somme de ces valeurs, et communiquez le rÃ©sultat de l'addition au personnage en jaune.",
+                    "globalObjective": "Sommer les deux valeurs des panneaux et communiquer le rÃ©sultat au personnage en jaune"
                 }
             }]
     },
@@ -1003,8 +1003,8 @@
         "plugins": [{
                 "fn": "Objective",
                 "cfg": {
-                    "fullObjective_old": "Utilisez la fonction Math.round pour arrondir le nombre écri nombre au dixième",
-                    "globalObjective": "Arrondir la valeur du panneau au dixième."
+                    "fullObjective_old": "Utilisez la fonction Math.round pour arrondir le nombre Ã©cri nombre au dixiÃ¨me",
+                    "globalObjective": "Arrondir la valeur du panneau au dixiÃ¨me."
                 }
             }]
     },
@@ -1112,7 +1112,7 @@
         "plugins": [{
                 "fn": "Popup",
                 "cfg": {
-                    "content": "Encore une fois bravo, mais ce n'était pas si dur. Pour passer le prochain niveau vous allez devoire utiliser des <i>variables</i>.<div class=\"wegas-proggame-def\">Dans un programme informatique, on va avoir en permanence besoin de stocker provisoirement des valeurs. Il peut s'agir de données issues d'un fichier sur disque dur, fournies par l'utilisateur (saisies au clavier), ou extraites d'une base de données. Il peut aussi s'agir de résultats obtenus au cours de l'exécution du programme. Ces données sont stockées en mémoire et ont une durée de vie égale au temps d'exécution du programme. Elles peuvent être de plusieurs types : des nombres, du texte, etc. Dès que l'on a besoin de stocker une valeur dans un programme, on utilise une variable.<br /><br />Pour employer une image, une variable est une boîte, repérée par une étiquette. Pour avoir accès au contenu de la boîte, il suffit de la désigner par son étiquette. En réalité, pour un ordinateur, Ces variables sont stockées dans la mémoire vive et elles sont désignées par des adresses binaires. Il est beaucoup plus facile d'employer des étiquettes de son choix, que de devoir manipuler des adresses binaires. Ainsi, la première chose à faire avant de pouvoir utiliser une variable est de définir « la boîte » et de lui donner une étiquette. Ceci se fait tout au début de l'algorithme, avant même les instructions proprement dites. C'est ce qu'on appelle la déclaration des variables.<br /><br />Le nom de la variable (l'étiquette de la boîte) obéit à des impératifs changeant selon les langages. Toutefois, une règle absolue est qu'ils peuvent comporter des lettres et des chiffres, mais qu'ils excluent tous les signes de ponctuation, en particulier les espaces. Un nom de variable correct commence impérativement par une lettre minuscule.<br /><br />Si pour des raisons purement pratiques on évite généralement les noms à rallonge, il faut tout de même veiller à choisir un nom pertinent en rapport à ce que représente la variable. Ainsi, on évitera d'utiliser de simples lettres souvent utilisées en mathématiques comme x, y, i, j,... qui sont peu explicites. On préférera des noms comme :compteur, temperature, abscisse, ordonnee, point, somme, moyenne...Des noms explicites apportent du sens, et rendent tout simplement les algorithmes plus lisibles et compréhensibles.</div>Dans cette exercice, recevrez votre première variable vous recevrez votre première variable en <i>paramètre</i> de votre fonction <i>main</i>. Cette variable contient le nom du charactère qui se tient en face de vous. Vous devez le saluer en utilisant ce nom, comme ceci:<div class=\"wegas-proggame-code\">var salutation = \"Hello \";<br />salutation = salutation + name;<br />say(salutation);</div>"
+                    "content": "Encore une fois bravo, mais ce n'Ã©tait pas si dur. Pour passer le prochain niveau vous allez devoire utiliser des <i>variables</i>.<div class=\"wegas-proggame-def\">Dans un programme informatique, on va avoir en permanence besoin de stocker provisoirement des valeurs. Il peut s'agir de donnÃ©es issues d'un fichier sur disque dur, fournies par l'utilisateur (saisies au clavier), ou extraites d'une base de donnÃ©es. Il peut aussi s'agir de rÃ©sultats obtenus au cours de l'exÃ©cution du programme. Ces donnÃ©es sont stockÃ©es en mÃ©moire et ont une durÃ©e de vie Ã©gale au temps d'exÃ©cution du programme. Elles peuvent Ãªtre de plusieurs types : des nombres, du texte, etc. DÃ¨s que l'on a besoin de stocker une valeur dans un programme, on utilise une variable.<br /><br />Pour employer une image, une variable est une boÃ®te, repÃ©rÃ©e par une Ã©tiquette. Pour avoir accÃ¨s au contenu de la boÃ®te, il suffit de la dÃ©signer par son Ã©tiquette. En rÃ©alitÃ©, pour un ordinateur, Ces variables sont stockÃ©es dans la mÃ©moire vive et elles sont dÃ©signÃ©es par des adresses binaires. Il est beaucoup plus facile d'employer des Ã©tiquettes de son choix, que de devoir manipuler des adresses binaires. Ainsi, la premiÃ¨re chose Ã  faire avant de pouvoir utiliser une variable est de dÃ©finir Â« la boÃ®te Â» et de lui donner une Ã©tiquette. Ceci se fait tout au dÃ©but de l'algorithme, avant mÃªme les instructions proprement dites. C'est ce qu'on appelle la dÃ©claration des variables.<br /><br />Le nom de la variable (l'Ã©tiquette de la boÃ®te) obÃ©it Ã  des impÃ©ratifs changeant selon les langages. Toutefois, une rÃ¨gle absolue est qu'ils peuvent comporter des lettres et des chiffres, mais qu'ils excluent tous les signes de ponctuation, en particulier les espaces. Un nom de variable correct commence impÃ©rativement par une lettre minuscule.<br /><br />Si pour des raisons purement pratiques on Ã©vite gÃ©nÃ©ralement les noms Ã  rallonge, il faut tout de mÃªme veiller Ã  choisir un nom pertinent en rapport Ã  ce que reprÃ©sente la variable. Ainsi, on Ã©vitera d'utiliser de simples lettres souvent utilisÃ©es en mathÃ©matiques comme x, y, i, j,... qui sont peu explicites. On prÃ©fÃ©rera des noms comme :compteur, temperature, abscisse, ordonnee, point, somme, moyenne...Des noms explicites apportent du sens, et rendent tout simplement les algorithmes plus lisibles et comprÃ©hensibles.</div>Dans cette exercice, recevrez votre premiÃ¨re variable vous recevrez votre premiÃ¨re variable en <i>paramÃ¨tre</i> de votre fonction <i>main</i>. Cette variable contient le nom du charactÃ¨re qui se tient en face de vous. Vous devez le saluer en utilisant ce nom, comme ceci:<div class=\"wegas-proggame-code\">var salutation = \"Hello \";<br />salutation = salutation + name;<br />say(salutation);</div>"
                 }
             }]
     }

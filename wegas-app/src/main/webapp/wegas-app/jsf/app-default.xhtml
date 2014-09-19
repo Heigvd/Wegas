@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='ISO-8859-1' ?>
+<?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -6,20 +6,26 @@
 
     <ui:composition template="page-default.xhtml">
 
-        <ui:define name="title">#{wegasAppBundle["LobbyPage.Title"]}</ui:define>
-
         <ui:define name="page">
-            <h:body class="yui3-skin-sam wegas-stdmode wegas-loading-overlay #{requestController.currentRoles}">
+            <h:body class="yui3-skin-sam #{cookie['asciimode'].value} wegas-stdmode #{requestController.currentRoles} ">
+
+                <!-- Loading -->
+                <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
 
                 <!-- Rollbar error tracking -->
-                <ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
+                <!--<ui:fragment rendered="#{wegasConfig.clientErrorLogging}">
                     <ui:include src="template/rollbar.xhtml" />
+                </ui:fragment>-->
+
+                <!-- Ascii mode -->
+                <ui:fragment rendered="#{cookie['asciimode'].value != null}">
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-ascii.css"></link>
                 </ui:fragment>
 
                 <!-- YUI3 -->
                 <!-- CDN -->
                 <ui:fragment rendered="#{wegasConfig.useYUICDN}">
-                    <script type="text/javascript" src="http://yui.yahooapis.com/3.16.0/build/yui/yui-min.js"></script>
+                    <script type="text/javascript" src="http://yui.yahooapis.com/3.17.2/build/yui/yui-min.js"></script>
                 </ui:fragment>
                 <!-- Self hosted -->
                 <ui:fragment rendered="#{!wegasConfig.useYUICDN}">
@@ -69,6 +75,9 @@
 
                 <!-- Wegas & inputEx Loader -->
                 <ui:fragment rendered="#{requestController.debugMode()}">
+                    <script type="text/javascript">
+                        YUI_config.combine = false;                             // Desactivate combine in debug mode so the loader dont break
+                    </script>
                     <script type="text/javascript" src="#{request.contextPath}/lib/inputex/src/loader-min.js"></script>
                     <script type="text/javascript" src="#{request.contextPath}/wegas-app/js/wegas-loader.js"></script>
                 </ui:fragment>

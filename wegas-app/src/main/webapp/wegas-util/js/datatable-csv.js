@@ -5,7 +5,6 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-
 /**
  * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -29,6 +28,7 @@ YUI.add('datatable-csv', function(Y) {
          * @returns {undefined}
          */
         initializer: function() {
+            var bb = this.get("host").get("boundingBox");
             this.bcsv = new Y.Button({
                 label: "CSV",
                 on: {
@@ -36,16 +36,16 @@ YUI.add('datatable-csv', function(Y) {
                         DatatableCSV.dataToWindow(this._toCSV());
                     }, this)
                 }
-            }).render(this.get("host").get("boundingBox"));
+            }).render(bb);
             this.bdcsv = new Y.Button({
                 label: "Download CSV",
                 on: {
                     click: Y.bind(function() {
                         var csv = this._toCSV(),
-                                //node = this.get("host").get("boundingBox").one(".datatable-csv-file"),
-                                gm_name = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name"),
-                                game_name = Y.Wegas.Facade.Game.cache.getCurrentGame().get("name"),
-                                name = gm_name + "-" + game_name + "-" + Y.Lang.now() + ".csv";
+                            //node = this.get("host").get("boundingBox").one(".datatable-csv-file"),
+                            gm_name = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("name"),
+                            game_name = Y.Wegas.Facade.Game.cache.getCurrentGame().get("name"),
+                            name = gm_name + "-" + game_name + "-" + Y.Lang.now() + ".csv";
 
                         DatatableCSV.download("text/csv", name, csv);
                         //Disabled due to IE allowing limited data URI
@@ -58,7 +58,7 @@ YUI.add('datatable-csv', function(Y) {
                         //}
                     }, this)
                 }
-            }).render(this.get("host").get("boundingBox"));
+            }).render(bb);
         },
         /**
          * Transformation method, datatable to CSV
@@ -72,21 +72,20 @@ YUI.add('datatable-csv', function(Y) {
             }), keys = Y.Array.map(this.get("host").get("columns"), function(i) {
                 return i.key;
             }),
-                    data = this.get("host").data.toArray(), records = [headers], i, j, fields;
+                data = this.get("host").data.toArray(), records = [headers], i, j, fields;
             //Build lignes following key order.
             for (i = 0; i < data.length; i += 1) {
                 fields = [];
                 for (j = 0; j < keys.length; j += 1) {
                     fields.push("\"" + (
-                            (data[i].get(keys[j]) === undefined || data[i].get(keys[j]) === null) ?
-                            "" : data[i].get(keys[j])
-                            ) + "\"");
+                        (data[i].get(keys[j]) === undefined || data[i].get(keys[j]) === null) ?
+                        "" : data[i].get(keys[j])
+                        ) + "\"");
                 }
                 records.push(fields);
 
             }
             return DatatableCSV.arraysToCSV(records);
-
         },
         /**
          * lifecycle method
@@ -162,7 +161,7 @@ YUI.add('datatable-csv', function(Y) {
          */
         download: function(contentType, name, data) {
             var url = Y.Wegas.app.get("base") + "rest/Download/" + name,
-                    form = Y.Node.create('<form enctype="multipart/form-data" accept-charset="UTF-8" method="post" action="' + url + '" ><input type="hidden" name="data"><input type="hidden" name="ctype"></form>');
+                form = Y.Node.create('<form enctype="multipart/form-data" accept-charset="UTF-8" method="post" action="' + url + '" ><input type="hidden" name="data"><input type="hidden" name="ctype"></form>');
             form.one("input[name=data]").getDOMNode().value = data;
             form.one("input[name=ctype]").getDOMNode().value = contentType;
             form.submit();

@@ -15,16 +15,16 @@ YUI.add('wegas-gameinformation', function(Y) {
     var CONTENTBOX = "contentBox", GameInformation, Wegas = Y.Wegas;
 
     /**
-     * @name Y.Wegas.JoinTeam
+     * @name Y.Wegas.GameInformation
      * @extends Y.Widget
      * @augments Y.WidgetChild
      * @augments Y.Wegas.Widget
-     * @class class for join a team
+     * @class 
      * @constructor
-     * @description Allows just to join a team
+     * @description 
      */
     GameInformation = Y.Base.create("wegas-gameinformation", Y.Widget, [Y.WidgetChild, Wegas.Widget], {
-        /** @lends Y.Wegas.JoinTeam# */
+        /** @lends Y.Wegas.GameInformation# */
         // *** Private fields *** //
         renderUI: function() {
             var entity = this.get("entity"),
@@ -35,7 +35,7 @@ YUI.add('wegas-gameinformation', function(Y) {
                 on: {
                     success: Y.bind(function(e) {
                         var game = e.response.entity;
-                        this.get(CONTENTBOX).append(GameInformation.renderGameInformation(game));
+                        this.get(CONTENTBOX).setHTML(GameInformation.renderGameInformation(game));
                     }, this)
                 }
             });
@@ -45,19 +45,14 @@ YUI.add('wegas-gameinformation', function(Y) {
             entity: {}
         },
         renderGameInformation: function(game) {
-            var information = new Y.Node.create('<div></div>'),
-                imgSrc = game.get("properties.imageUri");
-            if (imgSrc) {
-                information.append('<img src=' + imgSrc + ' />');
-            }
-            information.append('<div class="title">' + game.get("gameModelName") + "</div>"
-                + '<div class="gametitle">' + game.get("name") + "</div>"
-                + '<div class="subtitle">Created by ' + game.get("createdByName") + ", " + Wegas.Helper.smartDate(game.get("createdTime")) + "</div>");
-            if (game.get("description")) {
-                information.append('<div class="description"> ' + game.get("description") + '</div>');
-            }
-            information.append('<div style="clear: both"/>');
-            return information.getHTML();
+            var imageUri = Y.Plugin.Injector.getImageUri(game.get("properties.imageUri"), game.get("gameModelId"));
+            return '<div>'
+                + (game.get("properties.imageUri") ? '<img src=\"' + imageUri + '\" />' : "")
+                + '<div class="title">' + game.get("name") + "</div>"
+                + '<div class="gametitle">' + game.get("gameModelName") + "</div>"
+                + '<div class="subtitle">Created by ' + game.get("createdByName") + " " + Wegas.Helper.smartDate(game.get("createdTime"), true) + "</div>"
+                + (game.get("gameModel").get("description") ? '<div class="description"> ' + game.get("gameModel").get("description") + '</div>' : "")
+                + '<div style="clear: both"/></div>';
         }
     });
     Wegas.GameInformation = GameInformation;

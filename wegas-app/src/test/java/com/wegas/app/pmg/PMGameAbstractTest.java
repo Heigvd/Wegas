@@ -8,7 +8,6 @@
 package com.wegas.app.pmg;
 
 import com.wegas.app.AbstractEJBContainerTest;
-import com.wegas.app.TestHelper;
 import java.io.IOException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
@@ -25,24 +24,31 @@ abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
     public static final String SCRIPTROOT = "src/main/webapp/wegas-pmg/scripts/";
 
     protected abstract String getGameModelPath();
-    
+
     /**
      * Return the script test path, relative to SCRIPTROOT
-     * @return 
+     *
+     * @return
      */
     protected abstract String getScriptTestPath();
-    
+
     @Before
     public void setUpGM() throws IOException, GlassFishException {
         /* insert script from files*/
-        final String script = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-util.js");
-        final String script2 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-simulation.js");
-        final String script3 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-serverScript.js");
-        final String script4 = TestHelper.readFile(SCRIPTROOT + "wegas-pmg-server-test-util.js");
-        final String script5 = TestHelper.readFile(SCRIPTROOT + getScriptTestPath());
+        String[] scripts = {
+            SCRIPTROOT + "server-scripts/locales/fr.js",
+            SCRIPTROOT + "server-scripts/locales/en.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-backward.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-event-listeners.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-helper.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-language.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-simulation.js",
+            SCRIPTROOT + "server-scripts/wegas-pmg-server-util.js",
+            SCRIPTROOT + "test-scripts/wegas-pmg-server-test-util.js",
+            SCRIPTROOT + getScriptTestPath()};
 
         //guestLogin();
-        this.createGameModelFromFile(this.getGameModelPath(), script + "\n" + script2 + "\n" + script3 + "\n" + script4 + "\n" + script5);
+        this.createGameModelFromFileWithScript(this.getGameModelPath(), scripts);
     }
 
     @After

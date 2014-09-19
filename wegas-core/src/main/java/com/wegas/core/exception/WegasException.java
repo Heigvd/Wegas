@@ -7,13 +7,10 @@
  */
 package com.wegas.core.exception;
 
-import javax.ejb.ApplicationException;
-
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@ApplicationException(rollback = false)
 public class WegasException extends RuntimeException {
 
     /**

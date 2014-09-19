@@ -16,7 +16,7 @@ YUI.add('wegas-langselector', function(Y) {
             var cb = this.get(CONTENTBOX);
             cb.one('.wegas-langselector-select').on('change', function(e) {
                 var lang = e.currentTarget.get('value'),
-                        url = window.location.href;
+                    url = window.location.href;
 
                 if (url.indexOf("&lang=") > -1) {
                     location.replace(url.replace(/&lang=[^&]*/i, "&lang=" + lang));
@@ -27,10 +27,10 @@ YUI.add('wegas-langselector', function(Y) {
         },
         syncUI: function() {
             var i, cb = this.get(CONTENTBOX), pageLang, selected = false,
-                    url = window.location.href,
-                    browserLang = navigator.language || navigator.userLanguage,
-                    targetNode = cb.one('.wegas-langselector-select'),
-                    items = this.get("items");
+                url = window.location.href,
+                browserLang = navigator.language || navigator.userLanguage,
+                targetNode = cb.one('.wegas-langselector-select'),
+                items = this.get("items");
 
             if (items === null) {
                 return;
@@ -48,7 +48,7 @@ YUI.add('wegas-langselector', function(Y) {
                         targetNode.insert("<option selected='selected'>" + items[i] + "</option>");
                         selected = true;
                     } else if ((this.items[i].indexOf(browserLang) > -1 || browserLang.indexOf(items[i]) > -1)
-                            && url.indexOf("&lang=") <= -1) {
+                        && url.indexOf("&lang=") <= -1) {
                         targetNode.insert("<option selected='selected'>" + items[i] + "</option>");
                         selected = true;
                     } else {

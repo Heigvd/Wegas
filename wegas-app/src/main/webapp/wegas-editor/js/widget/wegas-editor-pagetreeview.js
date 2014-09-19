@@ -15,9 +15,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
 
     PageTreeview = Y.Base.create("wegas-editor-page", Y.Widget, [Wegas.Widget, Wegas.Editable, Y.WidgetChild], {
         renderUI: function() {
-            this.treeView = new Y.TreeView({
-                render: this.get(CONTENT_BOX)
-            });                                                                 // Render the treeview
+            this.treeView = new Y.TreeView().render(this.get(CONTENT_BOX));     // Render the treeview
             this.treeView.addTarget(this);                                      // Treeview events bubble
             this.plug(Plugin.WidgetToolbar);                                    // Add a toolbar
 
@@ -108,7 +106,13 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             //this.get("pageLoader").get("widget").after("*:destroy", this.syncUI, this);
         },
         getIndex: function() {
-            DATASOURCE.getIndex(Y.bind(this.buildIndex, this));
+            if (this.indexReq) {
+                return;
+            }
+            this.indexReq = DATASOURCE.getIndex(Y.bind(function(index) {
+                this.indexReq = null;
+                this.buildIndex(index);
+            }, this));
         },
         buildWidgetTree: function(node) {
             var widget = this.get("pageLoader").get("widget");
@@ -154,7 +158,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             node.add(treeNode);
         },
         buildIndex: function(index) {
-            var i, node, page = this.get("pageLoader")._pageId,
+            var i, node, page = -1,
                 twState,
                 pageFound = false,
                 buildSub = function(node, widget) {
@@ -172,7 +176,9 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                         node.item(0).get("data.widget").onceAfter("*:addChild", this.getIndex, this);
                     }
                 };
-
+            if (this.get("pageLoader")) {
+                page = this.get("pageLoader")._pageId;
+            }
             this.showOverlay();
             this.treeView.destroyAll();
 
@@ -211,7 +217,8 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         },
         deletePage: function(pageId) {
             var treeNode, i;
-            if (confirm("You are removing a page, this can't be undone. Are you sure?")) {
+
+            Wegas.Panel.confirm("You are removing a page, this can't be undone. Are you sure?", Y.bind(function() {
                 this.treeView.some(function() {
                     if (+this.get("data.page") === +pageId) {
                         treeNode = this;
@@ -230,7 +237,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
                     }
                 }, this));
                 this.hideOverlay();
-            }
+            }, this));
         },
         duplicatePage: function(pageId) {
             DATASOURCE.duplicate(pageId, Y.bind(function(page, id) {
@@ -278,6 +285,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
         destructor: function() {
             this.treeView.destroy();
             this.dsEvent.detach();
+            Y.Wegas.DataSource.abort(this.indexReq);
         }
     }, {
         CSS_PREFIX: "wegas-page-editor",

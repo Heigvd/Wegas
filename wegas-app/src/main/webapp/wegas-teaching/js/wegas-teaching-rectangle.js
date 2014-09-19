@@ -8,9 +8,7 @@
 YUI.add("wegas-teaching-rectangle", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", TeachingRectangle;
-
-    TeachingRectangle = Y.Base.create("wegas-teaching-rectangle", Y.Widget, [], {
+    Y.Wegas.TeachingRectangle = Y.Base.create("wegas-teaching-rectangle", Y.Widget, [], {
         CONTENT_TEMPLATE: '<div><div class="label"></div><div class="description"></div></div>',
         renderUI: function() {
             this.get("boundingBox").setStyles({
@@ -19,43 +17,32 @@ YUI.add("wegas-teaching-rectangle", function(Y) {
             });
         },
         bindUI: function() {
-            this.after("descriptionChange", this.syncUI);
-            this.after("labelChange", this.syncUI);
+            this.after(["descriptionChange", "labelChange"], this.syncUI);
         },
         syncUI: function() {
-            var cb = this.get(CONTENTBOX), description = this.get('description');
+            var cb = this.get("contentBox");
 
             cb.one(".label").setHTML(this.get("label"));
-            cb.one(".description").setHTML((description && description.length > 0) ? description : "<em><center><br /><br /><br />Click to edit</center></em>");
+            cb.one(".description").setHTML(this.get('description') || "<em><center><br /><br /><br />Click to edit</center></em>");
         }
     }, {
         ATTRS: {
             x: {
-                type: "Integer",
                 value: 0
             },
             y: {
-                type: "Integer",
                 value: 0
             },
             width: {
-                type: "Integer",
                 value: "200px"
             },
             height: {
-                type: "Integer",
                 value: "150px"
             },
-            label: {
-                type: "String"
-            },
+            label: {},
             description: {},
-            id: {
-                type: "Integer",
-                value: 0
-            }
+            rId: {},
+            position: {}
         }
     });
-
-    Y.Wegas.TeachingRectangle = TeachingRectangle;
 });

@@ -108,7 +108,7 @@ public class UserFacade extends BaseFacade<User> {
 
             return newUser;
         }
-        throw new WegasException("Guset log in not allowed on this server");
+        throw new WegasException("Guest log in not allowed on this server");
     }
 
     /**
@@ -461,7 +461,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @FIXME Should also remove players, created games and game models
      */
-    @Schedule(hour = "9", minute = "14")
+    @Schedule(hour = "4", minute = "14")
     public void removeIdleGuests() {
         Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
                 + "WHERE account.createdTime < :idletime;");
@@ -512,7 +512,7 @@ public class UserFacade extends BaseFacade<User> {
     public void duplicatePermissionByInstance(String gmId, String newGmId) {
         List<AbstractAccount> accounts = this.findAccountPermissionByInstance(gmId);
         String splitedPermission[];
-        for (AbstractAccount account : accounts){
+        for (AbstractAccount account : accounts) {
             List<Permission> perm = account.getPermissions();
             for (int ii = 0; ii < perm.size(); ii++) {
                 if (perm.get(ii).getValue().contains(gmId)) {

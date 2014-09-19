@@ -31,8 +31,8 @@ YUI.add('wegas-googletranslate', function(Y) {
                         multilanguagePage: true,
                         //pageLanguage: 'en',
                         layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-                                //layout: google.translate.TranslateElement.FloatPosition.TOP_RIGHT
-                                //layout: google.translate.TranslateElement.FloatPosition.BOTTOM_RIGHT
+                            //layout: google.translate.TranslateElement.FloatPosition.TOP_RIGHT
+                            //layout: google.translate.TranslateElement.FloatPosition.BOTTOM_RIGHT
                     }, this.get("contentBox").generateID());
                 }, this);
 

@@ -7,14 +7,20 @@
  */
 package com.wegas.app.pdf;
 
+import com.lowagie.text.DocumentException;
 import com.wegas.core.Helper;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.nio.charset.Charset;
+import java.util.logging.Level;
 import javax.servlet.DispatcherType;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -23,6 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
@@ -30,10 +37,14 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xhtmlrenderer.pdf.ITextOutputDevice;
 import org.xhtmlrenderer.pdf.ITextRenderer;
+import org.xhtmlrenderer.pdf.ITextUserAgent;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -115,11 +126,14 @@ public class PdfRenderer implements Filter {
                 }
 
                 ITextRenderer renderer = new ITextRenderer();
+                CookieUserAgent userAgentCallback = new CookieUserAgent(renderer.getOutputDevice(), req.getCookies());
+                userAgentCallback.setSharedContext(renderer.getSharedContext());
+                renderer.getSharedContext().setUserAgentCallback(userAgentCallback);
 
-                String baseUrl;
-                baseUrl = req.getRequestURL().toString().replace(req.getServletPath(), "/");
+                final String baseUrl = req.getRequestURL().toString().replace(req.getServletPath(), "/");
 
                 renderer.setDocument(xhtmlDocument, baseUrl);
+
                 renderer.layout();
 
                 resp.setContentType("application/pdf; charset=UTF-8");
@@ -133,7 +147,7 @@ public class PdfRenderer implements Filter {
                 log("PdfRenderer:Normal output", null);
                 chain.doFilter(request, response);
             }
-        } catch (Throwable t) {
+        } catch (DocumentException | IOException | ServletException | DOMException | SAXException t) {
             problem = t;
             log("ERROR", t);
         }
@@ -183,7 +197,7 @@ public class PdfRenderer implements Filter {
         if (filterConfig == null) {
             return ("PdfRenderer()");
         }
-        StringBuffer sb = new StringBuffer("PdfRenderer(");
+        StringBuilder sb = new StringBuilder("PdfRenderer(");
         sb.append(filterConfig);
         sb.append(")");
         return (sb.toString());
@@ -195,26 +209,24 @@ public class PdfRenderer implements Filter {
         if (stackTrace != null && !stackTrace.equals("")) {
             try {
                 response.setContentType("text/html");
-                PrintStream ps = new PrintStream(response.getOutputStream());
-                PrintWriter pw = new PrintWriter(ps);
-                pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
+                try (PrintStream ps = new PrintStream(response.getOutputStream()); PrintWriter pw = new PrintWriter(ps)) {
+                    pw.print("<html>\n<head>\n<title>Error</title>\n</head>\n<body>\n"); //NOI18N
 
-                // PENDING! Localize this for next official release
-                pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
-                pw.print(stackTrace);
-                pw.print("</pre></body>\n</html>"); //NOI18N
-                pw.close();
-                ps.close();
+                    // PENDING! Localize this for next official release
+                    pw.print("<h1>The resource did not process correctly</h1>\n<pre>\n");
+                    pw.print(stackTrace);
+                    pw.print("</pre></body>\n</html>"); //NOI18N
+                }
                 response.getOutputStream().close();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
             }
         } else {
             try {
-                PrintStream ps = new PrintStream(response.getOutputStream());
-                t.printStackTrace(ps);
-                ps.close();
+                try (PrintStream ps = new PrintStream(response.getOutputStream())) {
+                    t.printStackTrace(ps);
+                }
                 response.getOutputStream().close();
-            } catch (Exception ex) {
+            } catch (IOException ex) {
             }
         }
     }
@@ -228,7 +240,7 @@ public class PdfRenderer implements Filter {
             pw.close();
             sw.close();
             stackTrace = sw.getBuffer().toString();
-        } catch (Exception ex) {
+        } catch (IOException ex) {
         }
         return stackTrace;
     }
@@ -243,5 +255,56 @@ public class PdfRenderer implements Filter {
         } else {
             logger.info(msg);
         }
+    }
+
+    /**
+     * UserAgentCallback with cookies.
+     */
+    private static class CookieUserAgent extends ITextUserAgent {
+
+        private final Cookie[] cookies;
+
+        public CookieUserAgent(ITextOutputDevice outputDevice, Cookie[] cookies) {
+            super(outputDevice);
+            this.cookies = cookies;
+        }
+
+        @Override
+        protected InputStream resolveAndOpenStream(String uri) {
+            java.io.InputStream is = null;
+            try {
+                URL url = new URL(uri);
+                URLConnection uc = url.openConnection();
+                uc.setRequestProperty("Cookie", joinCookies(this.cookies));
+                is = uc.getInputStream();
+
+            } catch (MalformedURLException ex) {
+                java.util.logging.Logger.getLogger(PdfRenderer.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(PdfRenderer.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            return is;
+        }
+
+        /**
+         * Make a Cookie string
+         *
+         * @param cookies
+         * @return
+         */
+        private static String joinCookies(Cookie[] cookies) {
+            final String token = "; ";
+            if (cookies.length == 0) {
+                return "";
+            }
+            StringBuilder sb = new StringBuilder();
+            sb.append(cookies[0].getName()).append("=").append(cookies[0].getValue());
+            int i;
+            for (i = 1; i < cookies.length; i++) {
+                sb.append(token).append(cookies[i].getName()).append("=").append(cookies[i].getValue());
+            }
+            return sb.toString();
+        }
+
     }
 }

@@ -50,6 +50,7 @@ YUI.add('wegas-form', function(Y) {
          */
         renderUI: function() {
             Y.Array.each(this.get("buttons"), this.addButton, this);
+            this.get("contentBox").on("key", this.save, "down:83+ctrl", this);  // ctrl-s shortcut
         },
         /**
          * @function
@@ -71,21 +72,7 @@ YUI.add('wegas-form', function(Y) {
             switch (b.action) {
                 case "submit":
                     b.on = {
-                        click: Y.bind(function() {
-                            var form = this.get(FORM),
-                                val = form.getValue();
-
-                            if (!form.validate()) {
-                                this.showMessageBis("error", "Some fields are not valid.");
-                                return;
-                            }
-                            if (val.valueselector) {
-                                val = val.valueselector;
-                            }
-                            this.fire("submit", {
-                                value: val
-                            });
-                        }, this)
+                        click: Y.bind(this.save, this)
                     };
                     break;
                 default:
@@ -123,6 +110,23 @@ YUI.add('wegas-form', function(Y) {
                     this.fire("updated", e);
                 }, this);
             }, this, cfg));
+        },
+        save: function(e) {
+            e.halt(true);
+
+            var form = this.get(FORM),
+                val = form.getValue();
+
+            if (!form.validate()) {
+                this.showMessage("error", "Some fields are not valid.");
+                return;
+            }
+            if (val.valueselector) {
+                val = val.valueselector;
+            }
+            this.fire("submit", {
+                value: val
+            });
         },
         validate: function() {
             return this.get("form").validate();
@@ -211,7 +215,4 @@ YUI.add('wegas-form', function(Y) {
         data: "SaveObjectAction"
     });
 
-    inputEx.Group.groupOptions.splice(0, 4);
-    inputEx.Group.groupOptions[0].label = null;
-    inputEx.Group.groupOptions[0].useButtons = true;
 });

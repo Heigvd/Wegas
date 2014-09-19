@@ -32,9 +32,9 @@ YUI.add("wegas-inputex-keyvalue", function(Y) {
         setOptions: function(options) {
             var i = 0,
                 index = 0;
-            for (i in options.availableFields){
-                if (options.value){
-                    if (options.availableFields[i].name === options.value[0]){
+            for (i in options.availableFields) {
+                if (options.value) {
+                    if (options.availableFields[i].name === options.value[0]) {
                         index = i;
                     }
                 }

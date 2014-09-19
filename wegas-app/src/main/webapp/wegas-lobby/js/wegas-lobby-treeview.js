@@ -21,12 +21,12 @@ YUI.add('wegas-lobby-treeview', function(Y) {
      */
     GameModelTreeView = Y.Base.create("wegas-editor-treeview", Wegas.EditorTreeView, [], {
         CONTENT_TEMPLATE: '<div>'
-                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
-                + '<div class="yui3-u yui3-u-col1">Name</div>'
-                + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
-                + '<div class="yui3-u-1-2">Created</div>'
-                + '<div class="yui3-u-1-2">Created by</div>'
-                + '</div></div>',
+            + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
+            + '<div class="yui3-u yui3-u-col1">Name</div>'
+            + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
+            + '<div class="yui3-u-1-2">Created</div>'
+            + '<div class="yui3-u-1-2">Created by</div>'
+            + '</div></div>',
         /**
          * @function
          * @private
@@ -65,14 +65,14 @@ YUI.add('wegas-lobby-treeview', function(Y) {
      */
     var CreatedGameTreeView = Y.Base.create("wegas-editor-treeview", Wegas.EditorTreeView, [], {
         CONTENT_TEMPLATE: '<div>'
-                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
-                + '<div class="yui3-u yui3-u-col1">Name</div>'
-                + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                + '<div class="yui3-u-1-4 yui3-u-selected">Created</div>'
-                + '<div class="yui3-u-1-4">Created by</div>'
-                + '<div class="yui3-u-1-4">Token</div>'
-                + '<div class="yui3-u-1-4">Model</div></div>'
-                + '</div></div>',
+            + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd">'
+            + '<div class="yui3-u yui3-u-col1">Name</div>'
+            + '<div class="yui3-u yui3-u-col2 yui3-g">'
+            + '<div class="yui3-u-1-4 yui3-u-selected">Created</div>'
+            + '<div class="yui3-u-1-4">Created by</div>'
+            + '<div class="yui3-u-1-4">Token</div>'
+            + '<div class="yui3-u-1-4">Model</div></div>'
+            + '</div></div>',
         renderUI: function() {
             CreatedGameTreeView.superclass.renderUI.apply(this);
             //this.treeView.plug(Y.Plugin.TreeViewFilter, {
@@ -95,13 +95,13 @@ YUI.add('wegas-lobby-treeview', function(Y) {
      */
     var JoinedGameTreeView = Y.Base.create("wegas-editor-treeview", CreatedGameTreeView, [], {
         CONTENT_TEMPLATE: '<div>'
-                + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
-                + '<div class="yui3-u yui3-u-col1">Name</div>'
-                + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
-                + '<div class="yui3-u-1-3 yui3-u-selected">Joined</div>'
-                + '<div class="yui3-u-1-3">Created by</div>'
-                + '<div class="yui3-u-1-3">Model</div></div>'
-                + '</div></div>',
+            + '<div class="yui3-g wegas-editor-treeview-table wegas-editor-treeview-tablehd" style="padding-right: 461px">'
+            + '<div class="yui3-u yui3-u-col1">Name</div>'
+            + '<div class="yui3-u yui3-u-col2 yui3-g" style="margin-right: -461px;">'
+            + '<div class="yui3-u-1-3 yui3-u-selected">Joined</div>'
+            + '<div class="yui3-u-1-3">Created by</div>'
+            + '<div class="yui3-u-1-3">Model</div></div>'
+            + '</div></div>',
         // ** Lifecycle methods ** //
         genTreeViewElements: function(elements) {
             var ret = [], i, el;
@@ -115,14 +115,14 @@ YUI.add('wegas-lobby-treeview', function(Y) {
                             ret.push({
                                 //label: el.get(NAME),
                                 label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                        + '<div class="yui3-u-1-3">'
-                                        + Wegas.Helper.smartDate(el.get("createdTime"))
-                                        + '</div>'
-                                        + '<div class="yui3-u-1-3">' + (el.get("createdByName") || "undefined") + '</div>'
-                                        + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
-                                        + '</div>',
+                                    + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                    + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                    + '<div class="yui3-u-1-3">'
+                                    + Wegas.Helper.smartDate(el.get("createdTime"))
+                                    + '</div>'
+                                    + '<div class="yui3-u-1-3">' + (el.get("createdByName") || "undefined") + '</div>'
+                                    + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
+                                    + '</div>',
                                 data: {
                                     entity: el
                                 },
@@ -154,14 +154,14 @@ YUI.add('wegas-lobby-treeview', function(Y) {
                             ret.push({
                                 //label: el.get(NAME),
                                 label: '<div class="yui3-g wegas-editor-treeview-table">'
-                                        + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
-                                        + '<div class="yui3-u yui3-u-col2 yui3-g">'
-                                        + '<div class="yui3-u-1-3">'
-                                        + Wegas.Helper.smartDate(el.get("createdTime"))
-                                        + '</div>'
-                                        + '<div class="yui3-u-1-3">' + (el.get("createdByName") || "undefined") + '</div>'
-                                        + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
-                                        + '</div>',
+                                    + '<div class="yui3-u yui3-u-col1">' + el.get(NAME) + '</div>'
+                                    + '<div class="yui3-u yui3-u-col2 yui3-g">'
+                                    + '<div class="yui3-u-1-3">'
+                                    + Wegas.Helper.smartDate(el.get("createdTime"))
+                                    + '</div>'
+                                    + '<div class="yui3-u-1-3">' + (el.get("createdByName") || "undefined") + '</div>'
+                                    + '<div class="yui3-u-1-3">' + el.get("gameModelName") + '</div></div>'
+                                    + '</div>',
                                 data: {
                                     entity: el
                                 },

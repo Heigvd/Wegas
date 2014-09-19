@@ -8,14 +8,13 @@
 .wegas-menu-content li > div{
     cursor:pointer;
     list-style-type: none;
-    padding: 3px 5px 6px;
+    padding: 4px 5px 6px;
 }
 .wegas-menu-content ul{
     position:absolute;
     top:-10px;
     display:inline-block;
     background-color:white;
-    /* overflow:hidden; */
     border: 0px solid grey;
     z-index:2;
 }
@@ -24,11 +23,9 @@
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
     box-shadow: none;
-    /* border: 1px solid grey;*/
     background: none;
 }
 .wegas-menu-content li:hover{
-    /* box-shadow: 0px 0px 1px black inset; */
     z-index:10;
     background: lightgray;
 }

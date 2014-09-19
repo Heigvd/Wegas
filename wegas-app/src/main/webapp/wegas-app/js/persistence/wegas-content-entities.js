@@ -7,10 +7,9 @@
  */
 YUI.add("wegas-content-entities", function(Y) {
     "use strict";
+    var persistence = Y.Wegas.persistence;
 
-    var Wegas = Y.Wegas;
-
-    Wegas.persistence.Content = Y.Base.create("Content", Wegas.persistence.Entity, [], {}, {
+    persistence.Content = Y.Base.create("Content", persistence.Entity, [], {}, {
         ATTRS: {
             "@class": {
                 "transient": true
@@ -26,6 +25,20 @@ YUI.add("wegas-content-entities", function(Y) {
             },
             name: {
                 type: "string",
+                optional: true,
+                _inputex: {
+                    _type: "uneditable"
+                }
+            },
+            privateContent: {
+                type: "boolean",
+                _inputex: {
+                    label: "Private"
+                }
+            },
+            inheritedPrivate: {
+                type: "boolean",
+                "transient": true,
                 _inputex: {
                     _type: "uneditable"
                 }
@@ -54,16 +67,14 @@ YUI.add("wegas-content-entities", function(Y) {
             }
         }
     });
-
-    Wegas.persistence.Directory = Y.Base.create("Directory", Wegas.persistence.Content, [], {}, {
+    persistence.Directory = Y.Base.create("Directory", persistence.Content, [], {}, {
         ATTRS: {
             "@class": {
                 value: "Directory"
             }
         }
     });
-
-    Wegas.persistence.File = Y.Base.create("File", Wegas.persistence.Content, [], {}, {
+    persistence.File = Y.Base.create("File", persistence.Content, [], {}, {
         ATTRS: {
             "@class": {
                 value: "File"
@@ -72,8 +83,8 @@ YUI.add("wegas-content-entities", function(Y) {
                 writeOnce: "initOnly",
                 setter: function(bytes) {
                     var precision = 2,
-                            sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
-                            i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
+                        sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'],
+                        i = parseInt(Math.floor(Math.log(bytes) / Math.log(1024)));
                     return (bytes / Math.pow(1024, i)).toFixed(precision) + ' ' + sizes[i];
                 },
                 _inputex: {

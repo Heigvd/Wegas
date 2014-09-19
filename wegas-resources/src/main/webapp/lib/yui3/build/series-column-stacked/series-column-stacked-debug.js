@@ -1,5 +1,5 @@
 /*
-YUI 3.16.0 (build 76f0e08)
+YUI 3.17.2 (build 9c3c78e)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -355,4 +355,4 @@ Y.StackedColumnSeries = Y.Base.create("stackedColumnSeries", Y.ColumnSeries, [Y.
 
 
 
-}, '3.16.0', {"requires": ["series-stacked", "series-column"]});
+}, '3.17.2', {"requires": ["series-stacked", "series-column"]});

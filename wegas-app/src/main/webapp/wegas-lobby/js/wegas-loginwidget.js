@@ -55,7 +55,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         <div class='partner'>\n\
                             <a href='http://www.heig-vd.ch/' target='_blank'><div class='heigvd'></div></a>\n\
                           </div>\n\
-                        <div class='licence'><p>Wegas is an inititive of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
+                        <div class='licence'><p>Wegas is an initiative of School of Business <br /> and Engineering Vaud (HEIG-VD) <br /> Wegas is under a MIT licence</p></div>\n\
                         <div class='followus'>\n\
                   <a href='http://www.albasim.com' target='_blank'><div class='albasim'></div></a>\n\
                             </div>\n\
@@ -70,20 +70,23 @@ YUI.add('wegas-loginwidget', function(Y) {
          * Call 'redirect' function if user is alread logged.
          */
         renderUI: function() {
-            var cb = this.get(CONTENTBOX), token,
-                askPassNode = cb.one(".ask-pass");
+            var cb = this.get(CONTENTBOX), token, p,
+                askPassNode = cb.one(".ask-pass"),
+                redirect = decodeURIComponent(Wegas.Helper.getURLParameter("redirect"));
 
-            if (Wegas.Helper.getURLParameter("redirect").indexOf("token") > -1) {// If the user is trying to acces a specific game
-                this.loginRequest("/GuestLogin/");
-
-            } else if (Wegas.Helper.getURLParameter("redirect").indexOf("al=true") > -1) {// If the user is trying to acces a specific game
-                cb.one(".main.left").setContent("<h1>Want to test this game ?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
-                token = Wegas.Helper.getURLParameter("redirect").substr(Wegas.Helper.getURLParameter("redirect").indexOf('token=') + 6);
+            if (redirect.indexOf("token=") > -1) {// If the user is trying to acces a specific game
+                Y.Array.find(redirect.split("?")[1].split("&"), function(c) {
+                    p = c.split("=");
+                    if (p[0] === "token") {
+                        return token = p[1];
+                    }
+                });
+                cb.one(".main.left").setContent("<h1>Want to test this game?</h1><p class='wegas-testgame'>Please login as guest or with your personal account.</p>");
                 Wegas.Facade.Game.sendRequest({
-                    request: "/FindByToken/" + token,
+                    request: "/FindByToken/" + token + "?view=Extended",
                     on: {
                         success: Y.bind(function(e) {
-                            cb.one(".main.left").append("<div class=login-gameInformation>" + Wegas.GameInformation.renderGameInformation(e.response.entities[0]) + "</div>");
+                            cb.one(".main.left").append("<div class=wegas-gameinformation>" + Wegas.GameInformation.renderGameInformation(e.response.entities[0]) + "</div>");
                         }, this),
                         failure: Y.bind(this.defaultFailureHandler, this)
                     }
@@ -126,15 +129,15 @@ YUI.add('wegas-loginwidget', function(Y) {
                                 + '</a>';
                             break;
                     }
-
+                    var imageUri = Y.Plugin.Injector.getImageUri(g.get("properties.imageUri"), g.get("gameModelId"));
                     content.push('<li><div class="article-link"><span class="text">'
                         + '<span class="article-title">' + g.get("gameModelName") + '</span>'
-                        + '<span class="description">' + g.get("description") + '</span>'
+                        + '<span class="description">' + g.get("gameModel").get("description") + '</span>'
                         + '<span class="links"><a href="game.html?token=' + g.get("token") + '&al=true">Start playing</a> '
                         + add
                         + "</span></span>"
                         + '<span class="image"><span class="image-offset">'
-                        + '<img src="' + (g.get("properties.imageUri") || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
+                        + '<img src="' + (imageUri || "wegas-lobby/images/wegas-game-thumb.png") + '" /></span></span></div></li>');
                 });
                 content.push('</ul></div>');
                 cb.one(".main.left").setContent(content.join(""));
@@ -165,9 +168,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: cb.one(".login")
             });
             this.loginButton = new Y.Button({
-                label: "Log in",
-                render: cb.one(".login")
-            });
+                label: "Log in"
+            }).render(cb.one(".login"));
             cb.one(".login").append('<a class="forgot">Forgot password?</a>');
 
             // Create and append "sign in" from
@@ -220,17 +222,14 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: cb.one(".signup")
             });
             this.signUpButton = new Y.Button({
-                label: "Sign in",
-                render: cb.one(".signup")
-            });
+                label: "Sign in"
+            }).render(cb.one(".signup"));
             this.guestLoginButton = new Wegas.Button({
-                label: "Log in as guest",
-                render: cb.one(".signup-zone .guestlogin")
-            });
+                label: "Log in as guest"
+            }).render(cb.one(".signup-zone .guestlogin"));
             this.guestTeacherLoginButton = new Wegas.Button({
-                label: "Log in as guest teacher",
-                render: cb.one(".signup-zone .guestlogin")
-            });
+                label: "Log in as guest teacher"
+            }).render(cb.one(".signup-zone .guestlogin"));
 
             // Create, append and hide from to ask a new password.
             this.sendNewPasswordForm = new Y.inputEx.Group({
@@ -244,9 +243,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                 parentEl: askPassNode
             });
             this.askPassButton = new Y.Button({
-                label: "Submit",
-                render: askPassNode
-            });
+                label: "Submit"
+            }).render(askPassNode);
             askPassNode.append('<a class="return">Create an account</a>');
             askPassNode.hide();
         },
@@ -272,7 +270,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     var data = this.loginForm.getValue();
                     this.login(data.email, data.password, data.remember);
                 } else {
-                    this.showMessageBis("error", "Invalid email, username or password", 4000);
+                    this.showMessage("error", "Invalid email, username or password", 4000);
                 }
             }, this);
 
@@ -280,7 +278,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                 if (this.createAccountForm.validate()) {
                     this.createAccount(this.createAccountForm.getValue());
                 } else {
-                    this.showMessageBis("error", "Please correct form fields", 4000);
+                    this.showMessage("error", "Please correct form fields", 4000);
                 }
             }, this);
 

@@ -60,7 +60,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
 
-            } else {
+            } else if (response.getEntity() != null) {
                 ArrayList entities = new ArrayList();
                 entities.add(response.getEntity());
                 serverResponse.setEntities(entities);
@@ -69,7 +69,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             response.setEntity(serverResponse);
 
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-//                serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
+                //serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
                 EntityUpdatedEvent e = new EntityUpdatedEvent(rmf.getUpdatedInstances());
                 serverResponse.getEvents().add(e);
                 try {
@@ -92,8 +92,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         /**
          *
          */
-        // @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-        private List<AbstractEntity> entities;
+        private List<AbstractEntity> entities = new ArrayList<>();
         /**
          *
          */

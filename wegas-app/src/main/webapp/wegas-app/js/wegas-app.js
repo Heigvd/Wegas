@@ -12,7 +12,8 @@
 YUI.add('wegas-app', function(Y) {
     "use strict";
 
-    var Wegas = Y.namespace('Wegas');
+    var Wegas = Y.namespace('Wegas');                                           // Create namespace
+
     /**
      * Create a new wegas-app
      *
@@ -57,25 +58,20 @@ YUI.add('wegas-app', function(Y) {
          * @public
          */
         render: function() {
-
-            // Add loading animation (done without YUI cause node module is not available yet)
-            document.body.innerHTML += "<div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>";
-
             var ds, dsClass, widgetCfg, totalRequests,
                 dataSources = this.get('dataSources'), //                       // Data sources cfg objects
-
                 requestCounter = 0, //                                          // Request counter 
                 onRequest = function() {                                        // When a response to initial requests is received
                     requestCounter -= 1;
                     document.getElementsByClassName("wegas-loading-app-current")[0].setAttribute("style", "width:" + ((1 - requestCounter / totalRequests) * 100) + "%");
 
                     if (requestCounter === 0) {                                 // If all initial request are completed,
-                        Y.later(10, this, function() {                          // let the loading div update
-                            this.widget = Wegas.Widget.create(widgetCfg)        // instantiate the root widget
+                        Y.later(10, this, function() {                          // Let the loading div update
+                            this.widget = Wegas.Widget.create(widgetCfg)        // Instantiate the root widget
                                 .render();                                      // and render it
-                            this.fire("render");
-                            document.getElementsByClassName("wegas-loading-app")[0].remove();
-                        });                                  // fire a render event for some eventual post processing
+                            this.fire("render");                                // Fire a render event for some eventual post processing
+                            Y.one(".wegas-loading-app").remove();
+                        });
                     }
                 };
 
@@ -108,14 +104,16 @@ YUI.add('wegas-app', function(Y) {
 
             // Post render events
             this.on("render", function() {                                      // When the first page is rendered,
-                var body = Y.one("body");
-                body.removeClass("wegas-loading-overlay");                      // Remove loading overlay on render
-                body.on("key", function() {                                     // Add shortcut to activate developper mode
-                    body.toggleClass("wegas-stdmode");                          // Toggle stdmode class on body (hides any wegas-advancedfeature)
-                    body.toggleClass("wegas-advancedmode");
+                Y.one("body").on("key", function(e) {                           // Add shortcut to activate developper mode on key 'ยง' pressed
+                    e.currentTarget.toggleClass("wegas-stdmode")                // Toggle stdmode class on body (hides any wegas-advancedfeature)
+                        .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y;                                         // Allow access to Y instance
-                }, "167", this);                                                // on key 'ฐ' pressed
-            }, this);
+                    if (!this.audio) {                                          // Mexican guy
+                        this.audio = new Audio(this.get("base") + "wegas-app/images/wegas-mexican.mp3");
+                        this.audio.play();
+                    }
+                }, "167", this);
+            });
         },
         /**
          * Destructor methods.
@@ -149,10 +147,9 @@ YUI.add('wegas-app', function(Y) {
                 msg += "\n Server reply " + Y.JSON.stringify(response, null, "\t");
 
                 if (response.exception === "org.apache.shiro.authz.UnauthenticatedException") {// If the user session has timed out,
-                    new Wegas.Panel({// show a message that invites to reconnect
+                    new Wegas.Panel({//                                         // Show a message that invites to reconnect
                         content: "<div class='icon icon-info'>You have been logged out.</div>",
                         modal: true,
-                        centered: true,
                         buttons: {
                             footer: [{
                                     label: 'Click here to reconnect',

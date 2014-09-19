@@ -12,7 +12,6 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.NoResultException;
-import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
@@ -196,10 +195,8 @@ public class GameController {
                 if (accountKey.getGame() == game && !accountKey.getUsed()) {     //Account matches currentGame and key is not used
                     accountKey.setUsed(Boolean.TRUE);
                 }
-            } else {
-                if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {         // Check game token are authorized on this game
-                    return "Team token required";                               // Return a string indicating the client it should provide an enrolment key (not an error)
-                }
+            } else if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {      // Check game token are authorized on this game
+                return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
             }
         } else {                                                                // 2nd case: single usage enrolement key
             GameEnrolmentKey gameEnrolmentKey;
@@ -215,7 +212,9 @@ public class GameController {
             if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {  // Check single usage enrolement key are authorized on this game
                 throw new WegasException("Not allowed to connect using sinle usage enrolment keys");
             }
-            gameEnrolmentKey.setUsed(true);                                     // Mark the current key as used
+            if (game.getGameModel().getProperties().getFreeForAll()) {
+                gameEnrolmentKey.setUsed(true);                                 // Mark the current key as used
+            }
         }
 
         try {                                                                   // Check if logged user is already registered in the target game
@@ -233,10 +232,12 @@ public class GameController {
                 teamFacade.create(game.getId(), team);
 
                 // Version 2: Use same team for everybody
-                //if (game.getTeams().size() <= 1) {                              // Create a team if none present (first team is debug team)
+                //if (game.getTeams().size() <= 1) {                            // Create a team if none present (first team is debug team)
                 //    teamFacade.create(game.getId(), new Team("Default"));
                 //}
-                //Team team = game.getTeams().get(1);                             // Join the first team available
+                //Team team = game.getTeams().get(1);                           // Join the first team available
+                gameFacade.joinTeam(team, userFacade.getCurrentUser());         // Finally join the team
+
                 return Arrays.asList(team, game);
             } else {
                 return game;
@@ -273,14 +274,13 @@ public class GameController {
         List<User> users = userFacade.findOrCreate(accounts);
         Game g = null;
         Player p = null;
-        StringBuilder r = new StringBuilder();
-        r.append("The following users are already part of a team in the same game:");
+        StringBuilder r = new StringBuilder("Some users have already joined this game in another team: ");
 
         for (User user : users) {
             try {
                 p = playerFacade.findByGameIdAndUserId(teamFacade.find(teamId).getGame().getId(), user.getId());
                 r.append(" - ").append(user.getName()).append(";");
-            } catch (PersistenceException e) {
+            } catch (NoResultException e) {
                 // Gotcha
             }
         }
@@ -291,6 +291,22 @@ public class GameController {
             g = gameFacade.joinTeam(teamId, user.getId()).getGame();
         }
         return g;
+    }
+
+    @POST
+    @Path("/JoinTeam/{teamId : .*}/{token : .+}")
+    public Game joinTeamByGroup(@PathParam("teamId") Long teamId, @PathParam("token") String token,
+            List<AbstractAccount> accounts) {
+        SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
+                Arrays.asList("View", "Token"));                                // Make sure the user can join
+
+        try {
+            GameEnrolmentKey gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);// Look the key up
+            gameEnrolmentKey.setUsed(true);
+        } catch (NoResultException e) {
+            // GOTCHA
+        }
+        return this.joinTeamByGroup(teamId, accounts);
     }
 
     /**

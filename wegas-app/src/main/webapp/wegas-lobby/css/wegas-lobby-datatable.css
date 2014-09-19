@@ -62,7 +62,7 @@
 
 /* Lobby datatable: inline menu */
 .yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-col-menu {
-    width: 83px;
+    width: 86px;
     padding-bottom: 0;
     padding-top: 0;
 }
@@ -73,15 +73,22 @@
     background-color: transparent;
     visibility: hidden;
     font-size: 0;
-    padding: 0 3px 0 5px;
+    padding: 0 2px 0 4px;
+}
+
+.yui3-skin-sam .wegas-lobby-datatable tr.wegas-datatable-selected .yui3-datatable-col-menu .yui3-button {
+    visibility: visible;
+}
+.yui3-skin-sam .wegas-lobby-datatable .yui3-datatable-data:hover tr.wegas-datatable-selected .yui3-datatable-col-menu .yui3-button {
+    visibility: hidden;
 }
 .yui3-skin-sam .wegas-lobby-datatable tr:hover .yui3-datatable-col-menu .yui3-button {
-    visibility: visible;
+    visibility: visible !important;
 }
 .yui3-skin-sam .wegas-lobby-datatable td.yui3-datatable-col-iconCSS {
     padding-right: 0;
 }
-.yui3-skin-sam .wegas-lobby-datatable .editor-moregamemodel-button {
+.yui3-skin-sam .wegas-lobby-datatable .editor-button-more {
     display: none;
 }
 
@@ -90,6 +97,7 @@
     display: inline-block;
     float: right;
     margin-left: 5px;
+    vertical-align: top;
 }
 .wegas-datatable-viewbuttons .yui3-button {
     padding: .4em 0.4em 0.3em 0.6em;
@@ -119,9 +127,11 @@
     margin: 0em 0.6em 0.5em 0;
     display: inline-block;
     width: 205px;
-    border: 1px solid #ededed;
+    /* border: 1px solid #ededed; */
     text-align: left;
     position: relative;
+    border-bottom: 1px solid #ededed;
+    border-right: 1px solid #ededed;
 }
 .yui3-skin-sam .wegas-datatable-grid tr.wegas-datatable-selected {
     background: none;
@@ -180,12 +190,13 @@
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-header,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-cell {
-    padding: 0.5em 0.7em 0.4em;
+    padding: 0.7em 0.7em 0.3em;
     border-bottom: none;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-iconCSS {
-    padding-right: 4px;
+    padding-right: 4px !important;
     width: 95px!important;
+    padding-left: 0px;
 }
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-name,
 .yui3-skin-sam .wegas-datatable-list .yui3-datatable-col-gameModelName {
@@ -215,6 +226,7 @@
 .yui3-skin-sam .wegas-datatable-list .wegas-lobby-datatable-icon .wegas-lobby-thumb {
     width: 95px;
     background: #ededed;
+    height: 57px;
 }
 /* Lobby datatable: table view */
 .yui3-skin-sam .wegas-datatable-table .wegas-lobby-datatable-icon .wegas-lobby-icon {

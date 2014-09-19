@@ -9,10 +9,11 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-YUI.add('wegas-plugin', function(Y) {
+YUI.add("wegas-plugin", function(Y) {
     "use strict";
 
     var HOST = "host", Plugin = Y.Plugin, Wegas = Y.namespace("Wegas"),
+        PREVIEW_PAGELOADER_ID = "previewPageLoader",
         PAGELOADER_CONFIG = {
             FULL_PAGE: {
                 label: "Entire page",
@@ -22,7 +23,7 @@ YUI.add('wegas-plugin', function(Y) {
                 label: "Current page display",
                 value: "Current page display"
             }
-        }, PREVIEW_PAGELOADER_ID = "previewPageLoader";
+        };
 
     /**
      *  @name Y.Wegas.Plugin
@@ -32,7 +33,20 @@ YUI.add('wegas-plugin', function(Y) {
      */
     Wegas.Plugin = function() {
     };
-    Y.mix(Wegas.Plugin.prototype, {});
+    Y.mix(Wegas.Plugin.prototype, {
+        defaultFailureHandler: function(e) {
+            this.get(HOST).defaultFailureHandler(e);
+        },
+        showMessage: function() {
+            return this.get(HOST).showMessage.apply(this.get(HOST), arguments);
+        },
+        showOverlay: function() {
+            return this.get(HOST).showOverlay();
+        },
+        hideOverlay: function() {
+            return this.get(HOST).hideOverlay();
+        }
+    });
     Y.mix(Wegas.Plugin, {
         ATTRS: {
             host: {
@@ -54,9 +68,8 @@ YUI.add('wegas-plugin', function(Y) {
          * @description Get Class From plugin name. Hopefully a unique name ...
          */
         getPluginFromName: function(name) {
-            var i;
-            for (i in Y.Plugin) {
-                if (Y.Plugin[i].NAME === name) {
+            for (var i in Plugin) {
+                if (Plugin[i].NAME === name) {
                     return "" + i;
                 }
             }
@@ -73,14 +86,13 @@ YUI.add('wegas-plugin', function(Y) {
      */
     var Action = Y.Base.create("wegas-actionplugin", Plugin.Base, [Wegas.Plugin, Wegas.Editable], {
         /** @lends Y.Plugin.Action */
-
         /**
          * @function
          * @private
          */
         initializer: function() {
             this.handlers = [];
-            this.get("host").get("boundingBox").addClass("wegas-" + this.get("targetEvent"));
+            this.get(HOST).get("boundingBox").addClass("wegas-" + this.get("targetEvent"));
             this.onHostEvent(this.get("targetEvent"), this.execute);
         },
         /**
@@ -96,8 +108,7 @@ YUI.add('wegas-plugin', function(Y) {
          * @description Detach all functions created by this widget.
          */
         destructor: function() {
-            var i;
-            for (i = 0; i < this.handlers.length; i += 1) {
+            for (var i = 0; i < this.handlers.length; i += 1) {
                 if (this.handlers[i].detach) { // EventHandle
                     this.handlers[i].detach();
                 } else if (this.handlers[i].cancel) { //Timer
@@ -107,7 +118,6 @@ YUI.add('wegas-plugin', function(Y) {
         }
     }, {
         NS: "wegas",
-        NAME: "Action",
         ATTRS: {
             targetEvent: {
                 type: "string",
@@ -125,15 +135,11 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var OpenUrlAction = function() {
-        OpenUrlAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenUrlAction, Action, {
-        _getUrl: function () {
-           return this.get("url");
-        },
+    var OpenUrlAction = Y.Base.create("OpenUrlAction", Action, [], {
         execute: function() {
-            var url = this._getUrl("url");
+            this.open(this.get("url"));
+        },
+        open: function(url) {
             if (url.indexOf("http://") === -1) {
                 url = Wegas.app.get("base") + url;
             }
@@ -145,12 +151,10 @@ YUI.add('wegas-plugin', function(Y) {
         }
     }, {
         NS: "openurlaction",
-        NAME: "OpenUrlAction",
         ATTRS: {
             url: {
                 type: "string",
                 _inputex: {
-                    //_type: "wegasurl"
                     label: "Open url"
                 }
             },
@@ -181,32 +185,26 @@ YUI.add('wegas-plugin', function(Y) {
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var PrintActionPlugin = function() {
-        PrintActionPlugin.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(PrintActionPlugin, Action, {
+    var PrintActionPlugin = Y.Base.create("PrintActionPlugin", Action, [], {
         execute: function() {
-            var outputType = this.get("outputType");
-            //var gameModelId = Wegas.Facade.GameModel.get("currentGameModelId");
-            var playerId = Y.Wegas.Facade.Game.get("currentPlayerId");
-            var root = this.get("root.evaluated").get('name');
-            var printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
+            var outputType = this.get("outputType"),
+                playerId = Wegas.Facade.Game.get("currentPlayerId"),
+                root = this.get("root.evaluated").get("name"),
+                printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
             window.open(printUrl);
         }
     }, {
         NS: "PrintActionPlugin",
-        NAME: "PrintActionPlugin",
         ATTRS: {
             root: {
                 /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "Variable"/*,
-                    classFilter: ["ListDescriptor"]*/
+                    label: "Variable"
                 }
             },
             /**
@@ -215,13 +213,7 @@ YUI.add('wegas-plugin', function(Y) {
             outputType: {
                 type: "string",
                 value: "html",
-                choices: [{
-                        value: "html",
-                        label: "HTML"
-                    }, {
-                        value: "pdf",
-                        label: "PDF"
-                    }],
+                choices: ["html", "pdf"],
                 _inputex: {
                     label: "output type"
                 }
@@ -237,10 +229,7 @@ YUI.add('wegas-plugin', function(Y) {
      *  @module Wegas
      *  @constructor
      */
-    var OpenPageAction = function() {
-        OpenPageAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(OpenPageAction, Action, {
+    var OpenPageAction = Y.Base.create("OpenPageAction", Action, [], {
         initializer: function() {
             this.afterHostEvent("render", function() {
                 var targetPageLoader = this._getTargetPageLoader();
@@ -258,7 +247,7 @@ YUI.add('wegas-plugin', function(Y) {
         },
         execute: function() {
             var targetPageLoader = this._getTargetPageLoader();
-            if (!targetPageLoader || this.get("host").get("disabled")) {
+            if (!targetPageLoader || this.get(HOST).get("disabled")) {
                 return;
             }
             /* 
@@ -271,13 +260,13 @@ YUI.add('wegas-plugin', function(Y) {
                 }, this, targetPageLoader)));
         },
         _getTargetPageLoader: function() {
-            var targetPageLoader, plID = this.get('targetPageLoaderId');
+            var targetPageLoader, plID = this.get("targetPageLoaderId");
             switch (plID) {
                 case PAGELOADER_CONFIG.FULL_PAGE.value:
                     targetPageLoader = Wegas.PageLoader.find(PREVIEW_PAGELOADER_ID);
                     break;
                 case PAGELOADER_CONFIG.CURRENT_PAGE_LOADER.value:
-                    targetPageLoader = Y.Widget.getByNode(this.get("host").get("root").get("boundingBox").ancestor());
+                    targetPageLoader = Y.Widget.getByNode(this.get(HOST).get("root").get("boundingBox").ancestor());
                     break;
                 default:
                     targetPageLoader = Wegas.PageLoader.find(plID);
@@ -285,9 +274,8 @@ YUI.add('wegas-plugin', function(Y) {
             return targetPageLoader;
         },
         _subpage: function() {
-            var variable;
             if (this.get("variable.content")) {
-                variable = this.get("variable.evaluated");
+                var variable = this.get("variable.evaluated");
                 if (variable) {
                     return variable.getInstance().get("value");
                 }
@@ -296,7 +284,6 @@ YUI.add('wegas-plugin', function(Y) {
         }
     }, {
         NS: "OpenPageAction",
-        NAME: "OpenPageAction",
         ATTRS: {
             subpageId: {
                 type: "string",
@@ -319,7 +306,7 @@ YUI.add('wegas-plugin', function(Y) {
                 }
             },
             variable: {
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 _inputex: {
                     _type: "variableselect",
@@ -329,31 +316,29 @@ YUI.add('wegas-plugin', function(Y) {
         }
     });
     Plugin.OpenPageAction = OpenPageAction;
+
     /**
      *  @class
      *  @name Y.Plugin.ExecuteScriptAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var ExecuteScriptAction = function() {
-        ExecuteScriptAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(ExecuteScriptAction, Action, {
+    var ExecuteScriptAction = Y.Base.create("ExecuteScriptAction", Action, [], {
         execute: function() {
-            var host = this.get(HOST);
-            if (!host.get("disabled")) {
-                host.showOverlay();
-                Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
-                    on: {
-                        success: Y.bind(host.hideOverlay, host),
-                        failure: Y.bind(host.defaultFailureHandler, host)
-                    }
-                });
+            if (!this.get(HOST).get("disabled")) {
+                Wegas.Panel.confirmPlayerAction(Y.bind(function() {
+                    this.showOverlay();
+                    Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
+                        on: {
+                            success: Y.bind(this.hideOverlay, this),
+                            failure: Y.bind(this.defaultFailureHandler, this)
+                        }
+                    });
+                }, this));
             }
         }
     }, {
         NS: "ExecuteScriptAction",
-        NAME: "ExecuteScriptAction",
         ATTRS: {
             onClick: {
                 _inputex: {
@@ -366,21 +351,45 @@ YUI.add('wegas-plugin', function(Y) {
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
     /**
      *  @class
+     *  @name Y.Plugin.ConfirmExecuteScriptAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var ConfirmExecuteScriptAction = Y.Base.create("ConfirmExecuteScriptAction", ExecuteScriptAction, [], {
+        execute: function() {
+            if (!this.get(HOST).get("disabled")) {
+                Wegas.Panel.confirm(this.get("message"), Y.bind(ConfirmExecuteScriptAction.superclass.execute, this));
+            }
+        }
+    }, {
+        NS: "ExecuteScriptAction",
+        ATTRS: {
+            message: {
+                type: "string",
+                value: "",
+                _inputex: {
+                    label: "message"
+                }
+            }
+        }
+    });
+    Plugin.ConfirmExecuteScriptAction = ConfirmExecuteScriptAction;
+
+    /**
+     *  @class
      *  @name Y.Plugin.SaveObjectAction
      *  @extends Y.Plugin.Action
      *  @constructor
      */
-    var SaveObjectAction = function() {
-        SaveObjectAction.superclass.constructor.apply(this, arguments);
-    };
-    Y.extend(SaveObjectAction, Action, {
+    var SaveObjectAction = Y.Base.create("SaveObjectAction", Action, [], {
         execute: function(e) {
-            var overlayGuest,
+            var overlayGuest, i,
                 host = this.get(HOST),
                 guest = host.get("root"),
                 variable = this.get("variable.evaluated"),
                 data = variable.get("name") + ".properties",
-                script = this.get("clearStorage") ? data + ".clear();" : "", i;
+                script = this.get("clearStorage") ? data + ".clear();" : "";
+
             if (guest.showOverlay && guest.hideOverlay) {
                 overlayGuest = guest;
                 overlayGuest.showOverlay();
@@ -392,29 +401,24 @@ YUI.add('wegas-plugin', function(Y) {
 
             Wegas.Facade.Variable.script.run(script, {
                 on: {
-                    success: function(r) {
-                        if (overlayGuest) {
-                            overlayGuest.hideOverlay();
-                        }
+                    success: function() {
+                        overlayGuest && overlayGuest.hideOverlay();
                     },
-                    failure: function(r) {
-                        if (overlayGuest) {
-                            overlayGuest.hideOverlay();
-                        }
+                    failure: function() {
+                        overlayGuest && overlayGuest.hideOverlay();
                     }
                 }
             });
         }
     }, {
         NS: "SaveObjectAction",
-        NAME: "SaveObjectAction",
         ATTRS: {
             variable: {
                 /**
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
-                getter: Y.Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
                     legend: "Save to",

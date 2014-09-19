@@ -8,199 +8,161 @@
 YUI.add("wegas-teaching-main", function(Y) {
     "use strict";
 
-    var CONTENTBOX = "contentBox", TeachingMain;
+    var CONTENTBOX = "contentBox", Wegas = Y.Wegas;
 
-    TeachingMain = Y.Base.create("wegas-teaching-main", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
+    Wegas.TeachingMain = Y.Base.create("wegas-teaching-main", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div><div class='layer' style='width:100%;height:620px;'></div></div>",
-        // Graphic (Y.Graphic used to draw arrows)
-        graphic: null,
-        // Arrow const
-        ARROW_NONE: 0,
-        ARROW_NORMAL: 1,
-        ARROW_INVERSE: 2,
-        ARROW_DOUBLE: 3,
-        // Orientation const
-        ORIENTATION_HORIZONTAL: 0,
-        ORIENTATION_VERTICAL: 1,
-        // Ref on selected arrow
-        currentArrow: null,
-        // Ref on selected rectangle
-        currentRectangle: null,
-        // Editors (modal form)
-        arrowEditor: null,
-        rectangleEditor: null,
         renderUI: function() {
+            var rectangles = [
+                [3, 0], [300, 0], [595, 0],
+                [3, 225], [300, 225], [595, 225],
+                [3, 450], [300, 450], [595, 450]
+            ],
+                arrows = [[[100, 145], [100, 220]], [[375, 145], [375, 220]],
+                    [[650, 145], [650, 220]], [[200, 70], [295, 70]],
+                    [[495, 70], [590, 70]], [[200, 295], [295, 295]],
+                    [[495, 295], [590, 295]], [[100, 370], [100, 445]],
+                    [[375, 370], [375, 445]], [[650, 370], [650, 445]],
+                    [[200, 520], [295, 520]], [[495, 520], [590, 520]]];
+
             this.graphic = new Y.Graphic({
-                render: this.get(CONTENTBOX).one(".layer"),
                 autoDraw: true
-            });
-            /* Create and add 12 arrows */
-            this.createArrow(100, 225, 100, 300, 1);// Horizontal
-            this.createArrow(375, 225, 375, 300, 2);
-            this.createArrow(650, 225, 650, 300, 3);
-            this.createArrow(200, 150, 295, 150, 4);
-            this.createArrow(495, 150, 590, 150, 5);
-            this.createArrow(200, 375, 295, 375, 6);
-            this.createArrow(495, 375, 590, 375, 7);
-            this.createArrow(100, 450, 100, 525, 8);
-            this.createArrow(375, 450, 375, 525, 9);
-            this.createArrow(650, 450, 650, 525, 10);
-            this.createArrow(200, 600, 295, 600, 11);
-            this.createArrow(495, 600, 590, 600, 12);
+            }).render(this.get(CONTENTBOX).one(".layer"));
 
-            /* Create and add 9 rectangles */
-            var i, themes = this.get("themes"),
-                pos = [
-                    [3, 78], [300, 78], [595, 78],
-                    [3, 305], [300, 305], [595, 305],
-                    [3, 530], [300, 530], [595, 530]
-                ];
-            for (i = 0; i < 9; i += 1) {
-                this.createRectangle(pos[i][0], pos[i][1], i, themes[i] || "Undefined");
-            }
+            Y.Array.each(arrows, function(a, i) {                               // Create and add 12 arrows 
+                this.createArrow(a[0], a[1], i + 1);
+            }, this);
 
-            /* Init editors */
-            this.initArrowEditor();
+            Y.Array.each(rectangles, function(r, i) {                           // Create and add the 9 rectangles
+                this.createRectangle(r, i + 1);
+            }, this);
+
+            this.initArrowEditor();                                             // Init editors
             this.initRectangleEditor();
         },
         bindUI: function() {
-            this.bindDragDrop();
+            this.get(CONTENTBOX).all(".yui3-wegas-teaching-rectangle").each(function(n) {
+                var drop = new Y.DD.Drop({//                                    // Init drop
+                    node: n
+                }),
+                    drag = new Y.DD.Drag({//                                    // Init drag
+                        node: n
+                    }).plug(Y.Plugin.DDProxy, {
+                    moveOnEnd: false                                            // We don't want the node to move on end drag
+                }).plug(Y.Plugin.DDConstrained, {
+                    constrain2node: this.get(CONTENTBOX)                        // Keep nodes inside the workarea
+                });
+                drag.on("drag:drophit", function(e) {
+                    var drag = Y.Widget.getByNode(e.drag.get("node")),
+                        drop = Y.Widget.getByNode(e.drop.get("node")),
+                        tmpDescription = drag.get("description"),
+                        tmpLabel = drag.get("label"),
+                        tmpId = drag.get("rId");
+
+                    drag.set("description", drop.get("description"))            // Switch descriptionsand label
+                        .set("label", drop.get("label"))
+                        .set("rId", drop.get("rId"));
+                    drop.set("description", tmpDescription)
+                        .set("label", tmpLabel)
+                        .set("rId", tmpId);
+
+                    Wegas.Facade.Variable.script.run(
+                        'Variable.find(gameModel, "positions").setProperty(self, "position' + drop.get("position") + '", "' + drop.get("rId") + '");'
+                        + 'Variable.find(gameModel, "positions").setProperty(self, "position' + drag.get("position") + '", "' + drag.get("rId") + '");');
+                }, this);
+            }, this);
         },
         destructor: function() {
+            this.graphic.destroy();
             this.buttonGroup.destroy();
             this.arrowEditor.destroy();
-            this.rectangleEditor.destroy();
             try {
                 this.editor.destroy();
             } catch (e) {
                 // @FIXME Editor do throw errors on destruction
             }
+            this.rectangleEditor.destroy();
         },
-        showRectangleEditor: function(e, rectangle) {
+        showRectangleEditor: function(e) {
             if (e.domEvent.target.hasClass("label"))                            // Clicks on label dont show editor
                 return;
 
-            this.currentRectangle = rectangle;
-
-            this.rectangleEditor.set("headerContent", "Edit definition for " + this.currentRectangle.get("label"));
-            this.editor.set('content', rectangle.get('description'));
-            this.rectangleEditor.show();
-            this.editor.focus();
+            this.currentRectangle = e.target;
+            this.rectangleEditor.set("headerContent", "Edit definition of " + this.currentRectangle.get("label"));
+            this.editor.set("content", e.target.get("description"));
+            this.rectangleEditor.show()
+                .set("xy", [(Y.DOM.winWidth() / 2) - 300, 100]);
         },
         showArrowEditor: function(arrow) {
-            this.currentArrow = arrow;
-
-            // Set correct image (vertical or horizontal)
-            var direction = (arrow.get('orientation') == this.ORIENTATION_HORIZONTAL) ? "horizontal" : "vertical",
+            var direction = arrow.get("orientation") ? "vertical" : "horizontal",
+                directions = ["normal", "inverse", "double", "none"],
                 buttons = this.buttonGroup.getButtons();
 
-            buttons.item(0).set('label', '<span class="icon ' + direction + '-normal"></span>');
-            buttons.item(1).set('label', '<span class="icon ' + direction + '-inverse"></span>');
-            buttons.item(2).set('label', '<span class="icon ' + direction + '-double"></span>');
-            buttons.item(3).set('label', '<span class="icon ' + direction + '-none"></span>');
+            this.currentArrow = arrow;
 
-            this.setArrowEditorButtons(arrow.get('val'));
-            this.getArrowEditorInput().set("value", arrow.get('text'));//.focus();
-            this.arrowEditor.show();
+            buttons.each(function(n, i) {
+                n.toggleClass(Y.ButtonGroup.CLASS_NAMES.SELECTED, +n.get("value") == +arrow.get("val"))
+                    .set("labelHTML", '<span class="icon ' + direction + '-' + directions[i] + '"></span>');// Set correct image (vertical or horizontal)
+            });
+            this.getArrowEditorInput().set("value", arrow.get("text"));
+            this.arrowEditor.show().set("xy", [(Y.DOM.winWidth() / 2) - 150, 100]);
         },
-        createArrow: function(x1, y1, x2, y2, id) {
-            //var arrowInstance = Y.Wegas.Facade.Variable.cache.find("name", "arrow" + id);
-            //var val = arrowInstance.getInstance().get("value");
-            var arrowInstance = Y.Wegas.Facade.Variable.cache.find("name", "fleche" + id).getInstance(),
+        createArrow: function(xyStart, xyEnd, id) {
+            var arrowInstance = Wegas.Facade.Variable.cache.find("name", "fleche" + id).getInstance(),
                 val = arrowInstance.get("properties").value,
                 text = arrowInstance.get("properties").text,
-                color = this.getColorByVal(val),
-                orientation = x1 == x2, // true = 1: vertical (else horizontal)
+                orientation = xyStart[0] == xyEnd[0], // true = 1: vertical (else horizontal)
                 arrow = this.graphic.addShape({
                     type: Y.TeachingArrow,
                     stroke: {
                         weight: 5,
-                        color: color
+                        color: val == 0 ? "rgb(200,200,200)" : "rgb(0,0,0)",
                     },
-                    src: [x1, y1],
-                    tgt: [x2, y2],
+                    src: xyStart,
+                    tgt: xyEnd,
                     id: id,
                     val: val,
                     text: text,
                     orientation: orientation
                 }),
-                handleClick = Y.bind(this.showArrowEditor, this, arrow),
-                node = Y.Node(arrow.get('node'));
+                handleClick = Y.bind(this.showArrowEditor, this, arrow);
 
-            node.on('click', handleClick);
-            //this.createButton(x1, y1, orientation, handleClick);
-            arrow.label = this.createLabel(x1, y1, text, orientation, handleClick);
+            Y.Node(arrow.get("node")).on("click", handleClick);
+            arrow.label = this.createLabel(xyStart[0], xyStart[1], text, orientation);
+            arrow.label.on("click", handleClick);
         },
-        createButton: function(x1, y1, orientation, handleClick) {
-            // Button to edit arrow
-            var cb = this.get("contentBox"),
-                buttonWidget = new Y.Button({
-                    label: "Éditer",
-                    render: cb
-                }), button = buttonWidget.get("contentBox");
+        createLabel: function(x1, y1, text, orientation) {
+            var label = Y.Node.create("<div class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd'>" + (text || "<em>Click to edit</em>") + "</div><div class='yui3-widget-ft'><div></div></div></div></div>");
 
-            button.setStyle('position', 'absolute');
+            this.get(CONTENTBOX).append(label);
 
-            // Apply styles (difference between vertical and horizontal arrow)
-            if (orientation == this.ORIENTATION_VERTICAL) {
-                button.setStyles({left: x1 - 60, top: y1 + 26});
-            } else { // horizontal
-                button.setStyles({left: x1 + 16, top: y1 - 40});
-
-            }
-            buttonWidget.on('click', handleClick, this);
-        },
-        createLabel: function(x1, y1, text, orientation, handleClick) {
-            var cb = this.get("contentBox"),
-                label = Y.Node.create("<div class='yui3-tooltip'><div class='yui3-tooltip-content'><div class='yui3-widget-bd' style='overflow:hidden;text-overflow:ellipsis;'>Lien blabla blabla blabla</div><div class='yui3-widget-ft'><div></div></div></div></div>");
-            cb.append(label);
-            label.setStyle('position', 'absolute');
-            var child = label.one('*');
-            child.one('*').setHTML((text && text.length > 0) ? text : "<em>Click to edit</em>");
-
-            if (orientation == this.ORIENTATION_VERTICAL) {
-                label.setStyle('left', x1 + 25);
-                label.setStyle('top', y1 + 25);
-                child.addClass('yui3-tooltip-align-right');
-            } else { // horizontal
-                label.setStyle('left', x1 + 13);
-                label.setStyle('top', y1 + 25);
-                child.addClass('yui3-tooltip-align-bottom');
-            }
-            label.on('click', handleClick, this);
-
+            label.one("*").addClass(orientation ? "yui3-tooltip-align-right" : "yui3-tooltip-align-bottom");
+            label.setStyles(orientation ? {
+                left: x1 + 25,
+                top: y1 + 25
+            } : {// horizontal
+                left: x1 + 13,
+                top: y1 + 25
+            });
             return label;
         },
-        createRectangle: function(x, y, id, label) {
-            //var rectangles = Y.Wegas.Facade.Variable.cache.find("name", "rectangles").getAttrs().items;
-            //var val = rectangles[id].getInstance().get("value");
-            var cb = this.get("contentBox"),
-                rectangleInstance = Y.Wegas.Facade.Variable.cache.find("name", "rectangle" + (id + 1)),
+        createRectangle: function(xy, position) {
+            var positions = Wegas.Facade.Variable.cache.find("name", "positions"),
+                id = positions.getInstance().get("properties.position" + position),
+                rectangleInstance = Wegas.Facade.Variable.cache.find("name", "rectangle" + id),
                 val = rectangleInstance.getInstance().get("value");
-            var ereg = /(.*)\|\|\|/i, // the label is the first part of the string separated with a "|||"
-                label = (val.match(ereg, "$1") && val.match(ereg, "$1")[1]) || label,
-                description = val.replace(ereg, ""),
-                rectangle = new Y.Wegas.TeachingRectangle({
-                    x: x,
-                    y: y,
-                    label: label,
-                    description: description,
-                    id: id
-                });
 
-            rectangle.render(cb);
-            rectangle.on('click', this.showRectangleEditor, this, rectangle);
-        },
-        saveCurrentArrow: function() {
-            Y.Wegas.Facade.Variable.script.run(
-                "fleche" + this.currentArrow.get("id") + ".properties.put('value','" + this.currentArrow.get("val") + "');" +
-                "fleche" + this.currentArrow.get("id") + ".properties.put('text','" + this.currentArrow.get("text") + "');");
-        },
-        saveCurrentRectangle: function() {
-            this.saveRectangle(this.currentRectangle);
-        },
-        saveRectangle: function(rectangle) {
-            Y.Wegas.Facade.Variable.script.run("rectangle" + (rectangle.get("id") + 1) + ".value='" + String(rectangle.get("label")).replace(/'/g, '&#39;') + "|||" + String(rectangle.get("description")).replace(/'/g, '&#39;') + "';");
+            new Wegas.TeachingRectangle({
+                x: xy[0],
+                y: xy[1],
+                label: this.get("themes")[id] || "Undefined",
+                description: val,
+                rId: id,
+                position: position,
+                on: {
+                    click: Y.bind(this.showRectangleEditor, this)
+                }
+            }).render(this.get(CONTENTBOX));
         },
         initArrowEditor: function() {
             this.arrowEditor = new Y.Panel({
@@ -212,44 +174,42 @@ YUI.add("wegas-teaching-main", function(Y) {
                     + "<button value=\"2\"></button>"
                     + "<button value=\"3\"></button>"
                     + "<button value=\"0\"></button></div><br/>",
-                xy: [120, 100],
                 width: 300,
                 zIndex: 50000,
                 modal: true,
-                visible: false,
-                render: true
-                    //plugins: [Y.Plugin.Drag]
-            });
-            this.arrowEditor.addButton({
-                value: 'Save',
+                visible: false
+            }).render().addButton({
+                value: "Save",
                 section: Y.WidgetStdMod.FOOTER,
                 context: this,
                 action: function() {
-                    var text = this.getArrowEditorInput().get('value');
-                    this.currentArrow.setType(this.getArrowEditorType());
+                    var text = this.getArrowEditorInput().get("value");
+                    this.currentArrow.setType(+this.buttonGroup.getSelectedButtons()[0].get("value"));
                     this.currentArrow.setText(text);
-                    this.saveCurrentArrow();
-                    this.currentArrow.label.one('* *').setHTML((text && text.length > 0) ? text : "<em>Click to edit</em>");
+                    this.currentArrow.label.one("* *").setHTML(text || "<em>Click to edit</em>");
                     this.arrowEditor.hide();
+
+                    Wegas.Facade.Variable.script.run(
+                        "Variable.find(gameModel, 'fleche" + this.currentArrow.get("id") + "').getInstance(self).properties.put('value','" + this.currentArrow.get("val") + "');" +
+                        "Variable.find(gameModel, 'fleche" + this.currentArrow.get("id") + "').getInstance(self).properties.put('text','" + this.currentArrow.get("text") + "');");
                 }
             });
 
-            var links = this.get("availableLinkLabels"),
-                bodyNode = this.arrowEditor.getStdModNode("body"),
+            var bodyNode = this.arrowEditor.getStdModNode("body"),
                 inputNode = bodyNode.one("input");
 
             bodyNode.setStyles({
                 padding: "8px",
                 overflow: "visible"
             });
+
             inputNode.plug(Y.Plugin.AutoComplete, {
                 resultHighlighter: "phraseMatch",
-                //resultFilters: "phraseMatch",
-                source: links,
+                source: this.get("availableLinkLabels"),
                 queryDelay: 0,
                 minQueryLength: 0
             });
-            inputNode.on(['focus', "click"], function(e) {
+            inputNode.on(["focus", "click"], function() {
                 this.ac.sendRequest(this.get("value"));
                 this.ac.show();
             });
@@ -257,100 +217,51 @@ YUI.add("wegas-teaching-main", function(Y) {
 
             this.buttonGroup = new Y.ButtonGroup({
                 srcNode: bodyNode.one(".arrow-buttons"),
-                type: 'radio'
+                type: "radio"
             }).render();
         },
         initRectangleEditor: function() {
             this.rectangleEditor = new Y.Panel({
                 bodyContent: "<div id='editor'></div>",
-                width: 300,
+                width: 600,
                 zIndex: 50000,
-                xy: [120, 100],
                 modal: true,
-                visible: false,
-                //plugins: [Y.Plugin.Drag],
-                render: true
-            });
-            this.rectangleEditor.addButton({
-                value: 'Save',
+                visible: false
+            }).render().addButton({
+                value: "Save",
                 section: Y.WidgetStdMod.FOOTER,
                 context: this,
-                action: function(e) {
+                action: function() {
                     this.currentRectangle.set("description", this.editor.get("content"));
-                    this.saveCurrentRectangle();
+                    Wegas.Facade.Variable.script.run(
+                        "Variable.find(gameModel, 'rectangle" + this.currentRectangle.get("rId") + "').setValue(self, '" + this.currentRectangle.get("description").replace(/'/g, '&#39;') + "');");
                     this.rectangleEditor.hide();
                 }
             });
 
-            var bodyNode = this.rectangleEditor.getStdModNode("body");
-            bodyNode.setStyle("padding", "8px");
+            var bodyNode = this.rectangleEditor.getStdModNode("body")
+                .setStyle("padding", "8px");
 
-            this.editor = new Y.EditorBase({
-                content: '<p>Test</p>'
-            });
-            this.editor.plug(Y.Plugin.ITSAToolbar, {
-                btnEmail: false,
-                btnFontfamily: false,
-                btnHeader: false,
-                btnFontsize: false,
-                btnHyperlink: false,
-                btnMarkcolor: false,
-                btnTextcolor: false,
-                grpAlign: false,
-                grpIndent: false,
-                grpLists: false,
-                grpSubsuper: false,
-                grpUndoredo: false,
-                btnSize: 3
-            });
-            this.editor.render(bodyNode.one("#editor"));
-        },
-        getColorByVal: function(val) {
-            if (val == this.ARROW_NONE) {
-                return 'rgb(200,200,200)';
-            } else {
-                return 'rgb(0,0,0)';
-            }
-        },
-        setArrowEditorButtons: function(val) {
-            this.buttonGroup.getButtons().each(function(n) {
-                n.toggleClass(Y.ButtonGroup.CLASS_NAMES.SELECTED, +n.get("value") === +val);
-            });
-        },
-        getArrowEditorType: function() {
-            return +this.buttonGroup.getSelectedButtons()[0].get("value");
+            this.editor = new Y.EditorBase()
+                .plug(Y.Plugin.ITSAToolbar, {
+                    btnEmail: false,
+                    btnFontfamily: false,
+                    btnHeader: false,
+                    btnFontsize: false,
+                    btnHyperlink: false,
+                    btnMarkcolor: false,
+                    btnTextcolor: false,
+                    grpAlign: false,
+                    grpIndent: false,
+                    grpLists: false,
+                    grpSubsuper: false,
+                    grpUndoredo: false,
+                    btnSize: 3
+                }).render(bodyNode.one("#editor"));
         },
         getArrowEditorInput: function() {
             return this.arrowEditor.getStdModNode("body").one("input");
-        },
-        bindDragDrop: function() {
-            this.get(CONTENTBOX).all('.yui3-wegas-teaching-rectangle').each(function(n) {
-                var drop = new Y.DD.Drop({//                                    // Init drop
-                    node: n
-                }),
-                    drag = new Y.DD.Drag({//                                        // Init drag
-                        node: n
-                    }).plug(Y.Plugin.DDProxy, {
-                    moveOnEnd: false                                            // We don't want the node to move on end drag
-                }).plug(Y.Plugin.DDConstrained, {
-                    constrain2node: this.get(CONTENTBOX)                        // Keep nodes inside the workarea
-                });
-
-                drag.on('drag:drophit', function(e) {
-                    var drag = Y.Widget.getByNode(e.drag.get('node')),
-                        drop = Y.Widget.getByNode(e.drop.get('node')),
-                        tmpDescription = drag.get("description"),
-                        tmpLabel = drag.get("label");
-
-                    drag.set("description", drop.get("description"));           // Switch descriptionsand label
-                    drag.set("label", drop.get("label"));
-                    drop.set("description", tmpDescription);
-                    drop.set("label", tmpLabel);
-                    this.saveRectangle(drag);
-                    this.saveRectangle(drop);
-                }, this);
-            }, this);
-        },
+        }
     }, {
         ATTRS: {
             themes: {
@@ -359,10 +270,8 @@ YUI.add("wegas-teaching-main", function(Y) {
             },
             availableLinkLabels: {
                 type: "array",
-                value: ["Est équivalent", "Utilise", "Spécialise", "Sous-ensemble", "Appartient"]
+                value: ["Est Ã©quivalent", "Utilise", "SpÃ©cialise", "Sous-ensemble", "Appartient"]
             }
         }
     });
-
-    Y.Wegas.TeachingMain = TeachingMain;
 });

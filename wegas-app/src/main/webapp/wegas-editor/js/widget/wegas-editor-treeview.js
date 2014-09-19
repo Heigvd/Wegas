@@ -36,9 +36,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
             this.currentSelection = -1;
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Instantiate treeview
-            this.treeView.addTarget(this);                                      // Listen to treeview's events
-            this.treeView.render(this.get(CONTENTBOX));                         // Render treeview                   
+            }).render(this.get(CONTENTBOX))                                     // Instantiate & render treeview
+                .addTarget(this);                                               // Listen to treeview's events
 
             this.plug(Plugin.EditorTVContextMenu);                              // Open context menu on right click
             this.plug(Plugin.RememberExpandedTreeView);                         // Selected node is preserved across requests
@@ -134,14 +133,13 @@ YUI.add("wegas-editor-treeview", function(Y) {
         }
     }, {
         /** @lends Y.Wegas.EditorTreeView */
-
         /**
          * <p><strong>Attributes</strong></p>
          * <ul>
          *    <li>includeClasses a list of entity classes names that will be included</li>
          *    <li>excludeClasses a list of entity classes that will be excluded</li>
          *    <li>emptyMessage string message to display if there are no entity
-         *    to display <i>default: "No data to display"</i></li>
+         *    to display <i>default: "Empty"</i></li>
          *    <li>dataSelector</li>
          *    <li>dataSource</li>
          *    <li>request</li>
@@ -152,7 +150,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
          */
         ATTRS: {
             emptyMessage: {
-                value: "No data to display"
+                value: "Empty"
             },
             dataSelector: {},
             dataSource: {
@@ -181,18 +179,13 @@ YUI.add("wegas-editor-treeview", function(Y) {
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: this.get("emptyMessage")
-            });                                                                 // Render the treeview
-            this.treeView.addTarget(this);
-            this.treeView.render(this.get(CONTENTBOX).one(".treeview"));
+            })                                                                 // Render the treeview
+                .addTarget(this)
+                .render(this.get(CONTENTBOX).one(".treeview"));
 
             this.plug(Plugin.RememberExpandedTreeView);
             this.plug(Plugin.WidgetToolbar);
 
-            this.treeView.each(function(n) {
-                if (n.get("data.entity").get("players") && !n.get("data.entity").get("players").length) {
-                    n.get("boundingBox").addClass("noPlayer");
-                }
-            });
             //this.plug(Plugin.EditorTVToggleClick);
             //if (this.isFreeForAll()) {                                        // @hack Change the display if the gamemodel is freeforall
             //    this.get("parent").set("label", "Players");
@@ -228,14 +221,15 @@ YUI.add("wegas-editor-treeview", function(Y) {
                     return {
                         type: "TreeNode",
                         collapsed: !expanded,
-                        selected: entity.get("id") === Wegas.Facade.Game.get("currentTeamId") ? 2 : 0,
+                        selected: entity.get("id") === Wegas.Facade.Game.get("currentTeamId") ? 1 : 0,
                         //selected: selected,
                         label: entity.get(NAME),
                         children: children,
                         data: {
                             entity: entity
                         },
-                        iconCSS: "wegas-icon-team"
+                        iconCSS: "wegas-icon-team",
+                        cssClass: children.length ? "" : "noPlayer"
                     };
 
                 case "Player":
@@ -435,7 +429,6 @@ YUI.add("wegas-editor-treeview", function(Y) {
     Plugin.EditorTVToggleClick = Y.Base.create("EditorTVToggleClick", Plugin.Base, [], {
         initializer: function() {
             this.onHostEvent("treenode:click", function(e) {
-                //this.collapseAll();
                 e.target.toggleTree();
             });
         }

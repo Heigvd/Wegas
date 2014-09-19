@@ -23,9 +23,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
      * @description Manage a canevas gauge based on a instance's value
      */
     GaugeDisplay = Y.Base.create("wegas-gauge", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
-        /**
-         * @lends Y.Wegas.GaugeDisplay#
-         */
+        /** @lends Y.Wegas.GaugeDisplay# */
         // *** Private fields *** //
         /**
          * Content box of this widget, static
@@ -67,7 +65,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                 angle: this.angleTransform(cfg.angle) || 0.15, // The length of each line
                 lineWidth: cfg.lineWidth || 0.44, // The line thickness
                 pointer: cfg.pointer ? Y.merge(cfg.pointer) : {
-                    pointerlength: 0.5, // The radius of the inner circle
+                    pointerlength: 0.6, // The radius of the inner circle
                     strokeWidth: 0.035, // The rotation offset
                     color: '#000000'                                            // Fill color
                 },
@@ -331,7 +329,7 @@ YUI.add('wegas-gaugedisplay', function(Y) {
                                 name: "angle",
                                 label: "arc angle",
                                 type: "number",
-                                typeInvite: "126° [0° - 180°]",
+                                typeInvite: "126Â° [0Â° - 180Â°]",
                                 required: true
                             }]
                     }
@@ -339,6 +337,5 @@ YUI.add('wegas-gaugedisplay', function(Y) {
             }
         }
     });
-
     Y.Wegas.GaugeDisplay = GaugeDisplay;
 });

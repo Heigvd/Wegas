@@ -55,10 +55,12 @@ YUI.add("wegas-widget", function(Y) {
          * @private
          */
         defaultFailureHandler: function(e) {
-            this.hideOverlay();
             var error = e.response.message || e.response.results.message || "Error during request.",
                 test = error.match(/ConstraintViolationException: (.*) is out of bound/),
                 stringMessage = error.match(/Error: StringMessage: (.*)/);
+
+            this.hideOverlay();
+
             if (test) {
                 this.showMessage("error", "You don't have enough " + test[1] + ".");
             } else if (stringMessage) {
@@ -76,7 +78,8 @@ YUI.add("wegas-widget", function(Y) {
          * @description show an loading - overlay on all the screen.
          */
         showOverlay: function() {
-            this.fire("wegas:showOverlay")
+            this.fire("wegas:showOverlay");
+            return this;
         },
         /**
          * @function
@@ -85,6 +88,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         hideOverlay: function() {
             this.fire("wegas:hideOverlay");
+            return this;
         },
         /**
          * Display a closable message with a status-image.
@@ -100,27 +104,19 @@ YUI.add("wegas-widget", function(Y) {
          *
          */
         showMessage: function(level, txt, timeout) {
-            this.emitDOMMessage(level, {content: txt, timeout: timeout});
-        },
-        /**
-         * @deprecated 
-         */
-        emitDOMMessage: function(type, cfg) {
-            this.get(BOUNDING_BOX).emitDOMMessage(type, cfg);
-        },
-        showMessageBis: function(level, txt, timeout) {
             this.fire("wegas:message", {
                 level: level,
                 content: txt,
                 timeout: timeout
             });
+            return this;
         },
         rebuild: function() {
             var parent, index, cfg;
             if (this.isRoot()) {
                 parent = Y.Widget.getByNode(this.get(BOUNDING_BOX).get("parentNode"));
                 parent.reload();
-                return parent.get("widget"); // dependencies should (and must) be loaded by now that way we obtain the new widget
+                return parent.get("widget");                                    // dependencies should (and must) be loaded by now that way we obtain the new widget
             }
             parent = this.get(PARENT);
             index = parent.indexOf(this);
@@ -134,6 +130,7 @@ YUI.add("wegas-widget", function(Y) {
         }
     });
     Y.mix(Widget, {
+        /** @lends Y.Wegas.Widget */
         /**
          *  Defines edition menu to be used in editor
          */
@@ -156,9 +153,6 @@ YUI.add("wegas-widget", function(Y) {
                         fn: "DeleteWidgetAction"
                     }]
             }],
-        /**
-         * @lends Y.Wegas.Widget
-         */
         /**
          * @field
          * @static
@@ -206,7 +200,6 @@ YUI.add("wegas-widget", function(Y) {
                 type: "string",
                 optional: true,
                 value: undefined,
-                format: "number",
                 _inputex: {
                     _type: "hidden",
                     value: undefined
@@ -589,7 +582,7 @@ YUI.add("wegas-widget", function(Y) {
                     }
 
                 } else if (val.name) {                                          // @backwardcompatibility
-                    val.evaluated = ds.cache.find('name', val.name);
+                    val.evaluated = ds.cache.find("name", val.name);
 
                 } else if (val.expr) {                                          // @backwardcompatibility if absent evaluate the expr field
                     try {
@@ -611,7 +604,8 @@ YUI.add("wegas-widget", function(Y) {
             aggregates: ["EDITMENU"]
         }
     });
-    Y.namespace("Wegas").Widget = Widget;
+    Wegas.Widget = Widget;
+
     /**
      * @hack We override this function so widget are looked for in Wegas ns.
      */
@@ -660,34 +654,20 @@ YUI.add("wegas-widget", function(Y) {
                 config = Plugin.cfg;
                 Plugin = Plugin.fn;
             }
-            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked
+            if (Plugin && !Lang.isFunction(Plugin)) {                           // @hacked to allow string plug definition
                 Plugin = Y.Plugin[Plugin];
             }
         }
         Y.Widget.prototype.oPlug.call(this, Plugin, config); //reroute
     };
     /**
-     * Simulate a DOM Event bubbling up to a listener and stops.
-     * @param {String} type
-     * @param {Object} data
+     * 
      */
-    Y.Node.prototype.emitDOMMessage = function(type, data) {
-        var ev = "dom-message:" + type;
-        data = data || {};
-        data.type = type;
-        try {
-            this.ancestor(function(node) {
-                return node.getEvent(ev) ? true : false;
-            }, true).fire(ev, data);
-        } catch (e) {
-            //no ancestor found
-        }
-    };
     Widget.prototype.renderer = function() {
         try {
             Y.Widget.prototype.renderer.call(this, arguments);
         } catch (e) {
-            this.get("boundingBox").setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
+            this.get(BOUNDING_BOX).setHTML("<div class='wegas-widget-errored'><i>Failed to render<br>" + e.message + "</i></div>");
 
             Y.log("error", "Failed to render " + this.getType() + ": " + (e.message || ""), this.constructor.NAME);
             //Y.error("Failed to render " + this.getType() + ": " + (e.message || ""), e, this.constructor.NAME);//do crash parent widget in debug mode

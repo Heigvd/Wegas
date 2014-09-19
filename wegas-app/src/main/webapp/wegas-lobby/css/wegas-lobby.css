@@ -13,12 +13,19 @@
 .yui3-skin-sam #centerTabView .yui3-tab {
     max-width: 130px;
 }
+.yui3-skin-sam #centerTabView .wegas-status-message {
+    float: none;
+    padding-left: 3px;
+}
 #rightTabView .yui3-tab-remove {
     display: none;
 }
-.wegas-role-teacher #gamesTreeViewTab,
+.wegas-role-trainer #gamesTreeViewTab,
+/*.wegas-role-trainer #gameModelsTab,*/
 .wegas-role-scenarist #gamesTreeViewTab,
-.wegas-role-teacher #gameModelsTab {
+.wegas-role-scenarist #gameModelsTab,
+.wegas-role-administrator #gamesTreeViewTab,
+.wegas-role-administrator #gameModelsTab {
     display: inline-block;
 }
 .yui3-skin-sam .wegas-logo  {
@@ -26,6 +33,7 @@
     height: 30px;
     background: url(../../wegas-app/images/wegas-logowhite-80.png) no-repeat 8px 6px;
 }
+
 /** Edit game form */
 .wegas-lobby-editgame  .wegas-form-content {
     padding-bottom: 0px !important;
@@ -63,11 +71,6 @@
 .wegas-game-access .inputEx-Field {
     margin-left: -68px;
     margin-right: 1px;
-}
-.wegas-game-scenario .inputEx-Field {
-    border: 1px solid lightgray;
-    padding: 2px;
-    background: #fafafa;
 }
 .wegas-game-token .inputEx-StringField-wrapper:before {
     content:"Enrolment key ";
@@ -175,6 +178,21 @@
     height: 16px;
 }
 
+/* Edit game's scenario tab */
+.wegas-stdmode .wegas-lobby-parentgamemodeltab .editor-form-gamemodel-name {
+    display: none;
+}
+.wegas-lobby-datatable .wegas-datatable-menu .yui3-button  {
+    display: none;
+}
+.wegas-lobby-datatable .wegas-datatable-menu .wegas-button-edit  {
+    display: inline-block;
+}
+.wegas-lobby-datatable .wegas-datatable-menu .wegas-button-open  {
+    font-size: inherit!important;
+    padding-right: 0.4em !important;
+    display: inline-block;
+}
 /* Permissions */
 .role-permissions .inputEx-fieldWrapper {
     float: left;

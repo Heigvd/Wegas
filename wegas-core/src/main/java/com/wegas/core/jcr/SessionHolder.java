@@ -8,8 +8,8 @@
 package com.wegas.core.jcr;
 
 import com.wegas.core.Helper;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PreDestroy;
 import javax.ejb.DependsOn;
 import javax.ejb.Singleton;
@@ -27,7 +27,7 @@ import javax.jcr.SimpleCredentials;
 public class SessionHolder {
 
     final static private SimpleCredentials admin = new SimpleCredentials(Helper.getWegasProperty("jcr.admin.username"), Helper.getWegasProperty("jcr.admin.password").toCharArray());
-    private static Map<String, Session> sessionMap = new HashMap<>();
+    private static final List<Session> sessionList = new ArrayList<>();
 
     /**
      *
@@ -37,31 +37,26 @@ public class SessionHolder {
      */
     public static Session getSession(String repository) throws RepositoryException {
         Session session;
-        if (!SessionHolder.sessionMap.containsKey(repository) || !SessionHolder.sessionMap.get(repository).isLive()) {
-            final Repository repo = (Repository) new JackrabbitConnector().getRepo();
-            sessionMap.remove(repository);
-            try {
-                session = repo.login(admin, repository);
-            } catch (javax.jcr.NoSuchWorkspaceException ex) {
-                createWorkspace(repository);
-                session = repo.login(admin, repository);
-            }
-            sessionMap.put(repository, session);
+        final Repository repo = (Repository) new JackrabbitConnector().getRepo();
+        try {
+            session = repo.login(admin, repository);
+        } catch (javax.jcr.NoSuchWorkspaceException ex) {
+            createWorkspace(repository);
+            session = repo.login(admin, repository);
         }
-        return sessionMap.get(repository);
+        sessionList.add(session);
+        return session;
     }
 
     /**
      *
-     * @param repository
-     * @throws RepositoryException
+     * @param session
      */
-    public static void closeSession(String repository) throws RepositoryException {
-        if (SessionHolder.sessionMap.containsKey(repository) && SessionHolder.sessionMap.get(repository).isLive()) {
-            SessionHolder.sessionMap.get(repository).save();
-            SessionHolder.sessionMap.get(repository).logout();
+    public static void closeSession(Session session) {
+        if (session.isLive()) {
+            session.logout();
         }
-        SessionHolder.sessionMap.remove(repository);
+        SessionHolder.sessionList.remove(session);
     }
 
     /**
@@ -70,17 +65,18 @@ public class SessionHolder {
      * @throws RepositoryException
      */
     protected static void createWorkspace(String repository) throws RepositoryException {
-        final Session s = getSession(null);
-        s.getWorkspace().createWorkspace(repository);
+        final Session adminSession = getSession(null);
+        adminSession.getWorkspace().createWorkspace(repository);
+        closeSession(adminSession);
     }
 
     @PreDestroy
     private void onDestroy() {
-        for (Session s : sessionMap.values()) {
+        for (Session s : sessionList) {
             if (s.isLive()) {
                 s.logout();
             }
         }
-        sessionMap.clear();
+        sessionList.clear();
     }
 }

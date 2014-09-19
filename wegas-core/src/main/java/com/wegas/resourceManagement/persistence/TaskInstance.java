@@ -68,6 +68,7 @@ public class TaskInstance extends VariableInstance {
             //if (req.getId() != null) { //don't like modification
             WRequirement r = new WRequirement();
             r.merge(req);
+            r.setTaskInstance(this); // @fixme 
             this.requirements.add(r);
         }
         //}

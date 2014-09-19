@@ -239,17 +239,17 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     public String encodeVariableName(String s) {
         s = s.replaceAll(" ", "_");
 
-        s = s.replaceAll("[ËÈÍÎ]", "e");
-        s = s.replaceAll("[˚˘]", "u");
-        s = s.replaceAll("[ÔÓ]", "i");
-        s = s.replaceAll("[‡‚]", "a");
-        s = s.replaceAll("‘", "o");
+        s = s.replaceAll("[√®√©√™√´]", "e");
+        s = s.replaceAll("[√ª√π]", "u");
+        s = s.replaceAll("[√Ø√Æ]", "i");
+        s = s.replaceAll("[√†√¢]", "a");
+        s = s.replaceAll("√î", "o");
 
-        s = s.replaceAll("[»… À]", "E");
-        s = s.replaceAll("[€Ÿ]", "U");
-        s = s.replaceAll("[œŒ]", "I");
-        s = s.replaceAll("[¿¬]", "A");
-        s = s.replaceAll("‘", "O");
+        s = s.replaceAll("[√à√â√ä√ã]", "E");
+        s = s.replaceAll("[√õ√ô]", "U");
+        s = s.replaceAll("[√è√é]", "I");
+        s = s.replaceAll("[√Ä√Ç]", "A");
+        s = s.replaceAll("√î", "O");
 
         return s.replaceAll("[^\\w]|(^\\d)", "_$1");                                //Search for special chars or initial digit
     }

@@ -1,310 +1,610 @@
 {
     "@class": "GameModel",
-    "name": "Teaching",
-    "properties": {
-        "cssUri": "wegas-teaching/css/wegas-teaching.css",
-        "pagesUri": "wegas-teaching/db/wegas-teaching-pages.json?",
-        "clientScriptUri": "wegas-teaching/js/wegas-teaching-loader.js"
+    "pages": {
+        "1": {
+            "id": 1,
+            "type": "AbsoluteLayout",
+            "cssClass": "layout",
+            "children": [{
+                    "type": "List",
+                    "cssClass": "header",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "0px",
+                                    "left": "0px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {}
+                            }
+                        }],
+                    "direction": "horizontal",
+                    "children": [{
+                            "type": "Text",
+                            "cssClass": "title",
+                            "content": "<p>9 Cases</p>"
+                        }]
+                }, {
+                    "type": "PageLoader",
+                    "cssClass": "body",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "39px",
+                                    "left": "-15px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "823px",
+                                    "height": "720px"
+                                }
+                            }
+                        }],
+                    "pageLoaderId": "maindisplayarea",
+                    "variable": {
+                        "name": "currentPage"
+                    }
+                }],
+            "@name": "Main page"
+        },
+        "2": {
+            "id": 2,
+            "type": "AbsoluteLayout",
+            "cssClass": "content",
+            "children": [{
+                    "type": "Text",
+                    "cssClass": "data",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "6px",
+                                    "left": "12px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {}
+                            }
+                        }],
+                    "content": "<p><strong>Instructions &eacute;tudiants</strong></p>\n<p id=\"yui_3_17_2_3_1409925737761_11214\">- Chaque &eacute;tudiant lit un des articles propos&eacute;s.</p>\n<p id=\"yui_3_17_2_3_1409925737761_11213\">- Apr&egrave;s avoir lu les articles, passer &agrave; la phase suivante permettant de relier les concepts des diff&eacute;rents articles.</p>\n<p>&nbsp;</p>\n<p><strong>Informations&nbsp;enseignant:&nbsp;</strong></p>\n<p>Depuis l'interface \"Scenarist\", il&nbsp;est possible d'&eacute;diter les pages du jeu pour l'adapter avec vos&nbsp;propres articles et concepts.</p>\n<p>&nbsp;</p>\n<div style=\"overflow: hidden;\">\n<p style=\"float: left;\"><img src=\"http://www.jeannedarc33.fr/wp-content/uploads/2011/12/pedagogie_jeux_zoom.jpg\" alt=\"\" width=\"272\" height=\"351\" /></p>\n<p>Etudiant 1:</p>\n<p><a style=\"line-height: 1.231;\" title=\"Estimating\" data-file=\"/Projiris-Pilotage%20des%20couts%20et%20des%20delais.pdf\" target=\"_blank\">Projiris-Pilotage des couts et des delais</a></p>\n<p>&nbsp;</p>\n<p>Etudiant 2:</p>\n<p><a data-file=\"/Milestone%20%20Slip%20Charts%20-%20Volume%2019.pdf\">Milestone &nbsp;Slip Charts - Volume 19</a>&nbsp;(p.25-34)</p>\n<p>&nbsp;</p>\n<p><span style=\"line-height: 1.231;\">Etudiant 3:</span></p>\n<p><a data-file=\"/Milestone%20Planning%20%20Research-Quality%20Gates%20A%20Tutorial.pdf\" target=\"_blank\">Milestone Planning &nbsp;Research-Quality Gates A Tutorial</a></p>\n<p>&nbsp;</p>\n<p>Etudiant 4:</p>\n<p><a data-file=\"/APM-Schedule%20control%20and%20analysis.pdf\">APM-Schedule control and analysis</a></p>\n</div>"
+                }, {
+                    "label": "Suivant >",
+                    "type": "Button",
+                    "cssClass": "button",
+                    "plugins": [{
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "importPackage(com.wegas.core.script);\ncurrentPage.value = 3;"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": 3,
+                                "targetPageLoaderId": "maindisplayarea"
+                            }
+                        }, {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "479px",
+                                    "left": "12.15625px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {}
+                            }
+                        }]
+                }],
+            "@name": "Articles"
+        },
+        "3": {
+            "id": 3,
+            "type": "AbsoluteLayout",
+            "cssClass": "content",
+            "children": [{
+                    "type": "Text",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "12px",
+                                    "left": "14px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {}
+                            }
+                        }],
+                    "content": "<p>Compl&eacute;ter de mani&egrave;re coh&eacute;rente le syst&egrave;me des 9 cases en d&eacute;finissant:</p>\n<p>- chaque th&egrave;me donn&eacute; en titre des cases</p>\n<p>-&nbsp;les sens et types de relations entre les th&egrave;mes d&eacute;finis</p>"
+                }, {
+                    "type": "TeachingMain",
+                    "plugins": [{
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "top": "67px",
+                                    "left": "13px"
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "773px",
+                                    "height": "469px"
+                                }
+                            }
+                        }],
+                    "themes": ["EVM", "Milestone slip chart", "Burndown chart", "Réalisation", "Monitoring", "Gantt", "Coûts", "Délais", "Control"],
+                    "availableLinkLabels": ["Est équivalent", "Utilise", "Spécialise", "Sous-ensemble", "Appartient"]
+                }, {
+                    "label": "< Retour",
+                    "type": "Button",
+                    "plugins": [{
+                            "fn": "ExecuteScriptAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "onClick": {
+                                    "@class": "Script",
+                                    "language": "JavaScript",
+                                    "content": "importPackage(com.wegas.core.script);\ncurrentPage.value = 2;"
+                                }
+                            }
+                        }, {
+                            "fn": "OpenPageAction",
+                            "cfg": {
+                                "targetEvent": "click",
+                                "subpageId": "1",
+                                "targetPageLoaderId": "maindisplayarea",
+                                "variable": {
+                                    "@class": "Script",
+                                    "content": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSPosition",
+                            "cfg": {
+                                "styles": {
+                                    "position": "absolute",
+                                    "zIndex": "",
+                                    "top": "685px",
+                                    "left": "15px",
+                                    "bottom": "",
+                                    "right": ""
+                                }
+                            }
+                        }, {
+                            "fn": "CSSSize",
+                            "cfg": {
+                                "styles": {
+                                    "width": "",
+                                    "height": ""
+                                }
+                            }
+                        }],
+                    "data": {}
+                }],
+            "@name": "Cases à remplir"
+        }
     },
-    "childVariableDescriptors": [
-        {
+    "name": "Les 9 cases",
+    "description": "",
+    "createdTime": 1410438349556,
+    "template": true,
+    "childVariableDescriptors": [{
             "@class": "NumberDescriptor",
             "name": "currentPage",
-            "label": "currentPage",
+            "label": "Current page",
+            "title": null,
             "defaultInstance": {
                 "@class": "NumberInstance",
-                "value": 2
+                "history": [],
+                "value": 2.0
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "minValue": null,
+            "maxValue": null,
+            "defaultValue": 2.0
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle1",
             "label": "Rectangle 1",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle2",
             "label": "Rectangle 2",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle3",
             "label": "Rectangle 3",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle4",
             "label": "Rectangle 4",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle5",
             "label": "Rectangle 5",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle6",
             "label": "Rectangle 6",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle7",
             "label": "Rectangle 7",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle8",
             "label": "Rectangle 8",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
-        },
-        {
+        }, {
             "@class": "TextDescriptor",
             "name": "rectangle9",
             "label": "Rectangle 9",
+            "title": null,
             "defaultInstance": {
                 "@class": "TextInstance",
                 "value": ""
             },
             "scope": {
-                "@class": "TeamScope"
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
             }
         }, {
             "@class": "ObjectDescriptor",
             "name": "fleche1",
             "label": "fleche1",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche2",
             "label": "fleche2",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche3",
             "label": "fleche3",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche4",
             "label": "fleche4",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche5",
             "label": "fleche5",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche6",
             "label": "fleche6",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche7",
             "label": "fleche7",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche8",
             "label": "fleche8",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche9",
             "label": "fleche9",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche10",
             "label": "fleche10",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche11",
             "label": "fleche11",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        },
-        {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
             "@class": "ObjectDescriptor",
             "name": "fleche12",
             "label": "fleche12",
+            "title": null,
             "defaultInstance": {
                 "@class": "ObjectInstance",
                 "properties": {
-                    "value": 0,
-                    "text": ""
+                    "text": "",
+                    "value": "0"
                 }
             },
             "scope": {
-                "@class": "TeamScope"
-            }
-        }
-    ]
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }, {
+            "@class": "ObjectDescriptor",
+            "name": "positions",
+            "label": "Rectangle positions",
+            "title": null,
+            "defaultInstance": {
+                "@class": "ObjectInstance",
+                "properties": {
+                    "position9": "9",
+                    "position8": "8",
+                    "position7": "7",
+                    "position6": "6",
+                    "position5": "5",
+                    "position4": "4",
+                    "position3": "3",
+                    "position2": "2",
+                    "position1": "1"
+                }
+            },
+            "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+            },
+            "description": "",
+            "properties": {}
+        }],
+    "scriptLibrary": {},
+    "cssLibrary": {},
+    "clientScriptLibrary": {},
+    "properties": {
+        "freeForAll": false,
+        "pagesUri": "",
+        "cssUri": "wegas-teaching/css/wegas-teaching.css",
+        "websocket": "",
+        "scriptUri": "",
+        "clientScriptUri": "wegas-teaching/js/wegas-teaching-loader.js",
+        "imageUri": "/Thumb_9cases.png",
+        "iconUri": ""
+    },
+    "createdByName": "Admin "
 }

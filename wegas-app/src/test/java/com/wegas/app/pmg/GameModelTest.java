@@ -115,13 +115,13 @@ abstract public class GameModelTest {
         return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
     }
 
-    protected Object evalFile(String path) throws ScriptException {
+    protected Object evalFile(String path) throws ScriptException, IOException {
         return this.evalScript(TestHelper.readFile(path));
     }
 
     protected final void checkNumber(String name, double expectedValue, String errorMessage) {
         final VariableDescriptorFacade vdf = lookup(VariableDescriptorFacade.class);
-        org.junit.Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
+        Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
     }
 
     protected final void checkNumber(String name, double expectedValue) {

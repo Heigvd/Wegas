@@ -9,11 +9,6 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
-/* Override default browser styles */
-body {
-    overflow: hidden;
-}
-
 /* Set font in the editor*/
 body, button, .yui3-skin-sam .yui3-datatable-table {
     font-family: Verdana, Geneva, sans-serif;
@@ -21,10 +16,13 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .editor-preview, .editor-preview  button {
     font-family: arial; /* but not in the preview*/
 }
+.editor-preview {
+    width:100%;
+    height:100%;
+}
 
 /** Hide all advanced feature while in std mode */
-.wegas-stdmode .wegas-advanced-feature,
-.wegas-stdmode .editor-playerProperties-button {
+.wegas-stdmode .wegas-advanced-feature {
     display: none;
 }
 .wegas-advanced-feature {
@@ -59,7 +57,8 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     overflow: auto;
 }
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
-    height: 100%;
+    height: inherit;
+    overflow: auto;
 }
 
 /* Toolbar styles */
@@ -82,10 +81,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 .wegas-hastoolbar > .wegas-toolbar {
     position: absolute;
-}
-.editor-preview {
-    width:100%;
-    height:100%;
 }
 
 /* Console widget styles */
@@ -147,9 +142,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-console-wysiwyg .inputEx-WysiwygScript {
     position: relative;
     height: 100%;
-}
-.wegas-console-wysiwyg .inputEx-WysiwygScript > .inputEx-Field {    
-    /*padding: .5em;*/
 }
 .wegas-console-wysiwyg .inputEx-WysiwygScript > .inputEx-ListField  {
     margin-left: -72px;
@@ -227,7 +219,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 15px;
 }
 .yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-button-close::before {
-    /*    content: url(../../lib/yui2in3/build/assets/skins/sam/sprite.png);*/
     content: "";
     width: 30px;
 }
@@ -318,6 +309,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 32px;
     width: 32px;
     margin: 6px 5px;
+    line-height: 1.9em;
 }
 
 /* Wegas title */
@@ -363,40 +355,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     padding-top: 0px;
 }
 
-/* Join-token team styles */
-.wegas-join-token-content button {
-    margin-left: 11.3em;
-    margin-top: 10px;
-    padding: 7px 18px;
-}
-.wegas-jointeam-content button {
-    margin-left: 0;
-    margin-top: 0.5em;
-    padding: 7px 18px;
-    width: 146px;
-}
-.editor-button-resume {
-    margin-left: 0.5em;
-    margin-top: 0.5em;
-    padding: 7px 18px;
-    width: 146px;
-}
-.wegas-join-token .teamselection button {
-    margin-left: 0px;
-}
-.wegas-join-token .description {
-    padding: 10px 0 20px;
-    margin: 10px 10px 20px;
-}
-.yui3-tabview .wegas-join-token-content > .inputEx-fieldWrapper{
-    padding-top: 30px;
-}
-.wegas-join-token .inputEx-label,
-.wegas-jointeam .inputEx-label{
-    width: 11em;
-}
+/* Open game tab */
 .open-game-tab {
-    margin: 0 .5em;
+    margin: 1em .5em 0;
 }
 
 /* Wegas editor icons */
@@ -437,13 +398,12 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-filter-input {    
     display: inline-block;
     float: right;
-    padding-left: 19px;
-    background: transparent url(../../wegas-editor/images/search.png) 0px 5px no-repeat;
-    padding-top: 1px;
+    vertical-align: top;
 }
 .wegas-filter-input input {
     border: 1px solid #ededed;
-    padding: 3px;
+    padding: 5px 3px 4px 19px;
+    background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 1px -706px no-repeat;
 }
 
 /** Uservoice widget */
@@ -457,4 +417,40 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .yui3-skin-sam .uv-icon svg {
     width: 24px;
     height: 27px;
+}
+
+/* Upload file widget */
+.wegas-uploadfile {
+    display: inline-block;
+    vertical-align: top;
+}
+.wegas-lobby-datatable.wegas-dragover > div  {
+    background: #fbfbfb;
+}
+.wegas-lobby-datatable .wegas-dropdummy {
+    text-align: center;
+    vertical-align: top;
+    font-size: 1.2em;
+    padding: 0.5em; 
+    z-index: 100;
+    text-shadow: 2px 2px 1px white, -2px 2px 1px white, 2px -2px 1px white, -2px -2px 1px white;
+    border: 1px solid lightgray;
+    border-radius: 10px;
+    background: white !important;
+    position: absolute;
+    display: none;
+    top: 50%;
+    left: 50%;
+    margin-left: -152px;
+    margin-top: -20px;
+}
+.wegas-lobby-datatable.wegas-dragover .wegas-dropdummy {
+    display: block;
+}
+.yui3-skin-sam .wegas-uploadfile .yui3-button {
+    width: auto;
+    height: auto;
+}
+.wegas-uploadfile input {
+    display: none;
 }

@@ -8,8 +8,8 @@
 YUI.add('wegas-progressbar', function(Y) {
     'use strict';
     var ProgressBar,
-            BOUNDING_BOX = "boundingBox",
-            CONTENT_BOX = "contentBox";
+        BOUNDING_BOX = "boundingBox",
+        CONTENT_BOX = "contentBox";
     ProgressBar = Y.Base.create("wegas-progressbar", Y.Widget, [], {
         labelNode: null,
         valueNode: null,

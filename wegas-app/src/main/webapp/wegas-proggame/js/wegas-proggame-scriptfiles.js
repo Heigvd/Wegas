@@ -70,7 +70,6 @@ YUI.add('wegas-proggame-scriptfiles', function(Y) {
                 bodyContent: '<p><input type="text" name="fileName" placeholder="File name"/></p>',
                 width: 250,
                 modal: true,
-                centered: true,
                 render: true,
                 buttons: [{
                         value: 'Add',

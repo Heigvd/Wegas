@@ -9,7 +9,7 @@
 /* YUI3 Button Widget styles redefinition */
 .yui3-button {
     vertical-align: top;
-    padding: .1em 0.6em .1em;
+    padding: 0.2em 0.6em .1em;
     min-height: 26px;
     margin: 0;
     box-shadow: none;
@@ -29,7 +29,7 @@
     vertical-align: top;
 }
 .yui3-button .wegas-icon {
-    margin: -1px 2px 0 0;
+    margin: -2px 2px 0 0;
 }
 .yui3-skin-sam .yui3-button-hidden, .yui3-skin-sam .yui3-togglebutton-hidden {
     display:none !important;
@@ -46,7 +46,7 @@
     background-position: 0px 0px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-newfile {
-    background-position: 1px -401px;
+    background-position: 1px -400px;
 }
 .yui3-skin-sam .wegas-icon.wegas-icon-joingame {
     background-position: 1px -1028px;
@@ -109,7 +109,7 @@
     background-position: 2px -804px;
 }
 .yui3-skin-sam .wegas-icon-edit {
-    background-position: 2px -1109px;
+    background-position: 1px -1109px;
 }
 .yui3-skin-sam .wegas-icon-designmode {
     background-position: 0px -1110px;
@@ -119,6 +119,12 @@
 }
 .yui3-skin-sam .wegas-icon-sort {
     background-position: 0px -435px;
+}
+.yui3-skin-sam .wegas-icon-lock {
+    background-position: 0px -902px;
+}
+.yui3-skin-sam .wegas-icon-unlock {
+    background-position: 0px -938px;
 }
 .wegas-icon-edit {
     background-position: 1px -1110px;
@@ -152,7 +158,14 @@
     background: transparent url(../..//lib/inputex/src/inputex-list/assets/skins/sam/bullet_arrow_down.png) no-repeat scroll 0px 1px !important;
 }
 .wegas-icon-pdf {
-    background: transparent url(../images/oxygen-pdf-icon.png) no-repeat scroll 0px 1px !important;
-    width: 48px;
-    height: 48px;
+    background: transparent url(../images/oxygen-pdf-icon-22x22.png) no-repeat scroll 0px 0px !important;
+    width: 22px;
+    height: 22px;
+    margin: 6px;
+}
+.yui3-skin-sam .wegas-icon-restore {
+    background-position: 0 -100px;
+}
+.yui3-skin-sam .wegas-icon-leave {
+    background-position: 1px -127px;
 }

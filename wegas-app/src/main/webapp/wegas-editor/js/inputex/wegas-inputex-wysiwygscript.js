@@ -12,18 +12,18 @@
 YUI.add("wegas-inputex-wysiwygscript", function(Y) {
     "use strict";
 
-    var inputEx = Y.inputEx,
-        Parser;
+    var inputEx = Y.inputEx, Wegas = Y.Wegas, Syntax = window.esprima.Syntax,
+        Parser, WysiwygScript;
 
-    inputEx.WysiwygScript = function(options) {
-        inputEx.WysiwygScript.superclass.constructor.call(this, options);
+    WysiwygScript = function(options) {
+        WysiwygScript.superclass.constructor.call(this, options);
     };
-    Y.extend(inputEx.WysiwygScript, inputEx.Script, {
+    Y.extend(WysiwygScript, inputEx.Script, {
         /**
          *
          */
         setOptions: function(options) {
-            inputEx.WysiwygScript.superclass.setOptions.call(this, options);
+            WysiwygScript.superclass.setOptions.call(this, options);
             this.options.className = options.className || "inputEx-Field inputEx-WysiwygScript";
             this.options.wrapperClassName = options.wrapperClassName || "inputEx-fieldWrapper inputEx-WysiwygScriptWrapper";
             this.options.viewSrc = options.viewSrc || false;                    // wysywig / text
@@ -46,7 +46,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     content: ct
                 };
             }
-            return inputEx.WysiwygScript.superclass.getValue.apply(this, arguments);
+            return WysiwygScript.superclass.getValue.apply(this, arguments);
         },
         /**
          *
@@ -57,7 +57,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     content: "Variable.find('" + val.name + "');"
                 };
             }
-            inputEx.WysiwygScript.superclass.setValue.call(this, val, sendUpdated);
+            WysiwygScript.superclass.setValue.call(this, val, sendUpdated);
             if (!this.options.viewSrc) {
                 this.updateExpressionList();
             }
@@ -68,9 +68,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 return !this.options.required;
             }
             if (!this.options.viewSrc) {
-                return this.exprList.validate() && inputEx.WysiwygScript.superclass.validate.call(this);
+                return this.exprList.validate() && WysiwygScript.superclass.validate.call(this);
             }
-            return inputEx.WysiwygScript.superclass.validate.call(this);
+            return WysiwygScript.superclass.validate.call(this);
         },
         isEmpty: function() {
             return this.options.viewSrc ?
@@ -83,9 +83,9 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
          */
         renderComponent: function() {
             inputEx.Script.superclass.renderComponent.call(this);
-            var field = (new Y.Node(this.fieldContainer));
-            // Add the "view src" button
-            this.viewSrc = new Y.Wegas.Button({
+            var field = Y.one(this.fieldContainer);
+
+            this.viewSrc = new Wegas.Button({//                                 //Add the "view src" button
                 label: "<span class=\"wegas-icon wegas-icon-viewsrc\"></span>",
                 tooltip: "View source",
                 cssClass: "inputEx-WysiwygScript-viewsrc",
@@ -102,7 +102,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     }, this)
                 }
             }).render(field);
-            this.addButton = new Y.Wegas.Button({
+            this.addButton = new Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-add\"></span>",
                 tooltip: "Add",
                 cssClass: "inputEx-WysiwygScript-add",
@@ -114,7 +114,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     }, this)
                 }
             }).render(field);
-            this.sortButton = new Y.Wegas.Button({
+            this.sortButton = new Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-sort\"></span>",
                 tooltip: "Sort",
                 on: {
@@ -132,19 +132,19 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                     }, this)
                 }
             }).render(field);
-            this.runButton = new Y.Wegas.Button({
+            this.runButton = new Wegas.Button({
                 label: "<span class=\"wegas-icon wegas-icon-play\"></span>",
                 tooltip: "Test impact",
                 on: {
                     click: Y.bind(this.eval, this)
                 }
             }).render(field);
-            (new Y.Node(this.fieldContainer))
-                .prepend(this.viewSrc.get("boundingBox"))
+
+            field.prepend(this.viewSrc.get("boundingBox"))
                 .prepend(this.sortButton.get("boundingBox"))
                 .prepend(this.runButton.get("boundingBox"))
                 .prepend(this.addButton.get("boundingBox"))                     // Move view src and add buttons to the top of the the wysiwyg list 
-                .append("<em class=\"msg\"></em>"); // Add a div for messages
+                .append("<em class=\"msg\"></em>");                             // Add a div for messages
 
             this.on("updated", function() {
                 if (this.options.viewSrc) {
@@ -168,20 +168,20 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.addButton.destroy();
             this.runButton.destroy();
             this.sortButton.destroy();
-            inputEx.WysiwygScript.superclass.destroy.call(this);
+            WysiwygScript.superclass.destroy.call(this);
         },
         eval: function() {
             var parentWidget = Y.Widget.getByNode(this.divEl);
             parentWidget.showOverlay();
-            Y.Wegas.Facade.Variable.script.remoteEval(this.getValue(), {
+            Wegas.Facade.Variable.script.remoteEval(this.getValue(), {
                 on: {
                     success: Y.bind(function() {
                         parentWidget.hideOverlay();
-                        parentWidget.showMessageBis("success", "Impact executed successfully.");
+                        parentWidget.showMessage("success", "Impact executed successfully.");
                     }, this),
                     failure: Y.bind(function(e) {
                         parentWidget.hideOverlay();
-                        parentWidget.showMessageBis("error", "Error executing impact: <br /><br />"
+                        parentWidget.showMessage("error", "Error executing impact: <br /><br />"
                             + (e.response.results.exception || e.response));
                     }, this)
                 }
@@ -220,12 +220,12 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             }
         },
         updateExpressionList: function(sort) {
-            var container = new Y.Node(this.fieldContainer),
+            var container = Y.one(this.fieldContainer),
                 fields;
             container.one(".msg").setContent("");                               // Reset layout
 
             try { // Generate the syntactic tree using esprima 
-                fields = Parser.parse(inputEx.WysiwygScript.superclass.getValue.call(this).content, this.options);
+                fields = Parser.parse(WysiwygScript.superclass.getValue.call(this).content, this.options);
 
                 this.viewSrc.set("disabled", false);
                 if (this.exprList) {
@@ -266,7 +266,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
         },
         sortInputex: function(fields) {
             var order = [];
-            Y.Array.each(Y.Wegas.Facade.Variable.data, function(item) {
+            Y.Array.each(Wegas.Facade.Variable.data, function(item) {
                 if (item.flatten) {
                     Y.Array.each(item.flatten(), function(i) {
                         order.push(i.get("name"));
@@ -281,14 +281,92 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             return fields;
         }
     });
-    inputEx.registerType("script", inputEx.WysiwygScript);                      // Register this class as "script" type
+    Y.mix(WysiwygScript, {
+        formatScript: function(script) {
+            if (script && script.get) {
+                script = script.get("content");
+            } else if (Y.Lang.isObject(script)) {
+                script = script.content;
+            }
+            if (!script) {
+                return "";
+            }
+            try {
+                var globals = Y.mix(Y.mix({}, inputEx.Wegas.VariableDescriptorStatement.prototype.GLOBALMETHODS),
+                    inputEx.Wegas.VariableDescriptorCondition.prototype.GLOBALMETHODS),
+                    findLabel = function(a, n) {
+                        var l = Y.Array.find(a, function(i) {
+                            return i.value === n;
+                        });
+                        return l ? l.label : n;
+                    },
+                    source = function(range) {
+                        return script.substring.apply(script, range);
+                    },
+                    formatArgs = function(a, cfg) {
+                        return Y.Array.map(Y.Array.filter(a, function(o, index) {
+                            return cfg[index].type !== "hidden"
+                                && cfg[index].type !== "list";
+                        }), function(o) {
+                            return Wegas.Helper.trimLength(Wegas.Helper.stripHtml(source(o.range)), 50, "...\"");// Args are limited to 50 char
+                        }).join(", ");
+                    },
+                    parse = function(i) {
+                        switch (i.type) {
+                            case Syntax.EmptyStatement:
+                                return "";
+                            case Syntax.CallExpression:
+                                if (i.callee.object.callee
+                                    && i.callee.object.callee.object
+                                    && (i.callee.object.callee.object.name === "Variable"
+                                        || i.callee.object.callee.object.name === "VariableDescriptorFacade") // @backwardcompatibility
+                                    && i.callee.object.callee.property
+                                    && i.callee.object.callee.property.name === "find") {
+                                    var vd = Wegas.Facade.Variable.cache.find("name", i.callee.object.arguments[1].value),
+                                        methodName = i.callee.property.name,
+                                        method = vd.getMethodCfgs()[methodName];
+
+                                    return  vd.get("label") + " "
+                                        + (i.callee.property.name !== "getValue" ? "<em>" + (method.label ? method.label.toLowerCase() : methodName) + "</em> " : "")
+                                        + formatArgs(i.arguments.slice(1), method.arguments.slice(1));
+                                } else {
+                                    var global = globals[i.callee.object.name + "." + i.callee.property.name];
+                                    if (global) {
+                                        return  "<em>" + global.label + "</em> " + formatArgs(i.arguments, global.arguments);
+                                    } else {
+                                        return source(i.range);
+                                    }
+                                }
+                            case Syntax.ExpressionStatement:
+                                return parse(i.expression);
+                            case Syntax.LogicalExpression:
+                                return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.VariableDescriptorSelect.LOGICALOPERATORS, i.operator) + "</em> " + parse(i.right);
+                            case Syntax.BinaryExpression:
+                                //return parse(i.left) + " <em>" + findLabel(Y.inputEx.Wegas.BINARYOPERATORS, i.operator) + "</em> " + i.right.value;
+                                return parse(i.left) + " <em>" + i.operator.replace("===", "=") + "</em> " + i.right.value;
+                            default:
+                                return source(i.range);
+                        }
+                    },
+                    tree = window.esprima.parse(script, {
+                        raw: true,
+                        range: true
+                    });
+                return Y.Array.map(tree.body, parse, this).join("<br />").replace(/\\n/gi, "");
+            } catch (e) {
+                return script;
+            }
+        }
+    });
+    inputEx.registerType("script", WysiwygScript);                              // Register this class as "script" type
+    inputEx.WysiwygScript = WysiwygScript;
     /**
      *
      */
     inputEx.SingleLineWysiwygScript = function(options) {
         inputEx.SingleLineWysiwygScript.superclass.constructor.call(this, options);
     };
-    Y.extend(inputEx.SingleLineWysiwygScript, inputEx.WysiwygScript, {
+    Y.extend(inputEx.SingleLineWysiwygScript, WysiwygScript, {
         setOptions: function(options) {
             options.defaultValue = [{}];
             options.expects = options.expects || "getter";
@@ -309,7 +387,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
      * Singleton with parser's logic
      */
     Parser = (function() {
-        var eparse = window.esprima.parse, Syntax = window.esprima.Syntax;
+        var eparse = window.esprima.parse;
         return{
             /**
              * Transform a script into an array of json configuration for inputex.
@@ -325,35 +403,10 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                 });
                 for (i = 0; i < tree.body.length; i = i + 1) {
                     switch (tree.body[i].type) {
-                        case Syntax.EmptyStatement:                                  /** STATEMENT **/
+                        case Syntax.EmptyStatement:                             /** STATEMENT **/
                             break;
                         case Syntax.ExpressionStatement:
                             fields = fields.concat(Parser.generateExpression(tree.body[i].expression, options));
-                            break;
-                        case Syntax.BlockStatement:
-                        case Syntax.IfStatement:
-                        case Syntax.WithStatement:
-                        case Syntax.SwitchStatement:
-                        case Syntax.ThrowStatement:
-                        case Syntax.TryStatement:
-                        case Syntax.WhileStatement:
-                        case Syntax.DoWhileStatement:
-                        case Syntax.ForStatement:
-                        case Syntax.ForInStatement:
-                        case Syntax.ForOfStatement:
-                        case Syntax.LabeledStatement:
-                        case Syntax.DebuggerStatement:
-                            fields.push({
-                                raw: tree.body[i].range,
-                                type: options.expects
-                            });
-                            break;
-                        case Syntax.FunctionDeclaration:                             /** DECLARATION **/
-                        case Syntax.VariableDeclaration:
-                            fields.push({
-                                raw: tree.body[i].range,
-                                type: options.expects
-                            });
                             break;
                         default:
                             fields.push({
@@ -393,14 +446,11 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             }, this);
                             return args;
                         case Syntax.ArrayExpression:
-                            args = [];
-                            Y.Array.each(expression.elements, function(i) {
-                                args.push(Parser.generateExpression(i, options));
+                            return Y.Array.map(expression.elements, function(i) {
+                                return Parser.generateExpression(i, options);
                             }, this);
-                            return args;
                         case Syntax.BinaryExpression:
                             vdSelect = Parser.generateExpression(expression.left, options)[0];
-                            args = [];
                             vdSelect.type = "condition";
                             vdSelect.raw = expression.range;
                             vdSelect.operator = expression.operator;
@@ -414,9 +464,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             break;
                         case Syntax.CallExpression:
                             if (expression.callee.type === Syntax.Identifier) { //global function call ie "myFn()"
-                                args = [];
-                                Y.Array.each(expression["arguments"], function(i) {
-                                    args.push(Parser.generateExpression(i, options));
+                                args = Y.Array.map(expression["arguments"], function(i) {
+                                    return Parser.generateExpression(i, options);
                                 }, this);
                                 return [{
                                         type: options.expects,
@@ -430,7 +479,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                 case Syntax.Identifier:
                                     switch (expression.callee.object.name) {
                                         case "Variable":
-                                        case "VariableDescriptorFacade":                // @backwardcompatibility
+                                        case "VariableDescriptorFacade":        // @backwardcompatibility
                                             //Assume function is "find"
                                             return [{
                                                     type: options.expects,
@@ -441,9 +490,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
 //                                        case "RequestManager":
 //                                        case "Event":
                                         default:
-                                            args = [];
-                                            Y.Array.each(expression["arguments"], function(i) {
-                                                args.push(Parser.generateExpression(i, options));
+                                            args = Y.Array.map(expression["arguments"], function(i) {
+                                                return Parser.generateExpression(i, options);
                                             }, this);
                                             return [{
                                                     type: options.expects,
@@ -455,9 +503,8 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                                     }
                                 default:
                                     vdSelect = Parser.generateExpression(expression.callee.object, options);
-                                    args = [];
-                                    Y.Array.each(expression["arguments"], function(i) {
-                                        args.push(Parser.generateExpression(i, options));
+                                    args = Y.Array.map(expression["arguments"], function(i) {
+                                        return Parser.generateExpression(i, options);
                                     }, this);
                                     Y.mix(vdSelect[0], {
                                         method: expression.callee.property.name,
@@ -477,18 +524,16 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             join: function(scripts, joinType) {
                 var i, j, tree, next, script = "", tmp,
                     write = function(script, type, nextScript) {
-                        var ret = "";
                         switch (type) {
-                            case Syntax.EmptyStatement:                                  /** STATEMENT **/
+                            case Syntax.EmptyStatement:                         /** STATEMENT **/
                                 return false; //Skip it
                             case Syntax.ExpressionStatement:
                                 next = nextScript ? eparse(scripts[i + 1]).body[0].type : null;
                                 if (joinType === "condition" && next === Syntax.ExpressionStatement) { //Join 2 conditional expression
-                                    ret += script.replace(/;*\s*$/, " && ");
+                                    return script.replace(/;*\s*$/, " && ");
                                 } else {
-                                    ret += script.replace(/;*\s*$/, ";\n");
+                                    return script.replace(/;*\s*$/, ";\n");
                                 }
-                                break;
                             case Syntax.BlockStatement:
                             case Syntax.IfStatement:
                             case Syntax.WithStatement:
@@ -502,25 +547,22 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
                             case Syntax.ForOfStatement:
                             case Syntax.LabeledStatement:
                             case Syntax.DebuggerStatement:
-
-                            case Syntax.FunctionDeclaration:                             /** DECLARATION **/
-                                ret += scripts[i] + "\n";
-                                break;
+                            case Syntax.FunctionDeclaration:                    /** DECLARATION **/
+                                return scripts[i] + "\n";
                             case Syntax.VariableDeclaration:
-                                ret += scripts[i].replace(/;*\s*$/, ";\n");
-                                break;
+                                return scripts[i].replace(/;*\s*$/, ";\n");
                         }
-                        return ret;
+                        return "";
                     };
 
                 for (i = 0; i < scripts.length; i += 1) {
                     if (scripts[i]) {
-                        tree = eparse(scripts[i]);
-                        if (tree.body.length) {
+                        tree = eparse(scripts[i]).body;
+                        j = tree.length;
+                        if (j) {
                             tmp = false;
-                            j = tree.body.length;
                             while (j-- && !tmp) {
-                                tmp = write(scripts[i], tree.body[j].type, scripts[i + 1]);
+                                tmp = write(scripts[i], tree[j].type, scripts[i + 1]);
                             }
                             script += tmp;
                         }

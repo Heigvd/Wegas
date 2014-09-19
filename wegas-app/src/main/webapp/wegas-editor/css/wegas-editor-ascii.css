@@ -1,0 +1,247 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+*/
+/**
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+*/
+/** ASCII **/
+body.wegas-ascii {
+    background-color: black !important;    
+}
+body.wegas-ascii *,
+body.wegas-ascii *:after,
+body.wegas-ascii *:before {
+    background-color: transparent !important;
+    color: rgb(123, 224, 14) !important;
+    font-family: Courier, monospace !important;
+    text-shadow: none!important;
+    box-shadow: none!important;
+    border-color: rgb(123, 224, 14) !important;
+    border-radius: 0 !important;
+}
+.wegas-ascii .yui3-button {
+    background: none;
+    border: 1px solid rgb(123, 224, 14)  !important;
+    font-size: inherit !important;
+    font-family: Courier, monospace!important;
+}
+.wegas-ascii .wegas-layout-hd .yui3-button {
+    border: none !important;
+}
+.wegas-ascii .yui3-menu .yui3-button {
+    border: none !important;
+}
+.wegas-ascii .yui3-button:hover {
+    text-decoration: underline;
+}
+.wegas-ascii .yui3-button.wegas-widgetmenu-hassubmenu:after {
+    background: none !important;
+    content: "+";
+    top: 2px !important;
+    font-family: serif;
+    right: 6px;
+}
+.wegas-ascii .yui3-menu {
+    background: black!important;
+    border: 1px solid rgb(123, 224, 14);
+}
+.wegas-ascii .wegas-icon {
+    display: none !important;
+}
+.wegas-ascii .inputEx-wegas-UrlField .yui3-uploader-content button:before {
+    content: "u.";
+    margin-top: 4px;
+    display: block;
+}
+.wegas-ascii .wegas-icon-fileexplorer {
+    display:inline-block !important;
+}
+.wegas-ascii .wegas-icon-fileexplorer:after {
+    content:"e";
+    display: block;
+    margin-top: 3px;
+}
+.wegas-ascii .wegas-layout-left > .yui3-widget{
+    border-right: 1px solid; 
+}
+.wegas-ascii .wegas-layout-right {
+    top: 0px;
+}
+.wegas-ascii .wegas-layout-right> .yui3-widget {
+    border-left: 1px solid;
+}
+.wegas-ascii .yui3-treenode-content-toggle {
+    background: none !important;
+}
+.wegas-ascii .yui3-treenode-content-toggle:after {
+    content: "-";
+}
+.wegas-ascii .yui3-treenode-collapsed .yui3-treenode-content-toggle:after{
+    content: "+";
+}
+.wegas-ascii .yui3-treenode-content-icon, .wegas-ascii .yui3-treeleaf-content-icon {
+    display: none !important;
+}
+.wegas-ascii .yui3-tabview-list {
+    border-bottom: none !important;
+}
+.wegas-ascii .yui3-tab-label, .wegas-ascii .yui3-tab-label:focus, .wegas-ascii .yui3-tab-label:hover {
+    background: black !important;    
+    padding: 11px 5px 5px !important;
+    border-bottom: 1px solid !important;
+}
+.wegas-ascii .yui3-tab-selected .yui3-tab-label, .wegas-ascii .yui3-tab-selected .yui3-tab-label:focus, .wegas-ascii .yui3-tab-selected .yui3-tab-label:hover {
+    border-bottom: 2px solid !important;
+    padding: 5px !important;
+}
+.wegas-ascii .wegas-logo, .yui3-skin-sam .wegas-logo:hover {
+    background: none!important;
+    padding:0!important;
+    margin: 4px 12px 0 !important;
+    height: auto!important;
+    width: auto!important;
+    border: none!important;
+    line-height: -0.2em!important;
+    max-height: none!important;
+    line-height: 1.9em;
+}
+.wegas-ascii .wegas-logo:after {
+    content: "W";
+    font-weight: bolder;
+    font-size: 56px;
+    font-family: courier, monospace!important;
+    line-height: 39px;
+}
+.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected,
+.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected .yui3-button {
+    background: rgb(123, 224, 14) !important;
+    color: black !important;
+    border: 1px solid black !important;
+}
+.wegas-ascii .wegas-lobby-datatable tr.wegas-datatable-selected * {
+    color: black !important;
+}
+.wegas-ascii .wegas-panel-content {
+    border: 1px solid !important;
+    background-color: black !important;
+}
+.wegas-ascii .uv-bubble-background {
+    fill: rgb(123, 224, 14) !important;
+}
+.wegas-ascii .wegas-layout-hd .wegas-login img {
+    display: none;
+}
+.wegas-ascii .wegas-removebutton,
+.wegas-ascii img.inputEx-ListField-delButton {
+    background: none;
+}
+.wegas-ascii .wegas-removebutton:after,
+.wegas-ascii img.inputEx-ListField-delButton:after {
+    content: "x";
+}
+.wegas-ascii .wegas-moveupbutton:after {
+    content: "^";
+}
+.wegas-ascii .wegas-movedownbutton:after {
+    content: "v";
+}
+.wegas-ascii input {
+    border: 1px solid rgb(123, 224, 14) !important;
+    background: rgb(123, 224, 14) !important;
+    color: black!important;
+}
+.wegas-ascii input[type="checkbox"], .wegas-ascii input[type="radio"] {
+    display: none;
+}
+.wegas-ascii input[type="checkbox"] + *:before, .wegas-ascii input[type="radio"] + *:before {
+    content: "x";
+    border: 1px solid;
+    color: black!important;
+    padding: 0 3px;
+    margin-right: 4px;
+}
+.wegas-ascii input[type="checkbox"]:checked  + *:before, .wegas-ascii input[type="radio"]:checked + *:before {
+    color: rgb(123, 224, 14) !important;
+}
+.wegas-ascii input[type="checkbox"][disabled] + *:before, .wegas-ascii input[type="radio"][disabled] + *:before,
+.wegas-ascii input[type="checkbox"][disabled]:checked  + *:before, .wegas-ascii input[type="radio"][disabled]:checked + *:before{
+    border-color:  rgb(87, 141, 28) !important;
+    color:  rgb(87, 141, 28) !important;
+}
+.wegas-ascii .wegas-game-users .addkey button span, .wegas-ascii .wegas-game-keys .addkey button span {
+    display: none;
+}
+.wegas-ascii .wegas-filter-input input {
+    background: black !important;
+    padding: 5px 3px;
+}
+.wegas-ascii .wegas-datatable-viewbuttons {
+    display: none;
+}
+.wegas-ascii .wegas-loading-app {
+    background: none;    
+}
+.wegas-ascii .wegas-loading-app > div >div  {
+    content: "x";
+}
+.wegas-ascii .wegas-loading-app > div {
+    -webkit-animation: mymove 5s infinite;
+    margin: 0;
+}
+.wegas-ascii .wegas-loading-app:before {
+    content: "Wegas"; 
+    font-size: 25px;
+    font-weight: bolder;
+}
+.wegas-ascii .wegas-loading-app> div:after {
+    content: "Loading..."; 
+}
+@-webkit-keyframes mymove {
+    0%   {opacity: 0;}
+    50%  {opacity: 1;}
+    100%  {opacity: 0;}
+}
+.wegas-ascii ::-webkit-input-placeholder { /* WebKit browsers */
+    color:    rgb(123, 224, 14);
+}
+.wegas-ascii :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+    color:    rgb(123, 224, 14);
+    opacity:  1;
+}
+.wegas-ascii ::-moz-placeholder { /* Mozilla Firefox 19+ */
+    color:    rgb(123, 224, 14);
+    opacity:  1;
+}
+.wegas-ascii :-ms-input-placeholder { /* Internet Explorer 10+ */
+    color:    rgb(123, 224, 14);
+}
+.wegas-ascii  .yui3-resize-handle-inner-r, .wegas-ascii .yui3-resize-handle-inner-l {
+    background: none;
+}
+.wegas-ascii .wegas-toolbar-header {
+    padding: .5em 0;
+}
+.wegas-ascii .wegas-tooltip-content,
+.wegas-ascii .yui3-tabview-panel,
+.wegas-ascii .wegas-toolbar,
+.wegas-ascii select,
+.wegas-ascii .wegas-layout-right,
+.wegas-ascii .ace-tm,
+.wegas-ascii .yui3-button {
+    background: black !important;
+}
+.wegas-ascii select {
+    background: rgb(123, 224, 14)!important;
+    color: black !important;
+}
+.wegas-ascii select * {
+    background: black !important;
+    color: rgb(123, 224, 14) !important;
+}
+.wegas-ascii .inputEx-valid .inputEx-CheckBox > input[disabled] + .inputEx-CheckBox-rightLabel {
+    color: rgb(87, 141, 28) !important;
+}

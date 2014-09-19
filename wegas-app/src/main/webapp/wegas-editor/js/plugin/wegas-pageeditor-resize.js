@@ -12,9 +12,9 @@
 YUI.add("wegas-pageeditor-resize", function(Y) {
     "use strict";
     var CONTENTBOX = "contentBox",
-            BOUNDINGBOX = "boundingBox",
-            WIDTH = "width",
-            HEIGHT = "height";
+        BOUNDINGBOX = "boundingBox",
+        WIDTH = "width",
+        HEIGHT = "height";
     /**
      * PageEditor Plugin Extension enabling widget resize.
      * @constructor
@@ -63,7 +63,7 @@ YUI.add("wegas-pageeditor-resize", function(Y) {
             //    cacheRegion: false                                              //scroll changes region
             //});
             this._resizeNode.before("mousedown", function(e) {
-                this.detach();
+                this.detachHandlers();
                 this._resizeNode.show();
                 this._dd.con.set("constrain", this.get("host").get("widget").get(CONTENTBOX));
                 this._resize._widget = this.shownOverlay._widget.get(BOUNDINGBOX);

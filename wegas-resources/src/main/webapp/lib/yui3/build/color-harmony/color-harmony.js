@@ -1,5 +1,5 @@
 /*
-YUI 3.16.0 (build 76f0e08)
+YUI 3.17.2 (build 9c3c78e)
 Copyright 2014 Yahoo! Inc. All rights reserved.
 Licensed under the BSD License.
 http://yuilibrary.com/license/
@@ -572,4 +572,4 @@ var HSL = 'hsl',
 Y.Color = Y.mix(Y.Color, Harmony);
 
 
-}, '3.16.0', {"requires": ["color-hsl"]});
+}, '3.17.2', {"requires": ["color-hsl"]});
