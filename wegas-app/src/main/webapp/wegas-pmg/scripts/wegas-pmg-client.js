@@ -506,29 +506,32 @@ Y.use("wegas-inputex-variabledescriptorselect", function() {
                     }
                 }]
         },
-        "PMGHelper.addImpactDuration": {// currently not working waiting for a new server deploy
+         "PMGHelper.addImpactDuration": {
             label: "[PMG] impact reverse",
-            "arguments": [{
-                    type: "string",
-                    typeInvite: "factor",
+           "arguments": [{
+                    type: "flatvariableselect",
+                    typeInvite: "Object",
                     scriptType: "string",
+                    classFilter:["TaskDescriptor"],
                     required: true
                 }, {
-                    type: "string",
-                    typeInvite: "task name",
+                    type: "select",
+                    typeInvite: "method",
                     scriptType: "string",
+                    choices:Y.Object.keys(Y.Wegas.persistence.TaskDescriptor.METHODS),
+                    required: true
+                }, {
+                    type: "list",
+                    typeInvite: "",
+                    scriptType: "array",
+                    value:["bonusRatio", -0.2],
                     required: true
                 }, {
                     type: "number",
                     typeInvite: "in period",
                     scriptType: "number",
                     required: true
-                }, {
-                    type: "number",
-                    typeInvite: "value",
-                    scriptType: "number",
-                    required: true
-                }]
+            }]
         }
     });
 });
