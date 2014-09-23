@@ -158,9 +158,9 @@
     background: transparent url(../..//lib/inputex/src/inputex-list/assets/skins/sam/bullet_arrow_down.png) no-repeat scroll 0px 1px !important;
 }
 .wegas-icon-pdf {
-    background: transparent url(../images/oxygen-pdf-icon-22x22.png) no-repeat scroll 0px 0px !important;
-    width: 22px;
-    height: 22px;
+    background: transparent url(../images/oxygen-pdf-icon-32x32.png) no-repeat scroll 0px 0px !important;
+    width: 32px;
+    height: 32px;
     margin: 6px;
 }
 .yui3-skin-sam .wegas-icon-restore {

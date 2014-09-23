@@ -44,8 +44,8 @@
 
     <h:body>
         <a name="top" />
-        <div class="wegas-pdf-content">
-            <div id="floatingMenuContainer">
+        <div class="wegas-pdf-content mode_#{ (request.getParameter('mode') == 'editor' ? 'editor' : 'player') }">
+            <div class="wegas-pdf-menu" id="floatingMenuContainer">
                 <div id="gotoTop">
                     <a href="#top"><img src="wegas-app/images/top.png" /></a>
                 </div>

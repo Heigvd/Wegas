@@ -693,20 +693,6 @@
                     }, {
                 "fn": "Taskonclickpopup"
                     }]
-            }, {
-            "type": "Button",
-            "cssClass": "wegas-icon-pdf",
-            "plugins": [{
-                "fn": "PrintActionPlugin",
-                "cfg": {
-                    "targetEvent": "click",
-                    "root": {
-                        "@class": "Script",
-                        "content": "Variable.find('tasks')"
-                    },
-                    "outputType": "html"
-                }
-                    }]
             }]
     },
     "4": {
@@ -1024,20 +1010,6 @@
                 "fn": "Taskonclickpopup"
                     }, {
                 "fn": "PMGLineCompleteness"
-                    }]
-            }, {
-            "type": "Button",
-            "cssClass": "wegas-icon-pdf",
-            "plugins": [{
-                "fn": "PrintActionPlugin",
-                "cfg": {
-                    "targetEvent": "click",
-                    "root": {
-                        "@class": "Script",
-                        "content": "Variable.find('tasks')"
-                    },
-                    "outputType": "html"
-                }
                     }]
             }]
     },

@@ -94,6 +94,11 @@ div#floatingMenuContainer a{
     font-size: 1.2em;
 }
 
+
+.mode_player div.wegas-pdf-menu {
+    display: none;
+}
+
 div.wegas-pdf-menu a{
     margin-left: 4px;
 }
@@ -157,7 +162,7 @@ div.wegas-pdf-text-container {
     border-radius: 4px;
     padding: 4px;
     max-width: 100%;
-    margin: 4px;
+    margin: 4px 0px;
 }
 
 div.wegas-pdf-text-container div{
@@ -168,21 +173,23 @@ div.wegas-pdf-text-container div{
 }
 
 span.wegas-pdf-variable-title {
-    font-size : 1.4em;
+    font-size: 1.5em;
     display : block;
     padding-bottom: 5px;
+    font-weight: bolder;
+    color: rgb(75, 75, 75);
 }
 
 span.wegas-pdf-listdescriptor {
     //font-size : 1.5em;
-    font-weight: bold;
+    color: rgb(58, 58, 58);
 }
 
 span.wegas-pdf-variable-subtitle {
     font-size : 1.2em;
     display : block;
-    padding-bottom: 10px;
-    padding-top: 10px;
+    /* padding-bottom: 10px; */
+    /* padding-top: 10px; */
 }
 
 div.wegas-pdf-text-container span.wegas-pdf-code{
@@ -202,6 +209,12 @@ div.wegas-pdf-property {
     padding-top: 0px;
     page-break-inside: avoid;
 }
+
+
+.mode_player span.wegas-pdf-property-key {
+    display : none;
+}
+
 
 span.wegas-pdf-property-key {
     font-weight: bold;
@@ -235,10 +248,14 @@ span.wegas-pdf-property-value {
     font-style : italic;
 }
 
+div.wegas-pdf-folder:last-of-type {
+    border-bottom : none;
+}
+
 div.wegas-pdf-folder {
     margin-left: 20px;
     display : block;
-    border-left: 1px dashed rgb(129, 129, 129);
+    /* border-left: 1px dashed rgb(129, 129, 129); */
     padding: 2px 2px 7px 2px;
     margin-top: 5px;
     background-color: rgba(250, 250, 250, 0.78);
@@ -256,8 +273,11 @@ div.wegas-pdf-message-container div {
 }
 
 div.wegas-pdf-variable-container {
-    border-left: 1px dashed rgb(129, 129, 129);
+    /* border-left: 1px dashed rgb(129, 129, 129); */
     border-bottom: 1px dashed rgb(129, 129, 129);
+}
+div.wegas-pdf-variable-container:last-of-type {
+    border-bottom: none;
 }
 
 span.wegas-pdf-error {
