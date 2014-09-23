@@ -269,7 +269,7 @@ var PMGSimulation = (function() {
             taskProgress = 1; // Avoid >0 to be round to 0
         }
 
-        return (taskProgress > TASK_COMPLETED_AT) ? 100 : Math.round(taskProgress); // > 97 yes, don't frustrate the players please.
+        return (taskProgress > TASK_COMPLETED_AT) ? 100 : taskProgress; // > 97 yes, don't frustrate the players please.
     }
 
 
@@ -761,7 +761,7 @@ var PMGSimulation = (function() {
             stepAdvance *= sumEmployeesMotivationXActivityRate / sumActivityRate; //needMotivationFactor (facteur motivation besoin)
             debug("facteur motivation besoin: " + sumEmployeesMotivationXActivityRate / sumActivityRate + ", sumActivityRate:" + sumActivityRate + ", employeesMotivationXActivityRate: " + sumEmployeesMotivationXActivityRate);
             stepAdvance *= sumEmployeesSkillsetXActivityRate / sumActivityRate; //needSkillsetFactor (facteur compétence besoin)  
-            debug("facteur competence besoin : " + sumEmployeesSkillsetXActivityRate / sumActivityRate + ", employeeSkillsetFactor : " + employeeSkillsetFactor + ", sumEemployeesSkillsetXActivityRate: " + sumEmployeesSkillsetXActivityRate);
+            debug("facteur competence besoin : " + sumEmployeesSkillsetXActivityRate / sumActivityRate + ", sumActivityRate : " + sumActivityRate + ", sumEemployeesSkillsetXActivityRate: " + sumEmployeesSkillsetXActivityRate);
             stepAdvance *= sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100); //activityNeedRateFactor (facteur taux activité besoin)
             debug("facteur taux activité besoin : " + sumActivityCoefficientXActivityRate / (effectiveTotalOfEmployees * 100) + ", sumActivityCoefficientXActivityRate : " + sumActivityCoefficientXActivityRate + ", ActivityNeedRateFactor : " + sumActivityCoefficientXActivityRate / sumActivityRate);
         }
@@ -778,12 +778,13 @@ var PMGSimulation = (function() {
             debug("Facteur nb ressource besoin : " + correctedRessources + ", stepAdvance: " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees + ", correctedRessources: " + correctedRessources);
         }
 
-        debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.weightedCompleteness: " + work.weightedCompleteness);
         //if (work.completeness >= work.quantity * 100) {      // Other work factor 
         if (work.weightedCompleteness >= 100) {      // Other work factor 
             //debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.quantity: " + work.quantity + ", totalOfEmployees: " + totalOfEmployees + ", work.completeness:" + work.completeness);
             debug("otherWorkFactor : 0.8, stepAdvance: " + stepAdvance + ", work.weightedCompleteness: " + work.weightedCompleteness);
             stepAdvance *= 0.8;
+        } else {
+            debug("otherWorkFactor : 1, work.weightedCompleteness: " + work.weightedCompleteness);
         }
 
         stepAdvance *= taskTable[taskDesc.name].randomFactor; // Random factor 
@@ -879,7 +880,7 @@ var PMGSimulation = (function() {
             randomFactor = MIN_TASK_DURATION;
         }
 
-        return getFloat((task.duration / randomFactor), 2);
+        return task.duration / randomFactor;
     }
 
     /**
@@ -895,7 +896,7 @@ var PMGSimulation = (function() {
             needQualityXNeedProgress += req.quality * req.completeness;
             needProgress += req.completeness;
         }
-        return Math.round(needQualityXNeedProgress / needProgress);
+        return needQualityXNeedProgress / needProgress;
     }
 
 
@@ -1093,7 +1094,6 @@ var PMGSimulation = (function() {
             employeesRequired = Y.Array.sum(task.requirements, function(r) {
                 return r.quantity;
             });
-            task.setProperty("wages", Math.round(task.getPropertyD("wages")));
             if (completeness > 0) {
                 // Actual cost only cares about started tasks
                 ac += task.getPropertyD('wages') + task.getPropertyD('fixedCosts') + task.getPropertyD('unworkedHoursCosts');
@@ -1103,7 +1103,12 @@ var PMGSimulation = (function() {
             sumCompletenessXdurationXnbr += completeness * task.duration * employeesRequired;
             sumDurationXnbr += task.duration * employeesRequired;
             sumRealised += completeness;
-            sumQualityXrealised += completeness * Math.ceil(task.getPropertyD('quality'));
+            sumQualityXrealised += completeness * task.getPropertyD('quality');
+
+            // Round 
+            task.setProperty("wages", Math.round(task.getPropertyD("wages")));
+            task.setProperty('completeness', Math.round(task.getPropertyD('completeness')));
+            task.setProperty('quality', Math.round(task.getPropertyD('quality')));
         }
 
         if (sumDurationXnbr > 0) {
