@@ -186,7 +186,7 @@ var PMGSimulation = (function() {
                             debug("   -> Activity");
                         } else {
                             debug("    -> BLOCKED BY PREDECESSORS");
-                            if (currentStep === 0) {
+                            if (currentStep === 0 && !AUTOMATED_RESERVATION) {
                                 sendBlockedByPredecessorsMail(resourceInstance, currentStep, taskDesc);
                             }
                         }
