@@ -72,7 +72,6 @@ function testsimplepmg() {
     debug(arguments.callee.name);
     // DEBUGMODE = true;
     loadVariables();
-    testResourceChangeWithinTask();
 
     testUnworkedHours();
     testNormalAssignment();
@@ -101,6 +100,7 @@ function testsimplepmg() {
     testremoveassign();
     testUnworkedReq();
 
+    //testResourceChangeWithinTask();
 }
 function testNormalAssignment() {
     debug(arguments.callee.name);
@@ -631,14 +631,23 @@ function testResourceChangeWithinTask() {
     assign(informaticien1, task1);
     assign(informaticien1, task2);
 
-    reserve(informaticien1, 1);
-    reserve(informaticien2, 2);
-    reserve(informaticien3, 3);
-    reserve(informaticien4, 4);
+    assign(informaticien2, task1);
+    assign(informaticien2, task2);
+    
+    assign(informaticien3, task1);
+    assign(informaticien3, task2);
+
+    assign(informaticien4, task1);
+    assign(informaticien4, task2);
+    
+    reserve(informaticien1, 1,5);
+    reserve(informaticien2, 2,6);
+    reserve(informaticien3, 3,7);
+    reserve(informaticien4, 4,8);
 
     doNextPeriod(5);                                                            // -> Executing week 4
-    checkProperty(task1, 'completeness', 100, arguments.callee.name);
-    checkProperty(task2, 'completeness', 120, arguments.callee.name);
+    //checkProperty(task1, 'completeness', 100, arguments.callee.name);
+    //checkProperty(task2, 'completeness', 120, arguments.callee.name);
 }
 
 
