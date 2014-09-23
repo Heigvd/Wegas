@@ -378,7 +378,7 @@ var centerTab = Y.Widget.getByNode("#centerTabView"),
     properties;
 
 if (centerTab && Y.one(".wegas-hostmode")) {
-    Y.use('wegas-pageeditor-fullwidthtab', function() {
+    Y.use('wegas-fullwidthtab', function() {
 
         // Add dashboard tab in first position
         var dashboard = centerTab.add({
