@@ -13,7 +13,7 @@
 var gameModelFacade, loaded = false,
     task1, task2, task3, task4, task5, task6, task7, task8,
     commercial1, commercial2, commercial3, commercial4, commercial5,
-    informaticien1, informaticien2, informaticien3, informaticien4, informaticien5,
+    informaticien1, informaticien2, informaticien3, informaticien4, informaticien5, informaticien6,
     designer1, designer2, designer3, designer4,
     quality, costs, delay,
     projectUnworkedHours, actualCost,
@@ -51,6 +51,7 @@ function loadVariables() {
         informaticien3 = getVariableDescriptor('informaticien3');
         informaticien4 = getVariableDescriptor('informaticien4');
         informaticien5 = getVariableDescriptor('informaticien5');
+        informaticien6 = getVariableDescriptor('informaticien6');
         designer1 = getVariableDescriptor('designer1');
         designer2 = getVariableDescriptor('designer2');
         designer3 = getVariableDescriptor('designer3');
@@ -69,7 +70,9 @@ function loadVariables() {
 
 function testsimplepmg() {
     debug(arguments.callee.name);
+    // DEBUGMODE = true;
     loadVariables();
+    testResourceChangeWithinTask();
 
     testUnworkedHours();
     testNormalAssignment();
@@ -98,7 +101,6 @@ function testsimplepmg() {
     testremoveassign();
     testUnworkedReq();
 
-    //testResourceChangeWithinTask();
 }
 function testNormalAssignment() {
     debug(arguments.callee.name);
@@ -241,18 +243,18 @@ function testActivityFactor() {
     debug(arguments.callee.name);
     reset();
 
-    informaticien1.setProperty('coef_activity', '1.3');
+    informaticien6.setProperty('coef_activity', '1.3');
 
-    informaticien1.instance.setProperty('activityRate', '40');
+    informaticien6.instance.setProperty('activityRate', '40');
 
-    assign(informaticien1, task1);
-    reserve(informaticien1, 1);
+    assign(informaticien6, task1);
+    reserve(informaticien6, 1);
 
     doNextPeriod(3);                                                            // -> Executing week 2
-    checkProperty(task1, 'completeness', 13, arguments.callee.name); //ancien 12   @fixme @diff 
+    checkProperty(task1, 'completeness', 12, arguments.callee.name); //ancien 12
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 100, arguments.callee.name); //ancien 100
-    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 98   @fixme @diff
+    checkProperty(task1, 'quality', 99, arguments.callee.name); //ancien 98   @fixme @diff
 }
 function testCoordinationRatioInf() {
     debug(arguments.callee.name);
@@ -374,7 +376,7 @@ function testCoordinationRatioInfDiffWorks4() {
     checkProperty(task6, 'quality', 100, arguments.callee.name); // Old pmg: 100
     nextPeriod();                                                               // -> Execution week 3
     checkProperty(task6, 'completeness', 100, arguments.callee.name); // Old pmg 100%
-    checkProperty(task6, 'wages', 2850, arguments.callee.name); // Old pmg: 3000 @FIXME
+    checkProperty(task6, 'wages', 2850, arguments.callee.name); // Old pmg: 3000 @fixme @diff
     checkProperty(task6, 'quality', 100, arguments.callee.name); // Old pmg: 100
 }
 //TODO Check differences (probably round problem)
@@ -384,8 +386,8 @@ function testCoordinationRatioDiffLevel() {
 
     task2.setProperty('coordinationRatioSup', '1.3');
 
-    informaticien1.instance.setSkillset("Informaticien", 12);
-    informaticien2.instance.setSkillset("Informaticien", 12);
+    informaticien1.instance.setSkillset("Informaticien", 11);
+    informaticien2.instance.setSkillset("Informaticien", 11);
     commercial1.instance.setSkillset("Commercial", 5);
 
     assign(informaticien1, task2);
@@ -396,10 +398,10 @@ function testCoordinationRatioDiffLevel() {
     reserve(commercial1, 1);
 
     doNextPeriod(3);                                                            // -> Execution week 2
-    checkProperty(task2, 'completeness', 87, arguments.callee.name); //ancien 84%  @fixme @diff
+    checkProperty(task2, 'completeness', 85, arguments.callee.name); //ancien 84%  @fixme @diff
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task2, 'quality', 102, arguments.callee.name); //ancien 101   // @fixme @diff
+    checkProperty(task2, 'quality', 101, arguments.callee.name); //ancien 101
 }
 function testCoordinationRatioSup() {
     debug(arguments.callee.name);
@@ -601,7 +603,7 @@ function testPredecessorFactor() {
 }
 function testUnassignable() {
     debug(arguments.callee.name);
-    reset();                                                                    // Reset current game model
+    reset();                                                                    
 
     task1.getInstance(self).setProperty('bac', '1500');
     //task2.getInstance(self).setProperty('bac', '1500');
@@ -618,26 +620,25 @@ function testUnassignable() {
 
 function testResourceChangeWithinTask() {
     debug(arguments.callee.name);
-    reset();                                                                    // Reset current game model
+    reset();
 
     task1.getInstance(self).setProperty('bac', '3000');
     task2.getInstance(self).setProperty('bac', '3000');
 
-    plan(task1, 1);
-    plan(task1, 1);
-    plan(task2, 1);
-    plan(task2, 1);
+    plan(task1, 1,2,3,4);
+    plan(task2, 1,2,3,4);
 
-    assign(commercial1, task1);
-    assign(commercial1, task2);
+    assign(informaticien1, task1);
+    assign(informaticien1, task2);
 
-    reserve(commercial1, 1);
-    reserve(commercial2, 2);
-    reserve(commercial3, 3);
-    reserve(commercial4, 4);
+    reserve(informaticien1, 1);
+    reserve(informaticien2, 2);
+    reserve(informaticien3, 3);
+    reserve(informaticien4, 4);
 
     doNextPeriod(5);                                                            // -> Executing week 4
-    // checkProperty(task1, 'completeness', 100, arguments.callee.name);                                                             // -> Closing
+    checkProperty(task1, 'completeness', 100, arguments.callee.name);
+    checkProperty(task2, 'completeness', 120, arguments.callee.name);
 }
 
 
@@ -804,6 +805,7 @@ function reset() {
     defaultEmployee(informaticien3);
     defaultEmployee(informaticien4);
     defaultEmployee(informaticien5);
+    defaultEmployee(informaticien6);
 
     loadGameModelFacade();
     gameModelFacade.refresh(gameModel);

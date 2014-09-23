@@ -1286,53 +1286,9 @@
                                     "wage": "1000"
                                 },
                                 "moral": 7,
-                                "moralHistory": [
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7,
-                                    7
-                                ],
+                                "moralHistory": [],
                                 "confidence": 0,
-                                "confidenceHistory": [
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    0
-                                ]
+                                "confidenceHistory": []
                             },
                             "scope": {
                                 "@class": "TeamScope",
@@ -1658,6 +1614,42 @@
                                     0,
                                     0
                                 ]
+                            },
+                            "scope": {
+                                "@class": "TeamScope",
+                                "broadcastScope": "TeamScope"
+                            },
+                            "description": "",
+                            "properties": {
+                                "coef_activity": "1",
+                                "coef_moral": "1",
+                                "maxBilledUnworkedHours": "0",
+                                "planningAvailability": "false",
+                                "engagementDelay": "0"
+                            }
+                        },
+                        {
+                            "@class": "ResourceDescriptor",
+                            "name": "informaticien6",
+                            "label": "Informaticien6",
+                            "title": "",
+                            "defaultInstance": {
+                                "@class": "ResourceInstance",
+                                "assignments": [],
+                                "occupations": [],
+                                "activities": [],
+                                "active": true,
+                                "skillsets": {
+                                    "Informaticien": 7
+                                },
+                                "properties": {
+                                    "activityRate": "100",
+                                    "wage": "1000"
+                                },
+                                "moral": 7,
+                                "moralHistory": [],
+                                "confidence": 0,
+                                "confidenceHistory": []
                             },
                             "scope": {
                                 "@class": "TeamScope",
