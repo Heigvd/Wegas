@@ -10,6 +10,7 @@ package com.wegas.app.pdf.controllers;
 import com.wegas.app.jsf.controllers.*;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.exception.NoResultException;
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
@@ -50,9 +51,7 @@ public class PrintController {
     @Inject
     ErrorController errorController;
 
-
     private Player currentPlayer = null;
-
 
     /**
      * CASE #1 export based on a specific user
@@ -106,7 +105,7 @@ public class PrintController {
     }
 
     /**
-     * 
+     *
      * @return
      */
     public GameModel getGameModel() {
@@ -124,8 +123,12 @@ public class PrintController {
         // Case #1: print against a specific user 
         if (this.playerId != null) {
             currentPlayer = playerFacade.find(this.playerId);
-            permissionToCheck = "Game:View:g" + currentPlayer.getGame().getId();
-        } 
+            if (currentPlayer.getGame() instanceof DebugGame) {
+                permissionToCheck = "GameModel:View:gm" + getGameModel().getId();
+            } else {
+                permissionToCheck = "Game:View:g" + currentPlayer.getGame().getId();
+            }
+        }
 
         // Case #2: Export against a gameModel
         if (this.gameModelId != null) {
