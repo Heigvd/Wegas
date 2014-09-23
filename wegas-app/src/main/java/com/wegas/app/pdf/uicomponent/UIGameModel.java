@@ -11,10 +11,12 @@ import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
@@ -83,12 +85,12 @@ public class UIGameModel extends UIComponentBase {
             subtitle = "Test Team";
         }
 
-        String title = "Scenario " + gm.getName() + " / " + subtitle;
+        String title = gm.getName() + " / " + subtitle;
 
         UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_MAIN_TITLE);
 
         List<VariableDescriptor> vds;
-        
+
         // unless root is specified, fetch all descriptors
         if (root == null || root.isEmpty()) {
             vds = gm.getChildVariableDescriptors();
@@ -114,14 +116,48 @@ public class UIGameModel extends UIComponentBase {
         }
         UIHelper.endDiv(writer);
 
+        ArrayList<String> path = new ArrayList<>();
         if (root == null || root.isEmpty()) {
             encodeGameModelHeader(context, writer, gm);
+        } else {
+            VariableDescriptorFacade vdFacade = VariableDescriptorFacade.lookup();
+            VariableDescriptor current = vdFacade.find(gm, root);
+            DescriptorListI parent;
+            while ((parent = vdFacade.findParentList(current)) != null) {
+                if (parent instanceof GameModel) {
+                    break;
+                } else {
+                    current = (VariableDescriptor) parent;
+                    if (current.getTitle() == null) {
+                        path.add(current.getLabel());
+                    } else {
+                        path.add(current.getTitle());
+                    }
+                }
+            }
         }
-        
+
+        if (!path.isEmpty()) {
+            UIHelper.startDiv(writer, UIHelper.CSS_CLASS_FOLDER);
+            UIHelper.startSpan(writer, UIHelper.CSS_CLASS_VARIABLE_TITLE + "  wegas-pdf-listdescriptor");
+            for (int i = path.size() - 1; i >= 0; i--) {
+                writer.write(path.get(i));
+                if (i > 0) {
+                    writer.write(" / ");
+                }
+            }
+            UIHelper.endSpan(writer);
+        }
+
         for (VariableDescriptor vd : vds) {
             UIVariableDescriptor uiVd = new UIVariableDescriptor(vd, player, editorMode, defaultValues);
             uiVd.encodeAll(context);
         }
+
+        if (!path.isEmpty()) {
+            UIHelper.endDiv(writer);
+        }
+
     }
 
     /**

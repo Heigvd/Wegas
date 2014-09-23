@@ -318,7 +318,9 @@ public class UIVariableDescriptor extends UIComponentBase {
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, task.getDescription(), false, editorMode);
 
             if (editorMode) {
-                UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, task.getIndex().toString());
+                if (task.getIndex() != null) {
+                    UIHelper.printProperty(context, writer, UIHelper.TEXT_INDEX, task.getIndex().toString());
+                }
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
@@ -508,7 +510,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             if (!replies.isEmpty()) {
                 UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
                 for (Reply r : replies) {
-                    UIHelper.printText(context, writer, r.getResult().getChoiceDescriptor().getLabel(), UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
+                    //UIHelper.printText(context, writer, r.getResult().getChoiceDescriptor().getLabel(), UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
                     UIResult uiResult = new UIResult(r.getResult(), player, editorMode, defaultValues);
                     uiResult.encodeAll(context);
                 }
@@ -667,7 +669,6 @@ public class UIVariableDescriptor extends UIComponentBase {
 
         UIHelper.endDiv(writer);
     }
-
 
     /**
      * Print Boolean
