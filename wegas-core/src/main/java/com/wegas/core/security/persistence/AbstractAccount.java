@@ -144,7 +144,17 @@ public class AbstractAccount extends AbstractEntity {
      * @return the name
      */
     public String getName() {
-        return this.getFirstname() + " " + this.getLastname();
+        if (this.getFirstname() != null && this.getLastname() != null){
+            return this.getFirstname() + " " + this.getLastname();
+        } else if (this.getLastname() != null){
+            return this.getLastname();
+        } else if (this.getFirstname() != null){
+            return this.getFirstname();
+        } else if (this.getUsername() != null){
+            return this.getUsername();
+        } else {
+            return "";
+        }
     }
 
     /**
