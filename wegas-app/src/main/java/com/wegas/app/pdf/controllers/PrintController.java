@@ -14,14 +14,11 @@ import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
-import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ManagedProperty;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.shiro.SecurityUtils;
 
@@ -117,7 +114,6 @@ public class PrintController {
      */
     @PostConstruct
     public void init() {
-        final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         String permissionToCheck = null;
 
         // Case #1: print against a specific user 
@@ -147,10 +143,8 @@ public class PrintController {
         } else {
             if (!userFacade.matchCurrentUser(currentPlayer.getId())
                     && !SecurityUtils.getSubject().isPermitted(permissionToCheck)) {
-                try {
-                    externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
-                } catch (IOException ex) {
-                }
+
+                errorController.accessDenied();
             }
         }
     }
