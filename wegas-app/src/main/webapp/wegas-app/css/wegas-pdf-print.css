@@ -211,7 +211,7 @@ div.wegas-pdf-property {
 }
 
 
-.mode_player span.wegas-pdf-property-key {
+.mode_player  .wegas-pdf-QuestionDescriptor span.wegas-pdf-property-key {
     display : none;
 }
 
