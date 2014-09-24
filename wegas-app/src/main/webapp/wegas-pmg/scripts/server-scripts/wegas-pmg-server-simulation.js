@@ -1017,7 +1017,7 @@ var PMGSimulation = (function() {
             for (i = 0; i < questions.size(); i++) {
                 question = questions.get(i);
                 if (!question.isReplied(self) && question.isActive(self)) {
-                    throw new com.wegas.core.exception.WegasException("You have not answered all questions from this week.");
+                    throw new Error("StringMessage: You have not answered all questions from this week.");
                 }
             }
         }
