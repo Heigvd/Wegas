@@ -627,6 +627,8 @@ public class UserController {
                 gameAccount.setEmail(key);
                 gameAccount.setPassword(password);
                 gameAccount.setGame(gameAccountKey.getGame());
+                gameAccount.setFirstname("Team");
+                gameAccount.setLastname("Account");
                 gameAccountKey.setUsed(Boolean.TRUE);
                 this.signup(gameAccount);
             } catch (SQLException | NoResultException ex) {
