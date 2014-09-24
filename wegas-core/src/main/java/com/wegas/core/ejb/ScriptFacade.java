@@ -40,9 +40,6 @@ import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import sun.org.mozilla.javascript.JavaScriptException;
-import sun.org.mozilla.javascript.NativeJavaObject;
-
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -126,16 +123,6 @@ public class ScriptFacade implements Serializable {
             engine.put(ScriptEngine.FILENAME, script.getContent()); //@TODO: JAVA 8 filename in scope
             return engine.eval(script.getContent());
         } catch (ScriptException ex) {
-            if (ex.getCause() instanceof JavaScriptException) {
-                JavaScriptException jse = (JavaScriptException)ex.getCause();
-                if (jse.getValue() instanceof NativeJavaObject) {
-                    NativeJavaObject njo = (NativeJavaObject)jse.getValue();
-                    Object unwrap = njo.unwrap();
-                    if (unwrap instanceof WegasException) {
-                        throw (WegasException) unwrap;
-                    }
-                }
-            }
 //            requestManager.addException(
 //                    new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
 //            throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
