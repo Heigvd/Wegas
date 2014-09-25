@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
@@ -20,6 +21,10 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.PrePersist;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.map.annotate.JsonView;
 
@@ -28,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"requirements_variableinstance_id", "wrequirement_name"}))
 public class WRequirement extends AbstractEntity implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -39,6 +45,12 @@ public class WRequirement extends AbstractEntity implements Serializable {
     @GeneratedValue
     @JsonView(Views.IndexI.class)
     private Long id;
+    /**
+     *
+     */
+    @Column(name = "wrequirement_name")
+    @NotNull
+    private String name;
     /**
      *
      */
@@ -55,7 +67,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
     @Column(name = "wlevel")
     private Integer level = 0;
     /**
-     * 
+     *
      */
     @ManyToOne
     @JoinColumn(name = "requirements_variableinstance_id")
@@ -103,6 +115,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
         this.setWork(other.getWork());
         this.setCompleteness(other.getCompleteness());
         this.setQuality(other.getQuality());
+        this.setName(other.getName());
     }
 
     /**
@@ -118,6 +131,22 @@ public class WRequirement extends AbstractEntity implements Serializable {
      */
     public void setId(Long id) {
         this.id = id;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public void setName(String name) {
+        this.name = name;
     }
 
     /**
@@ -204,13 +233,21 @@ public class WRequirement extends AbstractEntity implements Serializable {
         this.quality = quality;
     }
 
+    /**
+     *
+     * @return
+     */
     @XmlTransient
-    public TaskInstance getTaskInstance(){
+    public TaskInstance getTaskInstance() {
         return taskInstance;
     }
 
+    /**
+     *
+     * @param taskInstance
+     */
     @XmlTransient
-    public void setTaskInstance(TaskInstance taskInstance){
+    public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
     }
 
@@ -264,5 +301,12 @@ public class WRequirement extends AbstractEntity implements Serializable {
     @Override
     public String toString() {
         return "Requirement(" + this.id + ", " + this.work + ", limit: " + this.limit + ", level:  " + this.level + ")";
+    }
+
+    @PrePersist
+    private void checkName() {
+        if (name == null || name.isEmpty()) {
+            name = work + level + quantity + Helper.genToken(4);
+        }
     }
 }

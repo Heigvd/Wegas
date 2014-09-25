@@ -8,6 +8,7 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,30 +54,6 @@ public class TaskInstance extends VariableInstance {
     private List<WRequirement> requirements = new ArrayList<>();
 
     /**
-     *
-     * @param a
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        TaskInstance other = (TaskInstance) a;
-        this.setActive(other.getActive());
-        this.setDuration(other.getDuration());
-        this.properties.clear();
-        this.properties.putAll(other.getProperties());
-        this.requirements.clear();
-        for (WRequirement req : other.getRequirements()) {
-            //if (req.getId() != null) { //don't like modification
-            WRequirement r = new WRequirement();
-            r.merge(req);
-            r.setTaskInstance(this); // @fixme 
-            this.requirements.add(r);
-        }
-        //}
-        this.plannification.clear();
-        this.plannification.addAll(other.getPlannification());
-    }
-
-    /**
      * @return the active
      */
     public boolean getActive() {
@@ -105,6 +82,20 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
+     * @return the plannification
+     */
+    public List<Integer> getPlannification() {
+        return plannification;
+    }
+
+    /**
+     * @param plannification the plannification to set
+     */
+    public void setPlannification(List<Integer> plannification) {
+        this.plannification = plannification;
+    }
+
+    /**
      * @return the properties
      */
     public Map<String, String> getProperties() {
@@ -116,15 +107,6 @@ public class TaskInstance extends VariableInstance {
      */
     public void setProperties(Map<String, String> properties) {
         this.properties = properties;
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setProperty(String key, String val) {
-        this.properties.put(key, val);
     }
 
     /**
@@ -146,49 +128,12 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @return the requirements
-     */
-    public List<WRequirement> getRequirements() {
-        return this.requirements;
-    }
-
-    /**
-     * @param requirements the requierement to set
-     */
-    public void setRequirements(List<WRequirement> requirements) {
-        this.requirements = requirements;
-    }
-
-    /**
      *
      * @param index
      * @return WRequirement
      */
     public WRequirement getRequirement(Integer index) {
         return this.requirements.get(index);
-    }
-
-    /**
-     *
-     * @param index
-     * @param val
-     */
-    public void setRequirement(Integer index, WRequirement val) {
-        this.requirements.set(index, val);
-    }
-
-    /**
-     * @return the plannification
-     */
-    public List<Integer> getPlannification() {
-        return plannification;
-    }
-
-    /**
-     * @param plannification the plannification to set
-     */
-    public void setPlannification(List<Integer> plannification) {
-        this.plannification = plannification;
     }
 
     /**
@@ -205,5 +150,88 @@ public class TaskInstance extends VariableInstance {
             }
         }
         return requirement;
+    }
+
+    public WRequirement getRequirementByName(String name) {
+        WRequirement requirement = null;
+        for (WRequirement req : this.getRequirements()) {
+            if (req.getName().equals(name)) {
+                requirement = req;
+                break;
+            }
+        }
+        return requirement;
+    }
+
+    /**
+     * @return the requirements
+     */
+    public List<WRequirement> getRequirements() {
+        return this.requirements;
+    }
+
+    /**
+     * @param requirements the requierement to set
+     */
+    public void setRequirements(List<WRequirement> requirements) {
+        this.requirements = requirements;
+    }
+
+    /**
+     *
+     * @param a
+     */
+    @Override
+    public void merge(AbstractEntity a) {
+        TaskInstance other = (TaskInstance) a;
+        this.setActive(other.getActive());
+        this.setDuration(other.getDuration());
+        this.properties.clear();
+        this.properties.putAll(other.getProperties());
+        ListUtils.ListKeyToMap<String, WRequirement> converter;
+        converter = new NameToWRequirementConverter();
+        Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
+        this.requirements.clear();
+        for (WRequirement req : other.getRequirements()) {
+            WRequirement r;
+            if (reqMap.containsKey(req.getName()) && req.getId() != null) {
+                r = reqMap.get(req.getName());
+                r.merge(req);
+                this.requirements.add(r);
+            } else {
+                r = new WRequirement();
+                r.merge(req);
+                r.setTaskInstance(this); // @fixme
+                this.requirements.add(r);
+            }
+        }
+        this.plannification.clear();
+        this.plannification.addAll(other.getPlannification());
+    }
+
+    /**
+     *
+     * @param key
+     * @param val
+     */
+    public void setProperty(String key, String val) {
+        this.properties.put(key, val);
+    }
+
+    /**
+     *
+     * @param index
+     * @param val
+     */
+    public void setRequirement(Integer index, WRequirement val) {
+        this.requirements.set(index, val);
+    }
+
+    private static class NameToWRequirementConverter implements ListUtils.ListKeyToMap<String, WRequirement> {
+
+        @Override
+        public String getKey(WRequirement item) {
+            return item.getName();
+        }
     }
 }

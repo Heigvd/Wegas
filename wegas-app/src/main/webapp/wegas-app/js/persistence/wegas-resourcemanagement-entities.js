@@ -654,8 +654,15 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                         value: "WRequirement",
                                         type: HIDDEN
                                     }, {
+                                        name: "id",
+                                        type: HIDDEN
+                                    }, {
+                                        name: "name",
+                                        type: HIDDEN,
+                                        typeInvite: "name"
+                                    }, {
                                         name: "work",
-                                        type: "select",
+                                        type: SELECT,
                                         choices: persistence.Resources.SKILLS
                                     }, {
                                         name: "level",
@@ -699,7 +706,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: ARRAY,
                         _inputex: {
                             _type: HIDDEN,
-                            value : []
+                            value: []
                         }
                     },
                     properties: {
@@ -880,6 +887,14 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "WRequirement"
+            },
+            id: {
+                optional: true,
+                type: NUMBER
+            },
+            name: {
+                optional: true,
+                type: STRING
             },
             work: {
                 type: STRING
