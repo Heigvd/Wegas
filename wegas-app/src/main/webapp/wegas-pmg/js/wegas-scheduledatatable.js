@@ -33,6 +33,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
         },
         sync: function() {
             Y.log("sync()", "log", "Wegas.ScheduleDT");
+            this.__currentPhase = this._currentPhase();                       // Cache current phase value
             this.__currentPeriod = this._currentPeriod();                       // Cache current period value
             this.setColumn(Math.max(this.currentPeriod(), this.initialMaximum()));
             this.setTime();
@@ -86,6 +87,17 @@ YUI.add('wegas-scheduledatatable', function(Y) {
                         .addClass(this.getClass(index + 1));
                 }, this);
             }
+        },
+        currentPhase: function() {
+            return this.__currentPhase;
+        },
+        _currentPhase: function() {
+            var variable = Wegas.Facade.Variable.cache.find("name", "currentPhase");
+            if (!variable) {
+                this.get("host").showMessage("error", "No variable found");
+                return;
+            }
+            return variable.getInstance().get("value");
         },
         currentPeriod: function() {
             return this.__currentPeriod;
