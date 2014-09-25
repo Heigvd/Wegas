@@ -299,41 +299,19 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
         instance.setDuration(instance.getDuration() + value);
     }
 
-    /**
-     *
-     * @param p
-     * @param id
-     * @param variable
-     * @return
-     */
-    public double getRequirementVariable(Player p, Long id, String variable) {
-        WRequirement requirement = this.getRequirementById(p, id);
-        double value = Double.NaN;
-        if (requirement != null) {
-            value = requirement.getVariableValue(variable);
-        }
-        return value;
+    public WRequirement getRequirementByName(Player p, String name) {
+        return this.getInstance(p).getRequirementByName(name);
     }
 
     /**
      *
      * @param p
-     * @param id
-     * @return
-     */
-    public WRequirement getRequirementById(Player p, Long id) {
-        return this.getInstance(p).getRequirementById(id);
-    }
-
-    /**
-     *
-     * @param p
-     * @param id
+     * @param name
      * @param variable
      * @param value
      */
-    public void setRequirementVariable(Player p, Long id, String variable, double value) {
-        WRequirement requirement = this.getRequirementById(p, id);
+    public void setRequirementVariable(Player p, String name, String variable, double value) {
+        WRequirement requirement = this.getRequirementByName(p, name);
         if (requirement != null) {
             requirement.setVariableValue(variable, value);
         }
@@ -342,12 +320,12 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      * @param p
-     * @param id
+     * @param name
      * @param variable
      * @param value
      */
-    public void addAtRequirementVariable(Player p, Long id, String variable, double value) {
-        WRequirement requirement = this.getRequirementById(p, id);
+    public void addAtRequirementVariable(Player p, String name, String variable, double value) {
+        WRequirement requirement = this.getRequirementByName(p, name);
         if (requirement != null) {
             requirement.addAtVariableValue(variable, value);
         }

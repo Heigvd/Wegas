@@ -195,7 +195,8 @@ Y.mix(persistence.TaskDescriptor.METHODS, {
                 value: SELF
             }, {
                 type: "entityarrayfieldselect",
-                returnAttr: "id",
+                returnAttr: "name",
+                scriptType: STRING,
                 scope: "instance",
                 field: "requirements",
                 name: {
@@ -223,7 +224,8 @@ Y.mix(persistence.TaskDescriptor.METHODS, {
                 value: SELF
             }, {
                 type: "entityarrayfieldselect",
-                returnAttr: "id",
+                returnAttr: "name",
+                scriptType: STRING,
                 scope: "instance",
                 field: "requirements",
                 name: {
@@ -506,32 +508,32 @@ Y.use("wegas-inputex-variabledescriptorselect", function() {
                     }
                 }]
         },
-         "PMGHelper.addImpactDuration": {
+        "PMGHelper.addImpactDuration": {
             label: "[PMG] impact reverse",
-           "arguments": [{
+            "arguments": [{
                     type: "flatvariableselect",
                     typeInvite: "Object",
                     scriptType: "string",
-                    classFilter:["TaskDescriptor"],
+                    classFilter: ["TaskDescriptor"],
                     required: true
                 }, {
                     type: "select",
                     typeInvite: "method",
                     scriptType: "string",
-                    choices:Y.Object.keys(Y.Wegas.persistence.TaskDescriptor.METHODS),
+                    choices: Y.Object.keys(Y.Wegas.persistence.TaskDescriptor.METHODS),
                     required: true
                 }, {
                     type: "list",
                     typeInvite: "",
                     scriptType: "array",
-                    value:["bonusRatio", -0.2],
+                    value: ["bonusRatio", -0.2],
                     required: true
                 }, {
                     type: "number",
                     typeInvite: "in period",
                     scriptType: "number",
                     required: true
-            }]
+                }]
         }
     });
 });
