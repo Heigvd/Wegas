@@ -77,7 +77,8 @@ public class ScriptController {
                 requestFacade.commit();
                 return r;
             } catch (ScriptException e) {                                       // Try catch since script exception does not rollback
-                throw new WegasException("Error running script", e);
+                //throw new WegasException("Error running script", e);
+                throw new WegasException(e.getMessage(), e);
             }
         } else {
             throw new UnauthorizedException();
