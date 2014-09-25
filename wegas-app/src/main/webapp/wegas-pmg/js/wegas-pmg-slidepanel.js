@@ -43,7 +43,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                     duration: 0.5
                 }, this);
 
-                this.cleaner = cb.ancestor().one(".slidepanel-cleaner").plug(Y.Plugin.NodeFX, { //compensates the non-height of the content's absolute position.
+                this.cleaner = cb.ancestor().one(".slidepanel-cleaner").plug(Y.Plugin.NodeFX, {//compensates the non-height of the content's absolute position.
                     from: {
                         height: 0
                     },
@@ -65,9 +65,9 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 this.get("boundingBox").toggleClass("wegas-slidepanel-toggled");
                 if (this.get('animation')) {
                     this.animation.fx.set('reverse', !this.animation.fx.get('reverse')) // toggle reverse
-                    .run();
+                        .run();
                     this.cleaner.fx.set('reverse', !this.cleaner.fx.get('reverse')) // toggle reverse
-                    .run();
+                        .run();
                 }
             }, this);
         },
@@ -123,64 +123,70 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                 panel = new Wegas.PmgSlidePanel({
                     title: vd.get("label"),
                     children: [{
-                        type: "PmgDatatable",
-                        plugins: [{
-                                fn: "ScheduleDT",
-                                cfg: {
-                                    variable: {
-                                        name: "periodPhase3"
+                            type: "PmgDatatable",
+                            plugins: [{
+                                    fn: "ScheduleDT",
+                                    cfg: {
+                                        variable: {
+                                            name: "periodPhase3"
+                                        }
                                     }
-                                }
                                 }, {
-                                fn: "Assignment",
-                                cfg: {
-                                    taskList: {
-                                        name: "tasks"
-                                    },
-                                    columnPosition: 5
-                                }
+                                    fn: "Assignment",
+                                    cfg: {
+                                        taskList: {
+                                            name: "tasks"
+                                        },
+                                        columnPosition: 5
+                                    }
                                 }, {
-                                fn: "OccupationColor",
-                                cfg: {
-                                    autoReservation: autoReserve
-                                }
+                                    fn: "OccupationColor",
+                                    cfg: {
+                                        autoReservation: autoReserve
+                                    }
                                 }, {
-                                fn: "ActivityColor"
+                                    fn: "ActivityColor"
                                 }
                             ],
-                        variable: {
-                            name: vd.get("name")
-                        },
-                        columnsCfg: [{
-                            key: "label",
-                            label: "Name",
-                            sortable: true
+                            variable: {
+                                name: vd.get("name")
+                            },
+                            columnsCfg: [{
+                                    key: "label",
+                                    label: "Name",
+                                    sortable: true
                                 }, {
-                            label: "Grade",
-                            formatter: "skillLevel",
-                            key: "instance.skillsets",
-                            sortable: true,
-                            allowHTML: true
+                                    label: "Grade",
+                                    formatter: "skillLevel",
+                                    key: "instance.skillsets",
+                                    sortable: true,
+                                    allowHTML: true
                                 }, {
-                            label: "Monthly wages",
-                            key: "instance.properties.wage",
-                            sortable: true
+                                    label: "Monthly wages",
+                                    key: "instance.properties.wage",
+                                    sortable: true
                                 }, {
-                            label: "Rate",
-                            key: "instance.properties.activityRate",
-                            sortable: true
+                                    label: "Rate",
+                                    key: "instance.properties.activityRate",
+                                    sortable: true
                                 }, {
-                            label: "Motiv.",
-                            key: "instance.moral",
-                            sortable: true
+                                    label: "Motiv.",
+                                    key: "instance.moral",
+                                    sortable: true
                                 }],
-                        defaultSort: null
+                            defaultSort: null
                         }, {
-                        type: "Text",
-                        content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nNot Available</div>\n</div>"
+                            type: "Text",
+                            content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nNot Available</div>\n</div>"
                         }]
                 }).render(this.get(CONTENTBOX));
-                if (!autoReserve) {
+                if (autoReserve) {
+                    panel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                        taskList: {
+                            name: "tasks"
+                        }
+                    });
+                } else {
                     panel.item(0).plug(Y.Plugin.Reservation); // Player can click cell to reserve
                     panel.item(0).plug(Y.Plugin.EngagmentDelay);
                     panel.item(0).plug(Y.Plugin.PMGLineFilter, {
@@ -196,13 +202,6 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                     });
                 }
 
-                if (autoReserve && currentPhase === 3) {
-                    panel.item(0).plug(Y.Plugin.AutoReservationColor, {
-                        taskList: {
-                            name: "tasks"
-                        }
-                    });
-                }
                 panel.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this);
                 return panel;
             }, this);

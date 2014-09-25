@@ -46,16 +46,16 @@ YUI.add('wegas-inbox', function(Y) {
         TEMPLATES: {
             inbox: {
                 tab: Micro.compile("<div class=' <%=(this.get('unread') ? 'unread' : 'read')%>'>"
-                    + "<div class='msg-firstLine'>" 
+                    + "<div class='msg-firstLine'>"
                     + "<span class='msg-subject'><%== this.get('subject')%></span>"
                     + "<% if (this.get('date')){ %><span class='msg-date'><%== this.get('date') %></span><% } %>"
-                    + "</div>" 
+                    + "</div>"
                     + "<% if (this.get('from')){ %><div class='msg-from'><span><%== this.get('from') %></span></div><% } %>"),
-                content: Micro.compile("<div class='msg-header msg-header-inbox'>" 
-                    + "<div class='msg-firstLine'>" 
+                content: Micro.compile("<div class='msg-header msg-header-inbox'>"
+                    + "<div class='msg-firstLine'>"
                     + "<span class='msg-subject'><%== this.get('subject')%></span>"
                     + "<% if (this.get('date')){ %><span class='msg-date'><%= this.get('date') %></span><% } %>"
-                    + "</div>" 
+                    + "</div>"
                     + "<% if (this.get('from')) { %><div><span class='msg-from'><%== this.get('from') %></span></div><% } %>"
                     + "<% if (this.get('attachements') && this.get('attachements').length) {%>"
                     + "<div class='msg-attachement'><% Y.Array.each(this.get('attachements'), function(a){ %><a href='<%= a %>' data-file='<%= a %>' target='_blank'><%= a.split('/').pop() %></a>;<% }); %></div>"
@@ -67,10 +67,10 @@ YUI.add('wegas-inbox', function(Y) {
              */
             clean: {
                 tab: Micro.compile("<div>"
-                    + "<div class='msg-firstLine'>" 
+                    + "<div class='msg-firstLine'>"
                     + "<span class='msg-subject'><%== this.get('subject')%></span>"
                     + "<% if (this.get('date')){ %><span class='msg-date'><%== this.get('date') %></span><% } %>"
-                    + "</div>" 
+                    + "</div>"
                     + "<% if (this.get('from')){ %><div class='msg-from'><span><%== this.get('from') %></span></div><% } %>"),
                 content: Micro.compile(
                     "<div class='msg-body'> <%== this.get('body') %></div>")
@@ -178,8 +178,7 @@ YUI.add('wegas-inbox', function(Y) {
             this.isDestroying = false;
             if (entities.length === 0) {
                 this.tabView.add(new Y.Tab({
-                    label: '',
-                    content: '<center><i>You have no messages</i></center>'
+                    label: '<center><i>You have no messages</i></center>'
                 }));
             }
             Y.Array.each(entities, function(entity) {
@@ -199,7 +198,9 @@ YUI.add('wegas-inbox', function(Y) {
                     this.tabView.selectChild(0);                                // Select the first tab by default
                 } else {
                     this.tabView.get("panelNode").all(".wegas-inbox-invite").remove(true);
-                    this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
+                    if (entities.length > 0) {
+                        this.tabView.get("panelNode").append("<div class=\"wegas-inbox-invite\">Select an item on the left</div>");
+                    }
                 }
             }
         },

@@ -38,7 +38,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
         sync: function() {
             this.taskTable = {};
             this.fillTaskTable();
-            this.computePert(this.taskTable, this.get("host").schedule.currentPeriod());
+            this.computePert(this.taskTable, this.get("host").schedule.currentPeriod(), this.get("host").schedule.currentPhase());
             this.renderCells();
         },
         fillTaskTable: function() {

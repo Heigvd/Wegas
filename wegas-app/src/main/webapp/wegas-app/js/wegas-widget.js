@@ -57,14 +57,14 @@ YUI.add("wegas-widget", function(Y) {
         defaultFailureHandler: function(e) {
             var error = e.response.message || e.response.results.message || "Error during request.",
                 test = error.match(/ConstraintViolationException: (.*) is out of bound/),
-                stringMessage = error.match(/Error: StringMessage: (.*)/);
+                stringMessage = error.match(/Error: StringMessage: (.*) in Script/);
 
             this.hideOverlay();
 
             if (test) {
                 this.showMessage("error", "You don't have enough " + test[1] + ".");
             } else if (stringMessage) {
-                this.showMessage("error", stringMessage[1].split(" in <")[0]);
+                this.showMessage("error", stringMessage[1]);
             } else if (error.match(/ERROR: duplicate key value violates unique constraint "unq_game_0"/)) {
                 this.showMessage("error", "This name is already in use");
             } else {

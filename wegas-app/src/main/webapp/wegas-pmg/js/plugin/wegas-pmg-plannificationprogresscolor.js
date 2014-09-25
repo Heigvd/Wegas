@@ -32,8 +32,8 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
         sync: function() {
             this.taskTable = {};
             this.fillTaskTable();
-            this.computePert(this.taskTable, this.get("host").schedule.currentPeriod());
-            this.findCell();
+            this.computePert(this.taskTable, this.get("host").schedule.currentPeriod(), this.get("host").schedule.currentPhase());
+            this.renderCells();
         },
         fillTaskTable: function() {
             var i, taskDesc, taskInst, properties,
@@ -51,7 +51,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 }
             }
         },
-        findCell: function() {
+        renderCells: function() {
             var taskId, taskDesc, host = this.get("host"),
                 dt = this.get("host").datatable, i, ii, cell;
 

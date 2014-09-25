@@ -71,7 +71,7 @@ var PMGHelper = (function() {
             currentPeriodNumber = getCurrentPeriodNumber();
         return Y.Array.find(rInst.assignments, function(a) {
             return !isCompleted(a.taskDescriptor);
-        }) 
+        })
             && (automatedReservation() || Y.Array.find(rInst.occupations, function(o) { // Check if has an occupation for the futur
                 return o.time >= currentPeriodNumber;
             }));
@@ -93,8 +93,8 @@ var PMGHelper = (function() {
      */
     function isReservedToWork(rd, period) {
         var employeeInst = rd.getInstance(self);
-        debug("isReservedToWork (rd: " + rd  + "; p:" + period + ")");
-        if (!period){
+        debug("isReservedToWork (rd: " + rd + "; p:" + period + ")");
+        if (!period) {
             period = getCurrentPeriodNumber();
         }
         // Inactive resource never work
