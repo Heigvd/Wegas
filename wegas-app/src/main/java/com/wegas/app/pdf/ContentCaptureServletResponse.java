@@ -10,6 +10,7 @@ package com.wegas.app.pdf;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
@@ -30,15 +31,21 @@ public class ContentCaptureServletResponse extends HttpServletResponseWrapper {
     @Override
     public PrintWriter getWriter() throws IOException {
 	if (writer == null){
-	    contentBuffer = new ByteArrayOutputStream();
-	    writer = new PrintWriter(contentBuffer);
+	    writer = new PrintWriter(getContentBuffer());
 	}
 	return writer;
     }
 
-    public String getContent(){
-	writer.flush();
-	String xhtmlContent = new String(contentBuffer.toByteArray());
+    private ByteArrayOutputStream getContentBuffer(){
+        if (contentBuffer == null){
+            contentBuffer = new ByteArrayOutputStream();
+        }
+        return contentBuffer;
+    }
+
+    public String getContent() throws IOException{
+	getWriter().flush();
+	String xhtmlContent = new String(getContentBuffer().toByteArray(), StandardCharsets.UTF_8);
 
 	xhtmlContent = xhtmlContent.replaceAll("<thead>|</thead>|"+ "<tbody>|</tbody>", "");
 	xhtmlContent = xhtmlContent.replaceAll("<br>", "<br />");
