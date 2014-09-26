@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "WarningEvent")
 public class WarningEvent extends CustomEvent {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

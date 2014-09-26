@@ -30,7 +30,7 @@ public class FacebookAuthenticationInfo implements AuthenticationInfo {
     public FacebookAuthenticationInfo(FacebookUserDetails facebookUserDetails, String realmName) {
         Collection<String> principals = new ArrayList<String>();
         principals.add(facebookUserDetails.getId());
-        principals.add(facebookUserDetails.getFirstName() + " " + facebookUserDetails.getLastName()); // Is this appropriate is the name not really a Principal ?
+        principals.add(facebookUserDetails.getFirstname() + " " + facebookUserDetails.getLastname()); // Is this appropriate is the name not really a Principal ?
         this.principalCollection = new SimplePrincipalCollection(principals, realmName);
     }
 

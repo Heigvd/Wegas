@@ -96,7 +96,7 @@ public class Pusher {
 
             //Process and return data
             byte[] digest = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
-            digest = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            //  digest = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             //Convert to string
             BigInteger bigInteger = new BigInteger(1, digest);
             return String.format("%0" + (digest.length << 1) + "x", bigInteger);
@@ -243,7 +243,7 @@ public class Pusher {
         String url = buildURI(uriPath, query, signature);
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpContext cntxt = new BasicHttpContext();
+        //HttpContext cntxt = new BasicHttpContext();
 
         HttpPost httpPost = new HttpPost(url);
         httpPost.addHeader("Content-Type", "application/json");

@@ -15,6 +15,8 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -138,7 +140,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Transient
     @JsonView({Views.Export.class})
-    private Map<String, JsonNode> pages;
+    private transient Map<String, JsonNode> pages;
 
     /**
      *
@@ -491,7 +493,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @JsonIgnore
     public void setItems(List<VariableDescriptor> items) {
         this.setChildVariableDescriptors(items);
-        this.addItem(null);
+//        this.addItem(null);
     }
 
     @Override
@@ -585,5 +587,10 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setTemplate(Boolean template) {
         this.template = template;
+    }
+
+    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        this.pages = new HashMap<>();
     }
 }

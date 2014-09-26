@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 @XmlRootElement
 public class FileDescriptor extends AbstractContentDescriptor {
 
-    private static final long serialVersionUID = 1L;
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
     @JsonIgnore

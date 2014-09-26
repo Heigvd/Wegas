@@ -421,7 +421,7 @@ public class UserFacade extends BaseFacade<User> {
      * @param accountId
      * @throws NoResultException
      */
-    public void DeleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
+    public void deleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
         try {

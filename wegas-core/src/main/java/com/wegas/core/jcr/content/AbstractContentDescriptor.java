@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @XmlRootElement
-abstract public class AbstractContentDescriptor implements Serializable {
+abstract public class AbstractContentDescriptor {
 
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);

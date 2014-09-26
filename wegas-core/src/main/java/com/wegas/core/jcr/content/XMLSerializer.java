@@ -101,9 +101,6 @@ public class XMLSerializer implements ContentHandler {
         } catch (TransformerException e) {
             throw new SAXException(e);
         }
-        if (ch == null) {
-            throw new SAXException("Transformer didn't set ContentHandler");
-        }
     }
 
     @Override

@@ -13,6 +13,7 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.Basic;
@@ -260,16 +261,11 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
      */
     public void removeOccupationsAtTime(Player p, double time) {
         ResourceInstance instance = this.getInstance(p);
-        List<Occupation> toRemove = new ArrayList<>();
-        Integer i = 0;
-        for (Occupation occupation : instance.getOccupations()) {
-            if (occupation.getTime() == time) {
-                toRemove.add(occupation);
+        for (Iterator<Occupation> it = instance.getOccupations().iterator(); it.hasNext();) {
+            Occupation occupation = it.next();
+            if (Math.abs(occupation.getTime() - time) < 0.000001) {
+                it.remove();
             }
-        }
-        while (toRemove.size() > i) {
-            instance.getOccupations().remove(toRemove.get(i));
-            i++;
         }
     }
 

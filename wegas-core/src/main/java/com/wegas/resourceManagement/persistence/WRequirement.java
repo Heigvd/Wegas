@@ -34,9 +34,8 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"requirements_variableinstance_id", "wrequirement_name"}))
-public class WRequirement extends AbstractEntity implements Serializable {
+public class WRequirement extends AbstractEntity {
 
-    private static final long serialVersionUID = 1L;
     /**
      *
      */
@@ -216,7 +215,7 @@ public class WRequirement extends AbstractEntity implements Serializable {
      * @param completeness the completeness to set
      */
     public void setCompleteness(double completeness) {
-        this.completeness = completeness == Double.NaN ? 0 : completeness;
+        this.completeness = Double.isNaN(completeness) ? 0 : completeness;
     }
 
     /**
@@ -279,6 +278,8 @@ public class WRequirement extends AbstractEntity implements Serializable {
             case "quantity":
                 this.setQuantity(Math.round(value));
                 break;
+            default:
+                throw new UnsupportedOperationException("Unexpected parameter " + variable);
         }
     }
 
@@ -295,6 +296,8 @@ public class WRequirement extends AbstractEntity implements Serializable {
             case "quantity":
                 this.setQuantity(this.getQuantity() + Math.round(value));
                 break;
+            default:
+                throw new UnsupportedOperationException("Unexpected parameter " + variable);
         }
     }
 

@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerInstance", value = TriggerInstance.class)
 })
-public class StateMachineInstance extends VariableInstance implements Serializable {
+public class StateMachineInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
     /**

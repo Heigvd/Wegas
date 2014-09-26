@@ -50,6 +50,6 @@ public class WebsocketController {
     @Path("Send/{entityType : .*}/{entityId : .*}/{eventType : .*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response send(@PathParam("entityType") String entityType, @PathParam("entityId") String entityId, @PathParam("eventType") String eventType, String data) throws IOException {
-        return Response.status(new Integer(websocketFacade.send(eventType, entityType, entityId, data).split(" ")[0])).build();
+        return Response.status(Integer.parseInt(websocketFacade.send(eventType, entityType, entityId, data).split(" ")[0])).build();
     }
 }

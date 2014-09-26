@@ -32,7 +32,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
     @JsonSubTypes.Type(name = "TeamScope", value = TeamScope.class),
     @JsonSubTypes.Type(name = "PlayerScope", value = PlayerScope.class)
 })
-abstract public class AbstractScope extends AbstractEntity implements Serializable {
+abstract public class AbstractScope extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
     /**

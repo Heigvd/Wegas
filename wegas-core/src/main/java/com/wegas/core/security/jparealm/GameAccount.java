@@ -30,6 +30,10 @@ public class GameAccount extends JpaAccount {
     public GameAccount() {
     }
 
+    public GameAccount(Game game) {
+        this.game = game;
+    }
+
     /**
      *
      * @return

@@ -46,9 +46,8 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class ScriptFacade implements Serializable {
+public class ScriptFacade {
 
-    private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
     /**
      *

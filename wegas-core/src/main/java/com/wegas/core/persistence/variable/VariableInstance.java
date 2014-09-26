@@ -49,18 +49,19 @@ import org.slf4j.LoggerFactory;
 })
 
 @Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
+    
     @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
     @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
     @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
 })
 
 /* JPA2.1 (GlassFish4) Indexes
-@Table(indexes = {
-     @Index(columnList = "gamescope_id"),
-     @Index(columnList = "teamscope_id"),
-     @Index(columnList = "playerscope_id")
-})
-*/
+ @Table(indexes = {
+ @Index(columnList = "gamescope_id"),
+ @Index(columnList = "teamscope_id"),
+ @Index(columnList = "playerscope_id")
+ })
+ */
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
@@ -139,7 +140,7 @@ abstract public class VariableInstance extends AbstractEntity {
      * @return
      */
     @Override
-    public VariableInstance clone() {
+    public VariableInstance clone(){
         return (VariableInstance) super.clone();
     }
 

@@ -30,9 +30,9 @@ import org.apache.shiro.subject.PrincipalCollection;
  */
 public class FacebookRealm extends AuthorizingRealm {
 
-    private static final String APP_SECRET = Helper.getWegasProperty("facebook.appSecret").toString();
-    private static final String APP_ID = Helper.getWegasProperty("facebook.appId").toString();
-    private static final String REDIRECT_URL = Helper.getWegasProperty("facebook.redirectUrl").toString();
+    private static final String APP_SECRET = Helper.getWegasProperty("facebook.appSecret");
+    private static final String APP_ID = Helper.getWegasProperty("facebook.appId");
+    private static final String REDIRECT_URL = Helper.getWegasProperty("facebook.redirectUrl");
 
     @Override
     public boolean supports(AuthenticationToken token) {

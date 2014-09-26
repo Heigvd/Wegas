@@ -161,18 +161,19 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         ArrayList<JpaAccount> accounts = new ArrayList();
         String splidedName[] = name.split(" ");
         for (int i = 0; i < splidedName.length; i++) {
-            String firstname = "";
-            String lastname = "";
+            StringBuilder firstnameBuilder = new StringBuilder();
+            StringBuilder lastnameBuilder = new StringBuilder();
+            String firstname, lastname;
             for (int ii = 0; ii <= i; ii++) {
-                firstname = firstname + splidedName[ii] + " ";
+                firstnameBuilder.append(splidedName[ii]).append(" ");
             }
-            firstname = normalizeName(firstname);
+            firstname = normalizeName(firstnameBuilder.toString());
             if (i < splidedName.length - 1) {
                 for (int ii = i + 1; ii < splidedName.length; ii++) {
-                    lastname = lastname + splidedName[ii] + " ";
+                    lastnameBuilder.append(splidedName[ii]).append(" ");
                 }
             }
-            lastname = normalizeName(lastname);
+            lastname = normalizeName(lastnameBuilder.toString());
             List<JpaAccount> tempAccount = this.findByNameOrEmailQuery("name", firstname, lastname);
             accounts = this.compareExistingAccount(tempAccount, accounts);
             tempAccount = this.findByNameOrEmailQuery("name", lastname, firstname);
@@ -206,6 +207,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             case "email":
                 cq.where(cb.like(cb.lower(account.get(JpaAccount_.email)), value1.toLowerCase()));
                 break;
+            default:
+                throw new UnsupportedOperationException("Unexpected parameter " + type);
         }
         Query q = em.createQuery(cq);
         q.setMaxResults(MAXRESULT);

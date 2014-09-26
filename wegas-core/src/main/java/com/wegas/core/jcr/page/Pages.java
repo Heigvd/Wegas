@@ -9,7 +9,6 @@ package com.wegas.core.jcr.page;
 
 import com.wegas.core.AlphanumericComparator;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.Map;
 import java.util.TreeMap;
 import javax.jcr.Node;
@@ -25,9 +24,8 @@ import org.slf4j.LoggerFactory;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @XmlRootElement
-public class Pages implements Serializable, AutoCloseable {
+public class Pages implements AutoCloseable {
 
-    private static final long serialVersionUID = 1L;
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
     private final String gameModelId;
     @XmlTransient

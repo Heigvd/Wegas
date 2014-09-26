@@ -10,6 +10,7 @@ package com.wegas.core.jcr.page;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.LinkedList;
+import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -152,8 +153,8 @@ public class Page {
      */
     public void patch(String patch) throws IOException {
         diff_match_patch dmp = new diff_match_patch(new StandardBreakScorer());
-        LinkedList<diff_match_patch.Patch> patches = (LinkedList<diff_match_patch.Patch>) dmp.patch_fromText(patch);
-        Object[] result = dmp.patch_apply(patches, this.content.toString());
+        List<diff_match_patch.Patch> patches = dmp.patch_fromText(patch);
+        Object[] result = dmp.patch_apply(new LinkedList<>(patches), this.content.toString());
         logger.info("INPUT\n" + this.content.toString() + "\nPATCH\n" + patch + "\nRESULT\n" + (String) result[0]);
         this.setContent((String) result[0]);
     }
