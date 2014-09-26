@@ -11,12 +11,16 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.Secured;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
@@ -48,6 +52,9 @@ public class AccountController {
     @EJB
     private TeamFacade teamFacade;
 
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
+    
     /**
      *
      * @param entity
@@ -122,6 +129,15 @@ public class AccountController {
     @Path("FindByTeamId/{teamId: [1-9][0-9]*}")
     public List<AbstractAccount> findByTeamId(@PathParam("teamId") Long teamId) {
         Team entity = teamFacade.find(teamId);
-        return accountFacade.findByTeam(entity);
+        ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);
+        for (AbstractAccount account : accounts){
+            if (account instanceof JpaAccount){
+                JpaAccount ja = (JpaAccount) account;
+                em.detach(ja);
+                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+            }
+        }
+        return accounts;
+        
     }
 }
