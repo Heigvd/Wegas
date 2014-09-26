@@ -23,7 +23,20 @@ YUI.add("wegas-lobby-datatable", function(Y) {
      */
     var CONTENTBOX = "contentBox", DATASOURCE = "dataSource", NAME = "name",
         RENDER = "render", HOST = "host", ENTITY = "entity", ID = "id",
-        Wegas = Y.Wegas, Plugin = Y.Plugin, GameDataTable;
+        Wegas = Y.Wegas, Plugin = Y.Plugin, GameDataTable, sortByDateDesc;
+
+    sortByDateDesc = function(e) {
+        var sortBy = Y.Array(e.sortBy),
+            column = sortBy.pop();
+
+        if (column['createdTime']) {
+            column['createdTime'] = -1;
+        }
+
+        sortBy.push(column);
+        e.sortBy = sortBy;
+        this.detach('sort',sortByDateDesc);
+    };
 
     GameDataTable = Y.Base.create("wegas-lobby-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         // *** Private fields *** //
@@ -49,6 +62,8 @@ YUI.add("wegas-lobby-datatable", function(Y) {
                 .addAttr("selectedRow", {value: null})
                 .render(this.get(CONTENTBOX))
                 .set("strings.emptyMessage", "<em><center><br /><br />" + this.get("emptyMessage") + "</center></em>");
+
+            this.table.on('sort', sortByDateDesc);
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
 
