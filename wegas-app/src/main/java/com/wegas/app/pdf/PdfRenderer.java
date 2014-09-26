@@ -99,53 +99,56 @@ public class PdfRenderer implements Filter {
 
         Throwable problem = null;
         try {
+            if (request instanceof HttpServletRequest && response instanceof HttpServletResponse) {
+                HttpServletRequest req = (HttpServletRequest) request;
+                HttpServletResponse resp = (HttpServletResponse) response;
 
-            HttpServletRequest req = (HttpServletRequest) request;
-            HttpServletResponse resp = (HttpServletResponse) response;
+                String renderType = req.getParameter("outputType");
 
-            String renderType = req.getParameter("outputType");
+                if (renderType != null && renderType.equals("pdf")) {
+                    // specific type ? capture response 
+                    ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
 
-            if (renderType != null && renderType.equals("pdf")) {
-                // specific type ? capture response 
-                ContentCaptureServletResponse capContent = new ContentCaptureServletResponse(resp);
+                    chain.doFilter(req, capContent);
+                    /*
+                     * convert xhtml from String to XML Document 
+                     */
+                    StringReader contentReader = new StringReader(capContent.getContent());
+                    InputSource source = new InputSource(contentReader);
 
-                chain.doFilter(req, capContent);
-                /*
-                 * convert xhtml from String to XML Document 
-                 */
-                StringReader contentReader = new StringReader(capContent.getContent());
-                InputSource source = new InputSource(contentReader);
+                    Document xhtmlDocument = documentBuilder.parse(source);
 
-                Document xhtmlDocument = documentBuilder.parse(source);
+                    if (debug) {
+                        Helper.logEnv();
+                        Element utf8Test = xhtmlDocument.getElementById("testUTF8");
+                        log("UTF-8 P test" + utf8Test.getTextContent());
+                        log("Default charset: " + Charset.defaultCharset());
+                    }
 
-                if (debug) {
-                    Helper.logEnv();
-                    Element utf8Test = xhtmlDocument.getElementById("testUTF8");
-                    log("UTF-8 P test" + utf8Test.getTextContent());
-                    log("Default charset: " + Charset.defaultCharset());
+                    ITextRenderer renderer = new ITextRenderer();
+                    CookieUserAgent userAgentCallback = new CookieUserAgent(renderer.getOutputDevice(), req.getCookies());
+                    userAgentCallback.setSharedContext(renderer.getSharedContext());
+                    renderer.getSharedContext().setUserAgentCallback(userAgentCallback);
+
+                    final String baseUrl = req.getRequestURL().toString().replace(req.getServletPath(), "/");
+
+                    renderer.setDocument(xhtmlDocument, baseUrl);
+
+                    renderer.layout();
+
+                    resp.setContentType("application/pdf; charset=UTF-8");
+                    OutputStream browserStream = resp.getOutputStream();
+
+                    renderer.createPDF(browserStream);
+                    renderer.finishPDF();
+                } else {
+                    // no specific type ? -> normal processing
+
+                    log("PdfRenderer:Normal output", null);
+                    chain.doFilter(request, response);
                 }
-
-                ITextRenderer renderer = new ITextRenderer();
-                CookieUserAgent userAgentCallback = new CookieUserAgent(renderer.getOutputDevice(), req.getCookies());
-                userAgentCallback.setSharedContext(renderer.getSharedContext());
-                renderer.getSharedContext().setUserAgentCallback(userAgentCallback);
-
-                final String baseUrl = req.getRequestURL().toString().replace(req.getServletPath(), "/");
-
-                renderer.setDocument(xhtmlDocument, baseUrl);
-
-                renderer.layout();
-
-                resp.setContentType("application/pdf; charset=UTF-8");
-                OutputStream browserStream = resp.getOutputStream();
-
-                renderer.createPDF(browserStream);
-                renderer.finishPDF();
             } else {
-                // no specific type ? -> normal processing
-
-                log("PdfRenderer:Normal output", null);
-                chain.doFilter(request, response);
+                throw new ServletException("Not an HTTP request");
             }
         } catch (DocumentException | IOException | ServletException | DOMException | SAXException t) {
             problem = t;

@@ -278,7 +278,7 @@ public class UIHelper {
         //printText(ctx, writer, "IMPACT", CSS_CLASS_VARIABLE_TITLE);
         try {
             if (script == null) {
-                printPropertyScript(ctx, writer, key, script);
+                printPropertyScript(ctx, writer, key, (String)null);
             } else {
                 UIHelper.startScript(ctx, writer, key);
                 ImpactPrinter ip = new ImpactPrinter(script.getContent());
@@ -464,8 +464,9 @@ public class UIHelper {
         if (!properties.isEmpty()) {
             //writer.startElement("div", null);
             //writer.writeAttribute("class", CSS_CLASS_FOLDER, null);
-            for (String key : properties.keySet()) {
-                UIHelper.printProperty(context, writer, key, properties.get(key));
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+
+                UIHelper.printProperty(context, writer, entry.getKey(), entry.getValue());
             }
             //writer.endElement("div");
         } else {
@@ -488,8 +489,8 @@ public class UIHelper {
      */
     public static void printKeyValueMap(FacesContext context, ResponseWriter writer, Map<String, String> properties) throws IOException {
         if (!properties.isEmpty()) {
-            for (String key : properties.keySet()) {
-                UIHelper.printProperty(context, writer, key, properties.get(key));
+            for (Map.Entry<String, String> entry : properties.entrySet()) {
+                UIHelper.printProperty(context, writer, entry.getKey(), entry.getValue());
             }
         } else {
             printText(context, writer, "[Empty Set]", CSS_CLASS_PROPERTY_VALUE_NA + " " + CSS_CLASS_PROPERTY_VALUE);

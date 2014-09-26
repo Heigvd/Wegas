@@ -145,7 +145,7 @@ public class ImpactPrinter {
                         UIHelper.printMessage(context, writer, variableAlias, args[0], args[2], args[1], args[3], null);
                                                               // TO           FROM     SUBJECT  DATE    BODY
                     } else {
-                        String var;
+                        String var = variableAlias;
                         String op;
                         switch (operator) {
                             case "add":
@@ -163,7 +163,7 @@ public class ImpactPrinter {
                                 op = operator;
                                 break;
                         }
-                        String print = variableAlias + " " + op + " " + value;
+                        String print = var + " " + op + " " + value;
                         UIHelper.printTextAreaText(context, writer, print, UIHelper.CSS_CLASS_PROPERTY_VALUE_TEXTAREA + " " + UIHelper.CSS_CLASS_SOURCE_CODE, true);
                     }
                 }
