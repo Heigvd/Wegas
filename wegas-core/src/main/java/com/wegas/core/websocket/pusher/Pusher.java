@@ -3,6 +3,7 @@ package com.wegas.core.websocket.pusher;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -70,14 +71,11 @@ public class Pusher {
         try {
             //Get MD5 MessageDigest
             MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-            byte[] digest = messageDigest.digest(data.getBytes("US-ASCII"));
+            byte[] digest = messageDigest.digest(data.getBytes(StandardCharsets.UTF_8));
             return byteArrayToString(digest);
         } catch (NoSuchAlgorithmException nsae) {
             //We should never come here, because GAE has a MD5 algorithm
             throw new RuntimeException("No MD5 algorithm");
-        } catch (UnsupportedEncodingException e) {
-            //We should never come here, because UTF-8 should be available
-            throw new RuntimeException("No UTF-8");
         }
     }
 
@@ -90,24 +88,21 @@ public class Pusher {
     private static String hmacsha256Representation(String data) {
         try {
             // Create the HMAC/SHA256 key from application secret
-            final SecretKeySpec signingKey = new SecretKeySpec(pusherApplicationSecret.getBytes(), "HmacSHA256");
+            final SecretKeySpec signingKey = new SecretKeySpec(pusherApplicationSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256");
 
             // Create the message authentication code (MAC)
             final Mac mac = Mac.getInstance("HmacSHA256");
             mac.init(signingKey);
 
             //Process and return data
-            byte[] digest = mac.doFinal(data.getBytes("UTF-8"));
-            digest = mac.doFinal(data.getBytes());
+            byte[] digest = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
+            digest = mac.doFinal(data.getBytes(StandardCharsets.UTF_8));
             //Convert to string
             BigInteger bigInteger = new BigInteger(1, digest);
             return String.format("%0" + (digest.length << 1) + "x", bigInteger);
         } catch (NoSuchAlgorithmException nsae) {
             //We should never come here, because GAE has HMac SHA256
             throw new RuntimeException("No HMac SHA256 algorithm");
-        } catch (UnsupportedEncodingException e) {
-            //We should never come here, because UTF-8 should be available
-            throw new RuntimeException("No UTF-8");
         } catch (InvalidKeyException e) {
             throw new RuntimeException("Invalid key exception while converting to HMac SHA256");
         }
@@ -122,7 +117,7 @@ public class Pusher {
      * @return
      */
     private static String buildQuery(String eventName, String jsonData, String socketID) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         //Auth_Key
         buffer.append("auth_key=");
         buffer.append(pusherApplicationKey);
@@ -152,7 +147,7 @@ public class Pusher {
      * @return
      */
     private static String buildURIPath(String channelName) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         //Application ID
         buffer.append("/apps/");
         buffer.append(pusherApplicationId);
@@ -174,7 +169,7 @@ public class Pusher {
      * @return
      */
     private static String buildAuthenticationSignature(String uriPath, String query) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         //request method
         buffer.append("POST\n");
         //URI Path
@@ -196,7 +191,7 @@ public class Pusher {
      * @return
      */
     private static String buildURI(String uriPath, String query, String signature) {
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         //Protocol
         buffer.append("http://");
         //Host
@@ -246,7 +241,6 @@ public class Pusher {
         String signature = buildAuthenticationSignature(uriPath, query);
         //Build URI
         String url = buildURI(uriPath, query, signature);
-
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpContext cntxt = new BasicHttpContext();

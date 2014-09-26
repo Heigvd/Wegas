@@ -21,6 +21,7 @@ import javax.xml.bind.annotation.XmlTransient;
 @Entity
 public class GameAccount extends JpaAccount {
 
+    private static final long serialVersionUID = 1L;
     private Game game;
 
     /**

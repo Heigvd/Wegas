@@ -25,6 +25,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class GameModelContent implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(Views.IndexI.class)

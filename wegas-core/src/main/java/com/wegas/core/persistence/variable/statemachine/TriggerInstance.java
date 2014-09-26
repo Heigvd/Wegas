@@ -23,6 +23,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "TriggerInstance")
 public class TriggerInstance extends StateMachineInstance {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public String toString() {
         return "TriggerInstance{" + "id=" + this.getId() + ", currentStateId=" + this.getCurrentStateId() + '}';

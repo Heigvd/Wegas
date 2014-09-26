@@ -38,6 +38,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

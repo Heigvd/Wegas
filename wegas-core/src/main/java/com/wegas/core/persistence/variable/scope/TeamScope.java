@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 @XmlType(name = "TeamScope")
 public class TeamScope extends AbstractScope {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(TeamScope.class.getName());
     /*
      * FIXME Here we should use Team reference and add a key deserializer

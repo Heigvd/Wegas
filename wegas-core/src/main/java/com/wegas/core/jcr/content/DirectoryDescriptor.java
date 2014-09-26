@@ -22,6 +22,7 @@ import org.codehaus.jackson.annotate.JsonProperty;
 @XmlRootElement
 public class DirectoryDescriptor extends AbstractContentDescriptor {
 
+    private static final long serialVersionUID = 1L;
     /**
      * Directory mime-type
      */
@@ -78,8 +79,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return
-     * @throws RepositoryException
+     * @return @throws RepositoryException
      */
     @XmlTransient
     public List<AbstractContentDescriptor> list() throws RepositoryException {

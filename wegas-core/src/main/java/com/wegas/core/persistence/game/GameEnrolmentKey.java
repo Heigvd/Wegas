@@ -21,9 +21,10 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @Table(name = "gameenrolementkey" //, uniqueConstraints = @UniqueConstraint(columnNames = {"wkey"})
-        )
+)
 public class GameEnrolmentKey extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(Views.IndexI.class)

@@ -7,7 +7,6 @@
  */
 package com.wegas.core.jcr.content;
 
-import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -15,7 +14,7 @@ import java.util.Comparator;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class ContentComparator implements Comparator<AbstractContentDescriptor>, Serializable {
+public class ContentComparator implements Comparator<AbstractContentDescriptor> {
 
     @Override
     public int compare(AbstractContentDescriptor t, AbstractContentDescriptor t1) {

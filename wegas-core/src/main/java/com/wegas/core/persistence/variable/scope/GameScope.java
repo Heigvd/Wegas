@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 @XmlType(name = "GameScope")
 public class GameScope extends AbstractScope {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(GameScope.class);
     /**
      *

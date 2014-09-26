@@ -28,6 +28,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Player extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue
     private Long id;

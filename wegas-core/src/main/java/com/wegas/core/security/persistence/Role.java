@@ -25,6 +25,7 @@ import javax.persistence.*;
 @Cacheable(true)
 public class Role extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

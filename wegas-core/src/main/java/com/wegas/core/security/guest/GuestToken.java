@@ -16,6 +16,7 @@ import org.apache.shiro.authc.RememberMeAuthenticationToken;
  */
 public class GuestToken implements HostAuthenticationToken, RememberMeAuthenticationToken {
 
+    private static final long serialVersionUID = 1L;
     private Long principal;
     private String host = null;
 

@@ -16,6 +16,8 @@ import javax.persistence.*;
 @Entity
 public class DebugTeam extends Team {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      *
      */

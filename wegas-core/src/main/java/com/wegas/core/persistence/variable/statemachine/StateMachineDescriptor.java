@@ -31,6 +31,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 })
 public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

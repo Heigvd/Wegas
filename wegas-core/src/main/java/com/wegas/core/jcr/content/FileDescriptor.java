@@ -11,6 +11,7 @@ import com.wegas.core.exception.WegasException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -27,6 +28,7 @@ import org.slf4j.LoggerFactory;
 @XmlRootElement
 public class FileDescriptor extends AbstractContentDescriptor {
 
+    private static final long serialVersionUID = 1L;
     @XmlTransient
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
     @JsonIgnore
@@ -124,7 +126,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
      * @throws IOException
      */
     public void setBase64Data(String data, String mimeType) throws IOException {
-        this.setBase64Data(new ByteArrayInputStream(data.getBytes()), mimeType);
+        this.setBase64Data(new ByteArrayInputStream(data.getBytes(StandardCharsets.UTF_8)), mimeType);
     }
 
     /**
@@ -163,8 +165,7 @@ public class FileDescriptor extends AbstractContentDescriptor {
 
     /**
      *
-     * @return
-     * @throws IOException
+     * @return @throws IOException
      */
     @XmlTransient
     protected byte[] getBytesData() throws IOException {
@@ -175,6 +176,6 @@ public class FileDescriptor extends AbstractContentDescriptor {
         } catch (RepositoryException ex) {
             logger.error("Something bad append, Roger!", ex);
         }
-        return null;
+        return new byte[0];
     }
 }

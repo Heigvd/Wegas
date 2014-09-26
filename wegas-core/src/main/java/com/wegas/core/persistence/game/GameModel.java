@@ -39,6 +39,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

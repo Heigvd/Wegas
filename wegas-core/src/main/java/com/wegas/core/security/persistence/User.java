@@ -24,6 +24,7 @@ import org.codehaus.jackson.annotate.JsonManagedReference;
 @Table(name = "users")
 public class User extends AbstractEntity implements Comparable<User> {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

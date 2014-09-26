@@ -31,6 +31,7 @@ import javax.script.ScriptEngine;
 @RequestScoped
 public class RequestManager implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */
@@ -77,7 +78,7 @@ public class RequestManager implements Serializable {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-       if ((this.currentPlayer == null) || (currentPlayer == null) || (currentPlayer.getId() != this.currentPlayer.getId())) {
+        if ((this.currentPlayer == null) || (currentPlayer == null) || (currentPlayer.getId() != this.currentPlayer.getId())) {
             this.currentPlayer = currentPlayer;
             this.setCurrentEngine(null);
         }

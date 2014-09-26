@@ -20,6 +20,7 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class Coordinate implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     @Column(columnDefinition = "SMALLINT")
     private Integer x;
     @Column(columnDefinition = "SMALLINT")

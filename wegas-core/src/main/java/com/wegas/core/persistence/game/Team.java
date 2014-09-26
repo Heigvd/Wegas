@@ -24,14 +24,15 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@Table(uniqueConstraints =
-        @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
+@Table(uniqueConstraints
+        = @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 public class Team extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */
@@ -138,7 +139,7 @@ public class Team extends AbstractEntity {
 
     /**
      *
-     * @return 
+     * @return
      */
     @Override
     public String toString() {

@@ -18,6 +18,7 @@ import javax.persistence.Lob;
 @Entity
 public class DialogueState extends State {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */
