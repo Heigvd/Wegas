@@ -7,6 +7,7 @@
  */
 package com.wegas.core.event.client;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.codehaus.jackson.annotate.JsonTypeInfo;
 
@@ -17,5 +18,5 @@ import org.codehaus.jackson.annotate.JsonTypeInfo;
 @XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 //@JsonSubTypes()
-abstract public class ClientEvent {
+abstract public class ClientEvent implements Serializable {
 }

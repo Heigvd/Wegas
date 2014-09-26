@@ -46,7 +46,7 @@ public class WebsocketFacade {
      * @throws IOException
      */
     public String send(String filter, String entityType, String entityId, String data) throws IOException {
-        Pusher p = new Pusher();
+//        Pusher p = new Pusher();
         return Pusher.triggerPush(entityType + "-" + entityId, filter, data);
     }
 

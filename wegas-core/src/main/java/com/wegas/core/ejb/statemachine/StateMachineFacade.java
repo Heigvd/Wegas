@@ -42,9 +42,8 @@ import org.slf4j.LoggerFactory;
  */
 @Stateless
 @LocalBean
-public class StateMachineFacade implements Serializable {
+public class StateMachineFacade {
 
-    private static final long serialVersionUID = 1L;
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
     /**
      * Event parameter will be passed in a function with named parameter
@@ -77,7 +76,7 @@ public class StateMachineFacade implements Serializable {
      *
      * @param playerAction
      */
-    public void PlayerActionListener(@Observes PlayerAction playerAction) {
+    public void playerActionListener(@Observes PlayerAction playerAction) {
         logger.debug("Received PlayerAction event");
         Player player = playerAction.getPlayer();
         if (player == null) {
@@ -283,16 +282,12 @@ public class StateMachineFacade implements Serializable {
                 || script.getContent().equals("");
     }
 
-    private void threatException(ScriptException ex, Transition transition) {
-
-    }
-
     /**
      * Used to store Events during run. Prevent passing multiple event
      * transitions with same event if less events where thrown.
      * StateMachineInstance dependant.
      */
-    private class InternalStateMachineEventCounter {
+    private static class InternalStateMachineEventCounter {
 
         private final Map<StateMachineInstance, Map<String, Integer>> smEvents;
 

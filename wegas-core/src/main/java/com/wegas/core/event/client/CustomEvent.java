@@ -19,6 +19,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 @XmlType(name = "CustomEvent")
 public class CustomEvent extends ClientEvent {
 
+    private static final long serialVersionUID = 1L;
     private String type;
     private Object payload;
 

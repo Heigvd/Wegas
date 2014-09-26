@@ -94,6 +94,7 @@ public class UserController {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
     /**
      *
      * @return
@@ -160,7 +161,7 @@ public class UserController {
                 res = email.substring(0, email.indexOf("@"));
             } else {
                 res = email.substring(0, 4);
-            } 
+            }
             res += "***";
             res += email.substring(email.indexOf("@"));
             accounts.get(i).setEmail(res);
@@ -342,7 +343,7 @@ public class UserController {
             subject.login(token);                                               // try to log in.
         } catch (AuthenticationException aex) {
             if (checkGameAccountKeylogin(email, password)) {                    //Login failed, maybe create a GameAccount or fail
-                GameAccountKey gameAccountKey = gameFacade.findGameAccountKey(email);
+                gameFacade.findGameAccountKey(email);
                 subject.login(token);
             } else {
                 throw new WegasException("Email/password combination not found");
@@ -595,14 +596,14 @@ public class UserController {
      */
     @DELETE
     @Path("DeleteAccountPermissionByPermissionAndAccount/{permission}/{accountId : [1-9][0-9]*}")
-    public void DeleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
+    public void deleteAccountPermissionByPermissionAndAccount(@PathParam("permission") String permission,
             @PathParam("accountId") Long accountId) {
 
         String splitedPermission[] = permission.split(":");
 
         checkGmOrGPermission(splitedPermission[2], "GameModel:Edit:", "Game:Edit:");
 
-        userFacade.DeleteAccountPermissionByPermissionAndAccount(permission, accountId);
+        userFacade.deleteAccountPermissionByPermissionAndAccount(permission, accountId);
     }
 
     private void checkGmOrGPermission(String entityId, String gmPermission, String gPermission) {
@@ -623,10 +624,9 @@ public class UserController {
                 if (gameAccountKey.getUsed()) {
                     return false;
                 }
-                GameAccount gameAccount = new GameAccount();
+                GameAccount gameAccount = new GameAccount(gameAccountKey.getGame());
                 gameAccount.setEmail(key);
                 gameAccount.setPassword(password);
-                gameAccount.setGame(gameAccountKey.getGame());
                 gameAccount.setFirstname("Team");
                 gameAccount.setLastname("Account");
                 gameAccountKey.setUsed(Boolean.TRUE);

@@ -145,7 +145,7 @@ public class ScriptEventFacade {
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
-            return this.eventsFired.getCollection(eventName).toArray(new Object[]{});
+            return this.eventsFired.getCollection(eventName).toArray();
         } else {
             return new Object[]{};
         }

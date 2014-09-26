@@ -219,11 +219,10 @@ public class Helper {
      * @return
      */
     public static String getWegasProperty(String propertyName, String defaultValue) {
-        String ret = getWegasProperty(propertyName);
-        if (ret == null) {
+        try {
+            return getWegasProperty(propertyName);
+        } catch (MissingResourceException | ClassCastException e) {
             return defaultValue;
-        } else {
-            return ret;
         }
     }
 
@@ -368,23 +367,25 @@ public class Helper {
 
         Collections.sort(keys);
 
-        String output = "";
+        StringBuilder output = new StringBuilder();
 
         for (String k : keys) {
             String v = env.get(k);
             if (v != null) {
-                output += (String.format("%s = \"%s%n", k, env.get(k)));
+                output.append(String.format("%s = \"%s%n", k, env.get(k)));
             } else {
-                output += (String.format("%s is not set%n", k));
+                output.append(String.format("%s is not set%n", k));
             }
         }
-        logger.info(output);
+        logger.info(output.toString());
     }
 
     public static void recursiveDelete(File file) throws IOException {
         if (file.isDirectory()) {
             if (file.list().length == 0) {
-                file.delete();
+                if (!file.delete()) {
+                    logger.warn("Failed to delete file {}", file.getName());
+                }
             } else {
                 String files[] = file.list();
                 for (String f : files) {
@@ -392,14 +393,18 @@ public class Helper {
                     recursiveDelete(fileToDel);
                 }
                 if (file.list().length == 0) {
-                    file.delete();
+                    if (!file.delete()) {
+                        logger.warn("Failed to delete file {}", file.getName());
+                    }
                 } else {
                     throw new IOException("Could not empty " + file.getName());
                 }
             }
 
         } else {
-            file.delete();
+            if (!file.delete()) {
+                logger.warn("Failed to delete file {}", file.getName());
+            }
         }
     }
 

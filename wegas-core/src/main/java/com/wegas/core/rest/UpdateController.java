@@ -49,12 +49,12 @@ public class UpdateController {
      */
     @GET
     public String index() {
-        String ret = "";
+        StringBuilder ret = new StringBuilder();
         for (GameModel gm : gameModelFacade.findAll()) {
-            ret += "<a href=\"Encode/" + gm.getId() + "\">Update variable names " + gm.getId() + "</a> | ";
-            ret += "<a href=\"UpdateScript/" + gm.getId() + "\">Update script " + gm.getId() + "</a><br />";
+            ret.append("<a href=\"Encode/").append(gm.getId()).append("\">Update variable names ").append(gm.getId()).append("</a> | ");
+            ret.append("<a href=\"UpdateScript/").append(gm.getId()).append("\">Update script ").append(gm.getId()).append("</a><br />");
         }
-        return ret;
+        return ret.toString();
     }
 
     /**

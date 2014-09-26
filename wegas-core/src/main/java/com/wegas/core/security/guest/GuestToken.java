@@ -17,8 +17,7 @@ import org.apache.shiro.authc.RememberMeAuthenticationToken;
 public class GuestToken implements HostAuthenticationToken, RememberMeAuthenticationToken {
 
     private static final long serialVersionUID = 1L;
-    private Long principal;
-    private String host = null;
+    private final Long principal;
 
     /**
      *
@@ -35,7 +34,7 @@ public class GuestToken implements HostAuthenticationToken, RememberMeAuthentica
 
     @Override
     public String getHost() {
-        return this.host;
+        return null;
     }
 
     @Override

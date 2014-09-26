@@ -7,6 +7,7 @@
  */
 package com.wegas.core;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
@@ -14,7 +15,9 @@ import java.util.Comparator;
  * @author Cyril Junod <cyril.junod at gmail.com>
  * @param <T>
  */
-public class AlphanumericComparator<T extends CharSequence> implements Comparator<T> {
+public class AlphanumericComparator<T extends CharSequence> implements Comparator<T>, Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      *
@@ -24,7 +27,7 @@ public class AlphanumericComparator<T extends CharSequence> implements Comparato
      */
     @Override
     public int compare(T left, T right) {
-        String numLeft, numRight;
+        StringBuilder numLeft, numRight;
         char leftChar, rightChar;
         int lengthLeft = left.length(), lengthRight = right.length(), leftPos = 0, rightPos = 0;
         int diff;
@@ -37,17 +40,17 @@ public class AlphanumericComparator<T extends CharSequence> implements Comparato
                 leftPos += 1;
                 rightPos += 1;
             } else if (Character.isDigit(leftChar) && Character.isDigit(rightChar)) {
-                numLeft = "0";
-                numRight = "0";
+                numLeft = new StringBuilder("0");
+                numRight = new StringBuilder("0");
                 while (leftPos < lengthLeft && Character.isDigit(left.charAt(leftPos))) {
-                    numLeft += left.charAt(leftPos);
+                    numLeft.append(left.charAt(leftPos));
                     leftPos += 1;
                 }
                 while (rightPos < lengthRight && Character.isDigit(right.charAt(rightPos))) {
-                    numRight += right.charAt(rightPos);
+                    numRight.append(right.charAt(rightPos));
                     rightPos += 1;
                 }
-                tmp = Integer.valueOf(numLeft).compareTo(Integer.valueOf(numRight));
+                tmp = Integer.valueOf(numLeft.toString()).compareTo(Integer.valueOf(numRight.toString()));
                 if (tmp != 0) {
                     return tmp;
                 }

@@ -22,6 +22,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 @XmlType(name = "EntityUpdatedEvent")
 public class EntityUpdatedEvent extends ClientEvent {
 
+    private static final long serialVersionUID = 1L;
     private List<VariableInstance> updatedEntities = new ArrayList<>();
 
     /**

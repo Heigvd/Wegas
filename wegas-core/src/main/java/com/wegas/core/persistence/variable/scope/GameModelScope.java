@@ -70,7 +70,7 @@ public class GameModelScope extends AbstractScope {
      */
     @Override
     public Map<Long, VariableInstance> getVariableInstances() {
-        Map<Long, VariableInstance> ret = new HashMap<Long, VariableInstance>();
+        Map<Long, VariableInstance> ret = new HashMap<>();
         ret.put(Long.valueOf("0"), getVariableInstance());
         return ret;
     }

@@ -10,6 +10,7 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.security.persistence.User;
 import java.util.Date;
+import java.util.Objects;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.codehaus.jackson.annotate.JsonBackReference;
@@ -228,5 +229,28 @@ public class Player extends AbstractEntity {
     @Override
     public String toString() {
         return "Player{" + this.getName() + ", " + this.getId() + ")";
+    }
+
+    /**
+     *
+     * @param player
+     * @return
+     */
+    @Override
+    public boolean equals(Object player) {
+        return super.equals(player) && this.hashCode() == player.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 7;
+        hash = 83 * hash + Objects.hashCode(this.id);
+        hash = 83 * hash + Objects.hashCode(this.user);
+        hash = 83 * hash + Objects.hashCode(this.userId);
+        hash = 83 * hash + Objects.hashCode(this.name);
+        hash = 83 * hash + Objects.hashCode(this.joinTime);
+        hash = 83 * hash + Objects.hashCode(this.team);
+        hash = 83 * hash + Objects.hashCode(this.teamId);
+        return hash;
     }
 }

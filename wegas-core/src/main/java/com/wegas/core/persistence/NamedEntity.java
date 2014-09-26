@@ -52,4 +52,18 @@ public abstract class NamedEntity extends AbstractEntity {
         hash = 37 * hash + Objects.hashCode(this.getId());
         return hash;
     }
+
+    /**
+     *
+     * @param entity
+     * @return
+     */
+    @Override
+    public boolean equals(Object entity) {
+        if (entity instanceof NamedEntity) {
+            return this.getName().equals(((NamedEntity) entity).getName()) && super.equals(entity);
+        } else {
+            return false;
+        }
+    }
 }

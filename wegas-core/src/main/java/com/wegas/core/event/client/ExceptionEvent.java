@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlType(name = "ExceptionEvent")
 public class ExceptionEvent extends ClientEvent {
-
+private static final long serialVersionUID = 1L;
     private List<Exception> exceptions;
 
     /**

@@ -21,9 +21,8 @@ import javax.ejb.Stateless;
  */
 @Stateless
 @LocalBean
-public class LibraryFacade implements Serializable {
+public class LibraryFacade {
 
-    private static final long serialVersionUID = 1L;
     /**
      *
      */

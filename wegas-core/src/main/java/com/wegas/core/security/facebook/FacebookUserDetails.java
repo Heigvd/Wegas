@@ -19,8 +19,8 @@ import org.codehaus.jettison.json.JSONObject;
 public class FacebookUserDetails {
 
     private String id;
-    private String firstName;
-    private String lastName;
+    private String firstname;
+    private String lastname;
     private String email;
 // jsonString Expected to be something like this
 // {
@@ -57,8 +57,8 @@ public class FacebookUserDetails {
         try {
             respjson = new JSONObject(fbResponse);
             this.id = respjson.getString("id");
-            this.firstName = respjson.has("first_name") ? respjson.getString("first_name") : " no name" + id;
-            this.lastName = respjson.has("last_name") ? respjson.getString("last_name") : "";
+            this.firstname = respjson.has("first_name") ? respjson.getString("first_name") : " no name" + id;
+            this.lastname = respjson.has("last_name") ? respjson.getString("last_name") : "";
             this.email = respjson.has("email") ? respjson.getString("email") : "-no email-";
         } catch (JSONException e) {
             System.out.println("fbResponse:" + fbResponse);
@@ -92,32 +92,32 @@ public class FacebookUserDetails {
      *
      * @return
      */
-    public String getFirstName() {
-        return firstName;
+    public String getFirstname() {
+        return firstname;
     }
 
     /**
      *
-     * @param firstName
+     * @param firstname
      */
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
     }
 
     /**
      *
      * @return
      */
-    public String getLastName() {
-        return lastName;
+    public String getLastname() {
+        return lastname;
     }
 
     /**
      *
-     * @param lastName
+     * @param lastname
      */
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 
     /**
