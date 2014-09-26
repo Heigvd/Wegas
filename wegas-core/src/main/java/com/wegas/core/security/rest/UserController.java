@@ -154,20 +154,12 @@ public class UserController {
     public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
         List<JpaAccount> accounts = this.getAutoComplete("%" + value + "%");
         for (int i = 0; i < accounts.size(); i++) {
-            em.detach(accounts.get(i));
-            String email = accounts.get(i).getEmail();
-            String res;
-            if (email.indexOf("@")<=4) {
-                res = email.substring(0, email.indexOf("@"));
-            } else {
-                res = email.substring(0, 4);
-            }
-            res += "***";
-            res += email.substring(email.indexOf("@"));
-            accounts.get(i).setEmail(res);
+            JpaAccount ja = accounts.get(i);
+            em.detach(ja);
+            ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
             try {
-                Player p = playerFacade.findByGameIdAndUserId(gameId, accounts.get(i).getUser().getId());
-                if (accounts.get(i).getUser() == p.getUser()) {
+                Player p = playerFacade.findByGameIdAndUserId(gameId, ja.getUser().getId());
+                if (ja.getUser() == p.getUser()) {
                     accounts.remove(i);
                 }
             } catch (PersistenceException e) {

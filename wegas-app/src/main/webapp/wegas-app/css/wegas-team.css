@@ -57,20 +57,48 @@
     font-size: 1.2em;
 }
 
-/*Css for editteam */
-.wegas-editteam .teamselection{
-    padding: 0 0 10px 0.6em;
-    margin: 1em 0 1em 0;
+.wegas-jointeam .teamselection .subtitle,
+.wegas-editteam .teamselection .subtitle {
+    font-weight: bolder;
+    margin-bottom: 8px;
+    font-size: 1.1em;
 }
+
+.teamselection .wegas-team-create-account,
+.teamselection .wegas-team-existing-account {
+    margin: 10px 0;
+}
+
+.teamselection img.inputEx-ListField-delButton {
+    display: none;
+}
+
+/*Css for editteam */
+.wegas-editteam .teamselection {
+    padding: 0 0 0px 0.6em;
+    margin: 1em 0 0 0;
+}
+
+.wegas-editteam button {
+    margin: 1em;
+}
+
 
 /*Css for jointteam */
 .wegas-jointeam-content {
     padding: .5em;
 }
-.wegas-jointeam .teamselection .title{
+.wegas-jointeam .teamselection .title {
     padding-left: 20px;
     font-size: 1.1em;
+    color : #777;
 }
+.wegas-jointeam .teamselection .subtitle {
+    padding-left: 20px;
+    font-size: 1.0em;
+    color : #777;
+}
+
 .wegas-jointeam  .inputEx-ListField >span {
     margin: 0 !important;
 }
@@ -124,24 +152,30 @@
 }
 
 /* TeamFormList widget styles */
-.wegas-teamformlist .yui3-u {
-    width: 116px;
+.wegas-teamformlist tr > * {
+    min-width: 120px;
     padding-bottom: 3px;
+    padding-right: 15px;
 }
-.wegas-teamformlist  .yui3-u:first-child {
-    padding-left: 22px;
+
+.wegas-teamformlist tr >*:first-child {
+    padding-left: 24px;
 }
-.wegas-teamformlist .header .yui3-u {
+.wegas-teamformlist .header th {
     color: #505050;
     font-style: italic;
 }
 .wegas-teamformlist  .inputEx-ListField {
     padding-left: 20px;
+    margin-top: 10px;
+}
+.wegas-teamformlist  .inputEx-ListField .inputEx-Group .inputEx-fieldWrapper input {
+       width: 113px;
+       padding-right: 15px;
 }
 .wegas-teamformlist  .inputEx-ListField .inputEx-Group .inputEx-fieldWrapper {
     float: left;    /* Player edition is displayed inline */
     padding-right: 3px;
-    width: 113px;
 }
 
 /* Formatting Autocomplete list*/
@@ -163,7 +197,12 @@
 .wegas-teamformlist .inputEx-ListField>span {
     display: none;
 }
-.wegas-teamformlist .addTeamMember {
+.wegas-teamformlist .inputEx-ListField-childContainer{
+    float: left;
+}
+.wegas-teamformlist .addTeamMember,
+.wegas-teamformlist .addExistingTeamMember {
     cursor: pointer;
     display: inline-block;
+    float: left;
 }
