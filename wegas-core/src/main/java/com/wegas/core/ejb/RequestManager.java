@@ -77,10 +77,10 @@ public class RequestManager {
      * @param currentPlayer the currentPlayer to set
      */
     public void setPlayer(Player currentPlayer) {
-        this.currentPlayer = currentPlayer;
-        if (!this.currentPlayer.equals(currentPlayer)) {
+        if (this.currentPlayer == null || !this.currentPlayer.equals(currentPlayer)) {
             this.setCurrentEngine(null);
         }
+        this.currentPlayer = currentPlayer;
     }
 
     /**
