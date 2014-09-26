@@ -10,8 +10,6 @@ package com.wegas.app;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.File;
@@ -57,7 +55,9 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
 
     @AfterClass
     public static void tearDown() throws GlassFishException {
-        container.close();
+        if (container != null) {
+            container.close();
+        }
     }
 
     protected <T> T lookup(Class<T> className) {
