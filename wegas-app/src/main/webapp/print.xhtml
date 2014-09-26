@@ -15,7 +15,6 @@
 
             <meta charset="UTF-8" />
             <meta http-equiv="Content-Type" content="text/html" />
-            <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}" />
             <!--meta http-equiv="Content-Language" content="# {requestController.locale.toLanguageTag()}" /-->
             <title>#{gameController.currentGameModel.name} - Wegas</title>
             <meta name="description" content="" />
@@ -55,7 +54,6 @@
                     </div>
                 </div>
                 <div>
-                    <div>
                         <wegas:GameModel 
                             value="#{printController.gameModel}" 
                             player="#{printController.currentPlayer}" 
