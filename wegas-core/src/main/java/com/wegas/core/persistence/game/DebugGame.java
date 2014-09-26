@@ -17,6 +17,7 @@ import javax.persistence.Entity;
 @Entity
 public class DebugGame extends Game {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

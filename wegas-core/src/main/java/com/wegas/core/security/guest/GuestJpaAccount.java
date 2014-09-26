@@ -18,6 +18,8 @@ import javax.persistence.*;
 @Entity
 public class GuestJpaAccount extends AbstractAccount {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * @return the name
      */

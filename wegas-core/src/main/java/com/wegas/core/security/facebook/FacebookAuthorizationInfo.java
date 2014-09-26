@@ -17,6 +17,8 @@ import org.apache.shiro.authz.Permission;
  */
 public class FacebookAuthorizationInfo implements AuthorizationInfo {
 
+    private static final long serialVersionUID = 1L;
+
     @Override
     public Collection<String> getRoles() {
         return null;

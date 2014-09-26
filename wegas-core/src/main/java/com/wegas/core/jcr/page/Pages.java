@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 @XmlRootElement
 public class Pages implements Serializable, AutoCloseable {
 
+    private static final long serialVersionUID = 1L;
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
     private final String gameModelId;
     @XmlTransient

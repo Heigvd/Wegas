@@ -19,6 +19,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "DialogueDescriptor")
 public class DialogueDescriptor extends StateMachineDescriptor {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

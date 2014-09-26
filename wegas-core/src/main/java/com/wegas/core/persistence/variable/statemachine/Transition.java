@@ -29,6 +29,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 })
 public class Transition extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

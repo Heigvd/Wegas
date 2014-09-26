@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.shiro.authc.AuthenticationException;
@@ -89,7 +90,7 @@ public class FacebookRealm extends AuthorizingRealm {
         while ((r = is.read()) != -1) {
             baos.write(r);
         }
-        return new String(baos.toByteArray());
+        return new String(baos.toByteArray(), StandardCharsets.UTF_8);
     }
 
     private Map<String, String> getPropsMap(String someString) {

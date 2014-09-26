@@ -33,6 +33,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 })
 public class State extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

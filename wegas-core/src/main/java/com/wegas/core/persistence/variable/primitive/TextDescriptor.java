@@ -18,7 +18,10 @@ import javax.persistence.Entity;
 @Entity
 public class TextDescriptor extends VariableDescriptor<TextInstance> {
 
+    private static final long serialVersionUID = 1L;
+
     // **** Sugar for scripts *** //
+
     /**
      *
      * @param p

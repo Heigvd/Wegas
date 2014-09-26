@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 @LocalBean
 public class StateMachineFacade implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
     /**
      * Event parameter will be passed in a function with named parameter

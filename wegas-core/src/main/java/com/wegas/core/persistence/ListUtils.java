@@ -124,7 +124,6 @@ public class ListUtils {
      * @return A merged list
      */
     public static <E extends AbstractEntity> List<E> updateList(List<E> oldList, List<E> newList) {
-        List<E> newElements = new ArrayList<>();
 
         ListUtils.ListKeyToMap<Long, E> converter = new ListUtils.ListKeyToMap<Long, E>() {
             @Override

@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -156,6 +157,7 @@ public class ComboController {
 
     private static class CacheObject implements Serializable {
 
+        private static final long serialVersionUID = 1L;
         private String ETag;
         private String files;
         private String mediaType;
@@ -165,7 +167,7 @@ public class ComboController {
                 this.files = files;
                 this.mediaType = mediaType;
                 MessageDigest md = MessageDigest.getInstance("MD5");
-                byte[] digest = md.digest(files.getBytes());
+                byte[] digest = md.digest(files.getBytes(StandardCharsets.UTF_8));
                 this.ETag = String.format("%1$032X", new BigInteger(1, digest));
             } catch (NoSuchAlgorithmException ex) {
                 logger.error("No MD5 algorithm found");

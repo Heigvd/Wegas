@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 @XmlType(name = "PlayerScope")
 public class PlayerScope extends AbstractScope {
 
+    private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(PlayerScope.class);
     /*
      * FIXME Here we should use UserEntity reference and add a key deserializer

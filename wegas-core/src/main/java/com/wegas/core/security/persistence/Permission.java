@@ -18,6 +18,7 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 @Entity
 public class Permission extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

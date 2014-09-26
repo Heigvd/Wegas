@@ -130,7 +130,8 @@ public class RequestFacade {
     public void commit(Player player) {
         em.flush();
         if (this.getUpdatedInstances().size() > 0 || scriptEvent.isEventFired()) {
-            if (this.getPlayer() != null) {
+            playerActionEvent.fire(new PlayerAction(player));
+         /*   if (this.getPlayer() != null) {
                 // RequestManager.PlayerAction action = new RequestManager.PlayerAction();
                 //action.setPlayer(this.getPlayer());
                 //playerActionEvent.fire(action);
@@ -158,7 +159,7 @@ public class RequestFacade {
                 // }
                 // PlayerAction action = new PlayerAction();
                 // playerActionEvent.fire(action);
-            }
+            }*/
             em.flush();
         }
     }

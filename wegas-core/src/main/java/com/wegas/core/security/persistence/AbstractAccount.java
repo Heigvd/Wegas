@@ -41,6 +41,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonIgnoreProperties({"passwordConfirm"})
 public class AbstractAccount extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */
@@ -144,13 +145,13 @@ public class AbstractAccount extends AbstractEntity {
      * @return the name
      */
     public String getName() {
-        if (this.getFirstname() != null && this.getLastname() != null){
+        if (this.getFirstname() != null && this.getLastname() != null) {
             return this.getFirstname() + " " + this.getLastname();
-        } else if (this.getLastname() != null){
+        } else if (this.getLastname() != null) {
             return this.getLastname();
-        } else if (this.getFirstname() != null){
+        } else if (this.getFirstname() != null) {
             return this.getFirstname();
-        } else if (this.getUsername() != null){
+        } else if (this.getUsername() != null) {
             return this.getUsername();
         } else {
             return "";

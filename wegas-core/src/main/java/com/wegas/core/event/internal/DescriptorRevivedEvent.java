@@ -16,6 +16,7 @@ import java.io.Serializable;
  */
 public class DescriptorRevivedEvent implements Serializable {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

@@ -10,6 +10,7 @@ package com.wegas.core.jcr.content;
 import com.wegas.core.jcr.JackrabbitConnector;
 import com.wegas.core.jcr.SessionHolder;
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
@@ -35,7 +36,7 @@ import org.xml.sax.SAXException;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class ContentConnector implements AutoCloseable {
-
+    
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(ContentConnector.class);
     final private Session session;
     private String workspace = null;
@@ -64,7 +65,7 @@ public class ContentConnector implements AutoCloseable {
         this.workspace = "GM_" + gameModelId;
         this.session = SessionHolder.getSession(this.workspace);
         this.initializeNamespaces();
-
+        
     }
 
     /**
@@ -250,7 +251,7 @@ public class ContentConnector implements AutoCloseable {
     protected void setDescription(String absolutePath, String description) throws RepositoryException {
         description = description == null ? "" : description;
         this.getNode(absolutePath).setProperty(WFSConfig.WFS_DESCRIPTION, description);
-
+        
     }
 
     /**
@@ -344,7 +345,7 @@ public class ContentConnector implements AutoCloseable {
             return;
         }
         List<AbstractContentDescriptor> list = root.list();
-
+        
         ZipEntry entry;
         for (Iterator<AbstractContentDescriptor> it = list.iterator(); it.hasNext();) {
             AbstractContentDescriptor item = it.next();
@@ -392,7 +393,7 @@ public class ContentConnector implements AutoCloseable {
     public void cloneWorkspace(Long oldGameModelId) throws RepositoryException {
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(oldGameModelId)) {
             NodeIterator it = connector.listChildren("/");
-
+            
             String path;
             while (it.hasNext()) {
                 path = it.nextNode().getPath();
@@ -443,7 +444,7 @@ public class ContentConnector implements AutoCloseable {
      * @throws SAXException
      */
     public void exportXML(OutputStream out) throws RepositoryException, IOException, SAXException {
-
+        
         XMLSerializer handler = new XMLSerializer(out);
         NodeIterator it = this.listChildren("/");
         handler.startDocument();
@@ -453,7 +454,7 @@ public class ContentConnector implements AutoCloseable {
         }
         handler.endElement("", "", "root");
         handler.endDocument();
-
+        
     }
 
     /**
@@ -481,7 +482,7 @@ public class ContentConnector implements AutoCloseable {
                     StringWriter writer = new StringWriter();
                     StreamResult result = new StreamResult(writer);
                     TransformerFactory.newInstance().newTransformer().transform(source, result);
-                    try (InputStream nodeAsStream = new ByteArrayInputStream(writer.getBuffer().toString().getBytes())) {
+                    try (InputStream nodeAsStream = new ByteArrayInputStream(writer.getBuffer().toString().getBytes(StandardCharsets.UTF_8))) {
                         session.getWorkspace().importXML("/", nodeAsStream, ImportUUIDBehavior.IMPORT_UUID_COLLISION_REMOVE_EXISTING);
                     }
                 }
@@ -506,7 +507,7 @@ public class ContentConnector implements AutoCloseable {
             }
         }
     }
-
+    
     private static Boolean isRoot(Node node) throws RepositoryException {
         try {
             node.getParent();
@@ -515,11 +516,11 @@ public class ContentConnector implements AutoCloseable {
         }
         return false;
     }
-
+    
     @Override
     public void close() {
         this.save();
         SessionHolder.closeSession(session);
-
+        
     }
 }
