@@ -11,6 +11,7 @@ import com.wegas.app.TestHelper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
@@ -40,7 +41,7 @@ import org.junit.BeforeClass;
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
- * @deprecated 
+ * @deprecated
  */
 abstract public class GameModelTest {
 
@@ -84,7 +85,9 @@ abstract public class GameModelTest {
 
     @After
     public void cleanGM() {
-        gmFacade.remove(gm.getId());
+        if (gm != null) {
+            gmFacade.remove(gm.getId());
+        }
         gm = null;
         player = null;
     }
@@ -112,7 +115,15 @@ abstract public class GameModelTest {
     }
 
     protected Object evalScript(String script) throws ScriptException {
-        return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
+        if (gm != null) {
+            if (player != null) {
+                return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
+            } else {
+                throw new WegasException("Player shall not be null");
+            }
+        } else {
+            throw new WegasException("GameModel shall not be null");
+        }
     }
 
     protected Object evalFile(String path) throws ScriptException, IOException {
