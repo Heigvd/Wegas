@@ -22,8 +22,6 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
@@ -140,7 +138,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     @Transient
     @JsonView({Views.Export.class})
-    private transient Map<String, JsonNode> pages;
+    private Map<String, JsonNode> pages;
 
     /**
      *
@@ -589,8 +587,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.template = template;
     }
 
-    private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
-        in.defaultReadObject();
-        this.pages = new HashMap<>();
-    }
+    /* try transient anotation on field "pages". Problem with anotation mixin'
+     private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+     in.defaultReadObject();
+     this.pages = new HashMap<>();
+     }*/
 }
