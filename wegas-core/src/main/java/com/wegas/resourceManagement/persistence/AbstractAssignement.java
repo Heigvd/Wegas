@@ -8,7 +8,7 @@
 package com.wegas.resourceManagement.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
-import org.codehaus.jackson.annotate.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 
 /**
  *

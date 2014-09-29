@@ -7,6 +7,8 @@
  */
 package com.wegas.core.rest;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
@@ -19,10 +21,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.node.ObjectNode;
 import org.codehaus.jettison.json.JSONException;
-import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.LoggerFactory;
 
 /**

@@ -9,7 +9,7 @@ package com.wegas.core.security.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  *

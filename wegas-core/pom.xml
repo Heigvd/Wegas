@@ -4,7 +4,7 @@
     <parent>
         <artifactId>wegas-project-gl4</artifactId>
         <groupId>com.wegas</groupId>
-    <version>1.0-SNAPSHOT-gl4</version>
+        <version>1.0-SNAPSHOT-gl4</version>
     </parent>
 
     <groupId>com.wegas</groupId>
@@ -62,10 +62,10 @@
             <artifactId>glassfish-embedded-all</artifactId>
             <scope>provided</scope>
             <!-- Compile scope is usefull to test JPQL queries-->
-<!--            <scope>compile</scope>-->
+            <!--            <scope>compile</scope>-->
         </dependency>
 
-        <!-- EclipseLink -->
+        <!-- EclipseLink 
         <dependency>
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>eclipselink</artifactId>
@@ -80,7 +80,7 @@
             <groupId>org.eclipse.persistence</groupId>
             <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
 
         <!-- Postgresql Driver -->
         <dependency>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>javax.jcr</groupId>
             <artifactId>jcr</artifactId>
-<!--            <scope>compile</scope>-->
+            <!--            <scope>compile</scope>-->
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
@@ -108,6 +108,19 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
             <version>2.8.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>2.3.2</version>
+            <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+            </exclusions>
+
         </dependency>
     </dependencies>
 
@@ -169,6 +182,15 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -19,8 +19,8 @@ import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.codehaus.jackson.map.annotate.JsonView;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.LoggerFactory;
 
 /**

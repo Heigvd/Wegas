@@ -16,7 +16,6 @@ import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.faces.component.FacesComponent;
 import javax.faces.component.UIComponentBase;
@@ -56,7 +55,9 @@ import org.apache.shiro.SecurityUtils;
  *                           namespace ="http://www.albasim.ch/wegas/pdf")
  * But still missing attributes definitions....
  */
-@FacesComponent("com.wegas.app.pdf.uicomponent.GameModel")
+//@FacesComponent("com.wegas.app.pdf.uicomponent.GameModel")
+@FacesComponent(value = "com.wegas.app.pdf.uicomponent.GameModel", createTag=true, tagName="Gamemodel", namespace = "http://www.albasim.ch/wegas/pdf")
+
 public class UIGameModel extends UIComponentBase {
 
     private boolean editorMode;

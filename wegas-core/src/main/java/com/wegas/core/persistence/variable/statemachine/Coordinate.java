@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable.statemachine;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
  *

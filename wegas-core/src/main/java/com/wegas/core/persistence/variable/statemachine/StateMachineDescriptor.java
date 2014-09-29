@@ -15,8 +15,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.map.annotate.JsonView;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  *

@@ -18,11 +18,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
-import org.codehaus.jackson.annotate.JsonBackReference;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.map.annotate.JsonView;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
+import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -116,6 +117,7 @@ public class AbstractAccount extends AbstractEntity {
     /**
      * @return the user
      */
+    @XmlTransient
     public User getUser() {
         return user;
     }
@@ -123,6 +125,7 @@ public class AbstractAccount extends AbstractEntity {
     /**
      * @param user the user to set
      */
+    @XmlTransient
     public void setUser(User user) {
         this.user = user;
     }

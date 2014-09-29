@@ -7,15 +7,16 @@
  */
 package com.wegas.core.rest.util;
 
-import com.wegas.core.ejb.RequestFacade;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
-import org.codehaus.jackson.map.AnnotationIntrospector;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.map.introspect.JacksonAnnotationIntrospector;
-import org.codehaus.jackson.xc.JaxbAnnotationIntrospector;
+
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+
 import org.slf4j.LoggerFactory;
 
 /**
@@ -30,13 +31,13 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
     /**
      *
      */
-    ObjectMapper mapper;
+    //ObjectMapper mapper;
 
     /**
      *
      */
     public JacksonMapperProvider() {
-        this.mapper = JacksonMapperProvider.getMapper();
+        //this.mapper = JacksonMapperProvider.getMapper();
     }
 
     /**
@@ -46,14 +47,8 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      */
     @Override
     public ObjectMapper getContext(Class<?> aClass) {
-        Class view = RequestFacade.lookup().getView();
-
-        mapper.getSerializationConfig().setSerializationView(view);             // Set up which view to use
-        //mapper.getSerializationConfig().withView(Views.Editor.class);         // This kind of declaration does not work with glassfish jersey 1.11
-        //mapper.writerWithView(Views.Editor.class);
-//        mapper.
-
-        return mapper;
+        //return mapper;
+        return JacksonMapperProvider.getMapper();
     }
 
     /**
@@ -61,36 +56,14 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      * @return
      */
     public static ObjectMapper getMapper() {
-
         ObjectMapper mapper = new ObjectMapper();
 
-        AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that comines jaxb and jackson
-        AnnotationIntrospector secondary = new JaxbAnnotationIntrospector();
-        AnnotationIntrospector pair = new AnnotationIntrospector.Pair(secondary, primary);
+        AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that combines jaxb and jackson
+        AnnotationIntrospector secondary = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
+        AnnotationIntrospector pair = AnnotationIntrospector.pair(primary, secondary);
 
         mapper.setAnnotationIntrospector(pair);
 
-//        mapper.registerModule(new SimpleModule("wegasdeserialize", new Version(1, 1, 1, null)) {
-//            @Override
-//            public void setupModule(SetupContext context) {
-//                super.setupModule(context);
-//
-//                context.addBeanDeserializerModifier(new BeanDeserializerModifier() {
-//                    @Override
-//                    public JsonDeserializer<?> modifyDeserializer(DeserializationConfig config, BasicBeanDescription beanDesc, JsonDeserializer<?> deserializer) {
-//
-//                        return new ChoiceInstanceDeserializer((BeanDeserializer) deserializer);
-//                    }
-//                });
-//            }
-//        });
-        //mapper.getDeserializationConfig().withAnnotationIntrospector(pair);
-        //mapper.getSerializationConfig().withAnnotationIntrospector(pair);
-        //mapper.configure(Feature.INDENT_OUTPUT, true);
-        //mapper.getSerializationConfig().setDateFormat(myDateFormat);
-        //mapper.configure(DeserializationConfig.Feature.USE_ANNOTATIONS, true);
-        //mapper.configure(SerializationConfig.Feature.USE_ANNOTATIONS, true);
-        //MapperConfigurator mapperConfigurator = new MapperConfigurator(null,new Annotations[]{Annotations.JAXB});
         return mapper;
     }
 }

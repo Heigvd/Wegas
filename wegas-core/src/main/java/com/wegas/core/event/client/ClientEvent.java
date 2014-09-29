@@ -7,9 +7,9 @@
  */
 package com.wegas.core.event.client;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
 
 /**
  *

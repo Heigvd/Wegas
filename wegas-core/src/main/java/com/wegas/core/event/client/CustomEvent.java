@@ -7,10 +7,10 @@
  */
 package com.wegas.core.event.client;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import javax.xml.bind.annotation.XmlType;
-import org.codehaus.jackson.map.ObjectMapper;
 
 /**
  *
