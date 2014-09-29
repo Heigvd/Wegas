@@ -7,7 +7,6 @@
  */
 package com.wegas.core.rest.util;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import net.sf.ehcache.CacheManager;
