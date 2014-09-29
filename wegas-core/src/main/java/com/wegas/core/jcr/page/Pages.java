@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.page;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.AlphanumericComparator;
 import java.io.IOException;
 import java.util.Map;
@@ -16,7 +17,6 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.JsonNode;
 import org.slf4j.LoggerFactory;
 
 /**

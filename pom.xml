@@ -82,19 +82,29 @@
         <wegas.clientErrorLogging>false</wegas.clientErrorLogging>
         <wegas.useYUICDN>false</wegas.useYUICDN>
 
-        <shiro.version>1.2.1</shiro.version>
+        <shiro.version>1.2.3</shiro.version>
         <atmosphere.version>0.9-SNAPSHOT</atmosphere.version>
-        <jersey.version>2.0</jersey.version>
-        <jdk.version>1.7</jdk.version>
-        <glassfish.version>4.0</glassfish.version>
+        <jersey.version>2.10</jersey.version>
+        <jdk.version>1.8</jdk.version>
+        <glassfish.version>4.1</glassfish.version>
         <cdi.version>1.0</cdi.version>
-        <slf4j.version>1.6.1</slf4j.version>
+        <slf4j.version>1.7.7</slf4j.version>
         <weld.version>1.1.0.Final</weld.version>
         <junit.version>4.8.2</junit.version>
         <exec.plugin.version>1.2</exec.plugin.version>
         <jar.plugin.version>2.3.1</jar.plugin.version>
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
+
+
+        <logback.version>1.0.9</logback.version>
+        <httpcomponents.version>4.2.3</httpcomponents.version>
+        <javax-enterprise.version>1.0</javax-enterprise.version>
+        <liquibase.version>3.2.2</liquibase.version>
+        <eclipselink.version>2.5.2</eclipselink.version>
+        <jcr.version>2.0</jcr.version>
+        <jackrabbit.version>2.8.0</jackrabbit.version>
+
         <netbeans.hint.j2eeVersion>1.7</netbeans.hint.j2eeVersion>
         <netbeans.hint.deploy.server>gfv3ee6</netbeans.hint.deploy.server>
         <netbeans.hint.license>wegas</netbeans.hint.license>
@@ -147,13 +157,13 @@
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>1.0.9</version>
+                <version>${logback.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-core</artifactId>
-                <version>1.0.9</version>
+                <version>${logback.version}</version>
                 <scope>compile</scope>
             </dependency>
 
@@ -184,14 +194,13 @@
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
-                <version>4.2.3</version>
+                <version>${httpcomponents.version}</version>
                 <type>jar</type>
             </dependency>
-
             <dependency>
                 <groupId>javax.enterprise</groupId>
                 <artifactId>cdi-api</artifactId>
-                <version>1.0</version>
+                <version>${javax-enterprise.version}</version>
                 <scope>provided</scope>
             </dependency>
 
@@ -199,7 +208,7 @@
             <dependency>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-core</artifactId>
-                <version>2.0.5</version>
+                <version>${liquibase.version}</version>
             </dependency>
 
             <!-- Embedded glassfish -->
@@ -210,37 +219,37 @@
                 <scope>provided</scope>
             </dependency>
 
-            <!-- EclipseLink -->
+            <!-- EclipseLink 
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>eclipselink</artifactId>
-                <version>2.3.0</version>
+                <version>${eclipselink.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>javax.persistence</artifactId>
-                <version>2.0.3</version>
+                <version>${eclipselink.version}</version>
                 <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.eclipse.persistence</groupId>
                 <artifactId>org.eclipse.persistence.jpa.modelgen.processor</artifactId>
-                <version>2.3.0</version>
+                <version>${eclipselink.version}</version>
                 <scope>provided</scope>
-            </dependency>
+            </dependency>-->
 
             <!-- Java Content Repository -->
             <dependency>
                 <groupId>javax.jcr</groupId>
                 <artifactId>jcr</artifactId>
-                <version>2.0</version>
+                <version>${jcr.version}</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>org.apache.jackrabbit</groupId>
                 <artifactId>jackrabbit-core</artifactId>
-                <version>2.8.0</version>
+                <version>${jackrabbit.version}</version>
                 <exclusions>
                     <exclusion>
                         <artifactId>derby</artifactId>
@@ -547,235 +556,235 @@
 
                     </check>
 
-			<argLine>-XX:-UseSplitVerifier</argLine>
-		    </configuration>
-		</plugin>-->
-	    </plugins>
-	</pluginManagement>
+                        <argLine>-XX:-UseSplitVerifier</argLine>
+                    </configuration>
+                </plugin>-->
+            </plugins>
+        </pluginManagement>
 
-	<plugins>
+        <plugins>
 
-	    <!-- Compiler -->
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-	     <configuration>
-	      <source>1.7</source>
-	      <target>1.7</target>
-	     </configuration>
-	    </plugin>
+            <!-- Compiler -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
 
-	    <!-- Site -->
-	    <plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-site-plugin</artifactId>
-		<version>3.2</version>
-		<inherited>true</inherited>
-		<executions>
-		    <execution>
-			<goals>
-			    <goal>site</goal>
-			</goals>
-			<phase>site</phase>
-		    </execution>
-		</executions>
-		<configuration>
-		    <!--                    <locales>en,fr</locales>-->
-		    <outputDirectory>${project.build.directory}/site</outputDirectory>
-		    <skipDeploy>true</skipDeploy>
-		    <generateReports>true</generateReports>
-		    <reportPlugins combine.children="append">
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-project-info-reports-plugin</artifactId>
-			    <configuration>
-				<dependencyDetailsEnabled>false</dependencyDetailsEnabled>
-				<dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-			    </configuration>
-			    <reports>
-				<report>index</report>
-				<report>license</report>
-				<report>project-team</report>
-				<report>scm</report>
-				<report>issue-tracking</report>
-				<report>cim</report>
-				<report>dependencies</report>
-				<!--<report>mailing-list</report>
-				<report>summary</report>-->
-			    </reports>
-			</plugin>
+            <!-- Site -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <version>3.2</version>
+                <inherited>true</inherited>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>site</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <!--                    <locales>en,fr</locales>-->
+                    <outputDirectory>${project.build.directory}/site</outputDirectory>
+                    <skipDeploy>true</skipDeploy>
+                    <generateReports>true</generateReports>
+                    <reportPlugins combine.children="append">
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-project-info-reports-plugin</artifactId>
+                            <configuration>
+                                <dependencyDetailsEnabled>false</dependencyDetailsEnabled>
+                                <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+                            </configuration>
+                            <reports>
+                                <report>index</report>
+                                <report>license</report>
+                                <report>project-team</report>
+                                <report>scm</report>
+                                <report>issue-tracking</report>
+                                <report>cim</report>
+                                <report>dependencies</report>
+                                <!--<report>mailing-list</report>
+                                <report>summary</report>-->
+                            </reports>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-javadoc-plugin</artifactId>
-			</plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-javadoc-plugin</artifactId>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-jxr-plugin</artifactId>
-			</plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jxr-plugin</artifactId>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>jdepend-maven-plugin</artifactId>
-			    <version>2.0-beta-2</version>
-			</plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>jdepend-maven-plugin</artifactId>
+                            <version>2.0-beta-2</version>
+                        </plugin>
 
 
-			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>findbugs-maven-plugin</artifactId>
-			    <version>2.4.0</version>
-			    <configuration>
-				<threshold>Normal</threshold>
-				<effort>Min</effort>
-			    </configuration>
-			</plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>findbugs-maven-plugin</artifactId>
+                            <version>2.4.0</version>
+                            <configuration>
+                                <threshold>Normal</threshold>
+                                <effort>Min</effort>
+                            </configuration>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>cobertura-maven-plugin</artifactId>
-			    <version>2.5.1</version>
-			</plugin>
+                        <plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>cobertura-maven-plugin</artifactId>
+                            <version>2.5.1</version>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-checkstyle-plugin</artifactId>
-			    <version>2.9.1</version>
-			    <configuration>
-				<configLocation>config/sun_checks.xml</configLocation>
-			    </configuration>
-			</plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-checkstyle-plugin</artifactId>
+                            <version>2.9.1</version>
+                            <configuration>
+                                <configLocation>config/sun_checks.xml</configLocation>
+                            </configuration>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-surefire-report-plugin</artifactId>
-			    <version>2.5</version>
-			</plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-surefire-report-plugin</artifactId>
+                            <version>2.5</version>
+                        </plugin>
 
-			<plugin>
-			    <groupId>org.apache.maven.plugins</groupId>
-			    <artifactId>maven-pmd-plugin</artifactId>
-			    <version>2.7.1</version>
-			    <configuration>
-				<rulesets>  http://pmd.sourceforge.net/rules/index.html
-				    <ruleset>/rulesets/braces.xml</ruleset>
-				    <ruleset>/rulesets/basic.xml</ruleset>
-				    <ruleset>/rulesets/optimizations.xml</ruleset>
-				    <ruleset>/rulesets/imports.xml</ruleset>
-				    <ruleset>/rulesets/j2ee.xml</ruleset>
-				    <ruleset>/rulesets/unusedcode.xml</ruleset>
-				    <ruleset>/rulesets/codesize.xml</ruleset>
-				    <ruleset>/rulesets/naming.xml</ruleset>
-				</rulesets>
-				<targetJdk>${jdk.version}</targetJdk>
-			    </configuration>
-			</plugin>
+                        <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-pmd-plugin</artifactId>
+                            <version>2.7.1</version>
+                            <configuration>
+                                <rulesets>  http://pmd.sourceforge.net/rules/index.html
+                                    <ruleset>/rulesets/braces.xml</ruleset>
+                                    <ruleset>/rulesets/basic.xml</ruleset>
+                                    <ruleset>/rulesets/optimizations.xml</ruleset>
+                                    <ruleset>/rulesets/imports.xml</ruleset>
+                                    <ruleset>/rulesets/j2ee.xml</ruleset>
+                                    <ruleset>/rulesets/unusedcode.xml</ruleset>
+                                    <ruleset>/rulesets/codesize.xml</ruleset>
+                                    <ruleset>/rulesets/naming.xml</ruleset>
+                                </rulesets>
+                                <targetJdk>${jdk.version}</targetJdk>
+                            </configuration>
+                        </plugin>
 
-			<!-- Code complexity -->
-			<!-- @fixme removed because it is not compatible w/ java 1.7 -->
-			<!--<plugin>
-			    <groupId>org.codehaus.mojo</groupId>
-			    <artifactId>javancss-maven-plugin</artifactId>
-			    <version>2.0-beta-2</version>
-			    <configuration>
-				<includes>
-				    <include>*.java</include>
-				</includes>
-				<linkXRef>false</linkXRef>
-			    </configuration>
-			    <dependencies>
-				<dependency>
-				    <groupId>javancss</groupId>
-				    <artifactId>javancss</artifactId>
-				    <version>29.50</version>
-				    <scope>compile</scope>
-				</dependency>
-			    </dependencies>
-			</plugin>-->
+                        <!-- Code complexity -->
+                        <!-- @fixme removed because it is not compatible w/ java 1.7 -->
+                        <!--<plugin>
+                            <groupId>org.codehaus.mojo</groupId>
+                            <artifactId>javancss-maven-plugin</artifactId>
+                            <version>2.0-beta-2</version>
+                            <configuration>
+                                <includes>
+                                    <include>*.java</include>
+                                </includes>
+                                <linkXRef>false</linkXRef>
+                            </configuration>
+                            <dependencies>
+                                <dependency>
+                                    <groupId>javancss</groupId>
+                                    <artifactId>javancss</artifactId>
+                                    <version>29.50</version>
+                                    <scope>compile</scope>
+                                </dependency>
+                            </dependencies>
+                        </plugin>-->
 
-		    </reportPlugins>
-		</configuration>
-	    </plugin>
+                    </reportPlugins>
+                </configuration>
+            </plugin>
 
-	    <!-- Site deployment on github -->
-	    <plugin>
-		<groupId>com.github.github</groupId>
-		<artifactId>site-maven-plugin</artifactId>
-		<version>0.8</version>
-		<inherited>false</inherited>
-		<configuration>
-		    <repositoryName>Wegas</repositoryName>
-		    <repositoryOwner>Heigvd</repositoryOwner>
-		    <outputDirectory>${project.build.directory}/staging</outputDirectory>
-		    <message>${project.version} Site (${maven.build.timestamp})</message>
-		</configuration>
-		<executions>
-		    <execution>
-			<id>gitSite</id>
-			<goals>
-			    <goal>site</goal>
-			</goals>
-			<phase>none</phase>
-		    </execution>
-		</executions>
-	    </plugin>
-	    <plugin>
-		<groupId>org.codehaus.mojo</groupId>
-		<artifactId>wagon-maven-plugin</artifactId>
-		<version>1.0-beta-4</version>
-		<inherited>false</inherited>
-		<configuration>
-		    <serverId>${wegas.deploy.server}</serverId>
-		    <fromFile>wegas-app/target/Wegas.war</fromFile>
-		    <url>${wegas.deploy.path}</url>
-		    <toFile>${wegas.deploy.name}</toFile>
-		</configuration>
-		<executions>
-		    <execution>
-			<id>upload-war</id>
-			<phase>deploy</phase>
-			<goals>
-			    <goal>upload-single</goal>
-			</goals>
-		    </execution>
-		</executions>
-	    </plugin>
+            <!-- Site deployment on github -->
+            <plugin>
+                <groupId>com.github.github</groupId>
+                <artifactId>site-maven-plugin</artifactId>
+                <version>0.8</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <repositoryName>Wegas</repositoryName>
+                    <repositoryOwner>Heigvd</repositoryOwner>
+                    <outputDirectory>${project.build.directory}/staging</outputDirectory>
+                    <message>${project.version} Site (${maven.build.timestamp})</message>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>gitSite</id>
+                        <goals>
+                            <goal>site</goal>
+                        </goals>
+                        <phase>none</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>wagon-maven-plugin</artifactId>
+                <version>1.0-beta-4</version>
+                <inherited>false</inherited>
+                <configuration>
+                    <serverId>${wegas.deploy.server}</serverId>
+                    <fromFile>wegas-app/target/Wegas.war</fromFile>
+                    <url>${wegas.deploy.path}</url>
+                    <toFile>${wegas.deploy.name}</toFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upload-war</id>
+                        <phase>deploy</phase>
+                        <goals>
+                            <goal>upload-single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
-	</plugins>
-	<extensions>
-	    <extension>
-		<groupId>org.apache.maven.wagon</groupId>
-		<artifactId>wagon-ssh</artifactId>
-		<version>2.5</version>
-	    </extension>
-	</extensions>
+        </plugins>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.5</version>
+            </extension>
+        </extensions>
     </build>
 
     <repositories>
-	<repository>
-	    <id>maven2-repository.dev.java.net</id>
-	    <name>Java.net Repository for Maven</name>
-	    <url>http://maven.glassfish.org/content/groups/glassfish</url>
-	    <layout>default</layout>
-	</repository>
+        <repository>
+            <id>maven2-repository.dev.java.net</id>
+            <name>Java.net Repository for Maven</name>
+            <url>http://maven.glassfish.org/content/groups/glassfish</url>
+            <layout>default</layout>
+        </repository>
 
-	<repository>
-	    <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
-	    <id>eclipselink</id>
-	    <layout>default</layout>
-	    <name>Repository for library Library[eclipselink]</name>
-	</repository>
-	<repository>
-	    <id>jsdoctk1</id>
-	    <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-	</repository>
+        <repository>
+            <url>http://download.eclipse.org/rt/eclipselink/maven.repo/</url>
+            <id>eclipselink</id>
+            <layout>default</layout>
+            <name>Repository for library Library[eclipselink]</name>
+        </repository>
+        <repository>
+            <id>jsdoctk1</id>
+            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
+        </repository>
     </repositories>
 
     <pluginRepositories>
-	<pluginRepository>
-	    <id>jsdoctk2</id>
-	    <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
-	</pluginRepository>
+        <pluginRepository>
+            <id>jsdoctk2</id>
+            <url>http://jsdoctk-plugin.googlecode.com/svn/repo</url>
+        </pluginRepository>
     </pluginRepositories>
 </project>

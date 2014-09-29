@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Locale;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
  *

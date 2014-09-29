@@ -7,6 +7,11 @@
  */
 package com.wegas.core.rest.util;
 
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
+import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
+import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
 import java.io.IOException;
 import java.net.URI;
@@ -15,6 +20,7 @@ import java.util.Locale;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.Provider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +35,6 @@ import org.slf4j.LoggerFactory;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-/* ResourceFilter -> DynamicFeature */
-//public class ViewRequestFilter implements ContainerRequestFilter, ResourceFilter {
 @Provider
 @PreMatching
 public class ViewRequestFilter implements ContainerRequestFilter {
@@ -41,13 +45,11 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      * Handle view parameter
      *
      * @param cr
-     * @return
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
         RequestFacade rmf = RequestFacade.lookup();
-        logger.error("VIEW FILTER");
-        
+
         // Handle language parameter
         if (cr.getHeaderString("lang") != null
                 && !cr.getHeaderString("lang").isEmpty()) {
@@ -85,8 +87,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 break;
         }
 
-        logger.error("final  URI: " + newUri);
-
         try {
             cr.setRequestUri(new URI(newUri));
         } catch (URISyntaxException ex) {
@@ -97,6 +97,9 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             // If the view is given through a query parameter
             rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
         }
+        
+        // Propadate new view to ObjectWriter
+        ObjectWriterInjector.set(new JsonViewModifier());
     }
 
     /**
@@ -132,4 +135,13 @@ public class ViewRequestFilter implements ContainerRequestFilter {
                 return Views.Public.class;
         }
     }
+
+    private static class JsonViewModifier extends ObjectWriterModifier {
+        @Override
+        public ObjectWriter modify(EndpointConfigBase<?> ecb, MultivaluedMap<String, Object> mm, Object o, ObjectWriter writer, JsonGenerator jg) throws IOException {
+            Class view = RequestFacade.lookup().getView();
+            return writer.withView(view);
+        }
+    }
+
 }

@@ -7,7 +7,7 @@
  */
 package com.wegas.core.rest.util;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  *

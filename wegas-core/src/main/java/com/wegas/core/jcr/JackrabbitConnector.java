@@ -18,10 +18,12 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
+//import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jcr.RepositoryException;
@@ -68,7 +70,7 @@ public class JackrabbitConnector {
         //this.runGC();
     }
 
-    @Schedule(minute = "0", hour = "3")
+    //@Schedule(minute = "0", hour = "3")
     private void runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
@@ -119,31 +121,35 @@ public class JackrabbitConnector {
     }
 
     @PreDestroy
-    private void close() throws RepositoryException {
-        //Build a list of workspace which have no more dependant gameModel
-        Session admin = SessionHolder.getSession(null);
-        String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
-        SessionHolder.closeSession(admin);
-        List<GameModel> gameModels = gmf.findAll();
-        List<String> fakeworkspaces = new ArrayList<>();
-        final List<String> toDelete = new ArrayList<>();
-        for (GameModel gameModel : gameModels) {
-            fakeworkspaces.add("GM_" + gameModel.getId());
-        }
-        for (String workspace : workspaces) {
-            if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                if (!fakeworkspaces.contains(workspace)) {
-                    toDelete.add(workspace);
-                    logger.info("Marked for deletion : {}", workspace);
+    private void close() {
+        try {
+            //Build a list of workspace which have no more dependant gameModel
+            Session admin = SessionHolder.getSession(null);
+            String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
+            SessionHolder.closeSession(admin);
+            List<GameModel> gameModels = gmf.findAll();
+            List<String> fakeworkspaces = new ArrayList<>();
+            final List<String> toDelete = new ArrayList<>();
+            for (GameModel gameModel : gameModels) {
+                fakeworkspaces.add("GM_" + gameModel.getId());
+            }
+            for (String workspace : workspaces) {
+                if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
+                    if (!fakeworkspaces.contains(workspace)) {
+                        toDelete.add(workspace);
+                        logger.info("Marked for deletion : {}", workspace);
+                    }
                 }
             }
-        }
-        //run garbage collector
-        this.runGC();
-        JackrabbitConnector.repo.shutdown();
-        // delete marked for deletion
-        for (String s : toDelete) {
-            deleteWorkspace(s);
+            //run garbage collector
+            this.runGC();
+            JackrabbitConnector.repo.shutdown();
+            // delete marked for deletion
+            for (String s : toDelete) {
+                deleteWorkspace(s);
+            }
+        } catch (RepositoryException ex) {
+            Logger.getLogger(JackrabbitConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

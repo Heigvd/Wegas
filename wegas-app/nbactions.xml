@@ -93,6 +93,21 @@
             <skipTests>true</skipTests>
         </properties>
     </action>
+    <action>
+        <actionName>CUSTOM-clean Debug exploded -skip-test</actionName>
+        <displayName>Clean Debug -exploded -skip-test</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>prepare-package</goal>
+            <goal>war:exploded</goal>
+        </goals>
+        <properties>
+            <netbeans.deploy.debugmode>true</netbeans.deploy.debugmode>
+            <netbeans.deploy>true</netbeans.deploy>
+            <skipTests>true</skipTests>
+        </properties>
+    </action>
+
 
     <action>
         <actionName>CUSTOM-Site</actionName>

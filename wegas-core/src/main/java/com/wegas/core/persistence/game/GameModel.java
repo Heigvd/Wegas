@@ -7,6 +7,13 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.jcr.page.Page;
 import com.wegas.core.jcr.page.Pages;
 import com.wegas.core.persistence.AbstractEntity;
@@ -23,13 +30,6 @@ import javax.jcr.RepositoryException;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.annotate.JsonCreator;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import org.codehaus.jackson.annotate.JsonManagedReference;
-import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonView;
 
 /**
  *
@@ -168,7 +168,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
             return;
         }
         String curKey;
-        Iterator<String> iterator = pageMap.getFieldNames();
+        Iterator<String> iterator = pageMap.fieldNames();
         while (iterator.hasNext()) {
             curKey = iterator.next();
             map.put(curKey, pageMap.get(curKey));

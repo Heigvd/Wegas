@@ -26,7 +26,7 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import org.apache.http.HttpStatus;
-import org.codehaus.jackson.annotate.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,7 +45,6 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
      *
      * @param request
      * @param response
-     * @return
      */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
@@ -55,7 +54,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))
                 && !(response.getEntity() instanceof ExceptionWrapper)) { // If there was an exception during the request, we forward it without a change
             ServerResponse serverResponse = new ServerResponse();
-            
+
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
 

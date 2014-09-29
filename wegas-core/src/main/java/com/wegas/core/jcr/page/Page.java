@@ -7,8 +7,11 @@
  */
 package com.wegas.core.jcr.page;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.jcr.Node;
@@ -17,10 +20,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import name.fraser.neil.plaintext.StandardBreakScorer;
 import name.fraser.neil.plaintext.diff_match_patch;
-import org.codehaus.jackson.JsonNode;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.node.ObjectNode;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -136,7 +135,7 @@ public class Page {
         JsonNode nameNode;
         nameNode = this.content.path("@name");
         if (!nameNode.isMissingNode()) {
-            this.name = nameNode.getTextValue();
+            this.name = nameNode.textValue();
             ((ObjectNode) this.content).remove("@name");
         }
     }

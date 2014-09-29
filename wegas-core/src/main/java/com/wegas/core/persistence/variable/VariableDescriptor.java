@@ -29,8 +29,8 @@ import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
-import org.codehaus.jackson.annotate.JsonSubTypes;
-import org.codehaus.jackson.map.annotate.JsonView;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.eclipse.persistence.annotations.JoinFetch;
 
 /**

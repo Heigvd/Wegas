@@ -32,6 +32,7 @@ import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
+//import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -461,7 +462,7 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @FIXME Should also remove players, created games and game models
      */
-    @Schedule(hour = "4", minute = "14")
+    //@Schedule(hour = "4", minute = "14")
     public void removeIdleGuests() {
         Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
                 + "WHERE account.createdTime < :idletime;");
