@@ -46,7 +46,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                         <h1 class='title'>Try Wegas</h1>\n\
                         <div class='guestlogin'></div>\n\
                         <h1 class='title'>Want to use Wegas?</h1>\n\
-                        <div class='contact'><a href=\"http://www.albasim.ch/en/contact/contact\">Contact us</a></div>\n\
+                        <div class='contact'><a href=\"http://www.albasim.ch/en/about/contact\">Contact us</a></div>\n\
                     </div>\n\
                     <div class='main right ask-pass'>\n\
                         <h1 class='title'>Get a new password</h1>\n\
