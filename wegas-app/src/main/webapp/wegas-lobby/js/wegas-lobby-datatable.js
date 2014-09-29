@@ -31,11 +31,11 @@ YUI.add("wegas-lobby-datatable", function(Y) {
 
         if (column['createdTime']) {
             column['createdTime'] = -1;
+            this.detach('sort',sortByDateDesc);
         }
 
         sortBy.push(column);
         e.sortBy = sortBy;
-        this.detach('sort',sortByDateDesc);
     };
 
     GameDataTable = Y.Base.create("wegas-lobby-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
