@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Maxece Laurent <maxence.laurent at gmail.com>
  */
 @Provider
 @Produces({MediaType.APPLICATION_JSON})
@@ -35,19 +35,11 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
     /**
      *
-     */
-    public JacksonMapperProvider() {
-        //this.mapper = JacksonMapperProvider.getMapper();
-    }
-
-    /**
-     *
      * @param aClass
      * @return
      */
     @Override
     public ObjectMapper getContext(Class<?> aClass) {
-        //return mapper;
         return JacksonMapperProvider.getMapper();
     }
 
