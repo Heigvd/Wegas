@@ -76,6 +76,7 @@ public class RequestFacade {
     /**
      *
      * @param view
+     * @deprecated 
      */
     public void setView(Class view) {
         this.requestManager.setView(view);
@@ -84,6 +85,7 @@ public class RequestFacade {
     /**
      *
      * @return
+     * @deprecated 
      */
     public Class getView() {
         return this.requestManager.getView();

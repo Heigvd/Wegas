@@ -49,6 +49,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
         RequestFacade rmf = RequestFacade.lookup();
+        Class<?> view;
 
         // Handle language parameter
         if (cr.getHeaderString("lang") != null
@@ -60,6 +61,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             rmf.setLocale(Locale.getDefault());
         }
 
+        
         String newUri = cr.getUriInfo().getRequestUri().toASCIIString();
         String firstPathSeg = cr.getUriInfo().getPathSegments().get(0).getPath();
 
@@ -67,7 +69,8 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Private":
             case "EditorPrivate":
                 String id = cr.getUriInfo().getPathSegments().get(1).getPath();
-                rmf.setView(this.stringToView(firstPathSeg));
+                //rmf.setView(this.stringToView(firstPathSeg));
+                view = this.stringToView(firstPathSeg);
                 rmf.setPlayer(Long.valueOf(id));
                 newUri = newUri.replace(firstPathSeg + "/" + id + "/", "");
                 break;
@@ -78,12 +81,14 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             case "Export":
             case "Editor":
             case "EditorExtended":
-                rmf.setView(this.stringToView(firstPathSeg));
+                //rmf.setView(this.stringToView(firstPathSeg));
+                view = this.stringToView(firstPathSeg);
                 newUri = newUri.replace(firstPathSeg + "/", "");
                 break;
 
             default:
-                rmf.setView(Views.Public.class);
+                //rmf.setView(Views.Public.class);
+                view = Views.Public.class;
                 break;
         }
 
@@ -95,11 +100,12 @@ public class ViewRequestFilter implements ContainerRequestFilter {
 
         if (cr.getUriInfo().getQueryParameters().get("view") != null) {
             // If the view is given through a query parameter
-            rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
+            //rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
+            view = this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0));
         }
         
         // Propadate new view to ObjectWriter
-        ObjectWriterInjector.set(new JsonViewModifier());
+        ObjectWriterInjector.set(new JsonViewModifier(view));
     }
 
     /**
@@ -137,9 +143,15 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     }
 
     private static class JsonViewModifier extends ObjectWriterModifier {
+        Class<?> view;
+
+        public JsonViewModifier(Class<?> view){
+            this.view = view;
+        }
+        
         @Override
         public ObjectWriter modify(EndpointConfigBase<?> ecb, MultivaluedMap<String, Object> mm, Object o, ObjectWriter writer, JsonGenerator jg) throws IOException {
-            Class view = RequestFacade.lookup().getView();
+            //Class view = RequestFacade.lookup().getView();
             return writer.withView(view);
         }
     }
