@@ -36,6 +36,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"requirements_variableinstance_id", "wrequirement_name"}))
 public class WRequirement extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */

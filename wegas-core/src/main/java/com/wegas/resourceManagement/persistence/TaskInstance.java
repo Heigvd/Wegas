@@ -189,7 +189,7 @@ public class TaskInstance extends VariableInstance {
         this.properties.clear();
         this.properties.putAll(other.getProperties());
         ListUtils.ListKeyToMap<String, WRequirement> converter;
-        converter = new NameToWRequirementConverter();
+        converter = new WRequirementToNameConverter();
         Map<String, WRequirement> reqMap = ListUtils.listAsMap(requirements, converter);
         this.requirements.clear();
         for (WRequirement req : other.getRequirements()) {
@@ -227,7 +227,7 @@ public class TaskInstance extends VariableInstance {
         this.requirements.set(index, val);
     }
 
-    private static class NameToWRequirementConverter implements ListUtils.ListKeyToMap<String, WRequirement> {
+    private static class WRequirementToNameConverter implements ListUtils.ListKeyToMap<String, WRequirement> {
 
         @Override
         public String getKey(WRequirement item) {
