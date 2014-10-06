@@ -56,7 +56,7 @@ public class JackrabbitConnector {
     private GameModelFacade gmf;
 
     @PostConstruct
-    private void init() {
+    protected void init() {
         Properties prop = new Properties();
         prop.setProperty("org.apache.jackrabbit.repository.home", DIR);
         prop.setProperty("org.apache.jackrabbit.repository.conf", DIR + "/repository.xml");
@@ -121,7 +121,7 @@ public class JackrabbitConnector {
     }
 
     @PreDestroy
-    private void close() {
+    protected void close() {
         try {
             //Build a list of workspace which have no more dependant gameModel
             Session admin = SessionHolder.getSession(null);
