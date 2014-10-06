@@ -13,7 +13,6 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.exception.ConstraintViolationException;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;

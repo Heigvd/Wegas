@@ -61,10 +61,31 @@ import org.eclipse.persistence.annotations.JoinFetch;
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),})
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)})
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
-
+    
     private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    @Lob
+    @JsonView(value = Views.EditorI.class)
+    @Column(name = "Descriptor_comments")
+    private String comments;
+    /**
+     * Here we cannot use type T, otherwise jpa won't handle the db ref
+     * correctly
+     */
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
+    @JsonView(value = Views.EditorExtendedI.class)
+    private VariableInstance defaultInstance;
+    /**
+     *
+     */
+    //@JsonBackReference
+    @ManyToOne
+    @JoinColumn
+    private GameModel gameModel;
     /**
      *
      */
@@ -76,15 +97,19 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    @NotNull
-    @Basic(optional = false)
-    //@JsonView(Views.EditorExtendedI.class)
-    protected String name;
-    /**
-     *
-     */
     //@JsonView(Views.EditorI.class)
     private String label;
+    /*
+     * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
+     * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
+     * updatable = true)
+     */
+    //@BatchFetch(BatchFetchType.JOIN)
+    //@JsonManagedReference
+    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
+    @JoinFetch
+    @JsonView(value = Views.WithScopeI.class)
+    private AbstractScope scope;
     /**
      * Title displayed in the for the player, should be removed from variable
      * descriptor and placed in the required entities (MCQQuestionDrescriptor,
@@ -95,28 +120,10 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      */
-    @ManyToOne
-    @JoinColumn
-    //@JsonBackReference
-    private GameModel gameModel;
-    /**
-     * Here we cannot use type T, otherwise jpa won't handle the db ref
-     * correctly
-     */
-    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)
-    @JsonView(Views.EditorExtendedI.class)
-    private VariableInstance defaultInstance;
-    /*
-     * @OneToOne(cascade = CascadeType.ALL) @NotNull @JoinColumn(name
-     * ="SCOPE_ID", unique = true, nullable = false, insertable = true,
-     * updatable = true)
-     */
-    @OneToOne(cascade = {CascadeType.ALL}, orphanRemoval = true, optional = false)
-    //@BatchFetch(BatchFetchType.JOIN)
-    @JoinFetch
-    //@JsonManagedReference
-    @JsonView(Views.WithScopeI.class)
-    private AbstractScope scope;
+    //@JsonView(Views.EditorExtendedI.class)
+    @NotNull
+    @Basic(optional = false)
+    protected String name;
 
     /**
      *
@@ -162,28 +169,67 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
-     * @param a
+     * @return
      */
-    @Override
-    public void merge(AbstractEntity a) {
-        super.merge(a);
-        VariableDescriptor other = (VariableDescriptor) a;
-        this.setName(other.getName());
-        this.setLabel(other.getLabel());
-        this.setTitle(other.getTitle());
-        this.defaultInstance.merge(other.getDefaultInstance());
-        if (other.getScope() != null) {
-            this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
-        }
-        //this.scope.merge(vd.getScope());
+    public String getComments() {
+        return comments;
     }
 
     /**
      *
-     * @param force
+     * @param comments
      */
-    public void propagateDefaultInstance(boolean force) {
-        this.getScope().propagateDefaultInstance(force);
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    /**
+     * @return the defaultInstance
+     */
+    public T getDefaultInstance() {
+        return (T) defaultInstance;
+    }
+
+    /**
+     * @param defaultInstance the defaultValue to set
+     */
+    public void setDefaultInstance(T defaultInstance) {
+        this.defaultInstance = defaultInstance;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @JsonIgnore
+    public GameModel getGameModel() {
+        return this.gameModel;
+    }
+
+    /**
+     *
+     * @param gameModel
+     */
+    public void setGameModel(GameModel gameModel) {
+        this.gameModel = gameModel;
+    }
+
+    /**
+     *
+     * @return
+     */
+    @JsonIgnore
+    public int getGameModelId() {
+        return this.gameModel.getId().intValue();
+    }
+
+    /**
+     *
+     * @return
+     */
+    @Override
+    public Long getId() {
+        return id;
     }
 
     /**
@@ -199,19 +245,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     public T getInstance() {
         return (T) this.getScope().getInstance();
     }
 
     /**
-     * 
+     *
      * @param defaultInstance
      * @param player
      * @return
      */
-    //@XmlTransient
     @JsonIgnore
     public T getInstance(Boolean defaultInstance, Player player) {
         if (defaultInstance) {
@@ -222,12 +266,17 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     *
-     * @return
+     * @return the label
      */
-    @Override
-    public Long getId() {
-        return id;
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**
@@ -249,6 +298,24 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
+     * @return the scope
+     */
+    public AbstractScope getScope() {
+        return scope;
+    }
+
+    /**
+     * @param scope the scope to set
+     * @fixme here we cannot use managed references since this.class is
+     * abstract.
+     */
+    //@JsonManagedReference
+    public void setScope(AbstractScope scope) {
+        this.scope = scope;
+        scope.setVariableDescscriptor(this);
+    }
+
+    /**
      *
      * @return title
      */
@@ -266,37 +333,21 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
-     * @param gameModel
+     * @param a
      */
-    public void setGameModel(GameModel gameModel) {
-        this.gameModel = gameModel;
-    }
-
-    /**
-     *
-     * @return
-     */
-    //@XmlTransient
-    @JsonIgnore
-    public GameModel getGameModel() {
-        return this.gameModel;
-    }
-
-    /**
-     *
-     * @return
-     */
-    //@XmlTransient
-    @JsonIgnore
-    public int getGameModelId() {
-        return this.gameModel.getId().intValue();
-    }
-
-    /**
-     * @return the scope
-     */
-    public AbstractScope getScope() {
-        return scope;
+    @Override
+    public void merge(AbstractEntity a) {
+        super.merge(a);
+        VariableDescriptor other = (VariableDescriptor) a;
+        this.setName(other.getName());
+        this.setLabel(other.getLabel());
+        this.setTitle(other.getTitle());
+        this.setComments(other.getComments());
+        this.defaultInstance.merge(other.getDefaultInstance());
+        if (other.getScope() != null) {
+            this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+        }
+        //this.scope.merge(vd.getScope());
     }
 
     /**
@@ -310,42 +361,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     }
 
     /**
-     * @param scope the scope to set
-     * @fixme here we cannot use managed references since this.class is
-     * abstract.
+     *
+     * @param force
      */
-    //@JsonManagedReference
-    public void setScope(AbstractScope scope) {
-        this.scope = scope;
-        scope.setVariableDescscriptor(this);
-    }
-
-    /**
-     * @return the defaultInstance
-     */
-    public T getDefaultInstance() {
-        return (T) defaultInstance;
-    }
-
-    /**
-     * @param defaultInstance the defaultValue to set
-     */
-    public void setDefaultInstance(T defaultInstance) {
-        this.defaultInstance = defaultInstance;
-    }
-
-    /**
-     * @return the label
-     */
-    public String getLabel() {
-        return label;
-    }
-
-    /**
-     * @param label the label to set
-     */
-    public void setLabel(String label) {
-        this.label = label;
+    public void propagateDefaultInstance(boolean force) {
+        this.getScope().propagateDefaultInstance(force);
     }
 
     /**

@@ -57,6 +57,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         }
     }, {
         ATTRS: {
+            comments: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    _type: "text",
+                    index: 100
+                }
+            },
             label: {
                 type: STRING,
                 "transient": false,
