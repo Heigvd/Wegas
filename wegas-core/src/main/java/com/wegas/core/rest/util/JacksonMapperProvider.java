@@ -9,13 +9,9 @@ package com.wegas.core.rest.util;
 
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
-import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
-import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +21,7 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 @Produces({MediaType.APPLICATION_JSON})
-public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
+public class JacksonMapperProvider /*implements ContextResolver<ObjectMapper> */{
 
     private final static org.slf4j.Logger logger = LoggerFactory.getLogger(JacksonMapperProvider.class);
     /**
@@ -38,7 +34,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
      * @param aClass
      * @return
      */
-    @Override
+    //@Override
     public ObjectMapper getContext(Class<?> aClass) {
         return JacksonMapperProvider.getMapper();
     }
@@ -50,11 +46,11 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
     public static ObjectMapper getMapper() {
         ObjectMapper mapper = new ObjectMapper();
 
-        AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that combines jaxb and jackson
+        /*AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that combines jaxb and jackson
         AnnotationIntrospector secondary = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
         AnnotationIntrospector pair = AnnotationIntrospector.pair(primary, secondary);
 
-        mapper.setAnnotationIntrospector(pair);
+        mapper.setAnnotationIntrospector(pair);*/
 
         return mapper;
     }
