@@ -7,9 +7,11 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,14 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
-public class State extends AbstractEntity {
+public class State extends AbstractEntity implements Searchable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    @JsonView(value = Views.EditorExtendedI.class)
+    private Coordinate editorPosition;
     /**
      *
      */
@@ -59,16 +66,43 @@ public class State extends AbstractEntity {
     @JoinColumn(name = "transition_id", referencedColumnName = "state_id")
     @OrderBy("index")
     private List<Transition> transitions = new ArrayList<>();
-    /**
-     *
-     */
-    @JsonView(Views.EditorExtendedI.class)
-    private Coordinate editorPosition;
 
     /**
      *
      */
     public State() {
+    }
+
+    @Override
+    public Boolean contains(String criteria) {
+        if (Helper.insensitiveContains(this.getLabel(), criteria)) {
+            return true;
+        }
+        if (this.getOnEnterEvent() != null && this.getOnEnterEvent().contains(criteria)) {
+            return true;
+        }
+        for (Transition t : this.getTransitions()) {
+            if (t.contains(criteria)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public Coordinate getEditorPosition() {
+        return editorPosition;
+    }
+
+    /**
+     *
+     * @param editorPosition
+     */
+    public void setEditorPosition(Coordinate editorPosition) {
+        this.editorPosition = editorPosition;
     }
 
     @Override
@@ -124,27 +158,6 @@ public class State extends AbstractEntity {
         this.transitions = transitions;
     }
 
-    /**
-     *
-     * @return
-     */
-    public Coordinate getEditorPosition() {
-        return editorPosition;
-    }
-
-    /**
-     *
-     * @param editorPosition
-     */
-    public void setEditorPosition(Coordinate editorPosition) {
-        this.editorPosition = editorPosition;
-    }
-
-    @Override
-    public String toString() {
-        return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
-    }
-
     @Override
     public void merge(AbstractEntity other) {
         State newState = (State) other;
@@ -152,5 +165,10 @@ public class State extends AbstractEntity {
         this.onEnterEvent = newState.getOnEnterEvent();
         this.editorPosition = newState.editorPosition;
         this.transitions = ListUtils.mergeLists(this.transitions, newState.transitions);
+    }
+
+    @Override
+    public String toString() {
+        return "State{" + "id=" + id + ", label=" + label + ", onEnterEvent=" + onEnterEvent + ", transitions=" + transitions + '}';
     }
 }

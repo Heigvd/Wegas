@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,7 +28,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
-public class Transition extends AbstractEntity {
+public class Transition extends AbstractEntity implements Searchable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -47,8 +48,7 @@ public class Transition extends AbstractEntity {
     /**
      *
      */
-    @Embedded
-    private Script triggerCondition;
+    private Long nextStateId;
 
     /**
      *
@@ -66,11 +66,38 @@ public class Transition extends AbstractEntity {
     /**
      *
      */
-    private Long nextStateId;
+    @Embedded
+    private Script triggerCondition;
+
+    @Override
+    public Boolean contains(String criteria) {
+        if (this.getPreStateImpact() != null && this.getPreStateImpact().contains(criteria)) {
+            return true;
+        }
+        if (this.getTriggerCondition() != null && this.getTriggerCondition().contains(criteria)) {
+            return true;
+        }
+
+        return false;
+    }
 
     @Override
     public Long getId() {
         return id;
+    }
+
+    /**
+     * @return the index
+     */
+    public Integer getIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(Integer index) {
+        this.index = index;
     }
 
     /**
@@ -93,22 +120,6 @@ public class Transition extends AbstractEntity {
      *
      * @return
      */
-    public Script getTriggerCondition() {
-        return triggerCondition;
-    }
-
-    /**
-     *
-     * @param triggerCondition
-     */
-    public void setTriggerCondition(Script triggerCondition) {
-        this.triggerCondition = triggerCondition;
-    }
-
-    /**
-     *
-     * @return
-     */
     public Script getPreStateImpact() {
         return preStateImpact;
     }
@@ -121,9 +132,20 @@ public class Transition extends AbstractEntity {
         this.preStateImpact = preStateImpact;
     }
 
-    @Override
-    public String toString() {
-        return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
+    /**
+     *
+     * @return
+     */
+    public Script getTriggerCondition() {
+        return triggerCondition;
+    }
+
+    /**
+     *
+     * @param triggerCondition
+     */
+    public void setTriggerCondition(Script triggerCondition) {
+        this.triggerCondition = triggerCondition;
     }
 
     @Override
@@ -135,17 +157,8 @@ public class Transition extends AbstractEntity {
         this.index = newTranstion.index;
     }
 
-    /**
-     * @return the index
-     */
-    public Integer getIndex() {
-        return index;
-    }
-
-    /**
-     * @param index the index to set
-     */
-    public void setIndex(Integer index) {
-        this.index = index;
+    @Override
+    public String toString() {
+        return "Transition{" + "triggerCondition=" + triggerCondition + ", nextStateId=" + nextStateId + '}';
     }
 }
