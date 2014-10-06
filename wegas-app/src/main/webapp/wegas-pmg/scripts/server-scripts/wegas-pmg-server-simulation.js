@@ -56,7 +56,7 @@ var PMGSimulation = (function() {
         return flattenList(Variable.findByName(gameModel, "employees"));
     }
 
-    function getInstancesFromDescriptors(descriptors) {
+    /*function getInstancesFromDescriptors(descriptors) {
         return descriptors.map(function(desc) {
             desc.getInstacnce(self);
         }, this);
@@ -64,7 +64,7 @@ var PMGSimulation = (function() {
 
     function getResourceInstances() {
         return getInstancesFromDescriptors(getResourceDescriptors());
-    }
+    }*/
 
     function cleanAssignments(resources) {
         var i;
@@ -111,7 +111,12 @@ var PMGSimulation = (function() {
     function step(currentStep) {
         debug("step(" + currentStep + ")");
         // Process assignments
-        var activities = assignResources(currentStep);
+        var activities = assignResources(currentStep), activity;
+
+        for (activity in activities){
+            debug("activity : " + activity);
+        }
+
         // Calculate progress for each requirement
         Y.Array.each(getDistinctRequirements(activities), function(r) {
             debug("step(): computeReq:" + r);
@@ -170,11 +175,13 @@ var PMGSimulation = (function() {
         var activity = null,
             resourceInstance = resourceDescriptor.getInstance(self);
         if (PMGHelper.isReservedToWork(resourceDescriptor, currentPeriodNumber)) {
+            debug("   Is Reserved");
             var i, allAssignments = resourceInstance.assignments,
                 justCompletedTasks = [];
             // iterate through assigments until an activity exists
             for (i = 0; i < allAssignments.size() && !activity; i++) {
                 var currentAssignment = allAssignments.get(i);
+                debug("   assignment: " + currentAssignment);
                 var taskDesc = currentAssignment.taskDescriptor;
                 // Only cares about uncompleted tasks
                 if (!PMGHelper.isTaskCompleted(taskDesc)) {
@@ -310,7 +317,7 @@ var PMGSimulation = (function() {
      * 
      */
     function getActiveTasks() {
-        return Variable.findByName(gameModel, "tasks").items.toArray().map(function(t) {
+        return Java.from(Variable.findByName(gameModel, "tasks").items).map(function(t) {
             return t.getInstance(self);
         }).filter(function(t) {
             return t.active;
@@ -576,7 +583,7 @@ var PMGSimulation = (function() {
      */
     function findActivitesByPeriod(employeeInst, period) {
         debug("Find all activities for " + employeeInst + " at period " + period);
-        return employeeInst.activities.toArray().filter(function(activity) {
+        return Java.from(employeeInst.activities).filter(function(activity) {
             return Math.floor(activity.time) === Math.floor(period);
         });
     }

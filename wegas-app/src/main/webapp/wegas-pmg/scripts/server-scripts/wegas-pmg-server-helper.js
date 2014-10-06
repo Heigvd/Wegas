@@ -108,6 +108,7 @@ var PMGHelper = (function() {
              * it means that an "editable" occupation must exists for the current time
              */
             return Y.Array.find(employeeInst.occupations, function(o) {
+                debug (" o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && o.editable;
             });
@@ -117,6 +118,7 @@ var PMGHelper = (function() {
              * it has an "uneditable" occupation for the current period
              */
             return !Y.Array.find(employeeInst.occupations, function(o) {
+                debug (" !o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && !o.editable; // Illness, etc. occupations are not editable
             });
@@ -209,7 +211,7 @@ var PMGHelper = (function() {
 
     function cancelEffect() {
         var factorsDesc = Variable.findByName(gameModel, "factors"),
-            propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i,
+            propertiesKey = Java.from(factorsDesc.getInstance().getProperties().keySet()), i,
             currentTime = Variable.findByName(gameModel, "currentTime").getInstance().getValue(), object,
             args;
         for (i = 0; i < propertiesKey.length; i++) {

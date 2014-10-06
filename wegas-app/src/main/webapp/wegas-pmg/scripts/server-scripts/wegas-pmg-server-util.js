@@ -11,18 +11,20 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-importPackage(javax.naming);
+
+//importPackage(javax.naming);
 
 var DEBUGMODE = false,
     Y = Y || {};
 
 /**
+ * 
  * get the specified wegas bean.
- * @param String name, the name of the bean
- * @return the wanted bean or null
+ * @param {String} name, the name of the bean
+ * @returns {unresolved}
  */
 function lookupBean(name) {
-    var ctx = new InitialContext();
+    var ctx = new javax.naming.InitialContext();
     return ctx.lookup('java:module/' + name);
 }
 /**
@@ -31,7 +33,7 @@ function lookupBean(name) {
 Y.Array = {
     each: function(array, fn, thisObj) {
         if (array.toArray)
-            array = array.toArray();                                            //convert list to array
+            array = Java.from(array);
         for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
             if (i in array) {
                 fn.call(thisObj || Y, array[i], i, array);
@@ -75,7 +77,7 @@ Y.Array = {
     },
     find: function(a, f, o) {
         if (a.toArray)
-            a = a.toArray();                                                    //convert list to array
+            a = Java.from(a);
         for (var i = 0, l = a.length; i < l; i++) {
             if (i in a && f.call(o, a[i], i, a)) {
                 return a[i];
@@ -85,7 +87,8 @@ Y.Array = {
     },
     sum: function(a, f, o) {
         if (a.toArray)
-            a = a.toArray();                                                    //convert list to array
+            a = Java.from(a);
+            //a = a.toArray();                                                    //convert list to array
         for (var i = 0, l = a.length, r = 0; i < l; i++) {
             r += f.call(o, a[i], i, a);
         }
@@ -115,7 +118,7 @@ Y.Object = {
 };
 
 Y.log = function(level, msg, sender) {
-    println("[" + level + "] " + msg);
+    print("[" + level + "] " + msg);
 };
 
 /**
@@ -157,6 +160,6 @@ function debug(msg) {
  * @param {String} msg
  */
 function printMessage(msg) {
-    println(msg);
+    print(msg);
     RequestManager.sendCustomEvent("debug", msg);
 }
