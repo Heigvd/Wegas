@@ -10,8 +10,8 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -19,8 +19,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Embeddable
-@XmlRootElement
-@XmlType(name = "")
+//@XmlRootElement
+//@XmlType(name = "")
 public class GameModelProperties implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -13,8 +13,9 @@ import java.util.Date;
 import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -61,7 +62,8 @@ public class Team extends AbstractEntity {
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "parentgame_id")
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
     private Game game;
@@ -123,7 +125,8 @@ public class Team extends AbstractEntity {
      *
      * @param p
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void addPlayer(Player p) {
         this.players.add(p);
         p.setTeam(this);

@@ -7,13 +7,14 @@
  */
 package com.wegas.core.security.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 /**
@@ -79,7 +80,8 @@ public class User extends AbstractEntity implements Comparable<User> {
     /**
      * @return the players
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     @JsonManagedReference(value = "player-user")
     public List<Player> getPlayers() {
         return players;
@@ -120,7 +122,8 @@ public class User extends AbstractEntity implements Comparable<User> {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public final AbstractAccount getMainAccount() {
         if (!this.accounts.isEmpty()) {
             return this.accounts.get(0);

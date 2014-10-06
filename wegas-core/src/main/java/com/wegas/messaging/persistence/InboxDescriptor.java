@@ -13,14 +13,14 @@ import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "InboxDescriptor")
+//@XmlType(name = "InboxDescriptor")
 public class InboxDescriptor extends VariableDescriptor<InboxInstance> {
 
     private static final long serialVersionUID = 1L;

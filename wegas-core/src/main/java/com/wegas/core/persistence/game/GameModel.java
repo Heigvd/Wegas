@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -71,20 +71,21 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private User createdBy;
     /**
      *
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private Boolean template = true;
     /**
      *
      */
     @OneToMany(mappedBy = "gameModel", cascade = {CascadeType.ALL}, orphanRemoval = true, fetch = FetchType.LAZY)
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private List<VariableDescriptor> variableDescriptors;
     /**
      * A list of Variable Descriptors that are at the root level of the
@@ -296,7 +297,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public List<VariableDescriptor> getVariableDescriptors() {
         return variableDescriptors;
     }
@@ -352,7 +354,8 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      * @return the games
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public List<Game> getGames() {
         return games;
     }

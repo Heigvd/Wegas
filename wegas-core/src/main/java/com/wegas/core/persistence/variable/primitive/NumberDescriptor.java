@@ -7,12 +7,13 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import javax.persistence.Entity;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,7 +103,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     @Transient
     public double getMaxValueD() {
         return this.maxValue;
@@ -112,7 +114,8 @@ public class NumberDescriptor extends VariableDescriptor<NumberInstance> {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     @Transient
     public double getMinValueD() {
         return this.minValue;

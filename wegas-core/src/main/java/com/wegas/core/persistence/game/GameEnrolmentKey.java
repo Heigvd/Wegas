@@ -11,7 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -42,7 +42,7 @@ public class GameEnrolmentKey extends AbstractEntity {
      *
      */
     @ManyToOne(optional = false)
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private Game game;
 

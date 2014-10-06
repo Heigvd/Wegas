@@ -12,8 +12,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "ChoiceInstance")
+//@XmlType(name = "ChoiceInstance")
 @Table(name = "MCQChoiceInstance")
 public class ChoiceInstance extends VariableInstance {
 
@@ -40,7 +40,8 @@ public class ChoiceInstance extends VariableInstance {
      */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "result_id", insertable = false, updatable = false)
-    @XmlTransient
+    @JsonIgnore
+    //@XmlTransient
     //@JsonBackReference
     //@JsonDeserialize(using = JsonDeserializer.None.class)
     private Result currentResult;

@@ -15,9 +15,11 @@ import java.util.List;
 import java.util.Objects;
 import javax.naming.NamingException;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -25,7 +27,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "Message")
+//@XmlType(name = "Message")
+@JsonTypeName(value = "Message")
 public class Message extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
@@ -232,7 +235,8 @@ public class Message extends NamedEntity {
     }
 
     @Override
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public String getName() {
         return this.subject;
     }
@@ -250,7 +254,8 @@ public class Message extends NamedEntity {
     /**
      * @return the MCQDescriptor
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public InboxInstance getInboxInstance() {
         return inboxInstance;
     }

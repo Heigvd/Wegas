@@ -7,16 +7,18 @@
  */
 package com.wegas.core.rest.exception;
 
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@XmlRootElement
-@XmlType(name = "RestException")
+//@XmlRootElement
+//@XmlType(name = "RestException")
+@JsonTypeName(value = "RestException")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ExceptionWrapper {
 

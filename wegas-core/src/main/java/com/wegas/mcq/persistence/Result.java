@@ -13,9 +13,11 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -23,7 +25,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "Result")
+//@XmlType(name = "Result")
+@JsonTypeName(value = "Result")
 @Table(name = "MCQResult")
 public class Result extends AbstractEntity {
 
@@ -75,13 +78,15 @@ public class Result extends AbstractEntity {
      * This link is here so the reference is updated on remove.
      */
     @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private List<ChoiceInstance> choiceInstances;
     /**
      * This field is here so deletion will be propagated to replies.
      */
     @OneToMany(mappedBy = "result", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private List<Reply> replies;
 
     /**
@@ -130,7 +135,8 @@ public class Result extends AbstractEntity {
     /**
      * @return the choiceDescriptor
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public ChoiceDescriptor getChoiceDescriptor() {
         return choiceDescriptor;
     }
@@ -209,7 +215,8 @@ public class Result extends AbstractEntity {
     /**
      * @return the choiceInstances
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public List<ChoiceInstance> getChoiceInstances() {
         return choiceInstances;
     }

@@ -9,16 +9,19 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "Reply")
+//@XmlType(name = "Reply")
+@JsonTypeName(value = "Reply")
 @Table(name = "MCQReply")
 public class Reply extends AbstractEntity {
 
@@ -80,7 +83,8 @@ public class Reply extends AbstractEntity {
     /**
      * @return the MCQDescriptor
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     @JsonBackReference
     public QuestionInstance getQuestionInstance() {
         return questionInstance;

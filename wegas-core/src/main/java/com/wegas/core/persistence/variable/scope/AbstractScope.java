@@ -16,7 +16,7 @@ import com.wegas.core.rest.util.Views;
 import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -88,7 +88,8 @@ abstract public class AbstractScope extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public VariableInstance getInstance() {
         return this.getVariableInstance(RequestFacade.lookup().getPlayer());
     }
@@ -105,7 +106,7 @@ abstract public class AbstractScope extends AbstractEntity {
      */
     // @fixme here we cannot use the back-reference on an abstract reference
     //@JsonBackReference
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getVariableDescriptor() {
         return this.variableDescriptor;
@@ -125,7 +126,7 @@ abstract public class AbstractScope extends AbstractEntity {
      * @return
      */
     @Override
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public Long getId() {
         return this.id;

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
@@ -28,7 +29,7 @@ import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
+//////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.eclipse.persistence.annotations.JoinFetch;
@@ -198,7 +199,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public T getInstance() {
         return (T) this.getScope().getInstance();
     }
@@ -209,7 +211,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      * @param player
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public T getInstance(Boolean defaultInstance, Player player) {
         if (defaultInstance) {
             return this.getDefaultInstance();
@@ -273,7 +276,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public GameModel getGameModel() {
         return this.gameModel;
     }
@@ -282,7 +286,8 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public int getGameModelId() {
         return this.gameModel.getId().intValue();
     }

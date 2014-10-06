@@ -18,8 +18,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "TeamScope")
+//@XmlType(name = "TeamScope")
 public class TeamScope extends AbstractScope {
 
     private static final long serialVersionUID = 1L;
@@ -42,7 +42,7 @@ public class TeamScope extends AbstractScope {
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "teamScope")
     @JoinColumn(name = "teamscope_id", referencedColumnName = "id")
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private Map<Long, VariableInstance> teamVariableInstances = new HashMap<>();
 
