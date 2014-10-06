@@ -14,7 +14,6 @@ import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.exception.ExceptionWrapper;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -23,10 +22,11 @@ import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlType;
 import org.apache.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +47,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
      * @param response
      */
     @Override
-    public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {
+    public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
 
         //rmf.commit();
@@ -82,21 +82,17 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         }
     }
 
-    @XmlRootElement
-    @XmlType(name = "")
+    //@XmlRootElement
+    //@XmlType(name = "")
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    private static class ServerResponse {
+    private static class ServerResponse implements Serializable, Cloneable {
 
-        /**
-         *
-         */
-        private List<AbstractEntity> entities = new ArrayList<>();
-        /**
-         *
-         */
-        private List<ClientEvent> events = new ArrayList<>();
+        private List<AbstractEntity> entities;
+        private List<ClientEvent> events;
 
         public ServerResponse() {
+            this.events = new ArrayList<>();
+            this.entities = new ArrayList<>();
         }
 
         /**
