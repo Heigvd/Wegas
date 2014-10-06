@@ -462,10 +462,11 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @FIXME Should also remove players, created games and game models
      */
+    //@Schedule(hour = "4", minute = "14", persistent = false)
     //@Schedule(hour = "4", minute = "14")
     public void removeIdleGuests() {
         Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
-                + "WHERE account.createdTime < :idletime;");
+                + "WHERE account.createdTime < :idletime");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
         findIdleGuests.setParameter("idletime", calendar.getTime(), TemporalType.DATE);
