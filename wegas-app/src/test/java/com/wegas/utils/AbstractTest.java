@@ -5,8 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app;
+package com.wegas.utils;
 
+import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.utils.TestHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
@@ -16,6 +18,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.unit.AbstractEJBContainerTest;
 import java.io.IOException;
 import javax.script.ScriptException;
 import org.junit.Assert;
@@ -57,7 +60,7 @@ public abstract class AbstractTest {
         }
 
         System.out.println("Create game model : " + gameModel.getName());
-        AbstractEJBContainerTest.gmFacade.createWithDebugGame(gameModel);
+        this.getGameModelFacade().createWithDebugGame(gameModel);
         junit.framework.Assert.assertNotNull(gameModel.getId()); //persisted
 
         this.gm = gameModel;
@@ -94,4 +97,6 @@ public abstract class AbstractTest {
     protected Player getPlayer() {
         return player;
     }
+
+    protected abstract GameModelFacade getGameModelFacade();
 }

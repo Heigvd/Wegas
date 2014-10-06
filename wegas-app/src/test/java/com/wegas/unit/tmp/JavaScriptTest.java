@@ -5,7 +5,7 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app;
+package com.wegas.unit.tmp;
 
 import java.io.File;
 import java.util.logging.Level;
@@ -26,8 +26,8 @@ import org.junit.Test;
  */
 public class JavaScriptTest {
 
-    private static GlassFish glassfish;
-    private static String appName;
+    //private static GlassFish glassfish;
+    //private static String appName;
 
 //    @BeforeClass
 //    public static void setUpClass() throws Exception {
