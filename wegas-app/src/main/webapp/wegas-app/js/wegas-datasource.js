@@ -260,12 +260,14 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
 
-                for (i = 0; i < response.get("events").length; i += 1) {
-                    evtPayload = Y.mix({
-                        serverEvent: response.get("events")[i]
-                    }, e);
-                    this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
-                    //this.fire("serverEvent", evtPayload);
+                if (response.get("events")){
+                    for (i = 0; i < response.get("events").length; i += 1) {
+                        evtPayload = Y.mix({
+                            serverEvent: response.get("events")[i]
+                        }, e);
+                        this.fire(evtPayload.serverEvent.get(CLASS), evtPayload);
+                        //this.fire("serverEvent", evtPayload);
+                    }
                 }
             }
             if ((!e.cfg || e.cfg.updateEvent !== false)
