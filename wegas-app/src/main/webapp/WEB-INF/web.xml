@@ -8,78 +8,82 @@
     <display-name>Web Game Authoring System</display-name>
     <distributable/>
     <session-config>
-	<session-timeout>30</session-timeout>
+        <session-timeout>30</session-timeout>
     </session-config>
     <welcome-file-list>
-	<welcome-file>index.html</welcome-file>
+        <welcome-file>index.html</welcome-file>
     </welcome-file-list>
 
     <!-- Apache Shiro Listener -->
     <!-- shiro filter must be declared before any other filter, to ensure
     security checks. -->
     <listener>
-	<listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
+        <listener-class>org.apache.shiro.web.env.EnvironmentLoaderListener</listener-class>
     </listener>
     <filter>
-	<filter-name>ShiroFilter</filter-name>
-	<filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
+        <filter-name>ShiroFilter</filter-name>
+        <filter-class>org.apache.shiro.web.servlet.ShiroFilter</filter-class>
     </filter>
     <filter-mapping>
-	<filter-name>ShiroFilter</filter-name>
-	<url-pattern>/*</url-pattern>
+        <filter-name>ShiroFilter</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <!-- JSF -->
     <context-param>
-	<param-name>javax.faces.PROJECT_STAGE</param-name>
-	<param-value>Development</param-value>
+        <param-name>javax.faces.PROJECT_STAGE</param-name>
+        <param-value>Development</param-value>
     </context-param>
     <servlet>
-	<servlet-name>Faces Servlet</servlet-name>
-	<servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
-	<load-on-startup>1</load-on-startup>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-	<servlet-name>Faces Servlet</servlet-name>
-	<url-pattern>*.html</url-pattern>
-	<url-pattern>*.xhtml</url-pattern>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.html</url-pattern>
+        <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
+
+    <listener>
+        <listener-class>com.sun.faces.config.ConfigureListener</listener-class>
+    </listener>
 
     <!-- Liquibase configuration -->
     <context-param>
-	<param-name>liquibase.changelog</param-name>
-	<param-value>META-INF/db.changelog.xml</param-value>
+        <param-name>liquibase.changelog</param-name>
+        <param-value>META-INF/db.changelog.xml</param-value>
     </context-param>
     <context-param>
-	<param-name>liquibase.datasource</param-name>
-	<param-value>jdbc/wegas_dev</param-value>
+        <param-name>liquibase.datasource</param-name>
+        <param-value>jdbc/wegas_dev</param-value>
     </context-param>
 
     <context-param>
-	<param-name>javax.faces.FACELETS_LIBRARIES</param-name>
-	<param-value>/WEB-INF/wegas-taglib.xml</param-value>
+        <param-name>javax.faces.FACELETS_LIBRARIES</param-name>
+        <param-value>/WEB-INF/wegas-taglib.xml</param-value>
     </context-param>
 
     <!--Liquibase sevlet listener to check database on start up and apply new changes if needed-->
     <listener>
-	<listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
+        <listener-class>liquibase.integration.servlet.LiquibaseServletListener</listener-class>
     </listener>
 
     <!--File Mime Types-->
     <mime-mapping>
-	<extension>json</extension>
-	<mime-type>application/json;charset=UTF-8</mime-type>
+        <extension>json</extension>
+        <mime-type>application/json;charset=UTF-8</mime-type>
     </mime-mapping>
     <mime-mapping>
-	<extension>ico</extension>
-	<mime-type>image/x-icon</mime-type>
+        <extension>ico</extension>
+        <mime-type>image/x-icon</mime-type>
     </mime-mapping>
     <mime-mapping>
-	<extension>woff</extension>
-	<mime-type>application/font-woff</mime-type>
+        <extension>woff</extension>
+        <mime-type>application/font-woff</mime-type>
     </mime-mapping>
     <mime-mapping>
-	<extension>ttf</extension>
-	<mime-type>application/x-font-ttf</mime-type>
+        <extension>ttf</extension>
+        <mime-type>application/x-font-ttf</mime-type>
     </mime-mapping>
 </web-app>
