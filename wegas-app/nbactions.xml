@@ -108,6 +108,17 @@
         </properties>
     </action>
 
+    <action>
+        <actionName>CUSTOM-verify -skip-surfire-tests</actionName>
+        <displayName>Verify -skip-surefire-tests</displayName>
+        <goals>
+            <goal>verify</goal>
+        </goals>
+        <properties>
+            <skip.surefire.tests>true</skip.surefire.tests>
+        </properties>
+    </action>
+
 
     <action>
         <actionName>CUSTOM-Site</actionName>
