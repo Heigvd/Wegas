@@ -201,7 +201,7 @@ public class MessageFacadeTest extends AbstractEJBTest {
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(
-                new Script("println(\"sending\");VariableDescriptorFacade.find(" + inbox.getId() + ").sendMessage(self, \"test\", \"test\", \"test\");"));
+                new Script("print(\"sending\");VariableDescriptorFacade.find(" + inbox.getId() + ").sendMessage(self, \"test\", \"test\", \"test\");"));
         vdf.create(gameModel.getId(), trigger);
 
         // Reset
