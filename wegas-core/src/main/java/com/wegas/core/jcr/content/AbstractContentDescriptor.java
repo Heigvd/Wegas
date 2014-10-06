@@ -8,23 +8,25 @@
 package com.wegas.core.jcr.content;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.zip.ZipEntry;
 import javax.jcr.ItemExistsException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@XmlRootElement
+//@XmlRootElement
 abstract public class AbstractContentDescriptor {
 
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(AbstractContentDescriptor.class);
 
     /**
@@ -43,7 +45,8 @@ abstract public class AbstractContentDescriptor {
             return new FileDescriptor(name, path, null);
         }
     }
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private boolean synched = false;
     /**
      *
@@ -58,12 +61,14 @@ abstract public class AbstractContentDescriptor {
     /**
      *
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     protected String fileSystemAbsolutePath;
     /**
      *
      */
-    @XmlTransient
+    ////@XmlTransient
+    @JsonIgnore
     protected ContentConnector connector;
 
     /**
@@ -171,7 +176,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public String getFullPath() {
         String p = fileSystemAbsolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
         if (this.isDirectory() && !p.endsWith("/")) {
@@ -233,7 +239,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public boolean isSynched() {
         return synched;
     }
@@ -242,7 +249,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @return @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public boolean exist() throws RepositoryException {
         return connector.nodeExist(fileSystemAbsolutePath);
     }
@@ -251,7 +259,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @return @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public boolean hasChildren() throws RepositoryException {
         return connector.getNode(fileSystemAbsolutePath).hasNodes();
     }
@@ -283,7 +292,8 @@ abstract public class AbstractContentDescriptor {
      * @return
      * @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public AbstractContentDescriptor addChild(AbstractContentDescriptor file) throws RepositoryException {
         Node parent = connector.getNode(fileSystemAbsolutePath);
         parent.addNode(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + file.getName());
@@ -308,7 +318,8 @@ abstract public class AbstractContentDescriptor {
      * @param force
      * @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void delete(boolean force) throws RepositoryException {
         if (this.exist()) {
             if (!this.hasChildren() || force) {
@@ -323,7 +334,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void getContentFromRepository() throws RepositoryException {
         this.mimeType = connector.getMimeType(fileSystemAbsolutePath);
         this.note = connector.getNote(fileSystemAbsolutePath);
@@ -336,7 +348,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void setContentToRepository() throws RepositoryException {
         connector.setMimeType(fileSystemAbsolutePath, mimeType);
         connector.setNote(fileSystemAbsolutePath, note);
@@ -349,7 +362,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @throws RepositoryException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void saveToRepository() throws RepositoryException {
         String parentPath = this.getPath().replaceAll("/(\\w)", "/" + WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + "$1");
         AbstractContentDescriptor parent = DescriptorFactory.getDescriptor(parentPath, connector);
@@ -361,7 +375,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     protected ZipEntry getZipEntry() {
         ZipEntry desc = new ZipEntry(this.getFullPath());
         //desc.setComment(this.description);
@@ -374,7 +389,8 @@ abstract public class AbstractContentDescriptor {
      *
      * @param absolutePath
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private void parseAbsolutePath(String absolutePath) {
         absolutePath = absolutePath.replaceAll(WFSConfig.WeGAS_FILE_SYSTEM_PREFIX, "");
         if (!absolutePath.startsWith("/")) {
@@ -399,7 +415,8 @@ abstract public class AbstractContentDescriptor {
      * Convert name and path to a fileSystemAbsolutePath, including namespace
      * (wfs)
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private void buildNamespaceAbsolutePath() {
         if (this.path.equals("/")) {
             this.fileSystemAbsolutePath = "/" + (this.name.equals("") ? "" : WFSConfig.WeGAS_FILE_SYSTEM_PREFIX + this.name);

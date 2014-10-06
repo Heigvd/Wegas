@@ -16,8 +16,8 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
 import name.fraser.neil.plaintext.StandardBreakScorer;
 import name.fraser.neil.plaintext.diff_match_patch;
 import org.slf4j.LoggerFactory;
@@ -26,12 +26,12 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@XmlRootElement
+//@XmlRootElement
 public class Page {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Page.class);
     @JsonIgnore
-    @XmlTransient
+    //@XmlTransient
     private static ObjectMapper mapper = new ObjectMapper();
     private String id;
     private JsonNode content;

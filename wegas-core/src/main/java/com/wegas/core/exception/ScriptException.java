@@ -9,18 +9,20 @@ package com.wegas.core.exception;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import javax.ejb.ApplicationException;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @ApplicationException(rollback = false)
-@XmlRootElement
+//@XmlRootElement
 @JsonIgnoreProperties({"cause", "stackTrace", "suppressed"})
-@XmlType(name = "WegasScriptException")
+//@XmlType(name = "WegasScriptException")
+@JsonTypeName(value = "WegasScriptException")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class ScriptException extends WegasException {
 
