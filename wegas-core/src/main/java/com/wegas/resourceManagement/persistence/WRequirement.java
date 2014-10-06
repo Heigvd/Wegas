@@ -37,6 +37,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"requirements_variableinstance_id", "wrequirement_name"}))
 public class WRequirement extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
     /**
      *
      */
