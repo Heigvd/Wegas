@@ -14,6 +14,10 @@
     <packaging>war</packaging>
     <name>wegas-app-gl4</name>
 
+    <properties>
+        <skip.surefire.tests>${skipTests}</skip.surefire.tests>
+    </properties>
+
     <profiles>
         <profile>
             <id>light-profile</id>
@@ -75,6 +79,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-core-gl4</artifactId>
             <version>1.0-SNAPSHOT-gl4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- log4j -->
@@ -86,14 +96,15 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
         </dependency>
         
-        <!-- cdi -->
+        <!-- cdi 
         <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
-        </dependency>
+        </dependency>-->
 
         <!-- Liquibase -->
         <dependency>
@@ -111,7 +122,7 @@
             <type>jar</type>
         </dependency>
 
-
+        <!-- TEST -->
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
             <artifactId>glassfish-embedded-all</artifactId>
@@ -131,15 +142,25 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>net.sourceforge.jwebunit</groupId>
             <artifactId>jwebunit-htmlunit-plugin</artifactId>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-codec</groupId>
+                    <artifactId>commons-codec</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 
@@ -215,11 +236,86 @@
 
             <!-- Dependencies -->
 
-            <!-- Tests -->
+            <!-- Unit Tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>**/integration/**</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/unit/**</include>
+                    </includes>
+                    <skipTests>${skip.surefire.tests}</skipTests>
+                </configuration>
             </plugin>
+
+            <!-- Integration Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/unit/**</exclude>
+                    </excludes>
+                    <includes>
+                        <include>**/integration/**</include>
+                    </includes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!--<plugin>
+                <groupId>org.glassfish.embedded</groupId>
+                <artifactId>maven-embedded-glassfish-plugin</artifactId>
+                <version>4.0</version>
+                <configuration>
+                    <goalPrefix>embedded-glassfish</goalPrefix>
+                    <app>targer/Wegas.war</app>
+                    <autoDelete>true</autoDelete>
+                    <port>5454</port>
+                    <configFile>src/test/glassfish/domains/domain1/config/domain.xml</configFile>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>start-glassfish</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>start</goal>
+                        </goals>
+                    </execution>
+                     <execution>
+                        <id>glassfish-deploy</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>deploy</goal>
+                        </goals>
+                    </execution>                   
+                     <execution>
+                        <id>glassfish-undeploy</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>undeploy</goal>
+                        </goals>
+                    </execution>            
+                     <execution>
+                        <id>stop-glassfish</id>
+                        <phase>post-integration-test</phase>
+                        <goals>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>           
+                </executions>
+            </plugin>-->
 
             <!-- YUI JS Compression Plugin -->
             <plugin>
