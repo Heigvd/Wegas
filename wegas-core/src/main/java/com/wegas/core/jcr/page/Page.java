@@ -8,7 +8,6 @@
 package com.wegas.core.jcr.page;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.LinkedList;
 import java.util.List;
 import javax.jcr.Node;

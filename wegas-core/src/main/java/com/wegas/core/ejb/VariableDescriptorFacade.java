@@ -376,7 +376,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @return
      */
     public List<VariableDescriptor> findAll(final Long gameModelId) {
-        final Query findByRootGameModelId = em.createNamedQuery("findVariableDescriptorsByRootGameModelId");
+        TypedQuery<VariableDescriptor> findByRootGameModelId = em.createNamedQuery("findVariableDescriptorsByRootGameModelId", VariableDescriptor.class);
         findByRootGameModelId.setParameter("gameModelId", gameModelId);
         return findByRootGameModelId.getResultList();
     }

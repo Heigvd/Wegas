@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
@@ -21,6 +22,14 @@ public class DialogueTransition extends Transition {
     private static final long serialVersionUID = 1L;
     @Lob
     private String actionText;
+
+    @Override
+    public Boolean contains(String criteria) {
+        if (Helper.insensitiveContains(this.getActionText(), criteria)) {
+            return true;
+        }
+        return super.contains(criteria);
+    }
 
     /**
      * @return the actionText

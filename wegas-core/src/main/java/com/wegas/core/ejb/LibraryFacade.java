@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
-import java.io.Serializable;
 import java.util.*;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;

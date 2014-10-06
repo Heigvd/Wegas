@@ -13,7 +13,6 @@ import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
-import com.wegas.core.persistence.variable.scope.TeamScope;
 import javax.naming.NamingException;
 import javax.script.ScriptException;
 import junit.framework.Assert;

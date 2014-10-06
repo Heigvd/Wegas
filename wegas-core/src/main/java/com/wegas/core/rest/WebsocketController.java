@@ -8,7 +8,6 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.WebsocketFacade;
-import com.wegas.core.websocket.pusher.Pusher;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

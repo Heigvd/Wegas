@@ -408,4 +408,18 @@ public class Helper {
         }
     }
 
+    /**
+     * Insensitive contains
+     *
+     * @param text text to search in
+     * @param criteria criteria to search for
+     * @return match
+     */
+    public static Boolean insensitiveContains(String text, String criteria) {
+        if(text == null){
+            return false;
+        }
+        return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(text).find();
+    }
+
 }
