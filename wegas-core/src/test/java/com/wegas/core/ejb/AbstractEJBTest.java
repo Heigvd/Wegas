@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import static com.wegas.core.ejb.GameModelFacadeTest.lookupBy;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -56,8 +55,9 @@ public class AbstractEJBTest {
 
     @AfterClass
     public static void tearDown() {
-
-        ejbContainer.close();
+        if (ejbContainer != null) {
+            ejbContainer.close();
+        }
         //logger.info("Closing the container");
     }
 
