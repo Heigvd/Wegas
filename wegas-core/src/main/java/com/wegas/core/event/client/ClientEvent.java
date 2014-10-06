@@ -9,13 +9,13 @@ package com.wegas.core.event.client;
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.io.Serializable;
-import javax.xml.bind.annotation.XmlRootElement;
+//import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author Yannick Lagger <lagger.yannick at gmail.com>
  */
-@XmlRootElement
+//@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 //@JsonSubTypes()
 abstract public class ClientEvent implements Serializable {

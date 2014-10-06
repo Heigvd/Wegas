@@ -15,8 +15,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.slf4j.LoggerFactory;
@@ -25,10 +25,11 @@ import org.slf4j.LoggerFactory;
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@XmlRootElement
+//@XmlRootElement
 public class FileDescriptor extends AbstractContentDescriptor {
 
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(FileDescriptor.class);
     @JsonIgnore
     private Calendar dataLastModified;
@@ -72,7 +73,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public InputStream getBase64Data() {
         try {
             return connector.getData(this.fileSystemAbsolutePath);
@@ -166,7 +168,8 @@ public class FileDescriptor extends AbstractContentDescriptor {
      *
      * @return @throws IOException
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     protected byte[] getBytesData() throws IOException {
         try {
             return connector.getBytesData(this.fileSystemAbsolutePath);

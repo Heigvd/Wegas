@@ -7,6 +7,7 @@
  */
 package com.wegas.core.jcr.page;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.wegas.core.AlphanumericComparator;
 import java.io.IOException;
@@ -15,20 +16,21 @@ import java.util.TreeMap;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@XmlRootElement
+//@XmlRootElement
 public class Pages implements AutoCloseable {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(Pages.class);
     private final String gameModelId;
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private final PageConnector connector;
 
     /**
