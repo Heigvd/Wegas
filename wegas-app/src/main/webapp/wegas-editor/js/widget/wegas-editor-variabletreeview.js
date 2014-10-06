@@ -12,8 +12,11 @@
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
 
-    var ID = "id", CLASS = "@class", NAME = "name",
-        Wegas = Y.Wegas, Plugin = Y.Plugin,
+    var ID = "id",
+        CLASS = "@class",
+        NAME = "name",
+        Wegas = Y.Wegas,
+        Plugin = Y.Plugin,
         VariableTreeView;
 
     /**
@@ -28,35 +31,42 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
         // ** Lifecycle methods ** //
         renderUI: function() {
-            VariableTreeView.superclass.renderUI.apply(this);                   // Render treeview
-            this.plug(Plugin.EditorTVDefaultMenuClick);                         // Open edit tab on left click
-
-            var timer = new Y.Wegas.Timer({duration: 100});
+            var timer = new Y.Wegas.Timer({
+                duration: 300
+            }),
+                searchVal, savedState;
+            VariableTreeView.superclass.renderUI.apply(this); // Render treeview
+            this.plug(Plugin.EditorTVDefaultMenuClick); // Open edit tab on left click
 
             this.toolbar.get('header').append("<div class='wegas-filter-input'><input size='15' placeholder='Search...'/></div>")
                 .one(".wegas-filter-input input").on("valueChange", function(e) {
                 if (e.prevVal === "") {
-                    this.savedState = this.treeView.saveState();
+                    savedState = this.treeView.saveState();
                 }
-                this.searchVal = e.newVal;
-                if (e.newVal === "") {
-                    this.treeView.applyState(this.savedState);
-                    timer.timeOut();
-                } else {
+                searchVal = e.newVal;
+                if (searchVal.length) {
                     timer.reset();
+                } else {
+                    timer.timeOut();
                 }
             }, this);
             timer.on("timeOut", function() {
-                this.treeView.filter.set("searchVal", this.searchVal);
+                if (!searchVal.length) {
+                    this.treeView.applyState(savedState);
+                }
+                this.treeView.filter.set("searchVal", searchVal);
             }, this);
 
             this.treeView.plug(Plugin.TreeViewFilter, {
-                testFn: function(searchVal) {
+                testFn: function(val) {
                     var e = this.get("data.entity");
-                    searchVal = searchVal.trim();
-                    return searchVal === ""
-                        || (e instanceof Wegas.persistence.VariableDescriptor)
-                        && (new RegExp(searchVal, "i")).test(e.get("name") + "|" + e.get("title") + "|" + e.get("label"));
+                    val = val.trim();
+                    return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
+                        e.get("name"),
+                        e.get("title"),
+                        e.get("label"),
+                        e.get("comments")
+                    ].join("|"));
                     //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
                 }
             });
@@ -69,12 +79,12 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         nodeClass: "wegas-editor-listitem",
                         parentNode: ".wegas-editor-list"
                     }]
-            });                                                                 // Add sortable plugin to the treeview
-            this.treeView.sortable.on("sort", function(e) {                     // On sort event,
+            }); // Add sortable plugin to the treeview
+            this.treeView.sortable.on("sort", function(e) { // On sort event,
                 var entity = e.dragWidget.get("data.entity"),
                     dropEntity = e.dropWidget.get("data.entity");
 
-                Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index);  // call facade method
+                Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index); // call facade method
             });
         },
         //
@@ -87,7 +97,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             var children, elClass = entity.get(CLASS),
                 collapsed = !this.isNodeExpanded(entity),
                 selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
-                text = entity.getEditorLabel(), /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
+                text = entity.getEditorLabel(),
+                /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
                 tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel();
 
             if (entity.get("items")) {
@@ -211,7 +222,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genScopeTreeViewElements: function(el) {
-            var children = [], i, label, team, player, instance,
+            var children = [],
+                i, label, team, player, instance,
                 instances = el.get("scope").get("variableInstances");
 
             for (i in instances) {
@@ -275,7 +287,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     };
 
                 case 'InboxInstance':
-                    var k, children = [], collapsed = !this.isNodeExpanded(el);
+                    var k, children = [],
+                        collapsed = !this.isNodeExpanded(el);
 
                     label += "(" + el.get("messages").length + ")";
 
@@ -316,7 +329,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         expandedIds: {},
         lastOpenedNode: null,
         initializer: function() {
-            this.onHostEvent("*:nodeExpanded", this.fillsLeaf);             //if treeleaf is empty, load elements from sever
+            this.onHostEvent("*:nodeExpanded", this.fillsLeaf); //if treeleaf is empty, load elements from sever
 
             //this.afterHostMethod("syncUI", function () {
             //    var i, doExpand = function (e) {
@@ -341,10 +354,9 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     return;
                 }
                 node.add(this.get("host").genTreeViewElements(entity.get("items")));
-            } else if (entity instanceof Wegas.persistence.VariableDescriptor
-                && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
+            } else if (entity instanceof Wegas.persistence.VariableDescriptor && !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
 
-                if (node.size() > 1) {  /* @fixme @hack What if there is only 1 player in the game ? */
+                if (node.size() > 1) { /* @fixme @hack What if there is only 1 player in the game ? */
                     return;
                 }
                 node.destroyAll();

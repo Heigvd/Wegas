@@ -10,7 +10,6 @@ package com.wegas.mcq.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
@@ -63,11 +62,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      */
-    private Long duration = Long.valueOf(1);
+    private Long duration = 1L;
     /**
      *
      */
-    private Long cost = Long.valueOf(0);
+    private Long cost = 0L;
 
     /**
      *
