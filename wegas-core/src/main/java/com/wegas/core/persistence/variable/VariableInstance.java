@@ -27,12 +27,10 @@ import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import org.eclipse.persistence.annotations.Index;
-import org.eclipse.persistence.annotations.Indexes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,20 +46,20 @@ import org.slf4j.LoggerFactory;
     @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid")
 })
 
-@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
+/*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED
     
     @Index(name = "index_variableinstance_gamescope_id", columnNames = {"gamescope_id"}),
     @Index(name = "index_variableinstance_teamscope_id", columnNames = {"teamscope_id"}),
     @Index(name = "index_variableinstance_playerscope_id", columnNames = {"playerscope_id"})
-})
+})*/
 
-/* JPA2.1 (GlassFish4) Indexes
+/* JPA2.1 (GlassFish4) Indexes */
  @Table(indexes = {
  @Index(columnList = "gamescope_id"),
  @Index(columnList = "teamscope_id"),
  @Index(columnList = "playerscope_id")
  })
- */
+
 //@JsonIgnoreProperties(value={"descriptorId"})
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "StringInstance", value = StringInstance.class),
@@ -160,7 +158,7 @@ abstract public class VariableInstance extends AbstractEntity {
     /**
      * @return the scope
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public AbstractScope getScope() {
         if (this.teamScopeKey != null) {
@@ -180,7 +178,7 @@ abstract public class VariableInstance extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public VariableDescriptor getDescriptor() {
         return this.getScope().getVariableDescriptor();

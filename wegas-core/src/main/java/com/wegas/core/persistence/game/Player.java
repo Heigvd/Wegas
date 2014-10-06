@@ -12,7 +12,7 @@ import com.wegas.core.security.persistence.User;
 import java.util.Date;
 import java.util.Objects;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+//////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -162,7 +162,7 @@ public class Player extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public GameModel getGameModel() {
         return this.getTeam().getGame().getGameModel();
@@ -172,7 +172,7 @@ public class Player extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public int getGameModelId() {
         return this.getTeam().getGame().getGameModel().getId().intValue();
@@ -182,7 +182,7 @@ public class Player extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public Game getGame() {
         return this.getTeam().getGame();
@@ -192,7 +192,7 @@ public class Player extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     public int getGameId() {
         return this.getTeam().getGame().getId().intValue();

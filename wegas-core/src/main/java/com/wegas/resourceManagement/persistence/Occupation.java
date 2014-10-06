@@ -10,7 +10,7 @@ package com.wegas.resourceManagement.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -120,8 +120,9 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the ResourceInstance
      */
-    @XmlTransient
+    //@XmlTransient
     @JsonBackReference
+    @JsonIgnore
     public ResourceInstance getResourceInstance() {
         return resourceInstance;
     }

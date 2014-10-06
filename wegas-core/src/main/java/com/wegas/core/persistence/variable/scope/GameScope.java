@@ -22,8 +22,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "GameScope")
+//@XmlType(name = "GameScope")
 public class GameScope extends AbstractScope {
 
     private static final long serialVersionUID = 1L;
@@ -44,7 +44,7 @@ public class GameScope extends AbstractScope {
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "gameScope")
     @JoinColumn(name = "gamescope_id", referencedColumnName = "id")
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private Map<Long, VariableInstance> gameVariableInstances = new HashMap<>();
 

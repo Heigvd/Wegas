@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -18,7 +19,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,8 @@ public class GameModelScope extends AbstractScope {
      *
      */
     @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private VariableInstance variableInstance;
 
     /**
@@ -53,7 +55,8 @@ public class GameModelScope extends AbstractScope {
      * @param force
      */
     @Override
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void propagateDefaultInstance(boolean force) {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
@@ -107,7 +110,8 @@ public class GameModelScope extends AbstractScope {
     /**
      * @return the variableInstance
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public VariableInstance getVariableInstance() {
         return variableInstance;
     }
@@ -115,7 +119,8 @@ public class GameModelScope extends AbstractScope {
     /**
      * @param variableInstance the variableInstance to set
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void setVariableInstance(VariableInstance variableInstance) {
         this.variableInstance = variableInstance;
     }

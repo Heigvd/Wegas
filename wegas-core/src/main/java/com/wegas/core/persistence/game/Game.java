@@ -24,7 +24,7 @@ import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlID;
-import javax.xml.bind.annotation.XmlTransient;
+//////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -74,14 +74,14 @@ public class Game extends NamedEntity {
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private User createdBy;
     /**
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    @XmlTransient
+    //@XmlTransient
     @JsonIgnore
     private Set<GameAccount> gameAccounts;
     /**
@@ -250,7 +250,8 @@ public class Game extends NamedEntity {
      *
      * @param t
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void addTeam(Team t) {
         this.teams.add(t);
         t.setGame(this);

@@ -7,11 +7,12 @@
  */
 package com.wegas.core.security.jparealm;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.game.Game;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlTransient;
+////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  * Account matching a specific Game
@@ -39,7 +40,8 @@ public class GameAccount extends JpaAccount {
      * @return
      */
     @ManyToOne
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public Game getGame() {
         return game;
     }

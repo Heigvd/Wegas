@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.scope;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
@@ -18,8 +19,8 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +29,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "PlayerScope")
+//@XmlType(name = "PlayerScope")
 public class PlayerScope extends AbstractScope {
 
     private static final long serialVersionUID = 1L;
@@ -39,7 +40,8 @@ public class PlayerScope extends AbstractScope {
      */
     @OneToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, orphanRemoval = true, mappedBy = "playerScope")
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private Map<Long, VariableInstance> variableInstances = new HashMap<Long, VariableInstance>();
 
     /**

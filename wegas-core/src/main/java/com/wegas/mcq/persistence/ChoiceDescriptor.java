@@ -16,9 +16,10 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+//import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "MCQChoiceDescriptor")
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@XmlType(name = "ChoiceDescriptor")
+//@XmlType(name = "ChoiceDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
@@ -42,7 +43,8 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     @JsonBackReference
     private QuestionDescriptor question;
     /**

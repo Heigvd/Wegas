@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable.statemachine;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.rest.util.Views;
@@ -15,9 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
+////import javax.xml.bind.annotation.XmlRootElement;
+////import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -25,8 +26,8 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
-@XmlRootElement
-@XmlType(name = "TriggerDescriptor")
+//@XmlRootElement
+//@XmlType(name = "TriggerDescriptor")
 public class TriggerDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;
@@ -118,7 +119,8 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      * @see StateMachineDescriptor#getStates
      */
     @Override
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public Map<Long, State> getStates() {
         return super.getStates();
     }

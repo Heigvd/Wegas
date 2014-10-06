@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
@@ -25,7 +26,7 @@ import javax.persistence.PrePersist;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
+//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -88,7 +89,8 @@ public class WRequirement extends AbstractEntity {
      *
      */
     @OneToMany(mappedBy = "requirement", cascade = CascadeType.ALL, orphanRemoval = true)
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     private List<Activity> activities = new ArrayList<>();
 
     /**
@@ -236,7 +238,8 @@ public class WRequirement extends AbstractEntity {
      *
      * @return
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public TaskInstance getTaskInstance() {
         return taskInstance;
     }
@@ -245,7 +248,8 @@ public class WRequirement extends AbstractEntity {
      *
      * @param taskInstance
      */
-    @XmlTransient
+    //@XmlTransient
+    @JsonIgnore
     public void setTaskInstance(TaskInstance taskInstance) {
         this.taskInstance = taskInstance;
     }
