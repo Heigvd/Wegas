@@ -5,9 +5,9 @@
  * Copyright (c) 2013,2014 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app.pmg;
+package com.wegas.unit.pmg;
 
-import com.wegas.app.AbstractEJBContainerTest;
+import com.wegas.unit.AbstractEJBContainerTest;
 import java.io.IOException;
 import org.glassfish.embeddable.GlassFishException;
 import org.junit.After;
@@ -53,7 +53,7 @@ abstract public class PMGameAbstractTest extends AbstractEJBContainerTest {
 
     @After
     public void cleanGM() {
-        gmFacade.remove(getGameModel().getId());
+        this.getGameModelFacade().remove(getGameModel().getId());
         cleanData();
     }
 }

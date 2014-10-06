@@ -5,8 +5,10 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app;
+package com.wegas.unit.tmp;
 
+import com.wegas.utils.AbstractTest;
+import com.wegas.utils.TestHelper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.rest.ScriptController;

@@ -1,4 +1,4 @@
-package com.wegas.app;
+package com.wegas.utils;
 
 /*
  * Wegas
@@ -25,7 +25,7 @@ public class TestHelper {
 
     private static Connection connection = null;
 
-    protected static void resetTestDB() {
+    public static void resetTestDB() {
         if (connection == null) {
             try {
                 connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/wegas_test", "user", "1234");

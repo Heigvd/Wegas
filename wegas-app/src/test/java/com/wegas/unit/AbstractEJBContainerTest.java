@@ -5,8 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app;
+package com.wegas.unit;
 
+import com.wegas.utils.AbstractTest;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -32,7 +33,7 @@ import org.junit.BeforeClass;
 public abstract class AbstractEJBContainerTest extends AbstractTest {
 
     private static EJBContainer container;
-    protected static GameModelFacade gmFacade;
+    private static GameModelFacade gmFacade;
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -76,5 +77,10 @@ public abstract class AbstractEJBContainerTest extends AbstractTest {
     @Override
     protected VariableDescriptorFacade getVariableDescriptorFacade() {
         return lookup(VariableDescriptorFacade.class);
+    }
+
+    @Override
+    protected GameModelFacade getGameModelFacade() {
+        return gmFacade;
     }
 }

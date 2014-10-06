@@ -5,9 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app.pmg;
+package com.wegas.unit.pmg;
 
-import com.wegas.app.TestHelper;
+import com.wegas.utils.TestHelper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;

@@ -5,17 +5,18 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.app;
+package com.wegas.unit.tmp;
 
+import com.wegas.utils.TestHelper;
 import com.gargoylesoftware.htmlunit.ScriptException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.sourceforge.jwebunit.junit.JWebUnit;
 import static net.sourceforge.jwebunit.junit.JWebUnit.*;
 import org.glassfish.embeddable.*;
-import org.glassfish.embeddable.archive.ScatteredArchive;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,7 +29,6 @@ import org.junit.Test;
 public class IntegrationTest {
 
     private static GlassFish glassfish;
-    private static String appName;
 
     @BeforeClass
     public static void setUpClass() throws Exception {
@@ -36,8 +36,8 @@ public class IntegrationTest {
         //bootstrapProperties.setInstallRoot("./src/test/glassfish");           // Only for glassfish-embedded-staticshell
 
         GlassFishProperties glassfishProperties = new GlassFishProperties();
-        glassfishProperties.setPort("https-listener", 5353);
-        glassfishProperties.setPort("http-listener", 5454);
+        glassfishProperties.setPort("http-listener-1", 5454);
+        glassfishProperties.setPort("http-listener-2", 5353);
         //glassfishProperties.setInstanceRoot("./src/test/glassfish/domains/domain1");
         glassfishProperties.setConfigFileURI((new File("./src/test/glassfish/domains/domain1/config/domain.xml")).toURI().toString());
         //glassfishProperties.setConfigFileReadOnly(false);
@@ -47,25 +47,36 @@ public class IntegrationTest {
         Logger.getLogger("javax.enterprise.system").setLevel(Level.OFF);
         glassfish.start();
 
-        //File war = new File("./target/Wegas.war");
-        //appName = glassfish.getDeployer().deploy(war, "--name=Wegas", "--contextroot=Wegas", "--force=true");
-        // deployer.deploy(war);
-        ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR,
-                new File("./target/embed-war/"));
-        archive.addClassPath(new File("./target/classes/"));                    // target/classes directory contains complied servlets
-        archive.addClassPath(new File("../wegas-core/target/classes"));         // wegas-core dependency
-        //archive.addClassPath(new File("../wegas-core/target/wegas-core_1.0-SNAPSHOT.jar"));// wegas-core dependency
-        //archive.addMetadata(new File("./src/main/webapp/WEB-INF", "web.xml"));// resources/sun-web.xml is the WEB-INF/sun-web.xml
-        //archive.addMetadata(new File("./src/main/webapp/test", "web.xml"));   // resources/web.xml is the WEB-INF/web.xml
-        appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=Wegas");    // Deploy the scattered web archive.
+        File war = new File("./target/Wegas.war");
+        Deployer deployer = glassfish.getDeployer();
+        deployer.deploy(war);
 
+        /*
+         ScatteredArchive archive = new ScatteredArchive("Wegas", ScatteredArchive.Type.WAR,
+         new File("./target/embed-war/"));
+         archive.addClassPath(new File("./target/classes/"));                    // target/classes directory contains complied servlets
+         archive.addClassPath(new File("../wegas-core/target/classes"));         // wegas-core dependency
+         appName = glassfish.getDeployer().deploy(archive.toURI(), "--contextroot=Wegas");    // Deploy the scattered web archive.
+
+         */
         setBaseUrl("http://localhost:5454/Wegas");
     }
 
     @AfterClass
     public static void tearDownClass() throws Exception {
-        glassfish.getDeployer().undeploy(appName);
-        glassfish.dispose();
+        if (glassfish != null) {
+            Deployer deployer = glassfish.getDeployer();
+            if (deployer != null) {
+                deployer.getDeployedApplications().stream().forEach(n -> {
+                    try {
+                        deployer.undeploy(n);
+                    } catch (GlassFishException ex) {
+                        Logger.getLogger(IntegrationTest.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                });
+            }
+            glassfish.dispose();
+        }
     }
 
     @Test(expected = ScriptException.class)
