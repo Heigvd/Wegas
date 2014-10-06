@@ -223,10 +223,10 @@ public class StateMachineITest extends AbstractEJBTest {
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("Event.fired('testEvent')"));
-        trigger.setPostTriggerEvent(new Script("println('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
+        trigger.setPostTriggerEvent(new Script("print('Update testnumber');VariableDescriptorFacade.findByName(gameModel, 'testnumber').setValue(self, param);"));
         descriptorFacade.create(gameModel.getId(), trigger);
 
-        sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){println('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"));
+        sf.eval(player, new Script("JavaScript", "Event.on('testEvent', function(e){print('args: ' + e)});Event.fire('testEvent', " + ENDVAL + ")"));
         lookupBy(RequestFacade.class).commit();
         Assert.assertEquals(ENDVAL, ((NumberInstance) instanceFacade.find(number.getId(), player.getId())).getValue(), 0);
     }
