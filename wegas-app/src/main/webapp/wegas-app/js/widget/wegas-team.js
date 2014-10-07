@@ -528,6 +528,7 @@ YUI.add('wegas-team', function(Y) {
                     this.addAccount(this.searchAccount.getValue()[0], true);
                     this.searchAccount.clear();
                     this.searchAccount.addElement();
+                    Y.once("domready", this.updateAutoCompletes, this);
                 }
             }, ".inputEx-ListField .addExistingTeamMember", this);
         },
@@ -548,7 +549,7 @@ YUI.add('wegas-team', function(Y) {
                     if (!field.wmodified) {
                         field.yEl.ac.after("select", function(e) {
                             this.setValue(e.result.raw);
-                            this.disable(true);
+                            //this.disable(true);
                         }, this.searchAccount.subFields[i]);
                         field.wmodified = true;
                     }
