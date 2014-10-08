@@ -96,7 +96,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
+            <!--<scope>runtime</scope>-->
         </dependency>
         
         <!-- cdi 
@@ -125,7 +125,7 @@
         <!-- TEST -->
         <dependency>
             <groupId>org.glassfish.main.extras</groupId>
-            <artifactId>glassfish-embedded-all</artifactId>
+            <artifactId>glassfish-embedded-web</artifactId>
             <scope>provided</scope>
         </dependency>
 

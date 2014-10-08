@@ -156,7 +156,7 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
-                <scope>runtime</scope>
+                <!--<scope>runtime</scope>-->
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
@@ -199,12 +199,12 @@
                 <version>${liquibase.version}</version>
             </dependency>
 
-            <!-- Jackson
-        <dependency>
+            <!-- Jackson -->
+        <dependency> 
             <groupId>com.fasterxml.jackson.module</groupId>
             <artifactId>jackson-module-jaxb-annotations</artifactId>
             <version>2.3.2</version>
-        </dependency>-->
+        </dependency>
 
 
             <!-- Java Content Repository -->
@@ -366,7 +366,7 @@
             <!-- Embedded glassfish -->
             <dependency>
                 <groupId>org.glassfish.main.extras</groupId>
-                <artifactId>glassfish-embedded-all</artifactId>
+                <artifactId>glassfish-embedded-web</artifactId>
                 <version>${glassfish.version}</version>
                 <scope>provided</scope>
             </dependency>
