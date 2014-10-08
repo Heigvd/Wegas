@@ -306,7 +306,7 @@ public class ResourceFacade {
         try {
             scriptEvent.fire(player, "addTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
-
+            logger.error("EventListener error (\"addTaskPlannification\")", ex);
         }
         return ti;
     }
@@ -334,7 +334,7 @@ public class ResourceFacade {
         try {
             scriptEvent.fire(player, "removeTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
-
+            logger.error("EventListener error (\"removePlannification\")", ex);
         }
         return ti;
     }
