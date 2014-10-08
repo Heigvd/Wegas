@@ -133,6 +133,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             scriptEvent.fire(player, "replySelect", new EventObject(reply));
         } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
+            logger.error("EventListener error (\"replySelect\")", e);
         }
 
         return reply;
@@ -215,6 +216,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
             scriptEvent.fire(player, "replySelect", new EventObject(reply));
         } catch (ScriptException | NoSuchMethodException e) {
             // GOTCHA no eventManager is instantiated
+            logger.error("EventListener error (\"replySelect\") (TEST)", e);
         }
 
         return reply;
@@ -255,6 +257,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         try {
             scriptEvent.fire(player, "replyValidate", new EventObject(validateReply, choiceDescriptor.getInstance(player), validateReply.getQuestionInstance()));
         } catch (ScriptException | NoSuchMethodException e) {
+            logger.error("EventListener error (\"replyValidate\")", e);
             // GOTCHA no eventManager is instantiated
         }
     }
