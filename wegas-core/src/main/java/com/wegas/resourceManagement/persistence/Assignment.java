@@ -13,6 +13,7 @@ import javax.persistence.*;
 //import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -33,8 +34,6 @@ public class Assignment extends AbstractAssignement {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "taskdescriptor_id", nullable = false)
-    //@XmlTransient
-    @JsonIgnore
     private TaskDescriptor taskDescriptor;
     /**
      *
@@ -120,6 +119,7 @@ public class Assignment extends AbstractAssignement {
     /**
      * @param taskDescriptor
      */
+    @JsonProperty
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
     }
