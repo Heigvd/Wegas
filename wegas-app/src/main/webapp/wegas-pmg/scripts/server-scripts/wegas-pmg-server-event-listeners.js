@@ -35,16 +35,11 @@ Event.on("replyValidate", function(e) {
         msg += "<b>Result</b><br />";
     }
 
-    println("Replies: " + replies);
-    println("l(Replies): " + replies.size());
-
     msg += '<div class="replies">';
     for (i = replies.size() - 1; i >= 0; i--) {
-        println ("i: " + i);
         msg += '<div class="replyDiv">';
         msg += replies.get(i).getResult().getAnswer();
         msg += "</div>";
-        println("Reply: " + replies.get(i));
     }
     msg += "</div>";
 
