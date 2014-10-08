@@ -45,7 +45,7 @@ public class JacksonMapperProvider /*implements ContextResolver<ObjectMapper> */
      */
     public static ObjectMapper getMapper() {
         ObjectMapper mapper = new ObjectMapper();
-
+        
         /*AnnotationIntrospector primary = new JacksonAnnotationIntrospector();   // Create a new annotation inspector that combines jaxb and jackson
         AnnotationIntrospector secondary = new JaxbAnnotationIntrospector(mapper.getTypeFactory());
         AnnotationIntrospector pair = AnnotationIntrospector.pair(primary, secondary);

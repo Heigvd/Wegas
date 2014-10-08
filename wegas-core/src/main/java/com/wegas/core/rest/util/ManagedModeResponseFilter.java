@@ -26,7 +26,6 @@ import javax.ws.rs.ext.Provider;
 //import javax.xml.bind.annotation.XmlType;
 import org.apache.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import java.io.Serializable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +84,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     //@XmlRootElement
     //@XmlType(name = "")
     @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-    private static class ServerResponse implements Serializable, Cloneable {
+    private static class ServerResponse {
 
         private List<AbstractEntity> entities;
         private List<ClientEvent> events;
@@ -93,7 +92,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         public ServerResponse() {
             this.events = new ArrayList<>();
             this.entities = new ArrayList<>();
-        }
+}
 
         /**
          * @return the entities
