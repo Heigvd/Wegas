@@ -13,6 +13,7 @@ import javax.persistence.*;
 //import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -173,6 +174,7 @@ public class Activity extends AbstractAssignement {
     /**
      * @param taskDescriptor the taskDescriptor to set
      */
+    @JsonProperty
     public void setTaskDescriptor(TaskDescriptor taskDescriptor) {
         this.taskDescriptor = taskDescriptor;
     }
