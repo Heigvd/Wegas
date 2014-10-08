@@ -7,14 +7,19 @@
  */
 package com.wegas.core.rest.util;
 
+import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
+import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+//import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Feature;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.MessageBodyReader;
 import javax.ws.rs.ext.MessageBodyWriter;
-import com.fasterxml.jackson.jaxrs.base.JsonMappingExceptionMapper;
-import com.fasterxml.jackson.jaxrs.base.JsonParseExceptionMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.glassfish.jersey.CommonProperties;
+import org.glassfish.jersey.internal.InternalProperties;
+import org.glassfish.jersey.internal.util.PropertiesHelper;
+
 
 /**
  *
@@ -22,16 +27,31 @@ import org.glassfish.jersey.CommonProperties;
  */
 public class JacksonFeature implements Feature {
 
+    private final static String JSON_FEATURE = JacksonFeature.class.getSimpleName();
+
     @Override
     public boolean configure(final FeatureContext context) {
+        final Configuration config = context.getConfiguration();
 
-        String postfix = '.' + context.getConfiguration().getRuntimeType().name().toLowerCase();
+        final String jsonFeature = CommonProperties.getValue(config.getProperties(), config.getRuntimeType(),
+                InternalProperties.JSON_FEATURE, JSON_FEATURE, String.class);
+        // Other JSON providers registered.
+        if (!JSON_FEATURE.equalsIgnoreCase(jsonFeature)) {
+            return false;
+        }
 
-        context.property(CommonProperties.MOXY_JSON_FEATURE_DISABLE + postfix, true);
+        // Disable other JSON providers.
+        context.property(PropertiesHelper.getPropertyNameForRuntime(InternalProperties.JSON_FEATURE, config.getRuntimeType()),
+                JSON_FEATURE);
 
-        context.register(JsonParseExceptionMapper.class);
-        context.register(JsonMappingExceptionMapper.class);
-        context.register(JacksonJsonProvider.class, MessageBodyReader.class, MessageBodyWriter.class);
+        //JaxbAnnotationIntrospector fuckin;
+        // Register Jackson.
+        if (!config.isRegistered(JacksonJsonProvider.class)) {
+            // add the default Jackson exception mappers
+            context.register(JsonParseExceptionMapper.class);
+            context.register(JsonMappingExceptionMapper.class);
+            context.register(JacksonJsonProvider.class, MessageBodyReader.class, MessageBodyWriter.class);
+        }
 
         return true;
     }
