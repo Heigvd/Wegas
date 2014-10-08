@@ -15,7 +15,9 @@ import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.script.Invocable;
+import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import jdk.nashorn.internal.runtime.ScriptFunction;
 import org.apache.commons.collections.map.MultiValueMap;
 
 /**
@@ -128,11 +130,24 @@ public class ScriptEventFacade {
             /* init script engine, declared eventListeners are not yet in memory */
             scriptFacace.eval(player, new Script(""));
         }
+        ScriptEngine engine = requestManager.getCurrentEngine();
 
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
-                ((Invocable) requestManager.getCurrentEngine()).invokeMethod(((Object[]) cb)[0], "call", ((Object[]) cb)[1], params);
+                ScriptFunction fcn = (ScriptFunction) ((Object[])cb)[0];
+                Object scope = (((Object[])cb).length == 2 ? ((Object[])cb)[1] : new EmptyObject());
+                /*
+                 *       JAVA BUG
+                 *       http://bugs.java.com/view_bug.do?bug_id=8050977
+                 *       
+                 *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptFunction.toSource()
+                 */
+                ((Invocable) engine).invokeMethod(engine.eval(fcn.toSource()), "call", scope, params);
+                /*
+                 *  ONCE RESOLVED, REPLACE WITH: 
+                 *  ((Invocable) requestManager.getCurrentEngine()).invokeMethod(((Object[]) cb)[0], "call", ((Object[]) cb)[1], params);
+                 */
             }
         }
     }
@@ -189,7 +204,7 @@ public class ScriptEventFacade {
      * @throws NoSuchMethodException
      */
     public void on(String eventName, Object func) throws ScriptException, NoSuchMethodException {
-        this.registeredEvents.put(eventName, new Object[]{func, func});
+        this.registeredEvents.put(eventName, new Object[]{func});
     }
 
     /**
