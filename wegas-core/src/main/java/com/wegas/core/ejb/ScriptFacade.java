@@ -19,12 +19,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.*;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -192,14 +190,12 @@ public class ScriptFacade {
             try {
 
                 java.io.FileInputStream fis = new FileInputStream(f);
-                java.io.InputStreamReader isr = new InputStreamReader(fis, "UTF8");
+                java.io.InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 
                 evt.getEngine().eval(isr);
                 logger.info("File " + f + " successfully injected");
             } catch (FileNotFoundException ex) {
                 logger.warn("File " + f + " was not found");
-            } catch (UnsupportedEncodingException ex) {
-                throw new com.wegas.core.exception.ScriptException(f, ex.getMessage());
             } catch (ScriptException ex) {
                 throw new com.wegas.core.exception.ScriptException(f, ex.getLineNumber(), ex.getMessage());
             }
