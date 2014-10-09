@@ -27,6 +27,8 @@ import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -368,9 +370,26 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
         this.getScope().propagateDefaultInstance(force);
     }
 
+    /**
+     *
+     * @param criterias
+     * @return
+     */
     @Override
-    public Boolean contains(String criteria) {
-        return Helper.insensitiveContains(this.getName() + this.getTitle() + this.getComments(), criteria);
+    public Boolean containsAll(final List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getLabel(), criterias)
+                || Helper.insensitiveContainsAll(this.getTitle(), criterias)
+                || Helper.insensitiveContainsAll(this.getComments(), criterias);
+    }
+
+    @Override
+    public Boolean contains(final String criteria) {
+        return this.containsAll(new ArrayList<String>() {
+            {
+                add(criteria);
+            }
+        });
     }
 
     /**

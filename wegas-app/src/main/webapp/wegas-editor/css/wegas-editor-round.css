@@ -14,8 +14,6 @@
 .wegas-round .wegas-toolbar .yui3-button {
     background-image: none !important;
     background: #D9D0BF !important;
-    border: 1px solid #E8DBC9 !important;
-    /* border-radius: 5px !important; */
 }
 .wegas-round .wegas-toolbar .yui3-button:hover {
   background: #A79082 !important;
@@ -70,14 +68,9 @@
     width: 8px  !important;
 }
 
-.wegas-round .yui3-button-hover,
-.wegas-round .yui3-button:hover {
-  background-image: none;
-}
-
-
 /* EFFECT */
 .wegas-round .yui3-menubar button:hover{
     background-color:#F9F9F9;
     box-shadow: 0px 0px 1px #6D6D6D;
+    background: none;
 }

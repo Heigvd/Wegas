@@ -132,12 +132,12 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     }
 
     @Override
-    public Boolean contains(String criteria) {
-        if (super.contains(criteria)) {
+    public Boolean containsAll(List<String> criterias) {
+        if (super.containsAll(criterias)) {
             return true;
         }
         for (State s : this.getStates().values()) {
-            if (s.contains(criteria)) {
+            if (s.containsAll(criterias)) {
                 return true;
             }
         }

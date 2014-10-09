@@ -8,6 +8,8 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 import javax.xml.bind.annotation.XmlType;
@@ -28,11 +30,9 @@ public class DialogueDescriptor extends StateMachineDescriptor {
     private String content;
 
     @Override
-    public Boolean contains(String criteria) {
-        if (Helper.insensitiveContains(this.getContent(), criteria)) {
-            return true;
-        }
-        return super.contains(criteria);
+    public Boolean containsAll(final List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getContent(), criterias)
+                || super.containsAll(criterias);
     }
 
     /**

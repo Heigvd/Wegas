@@ -11,6 +11,8 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.*;
 //import javax.xml.bind.annotation.XmlRootElement;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
@@ -70,15 +72,20 @@ public class Transition extends AbstractEntity implements Searchable {
     private Script triggerCondition;
 
     @Override
-    public Boolean contains(String criteria) {
-        if (this.getPreStateImpact() != null && this.getPreStateImpact().contains(criteria)) {
-            return true;
-        }
-        if (this.getTriggerCondition() != null && this.getTriggerCondition().contains(criteria)) {
-            return true;
-        }
+    public Boolean contains(final String criteria) {
+        return this.containsAll(new ArrayList<String>() {
+            {
+                add(criteria);
+            }
+        });
+    }
 
-        return false;
+    @Override
+    public Boolean containsAll(final List<String> criterias) {
+        if (this.getPreStateImpact() != null && this.getPreStateImpact().containsAll(criterias)) {
+            return true;
+        }
+        return this.getTriggerCondition() != null && this.getTriggerCondition().containsAll(criterias);
     }
 
     @Override
