@@ -16,7 +16,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
         NAME = "name",
         Wegas = Y.Wegas,
         Plugin = Y.Plugin,
-        VariableTreeView;
+        VariableTreeView,
+        searchFn = function(val) {
+            var e = this.get("data.entity");
+            return !val.length || ((e.getEditorLabel) && (new RegExp(val, "i")).test(e.getEditorLabel()));
+        };
     /**
      * @name Y.Wegas.VariableTreeView
      * @extends Y.Wegas.EditorTreeView
@@ -62,10 +66,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     click: Y.bind(function() {
                         Y.Wegas.DataSource.abort(req);
                         req = Y.Wegas.Facade.Variable.cache.remoteSearch(searchVal, Y.bind(function(results) {
-                            this.doFilter(function(val) {
-                                return Y.Array.indexOf(val, this.get("data.entity").get("id")) > -1;
-                            }, results);
-                        }, this.treeView.filter));
+                            this.setAttrs({
+                                testFn: function(val) {
+                                    return val.indexOf(this.get("data.entity").get("id")) > -1;
+                                },
+                                searchVal: results.join("--")
+                            });
+                        }, this.treeView.filter), true);
                     }, this)
                 }
             });
@@ -76,19 +83,18 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 } else {
                     this.treeView.filter.set("searchVal", searchRE);
                 }
+                this.treeView.filter.set("testFn", searchFn);
             }, this);
             this.treeView.plug(Plugin.TreeViewFilter, {
-                testFn: function(val) {
-                    var e = this.get("data.entity");
-                    return !val.length || ((e.getEditorLabel) && (new RegExp(val, "i")).test(e.getEditorLabel()));
-                    /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
+                testFn: searchFn
+                /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
                      e.get("name"),
                      e.get("title"),
                      e.get("label"),
                      e.get("comments")
                      ].join("|"));*/
-                    //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
-                }
+                //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
+
             });
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
@@ -251,14 +257,16 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     switch (el.get("scope").get(CLASS)) {
                         case 'PlayerScope':
                             player = Wegas.Facade.Game.cache.getPlayerById(i);
-                            if (!player)
+                            if (!player) {
                                 continue;
+                            }
                             label = (player) ? player.get(NAME) : "undefined";
                             break;
                         case 'TeamScope':
                             team = Wegas.Facade.Game.cache.getTeamById(i);
-                            if (!team)
+                            if (!team) {
                                 continue;
+                            }
                             label = (team) ? team.get(NAME) : "undefined";
                             break;
                         case 'GameScope':
@@ -276,7 +284,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genVariableInstanceElements: function(label, el) {
-            var selected = (this.currentSelection == el.get(ID)) ? 2 : 0;
+            var selected = (+this.currentSelection === +el.get(ID)) ? 2 : 0,
+                k, children, collapsed;
             switch (el.get(CLASS)) {
                 case 'StringInstance':
                 case 'TextInstance':
@@ -298,8 +307,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         }
                     };
                 case 'InboxInstance':
-                    var k, children = [],
-                        collapsed = !this.isNodeExpanded(el);
+                    children = [];
+                    collapsed = !this.isNodeExpanded(el);
                     label += "(" + el.get("messages").length + ")";
                     for (k = 0; k < el.get("messages").length; k += 1) {
                         children.push({
