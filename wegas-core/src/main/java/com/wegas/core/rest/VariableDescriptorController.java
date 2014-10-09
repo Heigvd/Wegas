@@ -14,7 +14,9 @@ import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -210,12 +212,29 @@ public class VariableDescriptorController {
     @POST
     @Path("contains")
     @Consumes(MediaType.TEXT_PLAIN)
-    public List<Long> contains(@PathParam("gameModelId") Long gameModelId, String criteria) {
+    public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         List<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
         List<Long> matches = new ArrayList<>();
         for (VariableDescriptor d : vars) {
             if (d.contains(criteria)) {
+                matches.add(d.getId());
+            }
+        }
+        return matches;
+    }
+
+    @POST
+    @Path("containsAll")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public List<Long> idsContainsAll(@PathParam("gameModelId") Long gameModelId, String criteria) {
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        List<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
+        List<Long> matches = new ArrayList<>();
+        List<String> criterias = new ArrayList<>(Arrays.asList(criteria.trim().split("[ ,]+")));
+        criterias.remove("");
+        for (VariableDescriptor d : vars) {
+            if (d.containsAll(criterias)) {
                 matches.add(d.getId());
             }
         }

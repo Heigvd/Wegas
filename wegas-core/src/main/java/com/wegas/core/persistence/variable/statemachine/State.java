@@ -74,15 +74,24 @@ public class State extends AbstractEntity implements Searchable {
     }
 
     @Override
-    public Boolean contains(String criteria) {
-        if (Helper.insensitiveContains(this.getLabel(), criteria)) {
+    public Boolean contains(final String criteria) {
+               return this.containsAll(new ArrayList<String>() {
+            {
+                add(criteria);
+            }
+        });
+    }
+
+    @Override
+    public Boolean containsAll(final List<String> criterias) {
+        if (Helper.insensitiveContainsAll(this.getLabel(), criterias)) {
             return true;
         }
-        if (this.getOnEnterEvent() != null && this.getOnEnterEvent().contains(criteria)) {
+        if (this.getOnEnterEvent() != null && this.getOnEnterEvent().containsAll(criterias)) {
             return true;
         }
         for (Transition t : this.getTransitions()) {
-            if (t.contains(criteria)) {
+            if (t.containsAll(criterias)) {
                 return true;
             }
         }
