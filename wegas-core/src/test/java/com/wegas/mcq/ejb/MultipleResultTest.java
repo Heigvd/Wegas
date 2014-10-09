@@ -10,7 +10,6 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.WegasException;
 import com.wegas.mcq.persistence.*;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;

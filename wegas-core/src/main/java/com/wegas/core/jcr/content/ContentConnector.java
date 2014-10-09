@@ -7,7 +7,6 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.wegas.core.jcr.JackrabbitConnector;
 import com.wegas.core.jcr.SessionHolder;
 import java.io.*;
 import java.nio.charset.StandardCharsets;

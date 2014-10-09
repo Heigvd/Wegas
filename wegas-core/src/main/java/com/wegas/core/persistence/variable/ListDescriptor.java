@@ -64,6 +64,19 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         super(name, defaultInstance);
     }
 
+    /*  @Override
+     public Boolean contains(String criteria) {
+     if (super.contains(criteria)) {
+     return true;
+     } else {
+     for (VariableDescriptor d : this.getItems()) {
+     if (d.contains(criteria)) {
+     return true;
+     }
+     }
+     }
+     return false;
+     }*/
     /**
      *
      * @param gameModel

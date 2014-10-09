@@ -7,6 +7,8 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.wegas.core.Helper;
+import com.wegas.core.persistence.variable.Searchable;
 import java.io.Serializable;
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
@@ -21,19 +23,19 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Embeddable
 @XmlType(name = "")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class Script implements Serializable {
+public class Script implements Serializable, Searchable {
 
     private static final long serialVersionUID = 1L;
     /**
      *
      */
-    @JsonIgnore
-    private String lang = "JavaScript";
+    @Lob
+    private String content = "";
     /**
      *
      */
-    @Lob
-    private String content = "";
+    @JsonIgnore
+    private String lang = "JavaScript";
 
     /**
      *
@@ -57,6 +59,11 @@ public class Script implements Serializable {
     public Script(String language, String content) {
         this.lang = language;
         this.content = content;
+    }
+
+    @Override
+    public Boolean contains(String criteria) {
+        return Helper.insensitiveContains(this.getContent(), criteria);
     }
 
     /**

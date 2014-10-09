@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.game.GameModel;
@@ -29,7 +29,7 @@ import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-//////import javax.xml.bind.annotation.XmlTransient;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.eclipse.persistence.annotations.JoinFetch;
@@ -47,7 +47,7 @@ import org.eclipse.persistence.annotations.JoinFetch;
 // @UniqueConstraint(columnNames = {"variabledescriptor_id", "name"})           // Name has to be unique within a list
 // @UniqueConstraint(columnNames = {"rootgamemodel_id", "name"})                // Names have to be unique at the base of a game model (root elements)
 })
-@NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT variableDescriptor FROM VariableDescriptor variableDescriptor LEFT JOIN variableDescriptor.gameModel AS gm WHERE gm.id = :gameModelId")
+@NamedQuery(name = "findVariableDescriptorsByRootGameModelId", query = "SELECT DISTINCT vd FROM VariableDescriptor vd LEFT JOIN vd.gameModel AS gm WHERE gm.id = :gameModelId")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "ListDescriptor", value = ListDescriptor.class),
     @JsonSubTypes.Type(name = "StringDescriptor", value = StringDescriptor.class),
@@ -62,8 +62,8 @@ import org.eclipse.persistence.annotations.JoinFetch;
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)})
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity {
-    
+abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable {
+
     private static final long serialVersionUID = 1L;
     /**
      *
@@ -366,6 +366,11 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     public void propagateDefaultInstance(boolean force) {
         this.getScope().propagateDefaultInstance(force);
+    }
+
+    @Override
+    public Boolean contains(String criteria) {
+        return Helper.insensitiveContains(this.getName() + this.getTitle() + this.getComments(), criteria);
     }
 
     /**

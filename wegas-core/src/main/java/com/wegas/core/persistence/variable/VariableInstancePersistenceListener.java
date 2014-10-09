@@ -4,12 +4,6 @@
  */
 package com.wegas.core.persistence.variable;
 
-import com.wegas.core.Helper;
-import com.wegas.core.ejb.VariableInstanceFacade;
-import javax.naming.NamingException;
-import javax.persistence.PostPersist;
-import javax.persistence.PostRemove;
-import javax.persistence.PostUpdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -18,7 +18,6 @@ import com.wegas.core.persistence.variable.ListInstance;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.primitive.*;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
-import com.wegas.core.persistence.variable.scope.TeamScope;
 import java.io.IOException;
 import java.util.List;
 import javax.naming.NamingException;

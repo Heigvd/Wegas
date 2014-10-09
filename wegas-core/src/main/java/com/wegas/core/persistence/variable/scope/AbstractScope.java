@@ -13,7 +13,6 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
-import java.io.Serializable;
 import java.util.Map;
 import javax.persistence.*;
 ////import javax.xml.bind.annotation.XmlTransient;
