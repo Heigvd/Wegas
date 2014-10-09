@@ -26,6 +26,8 @@ import javax.ws.rs.ext.Provider;
 //import javax.xml.bind.annotation.XmlType;
 import org.apache.http.HttpStatus;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import java.util.Collection;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,6 +59,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             if (response.getEntity() instanceof List) {
                 serverResponse.setEntities((List) response.getEntity());
 
+            } else if (response.getEntity() instanceof ScriptObjectMirror 
+                    && ((ScriptObjectMirror)response.getEntity()).isArray()) {
+                serverResponse.setEntities(new ArrayList(((ScriptObjectMirror) response.getEntity()).values()));
             } else if (response.getEntity() != null) {
                 ArrayList entities = new ArrayList();
                 entities.add(response.getEntity());
