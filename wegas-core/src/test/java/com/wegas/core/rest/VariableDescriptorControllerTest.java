@@ -38,14 +38,14 @@ public class VariableDescriptorControllerTest extends AbstractEJBTest {
         number.setName("testnumber");
         number.setDefaultInstance(new NumberInstance(1));
         vdf.create(gameModel.getId(), number);
-        Assert.assertTrue(controller.contains(gameModel.getId(), "testnum").contains(number.getId()));
+        Assert.assertTrue(controller.idsContains(gameModel.getId(), "testnum").contains(number.getId()));
         
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setDefaultInstance(new TriggerInstance());
         trigger.setTriggerEvent(new Script("true"));
         trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
         vdf.create(gameModel.getId(), trigger);
-        Assert.assertTrue(controller.contains(gameModel.getId(), "imascriptcontent").contains(trigger.getId()));
+        Assert.assertTrue(controller.idsContains(gameModel.getId(), "imascriptcontent").contains(trigger.getId()));
     }
 
 }
