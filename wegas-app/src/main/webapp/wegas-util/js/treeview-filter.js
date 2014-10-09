@@ -60,7 +60,12 @@ YUI.add("treeview-filter", function(Y) {
                     return;
                 }
                 this.after(["searchValChange", "testFnChange"], function(e) {
-                    this.doFilter(this.get("testFn"), this.get("searchVal"));
+                    if (this.timer && this.timer.cancel) {
+                        this.timer.cancel();
+                    }
+                    this.timer = Y.later(20, this, function() {
+                        this.doFilter(this.get("testFn"), this.get("searchVal"));
+                    });
                 });
 
                 this.afterHostEvent(["*:addChild", "render"], function(e) {

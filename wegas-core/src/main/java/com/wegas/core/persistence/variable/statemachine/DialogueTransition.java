@@ -9,6 +9,7 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -24,11 +25,11 @@ public class DialogueTransition extends Transition {
     private String actionText;
 
     @Override
-    public Boolean contains(String criteria) {
-        if (Helper.insensitiveContains(this.getActionText(), criteria)) {
+    public Boolean containsAll(List<String> criterias) {
+        if (Helper.insensitiveContainsAll(this.getActionText(), criterias)) {
             return true;
         }
-        return super.contains(criteria);
+        return super.containsAll(criterias);
     }
 
     /**

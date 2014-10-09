@@ -10,6 +10,8 @@ package com.wegas.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -416,10 +418,19 @@ public class Helper {
      * @return match
      */
     public static Boolean insensitiveContains(String text, String criteria) {
-        if(text == null){
+        if (text == null) {
             return false;
         }
         return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(text).find();
+    }
+
+    public static Boolean insensitiveContainsAll(String text, List<String> criterias) {
+        for (String c : criterias) {
+            if (!insensitiveContains(text, c)) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }

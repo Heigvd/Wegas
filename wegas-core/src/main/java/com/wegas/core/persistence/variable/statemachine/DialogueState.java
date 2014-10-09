@@ -9,6 +9,8 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
 
@@ -27,11 +29,11 @@ public class DialogueState extends State {
     private String text;
 
     @Override
-    public Boolean contains(String criteria) {
-        if (Helper.insensitiveContains(this.getText(), criteria)) {
+    public Boolean containsAll(final List<String> criterias) {
+        if (Helper.insensitiveContainsAll(this.getText(), criterias)) {
             return true;
         }
-        return super.contains(criteria);
+        return super.containsAll(criterias);
     }
 
     /**

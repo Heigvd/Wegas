@@ -47,5 +47,23 @@ public class VariableDescriptorControllerTest extends AbstractEJBTest {
         vdf.create(gameModel.getId(), trigger);
         Assert.assertTrue(controller.idsContains(gameModel.getId(), "imascriptcontent").contains(trigger.getId()));
     }
+    @Test
+    public void testContainsAll() throws NamingException {
+        System.out.println("containsAll");
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        final VariableDescriptorController controller = lookupBy(VariableDescriptorController.class);
+        NumberDescriptor number = new NumberDescriptor();
+        number.setName("testnumber");
+        number.setDefaultInstance(new NumberInstance(1));
+        vdf.create(gameModel.getId(), number);
+        Assert.assertTrue(controller.idsContainsAll(gameModel.getId(), "testnum").contains(number.getId()));
+        
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setTriggerEvent(new Script("true"));
+        trigger.setPostTriggerEvent(new Script("var imascriptcontent"));
+        vdf.create(gameModel.getId(), trigger);
+        Assert.assertTrue(controller.idsContainsAll(gameModel.getId(), "imascriptcontent").contains(trigger.getId()));
+    }
 
 }

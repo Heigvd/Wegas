@@ -741,9 +741,9 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             });
         },
-        remoteSearch: function(query, callback) {
+        remoteSearch: function(query, callback, containsAll) {
             return this.sendRequest({
-                request: "/contains",
+                request: containsAll ? "/containsAll" : "/contains",
                 cfg: {
                     method: POST,
                     data: query,
