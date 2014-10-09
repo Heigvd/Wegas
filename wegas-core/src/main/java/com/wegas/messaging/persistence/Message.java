@@ -13,7 +13,6 @@ import com.wegas.core.rest.util.Views;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import javax.naming.NamingException;
 import javax.persistence.*;
 //import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;

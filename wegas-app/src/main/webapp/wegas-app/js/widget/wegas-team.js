@@ -398,8 +398,10 @@ YUI.add('wegas-team', function(Y) {
             //+ "<th>Password</th>"
             + "</tr>"
             + "<tbody class=\"uneditable-players\"></tbody></table>"
-            + "<div class='wegas-team-create-account'><span class='subtitle'>Add new member</span></div>"
-            + "<div class='wegas-team-existing-account'><span class='subtitle'>Add existing member</span></div>"
+            + "<div><span class='title'><br />Add member</span>"
+            + "<div class='wegas-team-create-account'><span class='subtitle'>new wegas account</span></div>"
+            + "<div class='wegas-team-existing-account'><span class='subtitle'>existing wegas account</span></div>"
+            + "</div>"
             + "</div>",
         renderUI: function() {
             var cb = this.get("contentBox"),
@@ -428,8 +430,8 @@ YUI.add('wegas-team', function(Y) {
                             return !Y.Array.find(this.accounts, function(account) {
                                 return account.id === r.id;
                             }) /*&& !Y.Array.find(this.acou.subFields, function(user) {
-                                return user.getValue().email === r.email;
-                            })*/;
+                             return user.getValue().email === r.email;
+                             })*/;
                         }, this);
                     }, this)
                 };
@@ -451,6 +453,7 @@ YUI.add('wegas-team', function(Y) {
                             type: "hidden"
                         }, {
                             name: "firstname",
+                            typeInvite: "firstname",
                             type: "string",
                             required: true
                         }, {
@@ -466,23 +469,14 @@ YUI.add('wegas-team', function(Y) {
                         }, {
                             name: "password",
                             type: "password",
-                            required: true,
-                            //size: 13
+                            required: true
+                                //size: 13
                         }]
                 }
             });
             cb.all("input[type=\"password\"]").setAttribute("placeholder", "required");// Put placeholder attribute on all password fields
 
-            this.newAccountFields.addElement();
             cb.one(".wegas-team-create-account .inputEx-ListField").append('<div class="addTeamMember"><span class="wegas-icon wegas-icon-add"></span>Add member</div>');
-
-            cb.delegate("click", function() {
-                if (this.newAccountFields.getValue().length === 1 && this.newAccountFields.validate()) {
-                    this.addAccount(this.newAccountFields.getValue()[0], true);
-                    this.newAccountFields.clear();
-                    this.newAccountFields.addElement();
-                }
-            }, ".inputEx-ListField .addTeamMember", this);
 
             // ListFiled used for autocompletion
             // It's mainly the same as previously but most of field are hidden
@@ -503,11 +497,13 @@ YUI.add('wegas-team', function(Y) {
                             type: "autocomplete",
                             autoComp: autoCompleteCfg,
                             required: true,
-                            allowFreetext: true,
-                            //size: 13
+                            allowFreetext: true
                         }, {
                             name: "lastname",
-                            type: "hidden",
+                            type: "string",
+                            typeInvite: "",
+                            //required: true,
+                            readonly: true
                         }, {
                             name: "email",
                             type: "hidden"
@@ -515,18 +511,30 @@ YUI.add('wegas-team', function(Y) {
                 }
             });
 
-
-            this.searchAccount.addElement();
             cb.one(".wegas-team-existing-account .inputEx-ListField").append('<div class="addExistingTeamMember"><span class="wegas-icon wegas-icon-add"></span>Add member</div>');
+        },
+        bindUI: function() {
+            var cb = this.get("contentBox");
+            cb.delegate("click", function() {
+                if (this.newAccountFields.getValue().length === 1 && this.newAccountFields.validate()) {
+                    this.addAccount(this.newAccountFields.getValue()[0], true);
+                    this.newAccountFields.clear();
+                    this.newAccountFields.addElement();
+                }
+            }, ".inputEx-ListField .addTeamMember", this);
 
             cb.delegate("click", function() {
                 if (this.searchAccount.getValue().length === 1 && this.searchAccount.validate()) {
                     this.addAccount(this.searchAccount.getValue()[0], true);
                     this.searchAccount.clear();
                     this.searchAccount.addElement();
+                    Y.once("domready", this.updateAutoCompletes, this);
                 }
             }, ".inputEx-ListField .addExistingTeamMember", this);
-
+        },
+        syncUI: function() {
+            this.newAccountFields.addElement();
+            this.searchAccount.addElement();
             Y.once("domready", this.updateAutoCompletes, this); // register autocomplete stuff...
         },
         destructor: function() {
@@ -541,7 +549,7 @@ YUI.add('wegas-team', function(Y) {
                     if (!field.wmodified) {
                         field.yEl.ac.after("select", function(e) {
                             this.setValue(e.result.raw);
-                            this.disable(true);
+                            //this.disable(true);
                         }, this.searchAccount.subFields[i]);
                         field.wmodified = true;
                     }

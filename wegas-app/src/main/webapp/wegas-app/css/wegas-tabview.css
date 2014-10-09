@@ -11,9 +11,9 @@
 
 /*  TabView Styles */
 .yui3-skin-sam .yui3-tabview-panel {
-    border: none;
+    border: none !important;
     background: white;
-    padding: 0px;
+    padding: 0px !important;
 }
 .yui3-skin-sam  .yui3-tab-disabled {
     opacity: 0.5;

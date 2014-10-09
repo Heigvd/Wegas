@@ -13,7 +13,9 @@ import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -203,5 +205,20 @@ public class VariableDescriptorController {
 
         gameModelFacade.reset(gameModelId);
         return Response.ok().build();
+    }
+
+    @POST
+    @Path("contains")
+    @Consumes(MediaType.TEXT_PLAIN)
+    public List<Long> contains(@PathParam("gameModelId") Long gameModelId, String criteria) {
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        List<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
+        List<Long> matches = new ArrayList<>();
+        for (VariableDescriptor d : vars) {
+            if (d.contains(criteria)) {
+                matches.add(d.getId());
+            }
+        }
+        return matches;
     }
 }

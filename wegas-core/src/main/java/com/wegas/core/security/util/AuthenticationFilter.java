@@ -8,13 +8,9 @@
 package com.wegas.core.security.util;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.rest.UserController;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.naming.NamingException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;

@@ -64,6 +64,11 @@
     font-size: 1.1em;
 }
 
+.wegas-editteam .teamselection .subtitle {
+    padding-left: 20px;
+    color: #474747;
+}
+
 .teamselection .wegas-team-create-account,
 .teamselection .wegas-team-existing-account {
     margin: 10px 0;
