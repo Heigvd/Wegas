@@ -7,7 +7,7 @@
     <ui:composition template="page-default.xhtml">
 
         <ui:define name="page">
-            <h:body class="yui3-skin-sam #{cookie['asciimode'].value} wegas-stdmode #{requestController.currentRoles} ">
+            <h:body class="yui3-skin-sam #{cookie['customstyle'].value} wegas-stdmode #{requestController.currentRoles} ">
 
                 <!-- Loading -->
                 <div class='wegas-loading-app'><div><div class='wegas-loading-app-current'></div></div></div>
@@ -17,10 +17,19 @@
                     <ui:include src="template/rollbar.xhtml" />
                 </ui:fragment>-->
 
-                <!-- Ascii mode -->
-                <ui:fragment rendered="#{cookie['asciimode'].value != null}">
+                <!-- Ascii Theme -->
+                <ui:fragment rendered="#{cookie['customstyle'].value == 'wegas-ascii'}">
                     <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-ascii.css"></link>
                 </ui:fragment>
+                <!--round Theme -->
+                <ui:fragment rendered="#{cookie['customstyle'].value == 'wegas-round'}">
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-round.css"></link>
+                </ui:fragment>
+                <!--Dark Theme mode -->
+                <ui:fragment rendered="#{cookie['customstyle'].value == 'wegas-dark'}">
+                    <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-dark.css"></link>
+                </ui:fragment>
+
 
                 <!-- YUI3 -->
                 <!-- CDN -->

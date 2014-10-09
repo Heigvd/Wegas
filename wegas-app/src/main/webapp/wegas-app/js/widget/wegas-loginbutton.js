@@ -202,21 +202,66 @@ YUI.add("wegas-loginbutton", function(Y) {
                             }
                         }]
                 }, {
-                    label: "Ascii mode",
-                    on: {
-                        click: function() {
-                            Y.one("body").toggleClass("wegas-ascii");
-                            Y.use("cookie", "wegas-editor-asciicss", function(Y) {
-                                if (Y.one("body.wegas-ascii")) {
-                                    var audio = new Audio(Wegas.app.get("base") + "wegas-app/images/wegas-mexican.mp3");
-                                    audio.play();
-                                    Y.Cookie.set("asciimode", "wegas-ascii");
-                                } else {
-                                    Y.Cookie.remove("asciimode");
-                                }
-                            });
-                        }
-                    }
+                    type: "Button",
+                    label: "Themes",
+                    plugins: [{
+                            fn: "WidgetMenu",
+                            cfg: {
+                                event: "mouseenter",
+                                menuCfg: {
+                                    points: ["tr", "tl"]
+                                },
+                                children: [{
+                                        label: "Default",
+                                        on: {
+                                            click: function() {
+                                                Y.one("body").removeClass("wegas-ascii");
+                                                Y.one("body").removeClass("wegas-round");
+                                                Y.one("body").removeClass("wegas-dark");
+                                                Y.Cookie.remove("customstyle");
+                                            }
+                                        }
+                                    }, {
+                                        label: "Roundish",
+                                        on: {
+                                            click: function() {
+                                                Y.one("body").addClass("wegas-round");
+                                                Y.one("body").removeClass("wegas-ascii");
+                                                Y.one("body").removeClass("wegas-dark");
+                                                Y.use("cookie", "wegas-editor-roundcss", function(Y) {
+                                                    Y.Cookie.set("customstyle", "wegas-round");
+                                                });
+                                            }
+                                        }
+                                    }, {
+                                        label: "Grisaille",
+                                        on: {
+                                            click: function() {
+                                                Y.one("body").addClass("wegas-dark");
+                                                Y.one("body").removeClass("wegas-ascii");
+                                                Y.one("body").removeClass("wegas-round");
+                                                Y.use("cookie", "wegas-editor-darkcss", function(Y) {
+                                                    Y.Cookie.set("customstyle", "wegas-dark");
+                                                });
+                                            }
+                                        }
+                                    }, {
+                                        label: "Deprecated Terminal",
+                                        on: {
+                                            click: function() {
+                                                Y.one("body").addClass("wegas-ascii");
+                                                Y.one("body").removeClass("wegas-round");
+                                                Y.one("body").removeClass("wegas-dark");
+                                                Y.use("cookie", "wegas-editor-asciicss", function(Y) {
+                                                    Y.Cookie.set("customstyle", "wegas-ascii");
+                                                });
+                                            }
+                                        }
+
+                                    }
+                                ]
+                            }
+                        }]
                 }, {
                     type: "Button",
                     label: "Logout",
