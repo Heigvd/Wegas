@@ -13,7 +13,8 @@
 YUI.add('wegas-helper', function(Y) {
     "use strict";
 
-    var Wegas = Y.namespace("Wegas"), Helper;
+    var Wegas = Y.namespace("Wegas"),
+        Helper;
 
     /**
      * @name Y.Wegas.Helper
@@ -96,6 +97,7 @@ YUI.add('wegas-helper', function(Y) {
         formatDate: function(timestamp, fmt) {
             var date = new Date(timestamp),
                 months = ["Jan", "Feb", "Mar", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
             function pad(value) {
                 return (value.toString().length < 2) ? '0' + value : value;
             }
@@ -142,16 +144,15 @@ YUI.add('wegas-helper', function(Y) {
                 return "undefined";
             }
 
-            if (diffN < oneMinute) {                                           // last minute
+            if (diffN < oneMinute) { // last minute
                 return Math.round(diffN / 1000) + " seconds ago";
-            } else if (diffN < oneHour) {                                      // last hour
-                return  Math.round(diffN / oneMinute) + " minutes ago";
-            } else if (diffN < oneDay
-                && now.getDay() === date.getDay()) {                            // Today
+            } else if (diffN < oneHour) { // last hour
+                return Math.round(diffN / oneMinute) + " minutes ago";
+            } else if (diffN < oneDay && now.getDay() === date.getDay()) { // Today
                 return (prefix ? "at " : "") + Helper.formatDate(timestamp, "%H:%i");
-            } else if (date.getYear() === now.getYear()) {                      // This year
+            } else if (date.getYear() === now.getYear()) { // This year
                 return (prefix ? "the " : "") + Helper.formatDate(timestamp, "%d %M");
-            } else {                                                             // Older
+            } else { // Older
                 return (prefix ? "the " : "") + Helper.formatDate(timestamp, "%d %M %Y");
             }
         },
@@ -217,17 +218,29 @@ YUI.add('wegas-helper', function(Y) {
             // Return true if any of its four corners are visible
             return ((eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has);
         },
+        /**
+         *
+         */
         scrollIntoViewIfNot: function(node, alignTop) {
             if (!Helper.isElementVisible(node)) {
                 node.scrollIntoView(alignTop);
             }
+        },
+        /**
+         * Quote a given string to be passed in a regular expression
+         *
+         * @param str String the string to quote
+         * @returns String the quoted string
+         */
+        RegExpQuote: function(str) {
+            return ("" + str).replace(/([.*?+^$[\]\\(){}|-])/g, "\\$1");
         }
     };
     Wegas.Helper = Helper;
     Wegas.superbind = Helper.superbind;
 
     /**
-     * 
+     *
      */
     Wegas.Timer = Y.Base.create("wegas-timer", Y.Base, [], {
         start: function() {
@@ -279,15 +292,15 @@ YUI.add('wegas-helper', function(Y) {
      */
     Helper.Queue = (function() {
         /**
-         * 
+         *
          * @constructor Q
          * @returns {_L250.Q}
          */
         var Q = function() {
-            this._f = []; // function queue
-            this._a = []; // arguments queue
-            this._lock = false;
-        },
+                this._f = []; // function queue
+                this._a = []; // arguments queue
+                this._lock = false;
+            },
             doNext = function(queue) {
                 var cb;
                 if (queue._f.length && !queue._lock) {
@@ -333,6 +346,6 @@ YUI.add('wegas-helper', function(Y) {
                 return this;
             }
         };
-        return  Q;
+        return Q;
     }());
 });

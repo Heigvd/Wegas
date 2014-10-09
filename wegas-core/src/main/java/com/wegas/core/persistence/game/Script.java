@@ -10,6 +10,8 @@ package com.wegas.core.persistence.game;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.variable.Searchable;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
 import javax.xml.bind.annotation.XmlType;
@@ -62,8 +64,17 @@ public class Script implements Serializable, Searchable {
     }
 
     @Override
-    public Boolean contains(String criteria) {
-        return Helper.insensitiveContains(this.getContent(), criteria);
+    public Boolean contains(final String criteria) {
+        return this.containsAll(new ArrayList<String>() {
+            {
+                add(criteria);
+            }
+        });
+    }
+
+    @Override
+    public Boolean containsAll(final List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getContent(), criterias);
     }
 
     /**
