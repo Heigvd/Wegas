@@ -210,7 +210,7 @@ public class VariableDescriptorController {
     @POST
     @Path("contains")
     @Consumes(MediaType.TEXT_PLAIN)
-    public List<Long> contains(@PathParam("gameModelId") Long gameModelId, String criteria) {
+    public List<Long> idsContains(@PathParam("gameModelId") Long gameModelId, String criteria) {
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
         List<VariableDescriptor> vars = variableDescriptorFacade.findAll(gameModelId);
         List<Long> matches = new ArrayList<>();
