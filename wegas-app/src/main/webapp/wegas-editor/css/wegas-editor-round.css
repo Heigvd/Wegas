@@ -1,0 +1,83 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+*/
+
+/* 
+ * wegas-util/css/wegas-widgettoolbar.css   
+  *****************************************/
+
+/*  line 62 */
+.wegas-round .wegas-toolbar .yui3-button {
+    background-image: none !important;
+    background: #D9D0BF !important;
+    border: 1px solid #E8DBC9 !important;
+    /* border-radius: 5px !important; */
+}
+.wegas-round .wegas-toolbar .yui3-button:hover {
+  background: #A79082 !important;
+}
+
+.wegas-round .wegas-toolbar .yui3-button-selected,
+.wegas-round .wegas-toolbar .yui3-button-selected:hover{
+  background: #FAF5EE !important;
+}
+
+/* wegas-tabview.css 
+  ***************************"*/
+
+/* brand new selector */
+.wegas-round.yui3-skin-sam .yui3-tab-label:hover {
+    background : #A79082  !important;
+}
+
+/* line 39 */
+.wegas-round.yui3-skin-sam .yui3-tab-label {
+    background: #D9D0BF  !important;
+}
+.wegas-round.yui3-skin-sam .wegas-layout-right .yui3-tab-label {
+    background: none !important;
+}
+
+/* line 49-50 */
+.wegas-round.yui3-skin-sam .wegas-tabview-resizetabs > ul .yui3-tab-label {
+    border-top-right-radius: 5px  !important;
+    border-top-left-radius: 5px  !important;
+    /* border: 1px solid #594239 !important; */
+}
+
+.wegas-round.yui3-skin-sam .yui3-tab-selected .yui3-tab-label,
+.wegas-round.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:focus, 
+.wegas-round.yui3-skin-sam .yui3-tab-selected .yui3-tab-label:hover {
+  background : white !important;
+}
+
+/* wegas-layout-resizable.css
+  ****************************/
+
+/* line 13-16 */
+.wegas-round.yui3-skin-sam .wegas-layout-resizable {
+    /* bluish green */
+    background-color: #026379 !important;
+}
+
+/* line 54 */
+.wegas-round.yui3-skin-sam .wegas-layout-resizable .yui3-resize-handle {
+    background: #026379  !important;
+    width: 8px  !important;
+}
+
+.wegas-round .yui3-button-hover,
+.wegas-round .yui3-button:hover {
+  background-image: none;
+}
+
+
+/* EFFECT */
+.wegas-round .yui3-menubar button:hover{
+    background-color:#F9F9F9;
+    box-shadow: 0px 0px 1px #6D6D6D;
+}

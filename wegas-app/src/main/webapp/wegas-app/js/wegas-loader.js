@@ -517,6 +517,12 @@ YUI().use(function(Y) {
             "wegas-editorcss": {
                 type: CSS
             },
+            "wegas-editor-roundcss": {
+                type: CSS
+            },
+            "wegas-editor-darkcss": {
+                type: CSS
+            },
             "wegas-editor-asciicss": {
                 type: CSS
             },
