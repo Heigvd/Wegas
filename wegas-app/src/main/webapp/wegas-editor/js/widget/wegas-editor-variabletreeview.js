@@ -65,12 +65,15 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 on: {
                     click: Y.bind(function() {
                         Y.Wegas.DataSource.abort(req);
+                        if (!searchVal) {
+                            return;
+                        }
                         req = Y.Wegas.Facade.Variable.cache.remoteSearch(searchVal, Y.bind(function(results) {
                             this.setAttrs({
                                 testFn: function(val) {
                                     return val.indexOf(this.get("data.entity").get("id")) > -1;
                                 },
-                                searchVal: results.join("--")
+                                searchVal: "--" + results.join("--")
                             });
                         }, this.treeView.filter), true);
                     }, this)
@@ -88,11 +91,11 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this.treeView.plug(Plugin.TreeViewFilter, {
                 testFn: searchFn
                 /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
-                     e.get("name"),
-                     e.get("title"),
-                     e.get("label"),
-                     e.get("comments")
-                     ].join("|"));*/
+                 e.get("name"),
+                 e.get("title"),
+                 e.get("label"),
+                 e.get("comments")
+                 ].join("|"));*/
                 //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
@@ -100,10 +103,10 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 nodeGroups: [{
                     nodeClass: "wegas-editor-questionitem",
                     parentNode: ".wegas-editor-question"
-                    }, {
+                }, {
                     nodeClass: "wegas-editor-listitem",
                     parentNode: ".wegas-editor-list"
-                    }]
+                }]
             }); // Add sortable plugin to the treeview
             this.treeView.sortable.on("sort", function(e) { // On sort event,
                 var entity = e.dragWidget.get("data.entity"),
