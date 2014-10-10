@@ -39,15 +39,14 @@ YUI.add("treeview-filter", function(Y) {
                 //                if (!subMatch && match && item.collapse) {
                 //                    item.collapse(false);
                 //                }
+            } else if (!subMatch) {
+                item.get("boundingBox").addClass("filter-no-match");
             }
             if (subMatch) {
                 item.get("boundingBox").addClass("filter-sub-match");
                 if (item.expand) {
                     item.expand(false);
                 }
-            }
-            if (!matches && !subMatch) {
-                item.get("boundingBox").addClass("filter-no-match");
             }
             return matches || subMatch;
 
