@@ -61,7 +61,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }, this));
             this._searchBttn = new Y.Button({
                 render: this.toolbar.get("header").one(".wegas-filter-input"),
-                label: "<span title='Search in fields'>Full</span>",
+                label: "<span title='Search in every fields'>Full</span>",
                 on: {
                     click: Y.bind(function() {
                         Y.Wegas.DataSource.abort(req);
