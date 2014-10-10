@@ -19,7 +19,7 @@
     <logger name="com.wegas.core" level="WARN"/>
     <logger name="net.sf.ehcache" level="WARN"/>
 
-    <root level="DEBUG">
+    <root level="WARN">
         <appender-ref ref="STDOUT" />
     </root>
 </configuration>
