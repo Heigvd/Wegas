@@ -13,11 +13,15 @@ import com.wegas.core.persistence.game.GameModel;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -97,16 +101,33 @@ public class JackrabbitConnector {
      * @param workspaceName
      */
     private static void deleteWorkspace(String workspaceName) {
+        logger.warn("Delete " + workspaceName);
         try {
             DataSource ds = (DataSource) new InitialContext().lookup("jdbc/jcr");
             try (Connection con = ds.getConnection()) {
                 try (Statement statement = con.createStatement()) {
-                    statement.execute("DROP table " + workspaceName + "_binval, " + workspaceName + "_refs, " + workspaceName + "_bundle, " + workspaceName + "_names CASCADE");
+                    try {
+                        /* DROP TABLES */
+                        String dropQuery = "DROP table IF EXISTS " + workspaceName + "_binval, " + workspaceName + "_refs, " + workspaceName + "_bundle, " + workspaceName + "_names CASCADE";
+                        statement.execute(dropQuery);
+                        con.commit();
+                        /* DELETE WORKSPACE */
+                        try {
+                            Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
+                        } catch (IOException ex) {
+                            logger.warn("Delete workspace files failed", ex);
+                        }
+                    } catch (SQLException ex) {
+                        logger.warn("Delete workspace failed", ex);
+                        statement.cancel();
+                        con.rollback();
+                    }
                 }
+            } catch (SQLException ex) {
+                logger.warn("Delete workspace failed: getConnection failed", ex);
             }
-            Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
-        } catch (NamingException | SQLException | IOException ex) {
-            logger.warn("Delete workspace failed", ex);
+        } catch (NamingException ex) {
+            logger.warn("Delete workspace failed: no \"jdbc/jcr\" resource found", ex);
         }
     }
 
