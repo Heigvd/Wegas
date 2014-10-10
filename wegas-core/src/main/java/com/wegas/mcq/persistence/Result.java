@@ -7,8 +7,10 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Searchable;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,7 @@ import org.codehaus.jackson.map.annotate.JsonView;
 @Entity
 @XmlType(name = "Result")
 @Table(name = "MCQResult")
-public class Result extends AbstractEntity {
+public class Result extends AbstractEntity implements Searchable {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -96,6 +98,22 @@ public class Result extends AbstractEntity {
      */
     public Result(String name) {
         this.name = name;
+    }
+
+    @Override
+    public Boolean contains(final String criteria) {
+        return this.containsAll(new ArrayList<String>() {
+            {
+                add(criteria);
+            }
+        });
+    }
+
+    @Override
+    public Boolean containsAll(final List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getName(), criterias)
+                || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
+                || (this.getImpact() != null && this.getImpact().containsAll(criterias));
     }
 
     /**

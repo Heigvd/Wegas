@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
@@ -241,5 +242,11 @@ public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> imp
     @Override
     public boolean remove(ChoiceDescriptor item) {
         return this.items.remove(item);
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+                || super.containsAll(criterias);
     }
 }
