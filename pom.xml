@@ -69,6 +69,7 @@
 
     <properties>
         <maven.build.timestamp.format>MMddHHmm</maven.build.timestamp.format>
+        <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <endorsed.dir>${project.build.directory}/endorsed</endorsed.dir>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <build.optimize>false</build.optimize>
