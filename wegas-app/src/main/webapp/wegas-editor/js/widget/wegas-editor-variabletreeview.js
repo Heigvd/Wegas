@@ -43,22 +43,22 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
 
             this.handlers.push(this.toolbar.get('header').append("<div class='wegas-filter-input'><input size='15' placeholder='Search...'/></div>")
                 .one(".wegas-filter-input input").on("valueChange", function(e) {
-                    var arrSearch;
-                    if (e.prevVal === "") {
-                        savedState = this.treeView.saveState();
-                    }
-                    searchVal = Y.Lang.trim(e.newVal);
-                    arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
-                    arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
-                        return Y.Wegas.Helper.RegExpQuote(item);
-                    });
-                    searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";
-                    if (searchVal.length) {
-                        this._timer.reset();
-                    } else {
-                        this._timer.timeOut();
-                    }
-                }, this));
+                var arrSearch;
+                if (e.prevVal === "") {
+                    savedState = this.treeView.saveState();
+                }
+                searchVal = Y.Lang.trim(e.newVal);
+                arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
+                arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
+                    return Y.Wegas.Helper.RegExpQuote(item);
+                });
+                searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";
+                if (searchVal.length) {
+                    this._timer.reset();
+                } else {
+                    this._timer.timeOut();
+                }
+            }, this));
             this._searchBttn = new Y.Button({
                 render: this.toolbar.get("header").one(".wegas-filter-input"),
                 label: "<span title='Search in fields'>Full</span>",
@@ -90,23 +90,23 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }, this);
             this.treeView.plug(Plugin.TreeViewFilter, {
                 testFn: searchFn
-                /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
-                 e.get("name"),
-                 e.get("title"),
-                 e.get("label"),
-                 e.get("comments")
-                 ].join("|"));*/
-                //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
+                    /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
+                     e.get("name"),
+                     e.get("title"),
+                     e.get("label"),
+                     e.get("comments")
+                     ].join("|"));*/
+                    //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
-                    nodeClass: "wegas-editor-questionitem",
-                    parentNode: ".wegas-editor-question"
-                }, {
-                    nodeClass: "wegas-editor-listitem",
-                    parentNode: ".wegas-editor-list"
-                }]
+                        nodeClass: "wegas-editor-questionitem",
+                        parentNode: ".wegas-editor-question"
+                    }, {
+                        nodeClass: "wegas-editor-listitem",
+                        parentNode: ".wegas-editor-list"
+                    }]
             }); // Add sortable plugin to the treeview
             this.treeView.sortable.on("sort", function(e) { // On sort event,
                 var entity = e.dragWidget.get("data.entity"),
@@ -188,8 +188,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         tooltip: tooltip,
                         collapsed: collapsed,
                         selected: selected,
-                        //children: this.genTreeViewElements(entity.get("items")),
-                        children: (!collapsed) ? this.genTreeViewElements(entity.get("items")) : [],
+                        children: this.genTreeViewElements(entity.get("items")),
+//                        children: (!collapsed) ? this.genTreeViewElements(entity.get("items")) : [],
                         data: {
                             entity: entity
                         },
