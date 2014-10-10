@@ -7,6 +7,7 @@
  */
 package com.wegas.mcq.persistence;
 
+import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
@@ -130,7 +131,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      * @param player
-     * @param resultId
+     * @param resultName 
      */
     public void setCurrentResult(Player player, String resultName) {
         for (Result r : this.getResults()) {
@@ -250,4 +251,19 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     public void setQuestion(QuestionDescriptor question) {
         this.question = question;
     }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        if (Helper.insensitiveContainsAll(this.getDescription(), criterias)
+                || super.containsAll(criterias)) {
+            return true;
+        }
+        for (Result r : this.getResults()) {
+            if (r.containsAll(criterias)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 }
