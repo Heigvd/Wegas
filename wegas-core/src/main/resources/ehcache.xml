@@ -93,7 +93,7 @@ Here is an example of CacheManager level resource tuning, which will use up to 4
 
     
 -->
-<diskStore path="java.io.tmpdir"/>
+<diskStore path="java.io.tmpdir/ehcache"/>
 <!--
 
     TransactionManagerLookup configuration
