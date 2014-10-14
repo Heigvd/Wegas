@@ -29,8 +29,8 @@ Y.use("wegas-resourcemanagement-entities", function() {
     /** 
      * Set available jobs in the edit form based on the employee folder content
      */
-    persistence.Resources.SKILLS.length = 0;                                        // Remove existing skills
-    Y.Array.each(Y.Wegas.Facade.Variable.cache.find("name", "employees").get("items"), function(vd) {
+    persistence.Resources.SKILLS.length = 0; // Remove existing skills
+    Y.Array.each(Y.Wegas.Facade.VariableDescriptor.cache.find("name", "employees").get("items"), function(vd) {
         persistence.Resources.SKILLS.push({label: vd.get("label"), value: vd.get("name")});
     });
 
