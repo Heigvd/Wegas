@@ -1,5 +1,5 @@
 {
-	"label": "Actions",
+	"title": "Actions",
 	"@class": "ListDescriptor",
 	"scope": {
 		"@class": "TeamScope",
@@ -10,7 +10,7 @@
 	},
 	"items": [
 		{
-			"label": "Initiation",
+			"title": "Initiation",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer développeur et commercial : durée tâches",
+					"title": "Rencontrer développeur et commercial : durée tâches",
 					"name": "Rencontrer développeur et commercial : durée tâches",
-					"editorLabel": "A01 - Rencontrer dev. et commercial : durée tâches",
+					"label": "A01 - Rencontrer dev. et commercial : durée tâches",
 					"description": "<p>Vous passez un moment avec un d&eacute;veloppeur et un responsable commercial pour estimer la  dur&eacute;e des diff&eacute;rentes t&acirc;ches n&eacute;cessaires &agrave; la r&eacute;alisation du projet.</p><p>Budget temps: 3</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -37,8 +37,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -68,9 +68,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer supérieur : temps supplémentaire",
+					"title": "Rencontrer supérieur : temps supplémentaire",
 					"name": "Rencontrer supérieur : temps supplémentaire",
-					"editorLabel": "A02B - Rencontrer supérieur : temps supplémentaire",
+					"label": "A02B - Rencontrer supérieur : temps supplémentaire",
 					"description": "<p>Vous allez trouver votre sup&eacute;rieur hi&eacute;rarchique et lui demandez de vous accorder du temps suppl&eacute;mentaire pour la r&eacute;alisation de l'avant-projet. S'il accepte, ceci vous permettrait d'augmenter un peu votre budget temps.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -83,8 +83,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -109,9 +109,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer développeur et commercial: identifier tâches",
+					"title": "Rencontrer développeur et commercial: identifier tâches",
 					"name": "Rencontrer développeur et commercial: identifier tâches",
-					"editorLabel": "A03B - Rencontrer dev. et commercial: identifier tâches",
+					"label": "A03B - Rencontrer dev. et commercial: identifier tâches",
 					"description": "<p>Vous prenez du temps avec un d&eacute;veloppeur et un responsable commercial pour identifier sommairement la liste des t&acirc;ches &agrave; effectuer.</p><p>Budget temps: 2</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -124,8 +124,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -150,9 +150,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer développeur, intégrateur et commercial : enjeux",
+					"title": "Rencontrer développeur, intégrateur et commercial : enjeux",
 					"name": "Rencontrer développeur, intégrateur et commercial : enjeux",
-					"editorLabel": "A04B - Dev., intégrateur et commercial : enjeux",
+					"label": "A04B - Dev., intégrateur et commercial : enjeux",
 					"description": "<p>Vous effectuez une s&eacute;ance de brainstorming avec un d&eacute;veloppeur, un int&eacute;grateur et un responsable commercial afin de mieux d&eacute;terminer les enjeux du projet.</p><p>Budget temps: 3</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -165,8 +165,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -196,9 +196,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer direction : présentation projet",
+					"title": "Rencontrer direction : présentation projet",
 					"name": "Rencontrer direction : présentation projet",
-					"editorLabel": "A04B - Rencontrer direction",
+					"label": "A04B - Rencontrer direction",
 					"description": "<p>Vous sollicitez une r&eacute;union formelle avec la direction de l'entreprise afin de parler de votre projet.</p><p>Vous pr&eacute;parez une petite pr&eacute;sentation de l'&eacute;tat actuel du projet. Ceci permettra de faire conna&icirc;tre le projet &agrave; la direction et d'avoir un premier retour ou soutient de sa part.</p><p>Budget temps: 3</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -211,8 +211,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -257,9 +257,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer un membre de la direction : parler du projet",
+					"title": "Rencontrer un membre de la direction : parler du projet",
 					"name": "Rencontrer un membre de la direction : parler du projet",
-					"editorLabel": "A04B - Rencontrer un membre de la direction",
+					"label": "A04B - Rencontrer un membre de la direction",
 					"description": "<p>Vous provoquez une rencontre informelle avec un des membres de la direction afin de lui parler du projet.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -272,8 +272,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -308,9 +308,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Informer conjoint(e) : travailler le soir",
+					"title": "Informer conjoint(e) : travailler le soir",
 					"name": "Informer conjoint(e) : travailler le soir",
-					"editorLabel": "A09B -TravSoir - Rester travailler le soir",
+					"label": "A09B -TravSoir - Rester travailler le soir",
 					"description": "<p>Vous informez votre conjoint(e) que vous rester travailler quelquefois plus tard le soir car vous avez beaucoup &agrave; faire sur un projet important. Ceci vous permet d'augmenter votre budget temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -323,8 +323,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -355,7 +355,7 @@
 			]
 		},
 		{
-			"label": "Planning",
+			"title": "Planning",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -367,9 +367,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer ressources IHM : informations",
+					"title": "Rencontrer ressources IHM : informations",
 					"name": "Rencontrer ressources IHM : informations",
-					"editorLabel": "P11 - Rencontrer ressources IHM",
+					"label": "P11 - Rencontrer ressources IHM",
 					"description": "<p>Vous rencontrez les personnes qui r&eacute;aliseront la programmation de l'interface homme-machine (IHM) pour obtenir des informations sur r&eacute;alisation de cette t&acirc;che.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -382,8 +382,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -408,9 +408,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer ressources \"Analyses\" : estimation durées",
+					"title": "Rencontrer ressources \"Analyses\" : estimation durées",
 					"name": "Rencontrer ressources \"Analyses\" : estimation durées",
-					"editorLabel": "P1B -  Rencontrer ressources \"Analyses\" : estimation durées",
+					"label": "P1B -  Rencontrer ressources \"Analyses\" : estimation durées",
 					"description": "<p>Vous invitez une partie des ressources suppos&eacute;es travailler sur les analyses pr&eacute;liminaires (choix environnement d&eacute;veloppement, analyse existant, analyse besoins clients et int&eacute;grateurs, analyse de l'architecture logicielle si vous avez choisi de la faire, dossier sp&eacute;cification).</p><p>Avec ces personnes, vous cherchez &agrave; affiner l'estimation de la dur&eacute;e de ces diff&eacute;rentes t&acirc;ches et demandez leur avis sur la r&eacute;alisation de ces activit&eacute;s.</p><p>Budget temps: 3<br />Co&ucirc;ts: 2000.- (frais fixes du projet)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -423,8 +423,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -449,9 +449,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer direction : information sur la stratégie",
+					"title": "Rencontrer direction : information sur la stratégie",
 					"name": "Rencontrer direction : information sur la stratégie",
-					"editorLabel": "P2 - Rencontrer direction : information sur la stratégie",
+					"label": "P2 - Rencontrer direction : information sur la stratégie",
 					"description": "<p>Vous aller rencontrer la direction pour obtenir des informations relativement &agrave; la strat&eacute;gie de la soci&eacute;t&eacute;.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -464,8 +464,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -490,9 +490,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Rencontrer ressources \"Tests\" : informations",
+					"title": "Rencontrer ressources \"Tests\" : informations",
 					"name": "Rencontrer ressources \"Tests\" : informations",
-					"editorLabel": "P3 - Rencontrer ressources \"Tests\"",
+					"label": "P3 - Rencontrer ressources \"Tests\"",
 					"description": "<p>Vous rencontrez les personnes qui r&eacute;aliseront les tests du syst&egrave;me afin d'obtenir des informations sur r&eacute;alisation de cette t&acirc;che.</p><p>Budget temps: 1</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -505,8 +505,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -532,7 +532,7 @@
 			]
 		},
 		{
-			"label": "Execution",
+			"title": "Execution",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -544,9 +544,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"1. Choix environnement développement\" : qualité",
+					"title": "Réunir équipe \"1. Choix environnement développement\" : qualité",
 					"name": "Réunir équipe \"1. Choix environnement développement\" : qualité",
-					"editorLabel": "01 - R8B -  Réunir équipe \"1. Choix environnement développement\"",
+					"label": "01 - R8B -  Réunir équipe \"1. Choix environnement développement\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Choix environnement de d&eacute;veloppement\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2 <br /> Co&ucirc;ts: 500.- (frais fixes de la t&acirc;che)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -559,8 +559,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -590,9 +590,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"2. Analyse existant\" : qualité",
+					"title": "Réunir équipe \"2. Analyse existant\" : qualité",
 					"name": "Réunir équipe \"2. Analyse existant\" : qualité",
-					"editorLabel": "02 - R9B - Réunir équipe \"2. Analyse existant\"",
+					"label": "02 - R9B - Réunir équipe \"2. Analyse existant\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la t&acirc;che \"Analyse existant\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> Co&ucirc;t: 300.- (frais fixes de la t&acirc;che)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -605,8 +605,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -636,9 +636,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"3. Analyse des besoins\" : qualité",
+					"title": "Réunir équipe \"3. Analyse des besoins\" : qualité",
 					"name": "Réunir équipe \"3. Analyse des besoins\" : qualité",
-					"editorLabel": "03 - R1B - Réunir équipe \"3. Analyse des besoins\"",
+					"label": "03 - R1B - Réunir équipe \"3. Analyse des besoins\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de l'\"Analyse des besoins\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"analyse des besoins\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -651,8 +651,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -682,9 +682,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"4. Dossier de spécifications\" : qualité",
+					"title": "Réunir équipe \"4. Dossier de spécifications\" : qualité",
 					"name": "Réunir équipe \"4. Dossier de spécifications\" : qualité",
-					"editorLabel": "04 - Réunir équipe \"4. Dossier de spécifications\"",
+					"label": "04 - Réunir équipe \"4. Dossier de spécifications\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable du \"Dossier de sp&eacute;cifications\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br />Co&ucirc;t: 500.- (frais fixes de la t&acirc;che)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -697,8 +697,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -728,9 +728,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"6. Modélisation des traitements\" : qualité",
+					"title": "Réunir équipe \"6. Modélisation des traitements\" : qualité",
 					"name": "Réunir équipe \"6. Modélisation des traitements\" : qualité",
-					"editorLabel": "06 - R3B - Réunir équipe  \"6. Modélisation des traitements\"",
+					"label": "06 - R3B - Réunir équipe  \"6. Modélisation des traitements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la mod&eacute;lisation des traitements et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"mod&eacute;lisation des traitements\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -743,8 +743,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -774,9 +774,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"9. Programmation des traitements\" : qualité",
+					"title": "Réunir équipe \"9. Programmation des traitements\" : qualité",
 					"name": "Réunir équipe \"9. Programmation des traitements\" : qualité",
-					"editorLabel": "09 - R4B - Réunir équipe \"7. Programmation des traitements\"",
+					"label": "09 - R4B - Réunir équipe \"7. Programmation des traitements\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la \"Programmation des traitements\" et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"programmation des traitements\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -789,8 +789,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -830,9 +830,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"11. Promotion système\" : qualité",
+					"title": "Réunir équipe \"11. Promotion système\" : qualité",
 					"name": "Réunir équipe \"11. Promotion système\" : qualité",
-					"editorLabel": "11 - R7B - Réunir équipe \"11. Promotion système\"",
+					"label": "11 - R7B - Réunir équipe \"11. Promotion système\"",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la promotion du syst&egrave;me et passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"promotion syst&egrave;me\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -845,8 +845,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -876,9 +876,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe \"11. Promotion système\" : qualité",
+					"title": "Réunir équipe \"11. Promotion système\" : qualité",
 					"name": "Réunir équipe \"11. Promotion système\" : qualité",
-					"editorLabel": "11 - R7C - Réunir équipe \"11. Promotion système\" sans maquette ni prototype",
+					"label": "11 - R7C - Réunir équipe \"11. Promotion système\" sans maquette ni prototype",
 					"description": "<p>Vous r&eacute;unissez l'&eacute;quipe responsable de la promotion du syst&egrave;me et  passez une demi-journ&eacute;e &agrave; analyser le travail effectu&eacute;, d&eacute;couvrir et  &eacute;ventuellement corriger les erreurs.</p><p>Budget temps: 2<br /> 1/2 journ&eacute;e de travail de l'&eacute;quipe \"promotion syst&egrave;me\"</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -891,8 +891,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -922,9 +922,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir équipe projet : point et coordination",
+					"title": "Réunir équipe projet : point et coordination",
 					"name": "Réunir équipe projet : point et coordination",
-					"editorLabel": "R5B - Réunir l'équipe projet",
+					"label": "R5B - Réunir l'équipe projet",
 					"description": "<p>Vous r&eacute;unissez toute l'&eacute;quipe des ressources travaillant sur le projet afin de faire le point sur les objectifs, la qualit&eacute; du travail r&eacute;alis&eacute; et les d&eacute;lais. <br /> Vous terminez la r&eacute;union par la (re)d&eacute;finition du travail et des priorit&eacute;s.</p><p>Budget temps: 3<br /> Co&ucirc;t: 1000.- (frais fixes projet)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -937,8 +937,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -978,9 +978,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Réunir intégrateurs : présentation du travail",
+					"title": "Réunir intégrateurs : présentation du travail",
 					"name": "Réunir intégrateurs : présentation du travail",
-					"editorLabel": "R6B - Réunir intégrateurs: présentation du travail",
+					"label": "R6B - Réunir intégrateurs: présentation du travail",
 					"description": "<p>Vous invitez quelques int&eacute;grateurs &agrave; une pr&eacute;sentation du travail r&eacute;alis&eacute; afin d'obtenir leur point de vue et un retour g&eacute;n&eacute;ral d'informations.</p><p>Budget temps: 2<br /> Co&ucirc;ts: 500.- (frais fixes du projet)</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -993,8 +993,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": "",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1065,7 +1065,7 @@
 			]
 		},
 		{
-			"label": "Closure",
+			"title": "Closure",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",

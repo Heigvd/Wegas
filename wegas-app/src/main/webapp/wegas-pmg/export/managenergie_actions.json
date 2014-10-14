@@ -1,5 +1,6 @@
 {
 	"label": "Actions",
+	"name": "actions",
 	"@class": "ListDescriptor",
 	"scope": {
 		"@class": "TeamScope",
@@ -22,9 +23,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement: contact et intérêt",
+					"title": "Directeur hébergement: contact et intérêt",
 					"name": "Directeur hébergement: contact et intérêt",
-					"editorLabel": "AP1-A010 Dir. hébergt: prise contact",
+					"label": "AP1-A010 Dir. hébergt: prise contact",
 					"description": "<p>Vous allez voir Michel Renault, directeur de l&rsquo;h&eacute;bergement, pour parler de la place de l&rsquo;&eacute;nergie dans son d&eacute;partement et pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentant de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em><em></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -37,8 +38,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -63,9 +64,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directrice restauration: contact et intérêt",
+					"title": "Directrice restauration: contact et intérêt",
 					"name": "Directrice restauration: contact et intérêt",
-					"editorLabel": "AP1-A020 Dir. restau: prise contact",
+					"label": "AP1-A020 Dir. restau: prise contact",
 					"description": "<p>Vous allez voir Dorine Herbier, directrice de la restauration, pour parler de la place de l&rsquo;&eacute;nergie dans son d&eacute;partement et pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentante de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -78,8 +79,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -104,9 +105,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directrice RH : contact et intérêt",
+					"title": "Directrice RH : contact et intérêt",
 					"name": "Directrice RH : contact et intérêt",
-					"editorLabel": "AP1-A030 Dir. RH: prise contact",
+					"label": "AP1-A030 Dir. RH: prise contact",
 					"description": "<p>Vous allez voir Teresa Fernandez, directrice des RH, pour discuter de la place donn&eacute;e aux questions &eacute;nerg&eacute;tiques dans la formation et le syst&egrave;me de gratifications du personnel, ainsi que pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentante de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -119,8 +120,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -145,9 +146,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur technique : contact et intérêt",
+					"title": "Directeur technique : contact et intérêt",
 					"name": "Directeur technique : contact et intérêt",
-					"editorLabel": "AP1-A040 Dir. technique : prise contact",
+					"label": "AP1-A040 Dir. technique : prise contact",
 					"description": "<p>Vous allez rencontrer Christophe Lampion, directeur technique, pour cr&eacute;er un contact, obtenir des informations relativement &agrave; son domaine et &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentant de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -160,8 +161,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -186,9 +187,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur commercial : contact et intérêt",
+					"title": "Directeur commercial : contact et intérêt",
 					"name": "Directeur commercial : contact et intérêt",
-					"editorLabel": "AP1-A050 Dir. commercial : prise contact",
+					"label": "AP1-A050 Dir. commercial : prise contact",
 					"description": "<p>Vous allez voir Bertrand Lanoit, directeur commercial, pour parler de la place de l&rsquo;&eacute;nergie dans l&rsquo;activit&eacute; commerciale et pour &eacute;valuer son int&eacute;r&ecirc;t en tant que repr&eacute;sentant de la direction pour soutenir le projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -201,8 +202,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -227,9 +228,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur financier : contact et procédures investissements",
+					"title": "Directeur financier : contact et procédures investissements",
 					"name": "Directeur financier : contact et procédures investissements",
-					"editorLabel": "AP1-A060 Dir financier : contact",
+					"label": "AP1-A060 Dir financier : contact",
 					"description": "<p>Vous allez &agrave; B&acirc;le pour rencontrer Marc Zimmerman, directeur financier, afin d&rsquo;&eacute;tablir un contact, parler de votre projet et obtenir des informations sur les allocations de budget et les proc&eacute;dures de choix d&rsquo;investissements.</p><p><em>Cartes temps: 3</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -242,8 +243,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -268,9 +269,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : Opportunité politique énergétique",
+					"title": "Directeur général : Opportunité politique énergétique",
 					"name": "Directeur général : Opportunité politique énergétique",
-					"editorLabel": "AP1-A080 Dir. général: opportunité politique én.",
+					"label": "AP1-A080 Dir. général: opportunité politique én.",
 					"description": "<p>Vous allez trouver le directeur g&eacute;n&eacute;ral pour lui demander son avis sur l&rsquo;opportunit&eacute; d&rsquo;&eacute;laborer une politique &eacute;nerg&eacute;tique. Ceci permettrait d'am&eacute;liorer vos contacts avec la direction g&eacute;n&eacute;rale et garantir son soutien au projet.</p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -283,8 +284,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -309,9 +310,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Maire commune : sponsoring",
+					"title": "Maire commune : sponsoring",
 					"name": "Maire commune : sponsoring",
-					"editorLabel": "AP1-A090 Maire commune: sponsoring",
+					"label": "AP1-A090 Maire commune: sponsoring",
 					"description": "<p>Vous envoyez &agrave; la mairie une lettre de demande de sponsoring pour vos efforts en mati&egrave;re d&rsquo;am&eacute;lioration de l&rsquo;efficacit&eacute; &eacute;nerg&eacute;tique et de certification ISO 50001.</p><p>Vos travaux permettront &agrave; l&rsquo;h&ocirc;tel d&rsquo;utiliser les &eacute;nergies de fa&ccedil;on plus responsable et &eacute;cologique. &Ecirc;tre sponsoris&eacute; par le maire permettrait d&rsquo;encourager les autres h&ocirc;tels &agrave; faire de m&ecirc;me et ainsi rendre l&rsquo;utilisation de l&rsquo;&eacute;nergie dans la ville plus responsable.</p><p><em>Cartes temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -324,8 +325,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -350,9 +351,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Groupe développement durable : contact",
+					"title": "Groupe développement durable : contact",
 					"name": "Groupe développement durable : contact",
-					"editorLabel": "AP1-A100 Groupe dévpt durable : contact",
+					"label": "AP1-A100 Groupe dévpt durable : contact",
 					"description": "<p><span id=\"internal-source-marker_0.008807166504133157\">Vous demandez un entretien avec le groupe d&eacute;veloppement durable afin de parler de management de l&rsquo;&eacute;nergie et de certification ISO 50001. Vous esp&eacute;rez &eacute;tablir avec eux un bon contact en vue d&rsquo;&eacute;ventuels projets en commun.</span></p><p><em>Cartes temps: 2</em>&nbsp; <span>&nbsp;</span></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -365,8 +366,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -391,9 +392,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel : présenter projet",
+					"title": "Personnel : présenter projet",
 					"name": "Personnel : présenter projet",
-					"editorLabel": "AP1-A110 Personnel : présenter projet",
+					"label": "AP1-A110 Personnel : présenter projet",
 					"description": "<p>La r&eacute;union du personnel a lieu ce mois-ci (p&eacute;riode 1).</p><p>Vous pr&eacute;parez une pr&eacute;sentation, puis participez &agrave; la r&eacute;union afin d'y pr&eacute;senter le projet de management des &eacute;nergies et de certification ISO 50001.</p><p><em>Cartes temps: 3</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -406,8 +407,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -432,9 +433,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Office tourisme : contact et collaboration",
+					"title": "Office tourisme : contact et collaboration",
 					"name": "Office tourisme : contact et collaboration",
-					"editorLabel": "AP1-A120 Office tourisme : contact et collaboration",
+					"label": "AP1-A120 Office tourisme : contact et collaboration",
 					"description": "<p><span id=\"internal-source-marker_0.28218992553091005\">Vous prenez contact (t&eacute;l&eacute;phone) avec la responsable du d&eacute;partement \"h&ocirc;tels\" de l&rsquo;office du tourisme du canton de Gen&egrave;ve. </span></p><p><span id=\"internal-source-marker_0.28218992553091005\">Vous lui parlez du projet management de l'&eacute;nergie au sein de l'h&ocirc;tel Excellencia afin de poser les bases d'une &eacute;ventuelle collaboration future.</span></p><p><em>Cartes temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -447,8 +448,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -473,9 +474,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Brocard: Prise de contact",
+					"title": "Brocard: Prise de contact",
 					"name": "Brocard: Prise de contact",
-					"editorLabel": "AP1-A130 Brocard:Prise de contact",
+					"label": "AP1-A130 Brocard:Prise de contact",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7930-0274-d1bb-f98a39e1c82e\">Vous prenez rendez-vous avec Benoit Brocard (consultant, notamment ISO 50001, qui travaille r&eacute;guli&egrave;rement avec l&rsquo;h&ocirc;tel) afin de vous pr&eacute;senter et d&rsquo;&eacute;tablir un premier contact.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -488,8 +489,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -514,9 +515,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Brocard : Avis sur la politique énergétique",
+					"title": "Brocard : Avis sur la politique énergétique",
 					"name": "Brocard : Avis sur la politique énergétique",
-					"editorLabel": "AP1-A140 Brocard: Avis politique énergétique",
+					"label": "AP1-A140 Brocard: Avis politique énergétique",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7936-f928-5e3b-8514ae35f62c\">Vous contactez Beno&icirc;t Brocard, consultant ISO 50001 affili&eacute; &agrave; l&rsquo;h&ocirc;tel, pour lui demander ce qu&rsquo;il pense de la politique &eacute;nerg&eacute;tique envoy&eacute;e par votre ami Fabrice et obtenir quelques conseils.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -529,8 +530,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -560,9 +561,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur technique : lumières salles de conférence",
+					"title": "Directeur technique : lumières salles de conférence",
 					"name": "Directeur technique : lumières salles de conférence",
-					"editorLabel": "AP1-A150 Dir technique, lumières salles conf.",
+					"label": "AP1-A150 Dir technique, lumières salles conf.",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7a26-9129-6264-61d6eab0f033\">Vous rencontrez le directeur technique pour parler du fait que les lumi&egrave;res sont souvent allum&eacute;es dans les salles de conf&eacute;rences m&ecirc;me lorsque celles-ci sont vides. Vous souhaitez discuter avec lui des possibilit&eacute;s d&rsquo;un syst&egrave;me automatique d&rsquo;extinction des lumi&egrave;res.</span></p><p><em>Carte temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -575,8 +576,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -601,9 +602,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directrice des RH : demander propositions de formations",
+					"title": "Directrice des RH : demander propositions de formations",
 					"name": "Directrice des RH : demander propositions de formations",
-					"editorLabel": "AP1-A160 Dir RH, formation ",
+					"label": "AP1-A160 Dir RH, formation ",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-7a2b-0a4e-660c-d899c48b2858\">Vous contactez la directrice des RH pour lui demander d'effectuer une recherche sur les formations existantes sur les bonnes pratiques vis-&agrave;-vis de l&rsquo;usage de l&rsquo;&eacute;nergie. Ces formations pourront ensuite &ecirc;tre int&eacute;gr&eacute;es au plan d&rsquo;action, pour certaines professions de l&rsquo;h&ocirc;tel.</span></p><p><em>Carte temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -616,8 +617,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -642,9 +643,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "DG: demander budget temps \"Démarrer\"",
+					"title": "DG: demander budget temps \"Démarrer\"",
 					"name": "DG: demander budget temps \"Démarrer\"",
-					"editorLabel": "AP1-A170 - DG: budget temps \"Démarrer\"",
+					"label": "AP1-A170 - DG: budget temps \"Démarrer\"",
 					"description": "<p>Vous envoyez un mail &agrave; la direction pour demandez de vous accorder du temps suppl&eacute;mentaire pour la r&eacute;alisation de la phase \"D&eacute;marrer\". Vous justifiez en insistant sur l'importance de consacrer du temps dans les phases amont d'un tel projet.</p><p>Si la demande est accept&eacute;e, ceci vous permettrait d'augmenter un peu votre budget temps.</p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -657,8 +658,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -683,9 +684,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement : représentation",
+					"title": "Directeur hébergement : représentation",
 					"name": "Directeur hébergement : représentation",
-					"editorLabel": "AP2-A010 Dir. l?hébergement: représentation",
+					"label": "AP2-A010 Dir. l?hébergement: représentation",
 					"description": "<p><span id=\"internal-source-marker_0.28218992553091005\">Vous allez voir Michel Renault, directeur de l&rsquo;h&eacute;bergement, pour lui demander s&rsquo;il peut d&eacute;signer une personne de son d&eacute;partement pour le repr&eacute;senter au sein de l&rsquo;&eacute;quipe management &eacute;nergie. Vous lui expliquez qu&rsquo;il est important pour tout le monde que son d&eacute;partement soit repr&eacute;sent&eacute; (pour son d&eacute;partement lui-m&ecirc;me ainsi que pour la r&eacute;alisation du projet de certification de l&rsquo;h&ocirc;tel). </span></p><p><em>Cartes temps: 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -698,8 +699,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -724,9 +725,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur technique : info. consommation",
+					"title": "Directeur technique : info. consommation",
 					"name": "Directeur technique : info. consommation",
-					"editorLabel": "AP2-A040 Dir. technique : info consommation",
+					"label": "AP2-A040 Dir. technique : info consommation",
 					"description": "<p>Vous allez voir le directeur technique (Monsieur Lampion) pour obtenir plus d&rsquo;informations sur les diff&eacute;rents &eacute;quipements de l&rsquo;h&ocirc;tel, les consommations en &eacute;nergies et en eau, leur &eacute;volution et l&rsquo;organisation de la maintenance.</p><p><em>Cartes temps : 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -739,8 +740,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -765,9 +766,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur commercial: informations salles conférences",
+					"title": "Directeur commercial: informations salles conférences",
 					"name": "Directeur commercial: informations salles conférences",
-					"editorLabel": "AP2-A050 Dir. commercial: info salles conf",
+					"label": "AP2-A050 Dir. commercial: info salles conf",
 					"description": "<p><span id=\"internal-source-marker_0.9033698044296252\">Vous allez voir le directeur commercial afin obtenir les taux d&rsquo;occupation des salles de conf&eacute;rence et la contribution de cette activit&eacute; au chiffre d&rsquo;affaire de l&rsquo;h&ocirc;tel. Vous aimeriez aussi savoir si les conf&eacute;renciers sont dans l&rsquo;ensemble satisfaits du confort des salles mises &agrave; leur disposition (mobilier et installations informatiques et de communication, mais aussi la qualit&eacute; de l&rsquo;&eacute;clairage, du chauffage, de la climatisation et de la ventilation).</span></p><p><em>Cartes temps : 2&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -780,8 +781,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -806,9 +807,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : Information avancement projet",
+					"title": "Directeur général : Information avancement projet",
 					"name": "Directeur général : Information avancement projet",
-					"editorLabel": "AP2-A080 DG: Info avt projet",
+					"label": "AP2-A080 DG: Info avt projet",
 					"description": "<p><span id=\"internal-source-marker_0.9033698044296252\">Vous allez voir le directeur g&eacute;n&eacute;ral pour l&rsquo;informer sur l&rsquo;avancement du projet.</span></p><p><em>Carte temps: 1<br /></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -821,8 +822,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -852,9 +853,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel: évolution du projet",
+					"title": "Personnel: évolution du projet",
 					"name": "Personnel: évolution du projet",
-					"editorLabel": "AP2-A110 Personnel : évol. projet ",
+					"label": "AP2-A110 Personnel : évol. projet ",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-3bff-0e4a-5416-6e3925b1fda7\">Vous r&eacute;unissez le personnel de l&rsquo;h&ocirc;tel afin de leur parler de l&rsquo;&eacute;volution du projet. Vous leur pr&eacute;senter la politique &eacute;nerg&eacute;tique de l&rsquo;h&ocirc;tel, ainsi que l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie.</span></p><p><em>Cartes temps : 3<br /></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -867,8 +868,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -893,9 +894,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe ME: Réunion de démarrage",
+					"title": "Equipe ME: Réunion de démarrage",
 					"name": "Equipe ME: Réunion de démarrage",
-					"editorLabel": "AP2-A130 Equipe ME : démarrage",
+					"label": "AP2-A130 Equipe ME : démarrage",
 					"description": "<p><span id=\"internal-source-marker_0.11373222931549598\">Vous organisez une r&eacute;union de l'&eacute;quipe \"Management de l'&eacute;nergie\" afin de remercier les membres pour leur contribution &agrave; venir.</span> Vous profitez de les inciter &agrave; discuter avec leurs collaborateurs et &agrave; promouvoir le projet de certification ISO 50001.</p><p><em>Cartes temps : 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -908,8 +909,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -939,9 +940,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement : nuitées",
+					"title": "Directeur hébergement : nuitées",
 					"name": "Directeur hébergement : nuitées",
-					"editorLabel": "AP2-A015 Dir. l?hébergement: nuitées",
+					"label": "AP2-A015 Dir. l?hébergement: nuitées",
 					"description": "<p><span id=\"internal-source-marker_0.28218992553091005\">Vous allez voir Michel Renault, directeur de l&rsquo;h&eacute;bergement,</span><span id=\"internal-source-marker_0.28218992553091005\">&nbsp;</span>pour avoir des informations sur le nombre de nuit&eacute;es de l&rsquo;h&ocirc;tel. (1 carte temps).</p><p><em>Cartes temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -954,8 +955,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -980,9 +981,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directrice restauration : repas",
+					"title": "Directrice restauration : repas",
 					"name": "Directrice restauration : repas",
-					"editorLabel": "AP2-A030 Dir. l?hébergement: repas",
+					"label": "AP2-A030 Dir. l?hébergement: repas",
 					"description": "<p><span id=\"docs-internal-guid-31931126-1a20-56d8-6e95-1049a1897ed3\">Vous allez voir le Directrice restauration pour avoir des informations sur le nombre de repas distribu&eacute;s par l&rsquo;h&ocirc;tel de l&rsquo;h&ocirc;tel. (1 carte temps).</span></p><p><em>Cartes temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -995,8 +996,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1034,9 +1035,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel: Présentation évolution projet ",
+					"title": "Personnel: Présentation évolution projet ",
 					"name": "Personnel: Présentation évolution projet ",
-					"editorLabel": "P-A010 Personnel : Prés. évol. projet ",
+					"label": "P-A010 Personnel : Prés. évol. projet ",
 					"description": "<p>Vous profitez de la r&eacute;union du personnel pour le tenir au courant de l&rsquo;&eacute;volution du projet. Vous pr&eacute;sentez les r&eacute;sultats de l'&eacute;valuation de la performance &eacute;nerg&eacute;tique et parlez du plan d&rsquo;action.</p><p><em>Carte temps : 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1049,8 +1050,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1075,9 +1076,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général: info. plan actions",
+					"title": "Directeur général: info. plan actions",
 					"name": "Directeur général: info. plan actions",
-					"editorLabel": "P-A020 DG: info. plan actions",
+					"label": "P-A020 DG: info. plan actions",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-4067-7f9f-4c3e-e04794b8f26b\">Lors d&rsquo;une rencontre informelle, vous prenez le temps d&rsquo;informer le directeur g&eacute;n&eacute;ral des derniers choix effectu&eacute;s pour le plan d&rsquo;action.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1090,8 +1091,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1116,9 +1117,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Office tourisme: info. avancement projet",
+					"title": "Office tourisme: info. avancement projet",
 					"name": "Office tourisme: info. avancement projet",
-					"editorLabel": "P-A030 Office tourisme: info. avt projet",
+					"label": "P-A030 Office tourisme: info. avt projet",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-4077-35f3-27d3-325f2cca9da5\">Vous informez l&rsquo;office du tourisme de l&rsquo;avancement du projet et du passage &agrave; la phase de planification.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1131,8 +1132,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1157,9 +1158,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe de management de l?énergie : communication",
+					"title": "Equipe de management de l?énergie : communication",
 					"name": "Equipe de management de l?énergie : communication",
-					"editorLabel": "P-A040 Equipe ME : communication",
+					"label": "P-A040 Equipe ME : communication",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-408d-2673-7281-17c4bfc14d77\">Vous conviez l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie afin de r&eacute;fl&eacute;chir ensemble sur la strat&eacute;gie g&eacute;n&eacute;rale de communication interne et externe.</span></p><p><em>Carte temps : 2</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1172,8 +1173,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1198,9 +1199,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : info. avancement planification",
+					"title": "Directeur général : info. avancement planification",
 					"name": "Directeur général : info. avancement planification",
-					"editorLabel": "P-A070 DG : info. avancement planification",
+					"label": "P-A070 DG : info. avancement planification",
 					"description": "<p>Vous prenez rendez-vous avec Simon Mistral, le directeur g&eacute;n&eacute;ral, pour l&rsquo;informer sur l&rsquo;avancement des travaux relativement &agrave; la planification du projet.</p><p><em>Cartes temps: 1<br /></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1213,8 +1214,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1257,9 +1258,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Personnel: info. avancement projet",
+					"title": "Personnel: info. avancement projet",
 					"name": "Personnel: info. avancement projet",
-					"editorLabel": "R-A010 Personnel: Info avancement ",
+					"label": "R-A010 Personnel: Info avancement ",
 					"description": "<p><span id=\"docs-internal-guid-41be0204-4530-73b1-de64-400db40db7ae\">Vous envoyez un e-mail &agrave; tous les membres du personnel de l&rsquo;h&ocirc;tel afin de les tenir au courant de l&rsquo;avancement du projet.</span></p><p><em>Carte temps : 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1272,8 +1273,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1303,9 +1304,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Office tourisme : info. avancement projet",
+					"title": "Office tourisme : info. avancement projet",
 					"name": "Office tourisme : info. avancement projet",
-					"editorLabel": "R-A020 Office tourisme: info avt projet",
+					"label": "R-A020 Office tourisme: info avt projet",
 					"description": "<p><span id=\"docs-internal-guid-41be0204-54d4-aae4-41db-269d9fbd30f8\">Vous informez par mail l&rsquo;office du tourisme de l&rsquo;avancement du projet et de l'avancement des travaux de r&eacute;alisation.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1318,8 +1319,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1349,9 +1350,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur général : info. avancement projet",
+					"title": "Directeur général : info. avancement projet",
 					"name": "Directeur général : info. avancement projet",
-					"editorLabel": "R-A030 DG : info avct projet",
+					"label": "R-A030 DG : info avct projet",
 					"description": "<p><span id=\"docs-internal-guid-09fdc1a7-54fe-5dba-5ad4-60e576bb77ff\">Vous informez le directeur g&eacute;n&eacute;ral de l&rsquo;avancement du projet.</span></p><p><em>Carte temps : 1&nbsp;</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1364,8 +1365,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1405,9 +1406,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeurs technique et commercial: coordination TV, minibars",
+					"title": "Directeurs technique et commercial: coordination TV, minibars",
 					"name": "Directeurs technique et commercial: coordination TV, minibars",
-					"editorLabel": "R-A040 Dir. tech. et com.: coord TV, minibars",
+					"label": "R-A040 Dir. tech. et com.: coord TV, minibars",
 					"description": "<p>Vous organisez une s&eacute;ance de coordination avec le directeur technique et le directeur commercial pour choisir l&rsquo;emplacement des appareils (t&eacute;l&eacute;viseurs et/ou minibars).</p><p><em>Carte temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1420,8 +1421,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1451,9 +1452,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Equipe Management Energie - communication externe",
+					"title": "Equipe Management Energie - communication externe",
 					"name": "Equipe Management Energie - communication externe",
-					"editorLabel": "R-A050 Equipe ME- communication externe",
+					"label": "R-A050 Equipe ME- communication externe",
 					"description": "<p><span id=\"docs-internal-guid-b506172e-1d57-cf18-3987-6f7a04234428\">Vous r&eacute;unissez l&rsquo;&eacute;quipe de management de l&rsquo;&eacute;nergie afin de parler de la communication interne et externe du projet et de la mise en valeur les actions entreprises.</span></p><p><em>Carte temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1466,8 +1467,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1497,9 +1498,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur commercial: publier informations",
+					"title": "Directeur commercial: publier informations",
 					"name": "Directeur commercial: publier informations",
-					"editorLabel": "R-A060 Dir. com.: publier informations",
+					"label": "R-A060 Dir. com.: publier informations",
 					"description": "<p><span id=\"docs-internal-guid-5e2c3285-1de7-11b4-ade9-46735fc71071\">Vous rencontrez le directeur commercial pour lui demander la permission de publier des informations sur le site Internet de l&rsquo;h&ocirc;tel quant &agrave; l&rsquo;implication de celui-ci au niveau de la bonne gestion de l&rsquo;&eacute;nergie. Vous lui demandez aussi s&rsquo;il serait possible d&rsquo;afficher les informations sur les &eacute;crans du hall de l&rsquo;h&ocirc;tel.</span></p><p><em>Budget temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1512,8 +1513,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1533,9 +1534,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Directeur hébergement: prospectus chambres",
+					"title": "Directeur hébergement: prospectus chambres",
 					"name": "Directeur hébergement: prospectus chambres",
-					"editorLabel": "R-A070 Dir.  héb.: propectus chambres",
+					"label": "R-A070 Dir.  héb.: propectus chambres",
 					"description": "<p><span id=\"docs-internal-guid-5e2c3285-1dea-908c-a8f5-01570dd21389\">Vous prenez contact avec Michel Renault le directeur de l&rsquo;h&eacute;bergement pour lui demander si vous pouvez ajouter un prospectus dans la documentation &agrave; disposition dans les chambres des clients. </span></p><p><span id=\"docs-internal-guid-5e2c3285-1dea-908c-a8f5-01570dd21389\">Ce dernier contiendrait des informations quant &agrave; certaines d&eacute;marches mise en place et &agrave; l&rsquo;implication de l&rsquo;h&ocirc;tel quant &agrave; la bonne gestion de l&rsquo;&eacute;nergie.</span></p><p><em>Budget temps: 1</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -1548,8 +1549,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
