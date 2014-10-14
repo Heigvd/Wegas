@@ -530,7 +530,7 @@ if (centerTab) {
                     defaultPageId: 16
                 }]
         }).item(0);
-        properties.plug(Y.Plugin.FullWidthTab);
+        //properties.plug(Y.Plugin.FullWidthTab);
     });
 }
 
