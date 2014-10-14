@@ -62,6 +62,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                 optional: true,
                 _inputex: {
                     _type: "text",
+                    wrapperClassName: "wegas-comments",
                     index: 100
                 }
             },

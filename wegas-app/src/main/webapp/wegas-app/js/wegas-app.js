@@ -108,10 +108,6 @@ YUI.add('wegas-app', function(Y) {
                     e.currentTarget.toggleClass("wegas-stdmode")                // Toggle stdmode class on body (hides any wegas-advancedfeature)
                         .toggleClass("wegas-advancedmode");
                     Y.config.win.Y = Y;                                         // Allow access to Y instance
-                    //if (!this.audio) {                                          // Mexican guy
-                        //this.audio = new Audio(this.get("base") + "wegas-app/images/wegas-mexican.mp3");
-                        //this.audio.play();
-                    //}
                 }, "167", this);
             });
         },
