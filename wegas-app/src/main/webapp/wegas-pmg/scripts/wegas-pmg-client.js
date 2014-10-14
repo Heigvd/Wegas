@@ -256,6 +256,9 @@ Y.use("wegas-resourcemanagement-entities", function() {
     /**
      * Resource descriptor edition customisation
      */
+
+    persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.moral._inputex.value = 7;
+    
     persistence.ResourceDescriptor.ATTRS.properties._inputex = {
         type: GROUP,
         fields: [{
@@ -269,13 +272,14 @@ Y.use("wegas-resourcemanagement-entities", function() {
             }, {
                 label: "Maximum % of billed unworked hours",
                 name: "maxBilledUnworkedHours",
-                value: 0
+                value: 10
             }, {
                 label: "Engagement delay",
                 name: "engagementDelay",
                 value: 0
             }]
     };
+
     persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {
         type: GROUP,
         fields: [{
