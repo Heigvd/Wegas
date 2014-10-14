@@ -18,6 +18,12 @@ div.inputEx-hidden {
     border: 1px solid #C00E0C;
     background: #ffDFD3;
 }
+div.inputEx-invalid > div.inputEx-message {
+   /* color:#C00E0C; */
+   /* font-weight:bold; */
+   padding-bottom: 10px;
+   margin-top: -5px;
+}
 .inputEx-valid > div > div >input {
     border: 1px solid lightgray;
     background: white;
