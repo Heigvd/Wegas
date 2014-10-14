@@ -1,5 +1,5 @@
 {
-	"label": "Actions",
+	"title": "Actions",
 	"@class": "ListDescriptor",
 	"scope": {
 		"@class": "TeamScope",
@@ -10,7 +10,7 @@
 	},
 	"items": [
 		{
-			"label": "Initiation",
+			"title": "Initiation",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Board of Directors: Strategy",
+					"title": "Board of Directors: Strategy",
 					"name": "Board of Directors: Strategy",
-					"editorLabel": "AI 10 Board of Directors: Strategy",
+					"label": "AI 10 Board of Directors: Strategy",
 					"description": "<p>You consult the Board of Directors and ask information about the operational strategy for the campaign against computer addiction.</p><p><em>Costs: 1 time card</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -37,8 +37,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -63,9 +63,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Parents-teachers: Conference",
+					"title": "Parents-teachers: Conference",
 					"name": "Parents-teachers: Conference",
-					"editorLabel": "AI 20 Parents-teachers: Conference",
+					"label": "AI 20 Parents-teachers: Conference",
 					"description": "<p>You chair a parents-teachers conference on game addiction and prevention at local schools.</p><p><em>Costs: 4 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -78,8 +78,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -104,9 +104,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Teenagers: Workshops",
+					"title": "Teenagers: Workshops",
 					"name": "Teenagers: Workshops",
-					"editorLabel": "AI 60 Teenagers: workshops",
+					"label": "AI 60 Teenagers: workshops",
 					"description": "<p>You organize a series of 3 workshops with teeanagers that have more or less game affinity.</p><p><em>Costs: 4 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -119,8 +119,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -145,9 +145,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Team: Costs identification",
+					"title": "Team: Costs identification",
 					"name": "Team: Costs identification",
-					"editorLabel": "AI 65 Team: Costs identification",
+					"label": "AI 65 Team: Costs identification",
 					"description": "<p>You organize a workshop with 2 team members in order to estimate the overall costs of the prevention campaign.</p><p><em>Costs: 2 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -160,8 +160,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -196,9 +196,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Team: Goals identification",
+					"title": "Team: Goals identification",
 					"name": "Team: Goals identification",
-					"editorLabel": "AI 70 Team: Goals identification",
+					"label": "AI 70 Team: Goals identification",
 					"description": "<p>You organize a meeting with 2 teams members and a volunteer, aiming at identifying goals of the campaign.</p><p>The result should be an overall definition of the goal of the campaign \"prevention against computer addiction\".</p><p><em>Cost: 3 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -211,8 +211,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -242,9 +242,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Team: Tasks identification",
+					"title": "Team: Tasks identification",
 					"name": "Team: Tasks identification",
-					"editorLabel": "AI 75 Team: Tasks identification",
+					"label": "AI 75 Team: Tasks identification",
 					"description": "<p>You invite some team members expert in prevention campaign in order to identify overall tasks needed for the project execution.</p><p><em>Costs: 3 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -257,8 +257,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -288,9 +288,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Team: Campaign strategy",
+					"title": "Team: Campaign strategy",
 					"name": "Team: Campaign strategy",
-					"editorLabel": "AI 80 Team : Campaign strategy",
+					"label": "AI 80 Team : Campaign strategy",
 					"description": "<p>You organize a workshop with some team members and 3 expert volunteers.</p><p>Objectives of the workshop are to define the prevention campaign operational strategy: which public and which type of campaign.</p><p><em>Costs: 3 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -303,8 +303,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -334,9 +334,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Spouse: Work overtime",
+					"title": "Spouse: Work overtime",
 					"name": "Spouse: Work overtime",
-					"editorLabel": "AI 95 Spouse: Work overtime",
+					"label": "AI 95 Spouse: Work overtime",
 					"description": "<p>You inform your spouse that you're working on an important project proposal and that you will have to work late some evenings.</p><p><em>You will earn up to 3 time cards.</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -349,8 +349,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -381,7 +381,7 @@
 			]
 		},
 		{
-			"label": "Planning",
+			"title": "Planning",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -393,9 +393,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Team: Tasks durations assessment",
+					"title": "Team: Tasks durations assessment",
 					"name": "Team: Tasks durations assessment",
-					"editorLabel": "AP 10. Team: Tasks durations assessment",
+					"label": "AP 10. Team: Tasks durations assessment",
 					"description": "<p>You organize a meeting with some team members and ask their opinions about the estimation of the duration of tasks.</p><p>So they will be able to give their advice, validate and confirm the basics estimations that have already been done (in the \"Tasks\" tab).</p><p><em>Costs: 2 time cards<br /></em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -408,8 +408,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -434,9 +434,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Peter: Informal meeting",
+					"title": "Peter: Informal meeting",
 					"name": "Peter: Informal meeting",
-					"editorLabel": "AP 20. Peter: Informal report",
+					"label": "AP 20. Peter: Informal report",
 					"description": "<p>You create an informal meeting with Peter and drop some information on the project.</p><p><em>Cost: 1 time card</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -449,8 +449,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -490,9 +490,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Peter: Campaign strategy",
+					"title": "Peter: Campaign strategy",
 					"name": "Peter: Campaign strategy",
-					"editorLabel": "AP 30 Peter: Campaign strategy",
+					"label": "AP 30 Peter: Campaign strategy",
 					"description": "<p>You request an appointment with Peter in order to speak about the global prevention campaign strategy.</p><p><em>Cost: 1 time card</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -505,8 +505,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -531,9 +531,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Parent-Teacher: meeting",
+					"title": "Parent-Teacher: meeting",
 					"name": "Parent-Teacher: meeting",
-					"editorLabel": "AP 40. Parent-Teacher: meeting",
+					"label": "AP 40. Parent-Teacher: meeting",
 					"description": "<p>You organize a parent-teacher meeting in order to inform both groups on the state of the project and ask for their feedback.</p><p><em>Cost: 2 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -546,8 +546,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -577,9 +577,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Volunteers: Project information",
+					"title": "Volunteers: Project information",
 					"name": "Volunteers: Project information",
-					"editorLabel": "AP 60 Volunteers: Project information",
+					"label": "AP 60 Volunteers: Project information",
 					"description": "<p>You invite volunteers to a meeting where you will present the project. You will finish the meeting with an <span class=\"x-g\"><span id=\"appetizer__1\" class=\"x\">appetizer. </span></span></p><p><em>Costs:<br />2 time cards<br />200 euros</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -592,8 +592,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -618,9 +618,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Spouse: Work overtime",
+					"title": "Spouse: Work overtime",
 					"name": "Spouse: Work overtime",
-					"editorLabel": "AP95 Spouse: Work overtime",
+					"label": "AP95 Spouse: Work overtime",
 					"description": "<p>You inform your spouse that you're working on project planning and that you will have to work late some evenings.</p><p><em>You will earn up to 3 time cards.</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -633,8 +633,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -665,7 +665,7 @@
 			]
 		},
 		{
-			"label": "Execution",
+			"title": "Execution",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -677,9 +677,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Team Coordination",
+					"title": "Team Coordination",
 					"name": "Team Coordination",
-					"editorLabel": "AR 10. Team Coordination",
+					"label": "AR 10. Team Coordination",
 					"description": "<p>You organize a meeting with the responsible of each tasks in order to coordinate the work. During the meeting, you will also speak about quality of the work performed.</p><p>You will finish the meeting with (re)defining priorities and work to be done.</p><p><em>Cost: 2 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -692,8 +692,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -733,9 +733,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Quality analysis",
+					"title": "Quality analysis",
 					"name": "Quality analysis",
-					"editorLabel": "AR 20. Quality analysis",
+					"label": "AR 20. Quality analysis",
 					"description": "<p>You run an overall project quality analysis.</p><p>With some team members, you will check overall quality and if some problems are occurring, look for possible solutions.</p><p><em>Cost: 2 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -748,8 +748,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -794,9 +794,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Parents-Teachers information",
+					"title": "Parents-Teachers information",
 					"name": "Parents-Teachers information",
-					"editorLabel": "AR 30. Parents-Teacher information",
+					"label": "AR 30. Parents-Teacher information",
 					"description": "<p>You invite some parents and teachers in order to present the current state of the project and get some feedback.</p><p><em>Cost: 2 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -809,8 +809,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -855,9 +855,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Teenagers meeting",
+					"title": "Teenagers meeting",
 					"name": "Teenagers meeting",
-					"editorLabel": "AR 40. Teenagers meeting",
+					"label": "AR 40. Teenagers meeting",
 					"description": "<p>You organize a meeting with selected teenagers to inform them on the project achievements and ask for their feedback.</p><p><em>Cost: 2 time cards</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -870,8 +870,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -916,9 +916,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "End-User conference",
+					"title": "End-User conference",
 					"name": "End-User conference",
-					"editorLabel": "AR 50. End-User conference",
+					"label": "AR 50. End-User conference",
 					"description": "<div><p>You organize an End-User conference in order to inform stakeholders on the first results of the project.</p><p>You also hope that some journalists will atend the conference and make publicity about the campaign.</p><p><em>Cost: 2 time cards</em></p></div>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -931,8 +931,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -967,9 +967,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Spouse: Work overtime",
+					"title": "Spouse: Work overtime",
 					"name": "Spouse: Work overtime",
-					"editorLabel": "AR 95 Spouse: Work overtime",
+					"label": "AR 95 Spouse: Work overtime",
 					"description": "<p>You inform your spouse that you're very impliet in project execution and that you will have to work overtimes.</p><p><em>You will earn up to 3 time cards.</em></p>",
 					"allowMultipleReplies": "true",
 					"defaultInstance": {
@@ -982,8 +982,8 @@
 						{
 							"@class": "ChoiceDescriptor",
 							"name": "Result",
+							"title": "Result",
 							"label": "Result",
-							"editorLabel": "Result",
 							"description": null,
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1014,7 +1014,7 @@
 			]
 		},
 		{
-			"label": "Closure",
+			"title": "Closure",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",

@@ -1,0 +1,1217 @@
+{
+  "@class": "GameModel",
+  "pages": {},
+  "name": "Empty PMG",
+  "description": "",
+  "createdTime": 1413199619989,
+  "template": true,
+  "childVariableDescriptors": [
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 100
+      },
+      "label": "Management",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "managementApproval",
+      "minValue": 0,
+      "maxValue": 200,
+      "defaultValue": 100
+    },
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 100
+      },
+      "label": "User",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "userApproval",
+      "minValue": 0,
+      "maxValue": 200,
+      "defaultValue": 100
+    },
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 0
+      },
+      "label": "Quality",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "qualityImpacts",
+      "minValue": -100,
+      "maxValue": 100,
+      "defaultValue": 0
+    },
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 15
+      },
+      "label": "Time cards",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "timeCards",
+      "minValue": 0,
+      "maxValue": null,
+      "defaultValue": 15
+    },
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 0
+      },
+      "label": "Fixed costs",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "projectFixedCosts",
+      "minValue": null,
+      "maxValue": null,
+      "defaultValue": 0
+    },
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 1
+      },
+      "label": "Phase",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "currentPhase",
+      "minValue": 1,
+      "maxValue": 4,
+      "defaultValue": 1
+    },
+    {
+      "@class": "NumberDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 1
+      },
+      "label": "Bonus coeff.",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "bonusRatio",
+      "minValue": 0,
+      "maxValue": 2,
+      "defaultValue": 1
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "Contains four sub-directories, 1 for each project phase, containing Actions (i.e. question with only one conditional result choice) for the corresponding phase.\n\nWARNING: YOU SHALL NOT RE-ORDER SUBDIRECTORIES !!!",
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 0
+      },
+      "label": "Actions",
+      "scope": {
+        "@class": "GameScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "actions",
+      "items": [
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains actions available in the corresponding phase",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase1",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "actions_phase1",
+          "items": []
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains actions available in the corresponding phase",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase2",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "actions_phase2",
+          "items": []
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains actions available in the corresponding phase",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase3",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "actions_phase3",
+          "items": []
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains actions available in the corresponding phase",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase4",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "actions_phase4",
+          "items": []
+        }
+      ]
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "Contains four sub-directories, 1 for each project phase\n\nWARNING: YOU SHALL NOT RE-ORDER SUBDIRECTORIES !!!",
+      "defaultInstance": {
+        "@class": "NumberInstance",
+        "history": [],
+        "value": 0
+      },
+      "label": "Questions",
+      "scope": {
+        "@class": "GameScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "questions",
+      "items": [
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains one sub-directory for each period of the phase.\n\nWARNING: YOU SHALL NOT RE-ORDER SUBDIRECTORIES !!!",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase1",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "questionPhase1",
+          "items": [
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period1.1",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase1_1",
+              "items": []
+            }
+          ]
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains one sub-directory for each period of the phase.\n\nWARNING: YOU SHALL NOT RE-ORDER SUBDIRECTORIES !!!",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase2",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "questionPhase2",
+          "items": [
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period2.1",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase2_1",
+              "items": []
+            }
+          ]
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains one sub-directory for each period of the phase.\n\nWARNING: YOU SHALL NOT RE-ORDER SUBDIRECTORIES !!!",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase3",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "questionPhase3",
+          "items": [
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period3.1",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase3_1",
+              "items": []
+            },
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period3.2",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase3_2",
+              "items": []
+            },
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period3.3",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase3_3",
+              "items": []
+            },
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period3.4",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase3_4",
+              "items": []
+            }
+          ]
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "Should contains one sub-directory for each period of the phase.\n\nWARNING: YOU SHALL NOT RE-ORDER SUBDIRECTORIES !!!",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Phase4",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "questionPhase4",
+          "items": [
+            {
+              "@class": "ListDescriptor",
+              "comments": "Should contains questions available in the corresponding phase",
+              "defaultInstance": {
+                "@class": "ListInstance"
+              },
+              "label": "Period4-1",
+              "scope": {
+                "@class": "TeamScope",
+                "broadcastScope": "TeamScope"
+              },
+              "title": null,
+              "name": "questionPhase4_1",
+              "items": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "",
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "Tasks",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "tasks",
+      "items": []
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "Contains resources, organized by trade:\n - 1 sub-directory => 1 trade\n - no sub-sub-directory\n\nDONT FORGET TO SET RESOURCE'S SKILLS !!!",
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "Employees",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "employees",
+      "items": [
+        {
+          "@class": "ListDescriptor",
+          "comments": "",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Carpenters",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "carpenters",
+          "items": []
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Wood Turners",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "woodTurners",
+          "items": []
+        },
+        {
+          "@class": "ListDescriptor",
+          "comments": "",
+          "defaultInstance": {
+            "@class": "ListInstance"
+          },
+          "label": "Shoemakers",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "shoemakers",
+          "items": []
+        }
+      ]
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "Trigger",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "trigger",
+      "items": []
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "State Machine",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "stateMachine",
+      "items": []
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "",
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "Periods",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "currentPeriod",
+      "items": [
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 1
+          },
+          "label": "Periods phase 1",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "periodPhase1",
+          "minValue": 1,
+          "maxValue": 1,
+          "defaultValue": 1
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 1
+          },
+          "label": "Periods phase 2",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "periodPhase2",
+          "minValue": 1,
+          "maxValue": 1,
+          "defaultValue": 1
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 1
+          },
+          "label": "Periods phase 3",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "periodPhase3",
+          "minValue": 1,
+          "maxValue": null,
+          "defaultValue": 1
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 1
+          },
+          "label": "Periods phase 4",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "periodPhase4",
+          "minValue": 1,
+          "maxValue": 1,
+          "defaultValue": 1
+        }
+      ]
+    },
+    {
+      "@class": "InboxDescriptor",
+      "comments": null,
+      "defaultInstance": {
+        "@class": "InboxInstance",
+        "messages": [],
+        "unreadCount": 0
+      },
+      "label": "Inbox",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": "Inbox",
+      "name": "inbox",
+      "description": null
+    },
+    {
+      "@class": "InboxDescriptor",
+      "comments": "News will appears in player's \"Home\" tab.",
+      "defaultInstance": {
+        "@class": "InboxInstance",
+        "messages": [],
+        "unreadCount": 0
+      },
+      "label": "News",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "news",
+      "description": null
+    },
+    {
+      "@class": "TextDescriptor",
+      "comments": "ChangeLog:\n\n20131013\n - First Skeleton\n",
+      "defaultInstance": {
+        "@class": "TextInstance",
+        "value": "<p><strong>PMG Empty Skeleton</strong></p>\n<p>Version: 20131013</p>\n<p>&nbsp;</p>\n<p>&nbsp;</p>"
+      },
+      "label": "Texte d'accueil",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "homeText"
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "DON'T EDIT UNLESS YOU KNOW WHAT YOU DO",
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "Game properties",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "properties",
+      "items": [
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 16
+          },
+          "label": "Execution phase duration",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "executionPeriods",
+          "minValue": 1,
+          "maxValue": null,
+          "defaultValue": 16
+        },
+        {
+          "@class": "BooleanDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "BooleanInstance",
+            "value": false
+          },
+          "label": "Auto reservation",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "autoReservation"
+        },
+        {
+          "@class": "BooleanDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "BooleanInstance",
+            "value": false
+          },
+          "label": "Force question replies",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "forceQuestionReplies"
+        },
+        {
+          "@class": "BooleanDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "BooleanInstance",
+            "value": true
+          },
+          "label": "EVM",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "evm"
+        },
+        {
+          "@class": "StringDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "StringInstance",
+            "value": "week"
+          },
+          "label": "Time unit",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "timeUnit",
+          "validationPattern": null
+        },
+        {
+          "@class": "StringDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "StringInstance",
+            "value": "fr"
+          },
+          "label": "Language",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "language",
+          "validationPattern": null
+        }
+      ]
+    },
+    {
+      "@class": "ListDescriptor",
+      "comments": "Internal Variables. \n\nYou SHALL NOT UPDATE by hand or through impact unless you really know what you do!",
+      "defaultInstance": {
+        "@class": "ListInstance"
+      },
+      "label": "Private",
+      "scope": {
+        "@class": "TeamScope",
+        "broadcastScope": "TeamScope"
+      },
+      "title": null,
+      "name": "pageUtilities",
+      "items": [
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "projectUnworkedHours",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "projectUnworkedHours",
+          "minValue": 0,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 100
+          },
+          "label": "costs",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "costs",
+          "minValue": 0,
+          "maxValue": 200,
+          "defaultValue": 100
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "actualCost",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "actualCost",
+          "minValue": 0,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "plannedValue",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "planedValue",
+          "minValue": 0,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "earnedValue",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "earnedValue",
+          "minValue": 0,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 100
+          },
+          "label": "quality",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "quality",
+          "minValue": 0,
+          "maxValue": 200,
+          "defaultValue": 100
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 100
+          },
+          "label": "delay",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "delay",
+          "minValue": 0,
+          "maxValue": 200,
+          "defaultValue": 100
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 4
+          },
+          "label": "ganttPage",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "ganttPage",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 4
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 3
+          },
+          "label": "taskPage",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "taskPage",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 3
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "projectCompleteness",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "projectCompleteness",
+          "minValue": 0,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "cpi",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "cpi",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "spi",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "spi",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "FSMDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "FSMInstance",
+            "currentStateId": 1,
+            "enabled": true,
+            "currentState": {
+              "@class": "State",
+              "editorPosition": {
+                "@class": "Coordinate",
+                "x": 213,
+                "y": 170
+              },
+              "label": "annule effet",
+              "onEnterEvent": {
+                "@class": "Script",
+                "content": "",
+                "language": "JavaScript"
+              },
+              "transitions": [
+                {
+                  "@class": "Transition",
+                  "index": 0,
+                  "nextStateId": 1,
+                  "preStateImpact": {
+                    "@class": "Script",
+                    "content": "PMGHelper.cancelEffect()",
+                    "language": "JavaScript"
+                  },
+                  "triggerCondition": {
+                    "@class": "Script",
+                    "content": "Event.fired(\"nextWeek\")",
+                    "language": "JavaScript"
+                  }
+                }
+              ]
+            }
+          },
+          "label": "delayImpact",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "PlayerScope"
+          },
+          "title": null,
+          "name": "delayImpact",
+          "states": {
+            "1": {
+              "@class": "State",
+              "editorPosition": {
+                "@class": "Coordinate",
+                "x": 213,
+                "y": 170
+              },
+              "label": "annule effet",
+              "onEnterEvent": {
+                "@class": "Script",
+                "content": "",
+                "language": "JavaScript"
+              },
+              "transitions": [
+                {
+                  "@class": "Transition",
+                  "index": 0,
+                  "nextStateId": 1,
+                  "preStateImpact": {
+                    "@class": "Script",
+                    "content": "PMGHelper.cancelEffect()",
+                    "language": "JavaScript"
+                  },
+                  "triggerCondition": {
+                    "@class": "Script",
+                    "content": "Event.fired(\"nextWeek\")",
+                    "language": "JavaScript"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "@class": "InboxDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "InboxInstance",
+            "messages": [],
+            "unreadCount": 0
+          },
+          "label": "History",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "history",
+          "description": null
+        },
+        {
+          "@class": "ObjectDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "ObjectInstance",
+            "properties": {}
+          },
+          "label": "Factors",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "factors",
+          "description": "",
+          "properties": {}
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 1
+          },
+          "label": "currentTime",
+          "scope": {
+            "@class": "TeamScope",
+            "broadcastScope": "TeamScope"
+          },
+          "title": null,
+          "name": "currentTime",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 1
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "PhaseLimit",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "phaseLimit",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "NumberDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "NumberInstance",
+            "history": [],
+            "value": 0
+          },
+          "label": "PeriodLimit",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "periodLimit",
+          "minValue": null,
+          "maxValue": null,
+          "defaultValue": 0
+        },
+        {
+          "@class": "BooleanDescriptor",
+          "comments": null,
+          "defaultInstance": {
+            "@class": "BooleanInstance",
+            "value": false
+          },
+          "label": "AdvancementLimit",
+          "scope": {
+            "@class": "GameScope",
+            "broadcastScope": "GameScope"
+          },
+          "title": null,
+          "name": "advancementLimit"
+        }
+      ]
+    }
+  ],
+  "scriptLibrary": {},
+  "cssLibrary": {},
+  "clientScriptLibrary": {
+    "default": {
+      "@class": "GameModelContent",
+      "contentType": null,
+      "content": "/*\n * Wegas\n * http://wegas.albasim.ch\n *\n * Copyright (c) 2013 School of Business and Engineering Vaud, Comem\n * Licensed under the MIT License\n */\n/**\n * @author Francois-Xavier Aeberhard <fx@red-agent.com>\n */\nvar STRING = \"string\", HIDDEN = \"hidden\", ARRAY = \"array\", SELF = \"self\",\n    NUMBER = \"number\", SELECT = \"select\", VALUE = \"value\", GROUP = \"group\",\n    persistence = Y.Wegas.persistence;\n\nY.use(\"wegas-variabledescriptor-entities\", function() {\n    persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({\n        type: \"AddEntityChildButton\",\n        label: \"Resource\",\n        targetClass: \"ResourceDescriptor\"\n    }, {\n        type: \"AddEntityChildButton\",\n        label: \"Task\",\n        targetClass: \"TaskDescriptor\"\n    });\n});\n\nY.use(\"wegas-resourcemanagement-entities\", function() {\n\n    /** \n     * Set available jobs in the edit form based on the employee folder content\n     */\n    persistence.Resources.SKILLS.length = 0;                                        // Remove existing skills\n    Y.Array.each(Y.Wegas.Facade.Variable.cache.find(\"name\", \"employees\").get(\"items\"), function(vd) {\n        persistence.Resources.SKILLS.push({label: vd.get(\"label\"), value: vd.get(\"name\")});\n    });\n\n\n    persistence.TaskDescriptor.ATTRS.properties._inputex = {\n        type: GROUP,\n        index: 2,\n        fields: [{\n                name: \"takeInHandDuration\",\n                label: \"Take-in-hand duration\",\n                type: NUMBER,\n                value: 0\n            }, {\n                name: \"competenceRatioInf\",\n                label: \"Competence coeff. inf.\",\n                type: NUMBER,\n                value: 1\n            }, {\n                name: \"competenceRatioSup\",\n                label: \"Competence coeff. sup.\",\n                type: NUMBER,\n                value: 1\n            }, {\n                name: \"coordinationRatioInf\",\n                type: NUMBER,\n                label: \"Coordination coeff. inf.\",\n                value: 1\n            }, {\n                name: \"coordinationRatioSup\",\n                label: \"Coordination coeff. sup.\",\n                type: NUMBER,\n                value: 1\n            }, {\n                name: \"progressionOfNeeds\",\n                type: HIDDEN,\n                value: 1\n            }]\n    };\n\n    persistence.TaskDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {\n        type: GROUP,\n        index: 10,\n        fields: [{\n                name: \"fixedCosts\",\n                label: \"Fixed costs\",\n                type: NUMBER,\n                value: 0\n            }, {\n                name: \"randomDurationInf\",\n                label: \"Random duration delta inf.\",\n                type: NUMBER,\n                value: 0\n            }, {\n                name: \"randomDurationSup\",\n                label: \"Random duration delta sup.\",\n                type: NUMBER,\n                value: 0\n            }, {\n                name: \"predecessorsDependances\",\n                label: \"Predecessors dependency\",\n                type: NUMBER,\n                value: 1\n            }, {\n                name: \"bonusRatio\",\n                label: \"Bonus coeff.\",\n                type: NUMBER,\n                value: 1\n            }, {\n                name: \"unworkedHoursCosts\",\n                type: HIDDEN,\n                value: 0\n            }, {\n                name: \"wages\",\n                type: HIDDEN,\n                value: 0\n            }, {\n                name: \"bac\",\n                type: HIDDEN,\n                value: 0\n            }, {\n                name: \"completeness\",\n                value: 0,\n                type: HIDDEN\n            }, {\n                name: \"quality\",\n                type: HIDDEN,\n                value: 0\n            }]\n    };\n    Y.mix(persistence.TaskDescriptor.METHODS, {\n        getNumberInstanceProperty: {\n            label: \"Get instance property\",\n            returns: NUMBER,\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"fixedCosts\"\n                        }, {\n                            value: \"quality\"\n                        }, {\n                            value: \"completeness\"\n                        }]\n                }]\n        },\n        addNumberAtInstanceProperty: {\n            label: \"Add to instance property\",\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    type: SELECT,\n                    scriptType: STRING,\n                    choices: [{\n                            value: \"fixedCosts\"\n                        }, {\n                            value: \"quality\"\n                        }, {\n                            value: \"predecessorsDependances\"\n                        }, {\n                            value: \"randomDurationSup\"\n                        }, {\n                            value: \"randomDurationInf\"\n                        }, {\n                            value: \"bonusRatio\"\n                        }]\n                }, {\n                    type: STRING,\n                    typeInvite: VALUE,\n                    scriptType: STRING\n                }]\n        },\n        setInstanceProperty: {\n            label: \"Set instance property\",\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"fixedCosts\"\n                        }, {\n                            value: \"quality\"\n                        }, {\n                            value: \"predecessorsDependances\"\n                        }, {\n                            value: \"randomDurationSup\"\n                        }, {\n                            value: \"randomDurationInf\"\n                        }, {\n                            value: \"bonusRatio\"\n                        }]\n                }, {\n                    type: STRING,\n                    typeInvite: VALUE,\n                    scriptType: STRING\n                }]\n        },\n        addAtRequirementVariable: {\n            label: \"Add to requirements\",\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    type: \"entityarrayfieldselect\",\n                    returnAttr: \"name\",\n                    scriptType: STRING,\n                    scope: \"instance\",\n                    field: \"requirements\",\n                    name: {\n                        values: [\"quantity\", \"work\", \"level\"],\n                        separator: \" - \"\n                    }\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"quantity\"\n                        }, {\n                            value: \"level\"\n                        }]\n                }, {\n                    type: STRING,\n                    typeInvite: VALUE,\n                    scriptType: STRING\n                }]\n        },\n        setRequirementVariable: {\n            label: \"Set requirements\",\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    type: \"entityarrayfieldselect\",\n                    returnAttr: \"name\",\n                    scriptType: STRING,\n                    scope: \"instance\",\n                    field: \"requirements\",\n                    name: {\n                        values: [\"quantity\", \"work\", \"level\"],\n                        separator: \" - \"\n                    }\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"quantity\"\n                        }, {\n                            value: \"level\"\n                        }]\n                }, {\n                    type: STRING,\n                    typeInvite: VALUE,\n                    scriptType: STRING\n                }]\n        }\n    }, true);\n\n    /**\n     * Resource descriptor edition customisation\n     */\n    persistence.ResourceDescriptor.ATTRS.properties._inputex = {\n        type: GROUP,\n        fields: [{\n                label: \"Activity rate coeff.\",\n                name: \"coef_activity\",\n                value: 1\n            }, {\n                label: \"Motivation coeff.\",\n                name: \"coef_moral\",\n                value: 1\n            }, {\n                label: \"Maximum % of billed unworked hours\",\n                name: \"maxBilledUnworkedHours\",\n                value: 0\n            }, {\n                label: \"Engagement delay\",\n                name: \"engagementDelay\",\n                value: 0\n            }]\n    };\n    persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.properties._inputex = {\n        type: GROUP,\n        fields: [{\n                name: \"activityRate\",\n                label: \"Activity rate\",\n                type: NUMBER,\n                value: 100\n            }, {\n                name: \"wage\",\n                label: \"Monthly wages (100%)\",\n                type: NUMBER,\n                value: 1000\n            }]\n    };\n\n    persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {\n        optional: true,\n        type: NUMBER,\n        _inputex: {\n            _type: HIDDEN\n        }\n    };\n    persistence.ResourceInstance.ATTRS.confidence = {\n        type: NUMBER,\n        optional: true,\n        _inputex: {\n            _type: HIDDEN\n        }\n    };\n    persistence.ResourceInstance.ATTRS.moralHistory = {\n        type: ARRAY,\n        _inputex: {\n            _type: HIDDEN\n        }\n    };\n    persistence.ResourceInstance.ATTRS.confidenceHistory = {\n        type: ARRAY,\n        _inputex: {\n            _type: HIDDEN\n        }\n    };\n    persistence.ResourceDescriptor.METHODS = Y.Object.filter(persistence.ResourceDescriptor.METHODS, function(m, k) {\n        return !(k.match(/confidence/i)\n            || k.match(/salary/i)\n            || k.match(/experience/i)\n            || k.match(/leadership/i));\n    });\n    Y.mix(persistence.ResourceDescriptor.METHODS, {\n        getNumberInstanceProperty: {\n            label: \"Get instance property\",\n            returns: NUMBER,\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"activityRate\"\n                        }, {\n                            value: \"wage\"\n                        }]\n                }]\n        },\n        addNumberAtInstanceProperty: {\n            label: \"Add to instance property\",\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"activityRate\"\n                        }, {\n                            value: \"wage\"\n                        }]\n                }, {\n                    type: STRING,\n                    typeInvite: VALUE,\n                    scriptType: STRING\n                }]\n        },\n        setInstanceProperty: {\n            label: \"Set instance property\",\n            arguments: [{\n                    type: HIDDEN,\n                    value: SELF\n                }, {\n                    scriptType: STRING,\n                    type: SELECT,\n                    choices: [{\n                            value: \"activityRate\"\n                        }, {\n                            value: \"wage\"\n                        }]\n                }, {\n                    type: STRING,\n                    typeInvite: VALUE,\n                    scriptType: STRING\n                }]\n        }\n    }, true);\n\n    Y.mix(persistence.ResourceDescriptor.prototype, {\n        isFirstPriority: function(taskDescriptor) {\n            var assignments = this.getInstance().get(\"assignments\");\n\n            return assignments.length > 0 && assignments[0].get('taskDescriptorId') === taskDescriptor.get(\"id\");\n        },\n        isReservedToWork: function() {\n            var autoReserve = Y.Wegas.Facade.Variable.cache.find(\"name\", \"autoReservation\").get(\"value\"),\n                currentPeriod = Y.Wegas.Facade.Variable.cache.find(\"name\", \"periodPhase3\").getInstance().get(\"value\"),\n                occupations = this.getInstance().get(\"occupations\"),\n                oi;\n\n            if (autoReserve) {\n                // Auto Reservation : resource is always reserved unless\n                // an uneditable occupation exist\n                for (oi = 0; oi < occupations.length; oi++) {\n                    if (occupations[oi].get(\"time\") === currentPeriod && !occupations[oi].get(\"editable\")) {\n                        return false;\n                    }\n                }\n                return true;\n            } else {\n                // Manual Reservation: never reserved unless \n                // editable occupation\n                for (oi = 0; oi < occupations.length; oi++) {\n                    if (occupations[oi].get(\"time\") === currentPeriod && occupations[oi].get(\"editable\")) {\n                        return true;\n                    }\n                }\n                return false;\n            }\n        }, isPlannedForCurrentPeriod: function(taskDescriptor) {\n            return this.isFirstPriority(taskDescriptor) && this.isReservedToWork();\n        }\n    });\n\n});\n\nY.use(\"wegas-inputex-variabledescriptorselect\", function() {\n    Y.mix(Y.inputEx.getFieldClass(\"statement\").prototype.GLOBALMETHODS, {\n        \"PMGHelper.sendMessage\": {\n            label: \"PMG - Send Message\",\n            className: \"wegas-method-sendmessage\",\n            \"arguments\": [\n                {\n                    type: \"string\",\n                    label: \"From\",\n                    scriptType: \"string\"\n                }, {\n                    type: \"string\",\n                    label: \"Subject\",\n                    scriptType: \"string\",\n                    required: true\n                }, {\n                    type: \"html\",\n                    label: \"Body\",\n                    scriptType: \"string\",\n                    required: true\n                }, {\n                    type: \"list\",\n                    label: \"\",\n                    scriptType: \"string\",\n                    elementType: {\n                        type: \"wegasurl\",\n                        label: \"\",\n                        required: true\n                    }\n                }]\n        },\n        \"PMGHelper.addImpactDuration\": {\n            label: \"[PMG] impact reverse\",\n            \"arguments\": [{\n                    type: \"flatvariableselect\",\n                    typeInvite: \"Object\",\n                    scriptType: \"string\",\n                    classFilter: [\"TaskDescriptor\"],\n                    required: true\n                }, {\n                    type: \"select\",\n                    typeInvite: \"method\",\n                    scriptType: \"string\",\n                    choices: Y.Object.keys(Y.Wegas.persistence.TaskDescriptor.METHODS),\n                    required: true\n                }, {\n                    type: \"list\",\n                    typeInvite: \"\",\n                    scriptType: \"array\",\n                    value: [\"bonusRatio\", -0.2],\n                    required: true\n                }, {\n                    type: \"number\",\n                    typeInvite: \"in period\",\n                    scriptType: \"number\",\n                    required: true\n                }]\n        }\n    });\n});\n\n/*\n Y.use(\"wegas-inputex-variabledescriptorselect\", function(){\n Y.mix(Y.inputEx.getFieldClass(\"condition\").prototype.GLOBALMETHODS, {\n \"PMGHelper.workingOnProject\": {\n label: \"2 [PMG] is working on project\",\n \"arguments\" : [{\n type: \"variabledescriptorselect\",\n scriptType: \"ResourceDescriptor\",\n classFilter: \"ResourceDescriptor\",\n required: true\n }]\n }\n });\n });*/\n\n\n// Game properties & dashboard page\nvar centerTab = Y.Widget.getByNode(\"#centerTabView\");\n\nif (centerTab) {\n    Y.use('wegas-fullwidthtab', function() {\n\n        if (Y.one(\".wegas-hostmode\")) {\n            // Add dashboard tab in first position\n            var dashboard = centerTab.add({\n                label: \"Overview\",\n                children: [{\n                        type: \"PageLoader\",\n                        pageLoaderId: \"properties\",\n                        defaultPageId: 17\n                    }],\n                plugins: [{\n                        fn: \"FullWidthTab\"\n                    }]\n            }, 0).item(0);\n            dashboard.set(\"selected\", 2);\n        }\n\n        // Add properties tab\n        var properties = centerTab.add({\n            label: \"Properties\",\n            children: [{\n                    type: \"PageLoader\",\n                    pageLoaderId: \"properties\",\n                    defaultPageId: 16\n                }]\n        }).item(0);\n    });\n}\n\n"
+    }
+  },
+  "properties": {
+    "freeForAll": false,
+    "pagesUri": "wegas-pmg/db/wegas-pmg-pages.json?",
+    "cssUri": "wegas-pmg/css/wegas-pmg.css;wegas-pmg/css/wegas-pmg-editor.css",
+    "websocket": "",
+    "scriptUri": "wegas-pmg/scripts/server-scripts/",
+    "clientScriptUri": "wegas-pmg/js/wegas-pmg-loader.js",
+    "imageUri": "wegas-pmg/images/pmg-thumb.png",
+    "iconUri": "wegas-pmg/images/pmg-icon.png"
+  },
+  "createdByName": "Maxence Laurent"
+}

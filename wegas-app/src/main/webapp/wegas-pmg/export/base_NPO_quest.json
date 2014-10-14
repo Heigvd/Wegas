@@ -1,5 +1,5 @@
 {
-	"label": "Questions",
+	"title": "Questions",
 	"@class": "ListDescriptor",
 	"scope": {
 		"@class": "TeamScope",
@@ -10,7 +10,7 @@
 	},
 	"items": [
 		{
-			"label": "Initiation",
+			"title": "Initiation",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -22,9 +22,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Check trends with Policy makers",
+					"title": "Check trends with Policy makers",
 					"name": "Check trends with Policy makers",
-					"editorLabel": "CI 15. Policy makers: trends",
+					"label": "CI 15. Policy makers: trends",
 					"description": "<p>Mrs Robinson asks you : \"It could be a good idea to contact some Policy makers and chief administrators in order to get a feeling for which trends for  prevention programs and buzzwords could be popular with the National  Office for Public Health.\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -37,8 +37,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Accept",
+							"title": "1. Accept",
 							"label": "1. Accept",
-							"editorLabel": "1. Accept",
 							"description": "<p>You ask her to go ahead with this idea and share the job: she will do some phone calls to people that she knows and you will do the same.</p><p><em>Cost: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -57,8 +57,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Refuse",
+							"title": "2. Refuse",
 							"label": "2. Refuse",
-							"editorLabel": "2. Refuse",
 							"description": "<p>You prefer not to contact policy makers about this subject.</p><p><em>Cost: 0</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -78,9 +78,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Identify potential print media",
+					"title": "Identify potential print media",
 					"name": "Identify potential print media",
-					"editorLabel": "CI 20. Identify print media",
+					"label": "CI 20. Identify print media",
 					"description": "<p>You may spend some time for identifying potential print media for a mass-media campaign on game-addiction.</p><p><em>Which option do you choose?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -93,8 +93,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Complete identification",
+							"title": "1. Complete identification",
 							"label": "1. Complete identification",
-							"editorLabel": "1. Complete identification",
 							"description": "<p>You scan the complete market of potential print media for both teenagers and wider audience. This may help to identify key media and their ad rates and, in doing so, to give more concrete information for the project tender.</p><p><em>Costs: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -113,8 +113,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Partial identification",
+							"title": "2. Partial identification",
 							"label": "2. Partial identification",
-							"editorLabel": "2. Partial identification",
 							"description": "<p>You quickly scan the print media market just in order to have a first idea of costs and a somehow consistent proposition for the project tender.</p><p>You may complete the identification during planning stage.</p><p><em>Costs: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -133,8 +133,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No identification",
+							"title": "3. No identification",
 							"label": "3. No identification",
-							"editorLabel": "3. No identification",
 							"description": "<p>You choose to not to spend time on this issue now and to rather postpone it to the planning stage.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -154,9 +154,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Stakeholder participation",
+					"title": "Stakeholder participation",
 					"name": "Stakeholder participation",
-					"editorLabel": "CI 25. Stakeholder participation",
+					"label": "CI 25. Stakeholder participation",
 					"description": "<p>Peter, the Executive Director, asks you :</p><p>\"For this project, how will you identify and integrate project stakeholders? \"</p><p><em>What is your answer ?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -169,8 +169,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Complete stakeholders identification",
+							"title": "1. Complete stakeholders identification",
 							"label": "1. Complete stakeholders identification",
-							"editorLabel": "1. Complete stakeholders identification",
 							"description": "<p>You answer to Peter that you believe in the importance of stakeholders participation and therefore opt for spending some time in identifying project stakeholders.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -189,8 +189,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Quick stakeholders identification",
+							"title": "2. Quick stakeholders identification",
 							"label": "2. Quick stakeholders identification",
-							"editorLabel": "2. Quick stakeholders identification",
 							"description": "<p>You answer to Peter that you believe in the importance of stakeholder participation, but think that a short effort will give already a good overview of project stakeholders.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -209,8 +209,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No stakeholders integration",
+							"title": "3. No stakeholders integration",
 							"label": "3. No stakeholders integration",
-							"editorLabel": "3. No stakeholders integration",
 							"description": "<p>You answer to Peter that you answer that you prefer not to spent time on stakeholders identification.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -230,9 +230,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Shortened intiation",
+					"title": "Shortened intiation",
 					"name": "Shortened intiation",
-					"editorLabel": "CI 30. Shortened intiation",
+					"label": "CI 30. Shortened intiation",
 					"description": "<p>Mrs Robinson asks you to set the basic course of the new project and proposes to shorten the project initiation phase in order to save some time for when the real problems will start.</p><p><em>What is your answer ?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -245,8 +245,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Short cut",
+							"title": "1. Short cut",
 							"label": "1. Short cut",
-							"editorLabel": "1. Short cut",
 							"description": "<p>\"The early bird catches the worm\", you answer. \"Let's shorten the initiation phase in order to save some time for the project planning and execution\".&nbsp;</p><p><em>3 time cards will be removed from initiation and you will receive a bonus of 4 time cards for the planning phase.</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -265,8 +265,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Do not shorten initiation",
+							"title": "2. Do not shorten initiation",
 							"label": "2. Do not shorten initiation",
-							"editorLabel": "2. Do not shorten initiation",
 							"description": "<p>Only the foolish man builds his house upon the sand. You prefer to not to reduce the initiation phase time.</p><p><em>Cost: 0</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -286,9 +286,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Welcome cocktail party for Emma",
+					"title": "Welcome cocktail party for Emma",
 					"name": "Welcome cocktail party for Emma",
-					"editorLabel": "CI 40. Welcome cocktail",
+					"label": "CI 40. Welcome cocktail",
 					"description": "<p>A cocktail with staff members, trainees and volunteers is organized to welcome Emma, a trainee who just joined the team. Emma will support you to your marketing and event management activities. &nbsp;</p><p>After some words of welcome, you ask&nbsp;her and the other team members to introduce themselves.<em></em></p><p>As you have a lot of other things to do, you wonder whether or not you will stay for the presentations and the cocktail.<em><br /></em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -301,8 +301,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Leave the welcome cocktail",
+							"title": "1. Leave the welcome cocktail",
 							"label": "1. Leave the welcome cocktail",
-							"editorLabel": "1. Leave the welcome cocktail",
 							"description": "<p>You ask everybody to accept your excuses and say that you have to leave in order to get some work done.</p><p><em>Cost: 0</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -321,8 +321,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Stay at the welcome cocktail",
+							"title": "2. Stay at the welcome cocktail",
 							"label": "2. Stay at the welcome cocktail",
-							"editorLabel": "2. Stay at the welcome cocktail",
 							"description": "<p>You decide to stay at the cocktail. It is also the occasion to have a drink with the staff.</p><p><em>Cost: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -342,9 +342,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Costs estimation",
+					"title": "Costs estimation",
 					"name": "Costs estimation",
-					"editorLabel": "CI 50. Costs estimation",
+					"label": "CI 50. Costs estimation",
 					"description": "<p>Peter, the Executive Director, asks you: \"During the initiation stage, how will you estimate project costs ?\"</p><p><em>What is your answer ?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -357,8 +357,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Detailed estimation",
+							"title": "1. Detailed estimation",
 							"label": "1. Detailed estimation",
-							"editorLabel": "1. Detailed estimation",
 							"description": "<p>You answer that you will conduct a detailed estimate of project' costs.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -377,8 +377,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Global estimation",
+							"title": "2. Global estimation",
 							"label": "2. Global estimation",
-							"editorLabel": "2. Global estimation",
 							"description": "<p>You answer that you will conduct a rough estimation of project' costs.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -397,8 +397,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No costs estimation",
+							"title": "3. No costs estimation",
 							"label": "3. No costs estimation",
-							"editorLabel": "3. No costs estimation",
 							"description": "<p>You answer that it may be difficult to estimate costs at this stage of the project and that the cost estimate will be done in the planning stage.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -418,9 +418,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "NOPH: More information",
+					"title": "NOPH: More information",
 					"name": "NOPH: More information",
-					"editorLabel": "CI 60. NOPH: More information",
+					"label": "CI 60. NOPH: More information",
 					"description": "<p>Mrs Robinson asks you if she should send an email to the National Office of Public Health (NOPH) in order to ask for more information about the tender.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -433,8 +433,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Accept",
+							"title": "1. Accept",
 							"label": "1. Accept",
-							"editorLabel": "1. Accept",
 							"description": "<p>You answer that it's a good idea and tell her to send an email, asking  questions about the program in order to grasp more information.</p><p><em>Cost: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -453,8 +453,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Not necessary",
+							"title": "2. Not necessary",
 							"label": "2. Not necessary",
-							"editorLabel": "2. Not necessary",
 							"description": "<p>You answer that it is not necessary.</p><p><em>Cost: 0</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -475,7 +475,7 @@
 			]
 		},
 		{
-			"label": "Planning",
+			"title": "Planning",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -487,9 +487,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Complete the identification of potential print media",
+					"title": "Complete the identification of potential print media",
 					"name": "Complete the identification of potential print media",
-					"editorLabel": "CP 20.1 Complete Identify print media",
+					"label": "CP 20.1 Complete Identify print media",
 					"description": "<p>As you did a partial Print media during initiation stage, you may spend some time for completing potential print media for a mass-media campaign on game-addiction.</p><p><em>Which option do you choose?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -502,8 +502,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Complete identification",
+							"title": "1. Complete identification",
 							"label": "1. Complete identification",
-							"editorLabel": "1. Complete identification",
 							"description": "<p>You scan the complete market of potential print media for both teenagers and wider audience. This will help to identify key media and their ad rates and, in doing so, to give more concrete information for the project tender.</p><p><em>Costs: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -522,8 +522,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No additional identification",
+							"title": "3. No additional identification",
 							"label": "3. No additional identification",
-							"editorLabel": "3. No additional identification",
 							"description": "<p>You choose to not to complete Print media identification.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -543,9 +543,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Identify potential print media",
+					"title": "Identify potential print media",
 					"name": "Identify potential print media",
-					"editorLabel": "CP 20.2 Identify print media",
+					"label": "CP 20.2 Identify print media",
 					"description": "<p>As you did not identified print media during initiation, you may spend some time for identifying potential print media for a mass-media campaign on game-addiction.</p><p><em>Which option do you choose?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -558,8 +558,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Complete identification",
+							"title": "1. Complete identification",
 							"label": "1. Complete identification",
-							"editorLabel": "1. Complete identification",
 							"description": "<p>You scan the complete market of potential print media for both teenagers and wider audience. This will help to identify key media and their ad rates and, in doing so, to give more concrete information for the project tender.</p><p><em>Costs: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -578,8 +578,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Partial identification",
+							"title": "2. Partial identification",
 							"label": "2. Partial identification",
-							"editorLabel": "2. Partial identification",
 							"description": "<p>You quickly scan the print media market just in order to have a first idea of costs and a somehow consistent proposition for the project tender.</p><p><em>Costs: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -598,8 +598,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No identification",
+							"title": "3. No identification",
 							"label": "3. No identification",
-							"editorLabel": "3. No identification",
 							"description": "<p>You choose to not to spend time on this issue.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -619,9 +619,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Identify potential telemedia partners",
+					"title": "Identify potential telemedia partners",
 					"name": "Identify potential telemedia partners",
-					"editorLabel": "CP 30. Identify telemedia partners",
+					"label": "CP 30. Identify telemedia partners",
 					"description": "<p>Constantin suggests he could run an analysis of potential web 2.0 and telemedia partners.</p><p><em>Do you give him a go?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -634,8 +634,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Complete identification",
+							"title": "1. Complete identification",
 							"label": "1. Complete identification",
-							"editorLabel": "1. Complete identification",
 							"description": "<p>You ask Constantin to scan the complete market of potential telemedia partners media for both teenagers and wider audience. This will help to identify key telemedia media, their formats and their ad rates and, in doing so, to give more concrete information for the project tender.</p><p><em>Costs: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -654,8 +654,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Partial identification",
+							"title": "2. Partial identification",
 							"label": "2. Partial identification",
-							"editorLabel": "2. Partial identification",
 							"description": "<p>You decide to ask Constantin to quickly scan the telemedia media market.</p><p><em>Costs: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -674,8 +674,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No identification",
+							"title": "3. No identification",
 							"label": "3. No identification",
-							"editorLabel": "3. No identification",
 							"description": "<p>You choose not to spend time on this issue.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -695,9 +695,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Pilot \"school experiment\"",
+					"title": "Pilot \"school experiment\"",
 					"name": "Pilot \"school experiment\"",
-					"editorLabel": "CP 50. Pilot school experiment",
+					"label": "CP 50. Pilot school experiment",
 					"description": "<p>One of the team members proposes to conduct a pilot experiment for the school-based prevention program.</p><p><em>What is your answer?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -710,8 +710,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Run the pilot experiment",
+							"title": "1. Run the pilot experiment",
 							"label": "1. Run the pilot experiment",
-							"editorLabel": "1. Run the pilot experiment",
 							"description": "<p>You consider this a good idea.</p><p>The pilot experiment may help to improve the program as well as diminishing resources needed for the School-Based fields activities.</p><p>A new task <em>Pilot experiment (duration: 1 week / resources needed: 1 operation senior) </em>will be created. This task must be completed before the launch of the \"field activities\" of the school-based prevention program.</p><p><em>Cost: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -730,8 +730,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Refuse",
+							"title": "2. Refuse",
 							"label": "2. Refuse",
-							"editorLabel": "2. Refuse",
 							"description": "<p>You consider the pilot experience not relevant.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -751,9 +751,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Include teachers as trainers",
+					"title": "Include teachers as trainers",
 					"name": "Include teachers as trainers",
-					"editorLabel": "CP 60. Include teachers as trainers",
+					"label": "CP 60. Include teachers as trainers",
 					"description": "<p>Some teachers ask to participate in the prevention project, at least for the school-based program.</p><p>One team member proposes to include them as animators for some schools interventions.</p><p><em>What is your answer ?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -766,8 +766,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Accept",
+							"title": "1. Accept",
 							"label": "1. Accept",
-							"editorLabel": "1. Accept",
 							"description": "<p>You decide to accept this idea. Teachers will be in charge of some of the school-based program.</p><p>It will be necessary to spend some time in order to train them, and a new task <em>\"Train The Teachers\" </em><em>(duration 1 week, resources needed: 1 operation senior)</em> will be created.</p><p>But you may gain some time for the school-based fields activities. The duration of this task will be diminished of 1 week. Resources needed for the task \"SB field activities\" may also diminish.</p><p><em>Costs: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -786,8 +786,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Refuse",
+							"title": "2. Refuse",
 							"label": "2. Refuse",
-							"editorLabel": "2. Refuse",
 							"description": "<p>You prefer not to include the teachers and conserve the global field activities at Sandelman fundation.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -807,9 +807,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Leadership",
+					"title": "Leadership",
 					"name": "Leadership",
-					"editorLabel": "CP 70. Leadership style",
+					"label": "CP 70. Leadership style",
 					"description": "<p>You have to decide which management style you want to apply for the project and inform the team about your choice.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -822,8 +822,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Star",
+							"title": "1. Star",
 							"label": "1. Star",
-							"editorLabel": "1. Star",
 							"description": "<p>You will keep the best possible overview of the project. You will therefore make things pass your desk whenever possible and get a as much contact as possible with everybody in the team.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -842,8 +842,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Pyramid",
+							"title": "2. Pyramid",
 							"label": "2. Pyramid",
-							"editorLabel": "2. Pyramid",
 							"description": "<p>You will take the key decisions, clearly define short term objectives and assign them to team members.</p><p>You will define adequate communication channels and clarify responsibilities, just in order to avoid that everybody feels responsible for everything and nothing is done at the end.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -862,8 +862,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. Network",
+							"title": "3. Network",
 							"label": "3. Network",
-							"editorLabel": "3. Network",
 							"description": "<p>21st century is said to be the Network Age. Whenever as possible, you'll keep hierarchy as flat as possible.</p><p>You will let daily operational problems to be solved by the team. Results and major issues will be reviewed and discussed during weekly meetings.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -884,7 +884,7 @@
 			]
 		},
 		{
-			"label": "Execution",
+			"title": "Execution",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",
@@ -896,9 +896,9 @@
 			"items": [
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Web 2.0 Morphing Campaign",
+					"title": "Web 2.0 Morphing Campaign",
 					"name": "Web 2.0 Morphing Campaign",
-					"editorLabel": "CR 02. Web 2.0 Morphing Campaign",
+					"label": "CR 02. Web 2.0 Morphing Campaign",
 					"description": "<p>Annouck and Michael propose to develop a <em>morphing campaign: </em>The idea is to develop a simple app that allows for the morphing of Facebook profile pictures and make them look like game addict faces. Everybody would share the app just for fun, thus virally spreading the message.&nbsp;</p><p><em>Would you like to implement the idea?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -911,8 +911,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Go for the morphing campaign",
+							"title": "1. Go for the morphing campaign",
 							"label": "1. Go for the morphing campaign",
-							"editorLabel": "1. Go for the morphing campaign",
 							"description": "<p>You decide to validate this idea and launch the morphing campaign.</p><p><em>Costs: 2 time cards</em></p><p><em>A new task \"morphing campaign\" will be created. Duration: 1 period, ressources needed: 2 operational people.</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -931,8 +931,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. No",
+							"title": "2. No",
 							"label": "2. No",
-							"editorLabel": "2. No",
 							"description": "<p>You decide not to launch this morphing campaign.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -952,9 +952,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Silent Disco",
+					"title": "Silent Disco",
 					"name": "Silent Disco",
-					"editorLabel": "CR 04. Silent Disco",
+					"label": "CR 04. Silent Disco",
 					"description": "<p>Constantin suggests to organize a silent disco to raise campaign awareness.&nbsp;</p><p>He explain \"Silent disco will be a social event. It is a disco where people dance to music listened to on wireless headphones. Rather than using a <span class=\"mw-redirect\">speaker system</span>, music is broadcast via an <span class=\"mw-redirect\">FM-transmitter</span>. Those without the headphones hear no music. Silent discos are popular at places where noise may not allowed to traditional disco.\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -967,8 +967,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. GO for silent disco",
+							"title": "1. GO for silent disco",
 							"label": "1. GO for silent disco",
-							"editorLabel": "1. GO for silent disco",
 							"description": "<p>You decide to accept this idea of a silent disco.</p><p><em>Costs: </em><br /><em>3 time cards</em><br /><em>2000 euros will be added to \"School-based\" fields activities.</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -987,8 +987,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. NO GO for silent disco",
+							"title": "2. NO GO for silent disco",
 							"label": "2. NO GO for silent disco",
-							"editorLabel": "2. NO GO for silent disco",
 							"description": "<p>You consider this is not a good idea and politely say no.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1008,9 +1008,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Print Media Campaign",
+					"title": "Print Media Campaign",
 					"name": "Print Media Campaign",
-					"editorLabel": "CR 05 : Print media campaign",
+					"label": "CR 05 : Print media campaign",
 					"description": "<p>For the mass media campaign, you have to choose which print media you want to include.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1023,8 +1023,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. All",
+							"title": "1. All",
 							"label": "1. All",
-							"editorLabel": "1. All",
 							"description": "<p>You choose to have ads int the following medias:</p><ul><li>PC games, 1'500 &euro;&nbsp;</li><li>Le Journal du Gamer, 3'000 &euro;</li><li>IT world, 5'000 &euro;</li></ul><p><em>Costs: <br />1 time card<br />9500</em> euros added to fixed costs of the task \"Supervize Mass media campaign\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1043,8 +1043,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Some Medias only",
+							"title": "2. Some Medias only",
 							"label": "2. Some Medias only",
-							"editorLabel": "2. Some Medias only",
 							"description": "<p>You choose to have ads int the following medias:</p><ul><li>PC games, 1'500 &euro;&nbsp;</li><li>IT world, 5'000 &euro;</li></ul><p><em>Costs: <br />1 time card<br />6'500</em> euros added to fixed costs of the task \"Supervise Mass media campaign\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1063,8 +1063,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. Some Medias only",
+							"title": "3. Some Medias only",
 							"label": "3. Some Medias only",
-							"editorLabel": "3. Some Medias only",
 							"description": "<p>You choose to have ads int the following medias:</p><ul><li>PC games, 1'500 &euro;&nbsp;</li><li>Le Journal du Gamer, 3'000 &euro;</li></ul><p><em>Costs: <br />1 time card<br />4'500</em> euros added to fixed costs of the task \"Supervise Mass media campaign\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1083,8 +1083,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "4. No printing medias",
+							"title": "4. No printing medias",
 							"label": "4. No printing medias",
-							"editorLabel": "4. No printing medias",
 							"description": "<p>You chose not to spend money for a printing media campaign.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1104,9 +1104,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Telemedia Campaign",
+					"title": "Telemedia Campaign",
 					"name": "Telemedia Campaign",
-					"editorLabel": "CR 06 : telemedia campaign",
+					"label": "CR 06 : telemedia campaign",
 					"description": "<p>For the telemedia campaign, you have to choose which media you want to include.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1119,8 +1119,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. All",
+							"title": "1. All",
 							"label": "1. All",
-							"editorLabel": "1. All",
 							"description": "<p>You choose to have ads int the following medias:</p><ul><li>For television: RTS Nouvo (6000 euros)</li><li>For radio: DIradio.com and Next Station.ir (4000 euros)</li></ul><p><em>Costs: <br />2 time cards<br />10'000</em> euros added to fixed costs of the task \"Supervise Mass media campaign\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1139,8 +1139,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Television only",
+							"title": "2. Television only",
 							"label": "2. Television only",
-							"editorLabel": "2. Television only",
 							"description": "<p>You choose to have ads in television only:</p><ul><li>RTS Nouvo (6000 euros)</li></ul><p><em>Costs: <br />1 time card<br />6000</em> euros added to fixed costs of the task \"Supervise Mass media campaign\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1159,8 +1159,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. Radio only",
+							"title": "3. Radio only",
 							"label": "3. Radio only",
-							"editorLabel": "3. Radio only",
 							"description": "<p>You choose to have ads in Radios only:</p><ul><li>DIradio.com and Next Station.ir (4000 euros)</li></ul><p><em>Costs: <br />1 time cards<br />4'000</em> euros added to fixed costs of the task \"Supervise Mass media campaign\".</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1179,8 +1179,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "4. No telemedias",
+							"title": "4. No telemedias",
 							"label": "4. No telemedias",
-							"editorLabel": "4. No telemedias",
 							"description": "<p>You chose not to spend money for a telemedia campaign.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1200,9 +1200,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Project schedule status",
+					"title": "Project schedule status",
 					"name": "Project schedule status",
-					"editorLabel": "CR 07 : Project schedule status",
+					"label": "CR 07 : Project schedule status",
 					"description": "<p>Peter send you an email asking about the project schedule: \"Do you think that we will meet the deadlines defined in the planning ?\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1215,8 +1215,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "a) Yes",
+							"title": "a) Yes",
 							"label": "a) Yes",
-							"editorLabel": "a) Yes",
 							"description": "<p>You reply that the project will meet the deadlines.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1235,8 +1235,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "b) Nearly",
+							"title": "b) Nearly",
 							"label": "b) Nearly",
-							"editorLabel": "b) Nearly",
 							"description": "<p>You reply that the project may finish with just a some small delay.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1255,8 +1255,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "c) Not really",
+							"title": "c) Not really",
 							"label": "c) Not really",
-							"editorLabel": "c) Not really",
 							"description": "<p>You reply that the project will have substantial delays.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1275,8 +1275,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "d) You do not answer",
+							"title": "d) You do not answer",
 							"label": "d) You do not answer",
-							"editorLabel": "d) You do not answer",
 							"description": "<p>You decide not to answer to this email.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1296,9 +1296,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Project budget status",
+					"title": "Project budget status",
 					"name": "Project budget status",
-					"editorLabel": "CR 08 : Project budget status",
+					"label": "CR 08 : Project budget status",
 					"description": "<p>Peter sent you an email asking about the project budget: \"Do you think that we will meet the budget ?\"</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1311,8 +1311,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "a) Yes",
+							"title": "a) Yes",
 							"label": "a) Yes",
-							"editorLabel": "a) Yes",
 							"description": "<p>You reply that the project will finish within the defined budget.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1331,8 +1331,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "b) Nearly",
+							"title": "b) Nearly",
 							"label": "b) Nearly",
-							"editorLabel": "b) Nearly",
 							"description": "<p>You reply that the project may finish with some extra expenses, but not more than 15%.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1351,8 +1351,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "c) Not really",
+							"title": "c) Not really",
 							"label": "c) Not really",
-							"editorLabel": "c) Not really",
 							"description": "<p>You reply that the project will be substantially overbudget.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1371,8 +1371,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "d) You do not answer",
+							"title": "d) You do not answer",
 							"label": "d) You do not answer",
-							"editorLabel": "d) You do not answer",
 							"description": "<p>You decide not to answer to this email.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1392,9 +1392,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Tim: Advanced training",
+					"title": "Tim: Advanced training",
 					"name": "Tim: Advanced training",
-					"editorLabel": "CR09 - Tim: Advanced training",
+					"label": "CR09 - Tim: Advanced training",
 					"description": "<p>Tim ask you if he would be able to attend an advanced  training program on project management.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1407,8 +1407,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Yes",
+							"title": "1. Yes",
 							"label": "1. Yes",
-							"editorLabel": "1. Yes",
 							"description": "<p>You accept to send Tim to this training program.</p><p>Tim will not be available next week.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1427,8 +1427,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. No",
+							"title": "2. No",
 							"label": "2. No",
-							"editorLabel": "2. No",
 							"description": "<p>You answer that this seems interesting, but there is to many job yet. But ok for another time.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1448,9 +1448,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Kick off meeting",
+					"title": "Kick off meeting",
 					"name": "Kick off meeting",
-					"editorLabel": "CR 1. Kick off meeting",
+					"label": "CR 1. Kick off meeting",
 					"description": "<p>A project kick-off meeting is an occasions to make everybody feel included, but sometimes comes at the cost of more time spend in discussions than it would be justified by objective reasons only.&nbsp;</p><p>You therefore consider going straight into action, as you have the feeling of being quite well in touch with almost everyone.</p><p><em>What kind of kick off meeting do you organize ? &nbsp;</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1463,8 +1463,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Full kick-off meeting",
+							"title": "1. Full kick-off meeting",
 							"label": "1. Full kick-off meeting",
-							"editorLabel": "1. Full kick-off meeting",
 							"description": "<p>You decide to organize a full kick off meeting. It will be a good occasion to  make everbody feel wanted and included.</p><p><em>Cost: 3 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1483,8 +1483,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Brief kick-off meeting",
+							"title": "2. Brief kick-off meeting",
 							"label": "2. Brief kick-off meeting",
-							"editorLabel": "2. Brief kick-off meeting",
 							"description": "<p>Your think that the team agrees to have a brief and focused kick-off meeting,  which will save time and money.</p><p><em>Cost: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1503,8 +1503,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. No kick-off meeting",
+							"title": "3. No kick-off meeting",
 							"label": "3. No kick-off meeting",
-							"editorLabel": "3. No kick-off meeting",
 							"description": "<p>You prefer not to organize a kick off meeting.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1524,9 +1524,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Special offer for ad rates",
+					"title": "Special offer for ad rates",
 					"name": "Special offer for ad rates",
-					"editorLabel": "CR 10.0 Special rate for ad rates",
+					"label": "CR 10.0 Special rate for ad rates",
 					"description": "<p>One of your old classmates could arrange for a special rate for ads in one of the major national newspapers. You could order a series of entire pages for half price. However, your budget only allows for a series of quarters.</p><p><em>What will you do?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1539,8 +1539,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Snap the chance",
+							"title": "1. Snap the chance",
 							"label": "1. Snap the chance",
-							"editorLabel": "1. Snap the chance",
 							"description": "<p>You decide to take this opportunity and order a series of full page ads in the key national newspaper.<em> <br /></em></p><p><em>Cost: 1 time card</em><em><br />5'000 euros of extra charges will be added as fixed costs to the task \"MM definition and preparation\". Full pages adds will be published.<br /></em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1559,8 +1559,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Ask Board of Directors",
+							"title": "2. Ask Board of Directors",
 							"label": "2. Ask Board of Directors",
-							"editorLabel": "2. Ask Board of Directors",
 							"description": "<p>You write an email to the Executive Director and ask for permission to overdraw the budget.</p><p><em>Cost: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1579,8 +1579,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. Decline with thanks",
+							"title": "3. Decline with thanks",
 							"label": "3. Decline with thanks",
-							"editorLabel": "3. Decline with thanks",
 							"description": "<p>You answer your friend that it was friendly to made this offer, but you do not really need full-page ads in this kind of journal.&nbsp;</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1600,9 +1600,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Special rate for ad rates: and now ?",
+					"title": "Special rate for ad rates: and now ?",
 					"name": "Special rate for ad rates: and now ?",
-					"editorLabel": "CR 10.1 Special rate for ad rates",
+					"label": "CR 10.1 Special rate for ad rates",
 					"description": "<p>After having the response from Peter, what is your choice now ?</p><p>One of your old classmates could arrange for a special rate for ads in one of the major national newspapers. You could order a series of entire page for half price. However, your budget only allows for a series of quarters.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1615,8 +1615,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Snap the chance",
+							"title": "1. Snap the chance",
 							"label": "1. Snap the chance",
-							"editorLabel": "1. Snap the chance",
 							"description": "<p>You decide to take this opportunity and order a series of full page ads in the key national newspaper.<em> <br /></em></p><p><em>Cost: 1 time card</em><em><br />5'000 euros of extra charges will be added as fixed costs to the task \"MM definition and preparation\". Full pages adds will be published.<br /></em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1635,8 +1635,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Decline with thanks",
+							"title": "2. Decline with thanks",
 							"label": "2. Decline with thanks",
-							"editorLabel": "2. Decline with thanks",
 							"description": "<p>You answer your friend that it was friendly to made this offer, but you do not really need full-page ads in this kind of journal.&nbsp;</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1656,9 +1656,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Twitter campaign",
+					"title": "Twitter campaign",
 					"name": "Twitter campaign",
-					"editorLabel": "CR 30. Twitter campaign",
+					"label": "CR 30. Twitter campaign",
 					"description": "<p>On you way back from the restroom you meet a couple of volunteers and Michael around the coffee dispenser. One of the volunteers proposes to launch a Twitter Microblogging project as part of your campaign.</p><p><em>How do you feel about this idea?</em></p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1671,8 +1671,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Accept",
+							"title": "1. Accept",
 							"label": "1. Accept",
-							"editorLabel": "1. Accept",
 							"description": "<p>It's well known that twitter is among the TOP-10 of the most visited websites wordwide.</p><p>You therefore agree with this idea and launch the microblogging campaign.</p><p><em>Costs: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1691,8 +1691,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Refuse",
+							"title": "2. Refuse",
 							"label": "2. Refuse",
-							"editorLabel": "2. Refuse",
 							"description": "<p>You prefer not to spend time and energy at developing a microblogging campaign.</p><p><em>Costs: 0</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1712,9 +1712,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Meet new school director",
+					"title": "Meet new school director",
 					"name": "Meet new school director",
-					"editorLabel": "CR 20. Meet new school director",
+					"label": "CR 20. Meet new school director",
 					"description": "<p>You get informed that a new school director inaugurated in one of your partner schools just a few days ago.&nbsp;</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1727,8 +1727,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Short visit",
+							"title": "1. Short visit",
 							"label": "1. Short visit",
-							"editorLabel": "1. Short visit",
 							"description": "<p>You decide to go to the school and pay the director a courtesy visit.</p><p><em>Costs: 2 time card.&nbsp;</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1747,8 +1747,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Make a call",
+							"title": "2. Make a call",
 							"label": "2. Make a call",
-							"editorLabel": "2. Make a call",
 							"description": "<p>You make a courtesy call to the director.</p><p><em>Cost: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1767,8 +1767,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "3. Wait and see",
+							"title": "3. Wait and see",
 							"label": "3. Wait and see",
-							"editorLabel": "3. Wait and see",
 							"description": "<p>You prefer not to deal with that yet.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1788,9 +1788,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Exclude Teachers",
+					"title": "Exclude Teachers",
 					"name": "Exclude Teachers",
-					"editorLabel": "CR 50. Exclude Teachers",
+					"label": "CR 50. Exclude Teachers",
 					"description": "<p>Some of your team members report that some of the teenagers you work with have problems with the fact that teachers are involved in the campaign design. They consider teachers' opinion irrelevant or even dangerous for the success of the campaign, and therefore express the idea of excluding the teachers from the stakeholder meetings.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1803,8 +1803,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Exclude teachers",
+							"title": "1. Exclude teachers",
 							"label": "1. Exclude teachers",
-							"editorLabel": "1. Exclude teachers",
 							"description": "<p>You agree with the teenagers and write an email to politely inform the teachers that you do not require their services any longer.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1823,8 +1823,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Organize a reconciliation dinner",
+							"title": "2. Organize a reconciliation dinner",
 							"label": "2. Organize a reconciliation dinner",
-							"editorLabel": "2. Organize a reconciliation dinner",
 							"description": "<p>Of course you noticed yourself that some of the teachers do have weird opinions about the campaign. However, you do not want anybody to be in bad terms with each other and therefore organize a reconciliation dinner with both representant of teachers, teenagers and team members.</p><p><em>Cost: <br />2 time cards<br />500 added to the fixed costs of \"SB fiel activities\"</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1844,9 +1844,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Saskia needed for another projet",
+					"title": "Saskia needed for another projet",
 					"name": "Saskia needed for another projet",
-					"editorLabel": "CR 60. Saskia needed",
+					"label": "CR 60. Saskia needed",
 					"description": "<p>Another project manager needs Saskia (operation) for this week and asks you if you need her.</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1859,8 +1859,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. I need Saskia",
+							"title": "1. I need Saskia",
 							"label": "1. I need Saskia",
-							"editorLabel": "1. I need Saskia",
 							"description": "<p>You answer that you need Saskia for your project and can't release her.</p><p><em>Cost: 1 time card</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1879,8 +1879,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. I could do without Saskia",
+							"title": "2. I could do without Saskia",
 							"label": "2. I could do without Saskia",
-							"editorLabel": "2. I could do without Saskia",
 							"description": "<p>You answer that you will find a solution to do without Saskia for this week in order to help the other projects of the Foundation.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1900,9 +1900,9 @@
 				},
 				{
 					"@class": "QuestionDescriptor",
-					"label": "Partner organization visit",
+					"title": "Partner organization visit",
 					"name": "Partner organization visit",
-					"editorLabel": "CR 70: Partner organization visit",
+					"label": "CR 70: Partner organization visit",
 					"description": "<p>This week, one of our partner Non Profit Organization will come at Sandelman for sharing knowledge and discuss for possible future collaborations.</p><p>Peter asks you if it may be possible for you to present the project \"Computer addiction campaign\".</p>",
 					"allowMultipleReplies": "false",
 					"defaultInstance": {
@@ -1915,8 +1915,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "1. Accept",
+							"title": "1. Accept",
 							"label": "1. Accept",
-							"editorLabel": "1. Accept",
 							"description": "<p>You accept and will therefore prepare a presentation and spend some times with this partner organization.</p><p><em>Costs: 2 time cards</em></p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1935,8 +1935,8 @@
 						{
 							"@class": "SingleResultChoiceDescriptor",
 							"name": "2. Refuse",
+							"title": "2. Refuse",
 							"label": "2. Refuse",
-							"editorLabel": "2. Refuse",
 							"description": "<p>You answer that you really would like to do it, but do not have time this week.</p>",
 							"defaultInstance": {
 								"@class": "ChoiceInstance"
@@ -1957,7 +1957,7 @@
 			]
 		},
 		{
-			"label": "Closure",
+			"title": "Closure",
 			"@class": "ListDescriptor",
 			"scope": {
 				"@class": "TeamScope",

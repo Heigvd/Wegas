@@ -21,6 +21,17 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height:100%;
 }
 
+/** Comments */
+.wegas-comments{
+    font-style : italic;
+}
+
+.wegas-comments textarea {
+    font-style : italic;
+    color: #505050;
+    background-color: rgb(242, 242, 242);
+}
+
 /** Hide all advanced feature while in std mode */
 .wegas-stdmode .wegas-advanced-feature {
     display: none;
@@ -447,7 +458,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-lobby-datatable.wegas-dragover .wegas-dropdummy {
     display: block;
 }
-.yui3-skin-sam .wegas-uploadfile .yui3-button {
+.yui3-skin-sam .wegas-uploadfile .yui3-button {
     width: auto;
     height: auto;
 }
