@@ -25,7 +25,7 @@ import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
-//import javax.ejb.Schedule;
+import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.jcr.RepositoryException;
@@ -72,7 +72,7 @@ public class JackrabbitConnector {
         //this.runGC();
     }
 
-    //@Schedule(minute = "0", hour = "3")
+    @Schedule(hour = "3", minute = "0")
     private void runGC() {
         try {
             logger.info("Running Jackrabbit GarbageCollector");
