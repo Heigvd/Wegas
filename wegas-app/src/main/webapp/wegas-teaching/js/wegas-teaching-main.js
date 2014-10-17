@@ -155,7 +155,7 @@ YUI.add("wegas-teaching-main", function(Y) {
             new Wegas.TeachingRectangle({
                 x: xy[0],
                 y: xy[1],
-                label: this.get("themes")[id] || "Undefined",
+                label: this.get("themes")[parseInt(id) - 1] || "Undefined",
                 description: val,
                 rId: id,
                 position: position,
