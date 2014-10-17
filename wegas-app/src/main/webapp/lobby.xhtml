@@ -102,7 +102,6 @@
                                 success: function() {
                                     var joinedTable = Y.Widget.getByNode(".wegas-joinedgamesdatatable");
                                     joinedTable.table.data.some(function(d) {   // Find row with joined game and select it.
-l
                                         if (d.get("entity").get("id") === e.game.get("id")) {
                                             joinedTable.get("contentBox").all(".wegas-datatable-selected").removeClass("wegas-datatable-selected");
                                             joinedTable.table.getRow(d).addClass("wegas-datatable-selected").simulate("mouseover");
