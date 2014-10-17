@@ -2,13 +2,13 @@
     <security-configurations>
         <authentication-service default="true" name="adminAuth" use-password-credential="true">
             <security-provider provider-name="adminSpc" name="spcrealm" type="LoginModule">
-                <login-module-config control-flag="sufficient" module-class="com.sun.enterprise.admin.util.AdminLoginModule" name="adminSpecialLM">
+                <login-module-config module-class="com.sun.enterprise.admin.util.AdminLoginModule" control-flag="sufficient" name="adminSpecialLM">
                     <property name="config" value="server-config"></property>
                     <property name="auth-realm" value="admin-realm"></property>
                 </login-module-config>
             </security-provider>
             <security-provider provider-name="adminFile" name="filerealm" type="LoginModule">
-                <login-module-config control-flag="sufficient" module-class="com.sun.enterprise.security.auth.login.FileLoginModule" name="adminFileLM">
+                <login-module-config module-class="com.sun.enterprise.security.auth.login.FileLoginModule" control-flag="sufficient" name="adminFileLM">
                     <property name="config" value="server-config"></property>
                     <property name="auth-realm" value="admin-realm"></property>
                 </login-module-config>
@@ -24,35 +24,59 @@
     <system-applications />
     <applications />
     <resources>
-        <jdbc-resource pool-name="__TimerPool" object-type="system-admin" jndi-name="jdbc/__TimerPool"></jdbc-resource>
-        <jdbc-resource pool-name="DerbyPool" object-type="system-all" jndi-name="jdbc/__default"></jdbc-resource>
-        <jdbc-resource pool-name="jdbc/wegas_dev_pool" jndi-name="jdbc/wegas_dev"></jdbc-resource>
 
-        <jdbc-connection-pool ping="true" datasource-classname="org.apache.derby.jdbc.EmbeddedXADataSource" name="__TimerPool" res-type="javax.sql.XADataSource">
+
+        <!--<jdbc-resource pool-name="__TimerPool" object-type="system-admin" jndi-name="jdbc/__TimerPool"></jdbc-resource>-->
+        <jdbc-resource ping="true" pool-name="__TimerPool" object-type="system-admin" jndi-name="jdbc/__TimerPool"></jdbc-resource>
+        <jdbc-connection-pool datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="__TimerPool" res-type="javax.sql.DataSource">
             <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/ejbtimer"></property>
             <property name="connectionAttributes" value=";create=true"></property>
         </jdbc-connection-pool>
-        <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.ClientDataSource" name="DerbyPool" res-type="javax.sql.DataSource">
-            <property name="PortNumber" value="1527"></property>
-            <property name="Password" value="APP"></property>
-            <property name="User" value="APP"></property>
-            <property name="serverName" value="localhost"></property>
-            <property name="DatabaseName" value="sun-appserv-samples"></property>
-            <property name="connectionAttributes" value=";create=true"></property>
+
+        <jdbc-resource enable="false" pool-name="DerbyPool" object-type="system-all" jndi-name="jdbc/__default"></jdbc-resource>
+        <jdbc-connection-pool is-isolation-level-guaranteed="false" datasource-classname="org.apache.derby.jdbc.EmbeddedDataSource" name="DerbyPool" res-type="javax.sql.DataSource">
+            <property name="databaseName" value="${com.sun.aas.instanceRoot}/lib/databases/embedded_default" />
+            <property name="connectionAttributes" value=";create=true" />
         </jdbc-connection-pool>
+        <connector-connection-pool resource-adapter-name="jmsra" max-pool-size="250" steady-pool-size="1" name="jms/__defaultConnectionFactory-Connection-Pool" connection-definition-name="javax.jms.ConnectionFactory"></connector-connection-pool>
+        <connector-resource pool-name="jms/__defaultConnectionFactory-Connection-Pool" object-type="system-all-req" jndi-name="jms/__defaultConnectionFactory"></connector-resource>
         <jdbc-connection-pool datasource-classname="org.postgresql.ds.PGSimpleDataSource" name="jdbc/wegas_dev_pool" res-type="javax.sql.DataSource">
+            <property name="user" value="user"></property>
+            <property name="password" value="1234"></property>
+            <property name="portNumber" value="5432"></property>
+            <property name="databaseName" value="wegas_dev"></property>
+            <property name="serverName" value="localhost"></property>
             <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_dev"></property>
-            <property name="driverClass" value="org.postgresql.Driver"></property>
             <property name="Password" value="1234"></property>
-            <property name="DatabaseName" value="wegas_test"></property>
+            <property name="DatabaseName" value="wegas_dev"></property>
             <property name="User" value="user"></property>
+            <property name="driverClass" value="org.postgresql.Driver"></property>
         </jdbc-connection-pool>
+        <!--<jdbc-connection-pool datasource-classname="org.postgresql.ds.PGSimpleDataSource" name="jdbc/jcr_pool" res-type="javax.sql.DataSource">
+          <property name="user" value="user"></property>
+          <property name="password" value="1234"></property>
+          <property name="portNumber" value="5432"></property>
+          <property name="databaseName" value="jcr"></property>
+          <property name="serverName" value="localhost"></property>
+        </jdbc-connection-pool>-->
+        <jdbc-resource pool-name="jdbc/wegas_dev_pool" jndi-name="jdbc/wegas_dev"></jdbc-resource>
+        <!--<jdbc-resource pool-name="jdbc/jcr_pool" jndi-name="jdbc/jcr"></jdbc-resource>-->
+        <context-service object-type="system-all" jndi-name="concurrent/__defaultContextService"></context-service>
+        <managed-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedExecutorService"></managed-executor-service>
+        <managed-scheduled-executor-service object-type="system-all" jndi-name="concurrent/__defaultManagedScheduledExecutorService"></managed-scheduled-executor-service>
+        <managed-thread-factory object-type="system-all" jndi-name="concurrent/__defaultManagedThreadFactory"></managed-thread-factory>
     </resources>
     <servers>
         <server config-ref="server-config" name="server">
             <resource-ref ref="jdbc/__TimerPool"></resource-ref>
-            <resource-ref ref="jdbc/__default"></resource-ref>
+            <!--<resource-ref ref="jdbc/__default"></resource-ref>-->
+            <resource-ref ref="jms/__defaultConnectionFactory"></resource-ref>
             <resource-ref ref="jdbc/wegas_dev"></resource-ref>
+            <!--<resource-ref ref="jdbc/jcr"></resource-ref>-->
+            <resource-ref ref="concurrent/__defaultContextService"></resource-ref>
+            <resource-ref ref="concurrent/__defaultManagedExecutorService"></resource-ref>
+            <resource-ref ref="concurrent/__defaultManagedScheduledExecutorService"></resource-ref>
+            <resource-ref ref="concurrent/__defaultManagedThreadFactory"></resource-ref>
         </server>
     </servers>
     <nodes>
@@ -64,6 +88,7 @@
             <http-service>
                 <access-log></access-log>
                 <virtual-server network-listeners="http-listener-1,http-listener-2" id="server"></virtual-server>
+                <!--<virtual-server network-listeners="admin-listener" id="__asadmin"></virtual-server>-->
             </http-service>
             <iiop-service>
                 <orb use-thread-pool-ids="thread-pool-1"></orb>
@@ -86,7 +111,7 @@
             <transaction-service tx-log-dir="${com.sun.aas.instanceRoot}/logs"></transaction-service>
             <batch-runtime-configuration></batch-runtime-configuration>
             <jms-service default-jms-host="default_JMS_host" type="EMBEDDED">
-                <jms-host port="${JMS_PROVIDER_PORT}" host="localhost" name="default_JMS_host"></jms-host>
+                <jms-host port="${JMS_PROVIDER_PORT}" name="default_JMS_host" host="localhost"></jms-host>
             </jms-service>
             <cdi-service></cdi-service>
             <ejb-container>
@@ -95,13 +120,12 @@
             <web-container>
                 <session-config>
                     <session-manager>
-                        <store-properties></store-properties>
                         <manager-properties></manager-properties>
+                        <store-properties></store-properties>
                     </session-manager>
                     <session-properties></session-properties>
                 </session-config>
             </web-container>
-            <rest-config></rest-config>
             <diagnostic-service></diagnostic-service>
             <security-service>
                 <auth-realm classname="com.sun.enterprise.security.auth.realm.file.FileRealm" name="admin-realm">
@@ -210,6 +234,11 @@
                         </http>
                         <ssl ssl3-enabled="false" classname="com.sun.enterprise.security.ssl.GlassfishSSLImpl" cert-nickname="s1as"></ssl>
                     </protocol>
+                    <protocol name="admin-listener">
+                        <http encoded-slash-enabled="true" max-connections="250" default-virtual-server="__asadmin">
+                            <file-cache></file-cache>
+                        </http>
+                    </protocol>
                 </protocols>
                 <network-listeners>
                     <network-listener protocol="http-listener-1" port="0" name="http-listener-1" thread-pool="http-thread-pool" transport="tcp"></network-listener>
@@ -220,16 +249,19 @@
                 </transports>
             </network-config>
             <thread-pools>
+                <thread-pool name="admin-thread-pool" max-queue-size="256" max-thread-pool-size="50"></thread-pool>
                 <thread-pool name="http-thread-pool"></thread-pool>
                 <thread-pool name="thread-pool-1" max-thread-pool-size="200"></thread-pool>
             </thread-pools>
+            <monitoring-service>
+                <module-monitoring-levels></module-monitoring-levels>
+            </monitoring-service>
             <group-management-service>
                 <failure-detection></failure-detection>
             </group-management-service>
             <monitoring-service>
                 <module-monitoring-levels></module-monitoring-levels>
             </monitoring-service>
-            <availability-service></availability-service>
         </config>
     </configs>
     <property name="administrative.domain.name" value="domain1"></property>
