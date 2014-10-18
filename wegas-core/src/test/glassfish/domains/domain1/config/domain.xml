@@ -44,11 +44,11 @@
             <property name="user" value="user"></property>
             <property name="password" value="1234"></property>
             <property name="portNumber" value="5432"></property>
-            <property name="databaseName" value="wegas_dev"></property>
+            <property name="databaseName" value="wegas_test"></property>
             <property name="serverName" value="localhost"></property>
-            <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_dev"></property>
+            <property name="URL" value="jdbc:postgresql://localhost:5432/wegas_test"></property>
             <property name="Password" value="1234"></property>
-            <property name="DatabaseName" value="wegas_dev"></property>
+            <property name="DatabaseName" value="wegas_test"></property>
             <property name="User" value="user"></property>
             <property name="driverClass" value="org.postgresql.Driver"></property>
         </jdbc-connection-pool>
