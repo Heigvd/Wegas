@@ -97,7 +97,7 @@ YUI.add('wegas-panel', function(Y) {
                 "transient": true
             },
             zIndex: {
-                value: 100,
+                value: 100000,
                 "transient": true
             }
         },
