@@ -408,7 +408,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 /* Search input */
 .wegas-filter-input {    
     display: inline-block;
-    float: right;
     vertical-align: top;
 }
 .wegas-filter-input input {
