@@ -15,7 +15,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import org.eclipse.persistence.annotations.BatchFetch;
 import org.eclipse.persistence.annotations.BatchFetchType;
@@ -26,7 +25,6 @@ import org.eclipse.persistence.annotations.BatchFetchType;
  */
 @Entity
 @Table(name = "MCQQuestionInstance")
-@XmlType(name = "QuestionInstance")
 public class QuestionInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;

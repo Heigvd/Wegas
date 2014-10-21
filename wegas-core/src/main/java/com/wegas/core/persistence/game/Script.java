@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Embeddable;
 import javax.persistence.Lob;
-import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -23,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Embeddable
-@XmlType(name = "")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 public class Script implements Serializable, Searchable {
 

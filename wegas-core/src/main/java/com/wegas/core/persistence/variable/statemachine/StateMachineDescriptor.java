@@ -14,8 +14,8 @@ import com.wegas.core.rest.util.Views;
 import java.util.*;
 import java.util.Map.Entry;
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -24,7 +24,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "FSMDescriptor")
-@XmlType(name = "FSMDescriptor")
+@JsonTypeName(value = "FSMDescriptor")
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
     @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)

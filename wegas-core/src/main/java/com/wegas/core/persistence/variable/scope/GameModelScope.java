@@ -8,6 +8,7 @@
 package com.wegas.core.persistence.variable.scope;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -19,8 +20,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.PrePersist;
-////import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.XmlType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +28,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "GameModelScope", propOrder = {"@class", "id", "name"})
+@JsonPropertyOrder(value = {"@class", "id", "name"})
 public class GameModelScope extends AbstractScope {
 
     private static final long serialVersionUID = 1L;

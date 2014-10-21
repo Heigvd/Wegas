@@ -10,14 +10,12 @@ package com.wegas.mcq.persistence;
 import javax.persistence.Entity;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "SingleResultChoiceDescriptor")
 @Table(name = "MCQSingleResultChoiceDescriptor")
 public class SingleResultChoiceDescriptor extends ChoiceDescriptor {
 

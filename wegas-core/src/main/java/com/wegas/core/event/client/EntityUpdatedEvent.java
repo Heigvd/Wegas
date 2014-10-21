@@ -13,13 +13,11 @@ import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Yannick Lagger <lagger.yannick at gmail.com>
  */
-@XmlType(name = "EntityUpdatedEvent")
 public class EntityUpdatedEvent extends ClientEvent {
 
     private static final long serialVersionUID = 1L;
