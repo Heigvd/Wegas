@@ -8,18 +8,15 @@
 package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "DialogueDescriptor")
 public class DialogueDescriptor extends StateMachineDescriptor {
 
     private static final long serialVersionUID = 1L;

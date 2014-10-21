@@ -26,7 +26,6 @@ import javax.persistence.Lob;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -35,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
-@XmlType(name = "QuestionDescriptor")
 @Table(name = "MCQQuestionDescriptor")
 public class QuestionDescriptor extends VariableDescriptor<QuestionInstance> implements DescriptorListI<ChoiceDescriptor> {
 

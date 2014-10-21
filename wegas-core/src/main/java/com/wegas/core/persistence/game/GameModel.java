@@ -26,7 +26,6 @@ import java.util.*;
 import java.util.Map.Entry;
 import javax.jcr.RepositoryException;
 import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
 import org.apache.shiro.SecurityUtils;
 
 /**

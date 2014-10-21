@@ -7,13 +7,11 @@
  */
 package com.wegas.core.event.client;
 
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-@XmlType(name = "WarningEvent")
 public class WarningEvent extends CustomEvent {
 
     private static final long serialVersionUID = 1L;

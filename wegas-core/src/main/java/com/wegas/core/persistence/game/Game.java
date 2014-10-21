@@ -23,8 +23,6 @@ import java.util.List;
 import java.util.Set;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlID;
-//////import javax.xml.bind.annotation.XmlTransient;
 
 /**
  *
@@ -43,7 +41,6 @@ public class Game extends NamedEntity {
      *
      */
     @Id
-    @XmlID
     @Column(name = "game_id")
     @GeneratedValue
     private Long id;

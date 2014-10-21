@@ -10,7 +10,6 @@ package com.wegas.resourceManagement.persistence;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -51,7 +50,7 @@ public class Occupation extends AbstractAssignement {
      
     @ManyToOne(optional = true)
     @JoinColumn(name = "taskdescriptor_id", nullable = true)
-    @XmlTransient
+    @JsonIgnore
     private TaskDescriptor taskDescriptor;
     */
     
@@ -120,7 +119,6 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the ResourceInstance
      */
-    //@XmlTransient
     @JsonBackReference
     @JsonIgnore
     public ResourceInstance getResourceInstance() {
@@ -139,7 +137,7 @@ public class Occupation extends AbstractAssignement {
      *
      * @return
      
-    @XmlTransient
+    @JsonIgnore
     public Long getTaskDescriptorId() {
         if (this.taskDescriptor != null) {
             return this.taskDescriptor.getId();
@@ -152,7 +150,7 @@ public class Occupation extends AbstractAssignement {
     /**
      * @return the taskInstance
      
-    @XmlTransient
+    @JsonIgnore
     public TaskDescriptor getTaskDescriptor() {
         return taskDescriptor;
     }*/

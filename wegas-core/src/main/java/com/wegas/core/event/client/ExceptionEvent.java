@@ -8,13 +8,11 @@
 package com.wegas.core.event.client;
 
 import java.util.List;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@XmlType(name = "ExceptionEvent")
 public class ExceptionEvent extends ClientEvent {
 private static final long serialVersionUID = 1L;
     private List<Exception> exceptions;

@@ -10,13 +10,12 @@ package com.wegas.core.event.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import java.io.IOException;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-@XmlType(name = "CustomEvent")
+//@JsonTypeName(value = "CustomEvent")
 public class CustomEvent extends ClientEvent {
 
     private static final long serialVersionUID = 1L;
