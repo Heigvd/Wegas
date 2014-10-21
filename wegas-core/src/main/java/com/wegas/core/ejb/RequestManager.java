@@ -21,6 +21,7 @@ import java.util.ResourceBundle;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.script.ScriptEngine;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 
 /**
  *
@@ -153,12 +154,26 @@ public class RequestManager {
         this.addEvent(new ExceptionEvent(exceptions));
     }
 
+
     /**
-     *
+     * Method used to send custom event from Java world
+     * @see #sendCustomEvent(java.lang.String, jdk.nashorn.api.scripting.ScriptObjectMirror) to send event from Nashorn with JS object
+     * 
      * @param type
-     * @param payload
+     * @param payload  obj
      */
-    public void sendCustomEvent(String type, Object payload) {
+    public void sendCustomEventAsObject(String type, Object payload){
+        this.addEvent(new CustomEvent(type, payload));
+    }
+    
+    /**
+     * Method used to send event from Nashorn JS world
+     * @see #sendCustomEventAsObject(java.lang.String, java.lang.Object) to send pura Java event
+     * 
+     * @param type event name
+     * @param payload JS object associated with that event
+     */
+    public void sendCustomEvent(String type, ScriptObjectMirror payload) {
         this.addEvent(new CustomEvent(type, payload));
     }
 
