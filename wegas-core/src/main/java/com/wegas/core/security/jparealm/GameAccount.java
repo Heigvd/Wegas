@@ -8,6 +8,7 @@
 package com.wegas.core.security.jparealm;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
@@ -52,7 +53,11 @@ public class GameAccount extends JpaAccount {
      */
     @Transient
     public String getToken() {
-        return this.game.getToken();
+        if (this.game != null) {
+            return this.game.getToken();
+        } else {
+            throw new WegasException("GameAccount without a game is not possible !");
+        }
     }
 
     /**
