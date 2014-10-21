@@ -246,10 +246,10 @@ public class UIVariableDescriptor extends UIComponentBase {
     private static void printMethods(FacesContext context, ResponseWriter writer, String title, Object o) throws IOException {
         UIHelper.printText(context, writer, title, UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
         for (Method m : o.getClass().getDeclaredMethods()) {
-            // Only care about non-XmlTransient getter 
+            // Only care about non-JsonIgnored getter 
             if (m.getName().matches("^get.*")
                     && m.getParameterTypes().length == 0
-                    && m.getAnnotation(javax.xml.bind.annotation.XmlTransient.class) == null) {
+                    && m.getAnnotation(com.fasterxml.jackson.annotation.JsonIgnore.class) == null) {
                 try {
                     Object invoke = m.invoke(o);
                     String name, value;
