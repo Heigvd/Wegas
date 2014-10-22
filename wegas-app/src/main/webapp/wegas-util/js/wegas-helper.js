@@ -57,7 +57,7 @@ YUI.add('wegas-helper', function(Y) {
          */
         nl2br: function(str, replaceBy) {
             replaceBy = replaceBy || '<br />';
-            return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
+            return (String(str)).replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1' + replaceBy + '$2');
         },
         escapeJSString: function(str) {
             return str.replace(/"/g, "\\\"").replace(/(\r\n|\n\r|\r|\n)/g, "");
@@ -164,7 +164,7 @@ YUI.add('wegas-helper', function(Y) {
         hashCode: function(value) {
             return Y.Array.reduce(value.split(""), 0, function(prev, curr) {
                 prev = ((prev << 5) - prev) + curr.charCodeAt(0);
-                return prev |= 0; //Force 32 bits
+                return (prev |= 0); //Force 32 bits
             });
         },
         /**
@@ -180,14 +180,39 @@ YUI.add('wegas-helper', function(Y) {
         superbind: function(o, c) {
             var i, args = arguments.length > 0 ? Y.Array(arguments, 0, true) : null;
             for (i in o) {
-                args[0] = o[i];
-                o[i] = Y.bind.apply(c, args);
+                if (o.hasOwnProperty(i)) {
+                    args[0] = o[i];
+                    o[i] = Y.bind.apply(c, args);
+                }
             }
             return o;
         },
         getURLParameter: function(name) {
-            var param = (RegExp(name + '=' + '(.+?)(&|$)').exec(location.search) || [, null])[1];
+            var param = ((new RegExp(name + '=' + '(.+?)(&|$)')).exec(location.search) || [, null])[1];
             return param ? decodeURIComponent(param) : param;
+        },
+        getURLParameters: function() {
+            var match,
+                search = /([^&=]+)=?([^&]*)/g,
+                query = window.location.search.substring(1),
+                params = {};
+            while (match = search.exec(query)) {
+                params[decodeURIComponent(match[1])] = decodeURIComponent(match[2]);
+            }
+            return params;
+        },
+        setURLParameters: function(params) {
+            var par, str = [], tmp;
+            for (par in params) {
+                if (params.hasOwnProperty(par)) {
+                    tmp = encodeURIComponent(par);
+                    if (params[par]) {
+                        tmp += "=" + encodeURIComponent(params[par]);
+                    }
+                    str.push(tmp);
+                }
+            }
+            window.location.search = "?" + str.join("&");
         },
         getFilename: function(path) {
             return path.replace(/^.*[\\\/]/, '');
@@ -211,12 +236,13 @@ YUI.add('wegas-helper', function(Y) {
                     return document.elementFromPoint(x, y);
                 },
                 contains = "contains" in el ? "contains" : "compareDocumentPosition",
-                has = contains == "contains" ? 1 : 0x14;
+                has = contains === "contains" ? 1 : 0x14;
             // Return false if it's not in the viewport
-            if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight)
+            if (rect.right < 0 || rect.bottom < 0 || rect.left > vWidth || rect.top > vHeight) {
                 return false;
+            }
             // Return true if any of its four corners are visible
-            return ((eap = efp(rect.left, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.top)) == el || el[contains](eap) == has || (eap = efp(rect.right, rect.bottom)) == el || el[contains](eap) == has || (eap = efp(rect.left, rect.bottom)) == el || el[contains](eap) == has);
+            return ((eap = efp(rect.left, rect.top)) === el || el[contains](eap) === has || (eap = efp(rect.right, rect.top)) === el || el[contains](eap) === has || (eap = efp(rect.right, rect.bottom)) === el || el[contains](eap) === has || (eap = efp(rect.left, rect.bottom)) === el || el[contains](eap) === has);
         },
         /**
          *
@@ -233,7 +259,7 @@ YUI.add('wegas-helper', function(Y) {
          * @returns String the quoted string
          */
         RegExpQuote: function(str) {
-            return ("" + str).replace(/([.*?+^$[\]\\(){}|-])/g, "\\$1");
+            return (String(str)).replace(/([.*?+\^$\[\]\\(){}|\-])/g, "\\$1");
         }
     };
     Wegas.Helper = Helper;
@@ -297,10 +323,10 @@ YUI.add('wegas-helper', function(Y) {
          * @returns {_L250.Q}
          */
         var Q = function() {
-                this._f = []; // function queue
-                this._a = []; // arguments queue
-                this._lock = false;
-            },
+            this._f = []; // function queue
+            this._a = []; // arguments queue
+            this._lock = false;
+        },
             doNext = function(queue) {
                 var cb;
                 if (queue._f.length && !queue._lock) {
