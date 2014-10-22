@@ -166,7 +166,7 @@ YUI().use(function(Y) {
             "wegas-loginbutton": {
                 path: "js/widget/wegas-loginbutton-min.js",
                 requires: "wegas-widgetmenu",
-                ws_provides: ["LoginButton", "UserLoginButton"]
+                ws_provides: ["LoginButton", "UserLoginButton", "RestartButton"]
             },
             "wegas-chat": {
                 path: "js/widget/wegas-chat-min.js",
