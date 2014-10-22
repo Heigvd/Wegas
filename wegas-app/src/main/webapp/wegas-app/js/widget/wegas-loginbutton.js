@@ -12,7 +12,8 @@
 YUI.add("wegas-loginbutton", function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, UserLoginButton, LoginButton;
+    var Wegas = Y.Wegas, Helper = Y.Wegas.Helper,
+        UserLoginButton, LoginButton, RestartButton;
 
     /**
      * @name Y.Wegas.LoginButton
@@ -39,7 +40,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (Wegas.Facade.Variable)
                 this.handlers.variableUpdate = Wegas.Facade.Variable.after("update", this.syncUI, this);
 
-            if (!this.menu) {                                                    // Don't add the plugin if it already exist.
+            if (!this.menu) { // Don't add the plugin if it already exist.
                 this.plug(Y.Plugin.WidgetMenu);
             }
             this.menu.add([{
@@ -94,8 +95,8 @@ YUI.add("wegas-loginbutton", function(Y) {
                 mainAccount = cUser.getMainAccount(),
                 gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel();
 
-            if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) {     // If current account is a Guest,
-                this.menu.getMenu().item(0).hide();                             // hide the "Preference" button
+            if (mainAccount instanceof Wegas.persistence.GuestJpaAccount) { // If current account is a Guest,
+                this.menu.getMenu().item(0).hide(); // hide the "Preference" button
             }
 
             if (this.get("forcedLabel")) {
@@ -155,6 +156,41 @@ YUI.add("wegas-loginbutton", function(Y) {
         }
     });
     Wegas.LoginButton = LoginButton;
+    RestartButton = Y.Base.create("wegas-restart", Wegas.Button, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
+        bindUI: function() {
+            this.on("click", function() {
+                var autologin = this.get("autologin");
+                Y.io(Y.Wegas.app.get("base") + "/logout", {//logout
+                    on: {
+                        success: function() {
+                            if (autologin) {
+                                var params = Helper.getURLParameters();
+                                params["al"] = true;                            //autologin (guest)
+                                Helper.setURLParameters(params);
+                            } else {
+                                window.location.reload();
+                            }
+                        }
+                    }
+                });
+            });
+        }
+    }, {
+        ATTRS: {
+            label: {
+                value: "Restart"
+            },
+            autologin: {
+                value: true,
+                type: "boolean",
+                _inputex: {
+                    label: "Auto login",
+                    description: "If allowed, will try to login with a new guest."
+                }
+            }
+        }
+    });
+    Wegas.RestartButton = RestartButton;
 
     /**
      * @name Y.Wegas.LoginButton
@@ -181,7 +217,7 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (Wegas.Facade.Variable)
                 this.handlers.variableUpdate = Wegas.Facade.Variable.after("update", this.syncUI, this);
 
-            if (this.menu) {                                                    // Don't add the plugin if it already exists
+            if (this.menu) { // Don't add the plugin if it already exists
                 return;
             }
 
