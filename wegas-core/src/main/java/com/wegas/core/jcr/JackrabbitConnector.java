@@ -13,15 +13,11 @@ import com.wegas.core.persistence.game.GameModel;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.EJB;
@@ -100,29 +96,37 @@ public class JackrabbitConnector {
      *
      * @param workspaceName
      */
-    private static void deleteWorkspace(String workspaceName) {
-        logger.warn("Delete " + workspaceName);
+    private static void deleteWorkspaces(List<String> toDelete) {
         try {
             DataSource ds = (DataSource) new InitialContext().lookup("jdbc/jcr");
             try (Connection con = ds.getConnection()) {
-                try (Statement statement = con.createStatement()) {
-                    try {
-                        /* DROP TABLES */
-                        String dropQuery = "DROP table IF EXISTS " + workspaceName + "_binval, " + workspaceName + "_refs, " + workspaceName + "_bundle, " + workspaceName + "_names CASCADE";
-                        statement.execute(dropQuery);
-                        con.commit();
-                        /* DELETE WORKSPACE */
+                for (String workspaceName : toDelete) {
+                    logger.warn("Delete " + workspaceName);
+                    try (Statement statement = con.createStatement()) {
                         try {
-                            Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
-                        } catch (IOException ex) {
-                            logger.warn("Delete workspace files failed", ex);
+                            /* DROP TABLES */
+                            String dropQuery = "DROP table IF EXISTS "
+                                    + workspaceName + "_binval, "
+                                    + workspaceName + "_refs, "
+                                    + workspaceName + "_bundle, "
+                                    + workspaceName + "_names CASCADE";
+
+                            statement.execute(dropQuery);
+                            con.commit();
+                            /* DELETE WORKSPACE */
+                            try {
+                                Helper.recursiveDelete(new File(DIR + "/workspaces/" + workspaceName));
+                            } catch (IOException ex) {
+                                logger.warn("Delete workspace files failed", ex);
+                            }
+                        } catch (SQLException ex) {
+                            logger.warn("Delete workspace failed", ex);
+                            statement.cancel();
+                            con.rollback();
                         }
-                    } catch (SQLException ex) {
-                        logger.warn("Delete workspace failed", ex);
-                        statement.cancel();
-                        con.rollback();
                     }
                 }
+
             } catch (SQLException ex) {
                 logger.warn("Delete workspace failed: getConnection failed", ex);
             }
@@ -140,35 +144,29 @@ public class JackrabbitConnector {
     }
 
     @PreDestroy
-    protected void close() {
-        try {
-            //Build a list of workspace which have no more dependant gameModel
-            Session admin = SessionHolder.getSession(null);
-            String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
-            SessionHolder.closeSession(admin);
-            List<GameModel> gameModels = gmf.findAll();
-            List<String> fakeworkspaces = new ArrayList<>();
-            final List<String> toDelete = new ArrayList<>();
-            for (GameModel gameModel : gameModels) {
-                fakeworkspaces.add("GM_" + gameModel.getId());
-            }
-            for (String workspace : workspaces) {
-                if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                    if (!fakeworkspaces.contains(workspace)) {
-                        toDelete.add(workspace);
-                        logger.info("Marked for deletion : {}", workspace);
-                    }
+    protected void close() throws RepositoryException {
+        //Build a list of workspace which have no more dependant gameModel
+        Session admin = SessionHolder.getSession(null);
+        String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
+        SessionHolder.closeSession(admin);
+        List<GameModel> gameModels = gmf.findAll();
+        List<String> fakeworkspaces = new ArrayList<>();
+        final List<String> toDelete = new ArrayList<>();
+        for (GameModel gameModel : gameModels) {
+            fakeworkspaces.add("GM_" + gameModel.getId());
+        }
+        for (String workspace : workspaces) {
+            if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
+                if (!fakeworkspaces.contains(workspace)) {
+                    toDelete.add(workspace);
+                    logger.info("Marked for deletion : {}", workspace);
                 }
             }
-            //run garbage collector
-            this.runGC();
-            JackrabbitConnector.repo.shutdown();
-            // delete marked for deletion
-            for (String s : toDelete) {
-                deleteWorkspace(s);
-            }
-        } catch (RepositoryException ex) {
-            Logger.getLogger(JackrabbitConnector.class.getName()).log(Level.SEVERE, null, ex);
         }
+        //run garbage collector
+        this.runGC();
+        JackrabbitConnector.repo.shutdown();
+        // delete marked for deletion
+        deleteWorkspaces(toDelete);
     }
 }
