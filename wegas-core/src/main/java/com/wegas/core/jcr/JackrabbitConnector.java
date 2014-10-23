@@ -144,29 +144,33 @@ public class JackrabbitConnector {
     }
 
     @PreDestroy
-    private void close() throws RepositoryException {
-        //Build a list of workspace which have no more dependant gameModel
-        Session admin = SessionHolder.getSession(null);
-        String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
-        SessionHolder.closeSession(admin);
-        List<GameModel> gameModels = gmf.findAll();
-        List<String> fakeworkspaces = new ArrayList<>();
-        final List<String> toDelete = new ArrayList<>();
-        for (GameModel gameModel : gameModels) {
-            fakeworkspaces.add("GM_" + gameModel.getId());
-        }
-        for (String workspace : workspaces) {
-            if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
-                if (!fakeworkspaces.contains(workspace)) {
-                    toDelete.add(workspace);
-                    logger.info("Marked for deletion : {}", workspace);
+    private void close() {
+        try{
+            //Build a list of workspace which have no more dependant gameModel
+            Session admin = SessionHolder.getSession(null);
+            String[] workspaces = admin.getWorkspace().getAccessibleWorkspaceNames();
+            SessionHolder.closeSession(admin);
+            List<GameModel> gameModels = gmf.findAll();
+            List<String> fakeworkspaces = new ArrayList<>();
+            final List<String> toDelete = new ArrayList<>();
+            for (GameModel gameModel : gameModels) {
+                fakeworkspaces.add("GM_" + gameModel.getId());
+            }
+            for (String workspace : workspaces) {
+                if (workspace.startsWith("GM_") && !workspace.equals("GM_0")) {
+                    if (!fakeworkspaces.contains(workspace)) {
+                        toDelete.add(workspace);
+                        logger.info("Marked for deletion : {}", workspace);
+                    }
                 }
             }
+            //run garbage collector
+            this.runGC();
+            JackrabbitConnector.repo.shutdown();
+            // delete marked for deletion
+            deleteWorkspaces(toDelete);
+        } catch (RepositoryException ex) {
+            logger.warn("", ex);
         }
-        //run garbage collector
-        this.runGC();
-        JackrabbitConnector.repo.shutdown();
-        // delete marked for deletion
-        deleteWorkspaces(toDelete);
     }
 }
