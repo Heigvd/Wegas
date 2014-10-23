@@ -7,8 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.jcr.JackrabbitConnector;
-import javax.enterprise.inject.Specializes;
+//import com.wegas.core.jcr.JackrabbitConnector;
+//import javax.enterprise.inject.Specializes;
 import javax.inject.Singleton;
 
 /**
@@ -17,14 +17,14 @@ import javax.inject.Singleton;
  */
 //@Specializes
 @Singleton
-public class MockJackrabbitConnector extends JackrabbitConnector {  
+public class MockJackrabbitConnector /*extends JackrabbitConnector */{  
 
-    @Override
+    //@Override
     protected void init() {
         // NO-OP
     }
 
-    @Override
+    //@Override
     protected void close() {
         // NO-OP
     }
