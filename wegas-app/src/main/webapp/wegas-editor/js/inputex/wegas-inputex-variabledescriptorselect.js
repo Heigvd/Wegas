@@ -805,7 +805,7 @@ YUI.add("wegas-inputex-variabledescriptorselect", function(Y) {
             } else {
                 this.options.messages.error = "'" + this.options.value + "' is not a valid choice";
             }
-            return this.getValue();
+            return valid || !this.options.required;
         },
         addChoice: function() {
             EntityArrayFieldSelect.superclass.addChoice.apply(this, arguments);
