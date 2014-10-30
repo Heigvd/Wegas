@@ -8,6 +8,7 @@
 package com.wegas.app.jsf.controllers;
 
 import com.sun.faces.util.Util;
+import com.wegas.core.Helper;
 import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
@@ -118,5 +119,9 @@ public class AbstractGameController implements Serializable {
      */
     public void setPlayerId(final Long playerId) {
         this.playerId = playerId;
+    }
+
+    public String getWegasProperty(String property) {
+        return Helper.getWegasProperty(property);
     }
 }

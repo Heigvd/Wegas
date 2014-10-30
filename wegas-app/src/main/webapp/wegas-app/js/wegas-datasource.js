@@ -587,7 +587,7 @@ YUI.add('wegas-datasource', function(Y) {
                     this.updated = this.updateCache(POST, entities[i]) || this.updated;
                 }
 
-                if (e.cfg.updateEvent !== false && this.updated) {
+                if (!(e.cfg && e.cfg.updateEvent === false) && this.updated) {
                     this.get(HOST).fire("update", e);
                     this.updated = false;
                 }
