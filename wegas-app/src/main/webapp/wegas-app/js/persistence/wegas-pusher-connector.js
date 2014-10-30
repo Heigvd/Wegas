@@ -7,6 +7,7 @@
  */
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
@@ -40,7 +41,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
             }
             Pusher.log = Y.log;                                                 // Enable pusher logging - don't include this in production
             document.WEB_SOCKET_DEBUG = true;                                   // Flash fallback logging - don't include this in production
-            this.pusher = new Pusher(cfg["applicationKey"]);
+            this.pusher = new Pusher(cfg["applicationKey"], {authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth"});
             this.pusher.connection.bind('error', function(err) {
                 if (err.data && err.data.code === 4004) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
@@ -49,7 +50,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
             this.gameChannel = this.pusher.subscribe('Game-' + Wegas.Facade.Game.get("currentGameId"));
             this.teamChannel = this.pusher.subscribe('Team-' + Wegas.Facade.Game.get("currentTeamId"));
             this.playerChannel = this.pusher.subscribe('Player-' + Wegas.Facade.Game.get("currentPlayerId"));
-            this.pusher.bind_all(Y.bind(this.eventReceived, this));
+            this.gameChannel.bind_all(Y.bind(this.eventReceived, this));
+            this.teamChannel.bind_all(Y.bind(this.eventReceived, this));
+            this.playerChannel.bind_all(Y.bind(this.eventReceived, this));
         },
         /**
          * @function
@@ -59,7 +62,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
          * @returns {undefined}
          */
         eventReceived: function(event, data) {
-            if (event.indexOf("pusher:") !== 0) {                               //ignore pusher specific event
+            if (event.indexOf("pusher") !== 0) {                               //ignore pusher specific event
                 this.publish(event, {
                     emitFacade: false
                 });

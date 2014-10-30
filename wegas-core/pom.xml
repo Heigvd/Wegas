@@ -40,11 +40,6 @@
         </dependency>
         
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>javax.enterprise</groupId>
             <artifactId>cdi-api</artifactId>
             <scope>provided</scope>
@@ -118,6 +113,10 @@
         <dependency>
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.pusher</groupId>
+            <artifactId>pusher-rest-java</artifactId>
         </dependency>
     </dependencies>
 

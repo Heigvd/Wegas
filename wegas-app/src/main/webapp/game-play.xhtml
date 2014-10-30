@@ -59,10 +59,10 @@
                                  *THIS_IS_NOT_A_COMMENT!<ui:fragment rendered="#{gameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{gameController.currentGameModel.properties.pagesUri}",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                initialFullRequest: 'wegas-app/db/wegas-app-layout.json',
+                                    /* THIS IS NOT A COMMENT
+                                     * </ui:fragment>
+                                     */
+                                    initialFullRequest: 'wegas-app/db/wegas-app-layout.json',
                                 plugins: [{
                                         fn: "JSONSchema"
                                     }, {
@@ -99,7 +99,8 @@
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
-                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
+//                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
+                                applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}"
                             },
                             /* THIS IS NOT A COMMENT
                              * </ui:fragment>
@@ -125,7 +126,7 @@
 
                     app.after("render", function() {
                         try {
-                            #{gameController.clientScripts}                     // Run game model specific js footer
+                #{gameController.clientScripts}                     // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }

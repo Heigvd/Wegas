@@ -7,6 +7,9 @@
  */
 package com.wegas.core.ejb;
 
+import com.pusher.rest.Pusher;
+import com.pusher.rest.data.PresenceUser;
+import com.wegas.core.Helper;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -14,40 +17,60 @@ import com.wegas.core.persistence.variable.scope.GameModelScope;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
-import com.wegas.core.websocket.pusher.Pusher;
-import java.io.IOException;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
+
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- *
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
 @Stateless
 @LocalBean
 public class WebsocketFacade {
 
+    private final Pusher pusher;
     /**
      *
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
-
     /**
      *
+     */
+    @EJB
+    private UserFacade userFacade;
+
+    public WebsocketFacade() {
+        Pusher tmp;
+        try {
+            tmp = new Pusher(Helper.getWegasProperty("pusher.appId"), Helper.getWegasProperty("pusher.key"), Helper.getWegasProperty("pusher.secret"));
+        } catch (IllegalArgumentException e) {
+            tmp = null;
+        }
+        pusher = tmp;
+    }
+
+    /**
      * @param filter
      * @param entityType
      * @param entityId
      * @param data
-     * @return
+     * @return Status
      * @throws IOException
      */
-    public String send(String filter, String entityType, String entityId, String data) throws IOException {
-//        Pusher p = new Pusher();
-        return Pusher.triggerPush(entityType + "-" + entityId, filter, data);
+    public Integer send(String filter, String entityType, String entityId, Object data) throws IOException {
+        if (this.pusher == null) {
+            return 400;
+        }
+        return pusher.trigger(entityType + "-" + entityId, filter, data).getHttpStatus();
     }
 
     /**
@@ -57,6 +80,9 @@ public class WebsocketFacade {
      */
     @Asynchronous
     public void onRequestCommit(@Observes EntityUpdatedEvent events) {
+        if (this.pusher == null) {
+            return;
+        }
         VariableInstance v;
         EntityUpdatedEvent player = new EntityUpdatedEvent();
         EntityUpdatedEvent team = new EntityUpdatedEvent();
@@ -66,14 +92,15 @@ public class WebsocketFacade {
         Long gameId = null;
         final GameModel gameModel = events.getUpdatedEntities().get(0).getScope().getVariableDescriptor().getGameModel();
 
-        if (!gameModel.getProperties().getWebsocket().equals("")) {
-            return;
-        }
-
+//        if (!gameModel.getProperties().getWebsocket().equals("")) {
+//            return;
+//        }
         for (int i = 0; i < events.getUpdatedEntities().size(); i++) {
             v = events.getUpdatedEntities().get(i);
-            if (v.getScope() instanceof GameModelScope /*||
-                     v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())*/) {
+            if (v.getScope() instanceof GameModelScope /*
+                     * ||
+                     * v.getScope().getBroadcastScope().equals(GameModelScope.class.getSimpleName())
+                     */) {
                 //Not supported yet
             } else if (v.getScope() instanceof GameScope
                     || v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())) {
@@ -91,23 +118,36 @@ public class WebsocketFacade {
         }
         if (game.getUpdatedEntities().size() > 0) {
             try {
-                Pusher.triggerPush("Game-" + gameId, "EntityUpdatedEvent", game.toJson());
+                pusher.trigger("Game-" + gameId, "EntityUpdatedEvent", game.toJson());
             } catch (IOException ex) {
                 //
             }
         }
         if (team.getUpdatedEntities().size() > 0) {
             try {
-                Pusher.triggerPush("Team-" + teamId, "EntityUpdatedEvent", team.toJson());
+                pusher.trigger("Team-" + teamId, "EntityUpdatedEvent", team.toJson());
             } catch (IOException ex) {
                 //
             }
         }
         if (player.getUpdatedEntities().size() > 0) {
             try {
-                Pusher.triggerPush("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
+                pusher.trigger("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
             } catch (IOException ex) {
             }
         }
+    }
+
+    public String pusherAuth(final String socketId, final String channel) {
+        if (channel.startsWith("presence")) {
+            final Map<String, String> userInfo = new HashMap<>();
+            User user = userFacade.getCurrentUser();
+            userInfo.put("name", user.getName());
+            return pusher.authenticate(socketId, channel, new PresenceUser(user.getId(), userInfo));
+        }
+        if (channel.startsWith("private")) {
+            return pusher.authenticate(socketId, channel);
+        }
+        return null;
     }
 }
