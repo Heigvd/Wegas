@@ -31,7 +31,7 @@ YUI().use(function(Y) {
     YUI_config.Wegas.modulesByType = {};
 
     /**
-     * 
+     *
      */
     YUI.addGroup = function(name, group) {
         YUI_config.groups[name] = group;
@@ -329,6 +329,14 @@ YUI().use(function(Y) {
             "wegas-simpledialogue": {
                 path: "js/widget/wegas-simpledialogue-min.js",
                 ws_provides: "SimpleDialogue"
+            },
+            "wegas-historydialog": {
+                path: "js/widget/wegas-historydialog-min.js",
+                requires: ["wegas-simpledialogue", "wegas-historydialogcss"],
+                ws_provides: ["HistoryDialog", "EntityChooser"]
+            },
+            "wegas-historydialogcss": {
+                type: CSS
             }
         }
     });
@@ -662,7 +670,8 @@ YUI().use(function(Y) {
             },
             "wegas-mcq-printcss": {
                 type: CSS
-            }}
+            }
+        }
     });
     /* Lobby */
     YUI.addGroup("wegas-lobby", {

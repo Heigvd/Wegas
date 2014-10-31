@@ -43,7 +43,6 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             },
             transitionHistory: {
                 value: [],
-                writeOnce: "initOnly",
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
@@ -84,11 +83,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          *  for current user.
          *  @return {Array} An array containing alternatively state/transition.
          */
-        getFullHistory: function() {
-            var i, transitionHistory = this.getInstance().get("transitionHistory"),
+        getFullHistory: function(transitionHistory) {
+            var i, transitionHistory = transitionHistory || this.getInstance().get("transitionHistory"),
                 fullHistory = [],
                 tmpTransition = null;
-            //TODO :Currently assuming it begins with initialState. May be wrong?
+
             fullHistory.push(this.getState(this.getInitialStateId()));
             for (i = 0; i < transitionHistory.length; i += 1) {
                 tmpTransition = this.getTransitionById(transitionHistory[i]);
