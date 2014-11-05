@@ -9,7 +9,7 @@
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-/*global Pusher:true */
+/*global Pusher:true, YUI_config:true */
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
 
@@ -41,9 +41,14 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 //Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
-            Pusher.log = Y.log;                                                 // Enable pusher logging - don't include this in production
-            document.WEB_SOCKET_DEBUG = true;                                   // Flash fallback logging - don't include this in production
-            pusherInstance = new Pusher(cfg.applicationKey, {authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth"});
+            if(YUI_config.debug) {
+                Pusher.log = Y.log;                                                 // Enable pusher logging - don't include this in production
+                document.WEB_SOCKET_DEBUG = true;                                   // Flash fallback logging - don't include this in production
+            }
+            pusherInstance = new Pusher(cfg.applicationKey, {
+                authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth",
+                encrypted: true
+            });
             pusherInstance.connection.bind('error', function(err) {
                 if (err.data && err.data.code === 4004) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");

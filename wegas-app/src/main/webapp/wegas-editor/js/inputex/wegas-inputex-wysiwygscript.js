@@ -28,7 +28,7 @@ YUI.add("wegas-inputex-wysiwygscript", function(Y) {
             this.options.wrapperClassName = options.wrapperClassName || "inputEx-fieldWrapper inputEx-WysiwygScriptWrapper";
             this.options.viewSrc = options.viewSrc || false;                    // wysywig / text
             this.options.expects = options.expects || "statement";              // conditon/statement/getter
-            this.options.classFilter = options.classFilter;
+            this.options.classFilter = Y.Lang.isArray(options.classFilter) ? options.classFilter : [options.classFilter];
             this.options.messages.invalid = "";                                 //Invalid message should appear near invalid fields
         },
         /**
