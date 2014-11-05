@@ -2,17 +2,18 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+/*global Pusher:true */
 YUI.add('wegas-pusher-connector', function(Y) {
     "use strict";
 
-    var PusherDataSource, Wegas = Y.Wegas;
+    var PusherDataSource, Wegas = Y.Wegas, pusherInstance;
 
     /**
      * PusherConnector singleton for each applicationKey
@@ -21,8 +22,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
      * @param {Object} config, requires applicationKey
      * @returns {Instance}
      */
-    var PusherDataSource = Y.Base.create("PusherDataSource", Wegas.DataSource, [], {
+    PusherDataSource = Y.Base.create("PusherDataSource", Wegas.DataSource, [], {
         /* @lends Y.Wegas.util.PusherConnector# */
+
         /*
          * life cycle method
          * @private
@@ -35,24 +37,21 @@ YUI.add('wegas-pusher-connector', function(Y) {
             //this.pusher = new Pusher('732a1df75d93d028e4f9');
         },
         pusherInit: function(cfg) {
-            if (!window.Pusher) {
+            if (!window.Pusher || pusherInstance) {
                 //Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
             Pusher.log = Y.log;                                                 // Enable pusher logging - don't include this in production
             document.WEB_SOCKET_DEBUG = true;                                   // Flash fallback logging - don't include this in production
-            this.pusher = new Pusher(cfg["applicationKey"], {authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth"});
-            this.pusher.connection.bind('error', function(err) {
+            pusherInstance = new Pusher(cfg.applicationKey, {authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth"});
+            pusherInstance.connection.bind('error', function(err) {
                 if (err.data && err.data.code === 4004) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });
-            this.gameChannel = this.pusher.subscribe('Game-' + Wegas.Facade.Game.get("currentGameId"));
-            this.teamChannel = this.pusher.subscribe('Team-' + Wegas.Facade.Game.get("currentTeamId"));
-            this.playerChannel = this.pusher.subscribe('Player-' + Wegas.Facade.Game.get("currentPlayerId"));
-            this.gameChannel.bind_all(Y.bind(this.eventReceived, this));
-            this.teamChannel.bind_all(Y.bind(this.eventReceived, this));
-            this.playerChannel.bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.subscribe('Game-' + Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.subscribe('Team-' + Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.subscribe('Player-' + Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
         },
         /**
          * @function
@@ -68,6 +67,14 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 });
                 this.fire(event, data);
             }
+        },
+        /**
+         *
+         * @param channel
+         * @returns {*|EventHandle}
+         */
+        subscribe: function(channel) {
+            return pusherInstance.subscribe(channel);
         },
         /**
          * @function

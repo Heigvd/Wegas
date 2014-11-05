@@ -566,7 +566,7 @@ YUI.add('wegas-datasource', function(Y) {
     Plugin.WegasCache = WegasCache;
 
     /**
-     *  @name Y.Plugin.VariableDescriptorWegasCache
+     *  @name Y.Plugin.VariableDescriptorCache
      *  @class adds management of entities of type Y.Wegas.persistence.VariableDescriptor
      *  @extends Y.Plugin.WegasCache
      *  @constructor

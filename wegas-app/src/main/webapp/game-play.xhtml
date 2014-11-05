@@ -93,18 +93,13 @@
                                     }
                                 ]
                             },
-                            /* THIS IS NOT A COMMENT
-                             * <ui:fragment rendered="#{gameController.currentGameModel.properties.websocket != ''}">
-                             */
+
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
 //                                applicationKey: "#{gameController.currentGameModel.properties.websocket}"
                                 applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}"
                             },
-                            /* THIS IS NOT A COMMENT
-                             * </ui:fragment>
-                             */
                             User: {
                                 source: "rest/Extended/User",
                                 initialRequest: "/" + #{requestController.currentUser.id},
