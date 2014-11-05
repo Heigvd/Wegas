@@ -16,14 +16,14 @@ YUI.add('wegas-pusher-connector', function(Y) {
     var PusherDataSource, Wegas = Y.Wegas, pusherInstance;
 
     /**
-     * PusherConnector singleton for each applicationKey
-     * @name Y.Wegas.util.PusherConnector
+     * PusherDataSource singleton for each applicationKey
+     * @name Y.Wegas.util.PusherDataSource
      * @constructor
      * @param {Object} config, requires applicationKey
      * @returns {Instance}
      */
     PusherDataSource = Y.Base.create("PusherDataSource", Wegas.DataSource, [], {
-        /* @lends Y.Wegas.util.PusherConnector# */
+        /* @lends Y.Wegas.util.PusherDataSource# */
 
         /*
          * life cycle method
@@ -121,7 +121,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
             //delete this.constructor.INSTANCES[this.get("applicationKey")];
         }
     }, {
-        /* @lends Y.Wegas.util.PusherConnector */
+        /* @lends Y.Wegas.util.PusherDataSource */
         /**
          * Store running instances.
          * @private
