@@ -337,7 +337,7 @@
             <dependency>
                 <groupId>net.sourceforge.jwebunit</groupId>
                 <artifactId>jwebunit-htmlunit-plugin</artifactId>
-                <version>3.1</version>
+                <version>3.2</version>
                 <scope>test</scope>
                 <exclusions>
                     <exclusion>
