@@ -19,6 +19,8 @@ import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
@@ -36,6 +38,7 @@ import java.util.Map;
 @LocalBean
 public class WebsocketFacade {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
     private final Pusher pusher;
     /**
      *
@@ -52,7 +55,8 @@ public class WebsocketFacade {
         Pusher tmp;
         try {
             tmp = new Pusher(Helper.getWegasProperty("pusher.appId"), Helper.getWegasProperty("pusher.key"), Helper.getWegasProperty("pusher.secret"));
-        } catch (IllegalArgumentException e) {
+        } catch (Exception e) {
+            logger.error("Pusher init failed", e);
             tmp = null;
         }
         pusher = tmp;
