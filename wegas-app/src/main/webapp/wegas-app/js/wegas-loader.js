@@ -11,6 +11,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+/*global YUI_config:true*/
 YUI().use(function(Y) {
     "use strict";
     var CSS = "css";
@@ -647,6 +648,14 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-dashboard-min.js",
                 requires: "datatable",
                 ws_provides: "Dashboard"
+            },
+            "wegas-presencecss": {
+                type: CSS
+            },
+            "wegas-presence": {
+                path: "js/widget/wegas-presence-min.js",
+                requires: ["wegas-presencecss", "font-awesome"],
+                ws_provides: "EditorChat"
             }
         }
     });
@@ -836,6 +845,10 @@ YUI().use(function(Y) {
             googletranslate: {
                 async: false,
                 fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+            },
+            "font-awesome": {
+                type: CSS,
+                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
             }
         }
     };

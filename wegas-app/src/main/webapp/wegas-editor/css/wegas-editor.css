@@ -240,6 +240,9 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /* Editor layout styles */
+.yui3-skin-sam .wegas-layout-hd{
+    white-space: nowrap;
+}
 .yui3-skin-sam .wegas-layout-hd > div {
     display: inline-block;
     vertical-align: top;
@@ -416,7 +419,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     padding: 5px 3px 4px 19px;
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 1px -706px no-repeat;
 }
-
+/** Editor chat widget */
+.yui3-skin-sam .yui3-wegas-editorchat{
+    margin-top: 12px;
+    float: right;
+}
 /** Uservoice widget */
 .yui3-skin-sam .uv-icon {
     right: 0;
