@@ -11,6 +11,7 @@
  */
 YUI.add('wegas-presence', function(Y) {
     "use strict";
+    //@TODO: check connection is established
     var CONTENTBOX = 'contentBox', Chat, pagePresence;
     /**
      * @name Y.Wegas.EditorChat
@@ -23,7 +24,7 @@ YUI.add('wegas-presence', function(Y) {
         initializer: function() {
             var gmID = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id");
             pagePresence = Y.Wegas.Facade.Pusher.subscribe("presence-gm" + gmID);
-            pagePresence.bind_all(Y.bind(this.onEvent, this));
+            //pagePresence.bind_all(Y.bind(this.onEvent, this));
             this.closed = true;
         },
         renderUI: function() {
@@ -67,7 +68,7 @@ YUI.add('wegas-presence', function(Y) {
         },
         sendInput: function() {
             var val = this.field.get("value");
-            if (val) {
+            if (val && pagePresence.subscribed) {
                 pagePresence.trigger("client-message", {
                     data: val,
                     sender: pagePresence.members.me.info.name
@@ -86,9 +87,9 @@ YUI.add('wegas-presence', function(Y) {
                 }
             }, this));
         },
-        onEvent: function(event) {
-            console.log(event);
-        },
+        //onEvent: function(event) {
+        //    console.log(event);
+        //},
         onRemoved: function(event) {
             this.get(CONTENTBOX).one('.users').one("#user" + event.id).remove(true);
             this.updateCount();
