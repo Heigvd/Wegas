@@ -20,7 +20,7 @@ YUI.add('wegas-presence', function(Y) {
     Chat = Y.Base.create("wegas-editorchat", Y.Widget, [Y.WidgetChild], {
         CONTENT_TEMPLATE: "<div><div class='conversation'>" +
                           "<div class='msgs'></div><ul class='users'></ul><div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
-                          "<div class='footer'><i class='chat-icon fa fa-comments'></i> <span class='count'>Connecting...</span></div></div>",
+                          "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='count'>Connecting...</span></div></div>",
         initializer: function() {
             var gmID = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id");
             pagePresence = Y.Wegas.Facade.Pusher.subscribe("presence-gm" + gmID);
@@ -35,7 +35,7 @@ YUI.add('wegas-presence', function(Y) {
                 label: "Send",
                 cssClass: "chat-send"
             }).render(cb.one(".conversation"));
-            this.footer = cb.one(".footer");
+            this.footer = cb.one(".editorchat-footer");
             this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
 
         },
