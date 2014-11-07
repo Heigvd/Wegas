@@ -41,9 +41,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
                 //Y.later(100, this.pusherInit, this, cfg);
                 return;
             }
-            if(YUI_config.debug) {
-                Pusher.log = Y.log;                                                 // Enable pusher logging - don't include this in production
-                document.WEB_SOCKET_DEBUG = true;                                   // Flash fallback logging - don't include this in production
+            if (YUI_config.debug) {
+                Pusher.log = Y.log;                                                            // Enable pusher logging
+                document.WEB_SOCKET_DEBUG = true;                                              // Flash fallback logging
             }
             pusherInstance = new Pusher(cfg.applicationKey, {
                 authEndpoint: Y.Wegas.app.get("base") + "rest/Pusher/auth",
@@ -54,9 +54,17 @@ YUI.add('wegas-pusher-connector', function(Y) {
                     Y.log("Pusher daily limit", "error", "Y.Wegas.util.PusherConnector");
                 }
             });
-            pusherInstance.subscribe('Game-' + Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
-            pusherInstance.subscribe('Team-' + Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
-            pusherInstance.subscribe('Player-' + Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.connection.bind("state_change", function(state) {
+                this._set("status", state.current);
+            }, this);
+            this._set("status", pusherInstance.connection.state);
+            pusherInstance.subscribe('Game-' +
+                                     Wegas.Facade.Game.get("currentGameId")).bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.subscribe('Team-' +
+                                     Wegas.Facade.Game.get("currentTeamId")).bind_all(Y.bind(this.eventReceived, this));
+            pusherInstance.subscribe('Player-' +
+                                     Wegas.Facade.Game.get("currentPlayerId")).bind_all(Y.bind(this.eventReceived,
+                    this));
         },
         /**
          * @function
@@ -132,6 +140,9 @@ YUI.add('wegas-pusher-connector', function(Y) {
             applicationKey: {
                 initOnly: true,
                 validator: Y.Lang.isString
+            },
+            status: {
+                readOnly: true
             }
         }
     });

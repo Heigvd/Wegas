@@ -11,8 +11,36 @@
  */
 YUI.add('wegas-presence', function(Y) {
     "use strict";
-    //@TODO: check connection is established
-    var CONTENTBOX = 'contentBox', Chat, pagePresence;
+    var CONTENTBOX = 'contentBox', Chat, pagePresence,
+        updateState = function(node, status) {
+            var text = "Chat: ";
+            switch (status) {
+                case "disconnected":
+                    text += "Error while connecting";
+                    break;
+                case "unavailable":
+                    text += "Connection lost";
+                    break;
+                case "initialized":
+                case "connecting":
+                    text += "Connecting ...";
+                    break;
+                case "failed":
+                    text += "Unsupported browser";
+                    break;
+                case undefined:
+                    text += "Missing pusher";
+                    break;
+                default:
+                    text = "";
+            }
+            node.set("text", text);
+            if (text) {
+                node.show();
+            } else {
+                node.hide();
+            }
+        };
     /**
      * @name Y.Wegas.EditorChat
      * @class
@@ -20,12 +48,24 @@ YUI.add('wegas-presence', function(Y) {
     Chat = Y.Base.create("wegas-editorchat", Y.Widget, [Y.WidgetChild], {
         CONTENT_TEMPLATE: "<div><div class='conversation'>" +
                           "<div class='msgs'></div><ul class='users'></ul><div style='clear: both'></div><textarea  rows='3' class='input' placeholder='Your message'></textarea></div>" +
-                          "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='count'>Connecting...</span></div></div>",
+                          "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span></div></div>",
         initializer: function() {
-            var gmID = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id");
-            pagePresence = Y.Wegas.Facade.Pusher.subscribe("presence-gm" + gmID);
-            //pagePresence.bind_all(Y.bind(this.onEvent, this));
             this.closed = true;
+            if (Y.Wegas.Facade.Pusher.get("status")) {
+                this._initConnection();
+            } else {
+                Y.Wegas.Facade.Pusher.once("statusChange", this._initConnection, this);
+            }
+        },
+        _initConnection: function() {
+            var gmID = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel().get("id");
+
+            pagePresence = Y.Wegas.Facade.Pusher.subscribe("presence-gm" + gmID);
+            pagePresence.bind("client-message", this.onMessage, this);
+            pagePresence.bind('pusher:subscription_succeeded', this.onConnected, this);
+            pagePresence.bind("pusher:member_removed", this.onRemoved, this);
+            pagePresence.bind("pusher:member_added", this.onAdded, this);
+            //pagePresence.bind_all(Y.bind(this.onEvent, this));
         },
         renderUI: function() {
             var cb = this.get(CONTENTBOX);
@@ -45,6 +85,10 @@ YUI.add('wegas-presence', function(Y) {
                 this.closed = true;
                 this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
             }, this);
+            Y.Wegas.Facade.Pusher.on("statusChange", function(e) {
+                updateState(this.get(CONTENTBOX).one(".pusher-status"), e.newVal);
+            }, this);
+            updateState(this.get(CONTENTBOX).one(".pusher-status"), Y.Wegas.Facade.Pusher.get("status"));
             this.field.on("key", function(e) {
                 if (!(e.shiftKey || e.ctrlKey || e.altKey)) {
                     e.halt(true);
@@ -56,15 +100,6 @@ YUI.add('wegas-presence', function(Y) {
                 this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
                 this.get(CONTENTBOX).removeClass("new-message");
             }, this);
-            //this.get(CONTENTBOX).one(".count").on("click", function() {
-            //    var cb = this.get(CONTENTBOX);
-            //    cb.one(".users").toggleClass("closed");
-            //    cb.one(".msgs").toggleClass("closed");
-            //}, this);
-            pagePresence.bind("client-message", this.onMessage, this);
-            pagePresence.bind('pusher:subscription_succeeded', this.onConnected, this);
-            pagePresence.bind("pusher:member_removed", this.onRemoved, this);
-            pagePresence.bind("pusher:member_added", this.onAdded, this);
         },
         sendInput: function() {
             var val = this.field.get("value");
@@ -73,11 +108,15 @@ YUI.add('wegas-presence', function(Y) {
                     data: val,
                     sender: pagePresence.members.me.info.name
                 });
-                this.onMessage({sender: "me", data: val});
+                this.onMessage({
+                    sender: "me",
+                    data: val
+                });
             }
             this.field.set("value", "");
         },
         onConnected: function() {
+            this.get(CONTENTBOX).one('.users').empty();
             pagePresence.members.each(Y.bind(function(m) {
                 if (+m.id !== +pagePresence.members.me.id) {
                     this.onAdded(m);
@@ -96,7 +135,8 @@ YUI.add('wegas-presence', function(Y) {
             this.notification(event.info.name + " left");
         },
         onAdded: function(event) {
-            this.get(CONTENTBOX).one('.users').append("<li id='user" + event.id + "' class='user'>" + event.info.name + "</li>");
+            this.get(CONTENTBOX).one('.users').append("<li id='user" + event.id + "' class='user'>" + event.info.name +
+                                                      "</li>");
             this.updateCount();
             this.notification(event.info.name + " joined");
         },
@@ -106,7 +146,8 @@ YUI.add('wegas-presence', function(Y) {
                                                        (pagePresence.members.count - 1)); //minus self
         },
         addToChat: function(html) {
-            var msgBox = this.get(CONTENTBOX).one('.msgs'), node = (html instanceof Y.Node) ? html : Y.Node.create(html);
+            var msgBox = this.get(CONTENTBOX).one('.msgs'), node = (html instanceof Y.Node) ? html :
+                    Y.Node.create(html);
             msgBox.append(node);
             this.lastNode = node;
             msgBox.getDOMNode().scrollTop = msgBox.getDOMNode().scrollHeight;
@@ -116,7 +157,8 @@ YUI.add('wegas-presence', function(Y) {
         },
         onMessage: function(data) {
 
-            if (this.lastNode && this.lastNode.one(".sender") && this.lastNode.one(".sender").get("text") === data.sender) {
+            if (this.lastNode && this.lastNode.one(".sender") &&
+                this.lastNode.one(".sender").get("text") === data.sender) {
                 this.lastNode.append('<div class="content">' + data.data + '</div>');
                 this.addToChat(this.lastNode);
             } else {

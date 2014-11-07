@@ -106,3 +106,7 @@
 .yui3-skin-sam .yui3-wegas-editorchat .new-message .chat-icon {
     color: orange;
 }
+.yui3-skin-sam .yui3-wegas-editorchat .editorchat-footer .pusher-status{
+    font-size: 80%;
+    margin-right: 10px;
+}
