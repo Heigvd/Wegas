@@ -8,15 +8,16 @@
 package com.wegas.core.security.jparealm;
 
 import com.wegas.core.Helper;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.persistence.AbstractEntity;
-import javax.persistence.*;
+import com.wegas.core.security.persistence.AbstractAccount;
 import org.apache.shiro.crypto.RandomNumberGenerator;
 import org.apache.shiro.crypto.SecureRandomNumberGenerator;
 import org.apache.shiro.crypto.hash.Sha256Hash;
 import org.apache.shiro.util.SimpleByteSource;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonSubTypes;
+
+import javax.persistence.*;
 
 /**
  * Simple class that represents any User domain entity in any application.
@@ -25,11 +26,12 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  */
 @Entity
 @Table(uniqueConstraints = {
-    @UniqueConstraint(columnNames = "email")
+        @UniqueConstraint(columnNames = "email")
 })
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
+        @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
+@NamedQueries({@NamedQuery(name = "JPAAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass")})
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class JpaAccount extends AbstractAccount {
 
@@ -101,7 +103,6 @@ public class JpaAccount extends AbstractAccount {
     }
 
     /**
-     *
      * @param password
      */
     public void setPassword(String password) {
@@ -144,7 +145,6 @@ public class JpaAccount extends AbstractAccount {
     }
 
     /**
-     *
      * @return
      */
     public String getHash() {
