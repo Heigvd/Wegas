@@ -41,20 +41,34 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
     }, {
         NS: "preview"
     });
-
-    Y.Plugin.BlockAction = Y.Base.create("wegas-preview-fullscreen", Y.Plugin.Base, [], {
+    Y.Plugin.BlockAction = Y.Base.create("wegas-blockaction", Y.Plugin.Base, [], {
         initializer: function() {
-            this.afterHostEvent("render", this.render);
 
             Y.publish("playerAction", {
                 emitFacade: true
             });
-            Y.on("playerAction", function(e) {
-                if (this.viewButton.get("pressed")
-                    && this.get("host").get("parent").get("selected")) {        // @hack the plugin is only active when the preview tab is selected
+            this.handler = Y.on("playerAction", function(e) {
+                if (this.get("host").get("parent").get("selected") && this.doBlock(e)) { // @hack the plugin is only active when the preview tab is selected
                     e.halt(true);
                 }
             }, this);
+        },
+        doBlock: function() {
+            return true;
+        },
+        destructor: function() {
+            this.handler.detach();
+        }
+
+    }, {
+        NS: "BlockAction"
+    });
+    Y.Plugin.ToggleBlockAction = Y.Base.create("wegas-toggle-blockaction", Y.Plugin.BlockAction, [], {
+        initializer: function() {
+            this.afterHostEvent("render", this.render);
+        },
+        doBlock: function() {
+            return this.viewButton.get("pressed");
         },
         render: function() {
             var host = this.get('host');
@@ -73,6 +87,9 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
             this.viewButton.set("label", this.viewButton.get("pressed") ?
                 "<span class='wegas-icon wegas-icon-lock'></span>Block actions"
                 : "<span class='wegas-icon wegas-icon-unlock'></span>Allow actions");
+        },
+        destructor: function() {
+            this.viewButton.destroy();
         }
     }, {
         NS: "BlockAction"
