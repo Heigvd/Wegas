@@ -1,86 +1,108 @@
 {
     "type": "ResizableLayout",
     "top": {
-        "children": [{
+        "children": [
+            {
+                "type": "UserLoginButton"
+            }, {
                 "type": "Text",
                 "cssClass": "wegas-logo"
             }, {
                 "type": "Button",
                 "label": "Admin",
                 "cssClass": "editor-administrator-button",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "WidgetMenu",
                         "cfg": {
-                            "children": [{
+                            "children": [
+                                {
                                     "type": "OpenTabButton",
                                     "label": "Users",
-                                    "wchildren": [{
+                                    "wchildren": [
+                                        {
                                             "type": "EditorTreeView",
                                             "dataSource": "User",
                                             "request": {
                                                 "request": "/?view=Public"
                                             },
-                                            "plugins": [{
+                                            "plugins": [
+                                                {
                                                     "fn": "WidgetToolbar",
                                                     "cfg": {
-                                                        "children": [{
+                                                        "children": [
+                                                            {
                                                                 "type": "NewEntityButton",
                                                                 "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                                                                 "targetClass": "JpaAccount",
                                                                 "dataSource": "User"
-                                                            }]
+                                                            }
+                                                        ]
                                                     }
                                                 }, {
                                                     "fn": "EditorTVDefaultMenuClick"
-                                                }]
-                                        }]
+                                                }
+                                            ]
+                                        }
+                                    ]
                                 }, {
                                     "type": "OpenTabButton",
                                     "label": "Groups",
-                                    "wchildren": [{
+                                    "wchildren": [
+                                        {
                                             "type": "EditorTreeView",
                                             "dataSource": "Role",
                                             "request": {
                                                 "request": "/"
                                             },
-                                            "plugins": [{
+                                            "plugins": [
+                                                {
                                                     "fn": "WidgetToolbar",
                                                     "cfg": {
-                                                        "children": [{
+                                                        "children": [
+                                                            {
                                                                 "type": "NewEntityButton",
                                                                 "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New",
                                                                 "targetClass": "Role",
                                                                 "dataSource": "Role"
-                                                            }]
+                                                            }
+                                                        ]
                                                     }
                                                 }, {
                                                     "fn": "EditorTVDefaultMenuClick"
-                                                }]
-                                        }]
-                                }]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
                         }
-                    }]
-            }, {
-                "type": "UserLoginButton"
-            }]
+                    }
+                ]
+            }
+        ]
     },
     "center": {
         "width": 850,
-        "children": [{
+        "children": [
+            {
                 "id": "centerTabView",
                 "type": "TabView",
                 "cssClass": "wegas-tabview-fullheight",
-                "children": [{
+                "children": [
+                    {
                         "type": "Tab",
                         "id": "joinedGamesTab",
                         "label": "Player",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "GameDataTable",
                                 "dataSource": "RegisteredGames",
                                 "cssClass": "wegas-joinedgamesdatatable",
                                 "emptyMessage": "You have not joined any game yet",
                                 "dataTableCfg": {
-                                    "columns": [{
+                                    "columns": [
+                                        {
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
@@ -102,34 +124,44 @@
                                             "label": "Joined",
                                             "width": "125px",
                                             "formatter": "date"
-                                        }]
+                                        }
+                                    ]
                                 },
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "EditorDTMenu",
                                         "cfg": {
-                                            "children": [{
+                                            "children": [
+                                                {
                                                     "type": "Button",
                                                     "label": "Edit",
                                                     "cssClass": "wegas-button-edit",
-                                                    "plugins": [{
+                                                    "plugins": [
+                                                        {
                                                             "fn": "ToolbarMenu",
                                                             "cfg": {
-                                                                "children": [{
+                                                                "children": [
+                                                                    {
                                                                         "type": "Button",
                                                                         "label": "Open",
-                                                                        "plugins": [{
+                                                                        "plugins": [
+                                                                            {
                                                                                 "fn": "OpenGameAction",
                                                                                 "cfg": {
                                                                                     "url": "game-play.html?"
                                                                                 }
-                                                                            }]
+                                                                            }
+                                                                        ]
                                                                     }, {
                                                                         "type": "Button",
                                                                         "label": "Leave",
-                                                                        "plugins": [{
+                                                                        "plugins": [
+                                                                            {
                                                                                 "fn": "LeaveGameAction"
-                                                                            }]
-                                                                    }]
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
                                                             }
                                                         }, {
                                                             "fn": "OpenTabAction",
@@ -137,32 +169,42 @@
                                                                 "tabSelector": "#rightTabView",
                                                                 "emptyTab": true,
                                                                 "label": "Details",
-                                                                "wchildren": [{
+                                                                "wchildren": [
+                                                                    {
                                                                         "type": "List",
-                                                                        "children": [{
+                                                                        "children": [
+                                                                            {
                                                                                 "type": "GameInformation",
                                                                                 "cssClass": "open-game-tab"
-                                                                            }]
-                                                                    }]
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
                                                             }
-                                                        }]
+                                                        }
+                                                    ]
                                                 }, {
                                                     "type": "Button",
                                                     "label": "Open",
                                                     "cssClass": "wegas-button-open",
-                                                    "plugins": [{
+                                                    "plugins": [
+                                                        {
                                                             "fn": "OpenGameAction",
                                                             "cfg": {
                                                                 "url": "game-play.html?"
                                                             }
-                                                        }]
+                                                        }
+                                                    ]
                                                 }, {
                                                     "type": "Button",
                                                     "label": "Leave",
-                                                    "plugins": [{
+                                                    "plugins": [
+                                                        {
                                                             "fn": "LeaveGameAction"
-                                                        }]
-                                                }]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
                                         }
                                     }, {
                                         "fn": "EditorDTMouseOverMenu"
@@ -171,57 +213,75 @@
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
-                                            "children": [{
+                                            "children": [
+                                                {
                                                     "type": "Button",
                                                     "label": "<span class=\"wegas-icon wegas-icon-joingame\"></span>Join game",
-                                                    "plugins": [{
+                                                    "plugins": [
+                                                        {
                                                             "fn": "WidgetMenu",
                                                             "cfg": {
-                                                                "children": [{
+                                                                "children": [
+                                                                    {
                                                                         "type": "Button",
                                                                         "label": "Join with an enrolment key",
-                                                                        "plugins": [{
+                                                                        "plugins": [
+                                                                            {
                                                                                 "fn": "OpenTabAction",
                                                                                 "cfg": {
                                                                                     "label": "Join",
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
-                                                                                    "wchildren": [{
+                                                                                    "wchildren": [
+                                                                                        {
                                                                                             "type": "TokenJoin"
-                                                                                        }]
+                                                                                        }
+                                                                                    ]
                                                                                 }
-                                                                            }]
+                                                                            }
+                                                                        ]
                                                                     }, {
                                                                         "type": "Button",
                                                                         "label": "Join a public game",
-                                                                        "plugins": [{
+                                                                        "plugins": [
+                                                                            {
                                                                                 "fn": "OpenTabAction",
                                                                                 "cfg": {
                                                                                     "label": "Public games",
                                                                                     "tabSelector": "#rightTabView",
                                                                                     "emptyTab": true,
-                                                                                    "wchildren": [{
+                                                                                    "wchildren": [
+                                                                                        {
                                                                                             "type": "PublicGameDataTable"
-                                                                                        }]
+                                                                                        }
+                                                                                    ]
                                                                                 }
-                                                                            }]
-                                                                    }]
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                ]
                                                             }
-                                                        }]
-                                                }]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
                                         }
-                                    }]
-                            }]
+                                    }
+                                ]
+                            }
+                        ]
                     }, {
                         "id": "gamesTreeViewTab",
                         "type": "Tab",
                         "label": "Trainer",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "GameDataTable",
                                 "dataSource": "Game",
                                 "cssClass": "wegas-hostedgamesdatatable",
                                 "emptyMessage": "You have not created any game yet",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "EditorDTMouseOverMenu"
                                     }, {
                                         "fn": "EditorDTMenu"
@@ -230,7 +290,8 @@
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
-                                            "children": [{
+                                            "children": [
+                                                {
                                                     "type": "NewEntityButton",
                                                     "showEditionAfterRequest": false,
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New game",
@@ -239,7 +300,8 @@
                                                     "formCfg": {
                                                         "required": true,
                                                         "type": "group",
-                                                        "fields": [{
+                                                        "fields": [
+                                                            {
                                                                 "name": "@class",
                                                                 "type": "hidden",
                                                                 "value": "null"
@@ -256,23 +318,29 @@
                                                                     "canInstantiate": true
                                                                 },
                                                                 "type": "gamemodelselect"
-                                                            }]
+                                                            }
+                                                        ]
                                                     }
-                                                }]
+                                                }
+                                            ]
                                         }
-                                    }]
-                            }]
+                                    }
+                                ]
+                            }
+                        ]
                     }, {
                         "type": "Tab",
                         "id": "gameModelsTab",
                         "label": "Scenarist",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "GameDataTable",
                                 "dataSource": "GameModel",
                                 "cssClass": "wegas-gamemodeldatatable",
                                 "emptyMessage": "You have not created any scenario yet",
                                 "dataTableCfg": {
-                                    "columns": [{
+                                    "columns": [
+                                        {
                                             "formatter": "icon",
                                             "label": " ",
                                             "sortable": false,
@@ -293,7 +361,8 @@
                                         }
                                     ]
                                 },
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "EditorDTMenu"
                                     }, {
                                         "fn": "EditorDTContextMenu"
@@ -302,7 +371,8 @@
                                     }, {
                                         "fn": "WidgetToolbar",
                                         "cfg": {
-                                            "children": [{
+                                            "children": [
+                                                {
                                                     "type": "NewEntityButton",
                                                     "showEditionAfterRequest": false,
                                                     "label": "<span class=\"wegas-icon wegas-icon-new\"></span>New scenario",
@@ -310,7 +380,8 @@
                                                     "dataSource": "GameModel",
                                                     "formCfg": {
                                                         "type": "group",
-                                                        "fields": [{
+                                                        "fields": [
+                                                            {
                                                                 "name": "@class",
                                                                 "type": "hidden"
                                                             }, {
@@ -331,34 +402,46 @@
                                                                 "type": "object",
                                                                 "fields": [],
                                                                 "showMsg": true
-                                                            }]
+                                                            }
+                                                        ]
                                                     }
                                                 }, {
                                                     "type": "UploadFileButton",
                                                     "label": "<span class='wegas-icon wegas-icon-newfile'></span>Upload"
-                                                }]
+                                                }
+                                            ]
                                         }
-                                    }]
-                            }]
-                    }]
-            }]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     },
     "right": {
-        "children": [{
+        "children": [
+            {
                 "type": "List",
-                "children": [{
+                "children": [
+                    {
                         "type": "TabView",
                         "id": "rightTabView",
                         "cssClass": "wegas-tabview-fullheight"
-                    }],
-                "plugins": [{
+                    }
+                ],
+                "plugins": [
+                    {
                         "fn": "PopupListener",
                         "cfg": {
                             "filter": ["success"]
                         }
                     }, {
                         "fn": "Injector"
-                    }]
-            }]
+                    }
+                ]
+            }
+        ]
     }
 }
