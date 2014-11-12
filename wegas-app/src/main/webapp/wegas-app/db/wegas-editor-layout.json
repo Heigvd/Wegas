@@ -4,6 +4,10 @@
         "height": 25,
         "children": [
             {
+                "type": "UserLoginButton"
+            }, {
+                "type": "EditorChat"
+            }, {
                 "type": "Button",
                 "cssClass": "wegas-logo",
                 "tooltip": "Back to lobby",
@@ -114,10 +118,6 @@
                         "content": "<iframe src=\"https://docs.google.com/document/d/16S3uGvSGkweay9Dng6mIus3ERdq5D1_GJIwMynTMcuo/pub?embedded=true\"></iframe>"
                     }
                 ]
-            }, {
-                "type": "UserLoginButton"
-            }, {
-                "type": "EditorChat"
             }
         ]
     },
