@@ -51,6 +51,7 @@ YUI.add('wegas-presence', function(Y) {
                           "<div class='editorchat-footer'><i class='chat-icon fa fa-comments'></i> <span class='pusher-status'></span><span class='count'></span></div></div>",
         initializer: function() {
             this.closed = true;
+            this._handlers = [];
             if (Y.Wegas.Facade.Pusher.get("status")) {
                 this._initConnection();
             } else {
@@ -77,29 +78,28 @@ YUI.add('wegas-presence', function(Y) {
             }).render(cb.one(".conversation"));
             this.footer = cb.one(".editorchat-footer");
             this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
-
+            updateState(this.get(CONTENTBOX).one(".pusher-status"), Y.Wegas.Facade.Pusher.get("status"));
         },
         bindUI: function() {
-            this.send.on("click", this.sendInput, this);
-            this.get(CONTENTBOX).on("clickoutside", function() {
+            this._handlers.push(this.send.on("click", this.sendInput, this));
+            this._handlers.push(this.get(CONTENTBOX).on("clickoutside", function() {
                 this.closed = true;
                 this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
-            }, this);
-            Y.Wegas.Facade.Pusher.on("statusChange", function(e) {
+            }, this));
+            this._handlers.push(Y.Wegas.Facade.Pusher.on("statusChange", function(e) {
                 updateState(this.get(CONTENTBOX).one(".pusher-status"), e.newVal);
-            }, this);
-            updateState(this.get(CONTENTBOX).one(".pusher-status"), Y.Wegas.Facade.Pusher.get("status"));
-            this.field.on("key", function(e) {
+            }, this));
+            this._handlers.push(this.field.on("key", function(e) {
                 if (!(e.shiftKey || e.ctrlKey || e.altKey)) {
                     e.halt(true);
                     this.sendInput();
                 }
-            }, "enter", this);
-            this.footer.on("click", function() {
+            }, "enter", this));
+            this._handlers.push(this.footer.on("click", function() {
                 this.closed = !this.closed;
                 this.get(CONTENTBOX).one(".conversation").toggleClass("closed", this.closed);
                 this.get(CONTENTBOX).removeClass("new-message");
-            }, this);
+            }, this));
         },
         sendInput: function() {
             var val = this.field.get("value");
@@ -147,7 +147,7 @@ YUI.add('wegas-presence', function(Y) {
         },
         addToChat: function(html) {
             var msgBox = this.get(CONTENTBOX).one('.msgs'), node = (html instanceof Y.Node) ? html :
-                    Y.Node.create(html);
+                Y.Node.create(html);
             msgBox.append(node);
             this.lastNode = node;
             msgBox.getDOMNode().scrollTop = msgBox.getDOMNode().scrollHeight;
@@ -172,7 +172,9 @@ YUI.add('wegas-presence', function(Y) {
         },
         destructor: function() {
             this.send.destroy();
-            this.responseEvent.detach();
+            Y.Array.each(this._handlers, function(i) {
+                i.detach();
+            });
         }
     }, {
         EDITORNAME: "Chat",

@@ -582,7 +582,7 @@ YUI().use(function(Y) {
             },
             "wegas-preview-fullscreen": {
                 path: "js/plugin/wegas-preview-fullscreen-min.js",
-                ws_provides: "PreviewFullScreen",
+                ws_provides: ["PreviewFullScreen", "ToggleBlockAction", "BlockAction"],
                 requires: "wegas-pageeditorcss"
             },
             'wegas-fullwidthtab': {
