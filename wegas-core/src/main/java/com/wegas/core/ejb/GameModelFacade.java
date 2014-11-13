@@ -14,7 +14,6 @@ import com.wegas.core.jcr.content.ContentConnectorFactory;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
-import com.wegas.core.persistence.game.GameModel_;
 import com.wegas.core.rest.FileController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.core.rest.util.Views;
@@ -37,12 +36,12 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import org.apache.shiro.SecurityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -246,12 +245,17 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @throws NoResultException
      */
     public GameModel findByName(final String name) throws NoResultException, NonUniqueResultException {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        /*final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameModel> gameModel = cq.from(GameModel.class);
         cq.where(cb.equal(gameModel.get(GameModel_.name), name));
         final Query q = em.createQuery(cq);
-        return (GameModel) q.getSingleResult();
+        return (GameModel) q.getSingleResult();*/
+
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
+
     }
 
     /**

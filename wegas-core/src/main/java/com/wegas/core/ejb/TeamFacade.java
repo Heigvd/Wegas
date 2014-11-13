@@ -10,7 +10,6 @@ package com.wegas.core.ejb;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
-import com.wegas.core.persistence.game.Team_;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
@@ -22,9 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -62,12 +59,18 @@ public class TeamFacade extends BaseFacade<Team> {
      * @return
      */
     private Team findByName(Long gameModelId, String name) {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        /*final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<Team> game = cq.from(Team.class);
         cq.where(cb.and(cb.equal(game.get(Team_.gameId), gameModelId), cb.equal(game.get(Team_.name), name)));
         Query q = em.createQuery(cq);
-        return (Team) q.getSingleResult();
+        return (Team) q.getSingleResult();*/
+
+
+        final TypedQuery<Team> query = getEntityManager().createNamedQuery("Team.findByName", Team.class);
+        query.setParameter("name", name);
+        query.setParameter("gameId", gameModelId);
+        return query.getSingleResult();
     }
 
     /**

@@ -10,15 +10,11 @@ package com.wegas.core.security.ejb;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.security.persistence.Role;
-import com.wegas.core.security.persistence.Role_;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
+import javax.persistence.TypedQuery;
 
 /**
  *
@@ -48,12 +44,18 @@ public class RoleFacade extends BaseFacade<Role> {
      * @throws PersistenceException
      */
     public Role findByName(String name) throws PersistenceException {
+        /*
         CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<Role> role = cq.from(Role.class);
         cq.where(cb.equal(role.get(Role_.name), name));
         Query q = em.createQuery(cq);
         return (Role) q.getSingleResult();
+        */
+
+        final TypedQuery<Role> query = getEntityManager().createNamedQuery("Role.findByName", Role.class);
+        query.setParameter("name", name);
+        return query.getSingleResult();
     }
 
     /**
