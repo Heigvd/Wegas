@@ -4,7 +4,7 @@
 
     <parent>
         <groupId>com.wegas</groupId>
-    <version>1.0-SNAPSHOT-gl4</version>
+        <version>1.0-SNAPSHOT-gl4</version>
         <artifactId>wegas-project-gl4</artifactId>
     </parent>
     <name>wegas-resources-gl4</name>
