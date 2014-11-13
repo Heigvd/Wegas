@@ -31,6 +31,7 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
+@NamedQueries({@NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameId = :gameId")})
 public class Team extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;

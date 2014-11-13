@@ -36,6 +36,7 @@ import org.apache.shiro.SecurityUtils;
 //@Table(uniqueConstraints =
 //        @UniqueConstraint(columnNames = "name"))
 @JsonIgnoreProperties(ignoreUnknown = true)
+@NamedQueries({@NamedQuery(name = "GameModel.findByName", query = "SELECT a FROM GameModel a WHERE a.name = :name")})
 public class GameModel extends NamedEntity implements DescriptorListI<VariableDescriptor> {
 
     private static final long serialVersionUID = 1L;

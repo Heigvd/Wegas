@@ -12,9 +12,7 @@ import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
-import com.wegas.core.security.persistence.AbstractAccount_;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -25,9 +23,6 @@ import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.*;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 /**
  *
@@ -127,12 +122,17 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @throws NoResultException
      */
     public AbstractAccount findByUsername(String username) throws NoResultException {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        /*CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<AbstractAccount> account = cq.from(AbstractAccount.class);
         cq.where(cb.equal(account.get(AbstractAccount_.username), username));
         Query q = em.createQuery(cq);
-        return (AbstractAccount) q.getSingleResult();
+        return (AbstractAccount) q.getSingleResult();*/
+
+
+        final TypedQuery<AbstractAccount> query = getEntityManager().createNamedQuery("AbstractAccount.findByUsername", AbstractAccount.class);
+        query.setParameter("username", username);
+        return query.getSingleResult();
     }
 
     /**
@@ -142,12 +142,16 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @throws NoResultException
      */
     public JpaAccount findByEmail(String email) throws NoResultException {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        /*CriteriaBuilder cb = em.getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<JpaAccount> account = cq.from(JpaAccount.class);
         cq.where(cb.equal(account.get(JpaAccount_.email), email));
         Query q = em.createQuery(cq);
-        return (JpaAccount) q.getSingleResult();
+        return (JpaAccount) q.getSingleResult();*/
+
+        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
+        query.setParameter("email", email);
+        return query.getSingleResult();
     }
 
     /**
@@ -195,24 +199,34 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     private List<JpaAccount> findByNameOrEmailQuery(final String type, String value1, String value2) {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
-        Root<JpaAccount> account = cq.from(JpaAccount.class);
+
+        final TypedQuery<JpaAccount> query;
+
+        //CriteriaBuilder cb = em.getCriteriaBuilder();
+        //CriteriaQuery cq = cb.createQuery();
+        //Root<JpaAccount> account = cq.from(JpaAccount.class);
 
         switch (type) {
             case "name":
-                cq.where(cb.and(cb.like(cb.lower(account.get(JpaAccount_.firstname)), value1.toLowerCase()),
-                        cb.like(cb.lower(account.get(JpaAccount_.lastname)), value2.toLowerCase())));
+                query = getEntityManager().createNamedQuery("JpaAccount.findByFullName", JpaAccount.class);
+                query.setParameter("firstname", value1);
+                query.setParameter("lastname", value2);
+                //cq.where(cb.and(cb.like(cb.lower(account.get(JpaAccount_.firstname)), value1.toLowerCase()),
+                //        cb.like(cb.lower(account.get(JpaAccount_.lastname)), value2.toLowerCase())));
                 break;
             case "email":
-                cq.where(cb.like(cb.lower(account.get(JpaAccount_.email)), value1.toLowerCase()));
+                query = getEntityManager().createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
+                query.setParameter("email", value1);
+                //cq.where(cb.like(cb.lower(account.get(JpaAccount_.email)), value1.toLowerCase()));
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected parameter " + type);
         }
-        Query q = em.createQuery(cq);
-        q.setMaxResults(MAXRESULT);
-        return (List<JpaAccount>) q.getResultList();
+        //Query q = em.createQuery(cq);
+        //q.setMaxResults(MAXRESULT);
+        query.setMaxResults(MAXRESULT);
+        return query.getResultList();
+        //return (List<JpaAccount>) q.getResultList();
     }
 
     private ArrayList<JpaAccount> compareExistingAccount(List<JpaAccount> tempAccount, ArrayList<JpaAccount> accounts) {

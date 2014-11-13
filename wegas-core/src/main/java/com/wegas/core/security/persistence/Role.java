@@ -23,6 +23,7 @@ import javax.persistence.*;
     @UniqueConstraint(columnNames = "name")
 })
 @Cacheable(true)
+@NamedQueries({@NamedQuery(name = "Role.findByName", query = "SELECT a FROM Role a WHERE a.name = :name")})
 public class Role extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
