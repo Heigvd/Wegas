@@ -11,6 +11,8 @@ import com.wegas.core.ejb.WebsocketFacade;
 import java.io.IOException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -36,19 +38,36 @@ public class WebsocketController {
     private WebsocketFacade websocketFacade;
 
     /**
+     *
+     * @param channelName
+     * @param socketId
+     *
+     * @return
+     */
+    @POST
+    @Path("auth")
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    @Produces(MediaType.APPLICATION_JSON)
+    public String pusherAuth(@FormParam("socket_id") String socketId, @FormParam("channel_name") String channelName) {
+        return websocketFacade.pusherAuth(socketId, channelName);
+    }
+
+    /**
      * Retrieve
      *
      * @param entityType
      * @param data
      * @param eventType
      * @param entityId
+     *
      * @return
+     *
      * @throws java.io.IOException
      */
     @POST
     @Path("Send/{entityType : .*}/{entityId : .*}/{eventType : .*}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response send(@PathParam("entityType") String entityType, @PathParam("entityId") String entityId, @PathParam("eventType") String eventType, String data) throws IOException {
-        return Response.status(Integer.parseInt(websocketFacade.send(eventType, entityType, entityId, data).split(" ")[0])).build();
+    public Response send(@PathParam("entityType") String entityType, @PathParam("entityId") String entityId, @PathParam("eventType") String eventType, Object data) throws IOException {
+        return Response.status(websocketFacade.send(eventType, entityType, entityId, data)).build();
     }
 }

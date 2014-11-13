@@ -112,6 +112,11 @@
             <artifactId>logback-classic</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>com.pusher</groupId>
+            <artifactId>pusher-rest-java</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

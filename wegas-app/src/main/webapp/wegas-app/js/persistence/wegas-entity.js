@@ -18,7 +18,8 @@ YUI.add("wegas-entity", function(Y) {
         Base = Y.Base, Entity,
         IDATTRDEF = {
             type: STRING,
-            optional: true, //                                                  // The id is optional for entites that have not been persisted
+            optional: true, //                                                  // The id is optional for entites that
+                            // have not been persisted
             _inputex: {
                 _type: HIDDEN
             }
@@ -110,7 +111,7 @@ YUI.add("wegas-entity", function(Y) {
     });
 
     /**
-     * 
+     *
      */
     persistence.EntityUpdatedEvent = Base.create("EntityUpdatedEvent", persistence.Entity, [], {}, {
         ATTRS: {
@@ -580,6 +581,8 @@ YUI.add("wegas-entity", function(Y) {
                 type: "DeleteEntityButton",
                 label: "Delete"
             }, {
+                type: "RefreshEntityButton"
+            }, {
                 type: BUTTON,
                 label: "More",
                 cssClass: "editor-button-more",
@@ -703,7 +706,7 @@ YUI.add("wegas-entity", function(Y) {
             }]
     });
     /**
-     * 
+     *
      */
     persistence.DebugTeam = Base.create("DebugTeam", persistence.Team, [], {}, {});
 

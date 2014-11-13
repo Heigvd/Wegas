@@ -11,6 +11,7 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+/*global YUI_config:true*/
 YUI().use(function(Y) {
     "use strict";
     var CSS = "css";
@@ -31,7 +32,7 @@ YUI().use(function(Y) {
     YUI_config.Wegas.modulesByType = {};
 
     /**
-     * 
+     *
      */
     YUI.addGroup = function(name, group) {
         YUI_config.groups[name] = group;
@@ -329,6 +330,14 @@ YUI().use(function(Y) {
             "wegas-simpledialogue": {
                 path: "js/widget/wegas-simpledialogue-min.js",
                 ws_provides: "SimpleDialogue"
+            },
+            "wegas-historydialog": {
+                path: "js/widget/wegas-historydialog-min.js",
+                requires: ["wegas-simpledialogue", "wegas-historydialogcss"],
+                ws_provides: ["HistoryDialog", "EntityChooser"]
+            },
+            "wegas-historydialogcss": {
+                type: CSS
             }
         }
     });
@@ -573,7 +582,7 @@ YUI().use(function(Y) {
             },
             "wegas-preview-fullscreen": {
                 path: "js/plugin/wegas-preview-fullscreen-min.js",
-                ws_provides: "PreviewFullScreen",
+                ws_provides: ["PreviewFullScreen", "ToggleBlockAction", "BlockAction"],
                 requires: "wegas-pageeditorcss"
             },
             'wegas-fullwidthtab': {
@@ -639,6 +648,14 @@ YUI().use(function(Y) {
                 path: "js/widget/wegas-dashboard-min.js",
                 requires: "datatable",
                 ws_provides: "Dashboard"
+            },
+            "wegas-presencecss": {
+                type: CSS
+            },
+            "wegas-presence": {
+                path: "js/widget/wegas-presence-min.js",
+                requires: ["wegas-presencecss", "font-awesome"],
+                ws_provides: "EditorChat"
             }
         }
     });
@@ -662,7 +679,8 @@ YUI().use(function(Y) {
             },
             "wegas-mcq-printcss": {
                 type: CSS
-            }}
+            }
+        }
     });
     /* Lobby */
     YUI.addGroup("wegas-lobby", {
@@ -827,6 +845,10 @@ YUI().use(function(Y) {
             googletranslate: {
                 async: false,
                 fullpath: "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+            },
+            "font-awesome": {
+                type: CSS,
+                fullpath: "//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
             }
         }
     };

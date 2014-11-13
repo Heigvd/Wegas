@@ -24,7 +24,7 @@ YUI.add('wegas-chat', function(Y) {
             });
             this.send = new Y.Wegas.Button({
                 label: "Send",
-                cssClass: "wegas-chat-send",
+                cssClass: "wegas-chat-send"
             }).render(cb);
         },
         bindUI: function() {

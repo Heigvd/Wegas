@@ -113,7 +113,6 @@ public class StateMachineInstance extends VariableInstance {
      *
      * @return
      */
-    @JsonIgnore
     public List<Long> getTransitionHistory() {
         return transitionHistory;
     }
