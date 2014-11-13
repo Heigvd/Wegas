@@ -149,7 +149,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         Query q = em.createQuery(cq);
         return (JpaAccount) q.getSingleResult();*/
 
-        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
+        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JPAAccount.findByEmail", JpaAccount.class);
         query.setParameter("email", email);
         return query.getSingleResult();
     }
