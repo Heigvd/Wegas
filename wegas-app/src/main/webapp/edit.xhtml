@@ -66,11 +66,11 @@
                                  * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
                                  */
                                 source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                            
-                                initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-editor-layout.json</ui:insert>',
+                                    /* THIS IS NOT A COMMENT
+                                     * </ui:fragment>
+                                     */
+                                    
+                                    initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-editor-layout.json</ui:insert>',
                                 //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
                                 //initialRequest 'EditorLayout',
                                 plugins: [{
@@ -117,17 +117,12 @@
                                         fn: "WegasCache"
                                     }]
                             },
-                            /* THIS IS NOT A COMMENT
-                             * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.websocket != ''}">
-                             */
                             Pusher: {
                                 type: "PusherDataSource",
                                 source: "rest/Pusher/",
-                                applicationKey: "#{editorGameController.currentGameModel.properties.websocket}"
+                                //   applicationKey: "#{editorGameController.currentGameModel.properties.websocket}"
+                                applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}"
                             },
-                            /* THIS IS NOT A COMMENT
-                             * </ui:fragment>
-                             */
                             File: {
                                 source: "rest/GameModel/#{editorGameController.currentGameModel.id}/File/",
                                 plugins: [{
@@ -136,7 +131,7 @@
                             }
                         }
                     });
-
+                    
                     /**
                      * THIS IS NOT A COMMENT !!!
                      * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
@@ -145,13 +140,13 @@
                     /**
                      * END THIS IS NOT A COMMENT !!!
                      */
-                     
+                    
                     app.on("render", function() {                               // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
-
+                        
                         try {
-                            #{editorGameController.getClientScripts()}          // Run game model specific js footer
+                #{editorGameController.getClientScripts()}          // Run game model specific js footer
                         } catch (e) {
                             Y.log("Error running client scripts.", "error");
                         }

@@ -371,7 +371,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             + "<div></div>"                                                 // Menu
             + '<div class="wegas-state-text"></div>'
             + "<div class='transition-start'></div>"
-            + "<div class='state-toolbox'><div class='state-initial'></div><div class='state-delete'></div></div>"
+            //+ "<div class='state-toolbox'><div class='state-initial'></div><div class='state-delete'></div></div>"
             + "</div>",
         CONTENT_TEMPLATE: null,
         initializer: function() {
@@ -436,11 +436,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             jp.makeSource(bb.one(".transition-start"), {
                 parent: bb
             });
-            bb.delegate(CLICK, this.deleteSelf, ".state-delete", this); // Delete state button
-            bb.delegate(CLICK, function(e) {
-                e.halt(true);
-                this.setAsInitial();
-            }, ".state-initial", this);
+            //bb.delegate(CLICK, this.deleteSelf, ".state-delete", this); // Delete state button
+            //bb.delegate(CLICK, function(e) {
+            //    e.halt(true);
+            //    this.setAsInitial();
+            //}, ".state-initial", this);
             bb.on(CLICK, function() {                                         // Label click
                 var form;
                 Plugin.EditEntityAction.hideRightTabs();
@@ -641,7 +641,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     ["Label", {
                             id: "toolbox",
                             location: 0.8,
-                            label: "<div class='transition-edit'></div><div class='transition-delete'></div>",
+                          //  label: "<div class='transition-edit'></div><div class='transition-delete'></div>",
                             cssClass: "transition-toolbox"
                         }]
                 ],
@@ -652,10 +652,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             connection.canvas.setAttribute("cursor", "pointer");
             connection.canvas.onclick = editAction;
             Y.one(connection.getLabelOverlay().getElement()).on(CLICK, editAction);
-            Y.one(this.connection.getOverlay("toolbox").getElement()).delegate(CLICK, function(e) {// Delete transition button click
-                e.halt("true");
-                this.disconnect();
-            }, ".transition-delete", this);
+            //Y.one(this.connection.getOverlay("toolbox").getElement()).delegate(CLICK, function(e) {// Delete transition button click
+            //    e.halt("true");
+            //    this.disconnect();
+            //}, ".transition-delete", this);
             //this.connection.canvas.onmouseover = function() {
             //    this.labelNode.canvas.getElementsByClassName("transition-toolbox")[0].setAttribute("style", "display:inline-block;");
             //};

@@ -475,7 +475,7 @@ YUI.add("wegas-lobby-datatable", function(Y) {
             host.get(CONTENTBOX).addClass("wegas-datatable-list");
 
             if (host.toolbar) {
-                host.toolbar.get("header").append("<div class='wegas-datatable-viewbuttons'>"
+                host.toolbar.get("header").prepend("<div class='wegas-datatable-viewbuttons'>"                          // prepend as it will float right : Firefox fix
                     + "<button class='yui3-button button-grid'><span class='wegas-icon wegas-icon-gridview'></span></button>"
                     + "<button class='yui3-button button-list yui3-button-selected'><span class='wegas-icon wegas-icon-listview'></span></button>"
                     + "<button class='yui3-button button-table'><span class='wegas-icon wegas-icon-tableview'></span></button>"

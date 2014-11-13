@@ -158,7 +158,7 @@ YUI.add("wegas-template", function(Y) {
             + "<%= (this.value || '{label}') + '/' + (this.maxValue || '{maxValue}') %></div>")
     });
     Wegas.TextTemplate = Y.Base.create("wegas-template", AbstractTemplate, [], {
-        TEMPLATE: Micro.compile("<div><%== this.variable.getValue() || 'Unable to find value' %></div>")
+        TEMPLATE: Micro.compile("<div><%== this.value %></div>")
     }, {
         ATTRS: {
             /**

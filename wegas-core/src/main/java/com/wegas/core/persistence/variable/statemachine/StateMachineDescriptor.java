@@ -38,7 +38,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "statemachine_id", referencedColumnName = "variabledescriptor_id")
     @MapKeyColumn(name = "fsm_statekey")
-    @JsonView(Views.EditorExtendedI.class)
+    @JsonView(Views.ExtendedI.class)
     private Map<Long, State> states = new HashMap<>();
 
     /**

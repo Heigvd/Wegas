@@ -1,0 +1,67 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+.wegas-historydialog {
+    width: 100%;
+    max-height: 100%;
+    overflow-y: auto;
+    min-width: 150px;
+}
+
+.wegas-historydialog .talk {
+    text-align: left;
+    border: 1px solid #CCC;
+    padding: 1em;
+    background-color: #C7EDFA;
+    margin: 5px 20% 15px 5px;
+}
+
+.wegas-historydialog .response {
+    text-align: right;
+}
+
+.wegas-historydialog .dialogue .response li,
+.wegas-historydialog .history .response {
+    padding: 1em;
+    border: 1px solid #999;
+    background-color: #0981A9;
+    margin: 1px 5px 8px 20%;
+    color: white;
+}
+
+.wegas-historydialog .dialogue .response li {
+    cursor: pointer;
+    -webkit-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 2px 20px rgba(255, 255, 255, 0.30) inset, 0 1px 2px rgba(0, 0, 0, 0.15);
+    -moz-box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 2px 20px rgba(255, 255, 255, 0.30) inset, 0 1px 2px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25) inset, 0 2px 20px rgba(255, 255, 255, 0.30) inset, 0 1px 2px rgba(0, 0, 0, 0.15);
+}
+
+.wegas-historydialog .history .response {
+    margin-bottom: 40px;
+}
+
+.wegas-historydialog .response li:hover {
+    background: #3794B3;
+}
+
+/* CHOOSER */
+.chooser-entities {
+    float: left;
+}
+
+.chooser-widget {
+    float: left;
+}
+
+.chooser-entity {
+    cursor: pointer;
+}
+
+.chooser-choosen,
+.chooser-entity:hover{
+    background: #CCC;
+}

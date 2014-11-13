@@ -439,7 +439,8 @@ font {
 #tinymce ul,
 .wegas-inbox .yui3-tab-panel ul,
 .wegas-mcqtabview .yui3-tab-panel ul,
-.wegas-text-content ul {
+.wegas-text-content ul,
+.wegas-template-content ul{
     list-style-type: disc;
     padding: 0 2em;
     margin: 0.1em 0em;

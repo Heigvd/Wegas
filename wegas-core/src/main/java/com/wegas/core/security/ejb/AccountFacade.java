@@ -24,10 +24,7 @@ import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -114,9 +111,12 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @return
      */
     public List<JpaAccount> findAllRegistered() {
-        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
-        query.select(query.from(JpaAccount.class));
-        return getEntityManager().createQuery(query).getResultList();
+//        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
+//        query.select(query.from(JpaAccount.class));
+//        return getEntityManager().createQuery(query).getResultList();
+        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JPAAccount.findExactClass", JpaAccount.class);
+        query.setParameter("accountClass", JpaAccount.class);
+        return query.getResultList();
     }
 
     /**

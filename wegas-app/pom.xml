@@ -29,6 +29,15 @@
                         <configuration>
                             <warName>Wegas</warName>
                             <failOnMissingWebXml>false</failOnMissingWebXml>
+                            <archive>
+                                <!--<manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <classpathPrefix>lib</classpathPrefix>
+                                </manifest>-->
+                                <!--<manifestEntries>
+                                    <Class-Path>file:/${basedir}/../wegas-core/target/wegas-core.jar</Class-Path>
+                                </manifestEntries>-->
+                            </archive>
                         </configuration>
                     </plugin>
                 </plugins>
@@ -43,6 +52,8 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-war-plugin</artifactId>
                         <configuration>
+                            <!--remove not min js-->
+                            <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                             <overlays>
                                 <overlay>
                                     <id>wegaslibs</id>
@@ -70,21 +81,21 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-resources-gl4</artifactId>
-            <version>1.0</version>
+            <version>${project.version}</version>
             <type>war</type>
-            <optional>true</optional>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>wegas-core-gl4</artifactId>
-            <version>1.0-SNAPSHOT-gl4</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- log4j -->
@@ -92,6 +103,16 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
         </dependency>
+        <!-- logging redirect -->
+        <!--        <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                </dependency>
+
+                <dependency>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>jul-to-slf4j</artifactId>
+                </dependency>-->
         <!--slf4j implementation-->
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -99,6 +120,29 @@
             <!--<scope>runtime</scope>-->
         </dependency>
         
+        <!-- Jersey 
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        
+        <dependency>
+            <artifactId>jersey-multipart</artifactId>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <scope>provided</scope>
+        </dependency> -->
+
+        <!-- Apache Shiro Dependencies -->
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shiro</groupId>
+            <artifactId>shiro-web</artifactId>
+        </dependency>
+
         <!-- cdi 
         <dependency>
             <groupId>javax.enterprise</groupId>
@@ -166,7 +210,7 @@
 
     <build>
 
-        <finalName>Wegas_${project.version}</finalName>
+        <finalName>Wegas</finalName>
 
         <plugins>
 
@@ -200,6 +244,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-site-plugin</artifactId>
+                <version>3.2</version>
                 <executions>
                     <execution>
                         <goals>
@@ -215,7 +260,8 @@
                             <artifactId>jsdoctk-plugin</artifactId>
                             <version>2.3.2</version>
                             <configuration>
-                                <template>jsdoc</template> <!-- Alternatives are not pre-installed for version 2.x-->
+                                <template>jsdoc</template>
+                                <!-- Alternatives are not pre-installed for version 2.x-->
                                 <directory>${project.build.directory}/site/jsdoc</directory>
                                 <recurse>5</recurse>
                                 <ext>js</ext>
@@ -226,7 +272,8 @@
                                 to make the plugin work: ${basedir}/src/main/webapp/ -->
                                 <srcDir>${basedir}/src/main/webapp</srcDir>
                                 <exclude><!-- Since jsdoctk 2.3.2 -->
-                                    <param>lib</param><!--Multiple param entries allowed-->
+                                    <!--Multiple param entries allowed-->
+                                    <param>lib</param>
                                 </exclude>
                             </configuration>
                         </plugin>
@@ -317,6 +364,12 @@
                 </executions>
             </plugin>-->
 
+            <!-- Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+
             <!-- YUI JS Compression Plugin -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
@@ -347,7 +400,7 @@
                             <overwrite>true</overwrite>
                             <resources>
                                 <resource>
-                                    <directory>target/Wegas_1.0-SNAPSHOT</directory>
+                                    <directory>target/${project.build.finalName}</directory>
                                     <includes>
                                         <include>**/*.js</include>
                                     </includes>
