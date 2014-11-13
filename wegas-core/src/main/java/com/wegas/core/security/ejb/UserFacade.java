@@ -30,6 +30,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
+import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
@@ -139,9 +140,10 @@ public class UserFacade extends BaseFacade<User> {
                     throw new WegasException("This email is already associated with an existing account.");
                 }
             }
-        } catch (PersistenceException e) {
+        } catch (PersistenceException | EJBTransactionRolledbackException e){
             // GOTCHA
         }
+        
 
         super.create(user);
         try {

@@ -67,9 +67,9 @@ public class TeamFacade extends BaseFacade<Team> {
         return (Team) q.getSingleResult();*/
 
 
-        final TypedQuery<Team> query = getEntityManager().createNamedQuery("Team.findByName", Team.class);
-        query.setParameter("name", name);
+        final TypedQuery<Team> query = getEntityManager().createNamedQuery("Team.findByGameIdAndName", Team.class);
         query.setParameter("gameId", gameModelId);
+        query.setParameter("name", name);
         return query.getSingleResult();
     }
 
