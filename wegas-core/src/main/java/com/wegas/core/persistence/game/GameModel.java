@@ -65,6 +65,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     /**
      *
      */
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
+    @JsonView(Views.ExtendedI.class)
+    private String comments;
+    /**
+     *
+     */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
     /**
@@ -208,6 +215,7 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     public void merge(AbstractEntity n) {
         GameModel other = (GameModel) n;
         this.setDescription(other.getDescription());                            // Set description first, since fetching this lazy loaded attribute will cause an entity refresh
+        this.setComments(other.getComments());
         this.properties.merge(other.getProperties());
         super.merge(n);
     }
@@ -537,6 +545,14 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 
     /**
