@@ -382,9 +382,18 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         descriptor.get(this.get("attributeKey")).push(newEntity);
                         dataSource.cache.put(descriptor.toObject(), {
                             on: {
-                                success: function() {
+                                success: Y.bind(function(e) {
                                     EditEntityAction.hideRightTabs();
-                                },
+                                    if (this.get("showEditionAfterRequest")) {
+                                        var button = Wegas.Widget.create(e.response.entity.get(this.get("attributeKey")).slice(-1)[0].getMenuCfg({
+                                            dataSource: dataSource,
+                                            parentEntity: e.response.entity
+                                        })[0]);
+                                        button.fire("click");
+                                        button.destroy();
+                                    }
+
+                                }, this),
                                 failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
                             }
                         });
@@ -441,6 +450,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             method: {
                 value: "put"
             },
+            showEditionAfterRequest: {},
             parentEntity: {},
             targetClass: {},
             attributeKey: {}

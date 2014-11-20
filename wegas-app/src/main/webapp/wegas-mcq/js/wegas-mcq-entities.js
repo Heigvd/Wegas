@@ -308,7 +308,8 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         cfg: {
                             targetClass: "Result",
                             method: "POST",
-                            attributeKey: "results"
+                            attributeKey: "results",
+                            showEditionAfterRequest:true
                         }
                     }]
             }, {
