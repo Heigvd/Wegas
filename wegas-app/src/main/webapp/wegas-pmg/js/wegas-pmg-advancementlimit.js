@@ -71,6 +71,10 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             cb.delegate('hover', this.valueBoxHover, this.valueBoxOut, '.wegas-template-valuebox-unit.clickable', this);
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
+        isEnabled: function(){
+            var advLimitDesc = Y.Wegas.Facade.Variable.cache.find("name", "advancementLimit");
+            return (advLimitDesc === undefined || advLimitDesc.getValue());
+        },
         syncUI: function() {
             var cb = this.get(CONTENTBOX),
                 phaseLimit = Y.Wegas.Facade.Variable.cache.find("name", "phaseLimit").getValue(),
@@ -84,10 +88,13 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             cb.all(".currentPlayerState").removeClass("currentPlayerState");
             cb.all(".afterBlockPosition").removeClass("afterBlockPosition");
 
-            if (Y.Wegas.Facade.Variable.cache.find("name", "advancementLimit").getValue()) {
+            if (this.isEnabled()){
                 // Find box and add class blockPosition
                 phaseNode = cb.get('childNodes').item(phaseLimit - 1);
                 if (phaseNode) {
+                    if (periodLimit > phaseNode.one("div div").get('childNodes').size()){
+                        periodLimit = phaseNode.one("div div").get('childNodes').size();
+                    }
                     periodNode = phaseNode.one("div div").get('childNodes').item(periodLimit - 1);
                     if (periodNode) {
                         this.addBlockClass(periodNode, phaseNode);
@@ -152,7 +159,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                 }});
         },
         valueBoxHover: function(e) {
-            if (Y.Wegas.Facade.Variable.cache.find("name", "advancementLimit").getValue()) {
+            if (this.isEnabled()){
                 var cb = this.get(CONTENTBOX);
                 cb.all(".blockPosition").removeClass("blockPosition");
                 cb.all(".afterBlockPosition").removeClass("afterBlockPosition");

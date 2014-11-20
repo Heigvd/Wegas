@@ -131,7 +131,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase-1).getValue(self), advancement = Variable.find(gameModel, 'advancementLimit').getValue(self),phaseLimit = Variable.find(gameModel, 'phaseLimit').getValue(self),periodLimit = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return (advancement && !(phase === 3 && period > executionPeriods) && phase >= phaseLimit && period >= periodLimit)",
+                                "content": "var phase = Variable.find(gameModel, 'currentPhase').getValue(self), period = Variable.find(gameModel, 'currentPeriod').item(phase-1).getValue(self), advLimitDesc, advancement, phaseLimit = Variable.find(gameModel, 'phaseLimit').getValue(self),periodLimit = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); try {advLimitDesc = Variable.find(gameModel, 'advancementLimit');} catch(e){}; advancement = advLimitDesc === undefined || advLimitDesc.getValue(self); return (advancement && !(phase === 3 && period > executionPeriods) && phase >= phaseLimit && period >= periodLimit)",
                                 "language": "JavaScript"
                             }
                         }
@@ -1233,6 +1233,52 @@
         "type": "AbsoluteLayout",
         "children": [
             {
+                "type": "Text",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "top": "28px",
+                                "left": "83px"
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {}
+                        }
+                    },
+                    {
+                        "fn": "CSSText",
+                        "cfg": {
+                            "styles": {
+                                "color": "rgba(0,0,0,0.80)",
+                                "fontSize": "",
+                                "fontStyle": "",
+                                "textAlign": "",
+                                "fontVariant": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} (advLimitDesc != undefined);",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "hidden"
+                        }
+                    }
+                ],
+                "content": "<p>Advancement limit</p>"
+            },
+            {
                 "type": "Button",
                 "cssClass": "pmg-properties-button",
                 "label": "<span class='checkbox'>Advancement limit</span>",
@@ -1244,7 +1290,7 @@
                             "onClick": {
                                 "@class": "Script",
                                 "language": "JavaScript",
-                                "content": "if (Variable.find(gameModel, \"advancementLimit\").getValue(self)){\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, false);\n} else {\n    Variable.find(gameModel, \"advancementLimit\").setValue(self, true);\n}"
+                                "content": "var advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch (e){}\n if (advLimitDesc != undefined){ advLimitDesc.setValue(self, !advLimitDesc.getValue(self));};"
                             }
                         }
                     },
@@ -1269,11 +1315,23 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "Variable.find(gameModel, 'advancementLimit').getValue(self)",
+                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} (advLimitDesc == undefined || advLimitDesc.getValue(self));",
                                 "language": "JavaScript"
                             },
                             "attribute": "cssClass",
                             "value": "selected"
+                        }
+                    },
+                    {
+                        "fn": "ConditionalDisable2",
+                        "cfg": {
+                            "condition": {
+                                "@class": "Script",
+                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} (advLimitDesc == undefined);",
+                                "language": "JavaScript"
+                            },
+                            "attribute": "cssClass",
+                            "value": "hidden"
                         }
                     }
                 ]
