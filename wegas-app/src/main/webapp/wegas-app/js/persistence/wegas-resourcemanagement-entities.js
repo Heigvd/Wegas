@@ -202,6 +202,28 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             }
         },
         METHODS: {
+            getActive: {
+                label: "Is active",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            activate: {
+                label: "Activate",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            desactivate: {
+                label: "Desactivate",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
             getConfidence: {
                 label: "Get confidence",
                 returns: NUMBER,
@@ -469,28 +491,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: STRING,
                         value: 1
                     }]
-            },
-            getActive: {
-                label: "Is active",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            activate: {
-                label: "Activate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            desactivate: {
-                label: "Desactivate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
             }
         }
     });
@@ -731,6 +731,28 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 }
             }
         }, METHODS: {
+            activate: {
+                label: "Activate",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            desactivate: {
+                label: "Desactivate",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
+            getActive: {
+                label: "Is active",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }]
+            },
             getNumberInstanceProperty: {
                 label: "Get number instance property",
                 returns: NUMBER,
@@ -755,8 +777,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         scriptType: STRING
                     }]
             },
-            setInstanceProperty: {
-                label: "Set instance property",
+            addNumberAtInstanceProperty: {
+                label: "Add to instance property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -770,8 +792,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         scriptType: STRING
                     }]
             },
-            addNumberAtInstanceProperty: {
-                label: "Add to instance property",
+            setInstanceProperty: {
+                label: "Set instance property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -811,28 +833,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }, {
                         type: STRING,
                         value: 1
-                    }]
-            },
-            getActive: {
-                label: "Is active",
-                returns: BOOLEAN,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            activate: {
-                label: "Activate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            desactivate: {
-                label: "Desactivate",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
                     }]
             }
         }

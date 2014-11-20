@@ -322,18 +322,6 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 type: "DeleteEntityButton"
             }],
         METHODS: {
-            setCurrentResult: {
-                label: "set current result",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "entityarrayfieldselect",
-                        returnAttr: "name",
-                        field: "results",
-                        scriptType: STRING
-                    }]
-            },
             activate: {
                 arguments: [{
                         type: HIDDEN,
@@ -346,16 +334,28 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         value: SELF
                     }]
             },
-            hasBeenSelected: {
-                label: "has been selected",
+            isActive: {
+                label: "is active",
                 returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }]
             },
-            isActive: {
-                label: "is active",
+            setCurrentResult: {
+                label: "set current result",
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: "entityarrayfieldselect",
+                        returnAttr: "name",
+                        field: "results",
+                        scriptType: STRING
+                    }]
+            },
+                        hasBeenSelected: {
+                label: "has been selected",
                 returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,
