@@ -265,7 +265,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         value: SELF
                     }, {
                         type: NUMBER,
-                        typeInvite: "Time",
+                        typeInvite: "Period",
                         scriptType: NUMBER
                     }, {
                         type: HIDDEN,
