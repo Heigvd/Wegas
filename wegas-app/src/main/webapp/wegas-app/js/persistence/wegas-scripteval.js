@@ -89,17 +89,21 @@ YUI.add('wegas-scripteval', function(Y) {
          * @return {Any} value locally evaluated
          */
         localEval: function(script, player) {
-            if (Y.Lang.isObject(script)) {                                      // Normalize script argument
-                script = script.content;
-            }
             if (!this.upToDate) {                                               //Only compute if new value
                 this._buildContext();
             }
             this.context.self = player || Wegas.Facade.Game.cache.getCurrentPlayer();
+
+            if (Y.Lang.isObject(script) && script.content) {                                      // Normalize script argument
+                script = script.content;
+            }
+            /*jslint evil: true */
+            if(Y.Lang.isFunction(script)){
+                return (new Function(Y.Object.keys(this.context), "return ("+script.toString()+"())")).apply({}, Y.Object.values(this.context));
+            }
             if (script.indexOf("return") === -1) {
                 script = "return " + script;
             }
-            /*jslint evil: true */
             return (new Function(Y.Object.keys(this.context), script)).apply({}, Y.Object.values(this.context));
         },
         /**
