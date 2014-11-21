@@ -294,6 +294,8 @@ var PMGHelper = (function() {
         addImpactDuration: function(name, method, args, inTime) {               // Impact OK
             return addImpactDuration(name, method, args, inTime);
         },
+        addNumberImpactDuration: addImpactDuration,                             // Duplicate for wysiwyg
+        addResourceImpactDuration: addImpactDuration,                           // Duplicate for wysiwyg
         cancelEffect: function() {
             cancelEffect();
         },

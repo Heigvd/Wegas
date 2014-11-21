@@ -384,7 +384,7 @@ YUI.add("wegas-lobby-datatable", function(Y) {
             }
             var host = this.get(HOST), tmp,
                 rec = host.table.getRecord(e.currentTarget), // the current Record for the clicked TR
-                menuItems = this.get("children") || (host.menu && host.menu.get("children")),
+                menuItems = this.get("children") || (host.menu && Y.clone(host.menu.get("children"))),
                 entity = rec.get(ENTITY),
                 data = {
                     entity: entity,

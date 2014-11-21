@@ -988,11 +988,12 @@ var PMGSimulation = (function() {
     }
 
     /**
-     * Check if an advancement limit existe
+     * Check if an advancement limit exists
      */
     function assertAdvancementLimit() {
-        var phaseLimit, periodLimit, executionPeriods;
-        if (Variable.find(gameModel, "advancementLimit").getValue(self)) {
+        var phaseLimit, periodLimit, executionPeriods,
+            advLimitDesc = Variable.find(gameModel, "advancementLimit");
+        if (advLimitDesc === undefined || advLimitDesc.getValue(self)) {
             phaseLimit = Variable.find(gameModel, "phaseLimit").getValue(self);
             periodLimit = Variable.find(gameModel, "periodLimit").getValue(self);
             executionPeriods = Variable.find(gameModel, "executionPeriods").getValue(self);

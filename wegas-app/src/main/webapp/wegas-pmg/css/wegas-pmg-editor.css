@@ -5,6 +5,9 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
+.pmg-properties .hidden {
+    display: none;
+}
 .pmg-properties .pmg-properties-button,
 .pmg-properties .pmg-properties-button:hover {
     background: transparent;
@@ -52,7 +55,7 @@
     cursor: default;
 }
 .wegas-pmg-advancementlimit .currentPlayerState{
-    background-color: #0981A9;
+    background-color: lightgray;
     cursor: pointer;
 }
 .wegas-pmg-advancementlimit .clickable{
