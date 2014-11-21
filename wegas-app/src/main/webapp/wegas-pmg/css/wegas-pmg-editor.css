@@ -51,11 +51,11 @@
     border-left: 1px solid gray;
 }
 .wegas-pmg-advancementlimit .playerAdvancement{
-    background-color: lightgray;
+    background-color: #BBB;
     cursor: default;
 }
 .wegas-pmg-advancementlimit .currentPlayerState{
-    background-color: lightgray;
+    background-color: #707070;
     cursor: pointer;
 }
 .wegas-pmg-advancementlimit .clickable{
