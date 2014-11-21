@@ -35,15 +35,15 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                periodPhase1 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase1").getValue(),
-                periodPhase2 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase2").getValue(),
-                periodPhase3 = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                periodPhase4 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase4").getValue();
+                nbPeriodPhase1 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase1").getMaxValue(),
+                nbPeriodPhase2 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase2").getMaxValue(),
+                nbPeriodPhase3 = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
+                nbPeriodPhase4 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase4").getMaxValue();
 
-            cb.append(this.phaseNode("Initiation", "initiation", periodPhase1));
-            cb.append(this.phaseNode("Planning", "planning", periodPhase2));
-            cb.append(this.phaseNode("Execution", "execution", periodPhase3));
-            cb.append(this.phaseNode("Closing", "closing", periodPhase4));
+            cb.append(this.phaseNode("Initiation", "initiation", nbPeriodPhase1));
+            cb.append(this.phaseNode("Planning", "planning", nbPeriodPhase2));
+            cb.append(this.phaseNode("Execution", "execution", nbPeriodPhase3));
+            cb.append(this.phaseNode("Closing", "closing", nbPeriodPhase4));
         },
         valueBoxNode: function(period, phase) {
             var node = Y.Node.create("<div class='wegas-template-valuebox " + phase + "'></div>"),
@@ -134,7 +134,6 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
         },
         valueBoxClick: function(e) {
             var script, phase = 0, phaseDiv = e.target.ancestor().ancestor().ancestor(),
-                period3 = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
                 val;
 
             while (phaseDiv !== null) {
@@ -143,7 +142,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             }
             
             if (e.target.getHTML() === "..."){
-                val = period3 + 1;
+                val = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue() + 1;
             } else {
                 val = parseInt(e.target.getHTML());
             }
@@ -174,8 +173,6 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             this.syncUI();
         },
         addBlockClass: function(periodNode, phaseNode) {
-            var boxNodeList;
-
             periodNode.addClass("blockPosition");
             periodNode = periodNode.next();
             while (periodNode !== null) {
@@ -184,29 +181,26 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             }
             phaseNode = phaseNode.next();
             while (phaseNode !== null) {
-                boxNodeList = phaseNode.one("div div").get('childNodes');
-                boxNodeList.addClass("afterBlockPosition");
+                phaseNode.one("div div").get('childNodes').addClass("afterBlockPosition");
                 phaseNode = phaseNode.next();
             }
         },
         getMaxPlayerPhasePeriod: function() {
             var phaseInstList = Y.Wegas.Facade.Variable.cache.find("name", "currentPhase").get("scope").get("variableInstances"),
                 currentPeriodList = Y.Wegas.Facade.Variable.cache.find("name", "currentPeriod"),
-                key, playerPhaseVal, playerCurrentPeriodList, playerPeriodVal,
+                key, playerCurrentPeriodList,
                 max = {
                 phase: 0,
                 period: 0
             };
 
             for (key in phaseInstList) {
-                playerPhaseVal = phaseInstList[key].get("value");
-                max.phase = Math.max(max.phase, playerPhaseVal);
+                max.phase = Math.max(max.phase, phaseInstList[key].get("value"));
             }
 
             playerCurrentPeriodList = currentPeriodList.item(max.phase - 1).get("scope").get("variableInstances");
             for (key in playerCurrentPeriodList) {
-                playerPeriodVal = playerCurrentPeriodList[key].get("value");
-                max.period = Math.max(max.period, playerPeriodVal);
+                max.period = Math.max(max.period, playerCurrentPeriodList[key].get("value"));
             }
             return max;
         },
