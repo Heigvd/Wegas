@@ -14131,22 +14131,81 @@
 
                 },
                 {
-                    "@class": "BooleanDescriptor",
-                    "name": "advancementLimit",
-                    "label": "AdvancementLimit",
-                    "title": null,
+                    "@class": "TriggerDescriptor",
+                    "comments": "Used to set some initial values that depends on others :\n\nInitial advancement limit\n  - phaseLimit = Closing\n  - periodLimit = max closing period value",
                     "defaultInstance": {
-                        "@class": "BooleanInstance",
-                        "value": false
-
+                        "@class": "TriggerInstance",
+                        "currentStateId": 1,
+                        "enabled": true,
+                        "transitionHistory": [],
+                        "currentState": {
+                            "@class": "State",
+                            "editorPosition": null,
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "index": 0,
+                                    "nextStateId": 2,
+                                    "preStateImpact": null,
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
                     },
+                    "label": "InitialValues",
                     "scope": {
-                        "@class": "GameScope",
-                        "broadcastScope": "GameScope"
-
+                        "@class": "TeamScope",
+                        "broadcastScope": "TeamScope"
+                    },
+                    "title": null,
+                    "name": "initialValues",
+                    "states": {
+                        "2": {
+                            "@class": "State",
+                            "editorPosition": null,
+                            "label": null,
+                            "onEnterEvent": {
+                                "@class": "Script",
+                                "content": "Variable.find(gameModel, \"phaseLimit\").setValue(self, 4);\nVariable.find(gameModel, \"periodLimit\").setValue(self, Variable.find(gameModel, \"periodPhase4\").getMaxValue());\n",
+                                "language": "JavaScript"
+                            },
+                            "transitions": []
+                        },
+                        "1": {
+                            "@class": "State",
+                            "editorPosition": null,
+                            "label": null,
+                            "onEnterEvent": null,
+                            "transitions": [{
+                                    "@class": "Transition",
+                                    "index": 0,
+                                    "nextStateId": 2,
+                                    "preStateImpact": null,
+                                    "triggerCondition": {
+                                        "@class": "Script",
+                                        "content": "",
+                                        "language": "JavaScript"
+                                    }
+                                }]
+                        }
+                    },
+                    "oneShot": true,
+                    "triggerEvent": {
+                        "@class": "Script",
+                        "content": "",
+                        "language": "JavaScript"
+                    },
+                    "postTriggerEvent": {
+                        "@class": "Script",
+                        "content": "Variable.find(gameModel, \"phaseLimit\").setValue(self, 4);\nVariable.find(gameModel, \"periodLimit\").setValue(self, Variable.find(gameModel, \"periodPhase4\").getMaxValue());\n",
+                        "language": "JavaScript"
                     }
-
-                }]
+                }
+            ]
         },
         {
             "@class": "ListDescriptor",
