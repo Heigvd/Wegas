@@ -13,21 +13,23 @@
 body, button, .yui3-skin-sam .yui3-datatable-table {
     font-family: Verdana, Geneva, sans-serif;
 }
-.editor-preview, .editor-preview  button {
+
+.editor-preview, .editor-preview button {
     font-family: arial; /* but not in the preview*/
 }
+
 .editor-preview {
-    width:100%;
-    height:100%;
+    width: 100%;
+    height: 100%;
 }
 
 /** Comments */
-.wegas-comments{
-    font-style : italic;
+.wegas-comments {
+    font-style: italic;
 }
 
 .wegas-comments textarea {
-    font-style : italic;
+    font-style: italic;
     color: #505050;
     background-color: rgb(242, 242, 242);
 }
@@ -36,17 +38,30 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .wegas-stdmode .wegas-advanced-feature {
     display: none;
 }
+
 .wegas-advanced-feature {
     font-style: italic;
 }
+
 .editor-administrator-button,
 .wegas-rolerights-tab {
     display: none;
 }
+
 .wegas-role-administrator .editor-administrator-button,
-.wegas-role-administrator .wegas-rolerights-tab {                               /* Only members of administrator group can see admin button */
+.wegas-role-administrator .wegas-rolerights-tab {
+    /* Only members of administrator group can see admin button */
     display: inline-block;
     font-style: italic;
+}
+
+#rightTabView .yui3-tabview-panel:empty:before {
+    content: "Nothing selected";
+    text-align: center;
+    margin-top: 2em;
+    font-style: italic;
+    color: #a0a0a0;
+    display: block;
 }
 
 /* wegas-tabview-fullheight class makes a tab fill the whole height av1ailable */
@@ -55,18 +70,21 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: 100%;
     position: relative;
 }
+
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
-    position:absolute;
+    position: absolute;
     top: 38px;
-    bottom:0px;
-    width:100%;
+    bottom: 0px;
+    width: 100%;
     overflow: auto;
 }
+
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel {
-    position:relative;
+    position: relative;
     height: 100%;
     overflow: auto;
 }
+
 .yui3-skin-sam .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel > .yui3-tab-panel > .panel-inner {
     height: inherit;
     overflow: auto;
@@ -74,13 +92,15 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /* Toolbar styles */
 .wegas-hastoolbar {
-    position:relative;
+    position: relative;
     height: 100%;
     overflow: auto;
 }
+
 .editor-preview .layout .wegas-hastoolbar {
-    position:inherit;
+    position: inherit;
 }
+
 .wegas-hastoolbar > .wegas-toolbar-sibling {
     position: absolute;
     top: 3em;
@@ -90,6 +110,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     overflow: auto;
     height: initial !important;
 }
+
 .wegas-hastoolbar > .wegas-toolbar {
     position: absolute;
 }
@@ -107,40 +128,49 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     z-index: 1;
     overflow: auto;
 }
+
 .wegas-console .results .result {
     padding: 2px 4px;
     font-size: 11px;
     margin: 2px;
 }
+
 .wegas-console .results .result.error {
     border: 1px solid red;
     background: rgb(248, 220, 220);
 }
+
 .yui3-skin-sam .wegas-console .inputEx-ListField .wegas-addbutton {
     position: absolute;
     bottom: -28px;
     top: initial;
     left: initial;
 }
-.wegas-console .inputEx-ListField .wegas-addbutton::after{ 
-    content: "Add"; 
+
+.wegas-console .inputEx-ListField .wegas-addbutton::after {
+    content: "Add";
 
 }
+
 /* Styles for Animator -> impact game */
 .wegas-console-wysiwyg .inputEx-WysiwygScript > .yui3-button {
     display: none; /* Remove add button*/
 }
+
 .wegas-stdmode .wegas-console-wysiwyg .results {
-    display: none;    
+    display: none;
 }
+
 .wegas-console-wysiwyg .ace_editor {
     width: 100%;
     height: 100% !important;
 }
+
 .wegas-console-wysiwyg > div > .inputEx-fieldWrapper {
     height: 100%;
     margin-bottom: 0;
 }
+
 .wegas-advancedmode .wegas-console-wysiwyg > div > .inputEx-fieldWrapper {
     position: absolute;
     top: 0;
@@ -150,40 +180,46 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     height: auto;
     overflow: auto;
 }
+
 .wegas-console-wysiwyg .inputEx-WysiwygScript {
     position: relative;
     height: 100%;
 }
-.wegas-console-wysiwyg .inputEx-WysiwygScript > .inputEx-ListField  {
+
+.wegas-console-wysiwyg .inputEx-WysiwygScript > .inputEx-ListField {
     margin-left: -72px;
 }
 
 /* YUI3 Console style override */
 .yui3-console-hd {
-    display:none;
+    display: none;
 }
+
 .yui3-skin-sam .yui3-console-ft, .yui3-skin-sam .yui3-console-content,
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
-.yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories{
+.yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories {
     background: transparent;
     border: none;
 }
+
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-sources,
 .yui3-skin-sam .yui3-console-ft .yui3-console-filters-categories {
-    margin:0;
+    margin: 0;
     border-top: 1px solid #777;
 }
+
 .yui3-skin-sam .yui3-console-bd {
     border-top: none;
-    height:auto !important;
+    height: auto !important;
     position: absolute;
     bottom: 90px;
     left: 0;
     right: 0;
-    top:1px;
+    top: 1px;
 }
+
 .yui3-skin-sam .yui3-console-ft {
-    height:auto !important;
+    height: auto !important;
     position: absolute;
     bottom: 0px;
     left: 0;
@@ -192,9 +228,10 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /* Script library styles */
 .wegas-scriptlibrary .inputEx-Field {
-    float:none;
-    height:100%;
+    float: none;
+    height: 100%;
 }
+
 .wegas-scriptlibrary .empty {
     position: absolute;
     width: 100%;
@@ -202,10 +239,12 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     font-style: italic;
     top: 100px;
 }
+
 .wegas-scriptlibrary .inputEx-fieldWrapper {
-    height:100%;
-    margin-bottom:0;
+    height: 100%;
+    margin-bottom: 0;
 }
+
 .wegas-scriptlibrary .ace_editor {
     height: 100%;
     width: 100%;
@@ -213,40 +252,47 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 
 /* Panel Widget Styles */
 .yui3-panel-hidden {
-    display: none;                                                              /* added to the defaulty yui3 visibility: hidden */
+    display: none; /* added to the defaulty yui3 visibility: hidden */
 }
+
 .yui3-skin-sam .yui3-panel .yui3-widget-hd {
     background: white;
     color: #606060;
     margin-bottom: 0px;
     border-bottom: 1px solid lightgray;
 }
+
 .yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-widget-buttons {
     padding: 8px 8px 0 0;
 }
+
 .yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-button-close {
     background: url(../../wegas-app/images/sprite_icons.png) no-repeat 8px 3px;
     width: 26px;
     height: 15px;
 }
+
 .yui3-skin-sam .yui3-panel .yui3-widget-hd .yui3-button-close::before {
     content: "";
     width: 30px;
 }
+
 .yui3-skin-sam .yui3-panel .yui3-widget-bd {
     overflow: auto;
-    position: relative;                                                         /* So the abolute element like treeview icons are well positionned */
-    padding: 0;                                                                 /* Override yui default */
+    position: relative; /* So the abolute element like treeview icons are well positionned */
+    padding: 0; /* Override yui default */
 }
 
 /* Editor layout styles */
-.yui3-skin-sam .wegas-layout-hd{
+.yui3-skin-sam .wegas-layout-hd {
     white-space: nowrap;
 }
+
 .yui3-skin-sam .wegas-layout-hd > div {
     display: inline-block;
     vertical-align: top;
 }
+
 .yui3-skin-sam .wegas-layout-hd .yui3-button {
     border: none;
     font-weight: bold;
@@ -260,65 +306,79 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     background: none;
     margin-top: 12px;
 }
+
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
     background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 -40px;
     top: 11px;
 }
+
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
-    float:right  !important;
+    float: right !important;
     margin-right: 37px;
 }
+
 .yui3-skin-sam .wegas-layout-hd .wegas-login img {
     margin-top: -5px;
     margin-right: 6px;
 }
+
 #centerTabView > div > ul > .yui3-tab {
     max-width: 160px;
 }
+
 .yui3-skin-sam .wegas-layout-resizable .wegas-layout-right .yui3-resize-handle {
     background: #072644;
 }
+
 .wegas-layout-right > .wegas-list,
-.wegas-layout-right > .wegas-list > .wegas-list-content{
+.wegas-layout-right > .wegas-list > .wegas-list-content {
     height: 100%;
 }
+
 .yui3-skin-sam .wegas-layout-right {
     background: white;
     top: 38px;
     height: auto !important;
     bottom: 0px;
 }
-.yui3-skin-sam .wegas-layout-right .yui3-tabview-list{
+
+.yui3-skin-sam .wegas-layout-right .yui3-tabview-list {
     border-bottom: 1px solid #ededed;
     margin: 0 .5em;
 }
+
 .yui3-skin-sam .wegas-layout-right .yui3-tabview-list:empty {
     border: none;
 }
+
 .yui3-skin-sam .wegas-layout-right .yui3-tab-label {
     border-bottom: 2px solid transparent;
     background: none;
     padding: 14px 0 9px;
     color: gray;
 }
+
 .yui3-skin-sam .wegas-layout-right .yui3-tab-label:focus,
 .yui3-skin-sam .wegas-layout-right .yui3-tab-label:hover {
     border-bottom: 2px solid gray;
     padding: 14px 0 9px;
     background: none;
 }
+
 .yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label,
-.yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label:focus, 
+.yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label:focus,
 .yui3-skin-sam .wegas-layout-right .yui3-tab-selected .yui3-tab-label:hover {
     border-bottom: 2px solid black;
     color: black;
 }
+
 .yui3-skin-sam .wegas-layout-right .wegas-tabview-fullheight > .yui3-tabview-content > .yui3-tabview-panel {
     top: 42px;
 }
-/* Wegas logo */ 
+
+/* Wegas logo */
 .yui3-skin-sam .yui3-button.wegas-logo,
-.yui3-skin-sam .yui3-button.wegas-logo:hover  {
+.yui3-skin-sam .yui3-button.wegas-logo:hover {
     background: -2px -2px url(../../wegas-app/images/wegas-logoicon-35.png) no-repeat;
     height: 32px;
     width: 32px;
@@ -327,7 +387,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /* Wegas title */
-.yui3-skin-sam .wegas-title  {
+.yui3-skin-sam .wegas-title {
     font-weight: bolder;
     font-size: 22px;
     line-height: 1.3em;
@@ -342,29 +402,32 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     padding: 5px 10px;
     border-top: 1px solid lightgray;
 }
+
 .yui3-menu-content .wegas-playerlink-buttons input {
     width: 300px
 }
 
 /* Expermimental feature label */
-.experimental::after{
+.experimental::after {
     color: rgb(168, 168, 168);
     font-style: italic;
     font-size: 7pt;
-    content:" Experimental"
+    content: " Experimental"
 }
 
 /** Google help is displayed in max height size in the tab */
 .yui3-skin-sam .editor-help,
 .yui3-skin-sam .editor-help > div,
-.yui3-skin-sam .editor-help > div > iframe    {
+.yui3-skin-sam .editor-help > div > iframe {
     width: 100%;
     height: 100%;
 }
-.yui3-skin-sam .editor-help > div > iframe  {
+
+.yui3-skin-sam .editor-help > div > iframe {
     border: none;
     position: absolute;
 }
+
 .yui3-skin-sam .editor-help > div > iframe body {
     padding-top: 0px;
 }
@@ -387,21 +450,26 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     background-repeat: no-repeat;
     background-image: url(../../wegas-app/images/wegas-app-sprite.png);
 }
+
 .yui3-skin-sam .wegas-icon-game,
 .yui3-skin-sam .wegas-icon-gamemodel {
     margin: -6px 0 -8px;
     width: 20px;
 }
+
 .yui3-skin-sam .wegas-icon-gamemodel {
     background-position: 0 -514px;
 }
+
 .yui3-skin-sam .wegas-icon-game {
     background-position: 0 -552px;
 }
+
 .yui3-skin-sam .wegas-icon-team,
 .yui3-skin-sam .wegas-icon-role {
     background-position: 0 -621px;
 }
+
 .yui3-skin-sam .wegas-icon-player,
 .yui3-skin-sam .wegas-icon-user,
 .yui3-skin-sam .wegas-icon-jpaaccount {
@@ -409,29 +477,33 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /* Search input */
-.wegas-filter-input {    
+.wegas-filter-input {
     display: inline-block;
     vertical-align: top;
-    margin-left:4px;
+    margin-left: 4px;
 }
+
 .wegas-filter-input input {
     border: 1px solid #ededed;
     padding: 5px 3px 4px 19px;
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 1px -706px no-repeat;
 }
+
 /** Editor chat widget */
-.yui3-skin-sam .yui3-wegas-editorchat{
+.yui3-skin-sam .yui3-wegas-editorchat {
     margin-top: 12px;
     float: right;
 }
+
 /** Uservoice widget */
 .yui3-skin-sam .uv-icon {
     right: 0;
     top: 11px !important;
     width: 23px;
-    opacity: 1;                   
+    opacity: 1;
     /*z-index: 0;*/
 }
+
 .yui3-skin-sam .uv-icon svg {
     width: 24px;
     height: 27px;
@@ -442,14 +514,16 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     display: inline-block;
     vertical-align: top;
 }
-.wegas-lobby-datatable.wegas-dragover > div  {
+
+.wegas-lobby-datatable.wegas-dragover > div {
     background: #fbfbfb;
 }
+
 .wegas-lobby-datatable .wegas-dropdummy {
     text-align: center;
     vertical-align: top;
     font-size: 1.2em;
-    padding: 0.5em; 
+    padding: 0.5em;
     z-index: 100;
     text-shadow: 2px 2px 1px white, -2px 2px 1px white, 2px -2px 1px white, -2px -2px 1px white;
     border: 1px solid lightgray;
@@ -462,13 +536,16 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     margin-left: -152px;
     margin-top: -20px;
 }
+
 .wegas-lobby-datatable.wegas-dragover .wegas-dropdummy {
     display: block;
 }
+
 .yui3-skin-sam .wegas-uploadfile .yui3-button {
     width: auto;
     height: auto;
 }
+
 .wegas-uploadfile input {
     display: none;
 }
