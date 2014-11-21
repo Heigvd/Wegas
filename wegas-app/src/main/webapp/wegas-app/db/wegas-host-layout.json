@@ -2,77 +2,99 @@
     "type": "ResizableLayout",
     "top": {
         "height": 25,
-        "children": [{
+        "children": [
+            {
                 "type": "Button",
                 "cssClass": "wegas-logo",
                 "tooltip": "Back to lobby",
-                "plugins": [{
+                "plugins": [
+                    {
                         "fn": "OpenUrlAction",
                         "cfg": {
                             "url": "",
                             "target": "_self"
                         }
-                    }]
+                    }
+                ]
             }, {
                 "type": "Text",
                 "cssClass": "wegas-title"
             }, {
                 "type": "UserLoginButton"
-            }]
+            }
+        ]
     },
     "left": {
         "width": 300,
-        "children": [{
+        "children": [
+            {
                 "type": "TabView",
                 "id": "leftTabView",
                 "cssClass": "wegas-tabview-fullheight",
-                "children": [{
+                "children": [
+                    {
                         "label": "Players",
                         "cssClass": "wegas-tabview-fullheight",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "TeamTreeView",
                                 "dataSource": "Game",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "WidgetToolbar"
-                                    }]
-                            }]
+                                    }
+                                ]
+                            }
+                        ]
                     }, {
                         "type": "Tab",
                         "label": "Variables",
                         "cssClass": "editor-variables",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "VariableTreeView",
                                 "dataSource": "Variable",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "EditorTVNodeLoader"
                                     }, {
                                         "fn": "WidgetToolbar"
-                                    }]
-                            }]
+                                    }
+                                ]
+                            }
+                        ]
                     }, {
                         "type": "Tab",
                         "label": "Pages",
                         "cssClass": "editor-pages",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "PageTreeview"
-                            }]
-                    }]
-            }]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     },
     "center": {
-        "children": [{
+        "children": [
+            {
                 "id": "centerTabView",
                 "type": "TabView",
                 "cssClass": "wegas-tabview-fullheight",
-                "children": [{
+                "children": [
+                    {
                         "type": "Tab",
                         "label": "Preview",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "PageLoader",
                                 "pageLoaderId": "previewPageLoader",
                                 "defaultPageId": 1,
                                 "cssClass": "editor-preview wegas-playerview",
-                                "plugins": [{
+                                "plugins": [
+                                    {
                                         "fn": "PreviewFullScreen"
                                     }, {
                                         "fn": "WidgetToolbar"
@@ -84,28 +106,36 @@
                                         "fn": "PopupListener"
                                     }, {
                                         "fn": "ServerPopupListener"
-                                    }]
-                            }]
+                                    }
+                                ]
+                            }
+                        ]
                     }, {
                         "label": "Impact",
-                        "children": [{
+                        "children": [
+                            {
                                 "type": "WysiwygConsole",
                                 "cssClass": "wegas-console"
-                            }]
-                    }]
-            }]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
     },
     "right": {
         "width": "455px",
-        "children": [{
+        "children": [
+            {
                 "type": "TabView",
                 "id": "rightTabView",
                 "cssClass": "wegas-tabview-fullheight",
-                "plugins": [{
-                        "fn": "LayoutToggleTab"
-                    }, {
-                        "fn": "RemoveTab"
-                    }]
-            }]
+                "plugins": [
+                    {
+                        "fn": "RemoveRightTab"
+                    }
+                ]
+            }
+        ]
     }
 }
