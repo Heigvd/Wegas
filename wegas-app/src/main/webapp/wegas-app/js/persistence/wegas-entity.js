@@ -202,6 +202,15 @@ YUI.add("wegas-entity", function(Y) {
                 format: HTML,
                 optional: true
             },
+            comments: {
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    _type: "text",
+                    wrapperClassName: "wegas-comments",
+                    index: 100
+                }
+            },
             canView: {
                 "transient": true
             },

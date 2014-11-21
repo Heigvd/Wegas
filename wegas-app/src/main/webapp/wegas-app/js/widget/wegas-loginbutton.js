@@ -240,6 +240,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                 }, {
                     type: "Button",
                     label: "Themes",
+                    "cssClass": "wegas-advanced-feature",
                     plugins: [{
                             fn: "WidgetMenu",
                             cfg: {
