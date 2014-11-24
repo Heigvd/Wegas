@@ -35,7 +35,7 @@ YUI.add('wegas-object-entities', function(Y) {
                     _type: HASHLIST,
                     keyField: NAME,
                     valueField: VALUE,
-                    wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature",
+                    wrapperClassName: "inputEx-fieldWrapper",
                     elementType: {
                         type: COMBINE,
                         fields: [{
