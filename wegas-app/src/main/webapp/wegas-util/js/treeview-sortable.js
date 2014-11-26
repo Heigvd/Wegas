@@ -13,9 +13,22 @@ YUI.add("treeview-sortable", function(Y) {
     "use strict";
 
     var HOST = "host", NODE = "node", CONTENTBOX = 'contentBox',
-        TreeViewSortable;
+        TreeViewSortable,
+        
+        flagInsideNode = function(drop, nodeSelecter) {
+            if(nodeSelecter.timer){
+                nodeSelecter.timer.cancel();
+            }
+            var widgetDrop = Y.Widget.getByNode(drop);
+            if (widgetDrop !== null && widgetDrop.size() > 0) {
+                if(nodeSelecter.dropWidget !== null){
+                    nodeSelecter.dropWidget.addClass("yui3-dd-in");
+                }
+                nodeSelecter.inside = true;
+            }
+        };
     /*
-     * Plugin permettant de changer l'order des éléments d'un treeview. 
+     * Plugin used to change order of treeview elements. 
      */
     TreeViewSortable = Y.Base.create("treeview-sortable", Y.Plugin.Base, [], {
         initializer: function() {
@@ -25,15 +38,20 @@ YUI.add("treeview-sortable", function(Y) {
                 return;
             }
             
-            // Ajoute de la logique après le "render" de l'hote (treeview).
+            // Add logic after host (treeview) "render" method.
             this.afterHostEvent("render", function() {
-                var cb = this.get(HOST).get(CONTENTBOX);
+                var cb = this.get(HOST).get(CONTENTBOX),
+                nodeSelecter = {
+                    'inside':false,
+                    'timer':null,
+                    'dropWidget':null
+                };
 
                 cb.setStyles({
                     overflowY: "auto",
                     overflowX: "hidden"
                 });
-
+                
                 this.sortable = new NestedSortable({
                     container: cb,
                     nodes: 'li.treeview-draggable',
@@ -44,25 +62,19 @@ YUI.add("treeview-sortable", function(Y) {
                     // opacityNode: "dragNode",
                 });
                 this.sortable.treeSortPlg = this;
-
-                this.nodeSelecter = {
-                    'inside':false,
-                    'timer':null,
-                    'dropWidget':null
-                };
                 
                 this.sortable.delegate.on('drag:enter', function(e) {
                     var drop = e.drop.get('node');
-                    this.nodeSelecter.inside = false;
-                    if(this.nodeSelecter.timer !== null){
-                        this.nodeSelecter.timer.cancel();
+                    nodeSelecter.inside = false;
+                    if(nodeSelecter.timer !== null){
+                        nodeSelecter.timer.cancel();
                     }
-                    if(this.nodeSelecter.dropWidget !== null){
-                        this.nodeSelecter.dropWidget.removeClass("yui3-dd-in");
+                    if(nodeSelecter.dropWidget !== null){
+                        nodeSelecter.dropWidget.removeClass("yui3-dd-in");
                     }
                     if(drop.hasClass("yui3-treenode-collapsed") && !drop.hasClass("wegas-editor-question")){
-                        this.nodeSelecter.dropWidget = drop;
-                        this.nodeSelecter.timer = Y.later(1000, this, this._flagInsideNode, [drop]);
+                        nodeSelecter.dropWidget = drop;
+                        nodeSelecter.timer = Y.later(800, this, flagInsideNode, [drop,  nodeSelecter]);
                     }
                 }, this);
                 
@@ -76,24 +88,24 @@ YUI.add("treeview-sortable", function(Y) {
                     targetNode = ev.target.get(NODE);
                     targetNode.removeAttribute("style");// DD somewhere sets some element styles, which mess up alignment somewhere in IE
                     
-                    if(this.nodeSelecter.inside){
-                        dropNode = this.nodeSelecter.dropWidget;
+                    if(nodeSelecter.inside){
+                        dropNode = nodeSelecter.dropWidget;
                         dropWidget = Y.Widget.getByNode(dropNode);
                         dropWidget.fire("toggleClick", {
                             node: dropNode
                         });
-                        this.nodeSelecter.inside = false;
+                        nodeSelecter.inside = false;
                     }
-                    if(this.nodeSelecter.timer !== null){
-                        this.nodeSelecter.timer.cancel();
+                    if(nodeSelecter.timer){
+                        nodeSelecter.timer.cancel();
                     }
-                    if(this.nodeSelecter.dropWidget !== null){
-                        this.nodeSelecter.dropWidget.removeClass("yui3-dd-in");
-                        this.nodeSelecter.dropWidget = null;
+                    if(nodeSelecter.dropWidget !== null){
+                        nodeSelecter.dropWidget.removeClass("yui3-dd-in");
+                        nodeSelecter.dropWidget = null;
                     }
                     if(prev !== null){
                         if(prev.hasClass("wegas-editor-dummy")){
-                            index--;
+                            index -= 1;
                         }
                     }
                     // Update treeview
@@ -104,19 +116,7 @@ YUI.add("treeview-sortable", function(Y) {
                     }); // Fire sorted event
                     this.sync(); // Sync dummies
                 }, this);
-                
-                this._flagInsideNode = function(drop) {
-                    if(this.nodeSelecter.timer !== null){
-                        this.nodeSelecter.timer.cancel();
-                    }
-                    var widgetDrop = Y.Widget.getByNode(drop);
-                    if (widgetDrop !== null && widgetDrop.size() > 0) {
-                        if(this.nodeSelecter.dropWidget !== null){
-                            this.nodeSelecter.dropWidget.addClass("yui3-dd-in");
-                        }
-                        this.nodeSelecter.inside = true;
-                    }
-                };
+               
             });
             this.afterHostMethod("syncUI", this.sync);
             this.afterHostEvent(["*:collapsedChange"], this.sync);
@@ -131,9 +131,9 @@ YUI.add("treeview-sortable", function(Y) {
             });
             Y.Array.each(nodeGroups, function(item) {
                 cb.all("." + item.nodeClass).addClass("treeview-draggable");    // Add class to all draggable nodes
-                cb.all(item.parentNode + " ul:empty").each(function(ulVide) {
+                cb.all(item.parentNode + " ul:empty").each(function(emptyUL) {
                     var emptyLI = Y.Node.create("<li class=\"yui3-widget treeview-draggable yui3-treenode wegas-editor-dummy " + item.nodeClass + " \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
-                    ulVide.append(emptyLI);
+                    emptyUL.append(emptyLI);
                 });
             });
             this.sortable.sync();
@@ -178,7 +178,7 @@ YUI.add("treeview-sortable", function(Y) {
 
     /**
      * Extend so in works with nested lists
-     *
+     * 
      * @returns {undefined}
      */
     function NestedSortable() {
