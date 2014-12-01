@@ -1538,7 +1538,7 @@
                             "script": "var currentPhase = Variable.find('currentPhase'); return Variable.find('currentPeriod').item(currentPhase.getValue(self)-1).getValue(self)"
                         }, {
                             "label": "Choices",
-                            "script": "var currentPhase = Variable.find('currentPhase'), q = Variable.find('questions').item(currentPhase.value - 1).item(currentPeriod.items[currentPhase.value - 1].value - 1), items = q.flatten(),  i, count = 0, total = 0, inst;for (i = 0; i < items.length; i = i + 1) {    inst = items[i].getInstance(self);    count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0;    total += inst.get('active') ? 1 : 0;}return count + '/' + total;"
+                            "script": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'), q = Variable.find('questions').item(currentPhase.getValue(self) - 1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1), items = q.flatten(),  i, count = 0, total = 0, inst;for (i = 0; i < items.length; i = i + 1) {    inst = items[i].getInstance(self);    count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0;    total += inst.get('active') ? 1 : 0;}return count + '/' + total;"
                         }, {
                             "label": "Management",
                             "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",
