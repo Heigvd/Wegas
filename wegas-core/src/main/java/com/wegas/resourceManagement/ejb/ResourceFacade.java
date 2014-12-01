@@ -21,6 +21,7 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -85,7 +86,7 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param resourceInstanceId
      * @param taskDescriptorId
      * @return
@@ -95,7 +96,7 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param resourceInstance
      * @param taskDescriptor
      * @return
@@ -118,15 +119,15 @@ public class ResourceFacade {
 
     /**
      * Add an occupation for a resource at the given time
-     * 
+     *
      * @param resourceInstance
      * @param editable
      * @param time
-     * @return 
+     * @return
      */
     public Occupation addOccupation(ResourceInstance resourceInstance,
-                                    Boolean editable,
-                                    double time){
+            Boolean editable,
+            double time) {
         Occupation newOccupation = new Occupation(time);
         newOccupation.setEditable(editable);
 
@@ -136,13 +137,13 @@ public class ResourceFacade {
 
     /**
      * Reserve a resource for the given time
-     * 
+     *
      * @param resourceInstance
      * @param time
-     * @return 
+     * @return
      */
     public Occupation reserve(ResourceInstance resourceInstance,
-                                     double time){
+            double time) {
         return addOccupation(resourceInstance, true, time);
     }
 
@@ -294,15 +295,18 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param player
      * @param taskInstanceId
      * @param period
-     * @return 
+     * @return
      */
-    public TaskInstance addTaskPlannification(Player player, Long taskInstanceId, Integer period) {
+    public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
-        ti.getPlannification().add(period);
+        List<Integer> plannedPeriods = ti.getPlannification();
+        if (!plannedPeriods.contains(period)) {
+            plannedPeriods.add(period);
+        }
         try {
             scriptEvent.fire(player, "addTaskPlannification");
         } catch (NoSuchMethodException | ScriptException ex) {
@@ -310,25 +314,26 @@ public class ResourceFacade {
         }
         return ti;
     }
-    
+
     /**
-     * 
+     *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return 
+     * @return
      */
-    public TaskInstance addTaskPlannification(Long playerId, Long taskInstanceId, Integer period) {
-        return addTaskPlannification(playerFacade.find(playerId), taskInstanceId, period);
+    public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
+        return plan(playerFacade.find(playerId), taskInstanceId, period);
     }
 
     /**
      *
+     * @param player
      * @param taskInstanceId
-     * @param periode
+     * @param period
      * @return
      */
-    public TaskInstance removePlannification(Player player, Long taskInstanceId, Integer period) {
+    public TaskInstance unplan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(period);
         try {
@@ -338,16 +343,16 @@ public class ResourceFacade {
         }
         return ti;
     }
-    
+
     /**
-     * 
+     *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return 
+     * @return
      */
-    public TaskInstance removePlannification(Long playerId, Long taskInstanceId, Integer period) {
-        return this.removePlannification(playerFacade.find(playerId), taskInstanceId, period);
+    public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
+        return this.unplan(playerFacade.find(playerId), taskInstanceId, period);
     }
 
     /**
