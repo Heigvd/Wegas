@@ -106,7 +106,7 @@ function plan(task) {
     debug("Plan task " + task);
     loadResourceFacade();
     for (var i = 1; i < arguments.length; i++) {
-        resourceFacade.addTaskPlannification(self.id, task.instance.id, arguments[i]);
+        resourceFacade.plan(self.id, task.instance.id, arguments[i]);
     }
     debug("Plan task: DONE");
 }
