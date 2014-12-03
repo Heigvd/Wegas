@@ -372,7 +372,6 @@ YUI.add("wegas-plugin", function(Y) {
         }
     }, {
         NS: "PlaySoundAction",
-        FILEENTRY: Y.Wegas.Facade.File.get("source") + "read",
         ATTRS: {
             url: {
                 value: "",
