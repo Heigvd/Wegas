@@ -68,7 +68,7 @@ public class IntegrationTest {
         glassfish.dispose();
     }
 
-    @Test(expected = ScriptException.class)
+    @Test
     public void hello() throws GlassFishException, IOException {
         //java.lang.System.setProperty("org.apache.commons.logging.simplelog.defaultlog", "debug");
         //beginAt("test.htm");
@@ -80,7 +80,7 @@ public class IntegrationTest {
             // e.printStackTrace();
         }
         assertResponseCode(200);
-        assertTitleEquals("Login - Wegas");
+        assertTitleEquals("Web Game Authoring System - Wegas");
 
         //tester.setTextField("username", "root@root.com");
         //tester.setTextField("password", "test123");
