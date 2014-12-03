@@ -349,6 +349,43 @@ YUI.add("wegas-plugin", function(Y) {
         }
     });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
+
+    /**
+     *  @class
+     *  @name Y.Plugin.PlaySoundAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var PlaySoundAction = Y.Base.create("PlaySoundAction", Action, [], {
+        execute: function() {
+            var audio, url;
+            url = Y.Plugin.Injector.getImageUri(this.get("url"));
+
+            if (Y.Lang.isFunction(window.Audio)) {
+                audio = new Audio(url);
+                audio.play();
+            } else {
+                new Wegas.Panel({
+                    bodyContent: "<div class=''> <span class=\"fa fa-4x fa-bullhorn\"></span> <span>Please listen to that <a target=\"_blank\" href=\"" + url + "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
+                }).render();
+            }
+        }
+    }, {
+        NS: "PlaySoundAction",
+        FILEENTRY: Y.Wegas.Facade.File.get("source") + "read",
+        ATTRS: {
+            url: {
+                value: "",
+                type: "string",
+                _inputex: {
+                    label: "Sound",
+                    _type: "wegasurl"
+                }
+            }
+        }
+    });
+    Plugin.PlaySoundAction = PlaySoundAction;
+
     /**
      *  @class
      *  @name Y.Plugin.ConfirmExecuteScriptAction

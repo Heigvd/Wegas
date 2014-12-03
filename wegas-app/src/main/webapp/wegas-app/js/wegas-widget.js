@@ -432,6 +432,10 @@ YUI.add("wegas-widget", function(Y) {
                                                 data: "ExecuteScriptAction"
                                             }, {
                                                 type: BUTTON,
+                                                label: "Play sound",
+                                                data: "PlaySoundAction"
+                                            }, {
+                                                type: BUTTON,
                                                 label: "Print Variables",
                                                 data: "PrintActionPlugin"
                                             }
