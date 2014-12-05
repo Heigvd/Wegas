@@ -110,7 +110,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 //        final CriteriaQuery query = getEntityManager().getCriteriaBuilder().createQuery();
 //        query.select(query.from(JpaAccount.class));
 //        return getEntityManager().createQuery(query).getResultList();
-        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JPAAccount.findExactClass", JpaAccount.class);
+        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findExactClass", JpaAccount.class);
         query.setParameter("accountClass", JpaAccount.class);
         return query.getResultList();
     }
@@ -140,7 +140,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     public JpaAccount findByEmail(String email) throws WegasNoResultException {
         try {
-            final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JPAAccount.findByEmail", JpaAccount.class);
+            final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
             query.setParameter("email", email);
             return query.getSingleResult();
         } catch (NoResultException ex) {
