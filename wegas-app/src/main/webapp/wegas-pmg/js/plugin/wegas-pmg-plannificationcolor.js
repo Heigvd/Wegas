@@ -42,7 +42,7 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
                 plannification;
 
             for (i = 0; i < dt.data.size(); i++) {
-                plannification = dt.data.item(i).get("descriptor").getInstance().get("plannification");
+                plannification = Y.Array.unique(dt.data.item(i).get("descriptor").getInstance().get("plannification"));
                 for (ii = 0; ii < plannification.length; ii++) {
                     host.schedule.getCell(i, plannification[ii]).append("<span class='editable plannification'></span>");
                 }

@@ -329,14 +329,23 @@ YUI().use(function(Y) {
             },
             "wegas-simpledialogue": {
                 path: "js/widget/wegas-simpledialogue-min.js",
+                requires: ["wegas-dialogcss"],
                 ws_provides: "SimpleDialogue"
             },
             "wegas-historydialog": {
                 path: "js/widget/wegas-historydialog-min.js",
-                requires: ["wegas-simpledialogue", "wegas-historydialogcss"],
-                ws_provides: ["HistoryDialog", "EntityChooser"]
+                requires: ["wegas-simpledialogue"],
+                ws_provides: ["HistoryDialog"]
             },
-            "wegas-historydialogcss": {
+            "wegas-dialogcss": {
+                type: CSS
+            },
+            "wegas-entitychooser": {
+                path: "js/widget/wegas-entitychooser-min.js",
+                requires: ["wegas-entitychoosercss"],
+                ws_provides: ["EntityChooser"]
+            },
+            "wegas-entitychoosercss": {
                 type: CSS
             }
         }

@@ -12,7 +12,7 @@ YUI.add('wegas-scripteval', function(Y) {
 
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
         /**
-         * 
+         *
          */
         initializer: function() {
             this.context = {};
@@ -27,7 +27,8 @@ YUI.add('wegas-scripteval', function(Y) {
          *  A localEval with server fallback.
          *
          *  @param script The script to evaluate
-         *  @param cb A callback object, containing success, failure function or just a function as success callback. First parameter passed will be result
+         *  @param cb A callback object, containing success, failure function or just a function as success callback.
+         *     First parameter passed will be result
          */
         eval: function(script, cfg) {
             var result;
@@ -57,7 +58,7 @@ YUI.add('wegas-scripteval', function(Y) {
             }
         },
         /**
-         * 
+         *
          * @param {type} script
          * @param {type} cfg
          */
@@ -89,17 +90,22 @@ YUI.add('wegas-scripteval', function(Y) {
          * @return {Any} value locally evaluated
          */
         localEval: function(script, player) {
-            if (Y.Lang.isObject(script)) {                                      // Normalize script argument
+            var p = player || Wegas.Facade.Game.cache.getCurrentPlayer();
+            if (!this.upToDate || this.context.self !== p) {                                               //Only compute if new value
+                this._buildContext(p);
+            }
+
+            if (Y.Lang.isObject(script) && script.content) {                                      // Normalize script argument
                 script = script.content;
             }
-            if (!this.upToDate) {                                               //Only compute if new value
-                this._buildContext();
+            /*jslint evil: true */
+            if (Y.Lang.isFunction(script)) {
+                return (new Function(Y.Object.keys(this.context), "return (" + script.toString() + "())")).apply({},
+                    Y.Object.values(this.context));
             }
-            this.context.self = player || Wegas.Facade.Game.cache.getCurrentPlayer();
             if (script.indexOf("return") === -1) {
                 script = "return " + script;
             }
-            /*jslint evil: true */
             return (new Function(Y.Object.keys(this.context), script)).apply({}, Y.Object.values(this.context));
         },
         /**
@@ -107,21 +113,23 @@ YUI.add('wegas-scripteval', function(Y) {
          * @private
          * @returns {undefined}
          */
-        _buildContext: function() {
-            var i, data = this.get("host").data;
+        _buildContext: function(player) {
+            var i, data = this.get("host").data, j;
             this.upToDate = true;
             this.context = {};
 
             for (i in data) {
                 if (data.hasOwnProperty(i)) {
-                    this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance()));
+                    this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
                     this.buildItems(data[i], this.context[data[i].get('name')]);
-                    //if (data[i] instanceof Wegas.persistence.ListDescriptor) {
-                    //    this.context[data[i].get('name')].items = [];
-                    //    for (j in data[i].get("items")) {
-                    //        this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance())));
-                    //    }
-                    //}
+                    if (data[i] instanceof Wegas.persistence.ListDescriptor) {
+                        this.context[data[i].get('name')].items = [];
+                        for (j in data[i].get("items")) {
+                            if (data[i].get("items").hasOwnProperty(j)) {
+                                this.context[data[i].get('name')].items.push(JSON.parse(JSON.stringify(data[i].get("items")[j].getInstance(player))));
+                            }
+                        }
+                    }
                 }
             }
             /*SANDBOX*/
@@ -134,7 +142,7 @@ YUI.add('wegas-scripteval', function(Y) {
             Y.mix(this.context, {
                 VariableDescriptorFacade: Variable,
                 Variable: Variable,
-                self: Wegas.Facade.Game.cache.getCurrentPlayer(),
+                self: player,
                 gameModel: Wegas.Facade.GameModel.cache.getCurrentGameModel()
             });
         },

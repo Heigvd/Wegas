@@ -12,7 +12,8 @@
 YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
-    var Plugin = Y.Plugin, Wegas = Y.Wegas,
+    var RemoveRightTab,
+        Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
         TabView, Tab;
     /**
@@ -87,30 +88,30 @@ YUI.add('wegas-tabview', function(Y) {
             }
         },
         EDITMENU: [{
-                type: "Button",
-                label: "Edit",
-                plugins: [{
-                        fn: "EditWidgetAction"
-                    }
-                ]
-            }, {
-                type: "Button",
-                label: "Add tab",
-                plugins: [{
-                        fn: "AddChildWidgetAction",
-                        cfg: {
-                            childType: "Tab"
-                        }
-                    }
-                ]
-            }, {
-                type: "Button",
-                label: "Delete",
-                plugins: [{
-                        fn: "DeleteLayoutWidgetAction"
-                    }
-                ]
-            }],
+            type: "Button",
+            label: "Edit",
+            plugins: [{
+                fn: "EditWidgetAction"
+            }
+            ]
+        }, {
+            type: "Button",
+            label: "Add tab",
+            plugins: [{
+                fn: "AddChildWidgetAction",
+                cfg: {
+                    childType: "Tab"
+                }
+            }
+            ]
+        }, {
+            type: "Button",
+            label: "Delete",
+            plugins: [{
+                fn: "DeleteLayoutWidgetAction"
+            }
+            ]
+        }],
         /**
          * References to tab
          */
@@ -223,7 +224,7 @@ YUI.add('wegas-tabview', function(Y) {
 
     //Y.extend(Parent, Y.WidgetParent);
     Y.mix(Parent.prototype, Y.WidgetParent.prototype);
-//    Y.augment(Parent, Y.WidgetParent);
+    //    Y.augment(Parent, Y.WidgetParent);
     Parent.ATTRS = {};
     Y.mix(Parent.ATTRS, Y.WidgetParent.ATTRS);
     delete Parent.ATTRS.selected;
@@ -475,9 +476,7 @@ YUI.add('wegas-tabview', function(Y) {
                 });
             });
             this.onHostEvent("addChild", function() {
-                if (this.get("host").isEmpty()) {
-                    Wegas.app.widget.showPosition("right");
-                }
+                Wegas.app.widget.showPosition("right");
             });
         }
     }, {
@@ -507,42 +506,42 @@ YUI.add('wegas-tabview', function(Y) {
      * @class plugin with an empty tab
      * @constructor
      */
-//    var EmptyTab = function() {
-//        EmptyTab.superclass.constructor.apply(this, arguments);
-//    };
-//    Y.extend(EmptyTab, Plugin.Base, {
-//        /** @lends Y.Wegas.EmptyTab# */
-//
-//        // *** Private fields *** //
-//        /**
-//         * @function
-//         * @private
-//         */
-//        initializer: function() {
-//            var noItem;
-//            this.onceAfterHostEvent("render", function() {
-//                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
-//            });
-//            this.afterHostEvent("removeChild", function() {
-//                if (this.get("host").isEmpty()) {
-//                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
-//                }
-//            });
-//            this.onHostEvent("addChild", function() {
-//                noItem = Y.one("#rightTabView .wegas-noItem");
-//                if (noItem) {
-//                    noItem.remove();
-//                }
-//                if (this.get("host").isEmpty()) {
-//                    Wegas.app.widget.showPosition("right");
-//                }
-//            });
-//        }
-//    }, {
-//        NS: "EmptyTab",
-//        NAME: "EmptyTab"
-//    });
-//    Plugin.EmptyTab = EmptyTab;
+    //    var EmptyTab = function() {
+    //        EmptyTab.superclass.constructor.apply(this, arguments);
+    //    };
+    //    Y.extend(EmptyTab, Plugin.Base, {
+    //        /** @lends Y.Wegas.EmptyTab# */
+    //
+    //        // *** Private fields *** //
+    //        /**
+    //         * @function
+    //         * @private
+    //         */
+    //        initializer: function() {
+    //            var noItem;
+    //            this.onceAfterHostEvent("render", function() {
+    //                Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
+    //            });
+    //            this.afterHostEvent("removeChild", function() {
+    //                if (this.get("host").isEmpty()) {
+    //                    Y.one("#rightTabView .yui3-tabview-panel").append("<p class='wegas-noItem'></p>");
+    //                }
+    //            });
+    //            this.onHostEvent("addChild", function() {
+    //                noItem = Y.one("#rightTabView .wegas-noItem");
+    //                if (noItem) {
+    //                    noItem.remove();
+    //                }
+    //                if (this.get("host").isEmpty()) {
+    //                    Wegas.app.widget.showPosition("right");
+    //                }
+    //            });
+    //        }
+    //    }, {
+    //        NS: "EmptyTab",
+    //        NAME: "EmptyTab"
+    //    });
+    //    Plugin.EmptyTab = EmptyTab;
 
     /**
      * Plugin add a tab for remove tabview
@@ -559,7 +558,7 @@ YUI.add('wegas-tabview', function(Y) {
     Y.extend(RemoveTab, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
         // *** Private fields *** //
-        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tabs"><a>x</a></div>',
+        ADD_TEMPLATE: '<div class="wegas-removeTabview" title="Close tab"><a>x</a></div>',
         /**
          * @function
          * @private
@@ -569,13 +568,13 @@ YUI.add('wegas-tabview', function(Y) {
         initializer: function() {
             var tabview = this.get('host');
             tabview.after('render', this.afterRender, this);
-            tabview.get(CONTENTBOX).delegate('click', this.onAddClick, '.wegas-removeTabview a', this);
+            tabview.get(CONTENTBOX).delegate('click', this.onClick, '.wegas-removeTabview a', this);
         },
         afterRender: function(e) {
             var tabview = this.get('host');
             tabview.get(CONTENTBOX).one('> ul').append(this.ADD_TEMPLATE);
         },
-        onAddClick: function(e) {
+        onClick: function(e) {
             e.stopPropagation();
             this.get('host').destroyAll();
         }
@@ -584,6 +583,48 @@ YUI.add('wegas-tabview', function(Y) {
         NAME: "removetab"
     });
     Plugin.RemoveTab = RemoveTab;
+    /**
+     * Right tab management
+     * @name Y.Plugin.RemoveRightTab
+     * @extends Y.Plugin.RemoveTab
+     * @constructor
+     */
+    RemoveRightTab = function() {
+        RemoveRightTab.superclass.constructor.apply(this, arguments);
+    };
+
+    Y.extend(RemoveRightTab, RemoveTab, {
+        /** @lends Y.Wegas.RemoveRightTab# */
+        /**
+         * @function
+         * @private
+         * @description Create a tab for remove tabview.
+         * If this tab is clicked, remove host tabview.
+         */
+        initializer: function() {
+            Wegas.app.after("render", function() {
+                if (this.get("host").isEmpty()) {
+                    Wegas.app.widget.hidePosition("right");
+                }
+            }, this);
+            this.onHostEvent("addChild", function() {
+                Wegas.app.widget.showPosition("right");
+            });
+        },
+        onClick: function(e) {
+            e.stopPropagation();
+            this.get('host').destroyAll();
+            Y.later(100, this, function() {
+                if (this.get("host").isEmpty()) {
+                    Wegas.app.widget.hidePosition("right");
+                }
+            });
+        }
+    }, {
+        NS: "removetab",
+        NAME: "removetab"
+    });
+    Plugin.RemoveRightTab = RemoveRightTab;
 
     /**
      * Plugin that resizes the tabview's button if required
@@ -594,7 +635,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @constructor
      */
     var ResizeTabViewLinks = function() {
-        RemoveTab.superclass.constructor.apply(this, arguments);
+        ResizeTabViewLinks.superclass.constructor.apply(this, arguments);
     };
     Y.extend(ResizeTabViewLinks, Plugin.Base, {
         /** @lends Y.Wegas.Removetab# */
@@ -602,7 +643,7 @@ YUI.add('wegas-tabview', function(Y) {
         /**
          * @function
          * @private
-         * @description 
+         * @description
          */
         initializer: function() {
             this.afterHostEvent(['addChild', 'removeChild', 'render'], this.resizeTabs);

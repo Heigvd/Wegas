@@ -506,7 +506,7 @@
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": {
-                                        "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
+                                        "content": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'); return  Variable.find( 'questions').item(currentPhase.getValue(self)-1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1)"
                                     }
                                 }
                             }, {
@@ -843,7 +843,7 @@
                 "type": "MCQTabView",
                 "showUnanswered": false,
                 "variable": {
-                    "content": "Variable.find('actions').item(currentPhase.value-1)"
+                    "content": "var currentPhase = Variable.find('currentPhase'); return Variable.find('actions').item(currentPhase.getValue(self) - 1);"
                 }
             }, {
                 "label": "",
@@ -856,7 +856,7 @@
                             "targetEvent": "click",
                             "root": {
                                 "@class": "Script",
-                                "content": "Variable.find('actions').item(currentPhase.value -1)"
+                                "content": "var currentPhase = Variable.find('currentPhase'); return Variable.find('actions').item(currentPhase.getValue(self) - 1);"
                             },
                             "outputType": "html"
                         }
@@ -887,7 +887,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
+                    "content": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'); return  Variable.find( 'questions').item(currentPhase.getValue(self)-1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1)"
                 }
             }, {
                 "label": "",
@@ -900,7 +900,7 @@
                             "targetEvent": "click",
                             "root": {
                                 "@class": "Script",
-                                "content": "Variable.find('questions').item(currentPhase.value-1).item(currentPeriod.items[currentPhase.value-1].value - 1)"
+                                "content": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'); return  Variable.find( 'questions').item(currentPhase.getValue(self)-1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1)"
                             },
                             "outputType": "html"
                         }
@@ -1260,7 +1260,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nadvLimitDesc != undefined;\n"
+                                "content": "var advLimitDesc;\ntry {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){}\nreturn advLimitDesc !== undefined;\n"
                             },
                             "attribute": "cssClass",
                             "value": "hidden"
@@ -1302,7 +1302,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} (advLimitDesc == undefined || advLimitDesc.getValue(self));",
+                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined || advLimitDesc.getValue(self));",
                                 "language": "JavaScript"
                             },
                             "attribute": "cssClass",
@@ -1313,7 +1313,7 @@
                         "cfg": {
                             "condition": {
                                 "@class": "Script",
-                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} (advLimitDesc == undefined);",
+                                "content": "var  advLimitDesc; try {advLimitDesc = Variable.find(gameModel, \"advancementLimit\");} catch(e){} return (advLimitDesc === undefined);",
                                 "language": "JavaScript"
                             },
                             "attribute": "cssClass",
@@ -1535,9 +1535,10 @@
                             "script": "var names = ['Initiation', 'Planning', 'Executing', 'Closing'];return names[Variable.find(gameModel, 'currentPhase').getValue(self)-1]"
                         }, {
                             "label": "Period",
-                            "script": "Variable.find(gameModel, 'currentPeriod').item(currentPhase.value-1).getValue(self)"
+                            "script": "var currentPhase = Variable.find('currentPhase'); return Variable.find('currentPeriod').item(currentPhase.getValue(self)-1).getValue(self)"
                         }, {
-                            "label": "Choices"
+                            "label": "Choices",
+                            "script": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'), q = Variable.find('questions').item(currentPhase.getValue(self) - 1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1), items = q.flatten(),  i, count = 0, total = 0, inst;for (i = 0; i < items.length; i = i + 1) {    inst = items[i].getInstance(self);    count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0;    total += inst.get('active') ? 1 : 0;}return count + '/' + total;"
                         }, {
                             "label": "Management",
                             "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",

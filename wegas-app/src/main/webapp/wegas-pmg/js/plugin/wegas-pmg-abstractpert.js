@@ -26,18 +26,24 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
             //this.taskTable;
             Y.log("initializer", "info", "Wegas.AbstractPert");
         },
+        _plannedPeriods: function(taskInstance){
+            return Y.Array.unique(taskInstance.get("plannification"));
+        },
         timeSolde: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), properties = taskInst.get("properties"), timeSolde;
-            if (taskInst.get("plannification").length > 0) {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("plannification").length;
+            var taskInst = taskDesc.getInstance(), 
+                properties = taskInst.get("properties"), timeSolde,
+                plannedPeriods = this._plannedPeriods(taskInst);
+                
+            if (plannedPeriods.length > 0) {
+                timeSolde = (1 - parseInt(properties.completeness) / 100) * plannedPeriods.length;
             } else {
                 timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("duration");
             }
             return timeSolde;
         },
         startPlannif: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), plannification = taskInst.get("plannification"), min;
-            min = Math.min.apply(Math, plannification);
+            var taskInst = taskDesc.getInstance(), planning = this._plannedPeriods(taskInst), min;
+            min = Math.min.apply(Math, planning);
             if (min !== Infinity) {
                 return min;
             } else {
@@ -62,7 +68,7 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                 // do not compute pert before stage3 but return the planning planned by players 
                 for (taskId in taskTable) {
                     taskDesc = taskTable[taskId];
-                    initialPlanning = taskDesc.getInstance().get("plannification").sort(Y.Array.numericSort);
+                    initialPlanning = this._plannedPeriods(taskDesc.getInstance()).sort(Y.Array.numericSort);
                     taskDesc.planned = initialPlanning;
                     taskDesc.beginAt = 0;
                     taskDesc.endAt = 0;
@@ -112,7 +118,7 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                     if (allPredDefine) {
                         // all require data are available, let's compute pert for the task
                         var taskInstance = taskDesc.getInstance(),
-                            stillPlanned = taskInstance.get("plannification").filter(function(n) {
+                            stillPlanned = this._plannedPeriods(taskInstance).filter(function(n) {
                             return n >= minBeginAt;
                         }, this).sort(Y.Array.numericSort);
 

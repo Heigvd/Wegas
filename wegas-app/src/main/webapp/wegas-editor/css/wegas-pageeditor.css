@@ -41,6 +41,7 @@
 .wegas-pageeditor-layoutmode .wegas-pageloader-content .wegas-widget-editable {
     background: rgba(0,0,0,0.05) !important;
     color: #990808 !important;
+    box-shadow: 0 0 1px 1px #990808 !important;
     min-width: 20px;
     min-height: 20px;
     visibility: visible !important;

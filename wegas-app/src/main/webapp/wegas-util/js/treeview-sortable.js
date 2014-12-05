@@ -13,122 +13,110 @@ YUI.add("treeview-sortable", function(Y) {
     "use strict";
 
     var HOST = "host", NODE = "node", CONTENTBOX = 'contentBox',
-        TreeViewSortable;
-
+        TreeViewSortable,
+        
+        flagInsideNode = function(drop, nodeSelecter) {
+            if(nodeSelecter.timer){
+                nodeSelecter.timer.cancel();
+            }
+            var widgetDrop = Y.Widget.getByNode(drop);
+            if (widgetDrop !== null && widgetDrop.size() > 0) {
+                if(nodeSelecter.dropWidget !== null){
+                    nodeSelecter.dropWidget.addClass("yui3-dd-in");
+                }
+                nodeSelecter.inside = true;
+            }
+        };
+    /*
+     * Plugin used to change order of treeview elements. 
+     */
     TreeViewSortable = Y.Base.create("treeview-sortable", Y.Plugin.Base, [], {
         initializer: function() {
+            // Vérifie que le plugin est bien branché sur un widget treeview. 
             if (!(this.get(HOST) instanceof Y.TreeView)) {
-                Y.log("TreeView filter host must be a TreeView", "warn", "TreeViewFilter");
+                Y.log("TreeView sortable host must be a TreeView", "warn", "TreeViewSortable");
                 return;
             }
-
+            
+            // Add logic after host (treeview) "render" method.
             this.afterHostEvent("render", function() {
-                var cb = this.get(HOST).get(CONTENTBOX);
+                var cb = this.get(HOST).get(CONTENTBOX),
+                nodeSelecter = {
+                    'inside':false,
+                    'timer':null,
+                    'dropWidget':null
+                };
 
                 cb.setStyles({
                     overflowY: "auto",
                     overflowX: "hidden"
                 });
-
+                
                 this.sortable = new NestedSortable({
                     container: cb,
-                    //nodes: 'li',
                     nodes: 'li.treeview-draggable',
                     opacity: '.2',
                     invalid: ".wegas-editor-dummy",
                     moveType: "insert"
-                        // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
-                        // opacityNode: "dragNode",
-
+                    // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
+                    // opacityNode: "dragNode",
                 });
                 this.sortable.treeSortPlg = this;
-                //this.sortable.delegate.dd.plug(Y.Plugin.DDNodeScroll, {
-                //    node: cb,
-                //    horizontal: false
-                //});
-                var addedNode, newNode;
-
-                this.sortable.delegate.dd.on("drag:start", function(ev) {
-                    newNode = Y.Node.create("<ul></ul>");
-                    newNode.setAttribute("id", Y.guid());
-                    this.sync();
-                }, this);
-
-                this.sortable.delegate.dd.on("drag:over", function(ev) {
-                    if (addedNode !== undefined) {                              // remove it from where it was
-                        addedNode.remove();
+                
+                this.sortable.delegate.on('drag:enter', function(e) {
+                    var drop = e.drop.get('node');
+                    nodeSelecter.inside = false;
+                    if(nodeSelecter.timer !== null){
+                        nodeSelecter.timer.cancel();
                     }
-                    var dragNode = ev.drag.get(NODE),
-                        dropNode = ev.drop.get(NODE),
-                        found = this.testGroups(dragNode, dropNode),
-                        tOl = dropNode.one("ul");                               // tOl is looking for a child ol below the li
-
-                    //console.log("drag:over(", dropNode.get("nodeName").toLowerCase(), tOl ? "has tol" : "no tol",
-                    //        found, dropNode._node.className,
-                    //        dropNode.one(".yui3-treenode-content-label") ? dropNode.one(".yui3-treenode-content-label").getHTML() : "nolabel");
-
-                    switch (dropNode.get("nodeName").toLowerCase()) {           // if we've over an li, add the new ol child block
-                        case "li":
-                            if (tOl) {                                          // try and append it to existing ol on the target
-                                try {
-                                    if (found) {
-                                        tOl.append(ev.drag.get(NODE));
-                                    }
-                                } catch (e) {
-                                }
-                            } else {                                            // else add a new ol to the target
-                                try {
-                                    return;
-                                    if (found) {
-                                        dropNode.append(newNode);               // try adding newNode
-                                        newNode.append(ev.drag.get(NODE));
-                                        addedNode = newNode;
-                                    }
-                                } catch (e) {
-                                }
-                            }
-                            break;
-
-                        case "ul":                                              // if we're over an ol, just add this as a new li child
-                            try {
-                                if (found) {
-                                    dropNode.append(ev.drag.get(NODE));
-                                    return;
-
-                                }
-                            } catch (e) {
-                            }
-                            break;
-
-                        default:
-                            break;
+                    if(nodeSelecter.dropWidget !== null){
+                        nodeSelecter.dropWidget.removeClass("yui3-dd-in");
+                    }
+                    if(drop.hasClass("yui3-treenode-collapsed") && !drop.hasClass("wegas-editor-question")){
+                        nodeSelecter.dropWidget = drop;
+                        nodeSelecter.timer = Y.later(800, this, flagInsideNode, [drop,  nodeSelecter]);
                     }
                 }, this);
-
-                this.sortable.delegate.dd.after('drag:end', function(ev) {
+                
+                this.sortable.delegate.after('drag:end', function(ev) {
                     var node = this.sortable.delegate.get('currentNode'),
-                        //  prev = node.previous(), next = node.next(),
-                        dragWidget = Y.Widget.getByNode(node),
-                        dropNode = node.get("parentNode"),
-                        dropWidget = Y.Widget.getByNode(dropNode),
-                        index = dropNode.get("children").indexOf(node),
-                        targetNode = ev.target.get(NODE);
-
-                    //Y.log("onDragEnd()", "info", "Wegas.VariableTreeView");
-
-                    addedNode = undefined;
-                    newNode = undefined;
+                    prev = node.previous(),
+                    dragWidget = Y.Widget.getByNode(node),
+                    dropNode = node.get("parentNode"),
+                    dropWidget = Y.Widget.getByNode(dropNode),
+                    index = dropNode.get("children").indexOf(node),
+                    targetNode = ev.target.get(NODE);
                     targetNode.removeAttribute("style");// DD somewhere sets some element styles, which mess up alignment somewhere in IE
-
-                    dropWidget.add(dragWidget, index);                          // Update treeview
+                    
+                    if(nodeSelecter.inside){
+                        dropNode = nodeSelecter.dropWidget;
+                        dropWidget = Y.Widget.getByNode(dropNode);
+                        dropWidget.fire("toggleClick", {
+                            node: dropNode
+                        });
+                        nodeSelecter.inside = false;
+                    }
+                    if(nodeSelecter.timer){
+                        nodeSelecter.timer.cancel();
+                    }
+                    if(nodeSelecter.dropWidget !== null){
+                        nodeSelecter.dropWidget.removeClass("yui3-dd-in");
+                        nodeSelecter.dropWidget = null;
+                    }
+                    if(prev !== null){
+                        if(prev.hasClass("wegas-editor-dummy")){
+                            index -= 1;
+                        }
+                    }
+                    // Update treeview
                     this.fire("sort", {
                         dragWidget: dragWidget,
                         dropWidget: dropWidget,
                         index: index
-                    });                                                         // Fire sorted event
-                    this.sync();                                                // Sync dummies
+                    }); // Fire sorted event
+                    this.sync(); // Sync dummies
                 }, this);
-                //this.sortable.delegate.dd.after('drag:over', this.sync, this);
+               
             });
             this.afterHostMethod("syncUI", this.sync);
             this.afterHostEvent(["*:collapsedChange"], this.sync);
@@ -136,28 +124,24 @@ YUI.add("treeview-sortable", function(Y) {
         sync: function() {
             var cb = this.get(HOST).get(CONTENTBOX),
                 nodeGroups = this.get("nodeGroups");
-            // cb.all(".wegas-editor-dummy").remove(true);
-
             cb.all(".wegas-editor-dummy").each(function(n) {                    // Remove useless dummies
                 if (n.ancestor("ul").get("children").size() > 1) {
                     n.remove(true);
                 }
             });
-
             Y.Array.each(nodeGroups, function(item) {
                 cb.all("." + item.nodeClass).addClass("treeview-draggable");    // Add class to all draggable nodes
-
-                cb.all(item.parentNode + " ul:empty")                           // Add dummies to allow drag on empty nodes
-                    .append("<li class=\"yui3-widget yui3-treenode wegas-editor-dummy " + item.nodeClass + " \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
-                //.append('<li class="yui3-widget yui3-treenode wegas-editor-dummy wegas-editor-listitem yui3-dd-drop " tabindex="1"><div class="content-header yui3-treenode-content-header"><span class="yui3-treenode-content-label" ><i>empty</i></span></div></li>');
+                cb.all(item.parentNode + " ul:empty").each(function(emptyUL) {
+                    var emptyLI = Y.Node.create("<li class=\"yui3-widget treeview-draggable yui3-treenode wegas-editor-dummy " + item.nodeClass + " \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
+                    emptyUL.append(emptyLI);
+                });
             });
-
             this.sortable.sync();
         },
         testGroups: function(dragNode, dropNode) {
             var groups = this.get("nodeGroups");
             if (groups) {
-                return !!Y.Array.find(groups, function(item) {                  // Added custom class mathing for node groups
+                return !!Y.Array.find(groups, function(item) {  // Added custom class mathing for node groups
                     return dragNode.hasClass(item.nodeClass) && dropNode.hasClass(item.nodeClass);
                 });
             }
@@ -194,36 +178,24 @@ YUI.add("treeview-sortable", function(Y) {
 
     /**
      * Extend so in works with nested lists
-     *
+     * 
      * @returns {undefined}
      */
     function NestedSortable() {
         NestedSortable.superclass.constructor.apply(this, arguments);
     }
     Y.extend(NestedSortable, Y.Sortable, {
-        //_onDragStart: function(e) {
-        //    if (this.treeSortPlg.testDrag(e.drag.get(NODE))) {
-        //        NestedSortable.superclass._onDragStart.apply(this, e);
-        //    }
-        //},
         _onDropEnter: function(e) {
-            // console.log("_onDropEnter(" + dropNode._node.className + ", " + dropNode.one(".yui3-treenode-content-label").getHTML() + ")");
             if (this.treeSortPlg.testGroups(e.drag.get(NODE), e.drop.get(NODE))) {
                 NestedSortable.superclass._onDropEnter.apply(this, e);
             }
         },
         _onDragOver: function(e) {
             var dragNode = e.drag.get(NODE),
-                dropNode = e.drop.get(NODE);
-
-            //console.log("_onDragOver(", dropNode._node.className,
-            //        (dropNode.one(".yui3-treenode-content-label")) ?
-            //        dropNode.one(".yui3-treenode-content-label").getHTML() : "no label");
-
+                    dropNode = e.drop.get(NODE);
             if (!this.treeSortPlg.testGroups(dragNode, dropNode)) {
                 return;
             }
-
             // is drop a child of drag?  - this is the bit that's added:
             if (e.drag.get(NODE).contains(e.drop.get(NODE))) {
                 return;
