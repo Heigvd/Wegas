@@ -5,18 +5,19 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.exception;
+package com.wegas.core.exception.internal;
+
 
 /**
  *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Maxence Laurent <maxence.laurent at gmail.com>
  */
-public class PersistenceException extends RuntimeException {
+public class WegasNoResultException extends WegasInternalException {
 
     /**
      *
      */
-    public PersistenceException() {
+    public WegasNoResultException() {
         super();
     }
 
@@ -24,7 +25,7 @@ public class PersistenceException extends RuntimeException {
      *
      * @param message
      */
-    public PersistenceException(String message) {
+    public WegasNoResultException(String message) {
         super(message);
     }
 
@@ -32,7 +33,7 @@ public class PersistenceException extends RuntimeException {
      *
      * @param cause
      */
-    public PersistenceException(final Throwable cause) {
+    public WegasNoResultException(final Throwable cause) {
         super(cause);
     }
 }

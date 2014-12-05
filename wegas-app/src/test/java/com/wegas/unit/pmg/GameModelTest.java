@@ -11,7 +11,8 @@ import com.wegas.utils.TestHelper;
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
@@ -28,7 +29,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.embeddable.EJBContainer;
 import javax.naming.NamingException;
-import javax.script.ScriptException;
 import junit.framework.Assert;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.config.IniSecurityManagerFactory;
@@ -114,28 +114,28 @@ abstract public class GameModelTest {
         }
     }
 
-    protected Object evalScript(String script) throws ScriptException {
+    protected Object evalScript(String script) {
         if (gm != null) {
             if (player != null) {
                 return this.lookup(ScriptController.class).run(gm.getId(), this.player.getId(), new Script(script));
             } else {
-                throw new WegasException("Player shall not be null");
+                throw WegasErrorMessage.error("Player shall not be null");
             }
         } else {
-            throw new WegasException("GameModel shall not be null");
+            throw WegasErrorMessage.error("GameModel shall not be null");
         }
     }
 
-    protected Object evalFile(String path) throws ScriptException, IOException {
+    protected Object evalFile(String path) throws IOException {
         return this.evalScript(TestHelper.readFile(path));
     }
 
-    protected final void checkNumber(String name, double expectedValue, String errorMessage) {
+    protected final void checkNumber(String name, double expectedValue, String errorMessage) throws WegasNoResultException {
         final VariableDescriptorFacade vdf = lookup(VariableDescriptorFacade.class);
         Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
     }
 
-    protected final void checkNumber(String name, double expectedValue) {
+    protected final void checkNumber(String name, double expectedValue) throws WegasNoResultException {
         this.checkNumber(name, expectedValue, name);
     }
 }

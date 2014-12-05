@@ -79,7 +79,6 @@ YUI.add("wegas-lobby-datatable", function(Y) {
 
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
-                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this);// GLOBAL error message
             }
 
             this.table.delegate("click", function(e) {
@@ -148,7 +147,7 @@ YUI.add("wegas-lobby-datatable", function(Y) {
             this.table.destroy();
             this.addedHandler.detach();
             this.updateHandler.detach();
-            this.failureHandler.detach();
+            //this.failureHandler.detach();
         },
         // *** Private Methods *** //
         /**

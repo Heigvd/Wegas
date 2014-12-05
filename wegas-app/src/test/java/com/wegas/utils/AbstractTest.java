@@ -10,7 +10,8 @@ package com.wegas.utils;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.utils.TestHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
@@ -18,9 +19,7 @@ import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.rest.ScriptController;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.unit.AbstractEJBContainerTest;
 import java.io.IOException;
-import javax.script.ScriptException;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +35,11 @@ public abstract class AbstractTest {
     private GameModel gm;
     private Player player;
 
-    protected final void checkNumber(String name, double expectedValue) {
+    protected final void checkNumber(String name, double expectedValue) throws WegasNoResultException {
         this.checkNumber(name, expectedValue, name);
     }
 
-    protected final void checkNumber(String name, double expectedValue, String errorMessage) {
+    protected final void checkNumber(String name, double expectedValue, String errorMessage) throws WegasNoResultException {
         final VariableDescriptorFacade vdf = getVariableDescriptorFacade();
         Assert.assertEquals(errorMessage, expectedValue, ((NumberDescriptor) vdf.find(gm, name)).getValue(player), 0.0);
     }
@@ -54,7 +53,7 @@ public abstract class AbstractTest {
             String injectScript = TestHelper.readFile(injectScriptPath);
 
             if (injectScript == null) {
-                throw new WegasException("Injected Script doesn't exists [" + injectScriptPath + "]");
+                throw WegasErrorMessage.error("Injected Script doesn't exists [" + injectScriptPath + "]");
             }
             gameModel.getScriptLibrary().put("[injectedScript] " + injectScriptPath, new GameModelContent("JavaScript", injectScript));
         }
@@ -78,11 +77,11 @@ public abstract class AbstractTest {
         this.player = null;
     }
 
-    protected Object evalFile(String path) throws ScriptException {
+    protected Object evalFile(String path) {
         return this.evalScript(TestHelper.readFile(path));
     }
 
-    protected Object evalScript(String script) throws ScriptException {
+    protected Object evalScript(String script) {
         return getScriptController().run(gm.getId(), this.player.getId(), new Script(script));
     }
 

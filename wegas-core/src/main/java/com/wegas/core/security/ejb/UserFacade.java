@@ -11,13 +11,13 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.NoResultException;
-import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.guest.GuestToken;
@@ -35,6 +35,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
@@ -109,7 +110,7 @@ public class UserFacade extends BaseFacade<User> {
 
             return newUser;
         }
-        throw new WegasException("Guest log in not allowed on this server");
+        throw WegasErrorMessage.error("Guest log in not allowed on this server");
     }
 
     /**
@@ -122,10 +123,8 @@ public class UserFacade extends BaseFacade<User> {
 
         if (subject.isRemembered() || subject.isAuthenticated()) {
             return accountFacade.find((Long) subject.getPrincipal()).getUser();
-
         } else {
-            throw new NoResultException("Unable to find user");
-
+            throw new WegasNotFoundException("Unable to find user");
         }
     }
 
@@ -137,24 +136,23 @@ public class UserFacade extends BaseFacade<User> {
                 String mail = ((JpaAccount) account).getEmail();
                 if (mail != null && !mail.isEmpty()) {
                     accountFacade.findByEmail(mail);
-                    throw new WegasException("This email is already associated with an existing account.");
+                    throw WegasErrorMessage.error("This email is already associated with an existing account.");
                 }
             }
-        } catch (PersistenceException | EJBTransactionRolledbackException e){
+        } catch (WegasNoResultException | EJBTransactionRolledbackException e) {
             // GOTCHA
+            // E-Mail not yet registered -> proceed 
         }
-        
 
         super.create(user);
         try {
             account.addRole(roleFacade.findByName("Public"));
-        } catch (PersistenceException ex) {
-            //logger.error("Unable to find Role: Public", ex);
+        } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
         }
         try {
             account.addRole(roleFacade.findByName("Registered"));
-        } catch (PersistenceException ex) {
+        } catch (WegasNoResultException ex) {
             //logger.error("Unable to find Role: Registered", ex);
             logger.error("Unable to find Role: Registered");
         }
@@ -178,8 +176,8 @@ public class UserFacade extends BaseFacade<User> {
                     return accountFacade.findByEmail(mail).getUser();           // return it
                 }
             }
-        } catch (PersistenceException e) {
-            // GOTCHA
+        } catch (WegasNoResultException ex) {
+            // GOTCHA 
         }
         this.create(user);                                                      // If user could not be found, create and return it
         return user;
@@ -396,9 +394,8 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param instance
      * @param accountId
-     * @throws NoResultException
      */
-    public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
+    public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
         try {
@@ -421,9 +418,8 @@ public class UserFacade extends BaseFacade<User> {
      *
      * @param permission
      * @param accountId
-     * @throws NoResultException
      */
-    public void deleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) throws NoResultException {
+    public void deleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
         try {
@@ -446,16 +442,19 @@ public class UserFacade extends BaseFacade<User> {
      * @param email
      */
     public void sendNewPassword(String email) {
-        JpaAccount acc = (JpaAccount) accountFacade.findByEmail(email);
-        EMailFacade emailFacade = new EMailFacade();
-        RandomNumberGenerator rng = new SecureRandomNumberGenerator();
-        String newPassword = rng.nextBytes().toHex().substring(0, 12);
-        String subject = "Wegas account";
-        String body = "A new password for your wegas account has been successfully created: " + newPassword;
-        if (acc != null) {
-            emailFacade.send(acc.getEmail(), "albasim@heig-vd.ch", subject, body);
-            acc.setPassword(newPassword);
-            acc.setPasswordHex(null);                                           //force JPA update
+        try {
+            JpaAccount acc = (JpaAccount) accountFacade.findByEmail(email);
+            EMailFacade emailFacade = new EMailFacade();
+            RandomNumberGenerator rng = new SecureRandomNumberGenerator();
+            String newPassword = rng.nextBytes().toHex().substring(0, 12);
+            String subject = "Wegas account";
+            String body = "A new password for your wegas account has been successfully created: " + newPassword;
+            if (acc != null) {
+                emailFacade.send(acc.getEmail(), "albasim@heig-vd.ch", subject, body);
+                acc.setPassword(newPassword);
+                acc.setPasswordHex(null);                                           //force JPA update
+            }
+        } catch (WegasNoResultException ex) {
         }
     }
 

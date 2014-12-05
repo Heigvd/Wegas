@@ -235,8 +235,7 @@ YUI.add('wegas-editor-form', function(Y) {
                 on: {
                     success: Y.bind(function() {
                         this.showMessage("success", "All changes saved");
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         }
@@ -283,8 +282,7 @@ YUI.add('wegas-editor-form', function(Y) {
                             .set("gameModel", e.response.entity)
                             .set("properties", e.response.entity.get("properties"));
                         this.get("dataSource").fire("update");                  // and trigger the update event manually
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         }

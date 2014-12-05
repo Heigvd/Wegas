@@ -9,12 +9,21 @@ package com.wegas.core;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.event.client.CustomEvent;
+import com.wegas.core.event.client.EntityUpdatedEvent;
+import com.wegas.core.event.client.ExceptionEvent;
+import com.wegas.core.event.client.WarningEvent;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.external.WegasOutOfBoundException;
+import com.wegas.core.exception.external.WegasRuntimeException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.ListInstance;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.BooleanDescriptor;
 import com.wegas.core.persistence.variable.primitive.BooleanInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
@@ -31,12 +40,12 @@ import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
 import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
 import com.wegas.core.persistence.variable.statemachine.Transition;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.ManagedResponse;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.facebook.FacebookAccount;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.User;
 import com.wegas.mcq.persistence.ChoiceDescriptor;
@@ -57,8 +66,8 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -88,7 +97,6 @@ public class SerializationTest {
         String pattern = "\"" + property + "\":\"" + expected + "\"";
         assertTrue("Expected " + expected + ", found " + json, json.contains(pattern));
     }
-
 
     @Test
     public void testFSMSerialization() throws JsonProcessingException {
@@ -127,7 +135,7 @@ public class SerializationTest {
 
         assertPropertyEquals(mapper.writeValueAsString(trans1), "@class", "Transition");
     }
-    
+
     @Test
     public void testVariableSerialization() throws JsonProcessingException {
         ListDescriptor listD = new ListDescriptor("LIST");
@@ -157,12 +165,12 @@ public class SerializationTest {
         StringInstance stringI = new StringInstance();
         stringD.setDefaultInstance(stringI);
         stringI.setDefaultDescriptor(stringD);
- 
+
         TextDescriptor textD = new TextDescriptor();
         TextInstance textI = new TextInstance();
         textD.setDefaultInstance(textI);
         textI.setDefaultDescriptor(textD);
-               
+
         assertPropertyEquals(mapper.writeValueAsString(listD), "@class", "ListDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(listI), "@class", "ListInstance");
 
@@ -177,7 +185,7 @@ public class SerializationTest {
 
         assertPropertyEquals(mapper.writeValueAsString(stringD), "@class", "StringDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(stringI), "@class", "StringInstance");
-        
+
         assertPropertyEquals(mapper.writeValueAsString(textD), "@class", "TextDescriptor");
         assertPropertyEquals(mapper.writeValueAsString(textI), "@class", "TextInstance");
 
@@ -192,7 +200,7 @@ public class SerializationTest {
         Team team1 = new Team("DasTeam");
         team1.setGame(game);
         game.addTeam(team1);
-        
+
         FacebookAccount fbAccount = new FacebookAccount();
         GuestJpaAccount guAccount = new GuestJpaAccount();
         GameAccount gaAccount = new GameAccount(game);
@@ -212,7 +220,7 @@ public class SerializationTest {
         team1.addPlayer(guPlayer);
         team1.addPlayer(gaPlayer);
         team1.addPlayer(jpaPlayer);
-        
+
         fbUser.getPlayers().add(fbPlayer);
         gaUser.getPlayers().add(gaPlayer);
         guUser.getPlayers().add(guPlayer);
@@ -222,11 +230,10 @@ public class SerializationTest {
         permission.setAccount(jpaAccount);
         jpaAccount.addPermission(permission);
 
-
         assertPropertyEquals(mapper.writerWithView(Views.Public.class).writeValueAsString(game),
                 "@class", "Game");
         assertPropertyEquals(mapper.writeValueAsString(team1), "@class", "Team");
-        
+
         assertPropertyEquals(mapper.writeValueAsString(fbAccount), "@class", "FacebookAccount");
         assertPropertyEquals(mapper.writeValueAsString(gaAccount), "@class", "GameAccount");
         assertPropertyEquals(mapper.writeValueAsString(guAccount), "@class", "GuestJpaAccount");
@@ -350,5 +357,65 @@ public class SerializationTest {
         assertPropertyEquals(mapper.writeValueAsString(assignment), "@class", "Assignment");
         assertPropertyEquals(mapper.writeValueAsString(occupation), "@class", "Occupation");
         assertPropertyEquals(mapper.writeValueAsString(req), "@class", "WRequirement");
+    }
+
+    @Test
+    public void testExceptionMapper() throws JsonProcessingException {
+        NumberDescriptor nd = new NumberDescriptor("x");
+        NumberInstance ns = new NumberInstance(0);
+
+        nd.setDefaultInstance(ns);
+        ns.setDefaultDescriptor(nd);
+
+        nd.setMaxValue(10L);
+        //nd.setMinValue(0L);
+
+        nd.getDefaultInstance().setValue(-10);
+
+        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd));
+        System.out.println("WOOB: " + json);
+        assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
+
+        json = mapper.writeValueAsString(WegasErrorMessage.error("This is an error"));
+        assertPropertyEquals(json, "@class", "WegasErrorMessage");
+
+        json = mapper.writeValueAsString(new WegasScriptException("var a = tagada;", 123, "script exception", null));
+        assertPropertyEquals(json, "@class", "WegasScriptException");
+    }
+
+    @Test
+    public void testManagedModeResponse() throws JsonProcessingException {
+        String payload = "DummyPayload";
+        NumberDescriptor ndPayload = new NumberDescriptor("x");
+        NumberInstance niPayload = new NumberInstance(5);
+        niPayload.setDefaultDescriptor(ndPayload);
+        ndPayload.setDefaultInstance(niPayload);
+        
+
+        CustomEvent custom = new CustomEvent("Dummy CustomEvent", payload);
+        WarningEvent warn = new WarningEvent("Warning Dummy Event", payload);
+
+        List<WegasRuntimeException> exceptions = new ArrayList<>();
+        exceptions.add(new WegasOutOfBoundException(0L, 10L, 15.0, ndPayload));
+        exceptions.add(WegasErrorMessage.error("Error Message"));
+        exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
+
+        List<VariableInstance> instances = new ArrayList<>();
+        instances.add(new NumberInstance(1));
+
+        EntityUpdatedEvent update = new EntityUpdatedEvent(instances);
+
+        ExceptionEvent ex = new ExceptionEvent(exceptions);
+        
+        ManagedResponse managedResponse = new ManagedResponse();
+        managedResponse.getEvents().add(custom);
+        managedResponse.getEvents().add(warn);
+        managedResponse.getEvents().add(ex);
+        managedResponse.getEvents().add(update);
+
+        String json = mapper.writeValueAsString(managedResponse);
+                
+        System.out.println("JSON: " + json);
+
     }
 }

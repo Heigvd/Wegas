@@ -15,6 +15,8 @@ import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -29,7 +31,6 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.NamingException;
-import javax.script.ScriptException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -173,7 +174,7 @@ public class StateMachineITest extends AbstractEJBTest {
     }
 
     @Test
-    public void highScore() throws NamingException, ScriptException {
+    public void highScore() throws NamingException, WegasScriptException {
 
         ScriptFacade scriptFacade = lookupBy(ScriptFacade.class);
         NumberDescriptor highScore = new NumberDescriptor("highScore");
@@ -208,7 +209,7 @@ public class StateMachineITest extends AbstractEJBTest {
     }
 
     @Test
-    public void testEvent() throws NamingException, ScriptException, NoSuchMethodException {
+    public void testEvent() throws NamingException, NoSuchMethodException, WegasScriptException {
         final ScriptFacade sf = lookupBy(ScriptFacade.class);
         final Integer ENDVAL = 5;
 
@@ -231,7 +232,7 @@ public class StateMachineITest extends AbstractEJBTest {
     }
 
     @Test
-    public void duplicate() throws NamingException, IOException {
+    public void duplicate() throws NamingException, IOException, WegasNoResultException {
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         TriggerDescriptor trigger = new TriggerDescriptor();
         trigger.setName("trigger");
@@ -242,6 +243,5 @@ public class StateMachineITest extends AbstractEJBTest {
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         TriggerDescriptor find = (TriggerDescriptor) vdf.find(duplicateGm, "trigger");
         Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
-
     }
 }

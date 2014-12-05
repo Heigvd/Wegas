@@ -7,7 +7,6 @@
  */
 package com.wegas.unit.pmg;
 
-import javax.script.ScriptException;
 import org.junit.Test;
 
 /**
@@ -17,7 +16,7 @@ import org.junit.Test;
 public class PMGTest extends PMGameAbstractTest {
 
     @Test
-    public void testSimplePMG() throws ScriptException {
+    public void testSimplePMG() {
         this.evalScript("testsimplepmg()");
     }
 

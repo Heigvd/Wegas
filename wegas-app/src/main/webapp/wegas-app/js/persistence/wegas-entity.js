@@ -97,9 +97,9 @@ YUI.add("wegas-entity", function(Y) {
     persistence.RestException = persistence.DefaultEntity;
 
     /**
-     * ServerResponse mapper
+     * ManagedResponse mapper
      */
-    persistence["ManagedModeResponseFilter$ServerResponse"] = Base.create("ManagedModeResponseFilter$ServerResponse", Entity, [], {}, {
+    persistence["ManagedResponse"] = Base.create("ManagedResponse", Entity, [], {}, {
         ATTRS: {
             entities: {
                 value: []

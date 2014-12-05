@@ -41,6 +41,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import org.apache.shiro.SecurityUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import javax.persistence.TypedQuery;
 
 /**
@@ -161,7 +163,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         while (true) {
             try {
                 this.findByName(newName);
-            } catch (NoResultException ex) {
+            } catch (WegasNoResultException ex) {
                 return newName;
             } catch (NonUniqueResultException ex) {
             }
@@ -243,8 +245,9 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param name
      * @return
      * @throws NoResultException
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public GameModel findByName(final String name) throws NoResultException, NonUniqueResultException {
+    public GameModel findByName(final String name) throws NonUniqueResultException, WegasNoResultException {
         /*final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameModel> gameModel = cq.from(GameModel.class);
@@ -254,8 +257,11 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
         query.setParameter("name", name);
+        try{
         return query.getSingleResult();
-
+        } catch (NoResultException ex){
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**

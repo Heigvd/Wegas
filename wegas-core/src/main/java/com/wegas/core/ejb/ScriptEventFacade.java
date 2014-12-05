@@ -7,7 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import java.util.Collection;
@@ -81,10 +82,9 @@ public class ScriptEventFacade {
      * @param player
      * @param eventName
      * @param param
-     * @throws ScriptException
-     * @throws NoSuchMethodException
+     * @throws com.wegas.core.exception.external.WegasScriptException
      */
-    public void fire(Player player, String eventName, Object param) throws ScriptException, NoSuchMethodException {
+    public void fire(Player player, String eventName, Object param) throws WegasScriptException {
         this.eventsFired.put(eventName, param);
         this.doFire(player, eventName, param);
     }
@@ -93,10 +93,9 @@ public class ScriptEventFacade {
      *
      * @param player
      * @param eventName
-     * @throws ScriptException
-     * @throws NoSuchMethodException
+     * @throws com.wegas.core.exception.external.WegasScriptException
      */
-    public void fire(Player player, String eventName) throws ScriptException, NoSuchMethodException {
+    public void fire(Player player, String eventName) throws WegasScriptException {
         this.fire(player, eventName, null);
     }
 
@@ -104,27 +103,25 @@ public class ScriptEventFacade {
      *
      * @param eventName
      * @param param
-     * @throws ScriptException
-     * @throws NoSuchMethodException
+     * @throws com.wegas.core.exception.external.WegasScriptException
      */
-    public void fire(String eventName, Object param) throws ScriptException, NoSuchMethodException {
+    public void fire(String eventName, Object param) throws WegasScriptException {
         this.fire(requestManager.getPlayer(), eventName, param);
     }
 
     /**
      *
      * @param eventName
-     * @throws ScriptException
-     * @throws NoSuchMethodException
+     * @throws com.wegas.core.exception.external.WegasScriptException
      */
-    public void fire(String eventName) throws ScriptException, NoSuchMethodException {
+    public void fire(String eventName) throws WegasScriptException {
         this.fire(eventName, null);
     }
 
-    private void doFire(Player player, String eventName, Object params) throws ScriptException, NoSuchMethodException {
+    private void doFire(Player player, String eventName, Object params) throws WegasScriptException {
         this.eventFired = true;
         if (player == null && requestManager.getPlayer() == null) {
-            throw new WegasException("An event '" + eventName + "' has been fired without a player defined. A player has to be defined.");
+            throw WegasErrorMessage.error("An event '" + eventName + "' has been fired without a player defined. A player has to be defined.");
         }
         if (requestManager.getCurrentEngine() == null) {
             /* init script engine, declared eventListeners are not yet in memory */
@@ -135,17 +132,21 @@ public class ScriptEventFacade {
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
-                ScriptFunction fcn = (ScriptFunction) ((Object[])cb)[0];
-                Object scope = (((Object[])cb).length == 2 ? ((Object[])cb)[1] : new EmptyObject());
+                ScriptFunction fcn = (ScriptFunction) ((Object[]) cb)[0];
+                Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
                 /*
                  *       JAVA BUG
                  *       http://bugs.java.com/view_bug.do?bug_id=8050977
                  *       
                  *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptFunction.toSource()
                  */
-                ((Invocable) engine).invokeMethod(engine.eval(fcn.toSource()), "call", scope, params);
+                try {
+                    ((Invocable) engine).invokeMethod(engine.eval(fcn.toSource()), "call", scope, params);
+                } catch (ScriptException | NoSuchMethodException ex) {
+                    throw new WegasScriptException("Event exception" , ex);
+                }
                 /*
-                 *  ONCE RESOLVED, REPLACE WITH: 
+                 *  ONCE RESOLVED, REPLACE WITH
                  *  ((Invocable) requestManager.getCurrentEngine()).invokeMethod(((Object[]) cb)[0], "call", ((Object[]) cb)[1], params);
                  */
             }
@@ -189,10 +190,8 @@ public class ScriptEventFacade {
      * @param eventName
      * @param func
      * @param scope
-     * @throws ScriptException
-     * @throws NoSuchMethodException
      */
-    public void on(String eventName, Object func, Object scope) throws ScriptException, NoSuchMethodException {
+    public void on(String eventName, Object func, Object scope) {
         this.registeredEvents.put(eventName, new Object[]{func, scope});
     }
 
@@ -200,10 +199,8 @@ public class ScriptEventFacade {
      *
      * @param eventName
      * @param func
-     * @throws ScriptException
-     * @throws NoSuchMethodException
      */
-    public void on(String eventName, Object func) throws ScriptException, NoSuchMethodException {
+    public void on(String eventName, Object func) {
         this.registeredEvents.put(eventName, new Object[]{func});
     }
 

@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.exception.ConstraintViolationException;
+import com.wegas.core.exception.external.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -74,9 +74,10 @@ public class NumberInstance extends VariableInstance {
         try {
             if (this.getDescriptor() instanceof NumberDescriptor) {             // @fixme (Occurs when numberinstance are used for list descriptors)
                 NumberDescriptor desc = (NumberDescriptor) this.getDescriptor();
+
                 if ((desc.getMaxValue() != null && value > desc.getMaxValueD())
                         || (desc.getMinValue() != null && value < desc.getMinValueD())) {
-                    throw new ConstraintViolationException(desc.getLabel() + " is out of bound.");
+                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc);
                 }
             }
         } catch (NullPointerException e) {

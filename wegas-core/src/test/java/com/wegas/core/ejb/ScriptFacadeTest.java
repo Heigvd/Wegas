@@ -7,14 +7,13 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.primitive.StringDescriptor;
 import com.wegas.core.persistence.variable.primitive.StringInstance;
 import javax.naming.NamingException;
-import javax.script.ScriptException;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -29,7 +28,7 @@ public class ScriptFacadeTest extends AbstractEJBTest {
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacadeTest.class);
 
     @Test
-    public void testEval() throws NamingException, ScriptException, WegasException {
+    public void testEval() throws NamingException, WegasScriptException {
         final String VARIABLENAME = "testvariable";
         final String VALUE = "test-value";
         final String VALUE2 = "test-value2";

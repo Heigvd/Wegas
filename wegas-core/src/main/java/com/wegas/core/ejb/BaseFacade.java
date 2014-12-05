@@ -7,11 +7,10 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.external.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.Query;
@@ -185,7 +184,11 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
         final Root<T> rt = query.from(entityClass);
         query.select(getEntityManager().getCriteriaBuilder().count(rt));
         final Query q = getEntityManager().createQuery(query);
-        return ((Long) q.getSingleResult()).intValue();
+        try {
+            return ((Long) q.getSingleResult()).intValue();
+        } catch (NoResultException ex) {
+            throw new WegasNotFoundException(ex.getMessage());
+        }
     }
 
     /**
@@ -194,7 +197,7 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
      * @return
      * @throws Exception
      */
-    @AroundInvoke
+    /*@AroundInvoke
     public Object interceptor(final InvocationContext ic) throws Exception {
         Object o = null;
         try {
@@ -202,11 +205,11 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
             //if (!sessionContext.getRollbackOnly()) {
             //    entityManager.flush();
             //}
-        } catch (NoResultException e) {                                         // NoResultException are caught and wrapped exception
-            throw new com.wegas.core.exception.NoResultException(e);            // so they do not cause transaction rollback
+        } catch (NoResultException e) { // NoResultException are caught and wrapped exception
+            throw new WegasNotFoundException(e); // so they do not cause transaction rollback
             //throw e;
         }
 
         return o;
-    }
+    }*/
 }

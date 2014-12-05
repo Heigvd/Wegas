@@ -11,6 +11,8 @@ import com.pusher.rest.Pusher;
 import com.pusher.rest.data.PresenceUser;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.EntityUpdatedEvent;
+import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
@@ -83,7 +85,7 @@ public class WebsocketFacade {
      * @param events
      */
     @Asynchronous
-    public void onRequestCommit(@Observes EntityUpdatedEvent events) {
+    public void onRequestCommit(@Observes EntityUpdatedEvent events) throws NoPlayerException {
         if (this.pusher == null) {
             return;
         }

@@ -87,8 +87,7 @@ YUI.add('wegas-loginwidget', function(Y) {
                     on: {
                         success: Y.bind(function(e) {
                             cb.one(".main.left").append("<div class=wegas-gameinformation>" + Wegas.GameInformation.renderGameInformation(e.response.entities[0]) + "</div>");
-                        }, this),
-                        failure: Y.bind(this.defaultFailureHandler, this)
+                        }, this)
                     }
                 });
             } else {
@@ -349,11 +348,11 @@ YUI.add('wegas-loginwidget', function(Y) {
                     success: Y.bind(function(e) {
                         //this.showMessage("success", "Login successful");
                         window.location = Wegas.Helper.getURLParameter("redirect") || Wegas.app.get("base");
-                    }, this),
-                    failure: Y.bind(function(e) {
+                    }, this)
+                    /*failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Email, username or password not found.", 6000);
                         //this.showMessage("error", e.response.results.message || "Guest login failed", 6000);
-                    }, this)
+                    }, this)*/
                 }
             });
         },

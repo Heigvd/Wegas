@@ -8,11 +8,12 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
-import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.persistence.Role;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
@@ -41,21 +42,16 @@ public class RoleFacade extends BaseFacade<Role> {
      *
      * @param name
      * @return
-     * @throws PersistenceException
+     * @throws WegasNoResultException role not found
      */
-    public Role findByName(String name) throws PersistenceException {
-        /*
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
-        Root<Role> role = cq.from(Role.class);
-        cq.where(cb.equal(role.get(Role_.name), name));
-        Query q = em.createQuery(cq);
-        return (Role) q.getSingleResult();
-        */
-
-        final TypedQuery<Role> query = getEntityManager().createNamedQuery("Role.findByName", Role.class);
-        query.setParameter("name", name);
-        return query.getSingleResult();
+    public Role findByName(String name) throws WegasNoResultException {
+        try {
+            final TypedQuery<Role> query = getEntityManager().createNamedQuery("Role.findByName", Role.class);
+            query.setParameter("name", name);
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**

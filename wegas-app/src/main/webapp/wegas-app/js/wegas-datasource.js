@@ -197,6 +197,42 @@ YUI.add('wegas-datasource', function(Y) {
                 bubbles: false
             });
             this.doBefore("_defDataFn", this._beforeDefDataFn); // When the host receives some data, we parse the result
+
+            this.on("ExceptionEvent", function(e) {
+                var type = e.type.split(":").pop(),
+                    val, node, min, max;
+
+                if (e.serverEvent) {
+                    val = e.serverEvent.get("val.exceptions")[0].get("val");
+
+                    if (this.get("host").fire(val["@class"], val)) {
+                        node = Y.Widget.getByNode("#centerTabView").get("selection");
+                        switch (val["@class"]) {
+                            case "WegasErrorMessage":
+                                node.showMessage(val.level, val.message);
+                                break;
+                            case "WegasNotFoundException":
+                                node.showMessage("error", val.message);
+                                break;
+                            case "WegasOutOfBoundException":
+                                min = val.min || "-∞";
+                                max = val.max || "∞";
+                                node.showMessage("error", "Variable \"" + val.variableDescriptor.get("label") + "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])");
+                                break;
+                            case "WegasScriptException":
+                                node.showMessage("error", val.message + " at line " + val.lineNumber + " in script " + val.script);
+                                break;
+                            case "WegasWrappedException":
+                                node.showMessage(type, "Unexpected error: " + val.message);
+                                break;
+                            default:
+                                node.showMessage(type, "Severe error: " + val.message);
+                                break;
+                        }
+                    }
+                    this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
+                }
+            });
         },
         _beforeDefDataFn: function(e) {
             var response, data = e.data && (e.data.responseText || e.data),
@@ -209,7 +245,7 @@ YUI.add('wegas-datasource', function(Y) {
                 };
                 response.data = host.data; // Provides with a pointer to the datasource current content
                 payload.response = response;
-                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/ , "log", "Wegas.DataSource");
+                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
@@ -249,14 +285,15 @@ YUI.add('wegas-datasource', function(Y) {
             var i, entity, method, evtPayload, response = e.serverResponse;
 
             this.updated = false;
-            if (e.error) { // If there was an server error, do not update the cache
-                return;
-            }
+
             if (Lang.isArray(response)) { // Non-managed response: we apply the operation for each object in the returned array
-                for (i = 0; i < response.length; i += 1) {
-                    this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) || this.updated;
+                if (!e.error) { // If there was an server error, do not update the cache
+                    for (i = 0; i < response.length; i += 1) {
+                        this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) || this.updated;
+                    }
+                    return;
                 }
-            } else {
+            } else { // Managed-Mode ManagedResponse
                 if (response.get("entities")) {
                     for (i = 0; i < response.get("entities").length; i += 1) { // Update the cache with the Entites in the reply body
                         entity = response.get("entities")[i];
@@ -267,7 +304,7 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
 
-                if (response.get("events")){
+                if (response.get("events")) {
                     for (i = 0; i < response.get("events").length; i += 1) {
                         evtPayload = Y.mix({
                             serverEvent: response.get("events")[i]
@@ -277,9 +314,12 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                 }
             }
-            if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || e.cfg.initialRequest)) {
-                this.get(HOST).fire("update", e);
-                this.updated = false;
+
+            if (!e.error) { // If there was an server error, do not update the cache
+                if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || e.cfg.initialRequest)) {
+                    this.get(HOST).fire("update", e);
+                    this.updated = false;
+                }
             }
         },
         /**
@@ -597,9 +637,6 @@ YUI.add('wegas-datasource', function(Y) {
 
             this.on("CustomEvent", function(e) {
                 this.get(HOST).fire(e.serverEvent.get("val.type"), e.serverEvent.get("val.payload"));
-            });
-            this.on("ExceptionEvent", function(e) {
-                this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
             });
         },
         generateRequest: function(data) {
@@ -1300,7 +1337,8 @@ YUI.add('wegas-datasource', function(Y) {
         _successHandler: function(e) {
             Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
         },
-        _failureHandler: function(e) {}
+        _failureHandler: function(e) {
+        }
     }, {
         NS: "cache",
         NAME: "PageCache"
@@ -1364,8 +1402,8 @@ YUI.add('wegas-datasource', function(Y) {
             });
             this.onHostEvent("ExceptionEvent", function(e) {
                 var type = e.type.split(":").pop();
-                Y.Widget.getByNode("#centerTabView").get("selection")
-                    .showMessage(type, "Server error: " + e.message);
+                // Y.Widget.getByNode("#centerTabView").get("selection")
+                // .showMessage(type, "Server error: " + e.message);
 
                 this.logs.push({
                     type: "error",

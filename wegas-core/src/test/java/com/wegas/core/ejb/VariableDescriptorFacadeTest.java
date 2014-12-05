@@ -11,6 +11,7 @@ import static com.wegas.core.ejb.AbstractEJBTest.gameModel;
 import static com.wegas.core.ejb.AbstractEJBTest.gameModelFacade;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import static com.wegas.core.ejb.AbstractEJBTest.player;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
@@ -35,7 +36,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacadeTest.class);
 
     @Test
-    public void testNumberDescriptor() throws NamingException {
+    public void testNumberDescriptor() throws NamingException, WegasNoResultException {
         final String VARIABLENAME = "test-variable";
         final String VARIABLENAME2 = "test-variable2";
         final double VAL1 = 0;
@@ -73,7 +74,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testStringDescriptor() throws NamingException {
+    public void testStringDescriptor() throws NamingException, WegasNoResultException {
         final String VARIABLENAME = "test-variable";
         final String VARIABLENAME2 = "test-variable2";
         final String VALUE1 = "test-value";
@@ -111,7 +112,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testBooleanDescriptor() throws NamingException {
+    public void testBooleanDescriptor() throws NamingException, WegasNoResultException {
 
         final String VARIABLENAME = "test-variable";
         final String VARIABLENAME2 = "test-variable2";
@@ -181,7 +182,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     public <T extends VariableDescriptor> T testVariableDescriptor(T descriptor1, T descriptor2)
-            throws NamingException {
+            throws NamingException, WegasNoResultException {
         final String VARIABLENAME2 = "test-variable2";
         VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
 
@@ -211,7 +212,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testMove2P() throws NamingException {
+    public void testMove2P() throws NamingException, WegasNoResultException {
         final String VARIABLENAME = "test-variable";
         final String VARIABLENAME2 = "test-variable2";
         final double VAL1 = 0;
@@ -352,7 +353,7 @@ public class VariableDescriptorFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testListDuplicate() throws NamingException, IOException {
+    public void testListDuplicate() throws NamingException, IOException, WegasNoResultException {
         final String VARIABLENAME1 = "test_variable";
         final String LISTNAME1 = "list1";
         final String LISTNAME2 = "list2";

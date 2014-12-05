@@ -11,9 +11,10 @@ package com.wegas.core.rest.exception;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
+import com.wegas.core.exception.external.WegasErrorMessage;
 
 /**
- *
+ * @deprecated
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 //@XmlRootElement
@@ -25,6 +26,7 @@ public class ExceptionWrapper {
     private String code;
     private Class exception;
     private String message;
+    private String level;
 
     /**
      *
@@ -34,6 +36,8 @@ public class ExceptionWrapper {
 
     /**
      *
+     * Wrap exception with 
+     * 
      * @param code
      * @param exception
      * @param message
@@ -42,6 +46,19 @@ public class ExceptionWrapper {
         this.code = code;
         this.exception = exception;
         this.message = message;
+        this.level = WegasErrorMessage.ERROR;
+    }
+
+    /**
+     *
+     * @param code
+     * @param exception
+     * @param level
+     * @param message
+     */
+    public ExceptionWrapper(String code, Class exception, String level, String message) {
+        this(code, exception, message);
+        this.level = level;
     }
 
     /**
@@ -84,5 +101,21 @@ public class ExceptionWrapper {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    /**
+     * Get exception level
+     * @return the level
+     */
+    public String getLevel() {
+        return level;
+    }
+
+    /**
+     * Set exception level
+     * @param level the level to set
+     */
+    public void setLevel(String level) {
+        this.level = level;
     }
 }

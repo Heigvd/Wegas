@@ -12,6 +12,8 @@ import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Activity;
@@ -28,7 +30,6 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.script.ScriptException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,7 +86,7 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param resourceInstanceId
      * @param taskDescriptorId
      * @return
@@ -95,7 +96,7 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param resourceInstance
      * @param taskDescriptor
      * @return
@@ -118,15 +119,15 @@ public class ResourceFacade {
 
     /**
      * Add an occupation for a resource at the given time
-     * 
+     *
      * @param resourceInstance
      * @param editable
      * @param time
-     * @return 
+     * @return
      */
     public Occupation addOccupation(ResourceInstance resourceInstance,
-                                    Boolean editable,
-                                    double time){
+            Boolean editable,
+            double time) {
         Occupation newOccupation = new Occupation(time);
         newOccupation.setEditable(editable);
 
@@ -136,13 +137,13 @@ public class ResourceFacade {
 
     /**
      * Reserve a resource for the given time
-     * 
+     *
      * @param resourceInstance
      * @param time
-     * @return 
+     * @return
      */
     public Occupation reserve(ResourceInstance resourceInstance,
-                                     double time){
+            double time) {
         return addOccupation(resourceInstance, true, time);
     }
 
@@ -294,29 +295,29 @@ public class ResourceFacade {
     }
 
     /**
-     * 
+     *
      * @param player
      * @param taskInstanceId
      * @param period
-     * @return 
+     * @return
      */
     public TaskInstance addTaskPlannification(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().add(period);
         try {
             scriptEvent.fire(player, "addTaskPlannification");
-        } catch (NoSuchMethodException | ScriptException ex) {
+        } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"addTaskPlannification\")", ex);
         }
         return ti;
     }
-    
+
     /**
-     * 
+     *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return 
+     * @return
      */
     public TaskInstance addTaskPlannification(Long playerId, Long taskInstanceId, Integer period) {
         return addTaskPlannification(playerFacade.find(playerId), taskInstanceId, period);
@@ -324,8 +325,9 @@ public class ResourceFacade {
 
     /**
      *
+     * @param player
      * @param taskInstanceId
-     * @param periode
+     * @param period
      * @return
      */
     public TaskInstance removePlannification(Player player, Long taskInstanceId, Integer period) {
@@ -333,18 +335,18 @@ public class ResourceFacade {
         ti.getPlannification().remove(period);
         try {
             scriptEvent.fire(player, "removeTaskPlannification");
-        } catch (NoSuchMethodException | ScriptException ex) {
+        } catch (WegasScriptException ex) {
             logger.error("EventListener error (\"removePlannification\")", ex);
         }
         return ti;
     }
-    
+
     /**
-     * 
+     *
      * @param playerId
      * @param taskInstanceId
      * @param period
-     * @return 
+     * @return
      */
     public TaskInstance removePlannification(Long playerId, Long taskInstanceId, Integer period) {
         return this.removePlannification(playerFacade.find(playerId), taskInstanceId, period);
@@ -353,8 +355,9 @@ public class ResourceFacade {
     /**
      *
      * @param event
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
+    public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) throws WegasNoResultException {
         logger.debug("Received DescriptorRevivedEvent event");
 
         if (event.getEntity() instanceof TaskDescriptor) {

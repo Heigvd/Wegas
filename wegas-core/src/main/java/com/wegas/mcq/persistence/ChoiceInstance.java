@@ -7,7 +7,6 @@
  */
 package com.wegas.mcq.persistence;
 
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
@@ -16,6 +15,7 @@ import javax.persistence.*;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.external.WegasErrorMessage;
 
 /**
  *
@@ -70,7 +70,7 @@ public class ChoiceInstance extends VariableInstance {
                 return ((ChoiceDescriptor) this.getDescriptor()).getResults().get(0);
             } catch (ArrayIndexOutOfBoundsException ex) {
                 //return null;
-                throw new WegasException("No result found for choice \"" + this.getDescriptor().getLabel() + "\"", ex);
+                throw WegasErrorMessage.error("No result found for choice \"" + this.getDescriptor().getLabel() + "\"");
             }
         }
     }

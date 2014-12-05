@@ -7,14 +7,15 @@
  */
 package com.wegas.mcq.ejb;
 
+import com.wegas.core.exception.external.WegasErrorMessage;
 import com.wegas.core.persistence.game.Player;
-import com.wegas.core.exception.WegasException;
 import com.wegas.mcq.persistence.*;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
+import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
@@ -37,7 +38,11 @@ public class QuestionSingleton {
     public int findReplyCount(Long instanceId) {
         final Query query = em.createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
         query.setParameter("id", instanceId);
-        return ((Number) query.getSingleResult()).intValue();
+        try {
+            return ((Number) query.getSingleResult()).intValue();
+        } catch (NoResultException ex) {
+            return 0;
+        }
     }
 
     /**
@@ -46,7 +51,6 @@ public class QuestionSingleton {
      * @param player
      * @param startTime
      * @return
-     * @throws WegasException
      */
     public Reply createReplyUntransactionnal(Long choiceId, Player player, Long startTime) {
         ChoiceDescriptor choice = em.find(ChoiceDescriptor.class, choiceId);
@@ -58,7 +62,7 @@ public class QuestionSingleton {
                 && this.findReplyCount(questionInstance.getId()) > 0) {         // @fixme Need to check reply count this way, otherwise in case of double request, both will be added
             //if (!questionDescriptor.getAllowMultipleReplies()
             //&& !questionInstance.getReplies().isEmpty()) {                    // Does not work when sending 2 requests at once
-            throw new WegasException("You have already answered this question");
+            throw WegasErrorMessage.error("You have already answered this question");
         }
 
         Reply reply = new Reply();
@@ -72,7 +76,7 @@ public class QuestionSingleton {
     }
 
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // Require new transaction
-    public Reply createReply(Long choiceId, Player player, Long startTime) throws WegasException {
+    public Reply createReply(Long choiceId, Player player, Long startTime) {
         return createReplyUntransactionnal(choiceId, player, startTime);
     }
 }

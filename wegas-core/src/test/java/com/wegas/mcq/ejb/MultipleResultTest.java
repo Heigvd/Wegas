@@ -10,10 +10,11 @@ package com.wegas.mcq.ejb;
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.mcq.persistence.*;
+import java.util.logging.Level;
 import javax.ejb.EJBException;
 import javax.naming.NamingException;
-import javax.script.ScriptException;
 import junit.framework.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -41,7 +42,8 @@ public class MultipleResultTest extends AbstractEJBTest {
         public void run() {
             try {
                 qdf.selectAndValidateChoice(choice.getId(), player.getId());            // Do reply
-            } catch (ScriptException ex) {
+            } catch (WegasScriptException ex) {
+                java.util.logging.Logger.getLogger(MultipleResultTest.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }

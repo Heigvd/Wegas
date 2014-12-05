@@ -34,9 +34,6 @@ YUI.add("wegas-plugin", function(Y) {
     Wegas.Plugin = function() {
     };
     Y.mix(Wegas.Plugin.prototype, {
-        defaultFailureHandler: function(e) {
-            this.get(HOST).defaultFailureHandler(e);
-        },
         showMessage: function() {
             return this.get(HOST).showMessage.apply(this.get(HOST), arguments);
         },
@@ -330,8 +327,7 @@ YUI.add("wegas-plugin", function(Y) {
                     this.showOverlay();
                     Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
                         on: {
-                            success: Y.bind(this.hideOverlay, this),
-                            failure: Y.bind(this.defaultFailureHandler, this)
+                            success: Y.bind(this.hideOverlay, this)
                         }
                     });
                 }, this));
@@ -349,6 +345,8 @@ YUI.add("wegas-plugin", function(Y) {
         }
     });
     Plugin.ExecuteScriptAction = ExecuteScriptAction;
+
+
     /**
      *  @class
      *  @name Y.Plugin.ConfirmExecuteScriptAction
