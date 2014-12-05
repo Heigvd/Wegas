@@ -32,9 +32,9 @@ import javax.persistence.*;
         @JsonSubTypes.Type(name = "GameAccount", value = com.wegas.core.security.jparealm.GameAccount.class)
 })
 @NamedQueries({
-    @NamedQuery(name = "JPAAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass"),
-    @NamedQuery(name = "JPAAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.email) LIKE LOWER(:email)"),
-    @NamedQuery(name = "JPAAccount.findByFullName", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.firstname) LIKE LOWER(:firstname) AND  LOWER(a.lastname) LIKE LOWER(:lastname)")
+    @NamedQuery(name = "JpaAccount.findExactClass", query = "SELECT a FROM JpaAccount a WHERE TYPE(a) = :accountClass"),
+    @NamedQuery(name = "JpaAccount.findByEmail", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.email) LIKE LOWER(:email)"),
+    @NamedQuery(name = "JpaAccount.findByFullName", query = "SELECT a FROM JpaAccount a WHERE LOWER(a.firstname) LIKE LOWER(:firstname) AND  LOWER(a.lastname) LIKE LOWER(:lastname)")
 })
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class JpaAccount extends AbstractAccount {
