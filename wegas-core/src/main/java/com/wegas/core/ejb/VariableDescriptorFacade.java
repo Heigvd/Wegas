@@ -9,7 +9,6 @@ package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -31,6 +30,10 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +46,8 @@ import org.slf4j.LoggerFactory;
 public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
-    private static final String DEFAULTVARIABLENAME = "variable";
-    private static final String DEFAULTVARIABLELABEL = "Unnammed";
+    private static final String DEFAULT_VARIABLE_NAME = "variable";
+    private static final String DEFAULT_VARIABLE_LABEL = "Unnammed";
     /**
      *
      */
@@ -74,7 +77,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      */
     @Override
     public void create(final VariableDescriptor variableDescriptor) {
-        throw new WegasException("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
+        throw WegasErrorMessage.error("Unable to call create on Variable descriptor. Use create(gameModelId, variableDescriptor) instead.");
     }
 
     /**
@@ -109,10 +112,10 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
             entity.setName(entity.getLabel());
         }
         if (isNullOrEmpty(entity.getLabel())) {                                 // Still no label, place a default
-            entity.setLabel("Unnamed");
+            entity.setLabel(DEFAULT_VARIABLE_LABEL);
         }
         if (isNullOrEmpty(entity.getName())) {                                  // Still no name, place a default
-            entity.setName("variable");
+            entity.setName(DEFAULT_VARIABLE_NAME);
         }
         entity.setName(Helper.encodeVariableName(entity.getName()));            // Camel casify the name
 
@@ -201,7 +204,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         } else {
             try {
                 return this.findParentListDescriptor(vd);                       // ListDescriptor case
-            } catch (NoResultException e) {                                     // Descriptor is at root level
+            } catch (WegasNoResultException e) {                                     // Descriptor is at root level
                 return vd.getGameModel();
             }
         }
@@ -214,13 +217,22 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      */
     public void findUniqueName(final VariableDescriptor vd, List<String> usedNames) {
         if (isNullOrEmpty(vd.getName())) {
-            vd.setName(DEFAULTVARIABLENAME);
+            vd.setName(DEFAULT_VARIABLE_NAME);
         }
 
         vd.setName(this.encodeVariableName(vd.getName()));
 
-        int suff = 1;
-        final String baseName = vd.getName();
+        Pattern pattern = Pattern.compile("(.*)_(\\d*)");
+        Matcher matcher = pattern.matcher(vd.getName());
+        int suff;
+        final String baseName;
+        if (matcher.matches()) {
+            baseName = matcher.group(1);
+            suff = Integer.parseInt(matcher.group(2));
+        } else {
+            baseName = vd.getName();
+            suff = 1;
+        }
         String newName = vd.getName();
         while (usedNames.contains(newName)) {
             newName = baseName + "_" + suff;
@@ -260,7 +272,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      */
     public void findUniqueLabel(final VariableDescriptor vd) {
         if (isNullOrEmpty(vd.getLabel())) {
-            vd.setLabel(DEFAULTVARIABLELABEL);
+            vd.setLabel(DEFAULT_VARIABLE_LABEL);
         }
 
         int suff = 1;
@@ -276,7 +288,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
                 } else {
                     found = true;
                 }
-            } catch (NoResultException e) {
+            } catch (WegasNoResultException e) {
                 found = true;
             } catch (NonUniqueResultException e) {
                 // Should never happen
@@ -291,11 +303,16 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      *
      * @param item
      * @return
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public ListDescriptor findParentListDescriptor(final VariableDescriptor item) {
+    public ListDescriptor findParentListDescriptor(final VariableDescriptor item) throws WegasNoResultException {
         Query findListDescriptorByChildId = em.createNamedQuery("findListDescriptorByChildId");
         findListDescriptorByChildId.setParameter("itemId", item.getId());
-        return (ListDescriptor) findListDescriptorByChildId.getSingleResult();
+        try {
+            return (ListDescriptor) findListDescriptorByChildId.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
@@ -303,8 +320,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param gameModel
      * @param name
      * @return
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public VariableDescriptor find(final GameModel gameModel, final String name) {
+    public VariableDescriptor find(final GameModel gameModel, final String name) throws WegasNoResultException {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
@@ -315,7 +333,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("name"), name)));
         final Query q = em.createQuery(cq);
-        return (VariableDescriptor) q.getSingleResult();
+        try {
+            return (VariableDescriptor) q.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
@@ -344,12 +366,13 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * For backward compatibility, use find(final GameModel gameModel, final
      * String name) instead.
      *
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      * @deprecated
      * @param gameModel
      * @param name
      * @return
      */
-    public VariableDescriptor findByName(final GameModel gameModel, final String name) {
+    public VariableDescriptor findByName(final GameModel gameModel, final String name) throws WegasNoResultException {
         return this.find(gameModel, name);
     }
 
@@ -358,8 +381,9 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @param gameModel
      * @param label
      * @return
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public VariableDescriptor findByLabel(final GameModel gameModel, final String label) {
+    public VariableDescriptor findByLabel(final GameModel gameModel, final String label) throws WegasNoResultException {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
@@ -367,7 +391,11 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("label"), label)));
         final Query q = em.createQuery(cq);
-        return (VariableDescriptor) q.getSingleResult();
+        try {
+            return (VariableDescriptor) q.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**

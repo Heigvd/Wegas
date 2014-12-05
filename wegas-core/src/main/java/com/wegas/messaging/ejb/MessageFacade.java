@@ -9,6 +9,8 @@ package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.messaging.persistence.InboxInstance;
@@ -65,9 +67,13 @@ public class MessageFacade extends BaseFacade<Message> {
      * @param msg
      */
     public void send(Player p, Message msg) {
-        VariableDescriptor vd = variableDescriptorFacade.find(p.getGameModel(), "inbox");
-        InboxInstance inbox = (InboxInstance) vd.getInstance(p);
-        inbox.sendMessage(msg);
+        try {
+            VariableDescriptor vd = variableDescriptorFacade.find(p.getGameModel(), "inbox");     // @WTF ???
+            InboxInstance inbox = (InboxInstance) vd.getInstance(p);
+            inbox.sendMessage(msg);
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error(ex.getMessage());
+        }
     }
 
     /**

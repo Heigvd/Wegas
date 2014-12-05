@@ -11,12 +11,12 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
-import java.io.IOException;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -65,7 +65,6 @@ public class EditorGameController extends AbstractGameController {
 
     /**
      *
-     * @throws IOException if the target we dispatch to do not exist
      */
     @PostConstruct
     public void init() {
@@ -89,9 +88,8 @@ public class EditorGameController extends AbstractGameController {
                 GameModel gameModel = gameModelFacade.find(this.gameModelId);
                 currentPlayer = playerFacade.findByGameId(gameModel.getGames().get(0).getId());   // Select any player in the first game of the game model
 
-            } catch (NoResultException e) {
+            } catch (WegasNoResultException e) {
                 errorController.dispatch("Model " + gameModelFacade.find(this.gameModelId).getName() + " has no players.");
-
             }
 
         } else if (this.gameId != null) {                                       // If a game id is provided
@@ -99,11 +97,11 @@ public class EditorGameController extends AbstractGameController {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
                         userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game
 
-            } catch (NoResultException e) {                                     // If we still have nothing
+            } catch (WegasNotFoundException | WegasNoResultException e) {                                     // If we still have nothing
                 try {
                     currentPlayer = playerFacade.findByGameId(this.gameId);     // Select any player in that game
 
-                } catch (NoResultException e2) {
+                } catch (WegasNoResultException e2) {
                     Game g = gameFacade.find(this.gameId);
                     if (g != null) {
                         errorController.dispatch("Game " + g.getName() + " has no players.");

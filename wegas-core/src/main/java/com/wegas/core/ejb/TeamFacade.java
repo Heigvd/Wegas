@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
@@ -58,19 +59,15 @@ public class TeamFacade extends BaseFacade<Team> {
      * @param name
      * @return
      */
-    private Team findByName(Long gameModelId, String name) {
-        /*final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<Team> game = cq.from(Team.class);
-        cq.where(cb.and(cb.equal(game.get(Team_.gameId), gameModelId), cb.equal(game.get(Team_.name), name)));
-        Query q = em.createQuery(cq);
-        return (Team) q.getSingleResult();*/
-
-
+    private Team findByName(Long gameModelId, String name) throws WegasNoResultException {
         final TypedQuery<Team> query = getEntityManager().createNamedQuery("Team.findByGameIdAndName", Team.class);
         query.setParameter("gameId", gameModelId);
         query.setParameter("name", name);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
@@ -90,7 +87,7 @@ public class TeamFacade extends BaseFacade<Team> {
         try {
             this.findByName(gameId, t.getName());                               // If the provided name is already in use,
             t.setName(null);                                                    // reset so it will be generated
-        } catch (NoResultException e) {
+        } catch (WegasNoResultException e) {
             // Gotcha
         }
 
@@ -101,7 +98,7 @@ public class TeamFacade extends BaseFacade<Team> {
             try {
                 this.findByName(gameId, name);
                 suffix++;
-            } catch (NoResultException e) {
+            } catch (WegasNoResultException e) {
                 t.setName(name);
             }
         }

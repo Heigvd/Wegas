@@ -17,6 +17,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.external.WegasErrorMessage;
 
 /**
  *
@@ -70,9 +71,13 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
 
     @Override
     public void merge(AbstractEntity a) {
-        StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
-        this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
-        super.merge(smDescriptor);
+        if (a instanceof StateMachineDescriptor) {
+            StateMachineDescriptor smDescriptor = (StateMachineDescriptor) a;
+            this.mergeStates((HashMap<Long, State>) smDescriptor.getStates());
+            super.merge(smDescriptor);
+        } else {
+            throw WegasErrorMessage.error("Incompatible type");
+        }
     }
 
     /*

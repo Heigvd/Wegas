@@ -7,13 +7,9 @@
  */
 package com.wegas.core.rest.exception;
 
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.exception.ConstraintViolationException;
-import com.wegas.core.exception.PersistenceException;
-import com.wegas.core.exception.WegasException;
-import java.sql.SQLException;
 import javax.ejb.EJBException;
 import javax.enterprise.event.ObserverException;
+import javax.persistence.PersistenceException;
 import javax.transaction.RollbackException;
 import javax.transaction.TransactionRolledbackException;
 import javax.ws.rs.core.Response;
@@ -35,6 +31,7 @@ public abstract class AbstractExceptionMapper {
      * @return
      */
     public static Response processException(Throwable exception) {
+        logger.warn("ProcessException: " + exception);
 
         if (exception instanceof RollbackException
                 || exception instanceof TransactionRolledbackException
@@ -50,33 +47,17 @@ public abstract class AbstractExceptionMapper {
         } else if (exception instanceof DatabaseException) {
             DatabaseException dbe = (DatabaseException) exception;
             return processException(dbe.getInternalException());
-
-        } else if (exception instanceof javax.script.ScriptException) {
-            javax.script.ScriptException scriptException = (javax.script.ScriptException) exception;
+        } else {
             logger.error(exception.getLocalizedMessage());
-
-            if (scriptException.getCause() instanceof ConstraintViolationException) {
-                return processException(scriptException.getCause());
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST).
-                        entity(new ExceptionWrapper("400", scriptException.getClass(), scriptException.getLocalizedMessage())).
-                        build();
-            }
-
-        } else if (exception instanceof SQLException) {
-            SQLException sqlException = (SQLException) exception;
+            return Response.status(Response.Status.BAD_REQUEST).entity(exception).build();
+        }
+        /*} else if (exception instanceof WegasRuntimeException){
             logger.error(exception.getLocalizedMessage());
             return Response.status(Response.Status.BAD_REQUEST).
-                    entity(new ExceptionWrapper("400", sqlException.getClass(), sqlException.getLocalizedMessage())).build();
-
-        } else if (exception instanceof WegasException) {
-            WegasException wegasException = (WegasException) exception;
-            logger.error(exception.getLocalizedMessage());
-            return Response.status(Response.Status.BAD_REQUEST).
-                    entity(new ExceptionWrapper("400", wegasException.getClass(), wegasException.getLocalizedMessage())).build();
-
-        } else if (exception instanceof javax.validation.ConstraintViolationException) {
-            javax.validation.ConstraintViolationException constraintViolationException = (javax.validation.ConstraintViolationException) exception;
+                    //entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
+                    entity(exception).build();
+        } else if (exception instanceof ConstraintViolationException) {
+            ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception;
 
             StringBuilder sb = new StringBuilder(
                     RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint")); //internationalised error (sample)
@@ -87,12 +68,12 @@ public abstract class AbstractExceptionMapper {
             // constraintViolationException.getMessage()
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
-
+                    //entity(exception).build();
         } else {
             logger.error(RequestFacade.lookup().
                     getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
             return Response.status(Response.Status.BAD_REQUEST).
                     entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
-        }
+        }*/
     }
 }

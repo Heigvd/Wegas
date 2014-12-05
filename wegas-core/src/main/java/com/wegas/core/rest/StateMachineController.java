@@ -8,7 +8,7 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.*;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.statemachine.State;
 import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
@@ -22,7 +22,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-import javax.script.ScriptException;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -63,8 +62,6 @@ public class StateMachineController {
      * @param stateMachineDescriptorId
      * @param transitionId
      * @return StateMachineInstance
-     * @throws ScriptException
-     * @throws WegasException
      */
     @GET
     @Path("{stateMachineDescriptorId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/Do/{transitionId : [1-9][0-9]*}")
@@ -73,40 +70,39 @@ public class StateMachineController {
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("playerId") Long playerId,
             @PathParam("stateMachineDescriptorId") Long stateMachineDescriptorId,
-            @PathParam("transitionId") Long transitionId)
-            throws ScriptException, WegasException {
+            @PathParam("transitionId") Long transitionId) throws WegasScriptException {
 
-        checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
+            checkPermissions(playerFacade.find(playerId).getGame().getId(), playerId);
 
-        StateMachineDescriptor stateMachineDescriptor
-                = (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
-        StateMachineInstance stateMachineInstance = stateMachineDescriptor.getInstance(playerFacade.find(playerId));
-        State currentState = stateMachineInstance.getCurrentState();
-        List<Transition> transitions = currentState.getTransitions();
-        Boolean valid = true;
-        List<Script> impacts = new ArrayList<>();
-        for (Transition transition : transitions) {
-            if (transition instanceof DialogueTransition && transition.getId().equals(transitionId)) {
-                if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
-                    valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition());
-                }
-                if (valid) {
-                    if (transition.getPreStateImpact() != null) {
-                        impacts.add(transition.getPreStateImpact());
+            StateMachineDescriptor stateMachineDescriptor
+                    = (StateMachineDescriptor) variableDescriptorFacade.find(stateMachineDescriptorId);
+            StateMachineInstance stateMachineInstance = stateMachineDescriptor.getInstance(playerFacade.find(playerId));
+            State currentState = stateMachineInstance.getCurrentState();
+            List<Transition> transitions = currentState.getTransitions();
+            Boolean valid = true;
+            List<Script> impacts = new ArrayList<>();
+            for (Transition transition : transitions) {
+                if (transition instanceof DialogueTransition && transition.getId().equals(transitionId)) {
+                    if (transition.getTriggerCondition() != null && !transition.getTriggerCondition().getContent().equals("")) {
+                        valid = (Boolean) scriptManager.eval(playerId, transition.getTriggerCondition());
                     }
-                    stateMachineInstance.setCurrentStateId(transition.getNextStateId());
-                    stateMachineInstance.transitionHistoryAdd(transitionId);
-                    requestManager.addUpdatedInstance(stateMachineInstance); /* Force in case next state == current state */
+                    if (valid) {
+                        if (transition.getPreStateImpact() != null) {
+                            impacts.add(transition.getPreStateImpact());
+                        }
+                        stateMachineInstance.setCurrentStateId(transition.getNextStateId());
+                        stateMachineInstance.transitionHistoryAdd(transitionId);
+                        requestManager.addUpdatedInstance(stateMachineInstance); /* Force in case next state == current state */
 
-                    if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
-                        impacts.add(stateMachineInstance.getCurrentState().getOnEnterEvent());
+                        if (stateMachineInstance.getCurrentState().getOnEnterEvent() != null) {
+                            impacts.add(stateMachineInstance.getCurrentState().getOnEnterEvent());
+                        }
+                        scriptManager.eval(playerFacade.find(playerId), impacts);
                     }
-                    scriptManager.eval(playerFacade.find(playerId), impacts);
+                    break;
                 }
-                break;
             }
-        }
-        return (StateMachineInstance) variableInstanceFacade.update(stateMachineInstance.getId(), stateMachineInstance);
+            return (StateMachineInstance) variableInstanceFacade.update(stateMachineInstance.getId(), stateMachineInstance);
     }
 
     private void checkPermissions(Long gameId, Long playerId) throws UnauthorizedException {

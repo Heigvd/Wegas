@@ -10,7 +10,7 @@ package com.wegas.core.persistence.variable;
 import com.wegas.core.persistence.AbstractEntity;
 
 /**
- *
+ * @deprecated 
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class EntityUpdateEvent {

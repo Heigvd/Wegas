@@ -11,7 +11,7 @@ import com.wegas.core.persistence.game.Player;
 import com.wegas.messaging.persistence.Message;
 
 /**
- *
+ * @deprecated
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class MessageEvent {

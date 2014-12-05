@@ -10,8 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.exception.ScriptException;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
@@ -61,25 +60,17 @@ public class ScriptController {
      * @param playerId
      * @param script
      * @return p
-     * @throws ScriptException
-     * @throws WegasException
      */
     @POST
     @Path("Run/{playerId : [1-9][0-9]*}")
     public Object run(@PathParam("gameModelId") Long gameModelId,
-            @PathParam("playerId") Long playerId, Script script)
-            throws ScriptException, WegasException {
+            @PathParam("playerId") Long playerId, Script script) {
 
         if (SecurityUtils.getSubject().isPermitted("GameModel:Edit:gm" + gameModelId)
                 || userFacade.matchCurrentUser(playerId)) {
-            try {
-                Object r = scriptManager.eval(playerId, script);
-                requestFacade.commit();
-                return r;
-            } catch (ScriptException e) {                                       // Try catch since script exception does not rollback
-                //throw new WegasException("Error running script", e);
-                throw new WegasException(e.getMessage(), e);
-            }
+            Object r = scriptManager.eval(playerId, script);
+            requestFacade.commit();
+            return r;
         } else {
             throw new UnauthorizedException();
         }
@@ -89,14 +80,11 @@ public class ScriptController {
      * @param gameModelId
      * @param multiplayerScripts
      * @return
-     * @throws ScriptException
-     * @throws WegasException
      */
     @POST
     @Path("Multirun")
     public List<Object> multirun(@PathParam("gameModelId") Long gameModelId,
-            HashMap<String, Object> multiplayerScripts)
-            throws ScriptException, WegasException {
+            HashMap<String, Object> multiplayerScripts) throws WegasScriptException {
 
         Script script = new Script();
         ArrayList<Integer> playerIdList = (ArrayList<Integer>) multiplayerScripts.get("playerIdList");

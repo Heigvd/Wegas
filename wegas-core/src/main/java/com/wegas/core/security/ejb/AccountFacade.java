@@ -8,7 +8,8 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -80,9 +81,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             try {
                 AbstractAccount a = this.findByUsername(account.getUsername());
                 if (!a.getId().equals(account.getId())) {                       // and we can find an account with the username which is not the one we are editing,
-                    throw new WegasException("This username is already in use");// throw an exception
+                    throw WegasErrorMessage.error("This username is already in use");// throw an exception
                 }
-            } catch (NoResultException e) {
+            } catch (WegasNoResultException e) {
                 // GOTCHA no username could be found, do not use
             }
         }
@@ -119,39 +120,32 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      *
      * @param username
      * @return
-     * @throws NoResultException
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public AbstractAccount findByUsername(String username) throws NoResultException {
-        /*CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
-        Root<AbstractAccount> account = cq.from(AbstractAccount.class);
-        cq.where(cb.equal(account.get(AbstractAccount_.username), username));
-        Query q = em.createQuery(cq);
-        return (AbstractAccount) q.getSingleResult();*/
-
-
+    public AbstractAccount findByUsername(String username) throws WegasNoResultException {
         final TypedQuery<AbstractAccount> query = getEntityManager().createNamedQuery("AbstractAccount.findByUsername", AbstractAccount.class);
         query.setParameter("username", username);
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
      *
      * @param email
      * @return
-     * @throws NoResultException
+     * @throws WegasNoResultException
      */
-    public JpaAccount findByEmail(String email) throws NoResultException {
-        /*CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery cq = cb.createQuery();
-        Root<JpaAccount> account = cq.from(JpaAccount.class);
-        cq.where(cb.equal(account.get(JpaAccount_.email), email));
-        Query q = em.createQuery(cq);
-        return (JpaAccount) q.getSingleResult();*/
-
-        final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JPAAccount.findByEmail", JpaAccount.class);
-        query.setParameter("email", email);
-        return query.getSingleResult();
+    public JpaAccount findByEmail(String email) throws WegasNoResultException {
+        try {
+            final TypedQuery<JpaAccount> query = getEntityManager().createNamedQuery("JPAAccount.findByEmail", JpaAccount.class);
+            query.setParameter("email", email);
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
@@ -159,9 +153,8 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      * @param name
      * @param withEmail
      * @return
-     * @throws NoResultException
      */
-    public List<JpaAccount> findByNameOrEmail(String name, boolean withEmail) throws NoResultException {
+    public List<JpaAccount> findByNameOrEmail(String name, boolean withEmail) {
         ArrayList<JpaAccount> accounts = new ArrayList();
         String splidedName[] = name.split(" ");
         for (int i = 0; i < splidedName.length; i++) {
@@ -205,7 +198,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         //CriteriaBuilder cb = em.getCriteriaBuilder();
         //CriteriaQuery cq = cb.createQuery();
         //Root<JpaAccount> account = cq.from(JpaAccount.class);
-
         switch (type) {
             case "name":
                 query = getEntityManager().createNamedQuery("JpaAccount.findByFullName", JpaAccount.class);

@@ -7,6 +7,7 @@
  */
 package com.wegas.core.event.client;
 
+import com.wegas.core.exception.external.WegasRuntimeException;
 import java.util.List;
 
 /**
@@ -14,8 +15,9 @@ import java.util.List;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class ExceptionEvent extends ClientEvent {
-private static final long serialVersionUID = 1L;
-    private List<Exception> exceptions;
+
+    private static final long serialVersionUID = 1L;
+    private List<WegasRuntimeException> exceptions;
 
     /**
      *
@@ -27,7 +29,7 @@ private static final long serialVersionUID = 1L;
      *
      * @param exceptions
      */
-    public ExceptionEvent(List<Exception> exceptions) {
+    public ExceptionEvent(List<WegasRuntimeException> exceptions) {
         this.exceptions = exceptions;
     }
 
@@ -35,7 +37,7 @@ private static final long serialVersionUID = 1L;
      *
      * @return
      */
-    public List<Exception> getExceptions() {
+    public List<WegasRuntimeException> getExceptions() {
         return exceptions;
     }
 
@@ -43,7 +45,7 @@ private static final long serialVersionUID = 1L;
      *
      * @param exceptions
      */
-    public void setExceptions(List<Exception> exceptions) {
+    public void setExceptions(List<WegasRuntimeException> exceptions) {
         this.exceptions = exceptions;
     }
 }

@@ -11,9 +11,8 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.event.client.WarningEvent;
-import com.wegas.core.exception.NoResultException;
-import com.wegas.core.exception.PersistenceException;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.AccountFacade;
@@ -24,7 +23,6 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -144,6 +142,8 @@ public class UserController {
     }
 
     /**
+     * Return accounts that match given "value" and are not yet member of the
+     * given game
      *
      * @param value
      * @param gameId
@@ -162,7 +162,7 @@ public class UserController {
                 if (ja.getUser() == p.getUser()) {
                     accounts.remove(i);
                 }
-            } catch (PersistenceException e) {
+            } catch (WegasNoResultException e) {
                 //Gotcha
             }
         }
@@ -215,7 +215,7 @@ public class UserController {
                 }
                 account.put("value", a.getId());
                 returnValue.add(account);
-            } catch (PersistenceException e2) {
+            } catch (WegasNoResultException e2) {
                 notValidValue.add(value);
             }
         }
@@ -334,11 +334,16 @@ public class UserController {
         try {
             subject.login(token);                                               // try to log in.
         } catch (AuthenticationException aex) {
-            if (checkGameAccountKeylogin(email, password)) {                    //Login failed, maybe create a GameAccount or fail
-                gameFacade.findGameAccountKey(email);
-                subject.login(token);
+            if (checkGameAccountKeylogin(email, password)) {
+                try {
+                    //Login failed, maybe create a GameAccount or fail
+                    gameFacade.findGameAccountKey(email);
+                    subject.login(token);
+                } catch (WegasNoResultException ex) {
+                    throw WegasErrorMessage.error("Email/password combination not found");
+                }
             } else {
-                throw new WegasException("Email/password combination not found");
+                throw WegasErrorMessage.error("Email/password combination not found");
             }
         }
     }
@@ -359,7 +364,11 @@ public class UserController {
     @Path("TeacherGuestLogin")
     public void teacherGuestLogin() {
         User user = userFacade.guestLogin();
-        user.getMainAccount().addRole(roleFacade.findByName("Scenarist"));
+        try {
+            user.getMainAccount().addRole(roleFacade.findByName("Scenarist"));
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("Teacher mode is not available");
+        }
     }
 
     /**
@@ -395,11 +404,10 @@ public class UserController {
      * Create a user based with a JpAAccount
      *
      * @param account
-     * @throws SQLException
      */
     @POST
     @Path("Signup")
-    public void signup(JpaAccount account) throws SQLException {
+    public void signup(JpaAccount account) {
         User user = new User(account);                                          // Add the user to db
         userFacade.create(user);
     }
@@ -411,7 +419,6 @@ public class UserController {
      * @param firstname
      * @param lastname
      * @param email
-     * @throws SQLException
      */
     @POST
     @Path("Signup")
@@ -420,7 +427,7 @@ public class UserController {
             @FormParam("password") String password,
             @FormParam("firstname") String firstname,
             @FormParam("lastname") String lastname,
-            @FormParam("email") String email) throws SQLException {
+            @FormParam("email") String email) {
         JpaAccount account = new JpaAccount();                                   // Convert post params to entity
         account.setUsername(username);
         account.setPassword(password);
@@ -502,7 +509,11 @@ public class UserController {
     @POST
     @Path("AddPermission/{roleName}/{permission}")
     public boolean addPermissionsByInstance(@PathParam(value = "roleName") String roleName, @PathParam(value = "permission") String permission) {
-        return this.addPermissionsByInstance(roleFacade.findByName(roleName).getId(), permission);
+        try {
+            return this.addPermissionsByInstance(roleFacade.findByName(roleName).getId(), permission);
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
+        }
     }
 
     /**
@@ -532,7 +543,11 @@ public class UserController {
     @Path("DeleteAllRolePermissions/{roleName}/{gameModelId}")
     public boolean deleteAllRolePermissions(@PathParam("roleName") String roleName,
             @PathParam("gameModelId") String id) {
-        return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
+        try {
+            return this.deleteAllRolePermissions(roleFacade.findByName(roleName).getId(), id);
+        } catch (WegasNoResultException ex) {
+            throw WegasErrorMessage.error("Role \"" + roleName + "\" does not exists");
+        }
     }
 
     /**
@@ -623,7 +638,7 @@ public class UserController {
                 gameAccount.setLastname("Account");
                 gameAccountKey.setUsed(Boolean.TRUE);
                 this.signup(gameAccount);
-            } catch (SQLException | NoResultException ex) {
+            } catch (WegasNoResultException ex) {
                 return false;
             }
             return true;

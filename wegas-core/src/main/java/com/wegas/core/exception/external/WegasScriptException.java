@@ -5,26 +5,13 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.exception;
-
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.fasterxml.jackson.annotation.JsonTypeName;
-import javax.ejb.ApplicationException;
-//import javax.xml.bind.annotation.XmlRootElement;
-//import javax.xml.bind.annotation.XmlType;
+package com.wegas.core.exception.external;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-@ApplicationException(rollback = false)
-//@XmlRootElement
-@JsonIgnoreProperties({"cause", "stackTrace", "suppressed"})
-//@XmlType(name = "WegasScriptException")
-@JsonTypeName(value = "WegasScriptException")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
-public class ScriptException extends WegasException {
+public class WegasScriptException extends WegasRuntimeException {
 
     private String script;
     private Integer lineNumber;
@@ -32,14 +19,14 @@ public class ScriptException extends WegasException {
     /**
      *
      */
-    public ScriptException() {
+    public WegasScriptException() {
     }
 
     /**
      *
      * @param message
      */
-    public ScriptException(String message) {
+    public WegasScriptException(String message) {
         super(message);
     }
 
@@ -48,7 +35,7 @@ public class ScriptException extends WegasException {
      * @param script
      * @param lineNumber
      */
-    public ScriptException(String script, Integer lineNumber) {
+    public WegasScriptException(String script, Integer lineNumber) {
         this.script = script;
         this.lineNumber = lineNumber;
     }
@@ -59,7 +46,7 @@ public class ScriptException extends WegasException {
      * @param lineNumber
      * @param message
      */
-    public ScriptException(String script, Integer lineNumber, String message) {
+    public WegasScriptException(String script, Integer lineNumber, String message) {
         super(message);
         this.script = script;
         this.lineNumber = lineNumber;
@@ -72,7 +59,7 @@ public class ScriptException extends WegasException {
      * @param message
      * @param cause
      */
-    public ScriptException(String script, Integer lineNumber, String message, Throwable cause) {
+    public WegasScriptException(String script, Integer lineNumber, String message, Throwable cause) {
         super(message, cause);
         this.script = script;
         this.lineNumber = lineNumber;
@@ -83,7 +70,7 @@ public class ScriptException extends WegasException {
      * @param message
      * @param cause
      */
-    public ScriptException(String message, Throwable cause) {
+    public WegasScriptException(String message, Throwable cause) {
         super(message, cause);
     }
 
@@ -92,7 +79,7 @@ public class ScriptException extends WegasException {
      * @param script
      * @param message
      */
-    public ScriptException(String script, String message) {
+    public WegasScriptException(String script, String message) {
         super(message);
         this.script = script;
     }
@@ -103,7 +90,7 @@ public class ScriptException extends WegasException {
      * @param message
      * @param cause
      */
-    public ScriptException(String script, String message, Throwable cause) {
+    public WegasScriptException(String script, String message, Throwable cause) {
         super(message, cause);
         this.script = script;
     }

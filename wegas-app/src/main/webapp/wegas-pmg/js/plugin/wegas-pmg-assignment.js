@@ -62,8 +62,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                             updateEvent: false
                         },
                         on: {
-                            success: Y.bind(this.syncHost, this),
-                            failure: Y.bind(this.defaultFailureHandler, this)
+                            success: Y.bind(this.syncHost, this)
                         }
                     });
                     //this.destroySortables();
@@ -225,8 +224,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                         updateEvent: false
                     },
                     on: {
-                        success: Y.bind(this.syncHost, this),
-                        failure: Y.bind(this.defaultFailureHandler, this)
+                        success: Y.bind(this.syncHost, this)
                     }
                 });
             }, this));

@@ -7,7 +7,6 @@
  */
 package com.wegas.unit.pmg;
 
-import javax.script.ScriptException;
 import org.junit.Test;
 
 /**
@@ -17,7 +16,7 @@ import org.junit.Test;
 public class LanguageTest extends PMGameAbstractTest {
 
     @Test
-    public void testLanguage() throws ScriptException {
+    public void testLanguage() {
         this.evalScript("testLanguage()");
     }
 

@@ -9,6 +9,7 @@ package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.*;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
@@ -26,7 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import javax.naming.NamingException;
-import javax.script.ScriptException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -42,6 +42,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
 
     /**
      * Test of entityUpdateListener method, of class StateMachineFacade.
+     * @throws javax.naming.NamingException
      */
     @Test
     public void testTrigger() throws NamingException {
@@ -196,7 +197,7 @@ public class StateMachineFacadeTest extends AbstractEJBTest {
     }
 
     @Test
-    public void testEventTransition() throws NamingException, ScriptException {
+    public void testEventTransition() throws NamingException, WegasScriptException {
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
         final VariableInstanceFacade vif = lookupBy(VariableInstanceFacade.class);
         final GameModelFacade gmf = lookupBy(GameModelFacade.class);

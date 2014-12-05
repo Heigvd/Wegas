@@ -17,6 +17,7 @@ import javax.inject.Inject;
 
 /**
  *
+ * @deprecated  ??? 
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless

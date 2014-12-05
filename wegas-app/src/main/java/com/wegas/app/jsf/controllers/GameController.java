@@ -8,7 +8,8 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.UserFacade;
 import java.io.IOException;
 import javax.annotation.PostConstruct;
@@ -68,7 +69,7 @@ public class GameController extends AbstractGameController {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
                         userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game
 
-            } catch (NoResultException e) {                                     // If we still have nothing
+            } catch (WegasNoResultException | WegasNotFoundException e) {                                     // If we still have nothing
                 errorController.dispatch("You are not registered to this game.");
                 return;
             }
@@ -79,9 +80,8 @@ public class GameController extends AbstractGameController {
         } else if (!userFacade.matchCurrentUser(currentPlayer.getId())
                 && !SecurityUtils.getSubject().isPermitted("Game:View:g" + currentPlayer.getGame().getId())) {
             try {
-                externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
+                        externalContext.dispatch("/wegas-app/jsf/error/accessdenied.xhtml");
             } catch (IOException ex) {
-
             }
         }
     }
@@ -99,4 +99,4 @@ public class GameController extends AbstractGameController {
     public void setGameId(Long gameId) {
         this.gameId = gameId;
     }
-    }
+}

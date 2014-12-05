@@ -621,3 +621,15 @@ if (centerTab) {
     });
 }
 
+
+/*
+ *  Custom Error definition
+ */
+Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
+    if (e.variableDescriptor.get("name") === "timeCards"){
+        var node = Y.Widget.getByNode("#centerTabView").get("selection");
+        node.showMessage("warn", "You don't have enough time");
+        e.halt();
+    }
+});
+

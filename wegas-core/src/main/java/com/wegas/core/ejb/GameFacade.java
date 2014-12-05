@@ -8,8 +8,8 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.PlayerAction;
-import com.wegas.core.exception.PersistenceException;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -115,13 +115,14 @@ public class GameFacade extends BaseFacade<Game> {
      * @param game
      */
     public void create(final GameModel gameModel, final Game game) {
+        final User currentUser = userFacade.getCurrentUser();
+
         if (game.getToken() == null) {
             game.setToken(this.createUniqueEnrolmentkey(game));
         } else if (this.findByToken(game.getToken()) != null) {
-            throw new WegasException("This token is already in use.");
+            throw WegasErrorMessage.error("This token is already in use.");
         }
 
-        final User currentUser = userFacade.getCurrentUser();
         game.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
         gameModel.addGame(game);
         gameModelFacade.reset(gameModel);                                       // Reset the game so the default player will have instances
@@ -133,7 +134,7 @@ public class GameFacade extends BaseFacade<Game> {
 
         try {                                                                   // By default games can be join w/ token
             roleFacade.findByName("Public").addPermission("Game:Token:g" + game.getId());
-        } catch (PersistenceException ex) {
+        } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
         }
     }
@@ -196,13 +197,13 @@ public class GameFacade extends BaseFacade<Game> {
     public Game update(final Long entityId, final Game entity) {
         String token = entity.getToken().toLowerCase().replace(" ", "-");
         if (token.length() == 0) {
-            throw new WegasException("Key cannot be empty");
+            throw WegasErrorMessage.error("Key cannot be empty");
         }
         String[] splitedToken = entity.getToken().split("-");
         if (!token.endsWith("-")) {
             try {
                 Long.parseLong(splitedToken[splitedToken.length - 1]);
-                throw new WegasException("You can't have a trait followed by a number (example: xx-12)");
+                throw WegasErrorMessage.error("You can't have a dash followed by a number (example: xx-12)");
             } catch (NumberFormatException e) {
                 //Gotcha
             }
@@ -211,7 +212,7 @@ public class GameFacade extends BaseFacade<Game> {
         if ((this.findByToken(entity.getToken()) != null
                 && !this.findByToken(entity.getToken()).getId().equals(entity.getId()))) {
             //|| teamFacade.findByToken(entity.getToken()) != null) {
-            throw new WegasException("This token is already in use.");
+            throw WegasErrorMessage.error("This token is already in use.");
         }
         return super.update(entityId, entity);
     }
@@ -254,28 +255,38 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param key
      * @return
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public GameEnrolmentKey findGameEnrolmentKey(final String key) {
+    public GameEnrolmentKey findGameEnrolmentKey(final String key) throws WegasNoResultException {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameEnrolmentKey> game = cq.from(GameEnrolmentKey.class);
         cq.where(cb.equal(game.get(GameEnrolmentKey_.key), key));
         Query q = em.createQuery(cq);
-        return (GameEnrolmentKey) q.getSingleResult();
+        try {
+            return (GameEnrolmentKey) q.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
      *
      * @param key
      * @return
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public GameAccountKey findGameAccountKey(String key) {
+    public GameAccountKey findGameAccountKey(String key) throws WegasNoResultException {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
         cq.where(cb.equal(gameAccount.get(GameAccountKey_.key), key));
         Query q = em.createQuery(cq);
-        return (GameAccountKey) q.getSingleResult();
+        try {
+            return (GameAccountKey) q.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
     }
 
     /**
@@ -371,13 +382,18 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public Collection<Game> findPublicGamesByRole(String roleName) {
-        Role role = roleFacade.findByName(roleName);
         Collection<Game> games = new ArrayList<>();
-        for (Permission permission : role.getPermissions()) {
-            if (permission.getValue().startsWith("Game:View")) {
-                Long gameId = Long.parseLong(permission.getValue().split(":g")[1]);
-                games.add(this.find(gameId));
+        try {
+            Role role;
+            role = roleFacade.findByName(roleName);
+            for (Permission permission : role.getPermissions()) {
+                if (permission.getValue().startsWith("Game:View")) {
+                    Long gameId = Long.parseLong(permission.getValue().split(":g")[1]);
+                    games.add(this.find(gameId));
+                }
             }
+        } catch (WegasNoResultException ex) {
+            logger.error("FindPublicGamesByRole: " + roleName + " role not found");
         }
         return games;
     }

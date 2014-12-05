@@ -127,8 +127,7 @@ YUI.add('wegas-shareuser', function(Y) {
                         });
                         callback(result);
 
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },
@@ -208,8 +207,7 @@ YUI.add('wegas-shareuser', function(Y) {
                         }, this);
                         notAddedAccounts = Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
                         this.notAddedToUserlist(notAddedAccounts);
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },
@@ -232,8 +230,7 @@ YUI.add('wegas-shareuser', function(Y) {
                         }, this);
                         notAddedAccounts = Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
                         this.notAddedToUserlist(notAddedAccounts);
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },
@@ -304,8 +301,7 @@ YUI.add('wegas-shareuser', function(Y) {
 
                         }, this);
                         this.hideUsersWithoutVisiblePermission();
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },

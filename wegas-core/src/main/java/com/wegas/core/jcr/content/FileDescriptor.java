@@ -7,7 +7,6 @@
  */
 package com.wegas.core.jcr.content;
 
-import com.wegas.core.exception.WegasException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,6 +18,7 @@ import javax.jcr.RepositoryException;
 ////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.wegas.core.exception.external.WegasErrorMessage;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -101,12 +101,12 @@ public class FileDescriptor extends AbstractContentDescriptor {
             this.bytes = connector.getBytesSize(fileSystemAbsolutePath);
             if (WFSConfig.MAX_FILE_SIZE < this.bytes) {
                 this.delete(true);
-                throw new WegasException(this.getName() + "[" + ContentConnector.bytesToHumanReadable(this.bytes) + "] file max size exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
+                throw WegasErrorMessage.error(this.getName() + "[" + ContentConnector.bytesToHumanReadable(this.bytes) + "] file max size exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
             }
             Long totalSize = ((DirectoryDescriptor) DescriptorFactory.getDescriptor("/", connector)).getBytes();
             if (totalSize > WFSConfig.MAX_REPO_SIZE) {
                 this.delete(true);
-                throw new WegasException("Total size[" + ContentConnector.bytesToHumanReadable(totalSize) + "] exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
+                throw WegasErrorMessage.error("Total size[" + ContentConnector.bytesToHumanReadable(totalSize) + "] exceeded. Max " + ContentConnector.bytesToHumanReadable(WFSConfig.MAX_FILE_SIZE));
             }
             this.dataLastModified = connector.getLastModified(fileSystemAbsolutePath);
             this.mimeType = mimeType;

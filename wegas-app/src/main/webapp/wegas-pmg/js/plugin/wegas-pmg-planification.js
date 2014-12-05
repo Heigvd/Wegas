@@ -66,9 +66,6 @@ YUI.add('wegas-pmg-planification', function(Y) {
                 cfg: {
                     method: method,
                     updateEvent: false
-                },
-                on: {
-                    failure: Y.bind(this.defaultFailureHandler, this)
                 }
             });
         }

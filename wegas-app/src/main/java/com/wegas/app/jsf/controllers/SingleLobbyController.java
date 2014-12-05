@@ -9,7 +9,7 @@ package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import java.io.IOException;
@@ -74,7 +74,7 @@ public class SingleLobbyController implements Serializable {
                         externalContext.dispatch("game-play.xhtml?gameId=" + currentGame.getId());// display game page
                     } catch (IOException ex) {
                     }
-                } catch (PersistenceException e) {
+                } catch (WegasNoResultException e) {
                     // Nothing to do. stay on current page so player will choose his team
                 }
 

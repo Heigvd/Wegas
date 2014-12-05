@@ -7,9 +7,9 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.NoGameException;
-import com.wegas.core.exception.NoPlayerException;
-import com.wegas.core.exception.NoTeamException;
+import com.wegas.core.exception.internal.NoGameException;
+import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.exception.internal.NoTeamException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;

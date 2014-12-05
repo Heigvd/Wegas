@@ -9,11 +9,14 @@ package com.wegas.app.pdf.controllers;
 
 import com.wegas.app.jsf.controllers.*;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.UserFacade;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -132,7 +135,7 @@ public class PrintController {
                 // Select any player in the first game of the game model -> Test Team
                 currentPlayer = playerFacade.findByGameModelId(gameModelId);
                 permissionToCheck = "GameModel:View:gm" + getGameModel().getId();
-            } catch (NoResultException e) {
+            } catch (WegasNoResultException ex) {
                 errorController.dispatch("Model " + gameModelId + " has no players.");
             }
         }
@@ -141,9 +144,13 @@ public class PrintController {
             // If no player could be found, we redirect to an error page
             errorController.dispatch("The game you are looking for could not be found.");
         } else {
-            if (!userFacade.matchCurrentUser(currentPlayer.getId())
-                    && !SecurityUtils.getSubject().isPermitted(permissionToCheck)) {
+            try {
+                if (!userFacade.matchCurrentUser(currentPlayer.getId())
+                        && !SecurityUtils.getSubject().isPermitted(permissionToCheck)) {
 
+                    errorController.accessDenied();
+                }
+            } catch (WegasNotFoundException ex) {
                 errorController.accessDenied();
             }
         }

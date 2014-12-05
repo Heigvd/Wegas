@@ -10,6 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
+import com.wegas.core.exception.external.WegasRuntimeException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -148,8 +149,8 @@ public class RequestManager {
      *
      * @param e
      */
-    public void addException(Exception e) {
-        ArrayList exceptions = new ArrayList();
+    public void addException(WegasRuntimeException e) {
+        ArrayList<WegasRuntimeException> exceptions = new ArrayList();
         exceptions.add(e);
         this.addEvent(new ExceptionEvent(exceptions));
     }

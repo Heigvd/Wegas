@@ -8,7 +8,7 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.NoResultException;
+import com.wegas.core.exception.external.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
@@ -26,6 +26,8 @@ import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
  *
@@ -34,6 +36,8 @@ import org.apache.shiro.SecurityUtils;
 @ManagedBean(name = "requestController")
 @RequestScoped
 public class RequestController implements Serializable {
+
+    Logger logger = LoggerFactory.getLogger(RequestController.class);
 
     /**
      *
@@ -78,7 +82,7 @@ public class RequestController implements Serializable {
                 }
 
             }
-        } catch (NoResultException ex) {// no user
+        } catch (WegasNotFoundException ex) {// no user
         }
     }
 
@@ -144,7 +148,7 @@ public class RequestController implements Serializable {
     public String getCurrentUserId() {
         try {
             return "" + this.getCurrentUser().getId();
-        } catch (NoResultException e) {
+        } catch (WegasNotFoundException e) {
             return "0";
         }
     }
@@ -155,10 +159,8 @@ public class RequestController implements Serializable {
      */
     public String getCurrentUserMail() {
         try {
-            return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
-        } catch (ClassCastException e) {
-            return "";
-        } catch (NoResultException e) {
+                return ((JpaAccount) this.getCurrentUser().getMainAccount()).getEmail();
+        } catch (ClassCastException | WegasNotFoundException e) {
             return "";
         }
     }
@@ -166,7 +168,7 @@ public class RequestController implements Serializable {
     public String getCurrentUserName() {
         try {
             return this.getCurrentUser().getName();
-        } catch (NoResultException e) {
+        } catch (WegasNotFoundException ex) {
             return "";
         }
     }
@@ -174,11 +176,11 @@ public class RequestController implements Serializable {
     public String getCurrentRoles() {
         String cssClass = "";
         try {
-            for (Role r : userFacade.getCurrentUser().getMainAccount().getRoles()) {
+            for (Role r : this.getCurrentUser().getMainAccount().getRoles()) {
                 cssClass += " wegas-role-" + r.getName();
             }
             return cssClass.toLowerCase();
-        } catch (NoResultException e) {
+        } catch (WegasNotFoundException e) {
             return ""; // Current user could not be found
         }
     }

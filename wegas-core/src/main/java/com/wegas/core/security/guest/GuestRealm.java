@@ -9,7 +9,7 @@ package com.wegas.core.security.guest;
 
 import com.wegas.core.security.jparealm.*;
 import com.wegas.core.Helper;
-import com.wegas.core.exception.PersistenceException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.persistence.Permission;
@@ -60,7 +60,7 @@ public class GuestRealm extends AuthorizingRealm {
             } catch (NamingException ex) {
                 logger.error("Unable to find RoleFacade EJB", ex);
                 return null;
-            } catch (PersistenceException ex) {
+            } catch (WegasNoResultException ex) {
                 role = null;
             }
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();

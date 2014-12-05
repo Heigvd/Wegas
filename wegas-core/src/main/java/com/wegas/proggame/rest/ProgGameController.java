@@ -8,11 +8,10 @@
 package com.wegas.proggame.rest;
 
 import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.script.ScriptException;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -38,14 +37,12 @@ public class ProgGameController {
      * @param playerId
      * @param script
      * @return
-     * @throws ScriptException
-     * @throws WegasException
      */
     @POST
     @Path("/Run/{playerId : [1-9][0-9]*}")
     @Produces(MediaType.APPLICATION_JSON)
     public Object run(
-            @PathParam("playerId") Long playerId, String script) throws ScriptException, WegasException {
+            @PathParam("playerId") Long playerId, String script) throws WegasScriptException {
 
         return scriptFacade.eval(playerId, new Script("JavaScript", script));
     }

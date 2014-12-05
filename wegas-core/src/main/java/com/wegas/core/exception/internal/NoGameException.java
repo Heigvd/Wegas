@@ -5,25 +5,25 @@
  * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-package com.wegas.core.exception;
+package com.wegas.core.exception.internal;
 
 /**
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
-public class WegasException extends RuntimeException {
+public class NoGameException extends WegasInternalException {
 
     /**
      *
      */
-    public WegasException() {
+    public NoGameException() {
     }
 
     /**
      *
      * @param message
      */
-    public WegasException(String message) {
+    public NoGameException(String message) {
         super(message);
     }
 
@@ -32,7 +32,7 @@ public class WegasException extends RuntimeException {
      * @param message
      * @param cause
      */
-    public WegasException(String message, Throwable cause) {
+    public NoGameException(String message, Throwable cause) {
         super(message, cause);
     }
 }

@@ -10,7 +10,8 @@ package com.wegas.core.rest;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.external.WegasRuntimeException;
 import com.wegas.core.jcr.content.*;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
 import java.io.BufferedInputStream;
@@ -79,7 +80,6 @@ public class FileController {
      * @param details
      * @return
      * @throws RepositoryException
-     * @throws WegasException
      */
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -91,7 +91,7 @@ public class FileController {
             @FormDataParam("description") String description,
             @PathParam("directory") String path,
             @FormDataParam("file") InputStream file,
-            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException, WegasException {
+            @FormDataParam("file") FormDataBodyPart details) throws RepositoryException {
             
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -109,7 +109,7 @@ public class FileController {
                 detachedFile = this.createFile(gameModelId, name, path, details.getMediaType().toString(),
                         note, description, file);
             }
-        } catch (final WegasException ex) {
+        } catch (final WegasRuntimeException ex) {
             Response.StatusType status = new Response.StatusType() {
                 @Override
                 public int getStatusCode() {
@@ -336,7 +336,6 @@ public class FileController {
      * @throws SAXException
      * @throws ParserConfigurationException
      * @throws TransformerException
-     * @throws WegasException
      */
     @POST
     @Path("importXML")
@@ -346,7 +345,7 @@ public class FileController {
             @FormDataParam("file") InputStream file,
             @FormDataParam("file") FormDataBodyPart details)
             throws RepositoryException, IOException, SAXException,
-            ParserConfigurationException, TransformerException, WegasException {
+            ParserConfigurationException, TransformerException {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -361,7 +360,7 @@ public class FileController {
                     connector.importXML(file);
                     break;
                 default:
-                    throw new WegasException("Uploaded file mimetype does not match requirements [XML or Gunzip], found:"
+                    throw WegasErrorMessage.error("Uploaded file mimetype does not match requirements [XML or Gunzip], found:"
                             + details.getMediaType().toString());
             }
             connector.save();
@@ -399,7 +398,7 @@ public class FileController {
                 try {
                     descriptor.delete(recursive);
                 } catch (ItemExistsException e) {
-                    throw new WegasException(absolutePath + " is not empty, preventing removal");
+                    throw WegasErrorMessage.error(absolutePath + " is not empty, preventing removal");
                 }
                 return descriptor;
             } else {
@@ -476,17 +475,16 @@ public class FileController {
      * @param file
      * @return
      * @throws RepositoryException
-     * @throws WegasException
      */
     public FileDescriptor createFile(Long gameModelId, String name, String path, String mediaType,
-            String note, String description, InputStream file) throws RepositoryException, WegasException {
+            String note, String description, InputStream file) throws RepositoryException {
 
         logger.debug("File name: {}", name);
 
         Pattern pattern = Pattern.compile(FILENAME_REGEXP);
         Matcher matcher = pattern.matcher(name);
         if (name.equals("") || !matcher.matches()) {
-            throw new WegasException(name + " is not a valid filename.");
+            throw WegasErrorMessage.error(name + " is not a valid filename.");
         }
         try (final ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId)) {
 
@@ -504,13 +502,13 @@ public class FileController {
                         return detachedFile;
                     } catch (IOException ex) {
                         logger.error("Error reading uploaded file :", ex);
-                        throw new WegasException("Error reading uploaded file");
+                        throw WegasErrorMessage.error("Error reading uploaded file");
                     }
                 } else {
-                    throw new WegasException(detachedFile.getPath() + name + " already exists");
+                    throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
                 }
             } else {
-                throw new WegasException("Parent directory " + path + " does not exist exists");
+                throw WegasErrorMessage.error("Parent directory " + path + " does not exist exists");
             }
         }
     }
@@ -531,7 +529,7 @@ public class FileController {
         Pattern pattern = Pattern.compile(FILENAME_REGEXP);
         Matcher matcher = pattern.matcher(name);
         if (name.equals("") || !matcher.matches()) {
-            throw new WegasException(name + " is not a valid filename.");
+            throw WegasErrorMessage.error(name + " is not a valid filename.");
         }
         ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModelId);
         AbstractContentDescriptor dir = DescriptorFactory.getDescriptor(path, connector);
@@ -545,10 +543,10 @@ public class FileController {
                 logger.info("Directory {} created at {}", detachedFile.getName(), detachedFile.getPath());
                 return detachedFile;
             } else {
-                throw new WegasException(detachedFile.getPath() + name + " already exists");
+                throw WegasErrorMessage.error(detachedFile.getPath() + name + " already exists");
             }
         } else {
-            throw new WegasException(path + " directory does not exist already exists");
+            throw WegasErrorMessage.error(path + " directory does not exist already exists");
         }
     }
 
@@ -582,7 +580,7 @@ public class FileController {
             fileDescriptor = DescriptorFactory.getDescriptor(path, connector);
         } catch (PathNotFoundException e) {
             logger.debug("Asked path does not exist: {}", e.getMessage());
-            throw new WegasException("Directory " + path + " doest not exist");
+            throw WegasErrorMessage.error("Directory " + path + " doest not exist");
         } catch (RepositoryException e) {
             logger.error("Need to check those errors", e);
         }

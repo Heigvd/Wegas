@@ -9,7 +9,7 @@ package com.wegas.mcq.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
@@ -18,7 +18,6 @@ import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.mcq.persistence.Reply;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.script.ScriptException;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -60,14 +59,13 @@ public class QuestionController {
      * @param playerId
      * @param choiceId
      * @return p
-     * @throws ScriptException
-     * @throws WegasException
+     * @throws com.wegas.core.exception.external.WegasScriptException
      */
     @POST
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public Response selectChoice(
             @PathParam("playerId") Long playerId,
-            @PathParam("choiceId") Long choiceId) throws ScriptException, WegasException {
+            @PathParam("choiceId") Long choiceId) throws WegasScriptException {
 
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
@@ -82,13 +80,12 @@ public class QuestionController {
      * @param playerId
      * @param replyId
      * @return
-     * @throws ScriptException
      */
     @GET
     @Path("/CancelReply/{replyId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")
     public QuestionInstance cancelReply(
             @PathParam("playerId") Long playerId,
-            @PathParam("replyId") Long replyId) throws ScriptException {
+            @PathParam("replyId") Long replyId) {
 
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 
@@ -103,14 +100,13 @@ public class QuestionController {
      * @param choiceId
      * @param startTime
      * @return p
-     * @throws WegasException
      */
     @GET
     @Path("/SelectChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}/StartTime/{startTime : [0-9]*}")
     public QuestionInstance selectChoice(
             @PathParam("playerId") Long playerId,
             @PathParam("choiceId") Long choiceId,
-            @PathParam("startTime") Long startTime) throws WegasException {
+            @PathParam("startTime") Long startTime) {
 
         checkPermissions(playerFacade.find(playerId).getGame(), playerId);
 

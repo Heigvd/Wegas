@@ -114,8 +114,7 @@ YUI.add('wegas-sharerole', function(Y) {
                             }
                         }, this);
                         this.hideOverlay();
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },

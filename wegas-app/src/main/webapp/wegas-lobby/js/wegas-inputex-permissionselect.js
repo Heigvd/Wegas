@@ -76,8 +76,7 @@ YUI.add("wegas-inputex-permissionselect", function(Y) {
                         });
                         this.permsField.on("updated", this.sync, this);
                         this.get(CONTENTBOX).one(".roleBox img").hide();        // Hide add role button
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },

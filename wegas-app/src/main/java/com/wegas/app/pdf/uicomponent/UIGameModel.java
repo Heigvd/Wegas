@@ -9,6 +9,7 @@ package com.wegas.app.pdf.uicomponent;
 
 import com.wegas.app.pdf.helper.UIHelper;
 import com.wegas.core.ejb.VariableDescriptorFacade;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.DescriptorListI;
@@ -23,6 +24,8 @@ import javax.faces.component.html.HtmlGraphicImage;
 import javax.faces.context.FacesContext;
 import javax.faces.context.ResponseWriter;
 import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -46,8 +49,6 @@ import org.apache.shiro.SecurityUtils;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
-
-
 /*
  * 
  * Faces 2.2 @FacesComponent(value="com.wegas.app.pdf.uicomponent.GameModel", 
@@ -56,10 +57,12 @@ import org.apache.shiro.SecurityUtils;
  * But still missing attributes definitions....
  */
 //@FacesComponent("com.wegas.app.pdf.uicomponent.GameModel")
-@FacesComponent(value = "com.wegas.app.pdf.uicomponent.GameModel", createTag=true, tagName="Gamemodel", namespace = "http://www.albasim.ch/wegas/pdf")
+@FacesComponent(value = "com.wegas.app.pdf.uicomponent.GameModel", createTag = true, tagName = "Gamemodel", namespace = "http://www.albasim.ch/wegas/pdf")
 
 public class UIGameModel extends UIComponentBase {
 
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+    
     private boolean editorMode;
     private boolean defaultValues;
 
@@ -106,13 +109,17 @@ public class UIGameModel extends UIComponentBase {
             vds = gm.getChildVariableDescriptors();
         } else {
             /*
-             * when root is specified, do not print headers and start printing 
+             * when root is specified, do not print headers and start printing
              * vardesc from root node
              */
             vds = new ArrayList<>();
-            VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
-            VariableDescriptor find = lookup.find(gm, root);
-            vds.add(find);
+            try {
+                VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
+                VariableDescriptor find = lookup.find(gm, root);
+                vds.add(find);
+            } catch (WegasNoResultException ex) {
+                logger.error("Variable not found", ex);
+            }
         }
 
         // links to subdirs
@@ -130,20 +137,24 @@ public class UIGameModel extends UIComponentBase {
         if (root == null || root.isEmpty()) {
             encodeGameModelHeader(context, writer, gm);
         } else {
-            VariableDescriptorFacade vdFacade = VariableDescriptorFacade.lookup();
-            VariableDescriptor current = vdFacade.find(gm, root);
-            DescriptorListI parent;
-            while ((parent = vdFacade.findParentList(current)) != null) {
-                if (parent instanceof GameModel) {
-                    break;
-                } else {
-                    current = (VariableDescriptor) parent;
-                    if (current.getTitle() == null) {
-                        path.add(current.getLabel());
+            try {
+                VariableDescriptorFacade vdFacade = VariableDescriptorFacade.lookup();
+                VariableDescriptor current = vdFacade.find(gm, root);
+                DescriptorListI parent;
+                while ((parent = vdFacade.findParentList(current)) != null) {
+                    if (parent instanceof GameModel) {
+                        break;
                     } else {
-                        path.add(current.getTitle());
+                        current = (VariableDescriptor) parent;
+                        if (current.getTitle() == null) {
+                            path.add(current.getLabel());
+                        } else {
+                            path.add(current.getTitle());
+                        }
                     }
                 }
+            } catch (WegasNoResultException ex) {
+                logger.warn("Variable Not Found: " + ex);
             }
         }
 

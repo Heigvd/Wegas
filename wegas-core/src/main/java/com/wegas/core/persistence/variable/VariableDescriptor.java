@@ -34,6 +34,7 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.external.WegasErrorMessage;
 import org.eclipse.persistence.annotations.JoinFetch;
 
 /**
@@ -339,15 +340,19 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      */
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
-        VariableDescriptor other = (VariableDescriptor) a;
-        this.setName(other.getName());
-        this.setLabel(other.getLabel());
-        this.setTitle(other.getTitle());
-        this.setComments(other.getComments());
-        this.defaultInstance.merge(other.getDefaultInstance());
-        if (other.getScope() != null) {
-            this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+        try {
+            super.merge(a);
+            VariableDescriptor other = (VariableDescriptor) a;
+            this.setName(other.getName());
+            this.setLabel(other.getLabel());
+            this.setTitle(other.getTitle());
+            this.setComments(other.getComments());
+            this.defaultInstance.merge(other.getDefaultInstance());
+            if (other.getScope() != null) {
+                this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
+            }
+        } catch (PersistenceException pe) {
+            throw WegasErrorMessage.error("The name is already in use");
         }
         //this.scope.merge(vd.getScope());
     }

@@ -83,8 +83,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 success: function() {
                                     EditEntityAction.showFormMessage("success", "Item updated");
                                     EditEntityAction.hideEditFormOverlay();
-                                },
-                                failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
+                                }
                             }
                         });
                     }), menuItems = Y.Array.filter(entity.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
@@ -286,8 +285,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             //EditEntityAction.showUpdateForm(e.response.entity, dataSource);
                             //EditEntityAction.showFormMessage("success", "Item created");
                         }
-                    }, this),
-                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
+                    }, this)
                 });
             }, this), null, this.get("formCfg"));
         },
@@ -364,8 +362,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                 success: function() {
                                     EditEntityAction.hideEditFormOverlay();
                                     EditEntityAction.showFormMessage("success", "Item has been updated");
-                                },
-                                failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
+                                }
                             }
                         });
                     });
@@ -393,8 +390,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                         button.destroy();
                                     }
 
-                                }, this),
-                                failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
+                                }, this)
                             }
                         });
                     }, this));
@@ -415,8 +411,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             on: {
                                 success: function() {
                                     EditEntityAction.hideRightTabs();
-                                },
-                                failure: Y.bind(this.defaultFailureHandler, this)
+                                }
                             }
                         });
                     }, this));
@@ -434,8 +429,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
 
                     dataSource.cache.put(descriptor.toObject(), {
                         on: {
-                            success: EditEntityAction.hideRightTabs,
-                            failure: Y.bind(this.defaultFailureHandler, this)
+                            success: EditEntityAction.hideRightTabs
                         }
                     });
                     break;
@@ -493,8 +487,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         button.destroy();
                         //EditEntityAction.showUpdateForm(newDescriptor, dataSource);
                         //EditEntityAction.showFormMessage("success", "Item has been added");
-                    }, this),
-                    failure: Y.bind(EditEntityAction.form.defaultFailureHandler, EditEntityAction.form)
+                    }, this)
                 });
             }, this), null, this.get("formCfg"));
         },
@@ -524,8 +517,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             this.showOverlay();
             this.get(DATASOURCE).cache.duplicateObject(this.get(ENTITY), {
                 on: {
-                    success: Y.bind(this.hideOverlay, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    success: Y.bind(this.hideOverlay, this)
                 }
             });
         }
@@ -570,8 +562,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                                         }
                                     }
                                 }
-                            }, this),
-                            failure: Y.bind(this.defaultFailureHandler, this)
+                            }, this)
                         }
                     });
                 }, this));
@@ -840,8 +831,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 request: Lang.sub(this.get("request"), entity.toJSON()),
                 cfg: this.get("cfg"),
                 on: {
-                    success: Y.bind(this.hideOverlay, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    success: Y.bind(this.hideOverlay, this)
                 }
             });
         }

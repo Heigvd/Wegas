@@ -8,7 +8,10 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.EngineInvocationEvent;
-import com.wegas.core.exception.WegasException;
+import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.WegasErrorMessageManager;
+import com.wegas.core.exception.external.WegasRuntimeException;
+import com.wegas.core.exception.external.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
@@ -86,9 +89,8 @@ public class ScriptFacade {
      * @param script
      * @param arguments
      * @return
-     * @throws WegasException
      */
-    public Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasException {
+    public Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (script == null) {
             return null;
         }
@@ -101,14 +103,14 @@ public class ScriptFacade {
                 // Invocable invocableEngine = (Invocable) engine;
             } catch (NullPointerException ex) {
                 logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
-                throw new WegasException("Could not instantiate script engine for script" + script);
+                throw WegasErrorMessage.error("Could not instantiate script engine for script" + script);
             }
             try {
                 engineInvocationEvent.fire(
                         new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
 
             } catch (ObserverException ex) {
-                throw (WegasException) ex.getCause();
+                throw (WegasRuntimeException) ex.getCause();
             }
             requestManager.setCurrentEngine(engine);
         }
@@ -122,9 +124,13 @@ public class ScriptFacade {
             return engine.eval(script.getContent());
         } catch (ScriptException ex) {
 //            requestManager.addException(
-//                    new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
-//            throw new ScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
-            throw new com.wegas.core.exception.ScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
+//                    new com.wegas.core.exception.WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
+//            throw new WegasScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
+            throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
+        } catch (WegasRuntimeException ex) { // throw our exception as-is
+            throw ex;
+        } catch (RuntimeException ex) { // Java exception (Java -> JS -> Java -> throw)
+            throw new WegasScriptException(script.getContent(), ex.getMessage());
         }
     }
 
@@ -134,13 +140,14 @@ public class ScriptFacade {
      *
      * @param evt
      */
-    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) {
+    public void onEngineInstantiation(@Observes EngineInvocationEvent evt) throws WegasScriptException {
         evt.getEngine().put("self", evt.getPlayer());                           // Inject current player
         evt.getEngine().put("gameModel", evt.getPlayer().getGameModel());       // Inject current gameModel
         evt.getEngine().put("Variable", variableDescriptorFacade);              // Inject the variabledescriptor facade
         evt.getEngine().put("VariableDescriptorFacade", variableDescriptorFacade);// @backwardcompatibility
         evt.getEngine().put("RequestManager", requestManager);                  // Inject the request manager
         evt.getEngine().put("Event", event);                                    // Inject the Event manager
+        evt.getEngine().put("ErrorManager", new WegasErrorMessageManager());    // Inject the MessageErrorManager
         event.detachAll();
         this.injectStaticScript(evt);
         for (Entry<String, GameModelContent> arg
@@ -148,8 +155,10 @@ public class ScriptFacade {
             evt.getEngine().put(ScriptEngine.FILENAME, "Server script " + arg.getKey()); //@TODO: JAVA 8 filename in scope
             try {
                 evt.getEngine().eval(arg.getValue().getContent());
-            } catch (ScriptException ex) {
-                throw new com.wegas.core.exception.ScriptException("Server script " + arg.getKey(), ex.getLineNumber(), ex.getMessage());
+            } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
+                throw new WegasScriptException("Server script " + arg.getKey(), ex.getLineNumber(), ex.getMessage());
+            } catch (Exception ex) { // Java exception (Java -> JS -> Java -> throw)
+                throw new WegasScriptException("Server script " + arg.getKey(), ex.getMessage());
             }
         }
 
@@ -169,9 +178,8 @@ public class ScriptFacade {
      * engine
      *
      * @param evt EngineInvocationEvent
-     * @throws ScriptException
      */
-    private void injectStaticScript(EngineInvocationEvent evt) {
+    private void injectStaticScript(EngineInvocationEvent evt) throws WegasScriptException {
         String currentPath = getClass().getProtectionDomain().getCodeSource().getLocation().getPath();
         Integer index = currentPath.indexOf("WEB-INF");
         if (index < 1) { // @ TODO find an other way to get web app root currently war packaging required.
@@ -196,8 +204,10 @@ public class ScriptFacade {
                 logger.info("File " + f + " successfully injected");
             } catch (FileNotFoundException ex) {
                 logger.warn("File " + f + " was not found");
-            } catch (ScriptException ex) {
-                throw new com.wegas.core.exception.ScriptException(f, ex.getLineNumber(), ex.getMessage());
+            } catch (ScriptException ex) { // script exception (Java -> JS -> throw)
+                throw new WegasScriptException(f, ex.getLineNumber(), ex.getMessage());
+            } catch (RuntimeException ex) { // Unwrapped Java exception (Java -> JS -> Java -> throw)
+                throw new WegasScriptException(f, ex.getMessage());
             }
         }
     }
@@ -273,9 +283,8 @@ public class ScriptFacade {
      * @param scripts
      * @param arguments
      * @return
-     * @throws WegasException
      */
-    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasException {
+    public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         Object ret;
         if (scripts.isEmpty()) {
             return null;
@@ -299,10 +308,9 @@ public class ScriptFacade {
      *
      * @param scripts
      * @return
-     * @throws WegasException
      */
-    public Object eval(List<Script> scripts) throws WegasException {
-        return this.eval(scripts, new HashMap<String, AbstractEntity>());
+    public Object eval(List<Script> scripts) throws WegasScriptException {
+        return this.eval(scripts, new HashMap<>());
     }
 
     /**
@@ -310,9 +318,8 @@ public class ScriptFacade {
      * @param p
      * @param s
      * @return
-     * @throws WegasException
      */
-    public Object eval(Player p, Script s) throws WegasException {
+    public Object eval(Player p, Script s) throws WegasScriptException {
         requestManager.setPlayer(p);
         return this.eval(s);
     }
@@ -322,9 +329,8 @@ public class ScriptFacade {
      * @param p
      * @param s
      * @return
-     * @throws WegasException
      */
-    public Object eval(Player p, List<Script> s) throws WegasException {
+    public Object eval(Player p, List<Script> s) throws WegasScriptException {
         requestManager.setPlayer(p);
         return this.eval(s);
     }
@@ -335,9 +341,8 @@ public class ScriptFacade {
      * @param s
      * @param arguments
      * @return
-     * @throws WegasException
      */
-    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasException {
+    public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         requestManager.setPlayer(player);
         return this.eval(s, arguments);
     }
@@ -348,9 +353,8 @@ public class ScriptFacade {
      * @param scripts
      * @param arguments
      * @return
-     * @throws WegasException
      */
-    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasException {
+    public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         requestManager.setPlayer(player);                                       // Set up request's execution context
         return this.eval(scripts, arguments);
     }
@@ -360,9 +364,8 @@ public class ScriptFacade {
      * @param playerId
      * @param s
      * @return
-     * @throws WegasException
      */
-    public Object eval(Long playerId, Script s) throws WegasException {
+    public Object eval(Long playerId, Script s) throws WegasScriptException {
         requestManager.setPlayer(playerEntityFacade.find(playerId));
         return this.eval(s);
     }
@@ -371,9 +374,8 @@ public class ScriptFacade {
      *
      * @param s
      * @return
-     * @throws WegasException
      */
-    public Object eval(Script s) throws WegasException {
-        return this.eval(s, new HashMap<String, AbstractEntity>());
+    public Object eval(Script s) throws WegasScriptException {
+        return this.eval(s, new HashMap<>());
     }
 }

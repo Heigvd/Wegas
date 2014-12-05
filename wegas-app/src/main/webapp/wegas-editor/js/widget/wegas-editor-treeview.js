@@ -51,7 +51,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
                 request = this.get("request");
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
-                this.failureHandler = ds.after("failure", this.defaultFailureHandler, this); // GLOBAL error message
+                //this.failureHandler = ds.after("failure", this.defaultFailureHandler, this); // GLOBAL error message
 
                 this.addedHandler = ds.after("added", function(e) {             // When an entity is created
                     this.currentSelection = e.entity.get("id");
@@ -86,7 +86,7 @@ YUI.add("wegas-editor-treeview", function(Y) {
         destructor: function() {
             this.treeView.destroy();
             this.updateHandler.detach();
-            this.failureHandler.detach();
+            //this.failureHandler.detach();
             this.addedHandler.detach();
         },
         // *** Private Methods *** //

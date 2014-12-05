@@ -8,7 +8,6 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.PersistenceException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.UserFacade;
 import javax.ejb.embeddable.EJBContainer;
@@ -76,7 +75,7 @@ public class GameModelFacadeTest {
     }
 
     @Test
-    public void createGame() throws NamingException, PersistenceException {
+    public void createGame() throws NamingException {
         logger.info("createGame()");
         final String GAMENAME = "test-gamemodel";
         final String GAMENAME2 = "test-gamemodel2";

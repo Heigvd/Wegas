@@ -108,7 +108,6 @@ YUI.add('wegas-team', function(Y) {
                     success: Y.bind(this.onSaved, this),
                     failure: Y.bind(function(e) {
                         this.teamId = teamId;                                   // @hack
-                        this.defaultFailureHandler(e);
                     }, this)
                 }
             });
@@ -272,8 +271,7 @@ YUI.add('wegas-team', function(Y) {
                         on: {
                             success: function() {
                                 this.sendMultiJoinTeamRequest(entity.get("id"));// join the team
-                            },
-                            failure: Y.bind(this.defaultFailureHandler, this)
+                            }
                         }
                     });
                 } else {
@@ -358,8 +356,7 @@ YUI.add('wegas-team', function(Y) {
                             this.teamEdition.addAccount(entity);
                             this.joinedAccounts.push(entity);
                         }, this);
-                    }, this),
-                    failure: Y.bind(this.defaultFailureHandler, this)
+                    }, this)
                 }
             });
         },

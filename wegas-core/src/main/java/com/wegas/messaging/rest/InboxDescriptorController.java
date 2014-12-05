@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.shiro.authz.UnauthorizedException;
 
 /**
- *
+ * @deprecated ???
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless

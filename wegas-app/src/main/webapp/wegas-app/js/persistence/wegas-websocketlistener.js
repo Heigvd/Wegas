@@ -24,7 +24,7 @@ YUI.add('wegas-websocketlistener', function(Y) {
             Y.log("Websocket event received.", "info", "Wegas.WebsocketListener");
             this.get("host").cache.onResponseRevived({
                 serverResponse: Y.Wegas.Editable.revive({
-                    "@class": "ManagedModeResponseFilter$ServerResponse",
+                    "@class": "ManagedResponse",
                     events: [Y.JSON.parse(data)]
                 })
             });

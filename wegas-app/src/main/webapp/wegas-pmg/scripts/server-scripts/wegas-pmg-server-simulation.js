@@ -1003,7 +1003,8 @@ var PMGSimulation = (function() {
             executionPeriods = Variable.find(gameModel, "executionPeriods").getValue(self);
             if (!(PMGHelper.getCurrentPhaseNumber() === 3 && PMGHelper.getCurrentPeriodNumber() > executionPeriods)) {
                 if (PMGHelper.getCurrentPhaseNumber() >= phaseLimit && PMGHelper.getCurrentPeriodNumber() >= periodLimit) {
-                    throw new Error("StringMessage: Ask your course leader for permissions to continue.");
+                    ErrorManager.throwInfo("Ask your course leader for permissions to continue.");
+                    //throw new Error("StringMessage: Ask your course leader for permissions to continue.");
                 }
             }
         }
@@ -1029,7 +1030,8 @@ var PMGSimulation = (function() {
             for (i = 0; i < questions.size(); i++) {
                 question = questions.get(i);
                 if (!question.isReplied(self) && question.isActive(self)) {
-                    throw new Error("StringMessage: You have not answered all questions from this week.");
+                     ErrorManager.throwWarn("You have not answered all questions from this week.");
+                    //throw new Error("StringMessage: You have not answered all questions from this week.");
                 }
             }
         }
