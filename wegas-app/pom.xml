@@ -364,12 +364,6 @@
                 </executions>
             </plugin>-->
 
-            <!-- Tests -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-            </plugin>
-
             <!-- YUI JS Compression Plugin -->
             <plugin>
                 <groupId>net.alchim31.maven</groupId>
