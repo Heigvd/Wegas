@@ -30,8 +30,16 @@ YUI.add("wegas-image", function(Y) {
          * @private
          */
         initializer: function() {
-            this.publish("error", {fireOnce: true, async: true});
-            this.publish("load", {fireOnce: true, async: true});
+            this.publish("error",
+                {
+                    fireOnce: true,
+                    async: true
+                });
+            this.publish("load",
+                {
+                    fireOnce: true,
+                    async: true
+                });
             this.image = this.get("contentBox");
         },
         getEditorLabel: function() {
@@ -43,7 +51,8 @@ YUI.add("wegas-image", function(Y) {
          * @private
          */
         renderUI: function() {
-            this.image = this.get("boundingBox").one("img"); // !! IE 8 : this.image._node === this.get(CONTENTBOX)._node => false ...
+            this.image = this.get("boundingBox").one("img"); // !! IE 8 : this.image._node ===
+                                                             // this.get(CONTENTBOX)._node => false ...
             this.get("url");
         },
         /**
@@ -54,7 +63,10 @@ YUI.add("wegas-image", function(Y) {
         bindUI: function() {
             this.image.on("load", function(e) {
                 if (!this.CSSSize) { // adapt only without plugin
-                    this.get("boundingBox").setStyles({width: this.image.width, height: this.image.height});
+                    this.get("boundingBox").setStyles({
+                        width: this.image.width,
+                        height: this.image.height
+                    });
                 }
                 this.fire("load");
                 this.getEvent("load").fired = true;
@@ -70,7 +82,9 @@ YUI.add("wegas-image", function(Y) {
     }, {
         /** @lends Y.Wegas.Image */
         EDITORNAME: "Image",
-        FILEENTRY: Y.Wegas.Facade.File.get("source") + "read",
+        FILEENTRY: function() {
+            return Y.Wegas.Facade.File.get("source") + "read";
+        },
         ATTRS: {
             url: {
                 value: "",
@@ -79,7 +93,7 @@ YUI.add("wegas-image", function(Y) {
                     this.getEvent("load").fired = false;
                     this.getEvent("error").fired = false;
                     this.image.setAttribute("src", (val.indexOf("/") === 0) ?
-                        Image.FILEENTRY + val : //Wegas Filesystem
+                    Image.FILEENTRY + val : //Wegas Filesystem
                         val);
                     return val;
                 },
