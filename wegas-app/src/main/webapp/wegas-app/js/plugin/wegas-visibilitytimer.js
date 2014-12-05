@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 /**
- * @fileOverview 
+ * @fileOverview
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add("wegas-visibilitytimer", function(Y) {
@@ -27,7 +27,10 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 this.initialVisible = this.get("host").hasClass(HIDDENNODECSSCLASS);
             }
             this.set("time", this.get("time"));
-            this.restartEvent = Y.on("visibility-timer:restart", this.start, this);
+            this.restartEvent = Y.on("visibility-timer:restart", function() {
+                this.reset();
+                this.start();
+            }, this);
             this.start();
         },
         reset: function() {
@@ -55,12 +58,17 @@ YUI.add("wegas-visibilitytimer", function(Y) {
                 type: "string",
                 _inputex: {
                     label: "Timer ms"
+                },
+                setter: function(v) {
+                    this._set("arrayTime", v.split(/[ ,]+/));
+                    return v;
                 }
             },
             arrayTime: {
                 readOnly: true,
                 type: "array",
                 "transient": true,
+
                 _inputex: {
                     _type: "hidden"
                 }
@@ -69,7 +77,7 @@ YUI.add("wegas-visibilitytimer", function(Y) {
     });
 
     /**
-     * 
+     *
      */
     Y.Plugin.ShowAfter = Y.Base.create("wegas-showafter", VisibilityPlugin, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /**

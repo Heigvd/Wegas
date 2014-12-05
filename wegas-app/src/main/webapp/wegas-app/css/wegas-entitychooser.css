@@ -1,0 +1,34 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.chooser-entities {
+    float: left;
+    border-right: 1px solid lightgray;
+    border-left: 1px solid lightgray;
+    border-top: 1px solid lightgray;
+}
+
+.chooser-widget {
+    float: left;
+}
+
+.chooser-entity {
+    cursor: pointer;
+    border-bottom: 1px solid lightgray;
+    padding: 4px 20px;
+}
+
+.chooser-entity:hover {
+    background: rgba(178, 210, 255, 0.1);
+    box-shadow: 0px 0px 1px lightgray inset;
+}
+
+.chooser-choosen {
+    background: rgba(178, 210, 255, 0.5);
+    box-shadow: 0px 0px 1px lightgray inset;
+}

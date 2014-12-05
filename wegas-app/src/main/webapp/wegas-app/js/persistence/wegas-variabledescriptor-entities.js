@@ -714,8 +714,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Dialogue",
-                                    targetClass: "DialogueDescriptor",
-                                    cssClass: "wegas-advanced-feature"
+                                    targetClass: "DialogueDescriptor"
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Resource",

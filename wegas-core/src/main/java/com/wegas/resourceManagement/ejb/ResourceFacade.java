@@ -23,6 +23,7 @@ import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
+import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -301,9 +302,12 @@ public class ResourceFacade {
      * @param period
      * @return
      */
-    public TaskInstance addTaskPlannification(Player player, Long taskInstanceId, Integer period) {
+    public TaskInstance plan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
-        ti.getPlannification().add(period);
+        List<Integer> plannedPeriods = ti.getPlannification();
+        if (!plannedPeriods.contains(period)) {
+            plannedPeriods.add(period);
+        }
         try {
             scriptEvent.fire(player, "addTaskPlannification");
         } catch (WegasScriptException ex) {
@@ -319,8 +323,8 @@ public class ResourceFacade {
      * @param period
      * @return
      */
-    public TaskInstance addTaskPlannification(Long playerId, Long taskInstanceId, Integer period) {
-        return addTaskPlannification(playerFacade.find(playerId), taskInstanceId, period);
+    public TaskInstance plan(Long playerId, Long taskInstanceId, Integer period) {
+        return plan(playerFacade.find(playerId), taskInstanceId, period);
     }
 
     /**
@@ -330,7 +334,7 @@ public class ResourceFacade {
      * @param period
      * @return
      */
-    public TaskInstance removePlannification(Player player, Long taskInstanceId, Integer period) {
+    public TaskInstance unplan(Player player, Long taskInstanceId, Integer period) {
         TaskInstance ti = findTaskInstance(taskInstanceId);
         ti.getPlannification().remove(period);
         try {
@@ -348,8 +352,8 @@ public class ResourceFacade {
      * @param period
      * @return
      */
-    public TaskInstance removePlannification(Long playerId, Long taskInstanceId, Integer period) {
-        return this.removePlannification(playerFacade.find(playerId), taskInstanceId, period);
+    public TaskInstance unplan(Long playerId, Long taskInstanceId, Integer period) {
+        return this.unplan(playerFacade.find(playerId), taskInstanceId, period);
     }
 
     /**

@@ -124,6 +124,9 @@ public class StateMachineFacade {
             }
             transitions = smi.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
+                if(validTransition){
+                    break; // already have a valid transition
+                }
                 if (transition instanceof DialogueTransition
                         && ((DialogueTransition) transition).getActionText() != null
                         && !((DialogueTransition) transition).getActionText().isEmpty()) {                 // Dialogue, don't eval if not null or empty
@@ -182,7 +185,7 @@ public class StateMachineFacade {
             }
         }
         if (transitionPassed) {
-            /*@DIRTY, @TODO : find something else : Runing scripts overrides previous state change Only for first Player (resetEvent). */
+            /*@DIRTY, @TODO : find something else : Running scripts overrides previous state change Only for first Player (resetEvent). */
             variableDescriptorFacade.findByClass(player.getGameModel(), StateMachineDescriptor.class);
             preImpacts.addAll(impacts);
             try {
