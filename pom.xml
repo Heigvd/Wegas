@@ -491,7 +491,7 @@
                     <configuration>
                         <!-- There is an issue with cobertura and jdk7,
                         that forces us to run  in compatiblity mode.-->
-                        <argLine>-XX:-UseSplitVerifier -Xms800m -Xmx800m -XX:MaxPermSize=500m</argLine>
+                        <argLine>-Xms800m -Xmx800m</argLine>
                         <forkMode>always</forkMode>
                         <classpathDependencyExcludes>
                             <classpathDependencyExcludes>
@@ -531,7 +531,6 @@
 
                         </check>
 
-                            <argLine>-XX:-UseSplitVerifier</argLine>
                         </configuration>
                     </plugin>-->
             </plugins>
