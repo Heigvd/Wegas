@@ -113,7 +113,7 @@ public class ResourceController {
      * @return
      */
     @POST
-    @Path("Player/{playerId : [1-9][0-9]*}/Planning/{taskInstanceId : [1-9][0-9]*}/{period : [0-9]*}")
+    @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{period : [0-9]*}")
     public TaskInstance plan(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
             @PathParam("period") Integer period) {
         return resourceFacade.plan(playerId, taskInstanceId, period);
@@ -127,7 +127,7 @@ public class ResourceController {
      * @return
      */
     @DELETE
-    @Path("Player/{playerId : [1-9][0-9]*}/Planning/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
+    @Path("Player/{playerId : [1-9][0-9]*}/Plan/{taskInstanceId : [1-9][0-9]*}/{periode : [0-9]*}")
     public TaskInstance unplan(@PathParam("playerId") Long playerId, @PathParam("taskInstanceId") Long taskInstanceId,
             @PathParam("periode") Integer period) {
         return resourceFacade.unplan(playerId, taskInstanceId, period);
