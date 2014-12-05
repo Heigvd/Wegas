@@ -151,7 +151,7 @@ font {
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 10;
+    z-index: 99998;
     overflow: hidden;
     -webkit-animation: fadein 0.2s 0.1s 1;
     -o-animation: fadein 0.2s 0.1s 1;
