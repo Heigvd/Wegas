@@ -224,7 +224,8 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                         updateEvent: false
                     },
                     on: {
-                        success: Y.bind(this.syncHost, this)
+                        success: Y.bind(this.syncHost, this),
+                        failure: Y.bind(this.hideOverlay, this)
                     }
                 });
             }, this));

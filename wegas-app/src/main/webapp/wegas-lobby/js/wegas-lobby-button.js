@@ -119,7 +119,8 @@ YUI.add('wegas-lobby-button', function(Y) {
                                 updateCache: false
                             },
                             on: {
-                                success: Y.bind(this.syncUI, this)
+                                success: Y.bind(this.syncUI, this),
+                                failure: Y.bind(this.hideOverlay, this)
                             }
                         });
                     }, this)
@@ -150,7 +151,8 @@ YUI.add('wegas-lobby-button', function(Y) {
                         method: 'DELETE'
                     },
                     on: {
-                        success: Y.bind(this.syncUI, this)
+                        success: Y.bind(this.syncUI, this),
+                        failure: Y.bind(this.hideOverlay, this)
                     }
                 });
             }, ".button-remove", this);
@@ -181,7 +183,8 @@ YUI.add('wegas-lobby-button', function(Y) {
                         this.treeView.add(nodes);
                         this.treeView.syncUI();
                         this.hideOverlay();
-                    }, this)
+                    }, this),
+                    failure: Y.bind(this.hideOverlay, this)
                 }
             });
         },

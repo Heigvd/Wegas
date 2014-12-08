@@ -10,7 +10,7 @@
  */
 YUI.add('wegas-sharerole', function(Y) {
     "use strict";
-        var CONTENTBOX = 'contentBox', ShareRole;
+    var CONTENTBOX = 'contentBox', ShareRole;
 
     ShareRole = Y.Base.create("wegas-sharerole", Y.Widget, [Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Widget], {
         /**
@@ -37,7 +37,7 @@ YUI.add('wegas-sharerole', function(Y) {
                 parentEl: cb
             });
             Y.one(this.visibility.divEl).addClass("wegas-advanced-feature");    // @Hack Hide this field, not available
-                                                                                // for regular users
+            // for regular users
             //this.requestPermissions();                                        // and do not request permissions
 
             this.link = new Y.inputEx.StringField({
@@ -52,7 +52,7 @@ YUI.add('wegas-sharerole', function(Y) {
             this.syncLinkVisibility();
 
             this.set("visible", false);                                         // @HACK Visibility depends on a node
-                                                                                // in the parent's tree
+            // in the parent's tree
             Y.on("available", function(e, n) {
                 var updatVisibility = function() {
                     this.set("visible", !Y.one(".wegas-game-access input").get("checked"));
@@ -114,7 +114,8 @@ YUI.add('wegas-sharerole', function(Y) {
                             }
                         }, this);
                         this.hideOverlay();
-                    }, this)
+                    }, this),
+                    failure: Y.bind(this.hideOverlay, this)
                 }
             });
         },
