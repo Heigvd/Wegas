@@ -165,6 +165,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             tab.form.on("submit", function(e) {                                 // Attach submit callback
                 this.showOverlay();
                 callback(e.value, EditEntityAction.currentEntity);
+                this.hideOverlay();
                 //callback(e.value, entity);
                 //EditEntityAction.form.saveButton.set("disabled", true);
             });
