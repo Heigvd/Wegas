@@ -93,7 +93,7 @@ YUI.add("wegas-image", function(Y) {
                     this.getEvent("load").fired = false;
                     this.getEvent("error").fired = false;
                     this.image.setAttribute("src", (val.indexOf("/") === 0) ?
-                    Image.FILEENTRY + val : //Wegas Filesystem
+                    Image.FILEENTRY() + val : //Wegas Filesystem
                         val);
                     return val;
                 },
