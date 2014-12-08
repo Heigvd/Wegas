@@ -111,9 +111,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 this.gallery.destroy();
                 this.gallery = null;
             }
-            if (questions) {
-                this.addQuestions(questions.get("items"));
+            if (!Y.Lang.isArray(questions)) {
+                questions = [questions];
             }
+
+            this.addQuestions(questions);
 
             if (this.gallery) {
                 this.gallery.syncUI();
