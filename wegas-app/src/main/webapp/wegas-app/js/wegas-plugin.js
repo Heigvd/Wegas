@@ -189,8 +189,21 @@ YUI.add("wegas-plugin", function(Y) {
         execute: function() {
             var outputType = this.get("outputType"),
                 playerId = Wegas.Facade.Game.get("currentPlayerId"),
-                root = this.get("root.evaluated").get("name"),
-                printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + root;
+                roots = this.get("root.evaluated"),
+                root="",
+                printUrl;
+
+            if (roots) {
+                if (!Y.Lang.isArray(roots)) {
+                    roots = [roots];
+                }
+                Y.Array.each(roots, function(d) {
+                    root += d.get("name") + ",";
+                }, this);
+                root = root.slice(0, -1);
+            }
+
+            printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + encodeURIComponent(root);
             window.open(printUrl);
         }
     }, {

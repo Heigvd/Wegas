@@ -506,7 +506,7 @@
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": {
-                                        "content": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'); return  Variable.find( 'questions').item(currentPhase.getValue(self)-1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1)"
+                                        "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod'), phaseDir = Variable.find('questions').item(currentPhase - 1), i, d; list = []; list.push(phaseDir.item(currentPeriod.item(currentPhase - 1).getValue(self) - 1)); for (i in phaseDir.get(\"items\")){ d =  phaseDir.item(i); if (d.get(\"@class\") === \"QuestionDescriptor\"){list.push(d)};} return list;"
                                     }
                                 }
                             }, {
@@ -887,7 +887,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "content": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'); return  Variable.find( 'questions').item(currentPhase.getValue(self)-1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1)"
+                    "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod'), phaseDir = Variable.find('questions').item(currentPhase - 1), i, d; list = []; list.push(phaseDir.item(currentPeriod.item(currentPhase - 1).getValue(self) - 1)); for (i in phaseDir.get(\"items\")){ d =  phaseDir.item(i); if (d.get(\"@class\") === \"QuestionDescriptor\"){list.push(d)};} return list;"
                 }
             }, {
                 "label": "",
@@ -900,7 +900,7 @@
                             "targetEvent": "click",
                             "root": {
                                 "@class": "Script",
-                                "content": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'); return  Variable.find( 'questions').item(currentPhase.getValue(self)-1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1)"
+                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod'), phaseDir = Variable.find('questions').item(currentPhase - 1), i, d; list = []; list.push(phaseDir.item(currentPeriod.item(currentPhase - 1).getValue(self) - 1)); for (i in phaseDir.get(\"items\")){ d =  phaseDir.item(i); if (d.get(\"@class\") === \"QuestionDescriptor\"){list.push(d)};} return list;"
                             },
                             "outputType": "html"
                         }
