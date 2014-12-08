@@ -545,7 +545,10 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         execute: function() {
             var entity = this.get(ENTITY), i;
 
-            Wegas.Panel.confirm("Are you sure you want to delete this " + entity.getType().toLowerCase() + "?",
+            Wegas.Panel.confirm("Are you sure you want to delete the "
+                + entity.getType().toLowerCase().replace("descriptor", "") 
+                + " \"" + entity.get("label") + "\" " 
+                + "?",
                 Y.bind(function() {
                     this.showOverlay();
                     this.confirmDelete = true;
