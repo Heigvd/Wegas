@@ -7,7 +7,7 @@
  */
 package com.wegas.core.persistence.variable.primitive;
 
-import com.wegas.core.exception.external.WegasOutOfBoundException;
+import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;

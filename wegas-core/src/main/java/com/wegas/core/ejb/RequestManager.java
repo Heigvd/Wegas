@@ -10,7 +10,7 @@ package com.wegas.core.ejb;
 import com.wegas.core.event.client.ClientEvent;
 import com.wegas.core.event.client.CustomEvent;
 import com.wegas.core.event.client.ExceptionEvent;
-import com.wegas.core.exception.external.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;

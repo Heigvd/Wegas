@@ -6,7 +6,7 @@
  * Licensed under the MIT License
  */
 
-package com.wegas.core.exception.external;
+package com.wegas.core.exception.client;
 
 /**
  *

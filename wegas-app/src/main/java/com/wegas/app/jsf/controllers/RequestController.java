@@ -8,7 +8,7 @@
 package com.wegas.app.jsf.controllers;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;

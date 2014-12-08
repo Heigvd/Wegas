@@ -13,7 +13,7 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import javax.ejb.EJB;
@@ -168,7 +168,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param choiceId
      * @param playerId
      * @return
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public Reply selectAndValidateChoice(Long choiceId, Long playerId) throws WegasScriptException {
         Player player = playerFacade.find(playerId);
@@ -247,7 +247,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param player
      * @param validateReply
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void validateReply(final Player player, final Reply validateReply) throws WegasScriptException {
         final ChoiceDescriptor choiceDescriptor = validateReply.getResult().getChoiceDescriptor();
@@ -266,7 +266,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param player
      * @param replyVariableInstanceId
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void validateReply(Player player, Long replyVariableInstanceId) throws WegasScriptException {
         this.validateReply(player, em.find(Reply.class, replyVariableInstanceId));
@@ -276,7 +276,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      *
      * @param playerId
      * @param replyVariableInstanceId
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void validateReply(Long playerId, Long replyVariableInstanceId) throws WegasScriptException {
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);

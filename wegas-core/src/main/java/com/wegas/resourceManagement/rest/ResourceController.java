@@ -7,7 +7,7 @@
  */
 package com.wegas.resourceManagement.rest;
 
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.resourceManagement.ejb.ResourceFacade;
 import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Assignment;

@@ -11,7 +11,7 @@ package com.wegas.core.rest.exception;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeName;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 
 /**
  * @deprecated

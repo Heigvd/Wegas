@@ -9,7 +9,7 @@ package com.wegas.mcq.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
@@ -59,7 +59,7 @@ public class QuestionController {
      * @param playerId
      * @param choiceId
      * @return p
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
     @Path("/SelectAndValidateChoice/{choiceId : [1-9][0-9]*}/Player/{playerId : [1-9][0-9]*}")

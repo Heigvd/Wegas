@@ -7,7 +7,7 @@
  */
 package com.wegas.core.event.client;
 
-import com.wegas.core.exception.external.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import java.util.List;
 
 /**
