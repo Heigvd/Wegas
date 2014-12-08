@@ -66,6 +66,7 @@ public class UIGameModel extends UIComponentBase {
         String root = (String) getAttributes().get("root");
         String modeParam = (String) getAttributes().get("mode");
         String defVal = (String) getAttributes().get("defaultValues");
+        String[] roots = null;
 
         // editor mode and default values only allowedif current user has edit permission on gamemodel
         defaultValues = "true".equals(defVal)
@@ -95,14 +96,7 @@ public class UIGameModel extends UIComponentBase {
         if (root == null || root.isEmpty()) {
             vds = gm.getChildVariableDescriptors();
         } else {
-            /*
-             * when root is specified, do not print headers and start printing 
-             * vardesc from root node
-             */
             vds = new ArrayList<>();
-            VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
-            VariableDescriptor find = lookup.find(gm, root);
-            vds.add(find);
         }
 
         // links to subdirs
@@ -117,21 +111,37 @@ public class UIGameModel extends UIComponentBase {
         UIHelper.endDiv(writer);
 
         ArrayList<String> path = new ArrayList<>();
+
+        /*
+         * when root is specified, do not print headers and start printing 
+         * vardesc from root node
+         */
         if (root == null || root.isEmpty()) {
             encodeGameModelHeader(context, writer, gm);
         } else {
-            VariableDescriptorFacade vdFacade = VariableDescriptorFacade.lookup();
-            VariableDescriptor current = vdFacade.find(gm, root);
-            DescriptorListI parent;
-            while ((parent = vdFacade.findParentList(current)) != null) {
-                if (parent instanceof GameModel) {
-                    break;
-                } else {
-                    current = (VariableDescriptor) parent;
-                    if (current.getTitle() == null) {
-                        path.add(current.getLabel());
+            // Fetch all "root" descriptors
+            VariableDescriptorFacade lookup = VariableDescriptorFacade.lookup();
+            roots = root.split(",");
+
+            for (String name : roots) {
+                VariableDescriptor find = lookup.find(gm, name);
+                vds.add(find);
+            }
+
+            if (roots.length == 1) {
+                // TODO extract common path
+                VariableDescriptor current = lookup.find(gm, root);
+                DescriptorListI parent;
+                while ((parent = lookup.findParentList(current)) != null) {
+                    if (parent instanceof GameModel) {
+                        break;
                     } else {
-                        path.add(current.getTitle());
+                        current = (VariableDescriptor) parent;
+                        if (current.getTitle() == null) {
+                            path.add(current.getLabel());
+                        } else {
+                            path.add(current.getTitle());
+                        }
                     }
                 }
             }
