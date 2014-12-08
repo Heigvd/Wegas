@@ -53,7 +53,8 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                         //}
                 }
             }
-        }
+        },
+        EDITORNAME: "State Machine"
     });
     /*
      * FSMDescriptor Entity
