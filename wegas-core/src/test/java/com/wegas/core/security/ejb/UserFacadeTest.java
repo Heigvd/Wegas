@@ -2,6 +2,7 @@ package com.wegas.core.security.ejb;
 
 import com.wegas.core.Helper;
 import com.wegas.core.ejb.TestHelper;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
@@ -9,7 +10,6 @@ import com.wegas.core.security.persistence.User;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.EJBException;
 import javax.ejb.embeddable.EJBContainer;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -215,8 +215,8 @@ public class UserFacadeTest {
     /**
      * Test CreateSameUser
      */
-    @Test(expected = EJBException.class)
-    public void testCreateSameUser() throws Exception {
+    @Test(expected = WegasErrorMessage.class)
+    public void testCreateSameUser() throws WegasErrorMessage {
         u.addAccount(abstractAccount);
         userFacade.create(u);
     }
