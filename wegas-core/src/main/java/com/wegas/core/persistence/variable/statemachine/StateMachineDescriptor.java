@@ -17,7 +17,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 
 /**
  *

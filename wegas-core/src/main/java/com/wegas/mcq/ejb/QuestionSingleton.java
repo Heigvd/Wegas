@@ -7,7 +7,7 @@
  */
 package com.wegas.mcq.ejb;
 
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import javax.ejb.LocalBean;

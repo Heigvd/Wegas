@@ -8,7 +8,7 @@
 package com.wegas.core.security.jparealm;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Game;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;

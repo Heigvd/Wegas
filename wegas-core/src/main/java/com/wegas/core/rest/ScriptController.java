@@ -10,7 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;

@@ -8,10 +8,10 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.EngineInvocationEvent;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.WegasErrorMessageManager;
-import com.wegas.core.exception.external.WegasRuntimeException;
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasRuntimeException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.GameModelContent;
 import com.wegas.core.persistence.game.Player;
@@ -123,9 +123,6 @@ public class ScriptFacade {
             engine.put(ScriptEngine.FILENAME, script.getContent()); //@TODO: JAVA 8 filename in scope
             return engine.eval(script.getContent());
         } catch (ScriptException ex) {
-//            requestManager.addException(
-//                    new com.wegas.core.exception.WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage()));
-//            throw new WegasScriptException(ex.getMessage(), script.getContent(), ex.getLineNumber());
             throw new WegasScriptException(script.getContent(), ex.getLineNumber(), ex.getMessage());
         } catch (WegasRuntimeException ex) { // throw our exception as-is
             throw ex;

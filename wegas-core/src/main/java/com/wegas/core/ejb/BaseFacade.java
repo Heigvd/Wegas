@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import java.io.IOException;
 import java.util.List;

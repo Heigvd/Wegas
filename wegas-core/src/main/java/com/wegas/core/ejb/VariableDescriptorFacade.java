@@ -30,7 +30,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

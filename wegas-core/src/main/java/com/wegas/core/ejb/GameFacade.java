@@ -8,7 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.PlayerAction;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.RoleFacade;

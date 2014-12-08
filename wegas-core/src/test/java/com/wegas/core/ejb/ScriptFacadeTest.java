@@ -7,7 +7,7 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;

@@ -9,7 +9,7 @@ package com.wegas.app.pdf.controllers;
 
 import com.wegas.app.jsf.controllers.*;
 import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.exception.external.WegasNotFoundException;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.GameModel;

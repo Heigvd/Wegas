@@ -7,7 +7,7 @@
  */
 package com.wegas.core.exception;
 
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 
 /**
  *

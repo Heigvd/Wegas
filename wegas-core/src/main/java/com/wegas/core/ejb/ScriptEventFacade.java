@@ -7,8 +7,8 @@
  */
 package com.wegas.core.ejb;
 
-import com.wegas.core.exception.external.WegasErrorMessage;
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import java.util.Collection;
@@ -82,7 +82,7 @@ public class ScriptEventFacade {
      * @param player
      * @param eventName
      * @param param
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void fire(Player player, String eventName, Object param) throws WegasScriptException {
         this.eventsFired.put(eventName, param);
@@ -93,7 +93,7 @@ public class ScriptEventFacade {
      *
      * @param player
      * @param eventName
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void fire(Player player, String eventName) throws WegasScriptException {
         this.fire(player, eventName, null);
@@ -103,7 +103,7 @@ public class ScriptEventFacade {
      *
      * @param eventName
      * @param param
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void fire(String eventName, Object param) throws WegasScriptException {
         this.fire(requestManager.getPlayer(), eventName, param);
@@ -112,7 +112,7 @@ public class ScriptEventFacade {
     /**
      *
      * @param eventName
-     * @throws com.wegas.core.exception.external.WegasScriptException
+     * @throws com.wegas.core.exception.client.WegasScriptException
      */
     public void fire(String eventName) throws WegasScriptException {
         this.fire(eventName, null);

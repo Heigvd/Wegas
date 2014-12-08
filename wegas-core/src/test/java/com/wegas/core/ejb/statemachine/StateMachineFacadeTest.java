@@ -9,7 +9,7 @@ package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.*;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
-import com.wegas.core.exception.external.WegasScriptException;
+import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;

@@ -18,7 +18,7 @@ import javax.jcr.RepositoryException;
 ////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.wegas.core.exception.external.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import org.slf4j.LoggerFactory;
 
 /**
