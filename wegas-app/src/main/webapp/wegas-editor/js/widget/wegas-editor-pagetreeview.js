@@ -97,7 +97,7 @@ YUI.add('wegas-editor-pagetreeview', function(Y) {
             }, ".content-header", this);
 
             this.dsEvent = DATASOURCE.after("pageUpdated", function(e) {
-                this.showOverlay();
+                //this.showOverlay();
                 this.getIndex();
             }, this);
             //if (this.get("pageLoader")) {

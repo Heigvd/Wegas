@@ -141,7 +141,8 @@ YUI.add('wegas-join-token', function(Y) {
                         this.teamWidget.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // So overlay and message events will be forwarded
                         //this.teamWidget.addTarget(this);                    // So overlay and message events will be forwarded
 
-                    }, this)
+                    }, this),
+                    failure: Y.bind(this.hideOverlay, this)
                 }
             });
         }

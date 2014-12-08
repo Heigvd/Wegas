@@ -79,6 +79,7 @@ YUI.add("wegas-lobby-datatable", function(Y) {
 
             if (ds) {
                 this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
+                this.failureHandler = ds.after("failure", this.hideOverlay, this);
             }
 
             this.table.delegate("click", function(e) {

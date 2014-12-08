@@ -327,7 +327,8 @@ YUI.add("wegas-plugin", function(Y) {
                     this.showOverlay();
                     Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
                         on: {
-                            success: Y.bind(this.hideOverlay, this)
+                            success: Y.bind(this.hideOverlay, this),
+                            failure: Y.bind(this.hideOverlay, this)
                         }
                     });
                 }, this));
