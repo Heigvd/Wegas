@@ -208,7 +208,8 @@ YUI.add('wegas-editor-form', function(Y) {
                         success: Y.bind(function(e) {
                             this.showUpdateForm(e.response.entity);             // and show the form
                             this.hideOverlay();
-                        }, this)
+                        }, this),
+                        failure: Y.bind(this.hideOverlay, this)
                     }
                 });
             } else {                                                            // Otherwise,
