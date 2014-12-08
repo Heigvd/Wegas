@@ -714,6 +714,11 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         success: function(e) {
                             widget.set(ENTITY, e.response.entity);
                             EditEntityAction.hideEditFormOverlay();
+                            widget.hideOverlay();
+                        },
+                        failure: function(){
+                            EditEntityAction.hideEditFormOverlay();
+                            widget.hideOverlay();
                         }
                     }
                 });
