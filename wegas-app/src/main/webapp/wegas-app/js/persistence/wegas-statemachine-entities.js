@@ -161,6 +161,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             }
         },
+        EDITORNAME: "State Machine",
         EDITMENU: [{
                 type: "EditEntityButton",
                 plugins: [{
@@ -443,6 +444,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 }
             }
         },
+        EDITORNAME: "Dialog",
         EDITMENU: [{
                 type: "EditEntityButton",
                 plugins: [{
