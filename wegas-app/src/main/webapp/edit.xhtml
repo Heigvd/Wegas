@@ -3,166 +3,29 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://java.sun.com/jsf/facelets" >
 
-    <ui:composition template="wegas-app/jsf/app-default.xhtml">
+    <ui:composition template="wegas-app/jsf/editor-default.xhtml">
+        <ui:define name="pageUri">/wegas-app/db/wegas-host-layout.json</ui:define>
 
-        <ui:define name="title">#{editorGameController.currentGameModel.name}</ui:define>
+        <script>//<ui:define name = "editorFooter"><![CDATA[
+                Y.Wegas.app.once("render", function() {
+                    var body = Y.one("body");
 
-        <ui:define name="head">
+                    //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
+                        // Handle switch from host to edit mode
+                        Y.use("wegas-button", function() {
+                            var editButton = new Y.Wegas.Button({
+                                label: "Back to game",
+                                cssClass: "host-switchmode"
+                            }).render(".wegas-layout-hd");
 
-            <!-- Page styles -->
-            <link rel="stylesheet" type="text/css" href="#{request.contextPath}/wegas-editor/css/wegas-editor-min.css" />
+                            editButton.on("click", function() {
+                                window.location.replace(window.location.toString().replace("host.", "edit."));
+                            }, this);
+                        });
 
-            <!-- Stylesheets from current game model style library -->
-            <style type="text/css">#{editorGameController.styleSheets}</style>
-
-            <!-- Stylesheets from current game model cssUri property -->
-            <ui:repeat rendered="#{editorGameController.currentGameModel.properties.cssUri != ''}"
-                       var="o" value="#{editorGameController.currentGameModel.properties.cssUri.split(';')}" varStatus="status">
-                <link rel="stylesheet" type="text/css" href="#{request.contextPath}/#{o.trim()}?#{wegasConfig.timestamp}" />
-            </ui:repeat>
-
-            <ui:insert name="editorHeader"/>
-
-        </ui:define>
-
-        <ui:define name="body">
-
-            <!-- Client script (game model specific) -->
-            <ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
-                       var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
-                <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
-            </ui:repeat>
-
-            <script type="text/javascript">
-                YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
-                    var app = new Y.Wegas.App({
-                        dataSources: {
-                            Variable: {
-                                //source: "rest/EditorPrivate/#{editorGameController.currentPlayer.id}/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                source: "rest/Editor/GameModel/#{editorGameController.currentGameModel.id}/VariableDescriptor",
-                                initialRequest: "",
-                                plugins: [{
-                                        fn: "VariableDescriptorCache"
-                                    }, {
-                                        fn: "ScriptEval"
-                                    }, {
-                                        fn: "WebSocketListener",
-                                        cfg: {
-                                            dataSource: "Pusher"
-                                        }
-                                    }, {
-                                        fn: "ServerLog"
-                                    }]
-                            },
-                            Page: {
-                                /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri == ''}">
-                                 */
-                                source: "rest/GameModel/#{editorGameController.currentGameModel.id}/Page/",
-                                /* THIS IS NOT A COMMENT
-                                 * </ui:fragment>
-                                 */
-                                /* THIS IS NOT A COMMENT
-                                 * <ui:fragment rendered="#{editorGameController.currentGameModel.properties.pagesUri != ''}">
-                                 */
-                                source: "#{editorGameController.currentGameModel.properties.pagesUri}",
-                                    /* THIS IS NOT A COMMENT
-                                     * </ui:fragment>
-                                     */
-                                    
-                                    initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-editor-layout.json</ui:insert>',
-                                //initialFullRequest: 'wegas-app/db/wegas-editor-layout.json',
-                                //initialRequest 'EditorLayout',
-                                plugins: [{
-                                        fn: "JSONSchema"
-                                    }, {
-                                        fn: "PageCache"
-                                    }]
-                            },
-                            GameModel: {
-                                source: "rest/Editor/GameModel",
-                                initialRequest: "/#{editorGameController.currentGameModel.id}",
-                                plugins: [{
-                                        fn: "GameModelCache",
-                                        cfg: {
-                                            currentGameModelId: #{editorGameController.currentGameModel.id}
-                                        }
-                                    }]
-                            },
-                            Game: {
-                                source: "rest/Public/GameModel/#{editorGameController.currentGameModel.id}/Game",
-                                initialRequest: "/#{editorGameController.currentGame.id}",
-                                plugins: [{
-                                        fn: "GameCache",
-                                        cfg: {
-                                            currentGameId: #{editorGameController.currentGame.id},
-                                            currentTeamId: #{editorGameController.currentPlayer.team.id},
-                                            currentPlayerId: #{editorGameController.currentPlayer.id}
-                                        }
-                                    }]
-                            },
-                            User: {
-                                source: "rest/Extended/User",
-                                initialRequest: "/#{requestController.currentUser.id}",
-                                plugins: [{
-                                        fn: "UserCache",
-                                        cfg: {
-                                            currentUserId: #{requestController.currentUser.id}
-                                        }
-                                    }]
-                            },
-                            Role: {
-                                source: "rest/Role",
-                                plugins: [{
-                                        fn: "WegasCache"
-                                    }]
-                            },
-                            Pusher: {
-                                type: "PusherDataSource",
-                                source: "rest/Pusher/",
-                                //   applicationKey: "#{editorGameController.currentGameModel.properties.websocket}"
-                                applicationKey: "#{editorGameController.getWegasProperty('pusher.key')}"
-                            },
-                            File: {
-                                source: "rest/GameModel/#{editorGameController.currentGameModel.id}/File/",
-                                plugins: [{
-                                        fn: "JSONSchema"
-                                    }]
-                            }
-                        }
-                    });
-                    
-                    /**
-                     * THIS IS NOT A COMMENT !!!
-                     * Writen as a comment to avoid parsing problems mixing JSF/JavaScript
-                     */
-                    ////<ui:insert name="editorFooter" />////                   // Footer script (for host.html)
-                    /**
-                     * END THIS IS NOT A COMMENT !!!
-                     */
-                    
-                    app.on("render", function() {                               // When the page is rendered
-                        var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
-                        Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
-                        
-                        try {
-                #{editorGameController.getClientScripts()}          // Run game model specific js footer
-                        } catch (e) {
-                            Y.log("Error running client scripts.", "error");
-                        }
-                    });
-                    
-                    app.render();                                               // Render app
+                    //]]></ui:fragment><![CDATA[
                 });
-            </script>
-            <!-- Uservoice -->
-            <ui:include src="wegas-app/jsf/template/uservoice.xhtml" />
-        </ui:define>
-
-        <!-- User voice -->
-        <ui:define name="uservoice_trigger_position">top-right</ui:define>
-        <ui:define name="uservoice_trigger_background_color">white</ui:define>
-        <ui:define name="uservoice_trigger_color">#072644</ui:define>
+            //]]></ui:define></script>
 
     </ui:composition>
 </html>
