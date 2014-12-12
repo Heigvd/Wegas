@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 //@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
 @Table(name = "MCQResult")
-public class Result extends AbstractEntity implements Searchable {
+public class Result extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -119,6 +120,13 @@ public class Result extends AbstractEntity implements Searchable {
         return Helper.insensitiveContainsAll(this.getName(), criterias)
                 || Helper.insensitiveContainsAll(this.getAnswer(), criterias)
                 || (this.getImpact() != null && this.getImpact().containsAll(criterias));
+    }
+
+    @Override
+    public List<Script> getScripts() {
+        List<Script> ret = new ArrayList<>();
+        ret.add(this.impact);
+        return ret;
     }
 
     /**

@@ -18,6 +18,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
@@ -30,7 +32,7 @@ import com.wegas.core.exception.client.WegasErrorMessage;
     @JsonSubTypes.Type(name = "TriggerDescriptor", value = TriggerDescriptor.class),
     @JsonSubTypes.Type(name = "DialogueDescriptor", value = DialogueDescriptor.class)
 })
-public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> {
+public class StateMachineDescriptor extends VariableDescriptor<StateMachineInstance> implements Scripted {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -46,6 +48,15 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
      *
      */
     public StateMachineDescriptor() {
+    }
+
+    @Override
+    public List<Script> getScripts() {
+        List<Script> ret = new ArrayList<>();
+        for (State state: this.getStates().values()){
+             ret.addAll(state.getScripts());
+        }
+        return ret;
     }
 
     /**
@@ -102,6 +113,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      *
      * @param p
+     *
      * @return
      */
     public boolean isEnabled(Player p) {
@@ -111,6 +123,7 @@ public class StateMachineDescriptor extends VariableDescriptor<StateMachineInsta
     /**
      *
      * @param p
+     *
      * @return
      */
     public boolean isDisabled(Player p) {

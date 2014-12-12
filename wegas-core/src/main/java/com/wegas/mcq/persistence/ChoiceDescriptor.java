@@ -23,6 +23,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
@@ -35,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class)
 })
-public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
+public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> implements Scripted {
 
     private static final long serialVersionUID = 1L;
     // private static final Logger logger = LoggerFactory.getLogger(ChoiceDescriptor.class);
@@ -70,6 +72,17 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
      *
      */
     private Long cost = 0L;
+
+    @Override
+    @JsonIgnore
+    public List<Script> getScripts() {
+        List<Script> ret = new ArrayList<>();
+        //Avoid stream
+        for (Result r : this.getResults()) {
+            ret.addAll(r.getScripts());
+        }
+        return ret;
+    }
 
     /**
      *
@@ -131,7 +144,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      * @param player
-     * @param resultName 
+     * @param resultName
      */
     public void setCurrentResult(Player player, String resultName) {
         for (Result r : this.getResults()) {
@@ -203,6 +216,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      * @param p
+     *
      * @return
      */
     public boolean isActive(Player p) {
@@ -212,6 +226,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      * @param p
+     *
      * @return
      */
     public boolean hasBeenSelected(Player p) {

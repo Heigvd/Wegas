@@ -18,6 +18,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueTransition", value = DialogueTransition.class)
 })
-public class Transition extends AbstractEntity implements Searchable {
+public class Transition extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -137,6 +138,14 @@ public class Transition extends AbstractEntity implements Searchable {
      */
     public void setPreStateImpact(Script preStateImpact) {
         this.preStateImpact = preStateImpact;
+    }
+
+    @Override
+    public List<Script> getScripts() {
+        List<Script> ret = new ArrayList<>();
+        ret.add(this.triggerCondition);
+        ret.add(this.preStateImpact);
+        return ret;
     }
 
     /**
