@@ -9,7 +9,6 @@ package com.wegas.core.persistence.variable.statemachine;
 
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
-import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Lob;

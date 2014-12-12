@@ -81,6 +81,30 @@ public class ScriptFacade {
     @Inject
     Event<EngineInvocationEvent> engineInvocationEvent;
 
+    public ScriptEngine instanciateEngine(Player player, String language) {
+        ScriptEngine engine = requestManager.getCurrentEngine();
+        if (engine == null) {
+            ScriptEngineManager mgr = new ScriptEngineManager();                // Instantiate the corresponding script engine
+
+            try {
+                engine = mgr.getEngineByName(language);
+                // Invocable invocableEngine = (Invocable) engine;
+            } catch (NullPointerException ex) {
+                logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
+                throw WegasErrorMessage.error("Could not instantiate script engine for script" + language);
+            }
+            try {
+                engineInvocationEvent.fire(
+                        new EngineInvocationEvent(player, engine));// Fires the engine invocation event, to allow extensions
+
+            } catch (ObserverException ex) {
+                throw (WegasRuntimeException) ex.getCause();
+            }
+            requestManager.setCurrentEngine(engine);
+        }
+        return engine;
+    }
+
     /**
      *
      * Fires an engineInvocationEvent, which should be intercepted to customize
@@ -88,32 +112,14 @@ public class ScriptFacade {
      *
      * @param script
      * @param arguments
+     *
      * @return
      */
     public Object eval(Script script, Map<String, AbstractEntity> arguments) throws WegasScriptException {
         if (script == null) {
             return null;
         }
-        ScriptEngine engine = requestManager.getCurrentEngine();
-        if (engine == null) {
-            ScriptEngineManager mgr = new ScriptEngineManager();                // Instantiate the corresponding script engine
-
-            try {
-                engine = mgr.getEngineByName(script.getLanguage());
-                // Invocable invocableEngine = (Invocable) engine;
-            } catch (NullPointerException ex) {
-                logger.error("Could not find language", ex.getMessage(), ex.getStackTrace());
-                throw WegasErrorMessage.error("Could not instantiate script engine for script" + script);
-            }
-            try {
-                engineInvocationEvent.fire(
-                        new EngineInvocationEvent(requestManager.getPlayer(), engine));// Fires the engine invocation event, to allow extensions
-
-            } catch (ObserverException ex) {
-                throw (WegasRuntimeException) ex.getCause();
-            }
-            requestManager.setCurrentEngine(engine);
-        }
+        ScriptEngine engine = instanciateEngine(requestManager.getPlayer(), script.getLanguage());
 
         for (Entry<String, AbstractEntity> arg : arguments.entrySet()) {        // Inject the arguments
             engine.put(arg.getKey(), arg.getValue());
@@ -130,6 +136,8 @@ public class ScriptFacade {
             throw new WegasScriptException(script.getContent(), ex.getMessage());
         }
     }
+
+    
 
     /**
      * Default customization of our engine: inject the script library, the root
@@ -218,6 +226,7 @@ public class ScriptFacade {
      *
      * @param root
      * @param files
+     *
      * @return
      */
     private Collection<String> getJavaScriptsRecursively(String root, String[] files) {
@@ -263,6 +272,7 @@ public class ScriptFacade {
      * check if the given file is a minified version of an existing one
      *
      * @param file
+     *
      * @return
      */
     private boolean isMinifedDuplicata(File file) {
@@ -279,6 +289,7 @@ public class ScriptFacade {
      *
      * @param scripts
      * @param arguments
+     *
      * @return
      */
     public Object eval(List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -304,6 +315,7 @@ public class ScriptFacade {
     /**
      *
      * @param scripts
+     *
      * @return
      */
     public Object eval(List<Script> scripts) throws WegasScriptException {
@@ -314,6 +326,7 @@ public class ScriptFacade {
      *
      * @param p
      * @param s
+     *
      * @return
      */
     public Object eval(Player p, Script s) throws WegasScriptException {
@@ -325,6 +338,7 @@ public class ScriptFacade {
      *
      * @param p
      * @param s
+     *
      * @return
      */
     public Object eval(Player p, List<Script> s) throws WegasScriptException {
@@ -337,6 +351,7 @@ public class ScriptFacade {
      * @param player
      * @param s
      * @param arguments
+     *
      * @return
      */
     public Object eval(Player player, Script s, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -349,6 +364,7 @@ public class ScriptFacade {
      * @param player
      * @param scripts
      * @param arguments
+     *
      * @return
      */
     public Object eval(Player player, List<Script> scripts, Map<String, AbstractEntity> arguments) throws WegasScriptException {
@@ -360,6 +376,7 @@ public class ScriptFacade {
      *
      * @param playerId
      * @param s
+     *
      * @return
      */
     public Object eval(Long playerId, Script s) throws WegasScriptException {
@@ -370,6 +387,7 @@ public class ScriptFacade {
     /**
      *
      * @param s
+     *
      * @return
      */
     public Object eval(Script s) throws WegasScriptException {

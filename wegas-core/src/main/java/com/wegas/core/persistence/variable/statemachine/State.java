@@ -20,6 +20,7 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.variable.Scripted;
 
 /**
  *
@@ -33,7 +34,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(name = "DialogueState", value = DialogueState.class)
 })
-public class State extends AbstractEntity implements Searchable {
+public class State extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -75,7 +76,7 @@ public class State extends AbstractEntity implements Searchable {
 
     @Override
     public Boolean contains(final String criteria) {
-               return this.containsAll(new ArrayList<String>() {
+        return this.containsAll(new ArrayList<String>() {
             {
                 add(criteria);
             }
@@ -149,6 +150,16 @@ public class State extends AbstractEntity implements Searchable {
      */
     public void setOnEnterEvent(Script onEnterEvent) {
         this.onEnterEvent = onEnterEvent;
+    }
+
+    @Override
+    public List<Script> getScripts() {
+        List<Script> ret = new ArrayList<>();
+        ret.add(this.onEnterEvent);
+        for(Transition transition: this.getTransitions()){
+            ret.addAll(transition.getScripts());
+        }
+        return ret;
     }
 
     /**

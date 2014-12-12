@@ -7,15 +7,22 @@
  */
 package com.wegas.core.rest;
 
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.ScriptCheck;
 import com.wegas.core.ejb.ScriptFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
+import com.wegas.core.persistence.variable.Scripted;
+import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.security.ejb.UserFacade;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
@@ -47,18 +54,34 @@ public class ScriptController {
      *
      */
     @EJB
+    private GameModelFacade gmf;
+    /**
+     *
+     */
+    @EJB
     private RequestFacade requestFacade;
     /**
      *
      */
     @EJB
     private PlayerFacade playerFacadeFacade;
+    /**
+     *
+     */
+    @EJB
+    private VariableDescriptorFacade variableDescriptorFacade;
+    /**
+     *
+     */
+    @EJB
+    private ScriptCheck scriptCheck;
 
     /**
      *
      * @param gameModelId
      * @param playerId
      * @param script
+     *
      * @return p
      */
     @POST
@@ -79,6 +102,7 @@ public class ScriptController {
     /**
      * @param gameModelId
      * @param multiplayerScripts
+     *
      * @return
      */
     @POST
@@ -101,4 +125,35 @@ public class ScriptController {
         }
         return results;
     }
+
+    /**
+     * Test scripts in a given GameModel (Currently in VariableDescriptors only)
+     *
+     * @param gameModelId the given gameModel's id
+     *
+     * @return Map containing errored VariableDescriptor'id and associated error
+     *         informations
+     */
+    @GET
+    @Path("Test")
+    public Map<Long, WegasScriptException> testGameModel(@PathParam("gameModelId") Long gameModelId) {
+        List<VariableDescriptor> findAll = variableDescriptorFacade.findAll(gameModelId);
+        Player player = gmf.find(gameModelId).getPlayers().get(0);
+        Map<Long, WegasScriptException> ret = new HashMap<>();
+        findAll.stream().filter((descriptor) -> (descriptor instanceof Scripted))
+                .forEach((VariableDescriptor vd) -> {
+                    ((Scripted) vd).getScripts().stream().filter(script -> script != null)
+                    .anyMatch((Script script) -> {
+                        WegasScriptException validate = scriptCheck.validate(script, player);
+                        if (validate != null) {
+                            ret.put(vd.getId(), validate);
+                            return true;
+                        }
+                        return false;
+                    });
+                });
+
+        return ret;
+    }
+
 }
