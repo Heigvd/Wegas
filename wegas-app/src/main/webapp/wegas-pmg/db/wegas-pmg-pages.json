@@ -506,7 +506,7 @@
                                 "fn": "UnreadCount",
                                 "cfg": {
                                     "variable": {
-                                        "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod'), phaseDir = Variable.find('questions').item(currentPhase - 1), i, d; list = []; list.push(phaseDir.item(currentPeriod.item(currentPhase - 1).getValue(self) - 1)); for (i in phaseDir.get(\"items\")){ d =  phaseDir.item(i); if (d.get(\"@class\") === \"QuestionDescriptor\"){list.push(d)};} return list;"
+                                        "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } return items;"
                                     }
                                 }
                             }, {
@@ -887,7 +887,7 @@
             }, {
                 "type": "MCQTabView",
                 "variable": {
-                    "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod'), phaseDir = Variable.find('questions').item(currentPhase - 1), i, d; list = []; list.push(phaseDir.item(currentPeriod.item(currentPhase - 1).getValue(self) - 1)); for (i in phaseDir.get(\"items\")){ d =  phaseDir.item(i); if (d.get(\"@class\") === \"QuestionDescriptor\"){list.push(d)};} return list;"
+                    "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } return items;"
                 }
             }, {
                 "label": "",
@@ -900,7 +900,7 @@
                             "targetEvent": "click",
                             "root": {
                                 "@class": "Script",
-                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod'), phaseDir = Variable.find('questions').item(currentPhase - 1), i, d; list = []; list.push(phaseDir.item(currentPeriod.item(currentPhase - 1).getValue(self) - 1)); for (i in phaseDir.get(\"items\")){ d =  phaseDir.item(i); if (d.get(\"@class\") === \"QuestionDescriptor\"){list.push(d)};} return list;"
+                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i == currentPeriod - 1 && item.get('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } return items;"
                             },
                             "outputType": "html"
                         }
@@ -1537,8 +1537,8 @@
                             "label": "Period",
                             "script": "var currentPhase = Variable.find('currentPhase'); return Variable.find('currentPeriod').item(currentPhase.getValue(self)-1).getValue(self)"
                         }, {
-                            "label": "Choices",
-                            "script": "var currentPhase = Variable.find('currentPhase'), currentPeriod = Variable.find('currentPeriod'), q = Variable.find('questions').item(currentPhase.getValue(self) - 1).item(currentPeriod.item(currentPhase.getValue(self) - 1).getValue(self) - 1), items = q.flatten(),  i, count = 0, total = 0, inst;for (i = 0; i < items.length; i = i + 1) {    inst = items[i].getInstance(self);    count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0;    total += inst.get('active') ? 1 : 0;}return count + '/' + total;"
+                            "label": "Questions",
+                            "script": "var currentPhase = Variable.find('currentPhase').getValue(self), currentPeriod = Variable.find('currentPeriod').item(currentPhase - 1).getValue(self), i, count = 0, total = 0, inst, q, items = [], item; q = Variable.find('questions').item(currentPhase - 1); if (q) { for (i in q.get('items')) { item = q.item(i); if (item.get('@class') === 'QuestionDescriptor') { items.push(item); } else if (i === currentPeriod - 1 && item('@class') === 'ListDescriptor') { items = items.concat(item.flatten()); } } } for (i = 0; i < items.length; i = i + 1) { inst = items[i].getInstance(self); count += (inst.get('replies').length > 0 && inst.get('active')) ? 1 : 0; total += inst.get('active') ? 1 : 0; } return count + '/' + total;"
                         }, {
                             "label": "Management",
                             "script": "Variable.find(gameModel, 'managementApproval').getValue(self)",

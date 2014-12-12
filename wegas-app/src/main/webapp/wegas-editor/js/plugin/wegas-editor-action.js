@@ -497,7 +497,7 @@ YUI.add('wegas-editor-action', function(Y) {
                             this.hideOverlay();
                             Wegas.Facade.RegisteredGames.sendInitialRequest();      // Refresh the list of games
                             Y.Widget.getByNode(".wegas-joinedgamesdatatable")
-                                .showMessage("successPopup", "Game left", 2000)  // Popup
+                                //.showMessage("successPopup", "Game left", 2000)  // Popup
                                 .showMessage("success", "Game left");            // toolbar
 
                             Y.Plugin.EditEntityAction.hideRightTabs();              // Empty right tab on join
