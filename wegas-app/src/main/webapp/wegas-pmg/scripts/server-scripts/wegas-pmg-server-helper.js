@@ -97,7 +97,7 @@ var PMGHelper = (function() {
         if (!period) {
             period = getCurrentPeriodNumber();
         }
-        // Inactive resource never work
+// Inactive resource never work
         if (!employeeInst.getActive()) { // @fixme activity rate
             return false;
         }
@@ -175,7 +175,7 @@ var PMGHelper = (function() {
     }
 
     function getCurrentPhaseName() {
-        // TODO I18nalize ??? NO: Must be the same as the ones in the time bar !
+// TODO I18nalize ??? NO: Must be the same as the ones in the time bar !
         switch (getCurrentPhaseNumber()) {
             case 1:
                 return "Initiation";
