@@ -27,6 +27,7 @@ YUI.add('wegas-shareuser', function(Y) {
         renderUI: function() {
             var el = this.get(CONTENTBOX),
                 e = this.get("entity"),
+                resultTemplate = "{firstname} {lastname} {username} <p class='email'>{email}</p>",
                 permissions = [{
                         name: "username",
                         type: 'markup',
@@ -75,8 +76,33 @@ YUI.add('wegas-shareuser', function(Y) {
                 autoComp: {
                     minQueryLength: 1,
                     maxResults: 30,
-                    resultTextLocator: 'label',
-                    resultHighlighter: 'phraseMatch',
+                    //resultTextLocator: 'label',
+                    //resultHighlighter: 'phraseMatch',
+                    resultFormatter: function(query, results) {
+                        return Y.Array.map(results, function(result) {
+                            return Y.Lang.sub(resultTemplate, {
+                                firstname: result.highlighted.firstname,
+                                lastname: result.highlighted.lastname,
+                                email: result.highlighted.email,
+                                username: result.highlighted.username
+                            });
+                        });
+                    },
+                    resultHighlighter: function(query, results) {
+                        var tokens = query.split(" ");
+                        return Y.Array.map(results, function(result) {
+                            var rH = {};
+                            rH['firstname'] = Y.Highlight.all(result.raw.get("firstname"), tokens);
+                            rH['lastname'] = Y.Highlight.all(result.raw.get("lastname"), tokens);
+                            rH['email'] = Y.Highlight.all(result.raw.get("email"), tokens);
+                            if (result.raw.get("username")) {
+                                rH['username'] = "(" + Y.Highlight.all(result.raw.get("username"), tokens) + ")";
+                            } else {
+                                rH['username'] = "";
+                            }
+                            return rH;
+                        });
+                    },
                     queryDelimiter: ',',
                     source: Y.bind(function(query, callback) {
                         this.autocompleteRequest(query, callback);
@@ -111,22 +137,8 @@ YUI.add('wegas-shareuser', function(Y) {
                 },
                 on: {
                     success: Y.bind(function(e) {
-                        var data = e.response.results.entities, result = [], temp;
-                        Y.Array.each(data, function(r) {
-                            if ((r.get("firstname") && r.get("firstname") !== " ")) {
-                                temp = {
-                                    label: r.get("firstname") + " " + r.get("lastname")
-                                };
-                            } else {
-                                temp = {
-                                    label: r.get("email")
-                                };
-                            }
-                            temp.value = r.get("id");
-                            result.push(temp);
-                        });
-                        callback(result);
-
+                        var data = e.response.results.entities;
+                        callback(data);
                     }, this),
                     failure: Y.bind(this.defaultFailureHandler, this)
                 }
