@@ -8,7 +8,7 @@
 
         <script>//<ui:define name = "editorFooter"><![CDATA[
                 Y.Wegas.app.once("render", function() {
-                    var body = Y.one("body");
+                    Y.one("body").addClass("wegas-editmode");
 
                     //]]><ui:fragment rendered = "#{editorGameController.gameId != null}"><![CDATA[
                         // Handle switch from host to edit mode
