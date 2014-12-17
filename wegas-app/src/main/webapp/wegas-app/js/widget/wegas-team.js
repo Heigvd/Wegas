@@ -424,13 +424,13 @@ YUI.add('wegas-team', function(Y) {
                         var tokens = query.split(" ");
                         return Y.Array.map(results, function(result) {
                             var rH = {};
-                            rH['firstname'] = Y.Highlight.all(result.raw.firstname, tokens);
-                            rH['lastname'] = Y.Highlight.all(result.raw.lastname, tokens);
-                            rH['email'] = Y.Highlight.all(result.raw.email, tokens);
+                            rH.firstname = Y.Highlight.all(result.raw.firstname, tokens);
+                            rH.lastname = Y.Highlight.all(result.raw.lastname, tokens);
+                            rH.email = Y.Highlight.all(result.raw.email, tokens);
                             if (result.raw.username) {
-                                rH['username'] = "(" + Y.Highlight.all(result.raw.username, tokens) + ")";
+                                rH.username = "(" + Y.Highlight.all(result.raw.username, tokens) + ")";
                             } else {
-                                rH['username'] = "";
+                                rH.username = "";
                             }
                             return rH;
                         });
