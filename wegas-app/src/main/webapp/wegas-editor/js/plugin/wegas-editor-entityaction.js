@@ -276,6 +276,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             EditEntityAction.hideRightTabs();                                   // Hide all active tabs
             EditEntityAction.showEditForm(entity, Y.bind(function(newVal) {
                 var dataSource = this.get(DATASOURCE);
+                this.showOverlay();
                 dataSource.cache.post(newVal, null, {
                     success: Y.bind(function(e) {
                         if (this.get("showEditionAfterRequest")) {
@@ -286,6 +287,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             //EditEntityAction.hideEditFormOverlay();
                             //EditEntityAction.showUpdateForm(e.response.entity, dataSource);
                             //EditEntityAction.showFormMessage("success", "Item created");
+                            this.hideOverlay();
                         }
                     }, this),
                     failure: Y.bind(this.hideOverlay, this)
