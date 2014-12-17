@@ -13,6 +13,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
@@ -24,6 +25,13 @@ import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -32,6 +40,8 @@ import javax.persistence.*;
 @Stateless
 @LocalBean
 public class AccountFacade extends BaseFacade<AbstractAccount> {
+
+    Logger logger = LoggerFactory.getLogger(AccountFacade.class);
 
     private static final int MAXRESULT = 30;
     /**
@@ -146,6 +156,36 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
+    }
+
+    public List<JpaAccount> findByNameEmailOrUsername(String input) {
+        String[] tokens = input.split(" ");
+
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery cq = cb.createQuery();
+        Root<JpaAccount> jpaAccount = cq.from(JpaAccount.class);
+
+        Predicate[] prs = {};
+
+        List<Predicate> andPreds = new ArrayList<>();
+        for (String token : tokens) {
+            if (!token.isEmpty()) {
+                token = "%" + token.toLowerCase() + "%";
+                List<Predicate> orPreds = new ArrayList<>();
+                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.firstname)), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.lastname)), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.email)), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.username)), token));
+                
+                andPreds.add(cb.or(orPreds.toArray(prs)));
+            }
+        }
+
+        cq.where(cb.and(andPreds.toArray(prs)));
+
+        Query q = em.createQuery(cq);
+        q.setMaxResults(MAXRESULT);
+        return (List<JpaAccount>) q.getResultList();
     }
 
     /**
