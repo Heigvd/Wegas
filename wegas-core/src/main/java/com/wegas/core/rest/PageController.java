@@ -96,7 +96,7 @@ public class PageController {
     public Response getIndex(@PathParam("gameModelId") String gameModelId)
             throws RepositoryException {
 
-        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
+        SecurityUtils.getSubject().checkPermission("GameModel:View:gm" + gameModelId);
 
         try (final Pages pages = new Pages(gameModelId)) {
             return Response.ok(pages.getIndex(), MediaType.APPLICATION_JSON)
