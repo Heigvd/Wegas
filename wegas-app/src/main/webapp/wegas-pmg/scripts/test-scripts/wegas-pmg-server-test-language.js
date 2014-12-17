@@ -38,7 +38,7 @@ function testLanguage1() {
         exp_missingArgs, exp_missingKey, exp_missingLocale, exp_ok,
         key = "messages.endOfTaskSwitchToNew.content";
 
-    debug(arguments.callee.name);
+    debug("testLanguage1");
     language.setValue("en");
 
     ok = I18n.t(key, {step: "STEP", task: "T1", nextTask: "T2", employeeName: "John", job: "Job"});

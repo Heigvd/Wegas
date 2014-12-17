@@ -494,7 +494,7 @@ var PMGSimulation = (function() {
      * @param {ResourceInstance} employeeInst
      */
     function removeAssignmentsFromCompleteTasks(employeeInst) {
-        debug(arguments.callee.name);
+        debug("removeAssignmentsFromCompleteTasks");
         var i, assignment, toRemove = [];
         for (i = 0; i < employeeInst.assignments.size(); i += 1) {
             assignment = employeeInst.assignments.get(i);
@@ -672,7 +672,7 @@ var PMGSimulation = (function() {
     function getSkillsOverview(taskInstance) {
         var i, req, work, works = {},
             requirements = taskInstance.requirements;
-        debug(arguments.callee.name + " req: " + requirements);
+        debug("getSkillsOverview() req: " + requirements);
 
         for (i = 0; i < requirements.size(); i += 1) {
             req = requirements.get(i);
