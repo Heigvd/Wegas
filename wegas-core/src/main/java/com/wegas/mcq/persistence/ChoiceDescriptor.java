@@ -280,5 +280,4 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         }
         return false;
     }
-
 }

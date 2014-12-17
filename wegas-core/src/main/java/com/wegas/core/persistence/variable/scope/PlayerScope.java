@@ -42,7 +42,7 @@ public class PlayerScope extends AbstractScope {
     @JoinColumn(name = "playerscope_id", referencedColumnName = "id")
     //@XmlTransient
     @JsonIgnore
-    private Map<Long, VariableInstance> variableInstances = new HashMap<Long, VariableInstance>();
+    private Map<Long, VariableInstance> variableInstances = new HashMap<>();
 
     /**
      *

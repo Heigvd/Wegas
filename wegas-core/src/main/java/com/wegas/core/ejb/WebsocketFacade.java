@@ -12,7 +12,6 @@ import com.pusher.rest.data.PresenceUser;
 import com.wegas.core.Helper;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.scope.GameModelScope;
@@ -116,7 +115,7 @@ public class WebsocketFacade {
                     || v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
                 team.addEntity(v);
                 teamId = variableInstanceFacade.findTeam(v).getId();
-            } else if (events.getUpdatedEntities().get(i).getScope() instanceof PlayerScope
+            } else if (v.getScope() instanceof PlayerScope
                     || v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
                 player.addEntity(v);
                 playerId = variableInstanceFacade.findAPlayer(v).getId();

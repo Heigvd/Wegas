@@ -118,10 +118,10 @@ public class ScriptController {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
-        for (int i = 0; i < playerIdList.size(); i++) {
-            Object r = scriptManager.eval(playerIdList.get(i).longValue(), script);
+        for (Integer playerId : playerIdList) {
+            Object r = scriptManager.eval(playerId.longValue(), script);
             results.add(r);
-            requestFacade.commit(playerFacadeFacade.find(playerIdList.get(i).longValue()));
+            requestFacade.commit(playerFacadeFacade.find(playerId.longValue()));
         }
         return results;
     }

@@ -490,7 +490,7 @@ public class ResourceInstance extends VariableInstance {
      */
     public List<Assignment> moveAssignemnt(Integer currentPosition, Integer nextPosition) {
         Assignment assignment = this.assignments.remove(currentPosition.intValue());
-        this.assignments.add(nextPosition.intValue(), assignment);
+        this.assignments.add(nextPosition, assignment);
         return this.assignments;
     }
 }

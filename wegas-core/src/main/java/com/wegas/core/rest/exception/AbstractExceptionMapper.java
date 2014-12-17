@@ -37,7 +37,7 @@ public abstract class AbstractExceptionMapper {
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
-//                || exception instanceof javax.persistence.PersistenceException
+                //                || exception instanceof javax.persistence.PersistenceException
                 || exception instanceof org.omg.CORBA.TRANSACTION_ROLLEDBACK) {
             return processException(exception.getCause());
 
@@ -51,29 +51,5 @@ public abstract class AbstractExceptionMapper {
             logger.error(exception.getLocalizedMessage());
             return Response.status(Response.Status.BAD_REQUEST).entity(exception).build();
         }
-        /*} else if (exception instanceof WegasRuntimeException){
-            logger.error(exception.getLocalizedMessage());
-            return Response.status(Response.Status.BAD_REQUEST).
-                    //entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
-                    entity(exception).build();
-        } else if (exception instanceof ConstraintViolationException) {
-            ConstraintViolationException constraintViolationException = (ConstraintViolationException) exception;
-
-            StringBuilder sb = new StringBuilder(
-                    RequestFacade.lookup().getBundle("com.wegas.app.errors").getString("constraint")); //internationalised error (sample)
-            for (javax.validation.ConstraintViolation violation : constraintViolationException.getConstraintViolations()) {
-                sb.append("\n").append(violation.getLeafBean()).append(":").append(violation.getRootBean()).append(violation.getPropertyPath());
-            }
-            logger.error(sb.toString());
-            // constraintViolationException.getMessage()
-            return Response.status(Response.Status.BAD_REQUEST).
-                    entity(new ExceptionWrapper("400", exception.getClass(), constraintViolationException.getLocalizedMessage())).build();
-                    //entity(exception).build();
-        } else {
-            logger.error(RequestFacade.lookup().
-                    getBundle("com.wegas.app.errors").getString("unexpected"), exception); //internationalised error (sample)
-            return Response.status(Response.Status.BAD_REQUEST).
-                    entity(new ExceptionWrapper("400", exception.getClass(), exception.getLocalizedMessage())).build();
-        }*/
     }
 }

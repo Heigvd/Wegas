@@ -11,7 +11,6 @@ import com.wegas.core.jcr.SessionHolder;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -346,8 +345,7 @@ public class ContentConnector implements AutoCloseable {
         List<AbstractContentDescriptor> list = root.list();
 
         ZipEntry entry;
-        for (Iterator<AbstractContentDescriptor> it = list.iterator(); it.hasNext();) {
-            AbstractContentDescriptor item = it.next();
+        for (AbstractContentDescriptor item : list) {
             entry = item.getZipEntry();
             try {
                 out.putNextEntry(entry);

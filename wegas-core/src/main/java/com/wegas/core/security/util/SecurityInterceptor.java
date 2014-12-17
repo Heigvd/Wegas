@@ -51,7 +51,7 @@ public class SecurityInterceptor {
         final Class<? extends Object> runtimeClass = ctx.getTarget().getClass();
 
         Subject subject = SecurityUtils.getSubject();
-        boolean requiresAuthentication = false;// Check if user is authenticated
+        boolean requiresAuthentication;// Check if user is authenticated
         try { // check method first
             ctx.getMethod().getAnnotation(RequiresAuthentication.class);
             requiresAuthentication = true;
@@ -84,7 +84,7 @@ public class SecurityInterceptor {
          * *********************************************************
          */
         // check if user has roles
-        boolean requiresRoles = false;
+        boolean requiresRoles;
         List<String> listOfRoles = null;
 
         try { // check method first
@@ -132,7 +132,7 @@ public class SecurityInterceptor {
          * *********************************************************
          */
         // and lastly check for permissions
-        boolean requiresPermissions = false;
+        boolean requiresPermissions;
         List<String> listOfPermissionsString = null;
 
         try { // check method first
@@ -157,7 +157,7 @@ public class SecurityInterceptor {
 
         if (requiresPermissions && listOfPermissionsString != null) {
             log.debug("[security] checking for permissions.");
-            List<Permission> listOfPermissions = new ArrayList<Permission>();
+            List<Permission> listOfPermissions = new ArrayList<>();
             for (String p : listOfPermissionsString) {
                 listOfPermissions.add((Permission) new WildcardPermission(p));
             }
