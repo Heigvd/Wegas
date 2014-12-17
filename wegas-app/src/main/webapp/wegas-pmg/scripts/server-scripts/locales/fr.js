@@ -104,11 +104,12 @@ i18nTable.fr = {
     }
 };
 
-i18nOrdinate.fr = (function(number) {
+i18nOrdinate.fr = function(number) {
+    "use strict";
     switch (number) {
         case 1:
             return number + "er";
         default:
             return number + "ème";
     }
-});
+};

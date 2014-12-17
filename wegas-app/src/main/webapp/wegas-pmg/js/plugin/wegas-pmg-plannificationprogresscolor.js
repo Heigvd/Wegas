@@ -12,7 +12,7 @@
 YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
     "use strict";
 
-    var Wegas = Y.Wegas, PlannificationProgressColor;
+    var PlannificationProgressColor;
 
     /**
      *  @class color plannification progress in datatable
@@ -39,11 +39,11 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             var i, taskDesc, taskInst, properties,
                 dt = this.get("host").datatable;
 
-            for (i = 0; i < dt.data.size(); i++) {
+            for (i = 0; i < dt.data.size(); i += 1) {
                 taskDesc = dt.getRecord(i).get("descriptor");
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
-                if (parseInt(properties.completeness) < 100) {
+                if (parseInt(properties.completeness, 10) < 100) {
                     taskDesc.timeSolde = this.timeSolde(taskDesc);
                     taskDesc.startPlannif = this.startPlannif(taskDesc);
 
@@ -55,7 +55,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             var taskId, taskDesc, host = this.get("host"),
                 dt = this.get("host").datatable, i, ii, cell;
 
-            for (i = 0; i < dt.data.size(); i++) {
+            for (i = 0; i < dt.data.size(); i += 1) {
                 for (taskId in this.taskTable) {
                     taskDesc = this.taskTable[taskId];
                     if (dt.getRecord(i).get("id") === taskDesc.get("id")) {
@@ -75,11 +75,11 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
             if (time < this.get("host").schedule.currentPeriod()) {
                 return;
             }
-            if (start - parseInt(start) === 0 && end - parseInt(end) === 0) {
-                end--;
+            if (start - parseInt(start, 10) === 0 && end - parseInt(end, 10) === 0) {
+                end -= 1;
             }
-            if (time === parseInt(end) || time === parseInt(start) && parseInt(start) === parseInt(end)) {
-                decimal = end - parseInt(end);
+            if ((time === parseInt(end, 10)) || ((time === parseInt(start, 10)) && (parseInt(start, 10) === parseInt(end, 10)))) {
+                decimal = end - parseInt(end, 10);
                 if (decimal === 0) {
                     this.addColor(cell, "fill100");
                 } else if (decimal > 0 && decimal <= 0.3) {
@@ -89,8 +89,8 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 } else {
                     this.addColor(cell, "fill0to50");
                 }
-            } else if (time === parseInt(start)) {
-                decimal = start - parseInt(start);
+            } else if (time === parseInt(start, 10)) {
+                decimal = start - parseInt(start, 10);
                 if (decimal === 0) {
                     this.addColor(cell, "fill100");
                 } else if (decimal > 0 && decimal <= 0.3) {
@@ -100,7 +100,7 @@ YUI.add('wegas-pmg-plannificationprogresscolor', function(Y) {
                 } else {
                     this.addColor(cell, "fill50to100");
                 }
-            } else if (time > parseInt(start) && time < parseInt(end)) {
+            } else if (time > parseInt(start, 10) && time < parseInt(end, 10)) {
                 this.addColor(cell, "fill100");
             }
         },

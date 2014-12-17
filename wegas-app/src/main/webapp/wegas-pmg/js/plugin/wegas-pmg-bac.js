@@ -9,6 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+/*global YUI*/
 YUI.add('wegas-pmg-bac', function(Y) {
     "use strict";
 

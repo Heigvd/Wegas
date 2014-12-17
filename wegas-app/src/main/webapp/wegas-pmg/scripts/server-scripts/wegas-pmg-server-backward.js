@@ -11,18 +11,22 @@
  */
 
 
-function nextPeriod(){
+function nextPeriod() {
+    "use strict";
     PMGSimulation.nextPeriod();
 }
 
-function workOnProject(resourceInstance){
+function workOnProject(resourceInstance) {
+    "use strict";
     return PMGHelper.workOnProject(resourceInstance.getDescriptor());
 }
 
-function addImpactDuration(a, b, c, d){
+function addImpactDuration(a, b, c, d) {
+    "use strict";
     PMGHelper.addImpactDuration(a, b, c, d);
 }
 
 function cancelEffect() {
+    "use strict";
     PMGHelper.cancelEffect();
 }

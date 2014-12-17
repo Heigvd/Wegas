@@ -406,21 +406,33 @@ YUI.add('wegas-team', function(Y) {
         renderUI: function() {
             var cb = this.get("contentBox"),
                 gameId = Y.Widget.getByNode(this._parentNode).getTargetGame().get("id"),
-                resultTemplate = "{highlighted} <p class='email'>{email}</p>",
+                resultTemplate = "{firstname} {lastname} {username} <p class='email'>{email}</p>",
                 autoCompleteCfg = {
                     minQueryLength: 2,
                     maxResults: 30,
                     resultFormatter: function(query, results) {
                         return Y.Array.map(results, function(result) {
                             return Y.Lang.sub(resultTemplate, {
-                                email: result.raw.email,
-                                highlighted: result.highlighted
+                                firstname: result.highlighted.firstname,
+                                lastname: result.highlighted.lastname,
+                                email: result.highlighted.email,
+                                username: result.highlighted.username
                             });
                         });
                     },
                     resultHighlighter: function(query, results) {
+                        var tokens = query.split(" ");
                         return Y.Array.map(results, function(result) {
-                            return Y.Highlight.all(result.raw.firstname + " " + result.raw.lastname, query);
+                            var rH = {};
+                            rH['firstname'] = Y.Highlight.all(result.raw.firstname, tokens);
+                            rH['lastname'] = Y.Highlight.all(result.raw.lastname, tokens);
+                            rH['email'] = Y.Highlight.all(result.raw.email, tokens);
+                            if (result.raw.username) {
+                                rH['username'] = "(" + Y.Highlight.all(result.raw.username, tokens) + ")";
+                            } else {
+                                rH['username'] = "";
+                            }
+                            return rH;
                         });
                     },
                     source: Wegas.app.get("base") + "rest/User/AutoCompleteFull/{query}/" + gameId,

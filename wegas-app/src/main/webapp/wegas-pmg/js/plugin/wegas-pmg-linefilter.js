@@ -1,7 +1,7 @@
-/* 
+/*
  * Wegas
  * http://wegas.albasim.ch
- 
+
  * Copyright (c) 2014 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
@@ -9,6 +9,7 @@
  *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
+/*global YUI*/
 YUI.add('wegas-pmg-linefilter', function(Y) {
     "use strict";
     var Wegas = Y.Wegas;
@@ -44,7 +45,7 @@ YUI.add('wegas-pmg-linefilter', function(Y) {
         NS: "pmglinefilter",
         ATTRS: {
             filterFn: {
-                "transient": true, //avoid function serialization 
+                "transient": true, //avoid function serialization
                 value: function(data, node) {
                 },
                 validator: Y.Lang.isFunction

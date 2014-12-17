@@ -138,7 +138,10 @@ public class UserController {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
-        return accountFacade.findByNameOrEmail("%" + value + "%", true);
+        //return accountFacade.findByNameOrEmail("%" + value + "%", true);
+        //return accountFacade.findByNameOrEmail("%" + value + "%", true);
+        //return accountFacade.findByNameEmailOrUsername("%" + value + "%");
+        return accountFacade.findByNameEmailOrUsername(value);
     }
 
     /**
@@ -152,7 +155,7 @@ public class UserController {
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
     public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
-        List<JpaAccount> accounts = this.getAutoComplete("%" + value + "%");
+        List<JpaAccount> accounts = this.getAutoComplete(value);
         for (int i = 0; i < accounts.size(); i++) {
             JpaAccount ja = accounts.get(i);
             em.detach(ja);
@@ -185,9 +188,12 @@ public class UserController {
         ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
 
         List<JpaAccount> returnValue = new ArrayList<>();
-        for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
+        //for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
+        for (JpaAccount a : accountFacade.findByNameEmailOrUsername(value)) {
             boolean hasRole = userFacade.hasRoles(roles, new ArrayList(a.getRoles()));
             if (hasRole) {
+                em.detach(a);
+                a.setEmail(a.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
                 returnValue.add(a);
             }
         }

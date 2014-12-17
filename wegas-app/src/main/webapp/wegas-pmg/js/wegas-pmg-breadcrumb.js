@@ -8,6 +8,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
+/*global YUI*/
 YUI.add("wegas-pmg-breadcrumb", function(Y) {
     "use strict";
 
@@ -20,10 +21,11 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
         renderUI: function() {
             var i, node = Y.Node.create("<div class='pmg-breadcrumb'></div>"),
                 cb = this.get(CONTENTBOX), locations = this.get("locations");
-            if (locations.length === 0)
+            if (locations.length === 0) {
                 return;
+            }
 
-            for (i = 0; i < locations.length; i++) {
+            for (i = 0; i < locations.length; i += 1) {
                 node.append("<span class='element_" + i + "'>" + locations[i] + "</span>");
             }
             cb.append(node);
@@ -40,25 +42,32 @@ YUI.add("wegas-pmg-breadcrumb", function(Y) {
             cb.all(".pmg-breadcrumb span").removeClass("previous").removeClass("current").removeClass("next");
             varValue = varDesc.getInstance().get("value") - varDesc.get("minValue");
             if (typeof varValue === "string") {
-                for (i = 0; i < locations.length; i++) {
-                    if (locations[i] === varValue)
+                for (i = 0; i < locations.length; i += 1) {
+                    if (locations[i] === varValue) {
                         cb.one(".pmg-breadcrumb .element_" + (i + 1)).addClass("current");
-                    if (locations[i] < varValue)
+                    }
+                    if (locations[i] < varValue) {
                         cb.one(".pmg-breadcrumb .element_" + (i + 1)).addClass("previous");
-                    if (locations[i] > varValue)
+                    }
+                    if (locations[i] > varValue) {
                         cb.one(".pmg-breadcrumb .element_" + (i + 1)).addClass("next");
+                    }
                 }
             }
             else if (typeof varValue === "number") {
-                if (varValue > locations.length || varValue < 0)
+                if (varValue > locations.length || varValue < 0) {
                     return;
-                for (i = 0; i < locations.length; i++) {
-                    if (i === varValue)
+                }
+                for (i = 0; i < locations.length; i += 1) {
+                    if (i === varValue) {
                         cb.one(".pmg-breadcrumb .element_" + i).addClass("current");
-                    if (i < varValue)
+                    }
+                    if (i < varValue) {
                         cb.one(".pmg-breadcrumb .element_" + i).addClass("previous");
-                    if (i > varValue)
+                    }
+                    if (i > varValue) {
                         cb.one(".pmg-breadcrumb .element_" + i).addClass("next");
+                    }
                 }
             }
         },

@@ -13,7 +13,7 @@
  */
 
 //importPackage(javax.naming);
-
+/*global importPackage, javax, InitialContext, Y*/
 var DEBUGMODE = false,
     Y = Y || {};
 
@@ -24,6 +24,7 @@ var DEBUGMODE = false,
  * @returns {unresolved}
  */
 function lookupBean(name) {
+    "use strict";
     var ctx = new javax.naming.InitialContext();
     return ctx.lookup('java:module/' + name);
 }
@@ -32,9 +33,11 @@ function lookupBean(name) {
  */
 Y.Array = {
     each: function(array, fn, thisObj) {
+        "use strict";
+        var i, len;
         if (array.toArray)
             array = Java.from(array);
-        for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
+        for (i = 0, len = (array && array.length) || 0; i < len; i += 1) {
             if (i in array) {
                 fn.call(thisObj || Y, array[i], i, array);
             }
@@ -42,6 +45,7 @@ Y.Array = {
         return Y;
     },
     unique: function(array, testFn) {
+        "use strict";
         var i = 0,
             len = array.length,
             results = [],
@@ -88,7 +92,7 @@ Y.Array = {
     sum: function(a, f, o) {
         if (a.toArray)
             a = Java.from(a);
-            //a = a.toArray();                                                    //convert list to array
+        //a = a.toArray();                                                    //convert list to array
         for (var i = 0, l = a.length, r = 0; i < l; i++) {
             r += f.call(o, a[i], i, a);
         }

@@ -9,6 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+/*global YUI*/
 YUI.add('wegas-pmg-advancementlimit', function(Y) {
     "use strict";
 
@@ -52,7 +53,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
 
             for (i = 1; i <= period; i += 1) {
                 boxUnits.append("<div class='wegas-template-valuebox-unit'>" + i + "</div>");
-                if (phase === "box-execution" && i === period){
+                if (phase === "box-execution" && i === period) {
                     boxUnits.append("<div class='wegas-template-valuebox-unit'>...</div>");
                 }
             }
@@ -71,7 +72,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             cb.delegate('hover', this.valueBoxHover, this.valueBoxOut, '.wegas-template-valuebox-unit.clickable', this);
             this.handlers.push(Y.Wegas.Facade.Variable.after("update", this.syncUI, this));
         },
-        isEnabled: function(){
+        isEnabled: function() {
             var advLimitDesc = Y.Wegas.Facade.Variable.cache.find("name", "advancementLimit");
             return (advLimitDesc === undefined || advLimitDesc.getValue());
         },
@@ -88,11 +89,11 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
             cb.all(".currentPlayerState").removeClass("currentPlayerState");
             cb.all(".afterBlockPosition").removeClass("afterBlockPosition");
 
-            if (this.isEnabled()){
+            if (this.isEnabled()) {
                 // Find box and add class blockPosition
                 phaseNode = cb.get('childNodes').item(phaseLimit - 1);
                 if (phaseNode) {
-                    if (periodLimit > phaseNode.one("div div").get('childNodes').size()){
+                    if (periodLimit > phaseNode.one("div div").get('childNodes').size()) {
                         periodLimit = phaseNode.one("div div").get('childNodes').size();
                     }
                     periodNode = phaseNode.one("div div").get('childNodes').item(periodLimit - 1);
@@ -102,12 +103,12 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                 }
 
                 // Find boxes and add class playerAdvancement, clickable
-                for (i = 0; i < 4; i++) {
+                for (i = 0; i < 4; i += 1) {
                     phaseNode = cb.get('childNodes').item(i);
                     boxNodeList = phaseNode.one("div div").get('childNodes');
                     if (i < maxPlayer.phase) {
                         if (i === maxPlayer.phase - 1) {
-                            for (ii = 0; ii < maxPlayer.period; ii++) {
+                            for (ii = 0; ii < maxPlayer.period; ii += 1) {
                                 if (boxNodeList.item(ii)) {
                                     if (ii === maxPlayer.period - 1) {
                                         boxNodeList.item(ii)
@@ -118,7 +119,7 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                                     }
                                 }
                             }
-                            for (ii = maxPlayer.period; ii < boxNodeList.size(); ii++) {
+                            for (ii = maxPlayer.period; ii < boxNodeList.size(); ii += 1) {
                                 if (boxNodeList.item(ii)) {
                                     boxNodeList.item(ii).addClass("clickable");
                                 }
@@ -140,11 +141,11 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                 phase += 1;
                 phaseDiv = phaseDiv.previous();
             }
-            
-            if (e.target.getHTML() === "..."){
+
+            if (e.target.getHTML() === "...") {
                 val = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue() + 1;
             } else {
-                val = parseInt(e.target.getHTML());
+                val = parseInt(e.target.getHTML(), 10);
             }
 
             script = 'Variable.find(gameModel, "periodLimit").setValue(self, ' + val + ');';
@@ -158,13 +159,14 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                 }});
         },
         valueBoxHover: function(e) {
-            if (this.isEnabled()){
-                var cb = this.get(CONTENTBOX);
+            if (this.isEnabled()) {
+                var cb = this.get(CONTENTBOX),
+                    periodNode, phaseNode;
                 cb.all(".blockPosition").removeClass("blockPosition");
                 cb.all(".afterBlockPosition").removeClass("afterBlockPosition");
 
-                var periodNode = e.target,
-                    phaseNode = periodNode.ancestor().ancestor().ancestor();
+                periodNode = e.target;
+                phaseNode = periodNode.ancestor().ancestor().ancestor();
 
                 this.addBlockClass(periodNode, phaseNode);
             }
@@ -190,9 +192,9 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                 currentPeriodList = Y.Wegas.Facade.Variable.cache.find("name", "currentPeriod"),
                 key, playerCurrentPeriodList,
                 max = {
-                phase: 0,
-                period: 0
-            };
+                    phase: 0,
+                    period: 0
+                };
 
             for (key in phaseInstList) {
                 max.phase = Math.max(max.phase, phaseInstList[key].get("value"));

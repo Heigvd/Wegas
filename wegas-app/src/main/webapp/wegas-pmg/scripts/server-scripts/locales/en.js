@@ -97,7 +97,8 @@ i18nTable.en = {
     }
 };
 
-i18nOrdinate.en = (function(number) {
+i18nOrdinate.en = function(number) {
+    "use strict";
     switch (number) {
         case 1:
             return number + "st";
@@ -108,4 +109,4 @@ i18nOrdinate.en = (function(number) {
         default:
             return number + "th";
     }
-});
+};

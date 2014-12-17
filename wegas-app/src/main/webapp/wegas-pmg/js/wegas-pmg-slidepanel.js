@@ -8,6 +8,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
+/*global YUI*/
 YUI.add("wegas-pmg-slidepanel", function(Y) {
     "use strict";
 
@@ -116,8 +117,8 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
         renderUI: function() {
             var panel, resourceFolder = Wegas.Facade.Variable.cache.find("name", "employees"),
                 autoDesc = Wegas.Facade.Variable.cache.find("name", "autoReservation"),
-                autoReserve = autoDesc && autoDesc.getInstance().get("value"), // Ensure variable exists
-                currentPhase = Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
+                autoReserve = autoDesc && autoDesc.getInstance().get("value"); // Ensure variable exists
+            //currentPhase = Wegas.Facade.Variable.cache.find("name", "currentPhase").getValue();
 
             this.panels = Y.Array.map(resourceFolder.get("items"), function(vd) {
                 panel = new Wegas.PmgSlidePanel({
