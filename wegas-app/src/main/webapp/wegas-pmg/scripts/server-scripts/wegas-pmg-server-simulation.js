@@ -678,7 +678,7 @@ var PMGSimulation = (function() {
     function getSkillsOverview(taskInstance) {
         var i, req, work, works = {},
             requirements = taskInstance.requirements;
-        debug("getSkillsOverview: req: " + requirements);
+        debug("getSkillsOverview() req: " + requirements);
 
         for (i = 0; i < requirements.size(); i += 1) {
             req = requirements.get(i);
