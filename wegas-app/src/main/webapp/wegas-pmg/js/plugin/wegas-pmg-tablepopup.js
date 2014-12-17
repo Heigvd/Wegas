@@ -57,7 +57,7 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
         },
         sync: function() {
             var i, dt = this.get("host").datatable;
-            for (i = 0; i < dt.get("data").size(); i++) {
+            for (i = 0; i < dt.get("data").size(); i += 1) {
                 dt.getCell([i, this.get("column")]).addClass("popup");
             }
         },
@@ -90,7 +90,8 @@ YUI.add('wegas-pmg-tablepopup', function(Y) {
          * @private
          */
         destructor: function() {
-            for (var i = 0; i < this.handlers.length; i++) {
+            var i;
+            for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         }

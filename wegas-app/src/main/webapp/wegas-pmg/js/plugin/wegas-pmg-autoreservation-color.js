@@ -9,6 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+/*global YUI*/
 YUI.add('wegas-pmg-autoreservation-color', function(Y) {
     "use strict";
 
@@ -42,7 +43,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
             this.renderCells();
         },
         fillTaskTable: function() {
-            var i, taskDesc, taskInst, dt = this.get("host").datatable,
+            var i, taskDesc, taskInst,
                 properties, tasks, items;
 
             if (!this.get("taskList")) {
@@ -54,7 +55,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                 taskDesc = Wegas.Facade.Variable.cache.find("id", items[i].get("id"));
                 taskInst = taskDesc.getInstance();
                 properties = taskInst.get("properties");
-                if (parseInt(properties.completeness) < 100) {
+                if (parseInt(properties.completeness, 10) < 100) {
                     taskDesc.timeSolde = this.timeSolde(taskDesc);
                     taskDesc.startPlannif = this.startPlannif(taskDesc);
 
@@ -70,11 +71,12 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                 taskDescId, taskTableId,
                 taskDesc,
                 periods, period,
-                HOST = this.get("host");
+                HOST = this.get("host"),
+                p;
 
 
             // For earch resource instance
-            for (i = 0; i < dt.data.size(); i++) {
+            for (i = 0; i < dt.data.size(); i += 1) {
                 resourceDesc = Wegas.Facade.Variable.cache.find("id", dt.getRecord(i).get("id"));
                 resourceInst = resourceDesc.getInstance();
                 assignments = resourceInst.get("assignments");
@@ -89,8 +91,7 @@ YUI.add('wegas-pmg-autoreservation-color', function(Y) {
                     for (taskTableId in this.taskTable) {
                         taskDesc = this.taskTable[taskTableId];
                         if (taskDesc.get("id") === taskDescId) {
-                            var p;
-                            for (p in taskDesc.planned){
+                            for (p in taskDesc.planned) {
                                 periods.push(taskDesc.planned[p]);
                             }
                             break;

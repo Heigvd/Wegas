@@ -9,8 +9,11 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+/*global YUI*/
 YUI.add('wegas-pmg-occupationcolor', function(Y) {
     "use strict";
+
+    var OccupationColor, EngagmentDelay;
 
     /**
      *  @class color occupation in datatable
@@ -18,7 +21,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
      *  @extends Y.Plugin.Base
      *  @constructor
      */
-    var OccupationColor = Y.Base.create("wegas-pmg-occupationcolor", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    OccupationColor = Y.Base.create("wegas-pmg-occupationcolor", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.OccupationColor */
         /**
          * Lifecycle methods
@@ -39,9 +42,9 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                 host = this.get("host"),
                 data = host.datatable.data;
 
-            for (i = 0; i < data.size(); i++) {
+            for (i = 0; i < data.size(); i += 1) {
                 occupations = data.item(i).get("descriptor").getInstance().get("occupations");
-                for (ii = 0; ii < occupations.length; ii++) {
+                for (ii = 0; ii < occupations.length; ii += 1) {
                     time = occupations[ii].get("time");
                     if (time >= host.schedule.currentPeriod()
                         || !occupations[ii].get("editable")) {                  //Affiche les occupations
@@ -76,7 +79,7 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
     });
     Y.Plugin.OccupationColor = OccupationColor;
 
-    var EngagmentDelay = Y.Base.create("wegas-pmg-engagementdelay", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
+    EngagmentDelay = Y.Base.create("wegas-pmg-engagementdelay", Y.Plugin.Base, [Y.Wegas.Plugin, Y.Wegas.Editable], {
         /** @lends Y.Plugin.OccupationColor */
         /**
          * Lifecycle methods
@@ -95,11 +98,11 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                 dt = host.datatable,
                 currentPeriod = host.schedule.currentPeriod(),
                 initialMaximum = host.schedule.initialMaximum();
-    
+
             // Issue #795: disable engagment delay when currentPeriod > initial maximum
             if (currentPeriod <= initialMaximum) {
-                for (i = 0; i < dt.data.size(); i++) {
-                    for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii++) {
+                for (i = 0; i < dt.data.size(); i += 1) {
+                    for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii += 1) {
                         cell = host.schedule.getCell(i, currentPeriod + ii);
                         if (cell) {
                             if (!cell.getContent()) {

@@ -9,6 +9,7 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
+/*global YUI*/
 YUI.add('wegas-scheduledatatable', function(Y) {
     "use strict";
 
@@ -95,7 +96,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             var variable = Wegas.Facade.Variable.cache.find("name", "currentPhase");
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
-                return;
+                return null;
             }
             return variable.getInstance().get("value");
         },
@@ -106,7 +107,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             var variable = this.get('variable.evaluated');
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
-                return;
+                return null;
             }
             return variable.getInstance().get("value");
         },
@@ -114,7 +115,7 @@ YUI.add('wegas-scheduledatatable', function(Y) {
             var variable = Wegas.Facade.Variable.cache.find("name", "executionPeriods");
             if (!variable) {
                 this.get("host").showMessage("error", "No variable found");
-                return;
+                return null;
             }
             return variable.getInstance().get("value");
         },

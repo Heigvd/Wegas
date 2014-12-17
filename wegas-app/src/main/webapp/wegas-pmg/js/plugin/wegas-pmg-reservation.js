@@ -66,7 +66,6 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                         }
                     });
                 });
-                return;
             } else {
                 Wegas.Panel.confirmPlayerAction(function() {
                     Wegas.Facade.Variable.sendRequest({

@@ -11,6 +11,8 @@
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
+/*global importPackage, javax, InitialContext, Y*/
+
 importPackage(javax.naming);
 
 var DEBUGMODE = false,
@@ -22,6 +24,7 @@ var DEBUGMODE = false,
  * @return the wanted bean or null
  */
 function lookupBean(name) {
+    "use strict";
     var ctx = new InitialContext();
     return ctx.lookup('java:module/' + name);
 }
@@ -30,9 +33,12 @@ function lookupBean(name) {
  */
 Y.Array = {
     each: function(array, fn, thisObj) {
-        if (array.toArray)
+        "use strict";
+        var i, len;
+        if (array.toArray) {
             array = array.toArray();                                            //convert list to array
-        for (var i = 0, len = (array && array.length) || 0; i < len; ++i) {
+        }
+        for (i = 0, len = (array && array.length) || 0; i < len; i += 1) {
             if (i in array) {
                 fn.call(thisObj || Y, array[i], i, array);
             }
@@ -40,6 +46,7 @@ Y.Array = {
         return Y;
     },
     unique: function(array, testFn) {
+        "use strict";
         var i = 0,
             len = array.length,
             results = [],

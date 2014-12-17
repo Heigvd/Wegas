@@ -9,7 +9,8 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-pmg-assignment', function(Y) {
+/*global YUI*/
+YUI.add("wegas-pmg-assignment", function(Y) {
     "use strict";
 
     /**
@@ -33,7 +34,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.sortable = [];
 
             this.get(HOST).datatable.addColumn({
-                key: 'assignments',
+                key: "assignments",
                 label: "Assignments",
                 formatter: this.formatAssignment,
                 allowHTML: true
@@ -49,10 +50,10 @@ YUI.add('wegas-pmg-assignment', function(Y) {
 
             this.handlers.update = Wegas.Facade.Variable.after("update", this.sync, this);
 
-            this.handlers.createMenu = table.delegate('click', this.createMenu, // fill the "add" menu on click
-                '.yui3-datatable-data .assignment .assign', this);
+            this.handlers.createMenu = table.delegate("click", this.createMenu, // fill the "add" menu on click
+                ".yui3-datatable-data .assignment .assign", this);
 
-            this.handlers.remove = table.delegate('click', function(e) {
+            this.handlers.remove = table.delegate("click", function(e) {
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     var node = e.target.get("parentNode").get("parentNode");
                     Wegas.Facade.Variable.sendQueuedRequest({
@@ -70,23 +71,23 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                     //node.remove(true);
                     //this.sync();
                 }, this));
-            }, '.task .remove', this);
+            }, ".task .remove", this);
 
-            this.handlers.moveLeft = table.delegate('click', function(e) {
+            this.handlers.moveLeft = table.delegate("click", function(e) {
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     var node = e.target.get("parentNode").get("parentNode");
                     node.swap(node.previous());
                     this.savePosition(node);
                 }, this));
-            }, '.task .dirleft', this);
+            }, ".task .dirleft", this);
 
-            this.handlers.moveRight = table.delegate('click', function(e) {
+            this.handlers.moveRight = table.delegate("click", function(e) {
                 Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                     var node = e.target.get("parentNode").get("parentNode");
                     node.swap(node.next());
                     this.savePosition(node);
                 }, this));
-            }, '.task .dirright', this);
+            }, ".task .dirright", this);
 
             this.handlers.sort = table.after("sort", this.sync, this);
             this.beforeHostMethod("syncUI", this.destroySortables);
@@ -98,10 +99,10 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.get("host").get("contentBox").all(".tasks").each(function(n) {
                 var sort = new Y.Sortable({
                     container: n,
-                    nodes: '.task',
-                    opacity: '.1'
+                    nodes: ".task",
+                    opacity: ".1"
                 });
-                sort.delegate.after('drag:end', this.onDragEnd, this);
+                sort.delegate.after("drag:end", this.onDragEnd, this);
                 this.sortable.push(sort);
             }, this);
         },
@@ -128,10 +129,10 @@ YUI.add('wegas-pmg-assignment', function(Y) {
         },
         createMenu: function(e) {
             var resourceDesc = this.get(HOST).datatable.getRecord(e.target).get("descriptor"),
-                tasks = this.getTasks(resourceDesc);
+                tasks = this.getTasks(resourceDesc),
+                task;
 
             if (!this.menu) {
-                var task;
                 this.menu = new Wegas.Menu();
                 this.menuDetails = new Wegas.Menu({
                     width: "250px"
@@ -171,6 +172,11 @@ YUI.add('wegas-pmg-assignment', function(Y) {
             this.menu.add(tasks);
             this.menu.attachTo(e.target);
         },
+        filterById: function(taskDesc) {
+            return function(item) {
+                return taskDesc.get("id") === item.get("taskDescriptorId");
+            };
+        },
         getTasks: function(resourceDesc) {
             //add is a boolean to determine if target is remove or add a task
             //you can only add a task which isn't already added.
@@ -179,14 +185,12 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                 assignments = resourceDesc.getInstance().get("assignments");
 
             if (!this.get("taskList")) {
-                return;
+                return [];
             }
-            tasks = Wegas.Facade.Variable.cache.find("name", this.get("taskList")).get('items');
+            tasks = Wegas.Facade.Variable.cache.find("name", this.get("taskList")).get("items");
             for (i = 0; i < tasks.length; i += 1) {
                 taskDesc = tasks[i];
-                taskExist = Y.Array.find(assignments, function(item) {
-                    return taskDesc.get("id") === item.get("taskDescriptorId");
-                });
+                taskExist = Y.Array.find(assignments, this.filerById(taskDesc));
                 if (taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
                     label = taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined";
                     array.push({
@@ -243,7 +247,7 @@ YUI.add('wegas-pmg-assignment', function(Y) {
                         this.descriptionToDisplay(taskDescriptor, e.response.entity.get("description"));
                     },
                     failure: function() {
-                        this.menuDetails.get(CONTENTBOX).setHTML('<div style="padding:5px 10px"><i>Error loading description</i></div>');
+                        this.menuDetails.get(CONTENTBOX).setHTML("<div style=\"padding:5px 10px\"><i>Error loading description</i></div>");
                     }
                 }, this)
             });

@@ -14,7 +14,9 @@
  * 
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
+/*global Variable, gameModel, self, Y, PMGSimulation, debug */
 var PMGHelper = (function() {
+    "use strict";
 
     /**
      * Return the automatic planning setting 
@@ -175,7 +177,7 @@ var PMGHelper = (function() {
     }
 
     function getCurrentPhaseName() {
-// TODO I18nalize ??? NO: Must be the same as the ones in the time bar !
+// WTF I18nalize ??? NO: Must be the same as the ones in the time bar !
         switch (getCurrentPhaseNumber()) {
             case 1:
                 return "Initiation";
@@ -212,7 +214,7 @@ var PMGHelper = (function() {
             propertiesKey = factorsDesc.getInstance().getProperties().keySet().toArray(), i,
             currentTime = Variable.findByName(gameModel, "currentTime").getInstance().getValue(), object,
             args;
-        for (i = 0; i < propertiesKey.length; i++) {
+        for (i = 0; i < propertiesKey.length; i += 1) {
             object = JSON.parse(factorsDesc.getProperty(self, propertiesKey[i]));
             args = JSON.stringify(object.a).substr(1, JSON.stringify(object.a).length - 2);
             if (currentTime === object.t) {

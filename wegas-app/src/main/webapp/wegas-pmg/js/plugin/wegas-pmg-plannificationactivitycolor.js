@@ -39,28 +39,28 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             var i, ii, host = this.get("host"), dt = host.datatable,
                 taskActivities = this.taskActivitiesToAdd();
 
-            for (i = 0; i < dt.data.size(); i++) {
-                for (ii = 0; ii < taskActivities.length; ii++) {
+            for (i = 0; i < dt.data.size(); i += 1) {
+                for (ii = 0; ii < taskActivities.length; ii += 1) {
                     if (taskActivities[ii].get("taskDescriptorId") === dt.getRecord(i).get("id")) {
-                        this.addColor(host.schedule.getCell(i, parseInt(taskActivities[ii].get("time"))));
+                        this.addColor(host.schedule.getCell(i, parseInt(taskActivities[ii].get("time"), 10)));
                     }
                 }
             }
         },
         findTaskActivities: function() {
-            var employees, i, ii, activities,
+            var i, ii, activities,
                 employees = Wegas.Facade.Variable.cache.find("name", "employees"),
                 data = this.get("host").datatable.data,
                 taskActivities = [];
 
             if (!employees) {
-                return;
+                return [];
             }
 
             Y.Array.each(employees.flatten(), function(e) {
                 activities = e.getInstance().get("activities");
-                for (i = 0; i < activities.length; i++) {
-                    for (ii = 0; ii < data.size(); ii++) {
+                for (i = 0; i < activities.length; i += 1) {
+                    for (ii = 0; ii < data.size(); ii += 1) {
                         if (data.item(ii).get("id") === activities[i].get("taskDescriptorId")) {
                             taskActivities.push(activities[i]);
                         }
@@ -74,16 +74,16 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
                 i, ii, exist;
             if (!taskActivities) {
                 this.get("host").showMessage("error", "No employees list found");
-                return;
+                return [];
             }
-            for (i = 0; i < taskActivities.length; i++) {
+            for (i = 0; i < taskActivities.length; i += 1) {
                 exist = false;
                 if (activitiesToAdd.length === 0) {
                     activitiesToAdd.push(taskActivities[i]);
                 } else {
-                    for (ii = 0; ii < activitiesToAdd.length; ii++) {
+                    for (ii = 0; ii < activitiesToAdd.length; ii += 1) {
                         if (activitiesToAdd[ii].get("taskDescriptorId") === taskActivities[i].get("taskDescriptorId") &&
-                            parseInt(activitiesToAdd[ii].get("time")) === parseInt(taskActivities[i].get("time"))) {
+                            parseInt(activitiesToAdd[ii].get("time"), 10) === parseInt(taskActivities[i].get("time"), 10)) {
                             exist = true;
                             break;
                         }

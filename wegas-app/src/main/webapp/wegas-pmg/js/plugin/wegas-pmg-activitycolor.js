@@ -9,7 +9,8 @@
  * @fileoverview
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  */
-YUI.add('wegas-pmg-activitycolor', function(Y) {
+/*global YUI*/
+YUI.add("wegas-pmg-activitycolor", function(Y) {
     "use strict";
 
     /**
@@ -34,7 +35,7 @@ YUI.add('wegas-pmg-activitycolor', function(Y) {
                 taskNumber;
 
             Y.Array.each(resourceInstance.get("activities"), function(a) {
-                periodNumber = parseInt(a.get("time"));
+                periodNumber = parseInt(a.get("time"), 10);
                 taskNumber = Y.Wegas.Facade.Variable.cache.findById(a.get("taskDescriptorId")).get("index");
                 if (activities[periodNumber]) {
                     activities[periodNumber] += "; " + taskNumber;

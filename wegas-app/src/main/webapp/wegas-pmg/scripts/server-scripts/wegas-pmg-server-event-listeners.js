@@ -9,7 +9,9 @@
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
+/*global println, Event, PMGSimulation, PMGHelper */
 Event.on("replyValidate", function(e) {
+    "use strict";
     var msg, type = e.choice.getDescriptor().getTitle(),
         replies = e.question.getReplies(), i;
 
@@ -52,8 +54,10 @@ Event.on("replyValidate", function(e) {
 });
 
 Event.on("addTaskPlannification", function() {
+    "use strict";
     PMGSimulation.plannedValueHistory();
 });
 Event.on("removeTaskPlannification", function() {
+    "use strict";
     PMGSimulation.plannedValueHistory();
 });

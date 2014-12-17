@@ -9,7 +9,8 @@
  * @fileoverview
  * @author Maxence Laurent <maxence.laurent> <gmail.com>
  */
-YUI.add('wegas-pmg-abstractpert', function(Y) {
+/*global YUI*/
+YUI.add("wegas-pmg-abstractpert", function(Y) {
     "use strict";
 
     var Wegas = Y.Wegas, AbstractPert;
@@ -26,18 +27,18 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
             //this.taskTable;
             Y.log("initializer", "info", "Wegas.AbstractPert");
         },
-        _plannedPeriods: function(taskInstance){
+        _plannedPeriods: function(taskInstance) {
             return Y.Array.unique(taskInstance.get("plannification"));
         },
         timeSolde: function(taskDesc) {
-            var taskInst = taskDesc.getInstance(), 
+            var taskInst = taskDesc.getInstance(),
                 properties = taskInst.get("properties"), timeSolde,
                 plannedPeriods = this._plannedPeriods(taskInst);
-                
+
             if (plannedPeriods.length > 0) {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * plannedPeriods.length;
+                timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * plannedPeriods.length;
             } else {
-                timeSolde = (1 - parseInt(properties.completeness) / 100) * taskInst.get("duration");
+                timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * taskInst.get("duration");
             }
             return timeSolde;
         },
@@ -55,17 +56,26 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
          *   - planned : periods numbers the task is planned on   (e.g. [3, 5, 6]
          *   - beginAt : "real" time the work on task will start (e.g 3.25)
          *   - endAt : "real" time the work on task will start (e.g 6.18)
-         *   
+         *
          * @param {type} taskTable
          * @param {type} currentPeriod
          * @returns {undefined}
          */
+        filterAgaintMinBeginAt: function(minBeginAt) {
+            return function(n) {
+                return n >= minBeginAt;
+            };
+        },
         computePert: function(taskTable, currentPeriod, currentStage) {
-            var taskId, taskDesc;
+            var taskId, taskDesc, initialPlanning,
+                predecessors, i, minBeginAt, delta,
+                allPredDefine, predecessorId, stillMissing,
+                deltaMissing, queue = [],
+                lastPlanned, max,
+                taskInstance, stillPlanned;
 
             if (currentStage < 3) {
-                var initialPlanning;
-                // do not compute pert before stage3 but return the planning planned by players 
+                // do not compute pert before stage3 but return the planning planned by players
                 for (taskId in taskTable) {
                     taskDesc = taskTable[taskId];
                     initialPlanning = this._plannedPeriods(taskDesc.getInstance()).sort(Y.Array.numericSort);
@@ -73,9 +83,9 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                     taskDesc.beginAt = 0;
                     taskDesc.endAt = 0;
 
-                    if (initialPlanning.length > 0){
+                    if (initialPlanning.length > 0) {
                         taskDesc.beginAt = initialPlanning[0];
-                        taskDesc.endAt = initialPlanning[initialPlanning.length -1];
+                        taskDesc.endAt = initialPlanning[initialPlanning.length - 1];
                     }
 
                     Y.log("TASK PREVISION (" + taskDesc.get("label") + ")");
@@ -84,9 +94,7 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                     Y.log(" -planned: " + taskDesc.planned);
                 }
             } else {
-                var predecessors, i, minBeginAt, delta,
-                    allPredDefine, predecessorId, stillMissing,
-                    queue = [];
+                queue = [];
 
                 for (taskId in taskTable) {
                     queue.push(taskId);
@@ -98,39 +106,37 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                     allPredDefine = true;
                     predecessors = taskDesc.get("predecessors");
 
-                    // Check predecessors 
-                    for (i = 0; i < predecessors.length; i++) {
+                    // Check predecessors
+                    for (i = 0; i < predecessors.length; i += 1) {
                         predecessorId = predecessors[i].get("id");
-                        if (!taskTable[predecessorId]) {
-                            // Means this predecessor is not active: ignore it
-                            continue;
-                        }
-                        if (taskTable[predecessorId].endAt) {
-                            if (minBeginAt < taskTable[predecessorId].endAt) {
-                                minBeginAt = taskTable[predecessorId].endAt;
+                        if (taskTable[predecessorId]) {
+                            if (taskTable[predecessorId].endAt) {
+                                if (minBeginAt < taskTable[predecessorId].endAt) {
+                                    minBeginAt = taskTable[predecessorId].endAt;
+                                }
+                            } else {
+                                // At least one precedecessor has not been processed
+                                allPredDefine = false;
+                                break;
                             }
-                        } else {
-                            // At least one precedecessor has not been processed
-                            allPredDefine = false;
-                            break;
                         }
                     }
+
                     if (allPredDefine) {
                         // all require data are available, let's compute pert for the task
-                        var taskInstance = taskDesc.getInstance(),
-                            stillPlanned = this._plannedPeriods(taskInstance).filter(function(n) {
-                            return n >= minBeginAt;
-                        }, this).sort(Y.Array.numericSort);
+                        taskInstance = taskDesc.getInstance();
+                        stillPlanned = this._plannedPeriods(taskInstance).filter(this.filterAgainstMinBeginAt(minBeginAt)
+                            , this).sort(Y.Array.numericSort);
 
-                        delta = minBeginAt - parseInt(minBeginAt);
+                        delta = minBeginAt - parseInt(minBeginAt, 10);
                         stillMissing = this.timeSolde(taskDesc);
 
 
                         // postpone task that could start in the second part of period
-                        if (minBeginAt - parseInt(minBeginAt) > 0.50) {
-                            minBeginAt = parseInt(minBeginAt) + 1;
+                        if (minBeginAt - parseInt(minBeginAt, 10) > 0.50) {
+                            minBeginAt = parseInt(minBeginAt, 10) + 1;
                         } else {
-                            minBeginAt = parseInt(minBeginAt);
+                            minBeginAt = parseInt(minBeginAt, 10);
                             stillMissing += delta;
                         }
                         if (stillPlanned.length > 0 && stillPlanned[0] > minBeginAt) {
@@ -144,9 +150,9 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                             taskDesc.planned = [];
                         } else if (stillPlanned.length >= stillMissing) {
                             // enough or too many planned period
-                            var deltaMissing = stillMissing - parseInt(stillMissing);
+                            deltaMissing = stillMissing - parseInt(stillMissing, 10);
                             if (deltaMissing === 0) {
-                                taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing));
+                                taskDesc.planned = stillPlanned.slice(0, parseInt(stillMissing, 10));
                                 taskDesc.endAt = taskDesc.planned[taskDesc.planned.length - 1] + 1;
                             } else {
                                 taskDesc.planned = stillPlanned.slice(0, Math.ceil(stillMissing));
@@ -155,7 +161,6 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                             }
                         } else {
                             // not enough planned period
-                            var lastPlanned, i, max;
                             taskDesc.planned = stillPlanned.slice();
                             if (stillPlanned.length === 0) {
                                 lastPlanned = minBeginAt - 1;
@@ -166,7 +171,7 @@ YUI.add('wegas-pmg-abstractpert', function(Y) {
                                 taskDesc.endAt = lastPlanned + stillMissing - stillPlanned.length + 1;
                             }
                             max = Math.ceil(stillMissing) - stillPlanned.length;
-                            for (i = 0; i < max; i++) {
+                            for (i = 0; i < max; i += 1) {
                                 taskDesc.planned.push(lastPlanned + i + 1);
                             }
                         }

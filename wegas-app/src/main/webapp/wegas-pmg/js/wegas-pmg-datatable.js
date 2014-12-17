@@ -8,6 +8,7 @@
 /**
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  */
+/*global YUI*/
 YUI.add("wegas-pmg-datatable", function(Y) {
     "use strict";
 
@@ -36,14 +37,14 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 }
 
                 // Add specific getter for deep properties @hack : . and % are synonyms (@hack @shame)
-                if (ct[i].key && ct[i].key.indexOf(".") >= 0 || ct[i].key && ct[i].key.indexOf("%") >= 0) {  // @hack 
-                    // Key with points issue... 
+                if ((ct[i].key && ct[i].key.indexOf(".") >= 0) || (ct[i].key && ct[i].key.indexOf("%") >= 0)) {  // @hack
+                    // Key with points issue...
                     ct[i].key = ct[i].key.replace(/\./g, "%");  // @hack replace '.' by '%' @shame
 
                     recordTypes[ct[i].key] = {getter: function(i, key) {
                             var v = this.get(key.replace(/%/g, ".")); // @hack @shame
                             // Coerce to number if possible
-                            return (+v ? +v : v);
+                            return +v || v;
                         }
                     };
                 }
@@ -137,11 +138,11 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 return function(a, b, dir) {
                     var aa = Y.Object.values(a.get(col.key))[0] || '',
                         bb = Y.Object.values(b.get(col.key))[0] || '';
-                    if (typeof (aa) === "string" && typeof (bb) === "string") {// Not case sensitive
+                    if (typeof aa === "string" && typeof bb === "string") {// Not case sensitive
                         aa = aa.toLowerCase();
                         bb = bb.toLowerCase();
                     }
-                    return (dir) ? aa < bb : aa > bb;
+                    return dir ? aa < bb : aa > bb;
                 };
             }
         }

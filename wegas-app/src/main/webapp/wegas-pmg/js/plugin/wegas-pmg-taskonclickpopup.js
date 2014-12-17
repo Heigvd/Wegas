@@ -75,7 +75,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
         },
         sync: function() {
             var i, dt = this.get("host").datatable;
-            for (i = 0; i < dt.get("data").size(); i++) {
+            for (i = 0; i < dt.get("data").size(); i += 1) {
                 dt.getCell([i, this.get("column")]).addClass("onclickpopup");
             }
         },
@@ -105,7 +105,7 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 + '<p class="subtitle">Description</p><p>' + description
                 /*+ (description ?
                  description: "")*/
-                + '</p></div><div style="padding:5px 10px" class="duration"><p><span class="subtitle">Duration: </span><span>' 
+                + '</p></div><div style="padding:5px 10px" class="duration"><p><span class="subtitle">Duration: </span><span>'
                 + descriptor.getInstance().get('duration') + ' </span></p></div>'
                 + '<div style="padding:5px 10px" class="requirements"><p class="subtitle">Requirements</p>';
 
@@ -128,8 +128,9 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
          * @private
          */
         destructor: function() {
+            var i;
             this.detailsOverlay.destroy();
-            for (var i = 0; i < this.handlers.length; i++) {
+            for (i = 0; i < this.handlers.length; i += 1) {
                 this.handlers[i].detach();
             }
         }
