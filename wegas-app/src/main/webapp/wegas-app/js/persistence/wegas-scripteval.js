@@ -8,7 +8,20 @@
 YUI.add('wegas-scripteval', function(Y) {
     "use strict";
 
-    var ScriptEval, Variable, Wegas = Y.Wegas;
+    var ScriptEval, Variable, Wegas = Y.Wegas,
+        buildItems = function(entity, acc) {                                     // Recursively build items lists
+            var j, items;
+            if (entity instanceof Wegas.persistence.ListDescriptor) {
+                items = entity.get("items");
+                acc.items = [];
+                for (j in items) {
+                    if (items.hasOwnProperty(j)) {
+                        acc.items.push(Y.JSON.parse(Y.JSON.stringify(items[j].getInstance())));
+                        buildItems(items[j], acc.items[acc.items.length - 1]);
+                    }
+                }
+            }
+        };
 
     ScriptEval = Y.Base.create("ScriptEval", Y.Plugin.Base, [], {
         /**
@@ -121,7 +134,7 @@ YUI.add('wegas-scripteval', function(Y) {
             for (i in data) {
                 if (data.hasOwnProperty(i)) {
                     this.context[data[i].get('name')] = Y.JSON.parse(Y.JSON.stringify(data[i].getInstance(player)));
-                    this.buildItems(data[i], this.context[data[i].get('name')]);
+                    buildItems(data[i], this.context[data[i].get('name')]);
                     if (data[i] instanceof Wegas.persistence.ListDescriptor) {
                         this.context[data[i].get('name')].items = [];
                         for (j in data[i].get("items")) {
@@ -146,18 +159,38 @@ YUI.add('wegas-scripteval', function(Y) {
                 gameModel: Wegas.Facade.GameModel.cache.getCurrentGameModel()
             });
         },
-        buildItems: function(entity, acc) {                                     // Recursively build items lists
-            var j, items;
-            if (entity instanceof Wegas.persistence.ListDescriptor) {
-                items = entity.get("items");
-                acc.items = [];
-                for (j in items) {
-                    if (items.hasOwnProperty(j)) {
-                        acc.items.push(Y.JSON.parse(Y.JSON.stringify(items[j].getInstance())));
-                        this.buildItems(items[j], acc.items[acc.items.length - 1]);
+        /**
+         * Check current gameModel's script for errors
+         * @param {Function} callback
+         * @param {Function} errorCallback callback on failure
+         * @returns Request id
+         */
+        checkGameModel: function(callback, errorCallback) {
+            var that = this;
+            that.errored = {};
+            return this.get("host").sendRequest({
+                request: "/Script/Test/",
+                cfg: {
+                    method: "GET",
+                    updateCache: false,
+                    headers: {
+                        "Managed-Mode": false
+                    }
+                },
+                on: {
+                    success: function(e) {
+                        that.errored = e.serverResponse;
+                        if (Y.Lang.isFunction(callback)) {
+                            callback(e.serverResponse);
+                        }
+                    },
+                    failure: function(e) {
+                        if (Y.Lang.isFunction(errorCallback)) {
+                            errorCallback(e.serverResponse);
+                        }
                     }
                 }
-            }
+            });
         }
     }, {
         NS: "script"
