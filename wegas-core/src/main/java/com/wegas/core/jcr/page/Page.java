@@ -166,13 +166,13 @@ public class Page {
      */
     public String extract(String jsonPath) {
         JsonNode node = this.content;
-        final String[] xpath = jsonPath.trim().split("\\.|\\[|\\]");
-        for (int i = 0; i < xpath.length; i++) {
-            if (!xpath[i].equals("")) {
-                if (node.isArray() && xpath[i].matches("[0-9]+")) {
-                    node = node.path(Integer.parseInt(xpath[i]));
+        final String[] xpaths = jsonPath.trim().split("\\.|\\[|\\]");
+        for (String xpath : xpaths) {
+            if (!xpath.equals("")) {
+                if (node.isArray() && xpath.matches("[0-9]+")) {
+                    node = node.path(Integer.parseInt(xpath));
                 } else {
-                    node = node.path(xpath[i]);
+                    node = node.path(xpath);
                 }
             }
         }

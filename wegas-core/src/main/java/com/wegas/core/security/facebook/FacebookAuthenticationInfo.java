@@ -28,7 +28,7 @@ public class FacebookAuthenticationInfo implements AuthenticationInfo {
      * @param realmName
      */
     public FacebookAuthenticationInfo(FacebookUserDetails facebookUserDetails, String realmName) {
-        Collection<String> principals = new ArrayList<String>();
+        Collection<String> principals = new ArrayList<>();
         principals.add(facebookUserDetails.getId());
         principals.add(facebookUserDetails.getFirstname() + " " + facebookUserDetails.getLastname()); // Is this appropriate is the name not really a Principal ?
         this.principalCollection = new SimplePrincipalCollection(principals, realmName);

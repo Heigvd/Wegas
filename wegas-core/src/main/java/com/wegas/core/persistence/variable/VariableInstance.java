@@ -193,7 +193,7 @@ abstract public class VariableInstance extends AbstractEntity {
         if (this.getScope() != null) {
             return this.getDescriptor().getId();
         } else {
-            return Long.valueOf(-1);
+            return -1L;
         }
     }
 

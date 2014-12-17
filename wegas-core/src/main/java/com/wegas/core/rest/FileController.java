@@ -246,15 +246,15 @@ public class FileController {
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
+            try {
                 try {
-                    try {
-                        connector.exportXML(output);
-                    } catch (SAXException ex) {
-                        logger.error(null, ex);
-                    }
-                } catch (RepositoryException ex) {
+                    connector.exportXML(output);
+                } catch (SAXException ex) {
                     logger.error(null, ex);
                 }
+            } catch (RepositoryException ex) {
+                logger.error(null, ex);
+            }
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
@@ -278,20 +278,20 @@ public class FileController {
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
+            try {
                 try {
-                    try {
-                        try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
-                            connector.exportXML(xmlStream);
-                            try (GZIPOutputStream o = new GZIPOutputStream(output)) {
-                                o.write(xmlStream.toByteArray());
-                            }
+                    try (ByteArrayOutputStream xmlStream = new ByteArrayOutputStream()) {
+                        connector.exportXML(xmlStream);
+                        try (GZIPOutputStream o = new GZIPOutputStream(output)) {
+                            o.write(xmlStream.toByteArray());
                         }
-                    } catch (SAXException ex) {
-                        logger.error(null, ex);
                     }
-                } catch (RepositoryException ex) {
+                } catch (SAXException ex) {
                     logger.error(null, ex);
                 }
+            } catch (RepositoryException ex) {
+                logger.error(null, ex);
+            }
             }
         };
         return Response.ok(out, MediaType.APPLICATION_OCTET_STREAM).header("content-disposition",
@@ -314,11 +314,11 @@ public class FileController {
         StreamingOutput out = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
-                    connector.zipDirectory(zipOutputStream, "/");
-                } catch (RepositoryException ex) {
-                    logger.error(null, ex);
-                }
+            try (ZipOutputStream zipOutputStream = new ZipOutputStream(output)) {
+                connector.zipDirectory(zipOutputStream, "/");
+            } catch (RepositoryException ex) {
+                logger.error(null, ex);
+            }
             }
         };
         return Response.ok(out, "application/zip").
@@ -425,7 +425,7 @@ public class FileController {
             @PathParam("gameModelId") Long gameModelId,
             @PathParam("absolutePath") String absolutePath) {
 
-        AbstractContentDescriptor descriptor = null;
+        AbstractContentDescriptor descriptor;
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 

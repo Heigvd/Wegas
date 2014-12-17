@@ -222,9 +222,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     }
 
     private ArrayList<JpaAccount> compareExistingAccount(List<JpaAccount> tempAccount, ArrayList<JpaAccount> accounts) {
-        for (int i = 0; i < tempAccount.size(); i++) {
-            if (!accounts.contains(tempAccount.get(i))) {
-                accounts.add(tempAccount.get(i));
+        for (JpaAccount tempAccount1 : tempAccount) {
+            if (!accounts.contains(tempAccount1)) {
+                accounts.add(tempAccount1);
             }
         }
         return accounts;

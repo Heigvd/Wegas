@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -144,7 +145,7 @@ public class TaskInstance extends VariableInstance {
     public WRequirement getRequirementById(Long id) {
         WRequirement requirement = null;
         for (WRequirement req : this.getRequirements()) {
-            if (req.getId().longValue() == id.longValue()) {
+            if (Objects.equals(req.getId(), id)) {
                 requirement = req;
                 break;
             }

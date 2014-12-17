@@ -71,7 +71,7 @@ public class DirectoryDescriptor extends AbstractContentDescriptor {
             nodes = this.list();
         } catch (RepositoryException ex) {
         }
-        Long sum = Long.valueOf(0);
+        Long sum = 0L;
         for (AbstractContentDescriptor n : nodes) {
             sum += n.getBytes();
         }

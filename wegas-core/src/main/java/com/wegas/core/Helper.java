@@ -10,8 +10,6 @@ package com.wegas.core;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -266,7 +264,7 @@ public class Helper {
         int[] ret = new int[list.size()];
         int i = 0;
         for (Integer e : list) {
-            ret[i++] = e.intValue();
+            ret[i++] = e;
         }
         return ret;
     }

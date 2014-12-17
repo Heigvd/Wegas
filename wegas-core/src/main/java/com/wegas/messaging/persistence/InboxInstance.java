@@ -12,7 +12,6 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -57,8 +56,7 @@ public class InboxInstance extends VariableInstance {
      */
     public void setMessages(List<Message> messages) {
         this.messages = messages;
-        for (Iterator<Message> it = this.messages.iterator(); it.hasNext();) {
-            Message r = it.next();
+        for (Message r : this.messages) {
             r.setInboxInstance(this);
         }
     }
