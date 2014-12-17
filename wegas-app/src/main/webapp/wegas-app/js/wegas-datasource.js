@@ -293,7 +293,7 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                     return;
                 }
-            } else { // Managed-Mode ManagedResponse
+            } else if (response instanceof Y.Wegas.persistence.ManagedResponse) { // Managed-Mode ManagedResponse
                 if (response.get("entities")) {
                     for (i = 0; i < response.get("entities").length; i += 1) { // Update the cache with the Entites in the reply body
                         entity = response.get("entities")[i];
