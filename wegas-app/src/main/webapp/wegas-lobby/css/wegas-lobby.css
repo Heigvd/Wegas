@@ -147,17 +147,34 @@
     visibility: hidden;
 }
 .wegas-game-users .inputEx-ListField-childContainer > div {
-    /* float: left; */
-    width: 300px;
+    float: left;
+    margin-right: 5px;
+    width: 330px;
 }
 .wegas-game-keys .inputEx-ListField-childContainer > div:before {
     content: "Key: ";
     display: inline-block;
     color: #505050;
 }
+.wegas-game-keys div.inputEx-uneditableField {
+    width: 100px;
+}
+.wegas-game-users div.inputEx-uneditableField {
+    width: 100px;
+}
+.wegas-game-users .inputEx-ListField-childContainer > div img.inputEx-ListField-delButton {
+    left :auto;
+    right:20px;
+    top:0px;
+}
+.wegas-game-keys .inputEx-ListField-childContainer > div img.inputEx-ListField-delButton {
+    left :auto;
+    right:20px;
+}
 .wegas-game-keys .inputEx-ListField-childContainer > div {
     float: left;
-    width: 150px;
+    margin-right: 5px;
+    width: 175px;
 }
 .wegas-game-keys .inputEx-ListField-childContainer > div > .inputEx-ListField-subFieldEl {
     display: inline-block;

@@ -79,7 +79,9 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                         value: "GameEnrolmentKey"
                     }, {
                         name: "key",
-                        type: "uneditable"
+                        type: "string",
+                        size: 12,
+                        disable: true
                             //type: "string"
                     }, {
                         name: "used",
@@ -93,11 +95,13 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
         addElement: function(value) {
             var subfield = EnrolmentKeyList.superclass.addElement.call(this, value);
 
-            Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
             //Y.one(this.divEl).all(".inputEx-ListField-childContainer > div").setStyle("float", "left");
 
+            subfield.getFieldByName("key").disable();
+
             if (value.used) {
-                Y.one(subfield.divEl).all(".inputEx-Field").setStyle("textDecoration", "line-through");// strike through used tokens
+                Y.one(subfield.divEl).all("input").setStyle("textDecoration", "line-through");// strike through used tokens
+                Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
             }
             return subfield;
         },
@@ -120,17 +124,22 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             e.halt();
             var i, total = parseInt(Y.one(this.fieldContainer).one('.addkey input ').get("value")),
                 game = this.parentField.parentWidget.get("entity"),
-                teamCount = this.subFields.length + 1,
-                prefix = game.get("token");
+                prefix = game.get("token"),
+                usedNumber, max;
+
+            usedNumber = this.subFields.map(function(e) {
+                return +e.getFieldByName("key").getValue().replace(/.*-.{2}-/, "");
+            }).sort(Y.Array.numericSort);
+            max = usedNumber[usedNumber.length - 1] || 0;
 
             if (!Y.Lang.isNumber(total)) {
                 this.showMessage("error", "Invalid number");
                 return;
             }
 
-            for (i = 0; i < total; i += 1) {                                    // Add key fields
+            for (i = 1; i <= total; i += 1) {                                    // Add key fields
                 this.addElement({
-                    key: prefix + "-" + (teamCount + i)
+                    key: prefix + "-" + (max + i)
                 });
             }
             this.fireUpdatedEvt();                                              // Fire updated !
@@ -165,7 +174,9 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                         type: "hidden"
                     }, {
                         name: "key",
-                        type: "uneditable"
+                        type: "string",
+                        size: 12,
+                        disable: true
                             //type: "string"
                     }, {
                         name: "used",
@@ -184,12 +195,12 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                 node = Y.one(subfield.divEl);
 
             node.all(".inputEx-Field").each(function(n) {
-                n.setContent("<p class='wegas-accountkey'><span class='wegas-accountkeyUser'>User: </span><span>" + n.getContent() + "</span>\n\
-                                <span class='wegas-accountkeyPass'>Pwd: </span><span>" + n.getContent() + "</span></p>");
+                n.setContent("<p class='wegas-accountkey'><span class='wegas-accountkeyUser'>User: </span><span>" + value.key + "</span>\n\
+                                <span class='wegas-accountkeyPass'>Pwd: </span><span>" + value.key + "</span></p>");
             });
-            Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
 
             if (value.used) {
+                Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
                 node.all(".inputEx-Field span").setStyle("textDecoration", "line-through");// strike through used tokens
             }
             return subfield;
