@@ -604,7 +604,11 @@ var PMGSimulation = (function() {
     }
 
     function notBlockedByPredecessors(taskDescriptor) {
-        return getPredecessorFactor(taskDescriptor) >= 0.2;
+        if (this.AUTOMATED_RESERVATION) {
+            return getPredecessorFactor(taskDescriptor) >= 0.85;
+        } else {
+            return getPredecessorFactor(taskDescriptor) >= 0.25;
+        }
     }
 
     /**
