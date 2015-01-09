@@ -101,17 +101,16 @@ var PMGHelper = (function() {
      * @returns {Boolean} is reserved
      */
     function isReservedToWork(rd, period) {
-        var employeeInst = rd.getInstance(self), phase;
+        var employeeInst = rd.getInstance(self);
 
         // Inactive resource never work, such as those with 0% activity rate
         if (!employeeInst.getActive() || employeeInst.getPropertyD("activityRate") < 1.0) {
             return false;
         }
 
-        debug("isReservedToWork (rd: " + rd + "; p:" + period + ")");
         if (!period) {
-            switch (getCurrentPhaseNumber()){
-                case 1: 
+            switch (getCurrentPhaseNumber()) {
+                case 1:
                 case 2:
                     // first period of third stage
                     period = 1;
@@ -120,27 +119,28 @@ var PMGHelper = (function() {
                     // current period of third phase
                     period = getCurrentPeriodNumber();
                     break;
-                case 4: 
+                case 4:
                 default:
                     return false; // no-one is working in phase 4
             }
         }
+        debug("isReservedToWork (rd: " + rd + "; p:" + period + ")");
 
         if (!automatedReservation()) {
             /* MANUAL
              * the resource must be reserved.
              * it means that an "editable" occupation must exists for the current time
              */
-            return Y.Array.find(employeeInst.occupations, function(o) {
+            return (Y.Array.find(employeeInst.occupations, function(o) {
                 return o.time === period
                     && o.editable;
-            });
+            }) === null ? false : true);
         } else {
             /* AUTOMATIC
              * The resource is always reserved unless
              * it has an "uneditable" occupation for the current period
              */
-            return !Y.Array.find(employeeInst.occupations, function(o) {
+            return ! Y.Array.find(employeeInst.occupations, function(o) {
                 return o.time === period
                     && !o.editable; // Illness, etc. occupations are not editable
             });
@@ -289,8 +289,14 @@ var PMGHelper = (function() {
         workOnProject: function(resourceDescriptor) {                           // Condition
             return workOnProject(resourceDescriptor);
         },
+        workOnProjectByName: function(resourceName) {                           // Condition
+            return workOnProject(Variable.findByName(gameModel, resourceName));
+        },
         willWorkOnProject: function(resourceDescriptor) {                           // Condition
             return willWorkOnProject(resourceDescriptor);
+        },
+        willWorkOnProjectByName: function(resourceName) {                           // Condition
+            return willWorkOnProject(Variable.findByName(gameModel, resourceName));
         },
         workOnTask: function(resourceDescriptor, taskDescriptor) {              // Condition
             return workOnTask(resourceDescriptor, taskDescriptor);
@@ -316,8 +322,8 @@ var PMGHelper = (function() {
         addImpactDuration: function(name, method, args, inTime) {               // Impact OK
             return addImpactDuration(name, method, args, inTime);
         },
-        addNumberImpactDuration: addImpactDuration,                             // Duplicate for wysiwyg
-        addResourceImpactDuration: addImpactDuration,                           // Duplicate for wysiwyg
+        addNumberImpactDuration: addImpactDuration, // Duplicate for wysiwyg
+        addResourceImpactDuration: addImpactDuration, // Duplicate for wysiwyg
         cancelEffect: function() {
             cancelEffect();
         },
