@@ -51,9 +51,9 @@ var PMGHelper = (function() {
     }
 
     /**
-     * Check if a ressource is workng on the project
+     * Check if a ressource is working on the project
      *  -> MUST have assignment(s)
-     *  -> MUST be reserved
+     *  -> MUST be reserved for the current period
      * 
      * @param {type} resourceDescriptor
      * @returns {Boolean}
@@ -80,7 +80,14 @@ var PMGHelper = (function() {
     }
 
     /**
-     * Check if the given resource will work on the project for the current period
+     * Check if the given resource will work on the project for the given phase 3 period
+     * 
+     * If 'period' not specified
+     *   a) use the first period of stage 3 if current phase < 3
+     *   b) use the current period is current phase == 3
+     *   c) return false is current phase = 4
+     *   
+     * if current phase is 4, return false
      * 
      *  in automatic mode:
      *      the resource will always work unless it's unavailable (i.e. current occupation not editable)
@@ -94,14 +101,29 @@ var PMGHelper = (function() {
      * @returns {Boolean} is reserved
      */
     function isReservedToWork(rd, period) {
-        var employeeInst = rd.getInstance(self);
+        var employeeInst = rd.getInstance(self), phase;
+
+        // Inactive resource never work, such as those with 0% activity rate
+        if (!employeeInst.getActive() || employeeInst.getPropertyD("activityRate") < 1.0) {
+            return false;
+        }
+
         debug("isReservedToWork (rd: " + rd + "; p:" + period + ")");
         if (!period) {
-            period = getCurrentPeriodNumber();
-        }
-// Inactive resource never work
-        if (!employeeInst.getActive()) { // @fixme activity rate
-            return false;
+            switch (getCurrentPhaseNumber()){
+                case 1: 
+                case 2:
+                    // first period of third stage
+                    period = 1;
+                    break;
+                case 3:
+                    // current period of third phase
+                    period = getCurrentPeriodNumber();
+                    break;
+                case 4: 
+                default:
+                    return false; // no-one is working in phase 4
+            }
         }
 
         if (!automatedReservation()) {
