@@ -959,8 +959,10 @@ var PMGSimulation = (function() {
                 currentPhase.add(self, 1);
                 Event.fire("nextPhase");
                 Event.fire("nextWeek");
+                Event.fire("nextPeriod");
             } else {
                 Event.fire("nextWeek");
+                Event.fire("nextPeriod");
             }
 
         } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {      // If end of phase
@@ -972,10 +974,12 @@ var PMGSimulation = (function() {
             }
             Event.fire("nextPhase");
             Event.fire("nextWeek");
+            Event.fire("nextPeriod");
 
         } else {                                                                    // Otherwise pass to next period
             currentPeriod.add(self, 1);
             Event.fire("nextWeek");
+            Event.fire("nextPeriod");
         }
 
         // TODO #777 shall SaveHistory each time value changed rather than store once by period (ok for the time...)

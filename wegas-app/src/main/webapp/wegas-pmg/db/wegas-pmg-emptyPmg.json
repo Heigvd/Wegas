@@ -1037,7 +1037,7 @@
                                     },
                                     "triggerCondition": {
                                         "@class": "Script",
-                                        "content": "Event.fired(\"nextWeek\")",
+                                        "content": "Event.fired(\"nextPeriod\")",
                                         "language": "JavaScript"
                                     }
                                 }
@@ -1077,7 +1077,7 @@
                                     },
                                     "triggerCondition": {
                                         "@class": "Script",
-                                        "content": "Event.fired(\"nextWeek\")",
+                                        "content": "Event.fired(\"nextPeriod\")",
                                         "language": "JavaScript"
                                     }
                                 }
