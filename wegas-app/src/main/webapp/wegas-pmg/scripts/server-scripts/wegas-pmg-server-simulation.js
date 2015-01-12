@@ -1073,6 +1073,22 @@ var PMGSimulation = (function() {
             }
         });
     }
+
+
+    /**
+     * @returns {number} the last period of the project, according to GANTT planning
+     */
+    function getLastPlannedPeriodNumber() {
+        var tasks = getActiveTasks();
+        return Y.Array.reduce(tasks, 0, function(max, task) {
+            return Y.Array.reduce(task.plannification,
+                max, function(p, c) {
+                    return (c > p ? c : p);
+                });
+        });
+    }
+
+
     /**
      * Calculate earnedValue, actualCost, projectCompleteness, cpi, spi.
      * save histories for variable the same variable and for costs, delay and quality.
@@ -1096,7 +1112,9 @@ var PMGSimulation = (function() {
             projectComp = Variable.findByName(gameModel, 'projectCompleteness'), projectCompleteness = 0,
             tasks = getActiveTasks(),
             completeness,
-            pv = calculatePlannedValue(Variable.findByName(gameModel, 'periodPhase3').getValue(self));
+            currentPeriod3 = Variable.findByName(gameModel, 'periodPhase3').getValue(self),
+            lastPlannedPeriod = getLastPlannedPeriodNumber(),
+            pv = calculatePlannedValue(currentPeriod3);
 
         for (i = 0; i < tasks.length; i += 1) {
             task = tasks[i];
@@ -1142,13 +1160,16 @@ var PMGSimulation = (function() {
 
         // Costs
         if (ac > 0) {
-            cpi = ev / ac * 100;                                                    // cpi = ev / ac * 100
+            cpi = ev / ac * 100;
         }
         costValue = Math.min(Math.max(Math.round(cpi), costs.minValueD), costs.maxValueD);
 
         // Delay
         if (pv > 0) {
-            spi = ev / pv * 100;                                                // spi = ev / pv * 100
+            if (currentPeriod3 > lastPlannedPeriod) {
+                pv = pv + (pv / lastPlannedPeriod) * (currentPeriod3 - lastPlannedPeriod);
+            }
+            spi = ev / pv * 100;
         }
         delayValue = Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD);
 

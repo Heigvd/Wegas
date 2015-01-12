@@ -97,6 +97,14 @@ Y.Array = {
             r += f.call(o, a[i], i, a);
         }
         return r;
+    },
+    reduce : function(a, init, f, o){
+        if (a.toArray)
+            a = a.toArray();                                                    //convert list to array
+        for (var i=0; i < a.length; i++){
+            init = f.call(o, init, a[i], i, a);
+        }
+        return init;
     }
 };
 Y.Object = {
