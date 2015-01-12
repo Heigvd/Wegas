@@ -372,6 +372,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     /**
      *
+     * @param gameModel
+     * @param title
+     * @return
+     */
+    public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
+        cq.where(cb.and(
+                cb.equal(variableDescriptor.get("gameModel"), gameModel),
+                cb.equal(variableDescriptor.get("title"), title)));
+        final Query q = em.createQuery(cq);
+        return q.getResultList();
+    }
+
+    /**
+     *
      * @param gameModelId
      * @return
      */
