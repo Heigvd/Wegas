@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.rest;
@@ -24,11 +24,13 @@ import java.util.concurrent.TimeUnit;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
@@ -130,6 +132,14 @@ public class ComboController {
                 //    .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
                 .tag(new EntityTag(comboCache.getETag()))
                 .build();
+    }
+
+    @DELETE
+    @Produces(MediaType.WILDCARD)
+    public Response clear(){
+        Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
+        cache.removeAll();
+        return Response.ok().build();
     }
 
     private String getCombinedFile(List<String> fileList, String mediaType) throws IOException {

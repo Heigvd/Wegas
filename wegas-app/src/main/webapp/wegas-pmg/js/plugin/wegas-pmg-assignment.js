@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
@@ -171,11 +171,6 @@ YUI.add("wegas-pmg-assignment", function(Y) {
             this.menu.add(tasks);
             this.menu.attachTo(e.target);
         },
-        filterById: function(taskDesc) {
-            return function(item) {
-                return taskDesc.get("id") === item.get("taskDescriptorId");
-            };
-        },
         getTasks: function(resourceDesc) {
             //add is a boolean to determine if target is remove or add a task
             //you can only add a task which isn't already added.
@@ -189,7 +184,10 @@ YUI.add("wegas-pmg-assignment", function(Y) {
             tasks = Wegas.Facade.Variable.cache.find("name", this.get("taskList")).get("items");
             for (i = 0; i < tasks.length; i += 1) {
                 taskDesc = tasks[i];
-                taskExist = Y.Array.find(assignments, this.filerById(taskDesc));
+                taskExist = Y.Array.find(assignments,
+                    function(item) {
+                        return taskDesc.get("id") === item.get("taskDescriptorId");
+                    });
                 if (taskDesc.getInstance().get("active") && taskDesc.getInstance().get("properties.completeness") < 100) {
                     label = taskDesc.get("title") || taskDesc.get("label") || taskDesc.get("name") || "undefined";
                     array.push({

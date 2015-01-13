@@ -1,0 +1,115 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ *   Author     : Maxence Laurent (maxence.laurent at gmail.com)
+*/
+
+
+div.wegas-balance {
+    /* background-image: url('../images/balance.png'); */
+    /* background-size: contain; */
+    /* background-repeat: no-repeat; */
+    width: 600px;
+    /* position: relative; */
+    /* min-height: 250px; */
+    /* background-position: 171px; */
+}
+
+.wegas-balance span {
+    padding: 5px;
+}
+
+div.wegas-balance > .wegas-balance-titles,
+div.wegas-balance > .wegas-balance-contents,
+div.wegas-balance > .wegas-balance-sums {
+    clear  : both;
+    display: flex;
+}
+div.wegas-balance .wegas-balance-assets,
+div.wegas-balance .wegas-balance-liabilities{
+    width: 50%;
+}
+
+div.wegas-balance .wegas-balance-assets
+{
+    float:left;
+    left: 0;
+    border-right: 1px solid black;
+    margin-right: -1px;
+}
+
+div.wegas-balance .wegas-balance-liabilities {
+    float: right;
+    right: 0;
+}
+
+div.wegas-balance .wegas-balance-assets > .wegas-balance-title,
+div.wegas-balance .wegas-balance-liabilities > .wegas-balance-title {
+    font-size: 1.3em;
+    font-variant: small-caps;
+    font-weight: bold;
+    border-bottom: 1px solid;
+    margin-bottom: 15px;
+}
+
+div.wegas-balance .wegas-balance-assets > .wegas-balance-category,
+div.wegas-balance .wegas-balance-liabilities > .wegas-balance-category {
+    padding-bottom: 20px;
+}
+
+
+div.wegas-balance .wegas-balance-assets > .wegas-balance-amount,
+div.wegas-balance .wegas-balance-liabilities > .wegas-balance-amount {
+    font-weight: bold;
+    border-top: 4px double black;
+    width: 25%;
+    text-align: right;
+}
+
+div.wegas-balance-category {
+    margin-left:10px;
+}
+
+.wegas-balance-amount {
+    float: right;
+    padding-right: 5px;
+}
+
+.wegas-balance-category-items {
+    padding-left : 10px;
+    clear: both;
+}
+
+.wegas-balance-category > .wegas-balance-title {
+    font-size: 1.1em;
+    font-variant: small-caps;
+    float: left;
+    font-weight: bold;
+}
+
+.wegas-balance-category > .wegas-balance-amount {
+    font-weight: bold;
+    float: right;
+}
+
+.wegas-balance-input.wegas-balance-amount{
+    width: 54px;
+    text-align: right;
+    margin-right: 5px;
+}
+
+.wegas-balance-input.invalid{
+    border: 1px solid #C00E0C;
+    background: #ffDFD3;    
+}
+
+.wegas-balance-item {
+    height: 24px;
+}
+.wegas-balance-item > .wegas-balance-title {
+    vertical-align: sub;
+    float: left;
+}

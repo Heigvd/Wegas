@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
@@ -61,11 +61,6 @@ YUI.add("wegas-pmg-abstractpert", function(Y) {
          * @param {type} currentPeriod
          * @returns {undefined}
          */
-        filterAgaintMinBeginAt: function(minBeginAt) {
-            return function(n) {
-                return n >= minBeginAt;
-            };
-        },
         computePert: function(taskTable, currentPeriod, currentStage) {
             var taskId, taskDesc, initialPlanning,
                 predecessors, i, minBeginAt, delta,
@@ -125,8 +120,9 @@ YUI.add("wegas-pmg-abstractpert", function(Y) {
                     if (allPredDefine) {
                         // all require data are available, let's compute pert for the task
                         taskInstance = taskDesc.getInstance();
-                        stillPlanned = this._plannedPeriods(taskInstance).filter(this.filterAgainstMinBeginAt(minBeginAt)
-                            , this).sort(Y.Array.numericSort);
+                        stillPlanned = this._plannedPeriods(taskInstance).filter(function(n) {
+                            return n >= minBeginAt;
+                        }, this).sort(Y.Array.numericSort);
 
                         delta = minBeginAt - parseInt(minBeginAt, 10);
                         stillMissing = this.timeSolde(taskDesc);

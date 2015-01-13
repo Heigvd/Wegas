@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 
@@ -610,7 +610,11 @@ var PMGSimulation = (function() {
     }
 
     function notBlockedByPredecessors(taskDescriptor) {
-        return getPredecessorFactor(taskDescriptor) >= 0.2;
+        if (this.AUTOMATED_RESERVATION) {
+            return getPredecessorFactor(taskDescriptor) >= 0.85;
+        } else {
+            return getPredecessorFactor(taskDescriptor) >= 0.25;
+        }
     }
 
     /**
@@ -961,8 +965,10 @@ var PMGSimulation = (function() {
                 currentPhase.add(self, 1);
                 Event.fire("nextPhase");
                 Event.fire("nextWeek");
+                Event.fire("nextPeriod");
             } else {
                 Event.fire("nextWeek");
+                Event.fire("nextPeriod");
             }
 
         } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {      // If end of phase
@@ -974,10 +980,12 @@ var PMGSimulation = (function() {
             }
             Event.fire("nextPhase");
             Event.fire("nextWeek");
+            Event.fire("nextPeriod");
 
         } else {                                                                    // Otherwise pass to next period
             currentPeriod.add(self, 1);
             Event.fire("nextWeek");
+            Event.fire("nextPeriod");
         }
 
         // TODO #777 shall SaveHistory each time value changed rather than store once by period (ok for the time...)
@@ -1073,6 +1081,22 @@ var PMGSimulation = (function() {
             }
         });
     }
+
+
+    /**
+     * @returns {number} the last period of the project, according to GANTT planning
+     */
+    function getLastPlannedPeriodNumber() {
+        var tasks = getActiveTasks();
+        return Y.Array.reduce(tasks, 0, function(max, task) {
+            return Y.Array.reduce(task.plannification,
+                max, function(p, c) {
+                    return (c > p ? c : p);
+                });
+        });
+    }
+
+
     /**
      * Calculate earnedValue, actualCost, projectCompleteness, cpi, spi.
      * save histories for variable the same variable and for costs, delay and quality.
@@ -1096,7 +1120,9 @@ var PMGSimulation = (function() {
             projectComp = Variable.findByName(gameModel, 'projectCompleteness'), projectCompleteness = 0,
             tasks = getActiveTasks(),
             completeness,
-            pv = calculatePlannedValue(Variable.findByName(gameModel, 'periodPhase3').getValue(self));
+            currentPeriod3 = Variable.findByName(gameModel, 'periodPhase3').getValue(self),
+            lastPlannedPeriod = getLastPlannedPeriodNumber(),
+            pv = calculatePlannedValue(currentPeriod3);
 
         for (i = 0; i < tasks.length; i += 1) {
             task = tasks[i];
@@ -1142,13 +1168,16 @@ var PMGSimulation = (function() {
 
         // Costs
         if (ac > 0) {
-            cpi = ev / ac * 100;                                                    // cpi = ev / ac * 100
+            cpi = ev / ac * 100;
         }
         costValue = Math.min(Math.max(Math.round(cpi), costs.minValueD), costs.maxValueD);
 
         // Delay
         if (pv > 0) {
-            spi = ev / pv * 100;                                                // spi = ev / pv * 100
+            if (currentPeriod3 > lastPlannedPeriod) {
+                pv = pv + (pv / lastPlannedPeriod) * (currentPeriod3 - lastPlannedPeriod);
+            }
+            spi = ev / pv * 100;
         }
         delayValue = Math.min(Math.max(Math.round(spi), delay.minValueD), delay.maxValueD);
 

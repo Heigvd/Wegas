@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
@@ -432,7 +432,7 @@
     Y.use("wegas-inputex-variabledescriptorselect", function() {
         Y.mix(Y.inputEx.getFieldClass("statement").prototype.GLOBALMETHODS, {
             "PMGHelper.sendMessage": {
-                label: "PMG - Send Message",
+                label: "[PMG] Send Message",
                 className: "wegas-method-sendmessage",
                 "arguments": [
                     {
@@ -571,22 +571,30 @@
                     }]
             }
         });
-    });
 
-    /*
-     Y.use("wegas-inputex-variabledescriptorselect", function(){
-     Y.mix(Y.inputEx.getFieldClass("condition").prototype.GLOBALMETHODS, {
-     "PMGHelper.workingOnProject": {
-     label: "2 [PMG] is working on project",
-     "arguments" : [{
-     type: "variabledescriptorselect",
-     scriptType: "ResourceDescriptor",
-     classFilter: "ResourceDescriptor",
-     required: true
-     }]
-     }
-     });
-     });*/
+        Y.mix(Y.inputEx.getFieldClass("condition").prototype.GLOBALMETHODS, {
+            "PMGHelper.workOnProjectByName": {
+                label: "[PMG] resource work on project ?",
+                "arguments": [{
+                        type: "flatvariableselect",
+                        typeInvite: "Object",
+                        scriptType: "string",
+                        classFilter: ["ResourceDescriptor"],
+                        required: true
+                    }]
+            },
+            "PMGHelper.willWorkOnProjectByName": {
+                label: "[PMG] resource will work on project ?",
+                "arguments": [{
+                        type: "flatvariableselect",
+                        typeInvite: "Object",
+                        scriptType: "string",
+                        classFilter: ["ResourceDescriptor"],
+                        required: true
+                    }]
+            }
+        });
+    });
 
 
 // Game properties & dashboard page

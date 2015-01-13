@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 
@@ -51,9 +51,9 @@ var PMGHelper = (function() {
     }
 
     /**
-     * Check if a ressource is workng on the project
+     * Check if a ressource is working on the project
      *  -> MUST have assignment(s)
-     *  -> MUST be reserved
+     *  -> MUST be reserved for the current period
      * 
      * @param {type} resourceDescriptor
      * @returns {Boolean}
@@ -80,7 +80,14 @@ var PMGHelper = (function() {
     }
 
     /**
-     * Check if the given resource will work on the project for the current period
+     * Check if the given resource will work on the project for the given phase 3 period
+     * 
+     * If 'period' not specified
+     *   a) use the first period of stage 3 if current phase < 3
+     *   b) use the current period is current phase == 3
+     *   c) return false is current phase = 4
+     *   
+     * if current phase is 4, return false
      * 
      *  in automatic mode:
      *      the resource will always work unless it's unavailable (i.e. current occupation not editable)
@@ -95,31 +102,46 @@ var PMGHelper = (function() {
      */
     function isReservedToWork(rd, period) {
         var employeeInst = rd.getInstance(self);
-        debug("isReservedToWork (rd: " + rd + "; p:" + period + ")");
-        if (!period) {
-            period = getCurrentPeriodNumber();
-        }
-// Inactive resource never work
-        if (!employeeInst.getActive()) { // @fixme activity rate
+
+        // Inactive resource never work, such as those with 0% activity rate
+        if (!employeeInst.getActive() || employeeInst.getPropertyD("activityRate") < 1.0) {
             return false;
         }
+
+        if (!period) {
+            switch (getCurrentPhaseNumber()) {
+                case 1:
+                case 2:
+                    // first period of third stage
+                    period = 1;
+                    break;
+                case 3:
+                    // current period of third phase
+                    period = getCurrentPeriodNumber();
+                    break;
+                case 4:
+                default:
+                    return false; // no-one is working in phase 4
+            }
+        }
+        debug("isReservedToWork (rd: " + rd + "; p:" + period + ")");
 
         if (!automatedReservation()) {
             /* MANUAL
              * the resource must be reserved.
              * it means that an "editable" occupation must exists for the current time
              */
-            return Y.Array.find(employeeInst.occupations, function(o) {
+            return (Y.Array.find(employeeInst.occupations, function(o) {
                 debug (" o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && o.editable;
-            });
+            }) === null ? false : true);
         } else {
             /* AUTOMATIC
              * The resource is always reserved unless
              * it has an "uneditable" occupation for the current period
              */
-            return !Y.Array.find(employeeInst.occupations, function(o) {
+            return ! Y.Array.find(employeeInst.occupations, function(o) {
                 debug (" !o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && !o.editable; // Illness, etc. occupations are not editable
@@ -269,8 +291,14 @@ var PMGHelper = (function() {
         workOnProject: function(resourceDescriptor) {                           // Condition
             return workOnProject(resourceDescriptor);
         },
+        workOnProjectByName: function(resourceName) {                           // Condition
+            return workOnProject(Variable.findByName(gameModel, resourceName));
+        },
         willWorkOnProject: function(resourceDescriptor) {                           // Condition
             return willWorkOnProject(resourceDescriptor);
+        },
+        willWorkOnProjectByName: function(resourceName) {                           // Condition
+            return willWorkOnProject(Variable.findByName(gameModel, resourceName));
         },
         workOnTask: function(resourceDescriptor, taskDescriptor) {              // Condition
             return workOnTask(resourceDescriptor, taskDescriptor);
@@ -296,8 +324,8 @@ var PMGHelper = (function() {
         addImpactDuration: function(name, method, args, inTime) {               // Impact OK
             return addImpactDuration(name, method, args, inTime);
         },
-        addNumberImpactDuration: addImpactDuration,                             // Duplicate for wysiwyg
-        addResourceImpactDuration: addImpactDuration,                           // Duplicate for wysiwyg
+        addNumberImpactDuration: addImpactDuration, // Duplicate for wysiwyg
+        addResourceImpactDuration: addImpactDuration, // Duplicate for wysiwyg
         cancelEffect: function() {
             cancelEffect();
         },

@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.persistence.game;
@@ -18,6 +18,8 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -135,14 +137,14 @@ public class Game extends NamedEntity {
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("key")
+    //@OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
     private List<GameEnrolmentKey> keys = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    @OrderBy("key")
+    //@OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
     private List<GameAccountKey> accountkeys = new ArrayList<>();
 
@@ -409,6 +411,15 @@ public class Game extends NamedEntity {
      * @return the keys
      */
     public List<GameEnrolmentKey> getKeys() {
+        Collections.sort(keys, new Comparator<GameEnrolmentKey>() {
+            @Override
+            public int compare(GameEnrolmentKey arg0, GameEnrolmentKey arg1) {
+                int a = Integer.parseInt(arg0.getKey().substring(arg0.getKey().lastIndexOf("-") + 1));
+                int b = Integer.parseInt(arg1.getKey().substring(arg1.getKey().lastIndexOf("-") + 1));
+                return (a < b ? -1 : (a > b ? 1 : 0));
+            }
+        });
+
         return keys;
     }
 
@@ -427,6 +438,14 @@ public class Game extends NamedEntity {
      * @return
      */
     public List<GameAccountKey> getAccountkeys() {
+        Collections.sort(accountkeys, new Comparator<GameAccountKey>() {
+            @Override
+            public int compare(GameAccountKey arg0, GameAccountKey arg1) {
+                int a = Integer.parseInt(arg0.getKey().substring(arg0.getKey().lastIndexOf("-") + 1));
+                int b = Integer.parseInt(arg1.getKey().substring(arg1.getKey().lastIndexOf("-") + 1));
+                return (a < b ? -1 : (a > b ? 1 : 0));
+            }
+        });
         return accountkeys;
     }
 

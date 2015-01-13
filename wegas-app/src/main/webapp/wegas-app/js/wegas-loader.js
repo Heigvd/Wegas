@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
@@ -691,6 +691,25 @@ YUI().use(function(Y) {
             }
         }
     });
+    /**
+     * Accounting
+     */
+    YUI.addGroup("wegas-accounting", {
+        base: './wegas-accounting/',
+        root: '/wegas-accounting/',
+
+        modules: {
+            "wegas-accounting-css": {
+                type: CSS
+            },
+            "wegas-accounting-balance": {
+                //path: 'js/wegas-accounting-balance-min.js',
+                requires: ["wegas-accounting-css"],
+                ws_provides: "BalanceSheet"
+            }
+        }
+    });
+
     /* Lobby */
     YUI.addGroup("wegas-lobby", {
         base: "./wegas-lobby/",

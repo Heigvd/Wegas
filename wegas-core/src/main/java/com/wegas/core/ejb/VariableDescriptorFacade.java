@@ -2,7 +2,7 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.core.ejb;
@@ -396,6 +396,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
+    }
+
+    /**
+     *
+     * @param gameModel
+     * @param title
+     * @return
+     */
+    public List<VariableDescriptor> findByTitle(final GameModel gameModel, final String title) {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
+        cq.where(cb.and(
+                cb.equal(variableDescriptor.get("gameModel"), gameModel),
+                cb.equal(variableDescriptor.get("title"), title)));
+        final Query q = em.createQuery(cq);
+        return q.getResultList();
     }
 
     /**
