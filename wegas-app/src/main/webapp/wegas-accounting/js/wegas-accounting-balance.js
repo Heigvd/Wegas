@@ -41,7 +41,7 @@ YUI.add("wegas-accounting-balance", function(Y) {
         renderUI: function() {
         },
         isValidField: function(value) {
-            return /^[+]?\d+$/.test(value);
+            return /^[+-]?\d+$/.test(value);
         },
         bindUI: function() {
             this.updateHandler =
