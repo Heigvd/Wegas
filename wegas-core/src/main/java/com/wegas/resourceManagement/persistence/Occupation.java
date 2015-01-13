@@ -2,7 +2,7 @@
  * Wegas
  * http://www.albasim.ch/wegas/
  *
- * Copyright (c) 2013 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 package com.wegas.resourceManagement.persistence;

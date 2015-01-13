@@ -1,3 +1,10 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
 tinymce.PluginManager.add('dynamic_toolbar', function(editor) {
     var first = true;
     function showHideToolbar() {
