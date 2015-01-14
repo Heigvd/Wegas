@@ -319,7 +319,7 @@ YUI.add('wegas-datasource', function(Y) {
             }
 
             if (!e.error) { // If there was an server error, do not update the cache
-                if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || e.cfg.initialRequest)) {
+                if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || (e.cfg && e.cfg.initialRequest))) {
                     this.get(HOST).fire("update", e);
                     this.updated = false;
                 }
