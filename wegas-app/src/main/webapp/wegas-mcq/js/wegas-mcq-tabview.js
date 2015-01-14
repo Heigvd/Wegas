@@ -84,6 +84,10 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                             + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
                         cfg: {
                             method: "POST"
+                        },
+                        on: {
+                                success: Y.bind(this.hideOverlay, this),
+                                failure: Y.bind(this.hideOverlay, this)
                         }
                     });
                 }, this));
