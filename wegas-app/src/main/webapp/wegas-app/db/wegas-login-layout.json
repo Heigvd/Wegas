@@ -1,7 +1,11 @@
 {
     "type": "List",
     "children": [{
-            "type": "LoginWidget"
+            "type": "LoginWidget",
+            "cssClass": "wegas-login-page",
+            "plugins": [{
+                    "fn": "PopupListener"
+                }]
         }],
     "plugins": [{
             "fn": "PopupListener"

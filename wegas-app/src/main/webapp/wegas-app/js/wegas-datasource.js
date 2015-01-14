@@ -206,7 +206,10 @@ YUI.add('wegas-datasource', function(Y) {
                     val = e.serverEvent.get("val.exceptions")[0].get("val");
 
                     if (this.get("host").fire(val["@class"], val)) {
-                        node = Y.Widget.getByNode("#centerTabView").get("selection");
+
+                        node = Y.Widget.getByNode(".wegas-login-page") || Y.Widget.getByNode("#centerTabView").get("selection");
+
+
                         switch (val["@class"]) {
                             case "WegasErrorMessage":
                                 node.showMessage(val.level, val.message);
