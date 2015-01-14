@@ -19,10 +19,10 @@ import java.io.Serializable;
 //@XmlRootElement
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "@class")
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "CustomEvent", value = CustomEvent.class),
-    @JsonSubTypes.Type(name = "EntityUpdateEvent", value = EntityUpdatedEvent.class),
-    @JsonSubTypes.Type(name = "ExceptionEvent", value = ExceptionEvent.class),
-    @JsonSubTypes.Type(name = "WarningEvent", value = WarningEvent.class)
+    @JsonSubTypes.Type(value = CustomEvent.class),
+    @JsonSubTypes.Type(value = EntityUpdatedEvent.class),
+    @JsonSubTypes.Type(value = ExceptionEvent.class),
+    @JsonSubTypes.Type(value = WarningEvent.class)
 })
 abstract public class ClientEvent implements Serializable {
 }
