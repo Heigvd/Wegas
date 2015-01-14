@@ -378,10 +378,10 @@ YUI.add('wegas-loginwidget', function(Y) {
                         //this.showMessage("success", "User created", 6000);
                         //this.set("mode", "login");
                         this.login(data.email, data.password, false);
-                    }, this, data),
+                    }, this, data)/*,
                     failure: Y.bind(function(e) {
                         this.showMessage("error", e.response.results.message || "Error creating user");
-                    }, this)
+                    }, this)*/
                 }
             });
         },
