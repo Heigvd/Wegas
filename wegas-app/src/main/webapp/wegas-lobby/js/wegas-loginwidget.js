@@ -291,6 +291,8 @@ YUI.add('wegas-loginwidget', function(Y) {
                     var data = this.sendNewPasswordForm.getValue();
                     this.showOverlay();
                     this.sendNewPassword(data.email);
+                } else {
+                    this.showMessage("warn", "Invalid e-mail");
                 }
             }, this);
 
@@ -342,7 +344,8 @@ YUI.add('wegas-loginwidget', function(Y) {
             Wegas.Facade.User.sendRequest({
                 request: url,
                 cfg: {
-                    method: "POST"
+                    method: "POST",
+                    managed: "false"
                 },
                 on: {
                     success: Y.bind(function(e) {
