@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,8 +129,9 @@ public class GameModelController {
     @GET
     @Produces(MediaType.APPLICATION_JSON + "; charset=utf-8")                   // @hack force utf-8 charset
     @Path("{entityId : [1-9][0-9]*}/{filename: .*}.json")                       // @hack allow to add a filename with *.json to have a nice file
-    public GameModel getBis(@PathParam("entityId") Long entityId) {
-        return this.get(entityId);
+    public Response downloadJSON(@PathParam("entityId") Long entityId, @PathParam("filename") String filename) {
+        return Response.ok(this.get(entityId))
+                .header("Content-Disposition", "attachment; filename=" + filename).build();
     }
 
     /**

@@ -352,7 +352,7 @@ YUI.add("wegas-entity", function(Y) {
                                         }]
                                 }, {
                                     type: "OpenEntityButton",
-                                    url: "rest/Export/GameModel/{id}/{name}.json?forcedownload",
+                                    url: "rest/Export/GameModel/{id}/{name}.json",
                                     label: "Download",
                                     target: "self"
                                 }]
