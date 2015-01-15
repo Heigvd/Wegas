@@ -264,9 +264,7 @@ YUI.add('wegas-datasource', function(Y) {
                                 payload.response.entity = payload.response.entities[0]; // Shortcut, useful if there is only one instance
                             }
                         }
-                        if (!payload.cfg || payload.cfg.updateCache !== false) {
-                            this.onResponseRevived(payload);
-                        }
+                        this.onResponseRevived(payload);
                         host.fire("response", payload);
                     }, this, payload));
             }
@@ -286,24 +284,29 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         onResponseRevived: function(e) {
-            var i, entity, method, evtPayload, response = e.serverResponse;
+            var i, entity, method, evtPayload, response = e.serverResponse,
+                toUpdate = !e.cfg || e.cfg.updateCache !== false;
 
             this.updated = false;
 
             if (Lang.isArray(response)) { // Non-managed response: we apply the operation for each object in the returned array
-                if (!e.error) { // If there was an server error, do not update the cache
-                    for (i = 0; i < response.length; i += 1) {
-                        this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) || this.updated;
+                if (toUpdate) { // No Update ? No-update...
+                    if (!e.error) { // If there was an server error, do not update the cache
+                        for (i = 0; i < response.length; i += 1) {
+                            this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) || this.updated;
+                        }
+                        return;
                     }
-                    return;
                 }
             } else if (response instanceof Y.Wegas.persistence.ManagedResponse) { // Managed-Mode ManagedResponse
                 if (response.get("entities")) {
-                    for (i = 0; i < response.get("entities").length; i += 1) { // Update the cache with the Entites in the reply body
-                        entity = response.get("entities")[i];
-                        if (Lang.isObject(entity)) {
-                            method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
-                            this.updated = this.updateCache(method, entity, !e.cfg || !e.cfg.initialRequest) || this.updated;
+                    if (toUpdate) { // No Update ? No-update...
+                        for (i = 0; i < response.get("entities").length; i += 1) { // Update the cache with the Entites in the reply body
+                            entity = response.get("entities")[i];
+                            if (Lang.isObject(entity)) {
+                                method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
+                                this.updated = this.updateCache(method, entity, !e.cfg || !e.cfg.initialRequest) || this.updated;
+                            }
                         }
                     }
                 }
@@ -320,9 +323,11 @@ YUI.add('wegas-datasource', function(Y) {
             }
 
             if (!e.error) { // If there was an server error, do not update the cache
-                if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || (e.cfg && e.cfg.initialRequest))) {
-                    this.get(HOST).fire("update", e);
-                    this.updated = false;
+                if (toUpdate) { // No Update ? No-update...
+                    if ((!e.cfg || e.cfg.updateEvent !== false) && (this.updated || (e.cfg && e.cfg.initialRequest))) {
+                        this.get(HOST).fire("update", e);
+                        this.updated = false;
+                    }
                 }
             }
         },

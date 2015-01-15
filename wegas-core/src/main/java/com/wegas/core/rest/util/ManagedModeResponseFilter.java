@@ -23,6 +23,8 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 import org.apache.http.HttpStatus;
 import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.variable.VariableInstance;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,8 +50,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         RequestFacade rmf = RequestFacade.lookup();
 
         if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))) {
-            
+
             ManagedResponse serverResponse = new ManagedResponse();
+            List entities;
 
             /*
              * if response entity is kind of exception.
@@ -59,13 +62,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
              * and to register the exception as a request exception event
              */
             if (response.getEntity() instanceof Exception) {
-                // Empty Entity List
-                serverResponse.setEntities(new ArrayList<>());
-
-                // Register exception
+                // No Entities but register exception as event
+                entities = new ArrayList<>();
                 WegasRuntimeException wrex;
 
-                if (response.getEntity() instanceof WegasRuntimeException){
+                if (response.getEntity() instanceof WegasRuntimeException) {
                     wrex = (WegasRuntimeException) response.getEntity();
                 } else {
                     wrex = new WegasWrappedException((Exception) response.getEntity());
@@ -83,25 +84,35 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
 
                 if (response.getEntity() instanceof List) {
-                    serverResponse.setEntities((List) response.getEntity());
+                    entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
                         && ((ScriptObjectMirror) response.getEntity()).isArray()) {
-                    serverResponse.setEntities(new ArrayList(((ScriptObjectMirror) response.getEntity()).values()));
+                    entities = new ArrayList(((ScriptObjectMirror) response.getEntity()).values());
                 } else if (response.getEntity() != null) {
-                    ArrayList entities = new ArrayList();
+                    entities = new ArrayList<>();
                     entities.add(response.getEntity());
-                    serverResponse.setEntities(entities);
+                } else {
+                    entities = new ArrayList<>();
                 }
 
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            response.setEntity(serverResponse);
-
             if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
-                //serverResponse.getEvents().add(new EntityUpdatedEvent(rmf.getUpdatedInstances()));
-                EntityUpdatedEvent e = new EntityUpdatedEvent(rmf.getUpdatedInstances());
-                serverResponse.getEvents().add(e);
+                List<VariableInstance> updatedInstances = rmf.getUpdatedInstances();
+                /*
+                 * Merge updatedInstance within ManagedResponse entities
+                 */
+                for (VariableInstance vi : updatedInstances){
+                    if (!entities.contains(vi)){
+                        entities.add(vi);
+                    }
+                }
+                /*
+                 * EntityUpdatedEvent propagates changes through websocket
+                 */
+                EntityUpdatedEvent e = new EntityUpdatedEvent(updatedInstances);
+                //serverResponse.getEvents().add(e);
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
                     websocketFacade.onRequestCommit(e);
@@ -110,7 +121,12 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 }
             }
 
-            serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());// Push events stored in RequestManager
+            // Push events stored in RequestManager
+            serverResponse.getEvents().addAll(rmf.getRequestManager().getClientEvents());
+
+            // Set entities
+            serverResponse.setEntities(entities);
+            response.setEntity(serverResponse);
         }
     }
 }
