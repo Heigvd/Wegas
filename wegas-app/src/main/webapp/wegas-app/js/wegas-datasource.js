@@ -207,8 +207,9 @@ YUI.add('wegas-datasource', function(Y) {
 
                     if (this.get("host").fire(val["@class"], val)) {
 
-                        node = Y.Widget.getByNode(".wegas-login-page") || Y.Widget.getByNode("#centerTabView").get("selection");
-
+                        node = Y.Widget.getByNode(".wegas-login-page") ||
+                            (Y.Widget.getByNode("#centerTabView") && Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                            Y.Widget.getByNode(".wegas-playerview");
 
                         switch (val["@class"]) {
                             case "WegasErrorMessage":
