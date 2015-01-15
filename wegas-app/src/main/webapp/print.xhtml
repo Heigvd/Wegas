@@ -1,5 +1,4 @@
 <?xml version='1.0' encoding='UTF-8' ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd">
 
 <ui:component xmlns="http://www.w3.org/1999/xhtml"
               xmlns:ui="http://java.sun.com/jsf/facelets"
@@ -7,9 +6,10 @@
               xmlns:wegas="http://www.albasim.ch/wegas/pdf" >
 
 
-    <h:doctype public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
-               rootElement="html" 
-               system="#{request.requestURL.substring(0, request.requestURL.length() - request.requestURI.length())}#{request.contextPath}/wegas-app/DTD/xhtml1-transitional.dtd "/>
+    <h:doctype rootElement="html" public="-//W3C//DTD XHTML 1.0 Transitional//EN" 
+               system="http://wegas.albasim.ch/wegas-app/DTD/xhtml1-transitional.dtd"
+               >
+    </h:doctype>
     <html>
         <h:head>
 
@@ -54,17 +54,17 @@
                     </div>
                 </div>
                 <div>
-                        <wegas:GameModel 
-                            value="#{printController.gameModel}" 
-                            player="#{printController.currentPlayer}" 
-                            root="#{request.getParameter('root')}" 
-                            mode="#{request.getParameter('mode')}"
-                            defaultValues="#{request.getParameter('defaultValues')}"
-                            />
-                    </div>
+                    <wegas:GameModel 
+                        value="#{printController.gameModel}" 
+                        player="#{printController.currentPlayer}" 
+                        root="#{request.getParameter('root')}" 
+                        mode="#{request.getParameter('mode')}"
+                        defaultValues="#{request.getParameter('defaultValues')}"
+                        />
                 </div>
-                <script>updateMenu();</script>
-                <p style="display: none;" id="testUTF8">[Вегас: Паутина Игра Авторская Система]</p>
+            </div>
+            <script>updateMenu();</script>
+            <p style="display: none;" id="testUTF8">[Вегас: Паутина Игра Авторская Система]</p>
         </h:body>
     </html>
 </ui:component>
