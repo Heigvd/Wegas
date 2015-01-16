@@ -11,9 +11,7 @@
  */
 YUI.add('wegas-lobby-button', function(Y) {
     "use strict";
-
     var CONTENTBOX = "contentBox", Plugin = Y.Plugin, Wegas = Y.Wegas;
-
     /**
      * @name Y.Wegas.UploadFileButton
      * @extends Y.Wegas.Widget
@@ -28,7 +26,6 @@ YUI.add('wegas-lobby-button', function(Y) {
          */
         renderUI: function() {
             var cb = this.get("contentBox");
-
             this.uploader = new Y.UploaderHTML5({
                 fileFieldName: "file",
                 selectButtonLabel: this.get("label"),
@@ -42,12 +39,10 @@ YUI.add('wegas-lobby-button', function(Y) {
                     'Managed-Mode': 'true'
                 }
             }).render(cb);
-
             Y.later(40, this, function() {
                 cb.ancestor(".wegas-lobby-datatable").prepend("<div class=\"wegas-dropdummy\">Drop a json file to create a scenario</div>");
                 this.uploader.set("dragAndDropArea", cb.ancestor(".wegas-lobby-datatable"));
             });
-
             this.uploader.on("fileselect", function() {
                 this.showOverlay();
                 this.uploader.uploadAll();
@@ -72,7 +67,7 @@ YUI.add('wegas-lobby-button', function(Y) {
             this.uploader.on("uploaderror", function() {
                 this.hideOverlay().showMessage("error", "Error creating scenario");
                 this.uploader.set("enabled", true).set("fileList", []);
-                this.uploader.queue = null;                                     // @hack Otherwise file upload doesnt work after an error
+                this.uploader.queue = null; // @hack Otherwise file upload doesnt work after an error
             }, this);
             // this.uploader.on("alluploadscomplete", function() {}, this);
         },
@@ -86,7 +81,6 @@ YUI.add('wegas-lobby-button', function(Y) {
             }
         }
     });
-
     /**
      * @name Y.Wegas.GameModelHistory
      * @extends Y.Wegas.Widget
@@ -102,9 +96,9 @@ YUI.add('wegas-lobby-button', function(Y) {
         renderUI: function() {
             this.treeView = new Y.TreeView({
                 emptyMsg: "No version created yet"
-            });                                                                 // Instantiate treeview
-            this.treeView.addTarget(this);                                      // Listen to treeview's events
-            this.treeView.render(this.get(CONTENTBOX));                         // Render treeview  
+            }); // Instantiate treeview
+            this.treeView.addTarget(this); // Listen to treeview's events
+            this.treeView.render(this.get(CONTENTBOX)); // Render treeview  
 
             this.plug(Plugin.WidgetToolbar);
             this.toolbar.add({
@@ -119,7 +113,10 @@ YUI.add('wegas-lobby-button', function(Y) {
                                 updateCache: false
                             },
                             on: {
-                                success: Y.bind(this.syncUI, this),
+                                success: Y.bind(function() {
+                                    this.hideOverlay();
+                                    this.syncUI();
+                                }, this),
                                 failure: Y.bind(this.hideOverlay, this)
                             }
                         });
@@ -129,14 +126,16 @@ YUI.add('wegas-lobby-button', function(Y) {
         },
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
-
             cb.delegate("mouseup", function(e) {
                 var data = Y.Widget.getByNode(e.currentTarget).get("data");
                 this.showOverlay();
                 Wegas.Facade.GameModel.sendRequest({
                     request: "/" + this.get("entity").get("id") + "/Restore/History/" + data.name,
                     on: {
-                        success: Y.bind(this.syncUI, this),
+                        success: Y.bind(function() {
+                            this.hideOverlay();
+                            this.syncUI();
+                        }, this),
                         failure: Y.bind(this.hideOverlay, this)
                     }
                 });
@@ -151,7 +150,10 @@ YUI.add('wegas-lobby-button', function(Y) {
                         method: 'DELETE'
                     },
                     on: {
-                        success: Y.bind(this.syncUI, this),
+                        success: Y.bind(function() {
+                            this.hideOverlay();
+                            this.syncUI();
+                        }, this),
                         failure: Y.bind(this.hideOverlay, this)
                     }
                 });
