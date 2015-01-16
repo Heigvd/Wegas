@@ -128,6 +128,51 @@ YUI.add("wegas-plugin", function(Y) {
     Plugin.Action = Action;
     /**
      *  @class
+     *  @name Y.Plugin.FireAndForgetRequestAction
+     *  @extends Y.Plugin.Action
+     *  @constructor
+     */
+    var FireAndForgetRequestAction = Y.Base.create("FireAndForgetRequest", Action, [], {
+        execute: function() {
+            Y.io(Y.Wegas.app.get("base") + this.get("url"), {
+                "method": this.get("method"),
+                "data": this.get("data")
+            });
+        }
+    }, {
+        NS: "fireandforgetrequestaction",
+        ATTRS: {
+            url: {
+                type: "string",
+                _inputex: {
+                    label: "Url"
+                }
+            },
+            method: {
+                type: "string",
+                value: "GET",
+                choices: [{
+                        value: "GET"
+                    }, {
+                        value: "POST"
+                    }, {
+                        value: "DELETE"
+                    }, {
+                        value: "PUT"
+                    }
+                ],
+                _inputex: {
+                    label: ""
+                }
+            },
+            data: {
+                type: "string"
+            }
+        }
+    });
+    Plugin.FireAndForgetRequestAction = FireAndForgetRequestAction;
+    /**
+     *  @class
      *  @name Y.Plugin.OpenUrlAction
      *  @extends Y.Plugin.Action
      *  @constructor
@@ -187,7 +232,7 @@ YUI.add("wegas-plugin", function(Y) {
             var outputType = this.get("outputType"),
                 playerId = Wegas.Facade.Game.get("currentPlayerId"),
                 roots = this.get("root.evaluated"),
-                root="",
+                root = "",
                 printUrl;
 
             if (roots) {

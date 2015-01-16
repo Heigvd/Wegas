@@ -36,7 +36,46 @@ YUI.add('wegas-shareuser', function(Y) {
                     }, {
                         name: "userId",
                         type: "hidden"
-                    }];
+                    }],
+                autoCompleteCfg = {
+                    minQueryLength: 2,
+                    maxResults: 30,
+                    resultFormatter: function(query, results) {
+                        return Y.Array.map(results, function(result) {
+                            return Y.Lang.sub(resultTemplate, {
+                                firstname: result.highlighted.firstname,
+                                lastname: result.highlighted.lastname,
+                                email: result.highlighted.email,
+                                username: result.highlighted.username
+                            });
+                        });
+                    },
+                    resultHighlighter: function(query, results) {
+                        var tokens = query.split(" ");
+                        return Y.Array.map(results, function(result) {
+                            var rH = {};
+                            rH['firstname'] = Y.Highlight.all(result.raw.get("firstname"), tokens);
+                            rH['lastname'] = Y.Highlight.all(result.raw.get("lastname"), tokens);
+                            rH['email'] = Y.Highlight.all(result.raw.get("email"), tokens);
+                            if (result.raw.username) {
+                                rH['username'] = "(" + Y.Highlight.all(result.raw.get("username"), tokens) + ")";
+                            } else {
+                                rH['username'] = "";
+                            }
+                            return rH;
+                        });
+                    },
+                    source: Y.bind(function(query, callback) {
+                        this.autocompleteRequest(query, callback);
+                    }, this),
+                    enableCache: false,
+                    resultListLocator: Y.bind(function(responses) {
+                        Y.Array.each(this.userList.subFields, function(user) {
+                            responses = this.resultListLocator(user.getValue().userId, responses);
+                        }, this);
+                        return responses;
+                    }, this)
+                };
 
             permissions = permissions.concat(Y.Array.map(this.get("permsList"), function(item) {
                 item.type = "boolean";
@@ -62,69 +101,67 @@ YUI.add('wegas-shareuser', function(Y) {
 
             this.autocompleteValue = [];
             this.typeInviteValue = "e-mail, name or lastname";
-            this.field = new Y.inputEx.AutoComplete({
-                parentEl: el.one(".wegas-adduser"),
-                typeInvite: this.typeInviteValue,
-                // Format the hidden value (value returned by the form)
-                returnValue: Y.bind(function(oResultItem) {
-                    if (!this.field.options.value) {
-                        this.field.options.value = [];
-                    }
-                    this.field.options.value.push(oResultItem);
-                    return oResultItem.value;
-                }, this),
-                autoComp: {
-                    minQueryLength: 1,
-                    maxResults: 30,
-                    //resultTextLocator: 'label',
-                    //resultHighlighter: 'phraseMatch',
-                    resultFormatter: function(query, results) {
-                        return Y.Array.map(results, function(result) {
-                            return Y.Lang.sub(resultTemplate, {
-                                firstname: result.highlighted.firstname,
-                                lastname: result.highlighted.lastname,
-                                email: result.highlighted.email,
-                                username: result.highlighted.username
-                            });
-                        });
-                    },
-                    resultHighlighter: function(query, results) {
-                        var tokens = query.split(" ");
-                        return Y.Array.map(results, function(result) {
-                            var rH = {};
-                            rH['firstname'] = Y.Highlight.all(result.raw.get("firstname"), tokens);
-                            rH['lastname'] = Y.Highlight.all(result.raw.get("lastname"), tokens);
-                            rH['email'] = Y.Highlight.all(result.raw.get("email"), tokens);
-                            if (result.raw.get("username")) {
-                                rH['username'] = "(" + Y.Highlight.all(result.raw.get("username"), tokens) + ")";
-                            } else {
-                                rH['username'] = "";
-                            }
-                            return rH;
-                        });
-                    },
-                    queryDelimiter: ',',
-                    source: Y.bind(function(query, callback) {
-                        this.autocompleteRequest(query, callback);
-                    }, this),
-                    enableCache: false,
-                    resultListLocator: Y.bind(function(responses) {
-                        Y.Array.each(this.userList.subFields, function(user) {
-                            responses = this.resultListLocator(user.getValue().userId, responses);
-                        }, this);
-                        //Y.Array.each(this.field.options.value, function(fieldValue) {
-                        //    responses = this.resultListLocator(fieldValue.value, responses);
-                        //}, this);
-                        return responses;
-                    }, this)
+
+            this.searchAccount = new Y.inputEx.ListField({
+                parentEl: this.get("contentBox").one(".wegas-adduser"),
+                elementType: {
+                    type: "group",
+                    fields: [{
+                            name: "@class",
+                            type: "hidden",
+                            value: "JpaAccount"
+                        }, {
+                            name: "id",
+                            type: "hidden"
+                        }, {
+                            name: "firstname",
+                            typeInvite: this.typeInviteValue,
+                            type: "autocomplete",
+                            autoComp: autoCompleteCfg,
+                            required: true,
+                            allowFreetext: true
+                        }, {
+                            name: "lastname",
+                            type: "string",
+                            typeInvite: "",
+                            //required: true,
+                            readonly: true
+                        }, {
+                            name: "email",
+                            type: "hidden"
+                        }]
                 }
             });
 
             this.saveButton = new Wegas.Button({
                 label: "Add"
             }).render(el.one(".wegas-adduser"));
+            this.clearButton = new Wegas.Button({
+                label: "Clear"
+            }).render(el.one(".wegas-adduser"));
+
 
             this.loadPermissions();
+        },
+        syncUI: function() {
+            this.clearForm();
+        },
+        updateAutoCompletes: function() {
+            Y.one(this.searchAccount.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
+            var i, j, sBtn = this.saveButton;
+            for (i = 0; i < this.searchAccount.subFields.length; i++) {
+                for (j = 2; j < 3; j += 1) {
+                    var field = this.searchAccount.subFields[i].inputs[j];
+                    if (!field.wmodified) {
+                        field.yEl.ac.after("select", function(e) {
+                            this.setValue(e.result.raw.getAttrs());
+                            this.disable(true);
+                            sBtn.enable();
+                        }, this.searchAccount.subFields[i]);
+                        field.wmodified = true;
+                    }
+                }
+            }
         },
         autocompleteRequest: function(query, callback) {
             Wegas.Facade.User.sendRequest({
@@ -154,108 +191,28 @@ YUI.add('wegas-shareuser', function(Y) {
             }
             return responses;
         },
+        /* clean autoComplete field and prepare it for a new search */
+        clearForm: function() {
+            this.searchAccount.clear();
+            this.searchAccount.addElement();
+            Y.once("domready", this.updateAutoCompletes, this);
+            this.saveButton.disable();
+        },
         bindUI: function() {
             this.saveButton.on("click", function() {
-                var i, emailList = [], otherValueList = [],
-                    fieldValue = this.field.yEl.get("value"), notAdd,
-                    userNames = fieldValue.split(",");
-                this.sendAddErrorMessage = false;
-
-                if (fieldValue === this.typeInviteValue) {                                        // Check the input element is not empty
-                    return;
+                var account;
+                if (this.searchAccount.getValue().length === 1 && this.searchAccount.validate()) {
+                    account = this.searchAccount.getValue()[0];
+                    this.addToUserlist(account.id, account.firstname + " " + account.lastname);
+                } else {
+                    // nothing to do ?
                 }
-
-                //Add all accounts from "this.field" with an id (means selected with autocompletion)
-                Y.Array.each(this.field.options.value, function(account) {
-                    if (this.checkFieldValue(userNames, account)) {
-                        this.addToUserlist(account.value, account.label);
-                    }
-                }, this);
-
-                Y.Array.each(userNames, function(value) {                       // Create the email list and other value list
-                    notAdd = true;
-                    for (i in this.field.options.value) {
-                        if (this.field.options.value.hasOwnProperty(i)) {
-                            if (this.field.options.value[i].label === Y.Lang.trim(value)) {
-                                notAdd = false;
-                                break;
-                            }
-                        }
-                    }
-                    if (notAdd && value.indexOf("@") !== -1) {
-                        emailList.push(Y.Lang.trim(value));
-                    } else if (notAdd) {
-                        otherValueList.push(Y.Lang.trim(value));
-                    }
-                }, this);
-
-                if (emailList.length > 0) {
-                    this.findAccountsByEmail(emailList);
-                }
-
-                if (otherValueList.length > 0) {
-                    this.findAccountsByName(otherValueList);
-                }
-
-                this.field.options.value = [];
-                this.field.setValue("");
+                this.clearForm();
             }, this);
-        },
-        findAccountsByEmail: function(emailList) {
-            Wegas.Facade.User.sendRequest({
-                request: "/FindAccountsByEmailValues/",
-                headers: {
-                    'Managed-Mode': 'false'
-                },
-                cfg: {
-                    data: {
-                        values: emailList
-                    }
-                },
-                on: {
-                    success: Y.bind(function(e) {
-                        var notAddedAccounts;
-                        Y.Array.each(e.response.results.entities, function(account) {
-                            this.addToUserlist(account.get("val.value"), account.get("val.label"));
-                        }, this);
-                        notAddedAccounts = Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
-                        this.notAddedToUserlist(notAddedAccounts);
-                    }, this)
-                }
-            });
-        },
-        findAccountsByName: function(valueList) {
-            Wegas.Facade.User.sendRequest({
-                request: "/FindAccountsByName/",
-                headers: {
-                    'Managed-Mode': 'true'
-                },
-                cfg: {
-                    data: {
-                        values: valueList
-                    }
-                },
-                on: {
-                    success: Y.bind(function(e) {
-                        var notAddedAccounts;
-                        Y.Array.each(e.response.results.entities, function(account) {
-                            this.addToUserlist(account.get("id"), account.get("name"));
-                        }, this);
-                        notAddedAccounts = Wegas.Facade.User.cache.findEvent("NotAddedAccount", e);
-                        this.notAddedToUserlist(notAddedAccounts);
-                    }, this)
-                }
-            });
-        },
-        notAddedToUserlist: function(notAddedAccounts) {
-            var i;
-            for (i = 0; i < notAddedAccounts[0].length; i += 1) {
-                this.field.setValue(this.field.getValue() + notAddedAccounts[0][i] + ", ");
-            }
-            if (notAddedAccounts[0].length > 0 && !this.sendAddErrorMessage) {
-                this.sendAddErrorMessage = true;
-                this.showMessage("warn", "Some accounts couldn't be added");
-            }
+
+            this.clearButton.on("click", function() {
+                this.clearForm();
+            }, this);
         },
         addToUserlist: function(id, label) {
             var accountFind, newPermGroup;
@@ -273,16 +230,10 @@ YUI.add('wegas-shareuser', function(Y) {
                 this.defaultSelectedPerm(newPermGroup);
             }
         },
-        checkFieldValue: function(usernameList, account) {
-            return Y.Array.some(usernameList, function(value) {
-                if (account.label === Y.Lang.trim(value)) {
-                    return true;
-                }
-            });
-        },
         destructor: function() {
-            this.field.destroy();
+            this.searchAccount.destroy();
             this.saveButton.destroy();
+            this.clearButton.destroy();
             this.userList.destroy();
         },
         loadPermissions: function() {

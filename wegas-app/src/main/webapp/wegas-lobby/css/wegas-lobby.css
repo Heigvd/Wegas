@@ -322,6 +322,9 @@
 .wegas-shareuser .wegas-userlist > div {
     margin: 0;
 }
+.wegas-shareuser .wegas-adduser fieldset > .inputEx-fieldWrapper {
+    float: left;
+}
 .wegas-shareuser .wegas-adduser {
     padding: 10px;
     background: #f6f6f6;
@@ -333,7 +336,7 @@
     width: 100%;
 }
 .wegas-shareuser .wegas-adduser input {
-    width: 98%;
+    /*width: 98%;*/
     padding: 2px;
 }
 .wegas-shareuser .wegas-button {
