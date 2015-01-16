@@ -295,7 +295,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                         entity = Y.JSON.parse(Y.JSON.stringify(entity));
                         if (entity.id) {
                             Wegas.Facade.Variable.cache.put(entity, {
-                                on: DEFAULTCB
+                                on: DEFAULTCB,
+                                cfg:{updateEvent:false}
                             });
                         } else {
                             Wegas.Facade.Variable.cache.post(entity, {
