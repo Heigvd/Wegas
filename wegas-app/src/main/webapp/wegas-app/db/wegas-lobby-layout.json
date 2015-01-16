@@ -74,6 +74,19 @@
                                             ]
                                         }
                                     ]
+                                },
+                                {
+                                    "type": "Button",
+                                    "label": "Clear Cache",
+                                    "plugins" : [
+                                        {
+                                            "fn" : "FireAndForgetRequestAction",
+                                            "cfg" : {
+                                                "url": "rest/combo",
+                                                "method" : "DELETE"
+                                            }
+                                        }
+                                    ]
                                 }
                             ]
                         }
