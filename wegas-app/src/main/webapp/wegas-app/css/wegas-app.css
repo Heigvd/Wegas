@@ -145,7 +145,7 @@ font {
     }
 }
 .wegas-loading-overlay {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0);
     position: absolute;
     top: 0;
     bottom: 0;
