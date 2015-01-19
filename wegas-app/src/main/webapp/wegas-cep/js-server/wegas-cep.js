@@ -8,47 +8,56 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-importPackage(javax.naming);
+
+/*global currentPhase, self, phases, Variable, humanResources, Event, gameModel */
 
 function passPeriod() {
+    "use strict";
     var currentTime = phases.descriptor.items.get(currentPhase.value - 1),
-            currentTimeInstance = currentTime.getInstance(self);
+        currentTimeInstance = currentTime.getInstance(self);
     if (currentTimeInstance.value == currentTime.maxValue) {
         phases.value += 1;
         currentPhase.value += 1;
-        phases.descriptor.items.get(currentPhase.value - 1).getInstance(self).value += 1;
+        //phases.descriptor.items.get(currentPhase.value - 1).getInstance(self).value += 1;
     } else {
         currentTimeInstance.value += 1;
     }
     humanResources.value = humanResources.descriptor.defaultInstance.value;
 }
 function checkMoral() {
+    "use strict";
     this.setTeamMotivation();
     this.changePicture();
 }
 
+function boundConstrain(val, lowerBound, upperBound) {
+    "use strict";
+    return Math.max(lowerBound, Math.min(val, upperBound));
+}
+
 function setTeamMotivation() {
+    "use strict";
     var i, gm = self.getGameModel(),
-            listEmployees = Variable.findByName(gm, 'employees'),
-            employeeInstance,
-            teamMotivation = Variable.findByName(gm, 'teamMotivation'),
-            morals = [],
-            mSum = 0,
-            mAverage,
-            mGap = [],
-            tmpVal,
-            SumOfSquareOfMGap = 0,
-            standardDeviation,
-            newTeamMotivation;
+        listEmployees = Variable.findByName(gm, 'employees'),
+        employeeInstance,
+        teamMotivation = Variable.findByName(gm, 'teamMotivation'),
+        morals = [],
+        mSum = 0,
+        mAverage,
+        mGap = [],
+        tmpVal,
+        SumOfSquareOfMGap = 0,
+        standardDeviation,
+        newTeamMotivation;
     if (!listEmployees || !teamMotivation) {
         return;
     }
 
     // calcul arithmetic average of morals (on actives employees only)
-    for (i = 0; i < listEmployees.items.size(); i++) {
+    for (i = 0; i < listEmployees.items.size(); i += 1) {
         employeeInstance = listEmployees.items.get(i).getInstance(self);
         if (employeeInstance.getActive() == true) {
-            tmpVal = parseInt(employeeInstance.getMoral());
+            tmpVal = parseInt(employeeInstance.getMoral(), 10);
             //Bound moral between teamMotivation Min val and max val
             if (boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue()) !== tmpVal) {
                 tmpVal = boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue());
@@ -62,7 +71,7 @@ function setTeamMotivation() {
 
     //For each moral calcul gap between moral and average (= moral - average);
     //take the sum of each square of gaps (= Sum(n_gaps * n_gaps)).
-    for (i = 0; i < morals.length; i++) {
+    for (i = 0; i < morals.length; i += 1) {
         mGap.push(morals[i] - mAverage);
         SumOfSquareOfMGap += Math.pow(mGap[i], 2);
     }
@@ -80,29 +89,26 @@ function setTeamMotivation() {
     teamMotivation.getInstance(self).setValue(Math.round(newTeamMotivation));
 }
 
-function boundConstrain(val, lowerBound, upperBound) {
-    return Math.max(lowerBound, Math.min(val, upperBound));
-}
-
 /**
  * Set picture depending of resource's current moral.
  */
 function changePicture() {
+    "use strict";
     var i, j, valueInst, valueDescr, gm = self.getGameModel(), oldImg, newImg, moral,
-            listEmployees = Variable.findByName(gm, 'employees'),
-            imgSuffixe = ['Triste', 'Neutre', 'Joie'];
+        listEmployees = Variable.findByName(gm, 'employees'),
+        imgSuffixe = ['Triste', 'Neutre', 'Joie'];
     if (!listEmployees) {
         return;
     }
-    for (i = 0; i < listEmployees.items.size(); i++) {
+    for (i = 0; i < listEmployees.items.size(); i += 1) {
         valueDescr = listEmployees.items.get(i);
         valueInst = valueDescr.getInstance(self);
-        moral = parseInt(valueInst.getMoral());
+        moral = parseInt(valueInst.getMoral(), 10);
         oldImg = valueInst.getProperty('picture');
         newImg = null;
         switch (true) {
             case moral < 40 :
-                for (j = 0; j < imgSuffixe.length; j++) {
+                for (j = 0; j < imgSuffixe.length; j += 1) {
                     if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                         newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);
                         break;
@@ -110,7 +116,7 @@ function changePicture() {
                 }
                 break;
             case moral < 75 :
-                for (j = 0; j < imgSuffixe.length; j++) {
+                for (j = 0; j < imgSuffixe.length; j += 1) {
                     if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                         newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);
                         break;
@@ -118,7 +124,7 @@ function changePicture() {
                 }
                 break;
             default :
-                for (j = 0; j < imgSuffixe.length; j++) {
+                for (j = 0; j < imgSuffixe.length; j += 1) {
                     if (oldImg.indexOf(imgSuffixe[j]) > -1) {
                         newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[2]);
                         break;
@@ -131,16 +137,23 @@ function changePicture() {
         }
     }
 }
+
 /**
  * History
- **/
+ * @param {string} type type of the historical record
+ * @param {string} title title of the record
+ * @param {text} msg record content
+ * @returns {null}
+ */
 function sendHistory(type, title, msg) {
+    "use strict";
     var phase = phases.getDescriptor().item(currentPhase.value - 1),
-            phaseText = type + " - " + phase.label + " (" + phase.getInstance().value + ")";
+        phaseText = type + " - " + phase.label + " (" + phase.getInstance().value + ")";
     Variable.find(gameModel, "history").sendMessage(self, phaseText, title, msg, []);
 }
 
 Event.on("replyValidate", function(e) {
+    "use strict";
     var msg = "", root;
     /* Assume third level*/
     root = Variable.findParentList(e.question.getDescriptor());

@@ -40,28 +40,30 @@
                             }, {
                                 "type": "Button",
                                 "disabled": false,
-                                "label": "Next period",
+                                "label": "Période Suivante",
                                 "plugins": [{
                                         "cfg": {
-                                            "content": "Advance to next period"
+                                            "content": "Cliquez pour passer à la prochaine période"
                                         },
                                         "fn": "Tooltip"
                                     }, {
-                                        "fn": "ExecuteScriptAction",
+                                        "fn": "ConfirmExecuteScriptAction",
                                         "cfg": {
-                                            "targetEvent": "click",
                                             "onClick": {
                                                 "@class": "Script",
                                                 "language": "JavaScript",
                                                 "content": "passPeriod();"
-                                            }
+                                            },
+                                            "message": "Êtes-vous sûr de vouloir passer à la prochaine période ?",
+                                            "targetEvent": "click"
                                         }
-                                    }],
+                                    }
+                                ],
                                 "cssClass": "fl"
                             }, {
                                 "type": "BoxTemplate",
                                 "data": {
-                                    "label": "Time cards"
+                                    "label": "Cartes Temps"
                                 },
                                 "variable": {
                                     "name": "humanResources"
@@ -138,7 +140,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "questions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
+                                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self)-1; return Variable.find('questions').item(currentPhase).item(Variable.find('phases').item(currentPhase).getValue(self)-1);"
                                             }
                                         }
                                     }
@@ -160,7 +162,7 @@
                                         "fn": "UnreadCount",
                                         "cfg": {
                                             "variable": {
-                                                "expr": "actions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
+                                                "content": "var currentPhase = Variable.find('currentPhase').getValue(self)-1; return Variable.find('actions').item(currentPhase).item(Variable.find('phases').item(currentPhase).getValue(self)-1);"
                                             }
                                         }
                                     }
@@ -308,14 +310,14 @@
         "id": 4,
         "type": "MCQTabView",
         "variable": {
-            "expr": "questions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
+            "content": "var currentPhase = Variable.find('currentPhase').getValue(self)-1; return Variable.find('questions').item(currentPhase).item(Variable.find('phases').item(currentPhase).getValue(self)-1);"
         }
     },
     "5": {
         "id": 5,
         "type": "MCQTabView",
         "variable": {
-            "expr": "actions.items[currentPhase.value - 1].items[phases.items[currentPhase.value - 1].value - 1].descriptorId"
+            "content": "var currentPhase = Variable.find('currentPhase').getValue(self)-1; return Variable.find('actions').item(currentPhase).item(Variable.find('phases').item(currentPhase).getValue(self)-1);"
         }
     },
     "6": {
