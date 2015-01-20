@@ -56,7 +56,7 @@ var PMGExport = (function() {
                     choice = question.getItems().get(j);
                     for (k = 0; k < choice.getResults().size(); k += 1) {
                         result = choice.getResults().get(k);
-                        if (result.getAnswer().match(textAnswer)) {
+                        if (result.getAnswer().indexOf(textAnswer) !== -1) {
                             // MATCH FOUND
                             selected.push({
                                 "key": key,
