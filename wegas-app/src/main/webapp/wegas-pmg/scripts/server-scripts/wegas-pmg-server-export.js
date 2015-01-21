@@ -45,6 +45,8 @@ var PMGExport = (function() {
         } else {
             textAnswer = match[1];
 
+            printMessage ("SEARCH ->" + textAnswer + "<-");
+                        
             for (i = 0; i < candidates.size(); i += 1) { // Question Iterator
                 question = parent = candidates.get(i);
                 /* while (parent.getClass().getSimpleName() != "GameModel") {
@@ -56,7 +58,9 @@ var PMGExport = (function() {
                     choice = question.getItems().get(j);
                     for (k = 0; k < choice.getResults().size(); k += 1) {
                         result = choice.getResults().get(k);
-                        if (result.getAnswer().indexOf(textAnswer) !== -1) {
+                        //if (result.getAnswer().indexOf(textAnswer) !== -1) {
+                        printMessage ("ANSWER ->" + result.getAnswer() + "<-");
+                        if (result.getAnswer() == textAnswer) { // DO NOT USE === !!!
                             // MATCH FOUND
                             selected.push({
                                 "key": key,
