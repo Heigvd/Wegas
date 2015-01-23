@@ -79,7 +79,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (event.getEntity() instanceof ChoiceDescriptor) {
             ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
             ChoiceInstance defaultInstance = ((ChoiceInstance) choice.getDefaultInstance());
-            if (defaultInstance.getSerializedResultIndex() != -1
+            if (defaultInstance.getSerializedResultIndex() > -1
                     && defaultInstance.getSerializedResultIndex() < choice.getResults().size()) {
                 Result cr = choice.getResults().get(defaultInstance.getSerializedResultIndex());
 
