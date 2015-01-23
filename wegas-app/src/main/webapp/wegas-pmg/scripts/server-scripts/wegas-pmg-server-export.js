@@ -19,12 +19,13 @@
 var PMGExport = (function() {
     "use strict";
 
-    function findQuestionAndResult(message) {
+    function findQuestionAndResult(message, key, name) {
         var i, j, k,
-            question, choice, result, textAnswer,
-            candidates;
+            question, choice, result, match, textAnswer, parent, type,
+            candidates, selected = [];
 
         candidates = Variable.findByTitle(gameModel, message.getSubject());
+
 
         /* Msg Body is like :
          
@@ -35,30 +36,84 @@ var PMGExport = (function() {
          
          We're looking for blahblah1 only !
          */
-        textAnswer = message.getBody().match(/<div class="replyDiv"><p>((?:.(?!<\/p><\/div><div class="replyDiv"))*)<\/p><\/div>/)[1];
 
-        for (i = 0; i < candidates.size(); i += 1) { // Question Iterator
-            question = candidates.get(i);
-            for (j = 0; j < question.getItems().size(); j += 1) { // Choice iterator
-                choice = question.getItems().get(j);
-                for (k = 0; k < choice.getResults().size(); k += 1) {
-                    result = choice.getResults().get(k);
-                    if (result.getAnswer().match(textAnswer)) {
-                        // MATCH FOUND
-                        return {"question": question.getName(), "result": k, "date": message.getDate()};
+        //match = message.getBody().match(/<div class="replyDiv">(<p>(?:[\s\S](?!<\/div><div class="replyDiv"))*<\/p>)<\/div>/);
+        match = message.getBody().match(/<div class="replyDiv">(<p(?: class="[a-zA-Z0-9_]*")*>(?:[\s\S](?!<\/div><div class="replyDiv"))*<\/p>)<\/div>/);
+        if (!match) {
+            // REGEX FAILS 
+            printMessage("BODY : " + message.getBody());
+        } else {
+            textAnswer = match[1];
+
+            printMessage ("SEARCH ->" + textAnswer + "<-");
+                        
+            for (i = 0; i < candidates.size(); i += 1) { // Question Iterator
+                question = parent = candidates.get(i);
+                /* while (parent.getClass().getSimpleName() != "GameModel") {
+                    type = parent.getTitle();
+                    parent = Variable.findParentList(parent);
+                }*/
+
+                for (j = 0; j < question.getItems().size(); j += 1) { // Choice iterator
+                    choice = question.getItems().get(j);
+                    for (k = 0; k < choice.getResults().size(); k += 1) {
+                        result = choice.getResults().get(k);
+                        //if (result.getAnswer().indexOf(textAnswer) !== -1) {
+                        printMessage ("ANSWER ->" + result.getAnswer() + "<-");
+                        if (result.getAnswer() == textAnswer) { // DO NOT USE === !!!
+                            // MATCH FOUND
+                            selected.push({
+                                "key": key,
+                                "location": "",
+                                "name": name,
+                                "starttime": message.getTime(),
+                                "question": question.getName(),
+                                //"nbChoice": question.getItems().size(),
+                                "choice": choice.getName(),
+                                "result": k
+                            });
+                        }
                     }
                 }
+            }
+            if (selected.length === 1) {
+                return selected[0];
+            } else if (selected.length === 0) {
+                return null;
+            } else {
+                return Y.Array.reduce(selected, selected[0], function(current, item) {
+                    if (current.question !== item.question) {
+                        // Different questions -> could not guess anything
+                        current.question = null;
+                        current.choice = null;
+                        current.result = null;
+                    } else if (current.choice !== item.choice) {
+                        // Different choices -> only question is correct
+                        current.choice = null;
+                        current.result = null;
+                    } else {
+                        // same question & same choice -> only result is ambigous
+                        current.result = null;
+                    }
+                    return current;
+                });
             }
         }
     }
 
     function processTeam(team) {
-        var i, path = [], messages, msg;
+        var i, path = [], messages, msg, key, player;
 
-        messages = Variable.find(gameModel, "history").getInstance(team.getPlayers().get(0)).getMessages();
+        player = team.getPlayers().get(0);
+
+
+        key = player.getId() + "&" + team.getId() + "&" + team.getGame().getId();
+
+
+        messages = Variable.find(gameModel, "history").getInstance(player).getMessages();
         for (i = 0; i < messages.size(); i += 1) {
             msg = messages.get(i);
-            path.push(findQuestionAndResult(msg));
+            path.push(findQuestionAndResult(msg, key, player.getName()));
         }
 
         return path;
@@ -90,14 +145,14 @@ var PMGExport = (function() {
     }
 
     function generateHistory() {
-        var i, teams = getActiveTeams(), team, result = {};
+        var i, teams = getActiveTeams(), team, result = [];
 
         for (i = 0; i < teams.length; i += 1) {
             team = teams[i];
-            result[team.getName()] = processTeam(team);
+            result = result.concat(processTeam(team));
         }
 
-        return result;
+        return { "history" : result};
     }
 
     return {
