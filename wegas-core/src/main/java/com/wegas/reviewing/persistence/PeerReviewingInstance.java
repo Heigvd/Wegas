@@ -8,6 +8,7 @@
 package com.wegas.reviewing.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,16 +20,16 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * Instance of the PeerReviewingDescriptor variable
-
- Author:
-  - has to review several other authors: toReview Review list
-  - is reviewed by several other authors: reviewed Review list
- 
- The review is in a specific state, see PeerReviewingDescriptor 
- * 
- * 
+ *
+ * Author:<br />
+ * - has to review several other authors: <code>toReview</code> Review list<br />
+ * - is reviewed by several other authors: <code>reviewed</code> Review list
+ *
+ * The review is in a specific state, see PeerReviewingDescriptor
+ *
+ *
  * @see PeerReviewingDescriptor
- * 
+ *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Entity
@@ -37,42 +38,49 @@ public class PeerReviewingInstance extends VariableInstance {
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(PeerReviewingInstance.class);
 
-    private PeerReviewingDescriptor.ReviewingState reviewState;
-
+    private PeerReviewingDescriptor.ReviewingState reviewState = PeerReviewingDescriptor.ReviewingState.NOT_STARTED;
 
     @OneToMany(mappedBy = "reviewer")
     private List<Review> toReview = new ArrayList<>();
-    
-    @OneToMany(mappedBy = "reviewed")
-    private List<Review> reviewed = new ArrayList<>();
-    
 
-    /**
-     *
-     */
+    @OneToMany(mappedBy = "author")
+    private List<Review> reviewed = new ArrayList<>();
+
     public PeerReviewingInstance() {
     }
 
-    /**
-     *
-     * @param a
-     */
     @Override
     public void merge(AbstractEntity a) {
-        PeerReviewingInstance vi = (PeerReviewingInstance) a;
+        if (a instanceof PeerReviewingInstance) {
+            PeerReviewingInstance o = (PeerReviewingInstance) a;
+            this.setReviewState(o.getReviewState());
+            this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
+            this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));
+        }
     }
 
+    /**
+     * Get the current state of the review
+     *
+     * @return the current state
+     */
     public PeerReviewingDescriptor.ReviewingState getReviewState() {
         return reviewState;
     }
 
+    /**
+     * Set the current state of the review
+     *
+     * @param state the new current state
+     */
     public void setReviewState(PeerReviewingDescriptor.ReviewingState state) {
         this.reviewState = state;
     }
 
     /**
      * Get the list of feedback to write to review others authors
-     * @return the list of feedback 
+     *
+     * @return the list of feedback
      */
     public List<Review> getToReview() {
         return toReview;
@@ -80,6 +88,7 @@ public class PeerReviewingInstance extends VariableInstance {
 
     /**
      * Set the list of feedback to write to review others authors
+     *
      * @param toReview list of Review
      */
     public void setToReview(List<Review> toReview) {
@@ -88,7 +97,8 @@ public class PeerReviewingInstance extends VariableInstance {
 
     /**
      * Get the list of feedback written by others authors
-     * @return 
+     *
+     * @return
      */
     public List<Review> getReviewed() {
         return reviewed;
@@ -96,7 +106,8 @@ public class PeerReviewingInstance extends VariableInstance {
 
     /**
      * Set the list of feedback written by others authors
-     * @param reviewed 
+     *
+     * @param reviewed
      */
     public void setReviewed(List<Review> reviewed) {
         this.reviewed = reviewed;

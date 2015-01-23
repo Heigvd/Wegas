@@ -27,8 +27,7 @@ import org.codehaus.jackson.annotate.JsonSubTypes;
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Entity
-
-@Table(uniqueConstraints = {})
+@Inheritance(strategy = InheritanceType.JOINED)
 @JsonSubTypes(value = {
     @JsonSubTypes.Type(value = TextEvaluationInstance.class),
     @JsonSubTypes.Type(value = CategorizedEvaluationInstance.class),
@@ -49,6 +48,13 @@ public abstract class EvaluationInstance extends AbstractEntity {
 
     @ManyToOne
     private EvaluationDescriptor evaluationDescriptor;
+
+    public EvaluationInstance() {
+    }
+
+    public EvaluationInstance(EvaluationDescriptor ed){
+        this.evaluationDescriptor = ed;
+    }
 
     /**
      * Get the descriptor that drive this evaluation instance

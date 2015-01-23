@@ -8,17 +8,38 @@
 package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.AbstractEntity;
+import javax.persistence.Entity;
 
 /**
  * Define an grade-like evaluation by defined a scale (min and max)
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
+@Entity
 public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
     private Double minValue;
 
     private Double maxValue;
+
+    /**
+     * Basic constructor
+     */
+    public GradeDescriptor() {
+        super();
+    }
+
+    /**
+     * Constructor with all fields
+     * @param name the evaluation name
+     * @param minValue minimum allowed value (included) or NULL
+     * @param maxValue maximum allowed value (included) or NULL
+     */
+    public GradeDescriptor(String name, Double minValue, Double maxValue){
+        super(name);
+        this.minValue = minValue;
+        this.maxValue = maxValue;
+    }
 
     /**
      * get the minimum allowed value. NULL means no boundary

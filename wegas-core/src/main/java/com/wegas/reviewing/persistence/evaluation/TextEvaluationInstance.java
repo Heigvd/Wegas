@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Basic;
+import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
@@ -18,6 +19,7 @@ import javax.persistence.Lob;
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
+@Entity
 public class TextEvaluationInstance extends EvaluationInstance {
 
     /**
@@ -26,6 +28,10 @@ public class TextEvaluationInstance extends EvaluationInstance {
     @Lob
     @Basic(fetch = FetchType.LAZY)
     private String text;
+
+    public TextEvaluationInstance() {
+        super();
+    }
 
     /**
      * get the evaluation
@@ -47,6 +53,10 @@ public class TextEvaluationInstance extends EvaluationInstance {
 
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
+        if (a instanceof TextEvaluationInstance) {
+            TextEvaluationInstance o = (TextEvaluationInstance) a;
+            super.merge(a);
+            this.setText(o.getText());
+        }
     }
 }
