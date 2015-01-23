@@ -1149,7 +1149,7 @@ var PMGSimulation = (function() {
         if (sumRealised > 0) {
             effectiveQuality = sumQualityXrealised / sumRealised;
             // Include quality impact
-            effectiveQuality += Variable.findByName(gameModel, 'qualityImpacts').getValue(self) / 2;   // "/ 2" ??? @wtf
+            effectiveQuality += Variable.findByName(gameModel, 'qualityImpacts').getValue(self);
             effectiveQuality = Math.round(Math.min(Math.max(effectiveQuality, quality.minValueD), quality.maxValueD));
         }
 
