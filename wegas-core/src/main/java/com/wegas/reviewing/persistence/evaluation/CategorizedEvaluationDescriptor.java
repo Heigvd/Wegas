@@ -11,14 +11,17 @@ import com.wegas.core.persistence.AbstractEntity;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
 
 /**
  * Define an evaluation as a categorisation. For instance : [ very bad ; bad ;
- * acceptable ; good ; very good ], [true ; false], [off topic, irrelevant, relevant]
+ * acceptable ; good ; very good ], [true ; false], [off topic, irrelevant,
+ * relevant]
  *
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
+@Entity
 public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<CategorizedEvaluationInstance> {
 
     /**
@@ -28,7 +31,24 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
     private List<String> categories = new ArrayList<>();
 
     /**
+     * Basic constructor
+     */
+    public CategorizedEvaluationDescriptor() {
+        super();
+    }
+
+    /**
+     * Constructor with name
+     *
+     * @param name evaluation name
+     */
+    public CategorizedEvaluationDescriptor(String name) {
+        super(name);
+    }
+
+    /**
      * Get the list of allowed categories
+     *
      * @return allowed categories
      */
     public List<String> getCategories() {
@@ -37,6 +57,7 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
 
     /**
      * set the list of allowed categories
+     *
      * @param categories allowed categories
      */
     public void setCategories(List<String> categories) {
@@ -45,6 +66,7 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
 
     /**
      * Add a category to the list
+     *
      * @param category the category to add
      */
     public void addCategory(String category) {
@@ -55,7 +77,8 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
 
     /**
      * remove a category from the list
-     * @param category 
+     *
+     * @param category
      */
     public void removeCategory(String category) {
         categories.remove(category);

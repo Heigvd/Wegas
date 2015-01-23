@@ -8,16 +8,37 @@
 package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.AbstractEntity;
+import javax.persistence.Entity;
 
 /**
  * define an evaluation as free text
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
+@Entity
 public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluationInstance> {
+
+    /**
+     * Basic constructor
+     */
+    public TextEvaluationDescriptor() {
+        super();
+    }
+
+    /**
+     * Constructor with name
+     *
+     * @param name evaluation name
+     */
+    public TextEvaluationDescriptor(String name) {
+        super(name);
+    }
 
     @Override
     public void merge(AbstractEntity a) {
-        super.merge(a);
+        if (a instanceof TextEvaluationDescriptor) {
+            super.merge(a);
+            // Nothing to merge
+        }
     }
 }

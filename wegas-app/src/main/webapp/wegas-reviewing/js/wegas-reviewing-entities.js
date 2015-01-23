@@ -36,13 +36,44 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: STRING,
                 value: "PeerReviewingDescriptor"
             },
-            label: {
-                type: STRING,
-                optional: true,
+            maxNumberOfReview: {
+                type: NUMBER,
+                value: 3,
                 _inputex: {
-                    label: "Label",
-                    description: "Displayed to players",
-                    index: -1
+                    label: "Number of review"
+                }
+            },
+            toReview: {
+                type: STRING,
+                "transient": true,
+                getter: function() {
+                    return Wegas.Facade.Variable.cache.find("name", this.get("toReviewName"));
+                }
+            },
+            toReviewName: {
+                type: STRING,
+                _inputex: {
+                    label: "To Review",
+                    index: -1,
+                    _type: "flatvariableselect",
+                    required: true,
+                    classFilter: ["TextDescriptor", "NumberDescriptor"]
+                }
+            },
+            feedback: {
+                type: ARRAY,
+                value: [],
+                _inputex: {
+                    label: "feedback",
+                    index: 1
+                }
+            },
+            feedbackEvaluations: {
+                type: ARRAY,
+                value: [],
+                _inputex: {
+                    label: "feedback evaluation",
+                    index: 2
                 }
             },
             defaultInstance: {
@@ -90,9 +121,20 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             "@class": {
                 value: "PeerReviewingInstance"
             },
-            replies: {
-                value: [],
+            reviewState: {
+                type: STRING,
+                value: "not-started"
+            },
+            "toReview": {
                 type: ARRAY,
+                value: [],
+                _inputex: {
+                    _type: HIDDEN
+                }
+            },
+            "reviewed": {
+                type: ARRAY,
+                value: [],
                 _inputex: {
                     _type: HIDDEN
                 }
@@ -109,6 +151,15 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         ATTRS: {
             "@class": {
                 value: "EvaluationDescriptor"
+            },
+            name: {
+                type: STRING
+            },
+            feedbackEvaluationReviewDescriptor: {
+                type: persistence.PeerReviewingDescriptor
+            },
+            feedbackReviewDescriptor: {
+                type: persistence.PeerReviewingDescriptor
             }
         }
     });
@@ -117,11 +168,65 @@ YUI.add('wegas-reviewing-entities', function(Y) {
     /**
      * TextEvaluationDescriptor
      */
-    persistence.TextEvaluationDescriptor = Y.Base.create("TextEvaluationDescriptor", persistence.Entity, [], {
+    persistence.TextEvaluationDescriptor = Y.Base.create("TextEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
     }, {
         ATTRS: {
             "@class": {
-                value: "EvaluationDescriptor"
+                value: "TextEvaluationDescriptor"
+            }
+        }
+    });
+
+    /**
+     * GradeDescriptor
+     */
+    persistence.GradeDescriptor = Y.Base.create("GradeDescriptor", persistence.EvaluationDescriptor, [], {
+        getMaxValue: function() {
+            return this.get("maxValue");
+        },
+        getMinValue: function() {
+            return this.get("minValue");
+        }
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "GradeDescriptor"
+            },
+            minValue: {
+                type: NUMBER,
+                optional: true,
+                _inputex: {
+                    label: "Minimum"
+                }
+            },
+            maxValue: {
+                type: NUMBER,
+                optional: true,
+                _inputex: {
+                    label: "Maximum"
+                }
+            }
+        }
+    });
+
+    /**
+     * CategorizedEvaluationDescriptor
+     */
+    persistence.CategorizedEvaluationDescriptor = Y.Base.create("CategorizedEvaluationDescriptor", persistence.EvaluationDescriptor, [], {
+    }, {
+        ATTRS: {
+            "@class": {
+                value: "CategorizedEvaluationDescriptor"
+            },
+            categories: {
+                type: ARRAY,
+                _inputex: {
+                    label: "Categories",
+                    elementType: {
+                        required: true,
+                        type: STRING
+                    }
+                }
             }
         }
     });

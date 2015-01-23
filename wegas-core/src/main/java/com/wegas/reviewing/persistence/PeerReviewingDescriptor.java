@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * PeerReviewingDescriptor allows peer-reviewing of variable between (scope-dependent)
- Player/Team (ie the "author" and the "reviewers").
+ * PeerReviewingDescriptor allows peer-reviewing of variable between
+ * (scope-dependent) Player/Team (ie the "author" and the "reviewers").
  *
  * A review: <ul>
  * <li> is made for a specific variable ('toReview' VariableDescriptor)</li>
@@ -56,7 +57,11 @@ public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingIns
     private static final long serialVersionUID = 1L;
     private static final Logger logger = LoggerFactory.getLogger(PeerReviewingDescriptor.class);
 
+    /**
+     * Define review states
+     */
     public enum ReviewingState {
+
         NOT_STARTED, DISPATCHED, REVIEWED, CLOSED
     }
 
@@ -127,6 +132,12 @@ public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingIns
         if (a instanceof PeerReviewingDescriptor) {
             PeerReviewingDescriptor other = (PeerReviewingDescriptor) a;
             super.merge(a);
+
+            this.setMaxNumberOfReview(other.getMaxNumberOfReview());
+            this.setToReviewName(other.getToReviewName());
+
+            this.feedback = ListUtils.mergeLists(this.getFeedback(), other.getFeedback());
+            this.feedbackEvaluations = ListUtils.mergeLists(this.getFeedbackEvaluations(), other.getFeedbackEvaluations());
         }
     }
 
@@ -154,7 +165,7 @@ public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingIns
      * @return variable to review unique name
      */
     public String getToReviewName() {
-        return (toReview != null ? toReview.getName() : null);
+        return (toReview != null ? toReview.getName() : this.toReviewName);
     }
 
     /**

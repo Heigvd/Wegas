@@ -8,18 +8,24 @@
 package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.AbstractEntity;
+import javax.persistence.Entity;
 
 /**
  * Evaluation instance corresponding to CategorizedEvaluationDescriptor
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
+@Entity
 public class CategorizedEvaluationInstance extends EvaluationInstance {
 
     /**
      * the chosen category (null means un-chosen)
      */
     private String value = null;
+
+    public CategorizedEvaluationInstance() {
+        super();
+    }
 
     /**
      * get the chosen category

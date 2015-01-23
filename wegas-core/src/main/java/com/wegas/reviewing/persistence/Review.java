@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence;
 
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.ListUtils;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Entity;
@@ -48,13 +49,13 @@ public class Review extends AbstractEntity {
     /**
      * List of evaluation instances that compose the feedback (writable by 'reviewer' only)
      */
-    @OneToMany(mappedBy = "feedback")
+    @OneToMany(mappedBy = "feedbackReview")
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
      * List of evaluation instances that compose the feedback evaluation (writable by 'author' only)
      */
-    @OneToMany(mappedBy = "feedbackEvaluation")
+    @OneToMany(mappedBy = "feedbackEvaluationReview")
     private List<EvaluationInstance> feedbacksEvaluation = new ArrayList<>();
 
     @Override
@@ -131,6 +132,10 @@ public class Review extends AbstractEntity {
     public void merge(AbstractEntity other) {
         if (other instanceof Review) {
             Review o = (Review) other;
+            //this.setAuthor(o.getAuthor());
+            //this.setReviewer(o.getReviewer());
+            this.setFeedback(ListUtils.mergeLists(this.getFeedback(), o.getFeedback()));
+            this.setFeedbacksEvaluation(ListUtils.mergeLists(this.getFeedbacksEvaluation(), o.getFeedbacksEvaluation()));
         }
     }
 

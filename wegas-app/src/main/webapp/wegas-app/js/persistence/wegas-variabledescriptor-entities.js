@@ -725,6 +725,11 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     label: "Task",
                                     targetClass: "TaskDescriptor",
                                     cssClass: "wegas-advanced-feature"
+                                }, {
+                                    type: "AddEntityChildButton",
+                                    label: "PeerReview",
+                                    targetClass: "PeerReviewingDescriptor",
+                                    cssClass: "wegas-advanced-feature"
                                 }]
                         }
                     }]
