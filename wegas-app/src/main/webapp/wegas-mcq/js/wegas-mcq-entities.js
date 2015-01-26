@@ -309,7 +309,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             targetClass: "Result",
                             method: "POST",
                             attributeKey: "results",
-                            showEditionAfterRequest:true
+                            showEditionAfterRequest: true
                         }
                     }]
             }, {
@@ -354,13 +354,27 @@ YUI.add('wegas-mcq-entities', function(Y) {
                         scriptType: STRING
                     }]
             },
-                        hasBeenSelected: {
-                label: "has been selected",
+            hasBeenSelected: {
+                label: "has been selectedd",
                 returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
                     }]
+            },
+            hasResultBeenApplied: {
+                label: "has result been applied",
+                returns: BOOLEAN,
+                arguments: [{
+                        type: HIDDEN,
+                        value: SELF
+                    }, {
+                        type: "entityarrayfieldselect",
+                        returnAttr: "name",
+                        field: "results",
+                        scriptType: STRING
+                    }
+                ]
             }
         }
     });

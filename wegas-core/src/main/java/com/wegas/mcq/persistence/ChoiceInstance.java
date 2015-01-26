@@ -55,7 +55,10 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     @Transient
-    private int currentResultIndex;
+    private int currentResultIndex = -1;
+
+    public ChoiceInstance() {
+    }
 
     /**
      *
