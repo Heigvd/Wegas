@@ -30,7 +30,9 @@ import com.wegas.core.persistence.variable.Scripted;
 @Entity
 //@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
-@Table(name = "MCQResult")
+@Table(name = "MCQResult", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"})
+})
 public class Result extends AbstractEntity implements Searchable, Scripted {
 
     private static final long serialVersionUID = 1L;
