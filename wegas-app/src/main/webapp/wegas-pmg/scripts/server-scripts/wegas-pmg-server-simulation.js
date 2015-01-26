@@ -1013,19 +1013,21 @@ var PMGSimulation = (function() {
      * Check if all questions from the current period are answered
      */
     function assertAllPeriodQuestionAnswered() {
-        var i, question, questions, forceQuestion = Variable.findByName(gameModel, "forceQuestionReplies").getValue(self);
+        var i, question, dir, questions, forceQuestion = Variable.findByName(gameModel, "forceQuestionReplies").getValue(self);
 
         if (!forceQuestion) {
             return;
         }
 
         try {
-            questions = Variable.findByName(gameModel, "questions").items.get(PMGHelper.getCurrentPhaseNumber() - 1)
-                .items.get(PMGHelper.getCurrentPeriodNumber() - 1).items;
+            dir = Variable.findByName(gameModel, "questions").items.get(PMGHelper.getCurrentPhaseNumber() - 1)
+                .items.get(PMGHelper.getCurrentPeriodNumber() - 1);
         } catch (e) {
+            return;
             // Unable to find question list for current phase
         }
-        if (questions) {
+        if (dir && dir.getClass().getSimpleName() == "ListDescriptor"){ // DO NOT USE ===
+            questions = dir.items;
             for (i = 0; i < questions.size(); i += 1) {
                 question = questions.get(i);
                 if (!question.isReplied(self) && question.isActive(self)) {
@@ -1201,6 +1203,9 @@ var PMGSimulation = (function() {
         },
         nextPeriod: function() {
             nextPeriod();
+        },
+        assertQuestion : function(){
+            return assertAllPeriodQuestionAnswered();
         }
     };
 }());
