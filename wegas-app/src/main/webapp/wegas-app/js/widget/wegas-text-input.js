@@ -88,7 +88,7 @@ YUI.add("wegas-text-input", function(Y) {
                 //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
                 this.editor.render();
 
-                this.editor.setContent( this.get("variable.evaluated").getInstance().get("value"));
+                this.editor.setContent(this.get("variable.evaluated").getInstance().get("value"));
 
                 this.addButton = new Wegas.Button({
                     label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
@@ -100,10 +100,10 @@ YUI.add("wegas-text-input", function(Y) {
                 }).render(this.get("boundingBox").one(".wegas-text-input-toolbar"));
             }, this);
         },
-        save: function(){
+        save: function() {
             var theVar = this.get("variable.evaluated").getInstance();
             theVar.set("value", this.editor.getContent());
-            Y.Wegas.Facade.Variable.cache.put(theVar.toObject());            
+            Y.Wegas.Facade.Variable.cache.put(theVar.toObject());
         },
         getEditorLabel: function() {
             return this.get(CONTENTBOX).get("text");
@@ -127,6 +127,15 @@ YUI.add("wegas-text-input", function(Y) {
                     _type: "variableselect",
                     label: "variable",
                     classFilter: ["TextDescriptor"]
+                }
+            },
+            userEditable: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                optional: true,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Editable",
+                    classFilter: ["BooleanDescriptor"]
                 }
             }
         }
