@@ -129,7 +129,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      * @param player
-     * @param resultName 
+     * @param resultName
      */
     public void setCurrentResult(Player player, String resultName) {
         for (Result r : this.getResults()) {
@@ -201,6 +201,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     /**
      *
      * @param p
+     *
      * @return
      */
     public boolean isActive(Player p) {
@@ -208,13 +209,31 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
+     * Does this choice has been selected by the given player
+     * @param p the player
      *
-     * @param p
-     * @return
+     * @return true if one or more question replies referencing this choice exist
      */
     public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
             if (r.getResult().getChoiceDescriptor().equals(this)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Does this result has been selected by the given player
+     *
+     * @param p      the player
+     * @param result 
+     *
+     * @return true if one or more question reply referencing the given result exist
+     */
+    public boolean hasResultBeenApplied(Player p, Result result) {
+        for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
+            if (r.getResult().equals(result)) {
                 return true;
             }
         }

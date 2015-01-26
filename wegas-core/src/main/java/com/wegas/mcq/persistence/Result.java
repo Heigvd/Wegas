@@ -26,7 +26,9 @@ import org.codehaus.jackson.map.annotate.JsonView;
  */
 @Entity
 @XmlType(name = "Result")
-@Table(name = "MCQResult")
+@Table(name = "MCQResult", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"})
+})
 public class Result extends AbstractEntity implements Searchable {
 
     private static final long serialVersionUID = 1L;
