@@ -8,6 +8,7 @@
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * global: YUI
  */
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
@@ -121,7 +122,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             if (ds) {
                 this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
 
-                this.handlers.push(ds.after("updatedEntity", this.updateEntity, this));
+                this.handlers.push(ds.after("updatedDescriptor", this.updateDescriptor, this));
+                this.handlers.push(ds.after("updatedInstance", this.updateInstance, this));
                 this.handlers.push(ds.after("added", this.addEntity, this));
                 this.handlers.push(ds.after("delete", this.deleteEntity, this));
 
@@ -162,18 +164,26 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 target && Wegas.Helper.scrollIntoViewIfNot(target.get(CONTENTBOX), false);
             });
         },
-        updateEntity: function(e) {
-            var oldElement = this.findNode(e.entity),
-            parent = oldElement.get("parent"), index = parent.indexOf(oldElement),
-            newElement = this.genTreeViewElement(e.entity);
-            oldElement.remove();
-            parent.add(newElement, index);
+        updateDescriptor: function(e) {
+            var oldElement, entity, parent, index, newElement;
+            entity = e.entity;
+            oldElement = this.findNode(entity);
+            if (oldElement) {
+                parent = oldElement.get("parent");
+                index = parent.indexOf(oldElement);
+                newElement = this.genTreeViewElement(entity);
+                oldElement.remove();
+                parent.add(newElement, index);
+            }
             //oldElement.set("label", e.entity.getEditorLabel());
+        },
+        updateInstance: function(e) {  
+            this.updateDescriptor({entity: Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"))});
         },
         deleteEntity: function(e) {
             var node = this.findNode(e.entity);
             node.remove();
-                //parent = node.get("parent");
+            //parent = node.get("parent");
             //parent.remove(parent.indexOf(node));
         },
         //

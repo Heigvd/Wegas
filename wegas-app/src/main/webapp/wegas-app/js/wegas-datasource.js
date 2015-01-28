@@ -322,7 +322,7 @@ YUI.add('wegas-datasource', function(Y) {
                             this.oldIds = null;
                         } else {
                             // Update Entity (anywhere)
-                            this.get(HOST).fire("updatedEntity", {// New entity as children
+                            this.get(HOST).fire("updatedDescriptor", {
                                 entity: entity
                             });
                         }
@@ -652,7 +652,7 @@ YUI.add('wegas-datasource', function(Y) {
                     for (i in instances) {
                         if (instances[i].get(ID) === entity.get(ID)) {
                             instances[i].setAttrs(entity.getAttrs());
-                            this.get(HOST).fire("updatedEntity", {// Variable instance updated
+                            this.get(HOST).fire("updatedInstance", {// Variable instance updated
                                 entity: entity
                             });
                             break;
