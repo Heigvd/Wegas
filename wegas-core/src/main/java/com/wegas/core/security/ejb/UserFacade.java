@@ -398,7 +398,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) throws NoResultException {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
-                + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
+            + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
         try {
             AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
             for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
@@ -406,7 +406,11 @@ public class UserFacade extends BaseFacade<User> {
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
                     if (splitedPermission[2].equals(instance)) {
-                        sit.remove();
+                        if(this.checkHasLastEditPermission(p, instance)){
+                            sit.remove();
+                        }else{
+                            // ToDo : Send error 400
+                        }
                     }
                 }
             }
@@ -430,7 +434,11 @@ public class UserFacade extends BaseFacade<User> {
                 String p = sit.next().getValue();
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
-                    sit.remove();
+                    if (this.checkHasLastEditPermission(permission, splitedPermission[2])) {
+                        sit.remove();
+                    }else{
+                        // ToDo : Send error 400
+                    }
                 }
             }
         } catch (NoResultException e) {
@@ -522,5 +530,21 @@ public class UserFacade extends BaseFacade<User> {
                 }
             }
         }
+    }
+    
+    
+    private boolean checkHasLastEditPermission(String permission, String instance){
+        boolean isNotLastEdit = false;
+        if(permission.contains("Edit")){
+            Query getEditPermissions = em.createQuery("SELECT p FROM Permission p WHERE p.value LIKE :instance");
+            getEditPermissions.setParameter("instance", "%Edit%:" + instance);
+            List<Permission> listEditPermissions = getEditPermissions.getResultList();  
+            if(listEditPermissions.size() > 1){
+                isNotLastEdit = true;
+            }
+        }else{
+            isNotLastEdit = true;
+        }
+        return isNotLastEdit;
     }
 }
