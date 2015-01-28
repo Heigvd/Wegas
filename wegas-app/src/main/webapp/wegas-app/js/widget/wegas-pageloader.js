@@ -43,6 +43,7 @@ YUI.add("wegas-pageloader", function(Y) {
             this._pageId = null;
             PageLoader.pageLoaderInstances[this.get("pageLoaderId")] = this;    // We keep a references of all loaded PageLoaders
             this.publish("contentUpdated", {emitFacade: false});
+            Y.fire("pageloader:created", this);
         },
         /**
          * @function
