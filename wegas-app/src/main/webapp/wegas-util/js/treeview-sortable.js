@@ -14,14 +14,13 @@ YUI.add("treeview-sortable", function(Y) {
 
     var HOST = "host", NODE = "node", CONTENTBOX = 'contentBox',
         TreeViewSortable,
-        
         flagInsideNode = function(drop, nodeSelecter) {
-            if(nodeSelecter.timer){
+            if (nodeSelecter.timer) {
                 nodeSelecter.timer.cancel();
             }
             var widgetDrop = Y.Widget.getByNode(drop);
             if (widgetDrop !== null && widgetDrop.size() > 0) {
-                if(nodeSelecter.dropWidget !== null){
+                if (nodeSelecter.dropWidget !== null) {
                     nodeSelecter.dropWidget.addClass("yui3-dd-in");
                 }
                 nodeSelecter.inside = true;
@@ -37,58 +36,58 @@ YUI.add("treeview-sortable", function(Y) {
                 Y.log("TreeView sortable host must be a TreeView", "warn", "TreeViewSortable");
                 return;
             }
-            
+
             // Add logic after host (treeview) "render" method.
             this.afterHostEvent("render", function() {
                 var cb = this.get(HOST).get(CONTENTBOX),
-                nodeSelecter = {
-                    'inside':false,
-                    'timer':null,
-                    'dropWidget':null
-                };
+                    nodeSelecter = {
+                        'inside': false,
+                        'timer': null,
+                        'dropWidget': null
+                    };
 
                 cb.setStyles({
                     overflowY: "auto",
                     overflowX: "hidden"
                 });
-                
+
                 this.sortable = new NestedSortable({
                     container: cb,
                     nodes: 'li.treeview-draggable',
                     opacity: '.2',
                     invalid: ".wegas-editor-dummy",
                     moveType: "insert"
-                    // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
-                    // opacityNode: "dragNode",
+                        // handles: ['.yui3-treenode-content-icon', '.yui3-treeleaf-content-icon']
+                        // opacityNode: "dragNode",
                 });
                 this.sortable.treeSortPlg = this;
-                
+
                 this.sortable.delegate.on('drag:enter', function(e) {
                     var drop = e.drop.get('node');
                     nodeSelecter.inside = false;
-                    if(nodeSelecter.timer !== null){
+                    if (nodeSelecter.timer !== null) {
                         nodeSelecter.timer.cancel();
                     }
-                    if(nodeSelecter.dropWidget !== null){
+                    if (nodeSelecter.dropWidget !== null) {
                         nodeSelecter.dropWidget.removeClass("yui3-dd-in");
                     }
-                    if(drop.hasClass("yui3-treenode-collapsed") && !drop.hasClass("wegas-editor-question")){
+                    if (drop.hasClass("yui3-treenode-collapsed") && !drop.hasClass("wegas-editor-question")) {
                         nodeSelecter.dropWidget = drop;
-                        nodeSelecter.timer = Y.later(800, this, flagInsideNode, [drop,  nodeSelecter]);
+                        nodeSelecter.timer = Y.later(800, this, flagInsideNode, [drop, nodeSelecter]);
                     }
                 }, this);
-                
+
                 this.sortable.delegate.after('drag:end', function(ev) {
                     var node = this.sortable.delegate.get('currentNode'),
-                    prev = node.previous(),
-                    dragWidget = Y.Widget.getByNode(node),
-                    dropNode = node.get("parentNode"),
-                    dropWidget = Y.Widget.getByNode(dropNode),
-                    index = dropNode.get("children").indexOf(node),
-                    targetNode = ev.target.get(NODE);
+                        prev = node.previous(),
+                        dragWidget = Y.Widget.getByNode(node),
+                        dropNode = node.get("parentNode"),
+                        dropWidget = Y.Widget.getByNode(dropNode),
+                        index = dropNode.get("children").indexOf(node),
+                        targetNode = ev.target.get(NODE);
                     targetNode.removeAttribute("style");// DD somewhere sets some element styles, which mess up alignment somewhere in IE
-                    
-                    if(nodeSelecter.inside){
+
+                    if (nodeSelecter.inside) {
                         dropNode = nodeSelecter.dropWidget;
                         dropWidget = Y.Widget.getByNode(dropNode);
                         dropWidget.fire("toggleClick", {
@@ -96,15 +95,15 @@ YUI.add("treeview-sortable", function(Y) {
                         });
                         nodeSelecter.inside = false;
                     }
-                    if(nodeSelecter.timer){
+                    if (nodeSelecter.timer) {
                         nodeSelecter.timer.cancel();
                     }
-                    if(nodeSelecter.dropWidget !== null){
+                    if (nodeSelecter.dropWidget !== null) {
                         nodeSelecter.dropWidget.removeClass("yui3-dd-in");
                         nodeSelecter.dropWidget = null;
                     }
-                    if(prev !== null){
-                        if(prev.hasClass("wegas-editor-dummy")){
+                    if (prev !== null) {
+                        if (prev.hasClass("wegas-editor-dummy")) {
                             index -= 1;
                         }
                     }
@@ -116,10 +115,11 @@ YUI.add("treeview-sortable", function(Y) {
                     }); // Fire sorted event
                     this.sync(); // Sync dummies
                 }, this);
-               
+
             });
             this.afterHostMethod("syncUI", this.sync);
             this.afterHostEvent(["*:collapsedChange"], this.sync);
+            this.bind();
         },
         sync: function() {
             var cb = this.get(HOST).get(CONTENTBOX),
@@ -137,6 +137,24 @@ YUI.add("treeview-sortable", function(Y) {
                 });
             });
             this.sortable.sync();
+        },
+        bind: function() {
+            this.afterHostEvent("*:addChild", function(e) {
+                var parent = e.target, dummy;
+                if (parent.size() === 1) {
+                    dummy = parent.get("contentBox").one(".wegas-editor-dummy");
+                    if (dummy) {
+                        dummy.remove(true);
+                    }
+                }
+            });
+            this.afterHostEvent("*:removeChild", function(e) {
+                var parent = e.target, emptyLI;
+                if (parent.size() === 0) {
+                    var emptyLI = Y.Node.create("<li class=\"yui3-widget treeview-draggable yui3-treenode wegas-editor-dummy wegas-editor-listitem \"><div class=\"content-header yui3-treenode-content-header\"><span class=\"yui3-treenode-content-label\" ><i>empty</i></span></div></li>");
+                    parent.get("contentBox").append(emptyLI);
+                }
+            });
         },
         testGroups: function(dragNode, dropNode) {
             var groups = this.get("nodeGroups");
@@ -192,7 +210,7 @@ YUI.add("treeview-sortable", function(Y) {
         },
         _onDragOver: function(e) {
             var dragNode = e.drag.get(NODE),
-                    dropNode = e.drop.get(NODE);
+                dropNode = e.drop.get(NODE);
             if (!this.treeSortPlg.testGroups(dragNode, dropNode)) {
                 return;
             }
