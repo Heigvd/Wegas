@@ -694,7 +694,7 @@ YUI.add('wegas-datasource', function(Y) {
          */
         updateCache: function(method, entity) {
             if (entity instanceof Wegas.persistence.VariableInstance) {
-                return this.find(ID, +entity.get("descriptorId"), function(found, needle) {
+                return this.find(ID, +entity.get("descriptorId"), Y.bind(function(found, needle) {
                     var i, instances = found.get("scope").get("variableInstances");
 
                     for (i in instances) {
@@ -707,7 +707,7 @@ YUI.add('wegas-datasource', function(Y) {
                         }
                     }
                     return true;
-                });
+                }, this));
             } else if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 return VariableDescriptorCache.superclass.updateCache.apply(this, arguments);
             }
