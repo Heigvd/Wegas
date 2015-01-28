@@ -123,7 +123,7 @@ var PMGSimulation = (function() {
             var t = td.getInstance(self),
                 oCompleteness = t.getProperty("completeness");
             t.setProperty("completeness", calculateTaskProgress(t));
-            t.setProperty("quality", calculateTaskQuality(t));
+            t.setProperty("computedQuality", calculateTaskQuality(t));
             debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
             if (t.getProperty("completeness") >= 100) {
                 sendEndOfTaskMail(td, currentStep);
@@ -1135,12 +1135,13 @@ var PMGSimulation = (function() {
             sumCompletenessXdurationXnbr += completeness * task.duration * employeesRequired;
             sumDurationXnbr += task.duration * employeesRequired;
             sumRealised += completeness;
-            sumQualityXrealised += completeness * task.getPropertyD('quality');
+            // Effective task quality := computedQuality + impact's quality delta (stored as 'quality')
+            sumQualityXrealised += completeness * task.getPropertyD('computedQuality') + task.getPropertyD('quality');
 
             // Round 
             task.setProperty("wages", Math.round(task.getPropertyD("wages")));
             task.setProperty('completeness', Math.round(task.getPropertyD('completeness')));
-            task.setProperty('quality', Math.round(task.getPropertyD('quality')));
+            task.setProperty('computedQuality', Math.round(task.getPropertyD('computedQuality')));
         }
 
         if (sumDurationXnbr > 0) {

@@ -155,7 +155,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (o.data.instance.properties.completeness <= 0) {
                     return "-";
                 } else {
-                    return o.data.instance.properties.quality;
+                    return +o.data.instance.properties.quality + +o.data.instance.properties.computedQuality;
                 }
             };
         },

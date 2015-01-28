@@ -195,7 +195,7 @@ function testMotivationFactor() {
 
     doNextPeriod(3);                                                            // -> Executing week 2
     checkProperty(task1, 'completeness', 60, arguments.callee.name); //ancien 60 %
-    checkProperty(task1, 'quality', 104, arguments.callee.name); //ancien 104
+    checkProperty(task1, 'computedQuality', 104, arguments.callee.name); //ancien 104
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 500, arguments.callee.name); //ancien 500
 }
@@ -254,7 +254,7 @@ function testActivityFactor() {
     checkProperty(task1, 'completeness', 12, arguments.callee.name); //ancien 12
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 100, arguments.callee.name); //ancien 100
-    checkProperty(task1, 'quality', 99, arguments.callee.name); //ancien 98   @fixme @diff
+    checkProperty(task1, 'computedQuality', 99, arguments.callee.name); //ancien 98   @fixme @diff
 }
 function testCoordinationRatioInf() {
     debug(arguments.callee.name);
@@ -277,7 +277,7 @@ function testCoordinationRatioInf() {
     checkProperty(task1, 'completeness', 30, arguments.callee.name); //ancien 30%
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 1000, arguments.callee.name); //ancien 1000
-    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task1, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks() {
     debug(arguments.callee.name);
@@ -296,7 +296,7 @@ function testCoordinationRatioInfDiffWorks() {
     checkProperty(task2, 'completeness', 75, arguments.callee.name); //ancien 75%
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task2, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task2, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks2() {
     debug(arguments.callee.name);
@@ -316,7 +316,7 @@ function testCoordinationRatioInfDiffWorks2() {
     checkProperty(task2, 'completeness', 80, arguments.callee.name); //ancien 80%
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task2, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task2, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 //TODO Check differences (probably round problem)
 function testCoordinationRatioInfDiffWorks3() {
@@ -343,11 +343,11 @@ function testCoordinationRatioInfDiffWorks3() {
     checkProperty(task6, 'completeness', 80, arguments.callee.name); //ancien 81%   @fixme @diff
     checkProperty(task6, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task6, 'wages', 1500, arguments.callee.name); //ancien 1500
-    checkProperty(task6, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task6, 'computedQuality', 100, arguments.callee.name); //ancien 100
     nextPeriod();
     checkProperty(task6, 'completeness', 100, arguments.callee.name); //ancien 100%
     checkProperty(task6, 'wages', 1950, arguments.callee.name); //ancien 1950
-    checkProperty(task6, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task6, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 function testCoordinationRatioInfDiffWorks4() {
     debug(arguments.callee.name);
@@ -373,11 +373,11 @@ function testCoordinationRatioInfDiffWorks4() {
     doNextPeriod(3);                                                            // -> Execution week 2
     checkProperty(task6, 'completeness', 53, arguments.callee.name); // Old pmg 53%
     checkProperty(task6, 'wages', 1500, arguments.callee.name); // Old pmg: 1500
-    checkProperty(task6, 'quality', 100, arguments.callee.name); // Old pmg: 100
+    checkProperty(task6, 'computedQuality', 100, arguments.callee.name); // Old pmg: 100
     nextPeriod();                                                               // -> Execution week 3
     checkProperty(task6, 'completeness', 100, arguments.callee.name); // Old pmg 100%
     checkProperty(task6, 'wages', 2850, arguments.callee.name); // Old pmg: 3000 @fixme @diff
-    checkProperty(task6, 'quality', 100, arguments.callee.name); // Old pmg: 100
+    checkProperty(task6, 'computedQuality', 100, arguments.callee.name); // Old pmg: 100
 }
 //TODO Check differences (probably round problem)
 function testCoordinationRatioDiffLevel() {
@@ -401,7 +401,7 @@ function testCoordinationRatioDiffLevel() {
     checkProperty(task2, 'completeness', 85, arguments.callee.name); //ancien 84%  @fixme @diff
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task2, 'quality', 101, arguments.callee.name); //ancien 101
+    checkProperty(task2, 'computedQuality', 101, arguments.callee.name); //ancien 101
 }
 function testCoordinationRatioSup() {
     debug(arguments.callee.name);
@@ -422,7 +422,7 @@ function testCoordinationRatioSup() {
     checkProperty(task1, 'completeness', 50, arguments.callee.name); //ancien 50%
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task1, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 function testCompetenceRatioInf() {
     debug(arguments.callee.name);
@@ -443,7 +443,7 @@ function testCompetenceRatioInf() {
     checkProperty(task2, 'completeness', 40, arguments.callee.name); //ancien 42%  @fixme diff
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
-    checkProperty(task2, 'quality', 96, arguments.callee.name); //ancien 96
+    checkProperty(task2, 'computedQuality', 96, arguments.callee.name); //ancien 96
 }
 function testCompetenceRatioSup() {
     debug(arguments.callee.name);
@@ -463,7 +463,7 @@ function testCompetenceRatioSup() {
     checkProperty(task2, 'completeness', 60, arguments.callee.name); //ancien 60%
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
-    checkProperty(task2, 'quality', 103, arguments.callee.name); //ancien 103
+    checkProperty(task2, 'computedQuality', 103, arguments.callee.name); //ancien 103
 }
 function testRandomDurationInf() {
     debug(arguments.callee.name);
@@ -512,25 +512,25 @@ function testLearnFactor() {
     checkProperty(task5, 'completeness', 10, arguments.callee.name); //ancien 10%
     checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task5, 'wages', 250, arguments.callee.name); //ancien 250
-    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
     checkProperty(task5, 'completeness', 20, arguments.callee.name); //ancien 20%
     checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task5, 'wages', 500, arguments.callee.name); //ancien 500
-    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
     checkProperty(task5, 'completeness', 28, arguments.callee.name); //ancien 28%
     checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task5, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
     checkProperty(task5, 'completeness', 38, arguments.callee.name); //ancien 38%
     checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task5, 'wages', 1000, arguments.callee.name); //ancien 1000
-    checkProperty(task5, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 function testRequirementLimit() {
     debug(arguments.callee.name);
@@ -589,17 +589,17 @@ function testPredecessorFactor() {
     checkProperty(task1, 'completeness', 50, arguments.callee.name); //ancien 50%
     checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task1, 'wages', 500, arguments.callee.name); //ancien 500
-    checkProperty(task1, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task1, 'computedQuality', 100, arguments.callee.name); //ancien 100
     checkProperty(task2, 'completeness', 75, arguments.callee.name); //ancien 75%
     checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-    checkProperty(task2, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task2, 'computedQuality', 100, arguments.callee.name); //ancien 100
 
     nextPeriod();
     checkProperty(task3, 'completeness', 20, arguments.callee.name); //ancien 20%
     checkProperty(task3, 'fixedCosts', 500, arguments.callee.name); //ancien 500
     checkProperty(task3, 'wages', 500, arguments.callee.name); //ancien 500
-    checkProperty(task3, 'quality', 100, arguments.callee.name); //ancien 100
+    checkProperty(task3, 'computedQuality', 100, arguments.callee.name); //ancien 100
 }
 function testUnassignable() {
     debug(arguments.callee.name);

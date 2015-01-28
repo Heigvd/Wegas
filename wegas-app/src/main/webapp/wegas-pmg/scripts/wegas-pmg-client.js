@@ -124,7 +124,12 @@
                     name: "quality",
                     type: HIDDEN,
                     value: 0
-                }]
+                }, {
+                    name: "computedQuality",
+                    type: HIDDEN,
+                    value: 0
+                }
+            ]
         };
         Y.mix(persistence.TaskDescriptor.METHODS, {
             getNumberInstanceProperty: {
