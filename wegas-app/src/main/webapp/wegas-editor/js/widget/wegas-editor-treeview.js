@@ -32,6 +32,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
         /**
          *
          */
+        initializer: function(){
+            this.handlers = [];
+        },
         renderUI: function() {
             this.currentSelection = -1;
             this.treeView = new Y.TreeView({
@@ -50,10 +53,10 @@ YUI.add("wegas-editor-treeview", function(Y) {
             var ds = this.get(DATASOURCE),
                 request = this.get("request");
             if (ds) {
-                this.updateHandler = ds.after("update", this.syncUI, this);     // Listen updates on the target datasource
-                this.failureHandler = ds.after("failure", this.hideOverlay, this); // GLOBAL error message
+                this.handlers.push(ds.after("update", this.syncUI, this));     // Listen updates on the target datasource
+                this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
 
-                this.addedHandler = ds.after("added", function(e) {             // When an entity is created
+                this.handlers.push(ds.after("added", function(e) {             // When an entity is created
                     this.currentSelection = e.entity.get("id");
                     Y.later(20, this, function() {
                         var target = this.treeView.find(function(item) {        // scroll to it in the treeview
@@ -61,7 +64,8 @@ YUI.add("wegas-editor-treeview", function(Y) {
                         });
                         target && Wegas.Helper.scrollIntoViewIfNot(target.get(CONTENTBOX), false);
                     });
-                }, this);
+                }, this));
+
                 if (request) {
                     ds.sendRequest(request);
                 }
@@ -85,9 +89,9 @@ YUI.add("wegas-editor-treeview", function(Y) {
         },
         destructor: function() {
             this.treeView.destroy();
-            this.updateHandler.detach();
-            //this.failureHandler.detach();
-            this.addedHandler.detach();
+            Y.Array.each(this.handlers, function(i) {
+                i.detach();
+            });
         },
         // *** Private Methods *** //
         /**

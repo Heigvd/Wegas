@@ -14,6 +14,8 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
     var ID = "id",
         CLASS = "@class",
         NAME = "name",
+        CONTENTBOX = "contentBox",
+        DATASOURCE = "dataSource",
         Wegas = Y.Wegas,
         Plugin = Y.Plugin,
         VariableTreeView,
@@ -38,7 +40,6 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this._timer = new Y.Wegas.Timer({
                 duration: 300
             });
-            this.handlers = [];
             VariableTreeView.superclass.renderUI.apply(this); // Render treeview
             this.plug(Plugin.EditorTVDefaultMenuClick); // Open edit tab on left click
             this.treeView.plug(Plugin.TreeViewFilter, {
@@ -142,12 +143,66 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index); // call facade method
             });
         },
+        bindUI: function() {
+            var ds = this.get(DATASOURCE),
+                request = this.get("request");
+            if (ds) {
+                this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
+
+                this.handlers.push(ds.after("updatedEntity", this.updateEntity, this));
+                this.handlers.push(ds.after("added", this.addEntity, this));
+                this.handlers.push(ds.after("delete", this.deleteEntity, this));
+
+                if (request) {
+                    ds.sendRequest(request);
+                }
+            }
+        },
         destructor: function() {
             this._timer.destroy();
             this.treeView.destroy();
-            Y.Array.each(this.handlers, function(i) {
-                i.detach();
+        },
+        findNode: function(entity) {
+            return this.treeView.find(function(item) {
+                if (item.get("data") && item.get("data").entity.get("id") === entity.get("id")) {
+                    return item;
+                }
             });
+        },
+        /**
+         * 
+         * @returns {undefined}
+         */
+        addEntity: function(e) {
+            var entity = e.entity,
+                parent = e.parent,
+                parentNode;
+            if (parent) {
+                parentNode = this.findNode(parent);
+                parentNode.add(this.genTreeViewElement(entity));
+                parentNode.expand();
+            } else {
+                this.treeView.add(this.genTreeViewElement(entity));
+            }
+            this.currentSelection = e.entity.get("id");
+            Y.later(20, this, function() {
+                var target = this.findNode(e.entity);
+                target && Wegas.Helper.scrollIntoViewIfNot(target.get(CONTENTBOX), false);
+            });
+        },
+        updateEntity: function(e) {
+            var oldElement = this.findNode(e.entity),
+            parent = oldElement.get("parent"), index = parent.indexOf(oldElement),
+            newElement = this.genTreeViewElement(e.entity);
+            oldElement.remove();
+            parent.add(newElement, index);
+            //oldElement.set("label", e.entity.getEditorLabel());
+        },
+        deleteEntity: function(e) {
+            var node = this.findNode(e.entity);
+            node.remove();
+                //parent = node.get("parent");
+            //parent.remove(parent.indexOf(node));
         },
         //
         // *** Private Methods *** //
