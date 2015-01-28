@@ -209,7 +209,7 @@ YUI.add('wegas-datasource', function(Y) {
                 };
                 response.data = host.data; // Provides with a pointer to the datasource current content
                 payload.response = response;
-                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/ , "log", "Wegas.DataSource");
+                Y.log("Response received: " + host.get('source') /* + e.cfg.request*/, "log", "Wegas.DataSource");
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
@@ -291,24 +291,40 @@ YUI.add('wegas-datasource', function(Y) {
             //Y.log("updateCache(" + method + ", " + entity + ")", "log", "Y.Wegas.WegasCache");
             switch (method) {
                 case "DELETE":
-                    if (this.find(ID, entity, function(entity, needle, index, stack) {
+                    if (this.find(ID, entity, Y.bind(function(entity, needle, index, stack) {
                         stack.splice(index, 1);
+                        this.get(HOST).fire("delete", {"entity": entity});
                         return true;
-                    })) {
+                    }, this))) {
                         return true;
                     }
                     break;
                 default:
                     if (this.find(ID, entity, Y.bind(function(entity, needle) {
                         entity.setAttrs(needle.getAttrs());
+
                         if (this.oldIds) {
+                            // NEW ENTITY IN PARENT
+
+                            // oldIds is filled by VarDescCache.post when addind a variable as 
+                            // a child. oldIds contains new variable sieblings ids
+
+                            // Since return entity is not the new one but its parent, 
+                            // this statement search an entity with an unknown id (ie not in oldIds) within 
+                            // the parent items (ie children). 
                             var newEntity = Y.Array.find(entity.get("items"), function(i) {
                                 return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
                             }, this);
-                            this.get(HOST).fire("added", {
-                                entity: newEntity
+                            this.get(HOST).fire("added", {// New entity as children
+                                entity: newEntity,
+                                parent: entity
                             });
                             this.oldIds = null;
+                        } else {
+                            // Update Entity (anywhere)
+                            this.get(HOST).fire("updatedEntity", {// New entity as children
+                                entity: entity
+                            });
                         }
                         return true;
                     }, this))) {
@@ -316,10 +332,13 @@ YUI.add('wegas-datasource', function(Y) {
                     }
                     break;
             }
+
+            // FALLBACK: new root level entity
             this.addToCache(entity); // In case we still have not found anything
             if (updateEvent) {
-                this.get(HOST).fire("added", {
-                    entity: entity
+                this.get(HOST).fire("added", {// New Entity  (no parent)
+                    entity: entity,
+                    parent: null
                 });
             }
             return true;
@@ -633,7 +652,10 @@ YUI.add('wegas-datasource', function(Y) {
                     for (i in instances) {
                         if (instances[i].get(ID) === entity.get(ID)) {
                             instances[i].setAttrs(entity.getAttrs());
-                            continue;
+                            this.get(HOST).fire("updatedEntity", {// Variable instance updated
+                                entity: entity
+                            });
+                            break;
                         }
                     }
                     return true;
@@ -1298,7 +1320,8 @@ YUI.add('wegas-datasource', function(Y) {
         _successHandler: function(e) {
             Y.log("PageDatasource reply:" + e.response, "log", "Y.Plugin.PageCache");
         },
-        _failureHandler: function(e) {}
+        _failureHandler: function(e) {
+        }
     }, {
         NS: "cache",
         NAME: "PageCache"
