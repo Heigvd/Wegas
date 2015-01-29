@@ -144,8 +144,8 @@
                         choices: [{
                                 value: "fixedCosts"
                             }, {/*
-                                value: "quality"
-                            }, {*/
+                             value: "quality"
+                             }, {*/
                                 value: "completeness"
                             }]
                     }]
@@ -634,6 +634,9 @@
             // Add properties tab
             properties = centerTab.add({
                 label: "Properties",
+                plugins: [{
+                        fn: "TabDocker"
+                    }],
                 children: [{
                         type: "PageLoader",
                         pageLoaderId: "properties",
