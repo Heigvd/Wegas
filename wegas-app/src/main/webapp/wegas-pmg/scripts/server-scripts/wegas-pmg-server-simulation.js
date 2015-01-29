@@ -848,6 +848,24 @@ var PMGSimulation = (function() {
         return wages;
     }
 
+    /**
+     * return number if its value in [minValue; maxValue], 
+     * return the broken bound otherwise
+     * 
+     * @param {number} number value to bound
+     * @param {number} minValue minimum returned value
+     * @param {number} maxValue maximum returned value
+     * @returns {number}
+     */
+    function bound(number, minValue, maxValue) {
+        if (number < minValue) {
+            return minValue;
+        } else if (number > maxValue) {
+            return maxValue;
+        } else {
+            return number;
+        }
+    }
 
     /**
      * Return a random factor based on properties 'randomDurationSup' and 'randomDurationInf'
@@ -858,8 +876,11 @@ var PMGSimulation = (function() {
     function getRandomFactorFromTask(task) {
         var delta, randomFactor, x = Math.random(),
             rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
-            randomDurationSup = task.getPropertyD("randomDurationSup"),
-            randomDurationInf = task.getPropertyD("randomDurationInf");
+
+            // Make sure coeff dont break bounds
+            randomDurationSup = bound(task.getPropertyD("randomDurationSup"), 0, 4),
+            randomDurationInf = bound(task.getPropertyD("randomDurationInf"), 0, 4);
+
         if (rn < 3) {
             delta = -(0.25 * x + 0.75) * randomDurationInf;
         } else if (rn < 10) {
@@ -1026,7 +1047,7 @@ var PMGSimulation = (function() {
             return;
             // Unable to find question list for current phase
         }
-        if (dir && dir.getClass().getSimpleName() == "ListDescriptor"){ // DO NOT USE ===
+        if (dir && dir.getClass().getSimpleName() == "ListDescriptor") { // DO NOT USE ===
             questions = dir.items;
             for (i = 0; i < questions.size(); i += 1) {
                 question = questions.get(i);
@@ -1205,7 +1226,7 @@ var PMGSimulation = (function() {
         nextPeriod: function() {
             nextPeriod();
         },
-        assertQuestion : function(){
+        assertQuestion: function() {
             return assertAllPeriodQuestionAnswered();
         }
     };
