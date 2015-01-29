@@ -143,9 +143,9 @@
                         type: SELECT,
                         choices: [{
                                 value: "fixedCosts"
-                            }, {
+                            }, {/*
                                 value: "quality"
-                            }, {
+                            }, {*/
                                 value: "completeness"
                             }]
                     }]
