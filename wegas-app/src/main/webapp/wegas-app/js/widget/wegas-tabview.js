@@ -464,7 +464,7 @@ YUI.add('wegas-tabview', function(Y) {
             });
             this.get("host").remove().destroy();
             e.stopPropagation();
-        },
+        }
     }, {
         NS: "docker",
         NAME: "TabDocker",
