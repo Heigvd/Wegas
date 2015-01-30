@@ -317,11 +317,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 setter: function(v) {
                     if (Wegas.PageLoader.find(v)) {
                         if (this.get("previewPageLoader")) {
-                            Wegas.PageLoader.find(this.get("previewPageLoader")).detach(["contentUpdated"],
+                            Wegas.PageLoader.find(this.get("previewPageLoader")).detach(["contentUpdated", "destroy"],
                                 this.getIndex,
                                 this);
                         }
-                        Wegas.PageLoader.find(v).on(["contentUpdated"], this.getIndex, this);
+                        Wegas.PageLoader.find(v).after(["contentUpdated", "destroy"], this.getIndex, this);
                     }
                     this._pageLoaderId = v;
                     return v;
