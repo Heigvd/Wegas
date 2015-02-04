@@ -180,6 +180,7 @@
                     {
                         "type": "Tab",
                         "label": "Preview",
+                        "plugins": [{"fn": "TabDocker"}],
                         "children": [
                             {
                                 "type": "PageLoader",

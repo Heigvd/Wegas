@@ -48,6 +48,9 @@ YUI.add('wegas-layout-list', function(Y) {
                 cb.removeClass(this.getClassName('vertical'));
             }
             this.get(BOUNDINGBOX).append('<div style="clear:both"></div>');
+        },
+        getEditorLabel: function() {
+            return Y.Wegas.Helper.stripHtml(this.get("name"));
         }
     }, {
         /** @lends Y.Wegas.List */
@@ -74,6 +77,10 @@ YUI.add('wegas-layout-list', function(Y) {
                     }, {
                         value: 'horizontal'
                     }]
+            },
+            name: {
+                value: "folder",
+                type: "string"
             }
 
             /**

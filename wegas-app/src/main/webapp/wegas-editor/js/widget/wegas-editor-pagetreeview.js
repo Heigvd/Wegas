@@ -56,7 +56,11 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                     e.node.fire("click", {node: e.node}); //mimic click
                 }
             });
-
+            this.plCreationEvent = Y.after("pageloader:created", function(e) {
+                if(e.get("pageLoaderId") === this._pageLoaderId){
+                    this.set("pageLoader", this._pageLoaderId);
+                }
+            }, this);
             if (DATASOURCE.editable) {
                 this.treeView.sortable.on("sort", function(e) {
                     if (!e.dropWidget.get(BOUNDING_BOX).hasClass("container-node")) { //@TODO: find something better.
@@ -265,6 +269,9 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         },
         changePage: function(pageId, callback, force) {
             var pageLoader = this.get("pageLoader");
+            if (!pageLoader) {
+                return;
+            }
             if (force) {
                 pageLoader.set("pageId", null, {noquery: true});   //be sure to change (stuck on an non-existent page 1)
             }
@@ -295,6 +302,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
         destructor: function() {
             this.treeView.destroy();
             this.dsEvent.detach();
+            this.plCreationEvent.detach();
             Y.Wegas.DataSource.abort(this.indexReq);
         }
     }, {
@@ -309,13 +317,13 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
                 setter: function(v) {
                     if (Wegas.PageLoader.find(v)) {
                         if (this.get("previewPageLoader")) {
-                            Wegas.PageLoader.find(this.get("previewPageLoader")).detach(["contentUpdated",
-                                    "pageIdChange"],
+                            Wegas.PageLoader.find(this.get("previewPageLoader")).detach(["contentUpdated", "destroy"],
                                 this.getIndex,
                                 this);
                         }
-                        Wegas.PageLoader.find(v).on("contentUpdated", this.getIndex, this);
+                        Wegas.PageLoader.find(v).after(["contentUpdated", "destroy"], this.getIndex, this);
                     }
+                    this._pageLoaderId = v;
                     return v;
                 }
             }
@@ -402,7 +410,7 @@ YUI.add("wegas-editor-pagetreeview", function(Y) {
 
             if (page) {
                 //return;
-//                this.get(HOST).changePage(page);
+                //                this.get(HOST).changePage(page);
                 /* There may be no child widget when the widget is empty */
                 targetWidget.get("data").widget = targetWidget.item(0) && targetWidget.item(0).get("data.widget");
             }
