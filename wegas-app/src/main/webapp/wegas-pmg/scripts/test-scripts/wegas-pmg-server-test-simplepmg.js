@@ -77,7 +77,7 @@ var PMGTest = (function() {
 
 
     function testsimplepmg() {
-        debug(arguments.callee.name);
+        debug("TestSimplePMG");
         // DEBUGMODE = true;
         loadVariables();
 
@@ -111,7 +111,7 @@ var PMGTest = (function() {
         //testResourceChangeWithinTask();
     }
     function testNormalAssignment() {
-        debug(arguments.callee.name);
+        debug("Normal Assignment");
         reset();                                                                    // Reset current game model
 
         task1.getInstance(self).setProperty('bac', '1500');
@@ -125,15 +125,15 @@ var PMGTest = (function() {
         reserve(informaticien2, 1, 2);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 50, arguments.callee.name);
+        checkProperty(task1, 'completeness', 50, "Normal Assignment");
         nextPeriod();                                                               // -> Executing week 3
-        checkProperty(task1, 'completeness', 100, arguments.callee.name);
+        checkProperty(task1, 'completeness', 100, "Normal Assignment");
         assertEquals(100, costs.value, "testNormalAssignment(): task1 costs does not match");
         assertEquals(100, delay.value, "testNormalAssignment(): task1 delay does not match");
         assertEquals(100, quality.value, "testNormalAssignment(): task1 quality does not match");       // -> Closing
     }
     function testMultipleWork() {
-        debug(arguments.callee.name);
+        debug("Multiple Work");
         reset();                                                                    // Reset current game model
 
         task1.getInstance(self).setProperty('bac', '1500');
@@ -146,12 +146,12 @@ var PMGTest = (function() {
         reserve(commercial1, 1, 2);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task2, 'completeness', 50, arguments.callee.name);
+        checkProperty(task2, 'completeness', 50, "Multiple Work");
         nextPeriod();                                                               // -> Executing week 3
-        checkProperty(task2, 'completeness', 100, arguments.callee.name);           // -> Closing
+        checkProperty(task2, 'completeness', 100, "Multiple Work");           // -> Closing
     }
     function testNotEnoughResources() {
-        debug(arguments.callee.name);
+        debug("Not enough resources");
         reset();                                                                    // Reset current game model
 
         task1.getInstance(self).setProperty('bac', '1500');
@@ -162,11 +162,11 @@ var PMGTest = (function() {
         reserve(informaticien1, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 25, arguments.callee.name);
+        checkProperty(task1, 'completeness', 25, "Not enough resources");
     }
 
     function testTooManyResources() {
-        debug(arguments.callee.name);
+        debug("To many resources");
         reset();                                                                    // Reset current game model
 
         task1.getInstance(self).setProperty('bac', '1500');
@@ -181,10 +181,10 @@ var PMGTest = (function() {
         reserve(informaticien3, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 75, arguments.callee.name);            // -> Closing
+        checkProperty(task1, 'completeness', 75, "To many resources");            // -> Closing
     }
     function testMotivationFactor() {
-        debug(arguments.callee.name);
+        debug("MotivationFactor");
         reset();                                                                    // Reset current game model
 
         task1.getInstance(self).setProperty('bac', '1000');
@@ -202,13 +202,13 @@ var PMGTest = (function() {
         reserve(informaticien2, 1, 2);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 60, arguments.callee.name); //ancien 60 %
-        checkProperty(task1, 'computedQuality', 104, arguments.callee.name); //ancien 104
-        checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task1, 'wages', 500, arguments.callee.name); //ancien 500
+        checkProperty(task1, 'completeness', 60, "MotivationFactor"); //ancien 60 %
+        checkProperty(task1, 'computedQuality', 104, "MotivationFactor"); //ancien 104
+        checkProperty(task1, 'fixedCosts', 500, "MotivationFactor"); //ancien 500
+        checkProperty(task1, 'wages', 500, "MotivationFactor"); //ancien 500
     }
     function testremoveassign() {
-        debug(arguments.callee.name);
+        debug("RemoveAssign");
         reset();
         assign(informaticien1, task2);
         assign(commercial1, task2);
@@ -217,7 +217,7 @@ var PMGTest = (function() {
         doNextPeriod(8);
     }
     function testOtherWorkFactor() {
-        debug(arguments.callee.name);
+        debug("OtherWorkFactor");
         reset();
 
         task2.getInstance(self).setProperty('bac', '1500');
@@ -226,14 +226,14 @@ var PMGTest = (function() {
         reserve(informaticien1, 1, 2, 3, 4);
 
         doNextPeriod(4);                                                            // -> Executing week 3
-        checkProperty(task2, 'completeness', 50, arguments.callee.name); //ancien 50
+        checkProperty(task2, 'completeness', 50, "OtherWorkFactor"); //ancien 50
         nextPeriod();
-        checkProperty(task2, 'completeness', 70, arguments.callee.name); //ancien 70
+        checkProperty(task2, 'completeness', 70, "OtherWorkFactor"); //ancien 70
         nextPeriod();
-        checkProperty(task2, 'completeness', 90, arguments.callee.name); //ancien 90
+        checkProperty(task2, 'completeness', 90, "OtherWorkFactor"); //ancien 90
     }
     function testBonusProjectFactor() {
-        debug(arguments.callee.name);
+        debug("BonusProjectFactor");
         reset();
 
         getVariableDescriptor('bonusRatio').instance.setValue(1.15);
@@ -245,10 +245,10 @@ var PMGTest = (function() {
         reserve(informaticien2, 1, 2);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 58, arguments.callee.name);
+        checkProperty(task1, 'completeness', 58, "BonusProjectFactor");
     }
     function testActivityFactor() {
-        debug(arguments.callee.name);
+        debug("ActivityFactor");
         reset();
 
         informaticien6.setProperty('coef_activity', '1.3');
@@ -259,13 +259,13 @@ var PMGTest = (function() {
         reserve(informaticien6, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 12, arguments.callee.name); //ancien 12
-        checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task1, 'wages', 100, arguments.callee.name); //ancien 100
-        checkProperty(task1, 'computedQuality', 99, arguments.callee.name); //ancien 98   @fixme @diff
+        checkProperty(task1, 'completeness', 12, "ActivityFactor"); //ancien 12
+        checkProperty(task1, 'fixedCosts', 500, "ActivityFactor"); //ancien 500
+        checkProperty(task1, 'wages', 100, "ActivityFactor"); //ancien 100
+        checkProperty(task1, 'computedQuality', 99, "ActivityFactor"); //ancien 98   @fixme @diff
     }
     function testCoordinationRatioInf() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioInf");
         reset();
 
         task1.setProperty('coordinationRatioInf', '2');
@@ -282,13 +282,13 @@ var PMGTest = (function() {
         reserve(informaticien4, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 30, arguments.callee.name); //ancien 30%
-        checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task1, 'wages', 1000, arguments.callee.name); //ancien 1000
-        checkProperty(task1, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task1, 'completeness', 30, "CoordinationRatioInf"); //ancien 30%
+        checkProperty(task1, 'fixedCosts', 500, "CoordinationRatioInf"); //ancien 500
+        checkProperty(task1, 'wages', 1000, "CoordinationRatioInf"); //ancien 1000
+        checkProperty(task1, 'computedQuality', 100, "CoordinationRatioInf"); //ancien 100
     }
     function testCoordinationRatioInfDiffWorks() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioInfDiffWorks");
         reset();
 
         task2.setProperty('coordinationRatioInf', '2');
@@ -301,13 +301,13 @@ var PMGTest = (function() {
         reserve(commercial1, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task2, 'completeness', 75, arguments.callee.name); //ancien 75%
-        checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-        checkProperty(task2, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task2, 'completeness', 75, "CoordinationRatioInfDiffWorks"); //ancien 75%
+        checkProperty(task2, 'fixedCosts', 500, "CoordinationRatioInfDiffWorks"); //ancien 500
+        checkProperty(task2, 'wages', 750, "CoordinationRatioInfDiffWorks"); //ancien 750
+        checkProperty(task2, 'computedQuality', 100, "CoordinationRatioInfDiffWorks"); //ancien 100
     }
     function testCoordinationRatioInfDiffWorks2() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioInfDiffWorks2");
         reset();
 
         task2.setProperty('coordinationRatioInf', '2');
@@ -321,14 +321,14 @@ var PMGTest = (function() {
         reserve(commercial1, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task2, 'completeness', 80, arguments.callee.name); //ancien 80%
-        checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-        checkProperty(task2, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task2, 'completeness', 80, "CoordinationRatioInfDiffWorks2"); //ancien 80%
+        checkProperty(task2, 'fixedCosts', 500, "CoordinationRatioInfDiffWorks2"); //ancien 500
+        checkProperty(task2, 'wages', 750, "CoordinationRatioInfDiffWorks2"); //ancien 750
+        checkProperty(task2, 'computedQuality', 100, "CoordinationRatioInfDiffWorks2"); //ancien 100
     }
 //TODO Check differences (probably round problem)
     function testCoordinationRatioInfDiffWorks3() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioInfDiffWorks3");
         reset();
 
         task6.setProperty('coordinationRatioInf', '1.5');
@@ -348,17 +348,17 @@ var PMGTest = (function() {
         reserve(designer2, 1, 2);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task6, 'completeness', 80, arguments.callee.name); //ancien 81%   @fixme @diff
-        checkProperty(task6, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task6, 'wages', 1500, arguments.callee.name); //ancien 1500
-        checkProperty(task6, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task6, 'completeness', 80, "CoordinationRatioInfDiffWorks3"); //ancien 81%   @fixme @diff
+        checkProperty(task6, 'fixedCosts', 500, "CoordinationRatioInfDiffWorks3"); //ancien 500
+        checkProperty(task6, 'wages', 1500, "CoordinationRatioInfDiffWorks3"); //ancien 1500
+        checkProperty(task6, 'computedQuality', 100, "CoordinationRatioInfDiffWorks3"); //ancien 100
         nextPeriod();
-        checkProperty(task6, 'completeness', 100, arguments.callee.name); //ancien 100%
-        checkProperty(task6, 'wages', 1950, arguments.callee.name); //ancien 1950
-        checkProperty(task6, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task6, 'completeness', 100, "CoordinationRatioInfDiffWorks3"); //ancien 100%
+        checkProperty(task6, 'wages', 1950, "CoordinationRatioInfDiffWorks3"); //ancien 1950
+        checkProperty(task6, 'computedQuality', 100, "CoordinationRatioInfDiffWorks3"); //ancien 100
     }
     function testCoordinationRatioInfDiffWorks4() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioInfDiffWorks4");
         reset();
 
         task6.instance.duration = 3;
@@ -379,17 +379,17 @@ var PMGTest = (function() {
         reserve(designer2, 1, 2);
 
         doNextPeriod(3);                                                            // -> Execution week 2
-        checkProperty(task6, 'completeness', 53, arguments.callee.name); // Old pmg 53%
-        checkProperty(task6, 'wages', 1500, arguments.callee.name); // Old pmg: 1500
-        checkProperty(task6, 'computedQuality', 100, arguments.callee.name); // Old pmg: 100
+        checkProperty(task6, 'completeness', 53, "CoordinationRatioInfDiffWorks4"); // Old pmg 53%
+        checkProperty(task6, 'wages', 1500, "CoordinationRatioInfDiffWorks4"); // Old pmg: 1500
+        checkProperty(task6, 'computedQuality', 100, "CoordinationRatioInfDiffWorks4"); // Old pmg: 100
         nextPeriod();                                                               // -> Execution week 3
-        checkProperty(task6, 'completeness', 100, arguments.callee.name); // Old pmg 100%
-        checkProperty(task6, 'wages', 2850, arguments.callee.name); // Old pmg: 3000 @fixme @diff
-        checkProperty(task6, 'computedQuality', 100, arguments.callee.name); // Old pmg: 100
+        checkProperty(task6, 'completeness', 100, "CoordinationRatioInfDiffWorks4"); // Old pmg 100%
+        checkProperty(task6, 'wages', 2850, "CoordinationRatioInfDiffWorks4"); // Old pmg: 3000 @fixme @diff
+        checkProperty(task6, 'computedQuality', 100, "CoordinationRatioInfDiffWorks4"); // Old pmg: 100
     }
 //TODO Check differences (probably round problem)
     function testCoordinationRatioDiffLevel() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioInfDiffLevel");
         reset();
 
         task2.setProperty('coordinationRatioSup', '1.3');
@@ -406,13 +406,13 @@ var PMGTest = (function() {
         reserve(commercial1, 1);
 
         doNextPeriod(3);                                                            // -> Execution week 2
-        checkProperty(task2, 'completeness', 85, arguments.callee.name); //ancien 84%  @fixme @diff
-        checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-        checkProperty(task2, 'computedQuality', 101, arguments.callee.name); //ancien 101
+        checkProperty(task2, 'completeness', 85, "CoordinationRatioInfDiffLevel"); //ancien 84%  @fixme @diff
+        checkProperty(task2, 'fixedCosts', 500, "CoordinationRatioInfDiffLevel"); //ancien 500
+        checkProperty(task2, 'wages', 750, "CoordinationRatioInfDiffLevel"); //ancien 750
+        checkProperty(task2, 'computedQuality', 101, "CoordinationRatioInfDiffLevel"); //ancien 101
     }
     function testCoordinationRatioSup() {
-        debug(arguments.callee.name);
+        debug("CoordinationRatioSup");
         reset();
 
         task1.setProperty('coordinationRatioSup', '2');
@@ -427,13 +427,13 @@ var PMGTest = (function() {
         reserve(informaticien3, 1);
 
         doNextPeriod(3);                                                            // -> Execution week 2
-        checkProperty(task1, 'completeness', 50, arguments.callee.name); //ancien 50%
-        checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task1, 'wages', 750, arguments.callee.name); //ancien 750
-        checkProperty(task1, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task1, 'completeness', 50, "CoordinationRatioSup"); //ancien 50%
+        checkProperty(task1, 'fixedCosts', 500, "CoordinationRatioSup"); //ancien 500
+        checkProperty(task1, 'wages', 750, "CoordinationRatioSup"); //ancien 750
+        checkProperty(task1, 'computedQuality', 100, "CoordinationRatioSup"); //ancien 100
     }
     function testCompetenceRatioInf() {
-        debug(arguments.callee.name);
+        debug("CompetenceRationInf");
 
         reset();
 
@@ -448,13 +448,13 @@ var PMGTest = (function() {
         reserve(commercial1, 1);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task2, 'completeness', 40, arguments.callee.name); //ancien 42%  @fixme diff
-        checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'computedQuality', 96, arguments.callee.name); //ancien 96
+        checkProperty(task2, 'completeness', 40, "CompetenceRationInf"); //ancien 42%  @fixme diff
+        checkProperty(task2, 'fixedCosts', 500, "CompetenceRationInf"); //ancien 500
+        checkProperty(task2, 'wages', 500, "CompetenceRationInf"); //ancien 500
+        checkProperty(task2, 'computedQuality', 96, "CompetenceRationInf"); //ancien 96
     }
     function testCompetenceRatioSup() {
-        debug(arguments.callee.name);
+        debug("CompetenceRationSup");
         reset();
 
         task2.setProperty('competenceRatioSup', '1.3');
@@ -468,13 +468,13 @@ var PMGTest = (function() {
         reserve(commercial1, 1);
 
         doNextPeriod(3);                                                            // -> Execution week 2
-        checkProperty(task2, 'completeness', 60, arguments.callee.name); //ancien 60%
-        checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'wages', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'computedQuality', 103, arguments.callee.name); //ancien 103
+        checkProperty(task2, 'completeness', 60, "CompetenceRationSup"); //ancien 60%
+        checkProperty(task2, 'fixedCosts', 500, "CompetenceRationSup"); //ancien 500
+        checkProperty(task2, 'wages', 500, "CompetenceRationSup"); //ancien 500
+        checkProperty(task2, 'computedQuality', 103, "CompetenceRationSup"); //ancien 103
     }
     function testRandomDurationInf() {
-        debug(arguments.callee.name);
+        debug("RandomDurationinF");
         reset();
         standardPlannification();
         task1.instance.setProperty('randomDurationInf', '1');
@@ -488,7 +488,7 @@ var PMGTest = (function() {
         doNextPeriod(3);                                                            // -> Executing week 2
     }
     function testRandomDurationSup() {
-        debug(arguments.callee.name);
+        debug("RandomDurationSup");
         reset();
         standardPlannification();
         task1.instance.setProperty('randomDurationSup', '1');
@@ -502,7 +502,7 @@ var PMGTest = (function() {
         doNextPeriod(3);                                                            // -> Executing week 2
     }
     function testLearnFactor() {
-        debug(arguments.callee.name);
+        debug("LearnFactor");
         reset();
 
         task5.setProperty('takeInHandDuration', '20');
@@ -517,31 +517,31 @@ var PMGTest = (function() {
         reserve(commercial3, 4);
 
         doNextPeriod(3);                                                            // -> Execution week 2
-        checkProperty(task5, 'completeness', 10, arguments.callee.name); //ancien 10%
-        checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task5, 'wages', 250, arguments.callee.name); //ancien 250
-        checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task5, 'completeness', 10, "LearnFactor"); //ancien 10%
+        checkProperty(task5, 'fixedCosts', 500, "LearnFactor"); //ancien 500
+        checkProperty(task5, 'wages', 250, "LearnFactor"); //ancien 250
+        checkProperty(task5, 'computedQuality', 100, "LearnFactor"); //ancien 100
 
         nextPeriod();
-        checkProperty(task5, 'completeness', 20, arguments.callee.name); //ancien 20%
-        checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task5, 'wages', 500, arguments.callee.name); //ancien 500
-        checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task5, 'completeness', 20, "LearnFactor"); //ancien 20%
+        checkProperty(task5, 'fixedCosts', 500, "LearnFactor"); //ancien 500
+        checkProperty(task5, 'wages', 500, "LearnFactor"); //ancien 500
+        checkProperty(task5, 'computedQuality', 100, "LearnFactor"); //ancien 100
 
         nextPeriod();
-        checkProperty(task5, 'completeness', 28, arguments.callee.name); //ancien 28%
-        checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task5, 'wages', 750, arguments.callee.name); //ancien 750
-        checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task5, 'completeness', 28, "LearnFactor"); //ancien 28%
+        checkProperty(task5, 'fixedCosts', 500, "LearnFactor"); //ancien 500
+        checkProperty(task5, 'wages', 750, "LearnFactor"); //ancien 750
+        checkProperty(task5, 'computedQuality', 100, "LearnFactor"); //ancien 100
 
         nextPeriod();
-        checkProperty(task5, 'completeness', 38, arguments.callee.name); //ancien 38%
-        checkProperty(task5, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task5, 'wages', 1000, arguments.callee.name); //ancien 1000
-        checkProperty(task5, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task5, 'completeness', 38, "LearnFactor"); //ancien 38%
+        checkProperty(task5, 'fixedCosts', 500, "LearnFactor"); //ancien 500
+        checkProperty(task5, 'wages', 1000, "LearnFactor"); //ancien 1000
+        checkProperty(task5, 'computedQuality', 100, "LearnFactor"); //ancien 100
     }
     function testRequirementLimit() {
-        debug(arguments.callee.name);
+        debug("Limits");
         reset();
 
         task2.instance.requirements.get(0).limit = 80;
@@ -550,18 +550,18 @@ var PMGTest = (function() {
         reserve(informaticien1, 1, 2, 3, 4);
 
         doNextPeriod(4);                                                            // -> Execution week 3
-        checkProperty(task2, 'completeness', 50, arguments.callee.name); // Old pmg: 50%
+        checkProperty(task2, 'completeness', 50, "Limits"); // Old pmg: 50%
         nextPeriod();                                                               // -> Executing week 4
-        checkProperty(task2, 'completeness', 70, arguments.callee.name); // Old pmg: 70%
+        checkProperty(task2, 'completeness', 70, "Limits"); // Old pmg: 70%
         nextPeriod();                                                               // -> Executing week 3
-        checkProperty(task2, 'completeness', 80, arguments.callee.name); // Old pmg: 80%
+        checkProperty(task2, 'completeness', 80, "Limits"); // Old pmg: 80%
         nextPeriod();                                                               // -> Executing week 3
-        checkProperty(task2, 'completeness', 80, arguments.callee.name); // Old pmg: 80%
+        checkProperty(task2, 'completeness', 80, "Limits"); // Old pmg: 80%
 
         task2.instance.requirements.get(0).limit = 100;                              // Revert changes on the limit
     }
     function testPredecessorFactor() {
-        debug(arguments.callee.name);
+        debug("Predecessor");
         reset();
 
         addPredecessor('task3', ['task1', 'task2']);
@@ -594,23 +594,23 @@ var PMGTest = (function() {
         reserve(informaticien4, 2);
 
         doNextPeriod(3);                                                            // -> Executing week 2
-        checkProperty(task1, 'completeness', 50, arguments.callee.name); //ancien 50%
-        checkProperty(task1, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task1, 'wages', 500, arguments.callee.name); //ancien 500
-        checkProperty(task1, 'computedQuality', 100, arguments.callee.name); //ancien 100
-        checkProperty(task2, 'completeness', 75, arguments.callee.name); //ancien 75%
-        checkProperty(task2, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task2, 'wages', 750, arguments.callee.name); //ancien 750
-        checkProperty(task2, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task1, 'completeness', 50, "Predecessor"); //ancien 50%
+        checkProperty(task1, 'fixedCosts', 500, "Predecessor"); //ancien 500
+        checkProperty(task1, 'wages', 500, "Predecessor"); //ancien 500
+        checkProperty(task1, 'computedQuality', 100, "Predecessor"); //ancien 100
+        checkProperty(task2, 'completeness', 75, "Predecessor"); //ancien 75%
+        checkProperty(task2, 'fixedCosts', 500, "Predecessor"); //ancien 500
+        checkProperty(task2, 'wages', 750, "Predecessor"); //ancien 750
+        checkProperty(task2, 'computedQuality', 100, "Predecessor"); //ancien 100
 
         nextPeriod();
-        checkProperty(task3, 'completeness', 20, arguments.callee.name); //ancien 20%
-        checkProperty(task3, 'fixedCosts', 500, arguments.callee.name); //ancien 500
-        checkProperty(task3, 'wages', 500, arguments.callee.name); //ancien 500
-        checkProperty(task3, 'computedQuality', 100, arguments.callee.name); //ancien 100
+        checkProperty(task3, 'completeness', 20, "Predecessor"); //ancien 20%
+        checkProperty(task3, 'fixedCosts', 500, "Predecessor"); //ancien 500
+        checkProperty(task3, 'wages', 500, "Predecessor"); //ancien 500
+        checkProperty(task3, 'computedQuality', 100, "Predecessor"); //ancien 100
     }
     function testUnassignable() {
-        debug(arguments.callee.name);
+        debug("Unassignable");
         reset();
 
         task1.getInstance(self).setProperty('bac', '1500');
@@ -627,7 +627,7 @@ var PMGTest = (function() {
     }
 
     function testResourceChangeWithinTask() {
-        debug(arguments.callee.name);
+        debug("Change Within");
         reset();
 
         task1.getInstance(self).setProperty('bac', '3000');
@@ -654,13 +654,13 @@ var PMGTest = (function() {
         reserve(informaticien4, 4, 8);
 
         doNextPeriod(5);                                                            // -> Executing week 4
-        //checkProperty(task1, 'completeness', 100, arguments.callee.name);
-        //checkProperty(task2, 'completeness', 120, arguments.callee.name);
+        //checkProperty(task1, 'completeness', 100, "change within");
+        //checkProperty(task2, 'completeness', 120, "change within");
     }
 
 
     function testUnworkedReq() {
-        debug(arguments.callee.name);
+        debug("Unworked reqs");
         reset();
 
         /**
@@ -679,13 +679,13 @@ var PMGTest = (function() {
 
         doNextPeriod(3);
 
-        checkProperty(task7, 'completeness', 100, arguments.callee.name);
+        checkProperty(task7, 'completeness', 100, "CoordinationRatioInfDiffWorks");
     }
 
 
     function testUnworkedHours() {
         var unworkedCost = 0;
-        debug(arguments.callee.name);
+        debug("UnworkedHours");
         reset();
         debug("Init");
 
