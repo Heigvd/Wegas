@@ -12,10 +12,10 @@
 YUI.add('wegas-tabview', function(Y) {
     "use strict";
 
-    var RemoveRightTab,
+    var RemoveRightTab, TabDocker,
         Plugin = Y.Plugin, Wegas = Y.Wegas,
         CONTENTBOX = "contentBox", BOUNDINGBOX = "boundingBox",
-        TabView, Tab;
+        TabView, Tab, RemoveTab;
     /**
      * @name Y.Wegas.TabView
      * @extends Y.TabView
@@ -395,10 +395,12 @@ YUI.add('wegas-tabview', function(Y) {
             var tab = this.get('host'),
                 //cb = tab.get("parent").get(CONTENTBOX),
                 bb = tab.get(BOUNDINGBOX);
-
+            if(!tab instanceof Tab){
+                return Y.log("error", "Plugin Removable expects a Tab host", "Y.Plugin.Removable");
+            }
             bb.addClass('yui3-tabview-removeable');
             bb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
-            bb.append(this.REMOVE_TEMPLATE);
+            //            bb.append(this.REMOVE_TEMPLATE);
 
             // Tab events bubble to TabView
             // Here to plug on tabview
@@ -409,11 +411,11 @@ YUI.add('wegas-tabview', function(Y) {
             //cb.delegate('click', this.onRemoveClick, '.yui3-tab-remove', this);
             //
             //// Tab events bubble to TabView
-            //tabview.after('tab:render', this.afterTabRender, this);
+            this.onceAfterHostEvent('tab:render', this.afterTabRender, this);
         },
-        //afterTabRender: function(e) {
-        //    e.target.get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
-        //},
+        afterTabRender: function(e) {
+            this.get("host").get(BOUNDINGBOX).append(this.REMOVE_TEMPLATE);         // boundingBox is the Tab's LI
+        },
 
         /**
          * @function
@@ -440,6 +442,39 @@ YUI.add('wegas-tabview', function(Y) {
         }
     });
     Plugin.Removeable = Removeable;
+    /**
+     * Remove host tab and creates a button to restore it.
+     * @constructor
+     */
+    TabDocker = function() {
+        TabDocker.superclass.constructor.apply(this, arguments);
+    };
+    Y.extend(TabDocker, Removeable, {
+        onRemoveClick: function(e) {
+            var host = this.get("host"), parent = host.get("parent"),
+                cfg = host.toObject(), label = host.get("label"),
+                button = (new Y.Wegas.Button({
+                    label: label
+                })).render(Y.one(this.get("dockTarget")));
+            //get old children config
+            cfg.children = host.get("children");
+            button.on("click", function() {
+                parent.add(cfg).item(0).set('selected', 1).plug(TabDocker);
+                this.destroy();
+            });
+            this.get("host").remove().destroy();
+            e.stopPropagation();
+        }
+    }, {
+        NS: "docker",
+        NAME: "TabDocker",
+        ATTRS:{
+            dockTarget:{
+                value: ".wegas-layout-hd"
+            }
+        }
+    });
+    Plugin.TabDocker = TabDocker;
 
     /**
      * Plugin to toggle visibility of a tab
@@ -551,7 +586,7 @@ YUI.add('wegas-tabview', function(Y) {
      * @class plugin to add a tab for remove tabview
      * @constructor
      */
-    var RemoveTab = function() {
+    RemoveTab = function() {
         RemoveTab.superclass.constructor.apply(this, arguments);
     };
 

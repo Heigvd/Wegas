@@ -5383,6 +5383,7 @@
                             "bac": "0",
                             "completeness": "0",
                             "bonusRatio": "1",
+                            "computedQuality": "0",
                             "quality": "0",
                             "randomDurationSup": "0"
                         },
@@ -5443,6 +5444,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0.4"
                         },
                         "requirements": [
@@ -5502,6 +5504,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -5570,6 +5573,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -5633,6 +5637,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "randomDurationSup": "0",
+                            "computedQuality": "0",
                             "quality": "0"
                         },
                         "requirements": [
@@ -5695,6 +5700,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -5766,6 +5772,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -5828,6 +5835,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -5889,6 +5897,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -5960,6 +5969,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -6021,6 +6031,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -6091,6 +6102,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -6165,6 +6177,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -6237,6 +6250,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [
@@ -6300,6 +6314,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "randomDurationSup": "1",
+                            "computedQuality": "0",
                             "quality": "0"
                         },
                         "requirements": [
@@ -6359,6 +6374,7 @@
                             "completeness": "0",
                             "bonusRatio": "1",
                             "quality": "0",
+                            "computedQuality": "0",
                             "randomDurationSup": "0"
                         },
                         "requirements": [

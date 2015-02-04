@@ -41,6 +41,15 @@
             });
         });
 
+        persistence.Resources.GET_SKILL_LABEL = function(skillName){
+            var skill = Y.Array.find(Y.Wegas.persistence.Resources.SKILLS, function(item){
+                if (item.value === skillName){
+                    return item;
+                }
+            });
+            return (skill && skill.label) || null;
+        };
+
         persistence.TaskDescriptor.ATTRS.properties._inputex = {
             type: GROUP,
             index: 2,
@@ -124,7 +133,12 @@
                     name: "quality",
                     type: HIDDEN,
                     value: 0
-                }]
+                }, {
+                    name: "computedQuality",
+                    type: HIDDEN,
+                    value: 0
+                }
+            ]
         };
         Y.mix(persistence.TaskDescriptor.METHODS, {
             getNumberInstanceProperty: {
@@ -138,9 +152,9 @@
                         type: SELECT,
                         choices: [{
                                 value: "fixedCosts"
-                            }, {
-                                value: "quality"
-                            }, {
+                            }, {/*
+                             value: "quality"
+                             }, {*/
                                 value: "completeness"
                             }]
                     }]
@@ -390,6 +404,20 @@
             }
         }, true);
 
+        Y.mix(persistence.TaskInstance.prototype, {
+            isRequirementCompleted: function(req){
+                
+            },
+            /*
+             *  return {skills: {skill2 : x, skill2: y}, total: (x+y)}
+             */
+            countRequiredResources: function(){
+                var total = {}, i, req;
+                for (i = 0 ; i < this.requirements.size(); i++){
+                }
+            }
+        });
+
         Y.mix(persistence.ResourceDescriptor.prototype, {
             isFirstPriority: function(taskDescriptor) {
                 var assignments = this.getInstance().get("assignments");
@@ -602,8 +630,9 @@
 
     if (centerTab) {
         Y.use('wegas-fullwidthtab', function() {
+            var hostMode = Y.one(".wegas-hostmode");
 
-            if (Y.one(".wegas-hostmode")) {
+            if (hostMode) {
                 // Add dashboard tab in first position
                 dashboard = centerTab.add({
                     label: "Overview",
@@ -635,7 +664,10 @@
                         defaultPageId: 16
                     }]
             }).item(0);
-            //properties.plug(Y.Plugin.FullWidthTab);
+            
+            if (!hostMode) {
+                properties.plug(Y.Plugin.TabDocker);
+            }
         });
     }
 

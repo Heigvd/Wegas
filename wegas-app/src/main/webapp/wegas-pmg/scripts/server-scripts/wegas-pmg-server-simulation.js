@@ -12,6 +12,7 @@
  * @author Benjamin Gerber <ger.benjamin@gmail.com>
  * @author Yannick Lagger <lagger.yannick@gmail.com>
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * 
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
@@ -24,7 +25,8 @@ var PMGSimulation = (function() {
         AUTOMATED_RESERVATION = false,
         STEPS = 10,
         MIN_TASK_DURATION = 0.1,
-        TASK_COMPLETED_AT = 97;
+        TASK_COMPLETED_AT = 97,
+        mails = {};
 
     /**
      * Divide period in steps (see global variable).
@@ -110,6 +112,9 @@ var PMGSimulation = (function() {
      */
     function step(currentStep) {
         debug("step(" + currentStep + ")");
+
+        mails = {};
+
         // Process assignments
         var activities = assignResources(currentStep), activity;
 
@@ -128,12 +133,14 @@ var PMGSimulation = (function() {
             var t = td.getInstance(self),
                 oCompleteness = t.getProperty("completeness");
             t.setProperty("completeness", calculateTaskProgress(t));
-            t.setProperty("quality", calculateTaskQuality(t));
+            t.setProperty("computedQuality", calculateTaskQuality(t));
             debug("step(" + currentStep + "): Task completeness: " + oCompleteness + " => " + t.getProperty("completeness"));
             if (t.getProperty("completeness") >= 100) {
                 sendEndOfTaskMail(td, currentStep);
             }
         });
+
+        sendQueuedMails(currentStep);
     }
 
     /**
@@ -186,20 +193,26 @@ var PMGSimulation = (function() {
                 // Only cares about uncompleted tasks
                 if (!PMGHelper.isTaskCompleted(taskDesc)) {
                     req = selectRequirement(taskDesc.getInstance(self), resourceInstance);
-                    if (req) {
-                        if (notBlockedByPredecessors(taskDesc)) {
-                            activity = getActivity(resourceInstance, taskDesc,
-                                currentPeriodNumber + currentStep / STEPS, req);
-                            debug("   -> Activity");
-                        } else {
-                            debug("    -> BLOCKED BY PREDECESSORS");
-                            if (currentStep === 0 && !AUTOMATED_RESERVATION) {
-                                sendBlockedByPredecessorsMail(resourceInstance, currentStep, taskDesc);
+                    if (req.requirement) {
+                        if (!req.completed) {
+                            if (notBlockedByPredecessors(taskDesc)) {
+                                activity = getActivity(resourceInstance, taskDesc,
+                                    currentPeriodNumber + currentStep / STEPS, req.requirement);
+                                debug("   -> Activity");
+                            } else {
+                                debug("    -> BLOCKED BY PREDECESSORS");
+                                if (currentStep === 0 && !AUTOMATED_RESERVATION) {
+                                    sendBlockedByPredecessorsMail(resourceInstance, taskDesc);
+                                }
                             }
+                        } else {
+                            debug("   -> WORK FINISHED ");
+                            sendSkillCompletedMail(resourceInstance, taskDesc);
+                            allAssignments.remove(i);
                         }
                     } else {
                         debug("   -> NOT MY WORK req not found...");
-                        sendNotMyWorkMail(resourceInstance, currentStep, taskDesc);
+                        sendNotMyWorkMail(resourceInstance, taskDesc);
                         allAssignments.remove(i);
                         // dont work this step -> bill
                         addUnworkedHours(resourceInstance, 10); // Limit 10% -> a step
@@ -224,7 +237,7 @@ var PMGSimulation = (function() {
                     if (activity.getTime() < 0) { // Just created activity ? 
                         if (!findActivityByTaskAndPeriod(resourceInstance, activity.taskDescriptor, currentPeriodNumber - 1)) {
                             debug("New Activity: " + activity);
-                            sendStartWorkingOnTaskMail(resourceInstance, currentStep, activity.taskDescriptor);
+                            sendStartWorkingOnTaskMail(resourceInstance, activity.taskDescriptor);
                         } else {
                             debug("Continue on activity from previous period: " + activity);
                         }
@@ -235,10 +248,11 @@ var PMGSimulation = (function() {
             } else {
                 if (activity) {
                     // task have been completed during the previous step -> tracking-message
-                    sendGoToNextTaskMail(resourceInstance, currentStep, justCompletedTasks[0], activity.taskDescriptor);
+                    //sendGoToNextTaskMail(resourceInstance, currentStep, justCompletedTasks[0], activity.taskDescriptor);
+                    queueMail("endOfTaskSwitchToNew", resourceInstance, justCompletedTasks[0], activity.taskDescriptor);
                 } else {
                     // No more workable tasks for the resource message
-                    sendGoToOtherActivities(resourceInstance, currentStep, justCompletedTasks[0]);
+                    sendGoToOtherActivities(resourceInstance, justCompletedTasks[0]);
                 }
             }
         }
@@ -387,109 +401,9 @@ var PMGSimulation = (function() {
         projectUHDesc.setValue(self, projectUh);
     }
 
-    function sendEndOfTaskMail(task, currentStep) {
-        var key = "endOfTask";
-        PMGHelper.sendMessage(
-            I18n.t("messages." + key + ".from"),
-            I18n.t("messages." + key + ".subject", {
-                task: task.label
-            }),
-            I18n.t("messages." + key + ".content", {
-                step: getStepName(currentStep),
-                task: task.label
-            }));
-    }
-
-    function sendGoToNextTaskMail(resourceInstance, currentStep, oldTask, newTask) {
-        var resourceName = resourceInstance.descriptor.label,
-            resourceSkill = resourceInstance.mainSkill,
-            oldTaskName = oldTask.label,
-            newTaskName = newTask.label,
-            key = "endOfTaskSwitchToNew";
-        PMGHelper.sendMessage(
-            I18n.t("messages." + key + ".from", {
-                employeeName: resourceName}),
-            I18n.t("messages." + key + ".subject", {
-                task: oldTaskName
-            }),
-            I18n.t("messages." + key + ".content", {
-                step: getStepName(currentStep),
-                task: oldTaskName,
-                nextTask: newTaskName,
-                employeeName: resourceName,
-                job: resourceSkill
-            }));
-    }
-
-    function sendSkillCompletedEmail(currentStep, taskDesc, skill) {
-        var taskName = taskDesc.label,
-            key = "skillCompleted";
-        PMGHelper.sendMessage(
-            I18n.t("messages." + key + ".from", {
-                skill: skill}),
-            I18n.t("messages." + key + ".subject", {
-                task: taskName}),
-            I18n.t("messages." + key + ".content", {
-                step: getStepName(currentStep),
-                task: taskName,
-                skill: skill
-            }));
-    }
-
-    function sendPlanningProblemEmail(resourceInstance) {
-        var resourceName = resourceInstance.descriptor.label,
-            resourceSkill = resourceInstance.mainSkill,
-            timeUnit = Variable.findByName(gameModel, "timeUnit").getValue(self),
-            wholePeriod, key = "planningProblem";
-        if (timeUnit == "week") {
-            wholePeriod = I18n.t("date.formatter.wholeWeek");
-        } else {
-            wholePeriod = I18n.t("date.formatter.wholeMonth");
-        }
-
-        PMGHelper.sendMessage(
-            I18n.t("messages." + key + ".from", {
-                employeeName: resourceName}),
-            I18n.t("messages." + key + ".subject"),
-            I18n.t("messages." + key + ".content", {
-                wholePeriod: wholePeriod,
-                employeeName: resourceName,
-                job: resourceSkill
-            }));
-    }
-
-    function sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, key) {
-        var resourceName = resourceInstance.descriptor.label,
-            resourceSkill = resourceInstance.mainSkill,
-            taskName = taskDesc.label;
-        PMGHelper.sendMessage(
-            I18n.t("messages." + key + ".from", {
-                employeeName: resourceName}),
-            I18n.t("messages." + key + ".subject", {
-                task: taskName}),
-            I18n.t("messages." + key + ".content", {
-                step: getStepName(currentStep),
-                task: taskName,
-                employeeName: resourceName,
-                job: resourceSkill
-            }));
-    }
-
-    function sendStartWorkingOnTaskMail(resourceInstance, currentStep, taskDesc) {
-        sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "startOnTask");
-    }
-
-    function sendGoToOtherActivities(resourceInstance, currentStep, taskDesc) {
-        sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "endOfTaskOtherActivities");
-    }
-
-    function sendNotMyWorkMail(resourceInstance, currentStep, taskDesc) {
-        sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "notMyWork");
-    }
-
-    function sendBlockedByPredecessorsMail(resourceInstance, currentStep, taskDesc) {
-        sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, "blockedByPredecessors");
-    }
+    /*
+     * 
+     */
 
     function removeAssignment(resourceInstance, assignment) {
         resourceInstance.assignments.remove(assignment);
@@ -526,12 +440,13 @@ var PMGSimulation = (function() {
         var skill = resourceInst.mainSkill,
             overview = getSkillsOverview(taskInst),
             nbRequiredResourceInTask, ski, d, req, i,
-            selectedReq, deltaLevel;
+            selectedReq, completedReq, deltaLevel;
 
         // Be sure current tast requiere resource skill
         if (overview[skill]) {
             nbRequiredResourceInTask = 0;
             selectedReq = null;
+            completedReq = null;
             deltaLevel = 1000;
             for (ski in overview) {
                 nbRequiredResourceInTask += overview[ski].quantity;
@@ -539,20 +454,38 @@ var PMGSimulation = (function() {
             for (i = 0; i < taskInst.requirements.size(); i += 1) {
                 req = taskInst.requirements.get(i);
                 d = Math.abs(parseInt(resourceInst.mainSkillLevel) - req.level);
-                if (req.work == skill && deltaLevel > d && overview[skill].quantity > 0) {
-                    if (req.completeness < overview[skill].maxLimit * nbRequiredResourceInTask / overview[skill].quantity) {
-                        deltaLevel = d;
-                        selectedReq = req;
+                if (req.work == skill) {
+                    if (deltaLevel > d && overview[skill].quantity > 0) {
+                        // Still work to do
+                        if (req.completeness < overview[skill].maxLimit * nbRequiredResourceInTask / overview[skill].quantity) {
+                            deltaLevel = d;
+                            selectedReq = req;
+                        } else {
+                            completedReq = req;
+                        }
                     }
                 }
             }
             if (selectedReq && !selectedReq.getTaskInstance()) {
                 debug("ERROR ORPHAN REQUIREMENT " + selectedReq + "(" + selectedReq.id + ")");
             }
-            return selectedReq;
-        } else {
-            return null;
+            if (selectedReq) {
+                return {
+                    requirement: selectedReq,
+                    completed: false
+                };
+            } else if (completedReq) {
+                return {
+                    requirement: completedReq,
+                    completed: true
+                };
+            }
         }
+
+        return {
+            requirement: null,
+            completed: false
+        };
     }
 
     /**
@@ -854,6 +787,24 @@ var PMGSimulation = (function() {
         return wages;
     }
 
+    /**
+     * return number if its value in [minValue; maxValue], 
+     * return the broken bound otherwise
+     * 
+     * @param {number} number value to bound
+     * @param {number} minValue minimum returned value
+     * @param {number} maxValue maximum returned value
+     * @returns {number}
+     */
+    function bound(number, minValue, maxValue) {
+        if (number < minValue) {
+            return minValue;
+        } else if (number > maxValue) {
+            return maxValue;
+        } else {
+            return number;
+        }
+    }
 
     /**
      * Return a random factor based on properties 'randomDurationSup' and 'randomDurationInf'
@@ -864,8 +815,11 @@ var PMGSimulation = (function() {
     function getRandomFactorFromTask(task) {
         var delta, randomFactor, x = Math.random(),
             rn = Math.floor(Math.random() * 100), //number 0 to 100 (0 inclusive, 100 exclusive);
-            randomDurationSup = task.getPropertyD("randomDurationSup"),
-            randomDurationInf = task.getPropertyD("randomDurationInf");
+
+            // Make sure coeff dont break bounds
+            randomDurationSup = bound(task.getPropertyD("randomDurationSup"), 0, 4),
+            randomDurationInf = bound(task.getPropertyD("randomDurationInf"), 0, 4);
+
         if (rn < 3) {
             delta = -(0.25 * x + 0.75) * randomDurationInf;
         } else if (rn < 10) {
@@ -993,6 +947,10 @@ var PMGSimulation = (function() {
         Variable.findByName(gameModel, 'userApproval').getInstance(self).saveHistory();
     }
 
+    /*****************************************
+     *    ADVANCEMENT ASSERTS
+     *****************************************/
+
     /**
      * Check if an advancement limit exists
      */
@@ -1033,7 +991,7 @@ var PMGSimulation = (function() {
             return;
             // Unable to find question list for current phase
         }
-        if (dir && dir.getClass().getSimpleName() == "ListDescriptor"){ // DO NOT USE ===
+        if (dir && dir.getClass().getSimpleName() == "ListDescriptor") { // DO NOT USE ===
             questions = dir.items;
             for (i = 0; i < questions.size(); i += 1) {
                 question = questions.get(i);
@@ -1143,12 +1101,13 @@ var PMGSimulation = (function() {
             sumCompletenessXdurationXnbr += completeness * task.duration * employeesRequired;
             sumDurationXnbr += task.duration * employeesRequired;
             sumRealised += completeness;
-            sumQualityXrealised += completeness * task.getPropertyD('quality');
+            // Effective task quality := computedQuality + impact's quality delta (stored as 'quality')
+            sumQualityXrealised += completeness * task.getPropertyD('computedQuality') + task.getPropertyD('quality');
 
             // Round 
             task.setProperty("wages", Math.round(task.getPropertyD("wages")));
             task.setProperty('completeness', Math.round(task.getPropertyD('completeness')));
-            task.setProperty('quality', Math.round(task.getPropertyD('quality')));
+            task.setProperty('computedQuality', Math.round(task.getPropertyD('computedQuality')));
         }
 
         if (sumDurationXnbr > 0) {
@@ -1205,6 +1164,271 @@ var PMGSimulation = (function() {
         actualCost.setValue(self, ac);
     }
 
+
+
+    /*
+     * 
+     * TRACKIN SYSTEM EMAILS
+     * **********************************************
+     */
+
+    function getSkillLabel(skillName){
+        return Variable.findByName(gameModel, skillName).getLabel();
+    }
+
+
+    function concatenateOthers(resourceInstances, includeSkills) {
+        var result = "", i;
+        for (i = resourceInstances.length - 1; i > 0; i -= 1) {
+            result += resourceInstances[i].descriptor.label;
+            if (includeSkills) {
+                result += " (" + getSkillLabel(resourceInstances[i].mainSkill) + ")";
+            }
+            if (i > 1) {
+                result += ", ";
+            }
+        }
+        return result;
+    }
+
+    // Project tracking message : end of task
+    function sendEndOfTaskMail(task, currentStep) {
+        var key = "endOfTask";
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from"),
+            I18n.t("messages." + key + ".subject", {
+                task: task.label
+            }),
+            I18n.t("messages." + key + ".content", {
+                step: getStepName(currentStep),
+                task: task.label
+            }));
+    }
+
+    function sendPlanningProblemEmail(resourceInstance) {
+        var resourceName = resourceInstance.descriptor.label,
+            resourceSkill = getSkillLabel(resourceInstance.mainSkill),
+            timeUnit = Variable.findByName(gameModel, "timeUnit").getValue(self),
+            wholePeriod, key = "planningProblem";
+        if (timeUnit == "week") {
+            wholePeriod = I18n.t("date.formatter.wholeWeek");
+        } else {
+            wholePeriod = I18n.t("date.formatter.wholeMonth");
+        }
+
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from", {
+                employeeName: resourceName}),
+            I18n.t("messages." + key + ".subject"),
+            I18n.t("messages." + key + ".content", {
+                wholePeriod: wholePeriod,
+                employeeName: resourceName,
+                job: resourceSkill
+            }));
+    }
+
+
+    // individial got to next task e-mail
+    function sendGoToNextTaskMail(resourceInstance, currentStep, oldTask, newTask) {
+        var resourceName = resourceInstance.descriptor.label,
+            resourceSkill = getSkillLabel(resourceInstance.mainSkill),
+            oldTaskName = oldTask.label,
+            newTaskName = newTask.label,
+            key = "endOfTaskSwitchToNew";
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from", {
+                employeeName: resourceName}),
+            I18n.t("messages." + key + ".subject", {
+                task: oldTaskName
+            }),
+            I18n.t("messages." + key + ".content", {
+                step: getStepName(currentStep),
+                task: oldTaskName,
+                nextTask: newTaskName,
+                employeeName: resourceName,
+                job: resourceSkill
+            }));
+    }
+
+    // individial got to next task e-mail
+    function sendGroupedGoToNextTaskMail(resourceInstances, currentStep, oldTask, newTask) {
+        var resourceName = resourceInstances[0].descriptor.label,
+            resourceSkill = getSkillLabel(resourceInstances[0].mainSkill),
+            oldTaskName = oldTask.label,
+            newTaskName = newTask.label,
+            others = concatenateOthers(resourceInstances),
+            key = "endOfTaskSwitchToNew_grouped";
+
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from", {
+                employeeName: resourceName}),
+            I18n.t("messages." + key + ".subject", {
+                task: oldTaskName
+            }),
+            I18n.t("messages." + key + ".content", {
+                step: getStepName(currentStep),
+                others: others,
+                task: oldTaskName,
+                nextTask: newTaskName,
+                employeeName: resourceName,
+                job: resourceSkill
+            }));
+    }
+
+    function sendGroupedEmailFromTemplate(resourceInstances, currentStep, taskDesc, key) {
+        var resourceName = resourceInstances[0].descriptor.label,
+            resourceSkill = getSkillLabel(resourceInstances[0].mainSkill),
+            taskName = taskDesc.label,
+            others = concatenateOthers(resourceInstances, key !== "skillCompleted");
+
+        key += "_grouped";
+
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from", {
+                employeeName: resourceName}),
+            I18n.t("messages." + key + ".subject", {
+                task: taskName}),
+            I18n.t("messages." + key + ".content", {
+                step: getStepName(currentStep),
+                others: others,
+                task: taskName,
+                employeeName: resourceName,
+                job: resourceSkill
+            }));
+    }
+
+    function sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, key) {
+        var resourceName = resourceInstance.descriptor.label,
+            resourceSkill = getSkillLabel(resourceInstance.mainSkill),
+            taskName = taskDesc.label;
+        PMGHelper.sendMessage(
+            I18n.t("messages." + key + ".from", {
+                employeeName: resourceName}),
+            I18n.t("messages." + key + ".subject", {
+                task: taskName}),
+            I18n.t("messages." + key + ".content", {
+                step: getStepName(currentStep),
+                task: taskName,
+                employeeName: resourceName,
+                job: resourceSkill
+            }));
+    }
+
+
+    function groupMails(mails, getKey, thiz) {
+        var lists = {}, mail, key, i;
+
+        for (i in mails) {
+            if (mails.hasOwnProperty(i)) {
+                mail = mails[i];
+                key = getKey.call(thiz, mail);
+                if (!lists[key]) {
+                    lists[key] = [];
+                }
+                lists[key].push(mail);
+            }
+        }
+        return lists;
+    }
+
+    function getKeys(list, key) {
+        var keys = [], i;
+        for (i in list) {
+            keys.push(list[i][key]);
+        }
+        return keys;
+    }
+
+    function sendQueuedMails(currentStep) {
+        var i, key, td1, td2,
+            groups, group, k;
+        for (key in mails) {
+            if (mails.hasOwnProperty(key)) {
+
+                // a group is a list of mails that can be joined into a single one
+                // if a group contains 1 mail, send the normal mail (1 sender)   @ TODO
+                // if a group contains more mails, send its pluralized version   @ TODO
+                switch (key) {
+                    case "endOfTaskSwitchToNew":
+                        // Group mail by T1,T2
+                        groups = groupMails(mails[key], function(mail) {
+                            return mail.taskD1.id + "/" + mail.taskD2.id;
+                        });
+
+                        for (i in groups) {
+                            if (groups.hasOwnProperty(i)) {
+                                group = groups[i];
+                                td1 = group[0].taskD1;
+                                td2 = group[0].taskD2;
+                                if (group.length === 1) {
+                                    sendGoToNextTaskMail(group[0].resourceInstance, currentStep, td1, td2);
+                                    // Single 
+                                } else {
+                                    // Pluralized
+                                    sendGroupedGoToNextTaskMail(getKeys(group, "resourceInstance"), currentStep, td1, td2);
+                                }
+                            }
+                        }
+                        break;
+                    default:
+                        // Group By (T)
+                        groups = groupMails(mails[key], function(mail) {
+                            return mail.taskD1.id;
+                        });
+
+                        for (i in groups) {
+                            if (groups.hasOwnProperty(i)) {
+                                group = groups[i];
+                                td1 = group[0].taskD1;
+                                if (group.length === 1) {
+                                    // Single 
+                                    sendEmailFromTemplate(group[0].resourceInstance, currentStep, td1, key);
+                                } else {
+                                    // Pluralized
+                                    sendGroupedEmailFromTemplate(getKeys(group, "resourceInstance"), currentStep, td1, key);
+                                }
+                            }
+                        }
+                        break;
+                }
+            }
+        }
+    }
+
+    function queueMail(key, resourceInstance, taskDesc1, taskDesc2) {
+        if (!mails[key]) {
+            mails[key] = [];
+        }
+
+        mails[key].push({
+            resourceInstance: resourceInstance,
+            taskD1: taskDesc1,
+            taskD2: taskDesc2
+        });
+    }
+
+    function sendStartWorkingOnTaskMail(resourceInstance, taskDesc) {
+        queueMail("startOnTask", resourceInstance, taskDesc, null);
+    }
+
+    function sendGoToOtherActivities(resourceInstance, taskDesc) {
+        queueMail("endOfTaskOtherActivities", resourceInstance, taskDesc, null);
+    }
+
+    function sendSkillCompletedMail(resourceInstance, taskDesc) {
+        queueMail("skillCompleted", resourceInstance, taskDesc, null);
+    }
+
+    function sendNotMyWorkMail(resourceInstance, taskDesc) {
+        queueMail("notMyWork", resourceInstance, taskDesc, null);
+    }
+
+    function sendBlockedByPredecessorsMail(resourceInstance, taskDesc) {
+        queueMail("blockedByPredecessors", resourceInstance, taskDesc, null);
+    }
+
+
+
     return {
         plannedValueHistory: function() {
             plannedValueHistory();
@@ -1212,7 +1436,7 @@ var PMGSimulation = (function() {
         nextPeriod: function() {
             nextPeriod();
         },
-        assertQuestion : function(){
+        assertQuestion: function() {
             return assertAllPeriodQuestionAnswered();
         }
     };

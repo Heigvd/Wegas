@@ -18,8 +18,8 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         TEMPLATES = {
             template: micro.compile('<%= Y.Object.getValue(this, this._field.split(".")) %>'),
             object: micro.compile('<% for(var i in Y.Object.getValue(this, this._field.split("."))){%> <%= Y.Object.getValue(this, this._field.split("."))[i]%> <%} %>'),
-            requiredRessource: micro.compile('<% for(var i=0; i< this.length;i+=1){%><p><span class="quantity"><%= this[i].get("quantity") %>x</span> <span class="work"><%= this[i].get("work") %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].get("level")] %></span></p><%}%>'),
-            assignedResource: micro.compile('<% var bold=false; for(var i = 0; i < this.length; i+=1){ bold = this[i].ressourceDescriptor.isPlannedForCurrentPeriod(this[i].taskDescriptor); for (var j in this[i].ressourceInstance.get("skillsets")){ if (bold) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= j %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
+            requiredRessource: micro.compile('<% var reqs = this.get("requirements"), i; for(i=0; i< reqs.length;i+=1){%><p><span class="quantity"><%= reqs[i].get("quantity") %>x</span> <span class="work"><%= Y.Wegas.persistence.Resources.GET_SKILL_LABEL(reqs[i].get("work")) %></span> <span class="level"><%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[reqs[i].get("level")] %></span>  <% if (this.isRequirementCompleted(reqs[i])){%><span>&#10003;</span><%}%>  </p><%}%>'),
+            assignedResource: micro.compile('<% var bold=false; for(var i = 0; i < this.length; i+=1){ bold = this[i].ressourceDescriptor.isPlannedForCurrentPeriod(this[i].taskDescriptor); for (var j in this[i].ressourceInstance.get("skillsets")){ if (bold) {%> <p style="font-weight: bold;"><%} else { %> <p><% } %><%= this[i].ressourceDescriptor.get("label") %> (<%= Y.Wegas.persistence.Resources.GET_SKILL_LABEL(j) %> <%= Y.Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[this[i].ressourceInstance.get("skillsets")[j]]%>)</p><% }} %>')
         };
 
     Datatable = Y.Base.create("wegas-pmg-datatable", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
@@ -155,13 +155,13 @@ YUI.add("wegas-pmg-datatable", function(Y) {
                 if (o.data.instance.properties.completeness <= 0) {
                     return "-";
                 } else {
-                    return o.data.instance.properties.quality;
+                    return +o.data.instance.properties.quality + +o.data.instance.properties.computedQuality;
                 }
             };
         },
         requieredRessources: function() {
             return function(o) {
-                return TEMPLATES.requiredRessource(o.data.instance.requirements);
+                return TEMPLATES.requiredRessource(Y.Wegas.Facade.Variable.cache.find("id", o.data.id).getInstance());
             };
         },
         assignedRessources: function() {

@@ -17,7 +17,7 @@ public class PMGTest extends PMGameAbstractTest {
 
     @Test
     public void testSimplePMG() {
-        this.evalScript("testsimplepmg()");
+        this.evalScript("PMGTest.testAll()");
     }
 
     @Override

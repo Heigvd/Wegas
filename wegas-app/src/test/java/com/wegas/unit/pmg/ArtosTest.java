@@ -18,7 +18,7 @@ public class ArtosTest extends PMGameAbstractTest {
     @Test
     public void testArtos() {
         //this.evalScript("testArtos()");
-        this.evalScript("testMessages()");
+        this.evalScript("PMGTest.testAll()");
     }
 
     @Override

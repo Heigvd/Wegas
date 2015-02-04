@@ -355,7 +355,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                     }]
             },
             hasBeenSelected: {
-                label: "has been selectedd",
+                label: "has been selected",
                 returns: BOOLEAN,
                 arguments: [{
                         type: HIDDEN,

@@ -495,13 +495,13 @@ YUI.add("treeview", function(Y) {
                         this.get(BOUNDING_BOX).removeClass(SELECTED)
                             .removeClass("sub-partially-selected")
                             .removeClass("sub-fully-selected");
-                    }
-                    if (v && !this.get(SELECTION)) {
-                        this.get(BOUNDING_BOX).addClass(SELECTED);
-                    } else if (v === 2) {
-                        this.get(BOUNDING_BOX).addClass("sub-partially-selected");
-                    } else if (v === 1) {
-                        this.get(BOUNDING_BOX).addClass("sub-fully-selected");
+                        if (v && !this.get(SELECTION)) {
+                            this.get(BOUNDING_BOX).addClass(SELECTED);
+                        } else if (v === 2) {
+                            this.get(BOUNDING_BOX).addClass("sub-partially-selected");
+                        } else if (v === 1) {
+                            this.get(BOUNDING_BOX).addClass("sub-fully-selected");
+                        }
                     }
                     return v;
                 }

@@ -42,7 +42,7 @@
     width:90px;
     height:18px;
     padding:2px 0 1px 0;
-    margin-right:3px;
+    margin-right: 2px;
     background-color: white;
     color:black;
     float:left;
@@ -58,20 +58,22 @@
 }
 .pmg-period{
     font-size: 9pt;
+    width: 380px;
 }
 .wegas-template-valuebox label{
     display:none;
 }
 .pmg-period .wegas-template-valuebox-unit{
-    width:20px;
-    height:16px;
+    width: 20px;
+    height: 15px;
     float:left;
-    margin: 0px 2px 0 0;
+    margin: 0 2px 3px 0;
     color:black;
     border:none;
     background-color: white;
     text-align: center;
-    padding-top: 1px;
+    padding-top: 2px;
+    padding-left: 1px;
 }
 .pmg-period .wegas-template-valuebox-previous{
     background-color:#BBBBBB;
