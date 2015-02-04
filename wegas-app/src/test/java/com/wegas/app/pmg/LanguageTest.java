@@ -18,7 +18,7 @@ public class LanguageTest extends PMGameAbstractTest {
 
     @Test
     public void testLanguage() throws ScriptException {
-        this.evalScript("testLanguage()");
+        this.evalScript("PMGTest.testAll()");
     }
 
     @Override
