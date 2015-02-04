@@ -41,6 +41,15 @@
             });
         });
 
+        persistence.Resources.GET_SKILL_LABEL = function(skillName){
+            var skill = Y.Array.find(Y.Wegas.persistence.Resources.SKILLS, function(item){
+                if (item.value === skillName){
+                    return item;
+                }
+            });
+            return (skill && skill.label) || null;
+        };
+
         persistence.TaskDescriptor.ATTRS.properties._inputex = {
             type: GROUP,
             index: 2,
@@ -395,6 +404,20 @@
             }
         }, true);
 
+        Y.mix(persistence.TaskInstance.prototype, {
+            isRequirementCompleted: function(req){
+                
+            },
+            /*
+             *  return {skills: {skill2 : x, skill2: y}, total: (x+y)}
+             */
+            countRequiredResources: function(){
+                var total = {}, i, req;
+                for (i = 0 ; i < this.requirements.size(); i++){
+                }
+            }
+        });
+
         Y.mix(persistence.ResourceDescriptor.prototype, {
             isFirstPriority: function(taskDescriptor) {
                 var assignments = this.getInstance().get("assignments");
@@ -607,8 +630,9 @@
 
     if (centerTab) {
         Y.use('wegas-fullwidthtab', function() {
+            var hostMode = Y.one(".wegas-hostmode");
 
-            if (Y.one(".wegas-hostmode")) {
+            if (hostMode) {
                 // Add dashboard tab in first position
                 dashboard = centerTab.add({
                     label: "Overview",
@@ -634,16 +658,16 @@
             // Add properties tab
             properties = centerTab.add({
                 label: "Properties",
-                plugins: [{
-                        fn: "TabDocker"
-                    }],
                 children: [{
                         type: "PageLoader",
                         pageLoaderId: "properties",
                         defaultPageId: 16
                     }]
             }).item(0);
-            //properties.plug(Y.Plugin.FullWidthTab);
+            
+            if (!hostMode) {
+                properties.plug(Y.Plugin.TabDocker);
+            }
         });
     }
 
