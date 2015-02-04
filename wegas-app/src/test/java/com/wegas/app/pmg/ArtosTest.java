@@ -19,7 +19,7 @@ public class ArtosTest extends PMGameAbstractTest {
     @Test
     public void testArtos() throws ScriptException {
         //this.evalScript("testArtos()");
-        this.evalScript("testMessages()");
+        this.evalScript("PMGTest.testAll()");
     }
 
     @Override
