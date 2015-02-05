@@ -8,6 +8,7 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.Helper;
+import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
@@ -127,17 +128,27 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
     }
 
     /**
+     * Select this choice result matching given name
+     * <p>
+     * @param name result-to-find's name
+     * @return the specified result
+     */
+    private Result getResultByName(String name) {
+        for (Result r : this.getResults()) {
+            if (r.getName().equals(name)) {
+                return r;
+            }
+        }
+        throw new WegasException("Result \"" + name + "\" not found");
+    }
+
+    /**
      *
      * @param player
      * @param resultName
      */
     public void setCurrentResult(Player player, String resultName) {
-        for (Result r : this.getResults()) {
-            if (r.getName().equals(resultName)) {
-                this.getInstance(player).setCurrentResultId(r.getId());
-                return;
-            }
-        }
+        this.getInstance(player).setCurrentResultId(this.getResultByName(resultName).getId());
     }
 
     /**
@@ -200,8 +211,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     /**
      *
-     * @param p
-     *
+     * @param p <p>
      * @return
      */
     public boolean isActive(Player p) {
@@ -210,9 +220,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     /**
      * Does this choice has been selected by the given player
+     * <p>
      * @param p the player
-     *
-     * @return true if one or more question replies referencing this choice exist
+     * <p>
+     * @return true if one or more question replies referencing this choice
+     *         exist
      */
     public boolean hasBeenSelected(Player p) {
         for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
@@ -225,11 +237,11 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
 
     /**
      * Does this result has been selected by the given player
-     *
+     * <p>
      * @param p      the player
-     * @param result 
-     *
-     * @return true if one or more question reply referencing the given result exist
+     * @param result <p>
+     * @return true if one or more question reply referencing the given result
+     *         exist
      */
     public boolean hasResultBeenApplied(Player p, Result result) {
         for (Reply r : this.getQuestion().getInstance(p).getReplies()) {
@@ -238,6 +250,19 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> {
             }
         }
         return false;
+    }
+
+    /**
+     * Does this result has been selected by the given player
+     * <p>
+     * @param p          the player
+     * @param resultName result name
+     * <p>
+     * @return true if one or more question reply referencing the given result
+     *         exist
+     */
+    public boolean hasResultBeenApplied(Player p, String resultName) {
+        return this.hasResultBeenApplied(p, this.getResultByName(resultName));
     }
 
     /**
