@@ -841,7 +841,7 @@
                 "content": "<div class='title'><h2>Available actions during this phase</h2></div><div class='title'><h2>Description</h2></div>"
             }, {
                 "type": "MCQTabView",
-                "showUnanswered": false,
+                "highlightUnanswered": false,
                 "variable": {
                     "content": "var currentPhase = Variable.find('currentPhase'); return Variable.find('actions').item(currentPhase.getValue(self) - 1);"
                 }

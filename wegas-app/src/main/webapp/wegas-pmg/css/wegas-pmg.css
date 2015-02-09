@@ -7,12 +7,12 @@
  */
 /*--------------------------------header--------------------------------------*/
 .layout {
-    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-family: "Lucida Grande", sans-serif;
     background: #282828;
     min-width:1025px;
 }
 .layout * {
-    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-family: "Lucida Grande", sans-serif;
 }
 
 .wegas-loading-overlay {
@@ -289,93 +289,6 @@ h2{
     border:none;
     background:white;
 }
-.wegas-mcqtabview .yui3-tab {
-    border-width: 0 0 1px 0;
-}
-.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle  .left ,
-.yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
-    text-decoration: underline;
-}
-.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle .right ,
-.yui3-skin-sam .wegas-mcqtabview .yui3-tab .status {
-    float:right;
-    padding-right:8px;
-}
-.yui3-skin-sam .wegas-mcqtabview .yui3-tab a.yui3-tab-label  {
-    background: none;
-    border: none;
-    padding: 6px 0px;
-    width:100%;
-}
-.wegas-mcqtabview {
-    line-height: normal;
-}
-.body .wegas-mcqtabview-content .content{
-    margin-top: 0px;
-}
-.yui3-skin-sam .wegas-mcqtabview .wegas-mcqtabview-content .yui3-tabview .yui3-tabview-content .yui3-tabview-panel{
-    margin-top:1px
-}
-.wegas-mcqtabview-content .content .content{
-    margin:0;
-}
-.yui3-skin-sam  .wegas-mcqtabview .yui3-tab-selected .yui3-tab-label {
-    color:black;
-}
-
-.wegas-mcqtabview .title {
-    font-weight: bold;
-    padding: 0 6px 4px;
-    border-bottom: 1px solid lightgray;
-    font-size: 13px;
-    width:100%;
-    height:16px;
-}
-
-.wegas-mcqtabview .replyDiv > .reply {
-    color: black;
-}
-
-.wegas-mcqtabview .subtitle {
-    font-weight: bold;
-    padding: 2px 5px 0px;
-    border-bottom: 1px solid lightgray;
-}
-
-.wegas-mcqtabview  .description {
-    margin: 6px;
-    margin-bottom: 20px;
-}
-.wegas-mcqtabview  input {
-    float: right;
-}
-.wegas-mcqtabview .reply {
-    margin: 3px 8px 0px;
-}
-.wegas-mcqtabview .reply .name {
-    font-weight: bold;
-}
-.wegas-mcqtabview .reply content {
-    /*font-weight: bold;*/
-    margin-bottom:5px;
-}
-.wegas-mcqtabview .numberOfReplies{
-    float:right;
-}
-.wegas-mcqtabview .unread {
-    font-weight:bold;
-}
-
-.wegas-mcqtabview .mostRecentReply .replies {
-    font-style: normal;
-    color: black;
-}
-
-.wegas-mcqtabview .replies .olderReply {
-    color: #999;
-}
-
-
 /*-----------------------------inbox and history------------------------------*/
 .inbox-page .wegas-text,
 .history-page .wegas-text{

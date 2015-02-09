@@ -7,7 +7,7 @@
  */
 /*--------------------------------header--------------------------------------*/
 body {
-    /*font-family: "Lucida Sans Unicode", "Lucida Grande", Sans-Serif;*/
+    /*font-family: "Lucida Grande", Sans-Serif;*/
 }
 .header{
     position:absolute;
@@ -18,7 +18,7 @@ body {
     background-repeat: repeat-x;
     background-color:#353B41;
     color:white;
-    font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+    font-family: "Lucida Grande", sans-serif;
     font-size: 9pt;
     height:80px;
     padding:5px;

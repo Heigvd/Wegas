@@ -717,7 +717,7 @@
                 "language": "JavaScript",
                 "content": "Variable.find(gameModel, \"questions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)"
             },
-            "showUnanswered": true,
+            "highlightUnanswered": true,
             "@name": "Questions"
         },
         "4": {
@@ -727,7 +727,7 @@
                 "language": "JavaScript",
                 "content": "Variable.find(gameModel, \"actions\").item(currentPhase.value-1).item(periods.items[currentPhase.value-1].value- 1)"
             },
-            "showUnanswered": true,
+            "highlightUnanswered": true,
             "@name": "Actions"
         },
         "5": {
