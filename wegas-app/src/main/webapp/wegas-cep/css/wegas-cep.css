@@ -301,65 +301,6 @@ h3 {
     color:black;
 }
 
-/** Mcq tab view styles */
-.wegas-mcqtabview {
-    line-height: normal;
-}
-
-.wegas-mcqtabview .pmg-subtitle {
-    padding:6px 0;
-    font-size: 1.2em;
-    font-weight: normal;
-    border-bottom: 2px solid #4D4D4D;
-}
-.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle  .left ,
-.yui3-skin-sam .wegas-mcqtabview .yui3-tab  .label {
-    float:left;
-    padding-left:8px;
-}
-.yui3-skin-sam .wegas-mcqtabview .pmg-subtitle .right ,
-.yui3-skin-sam .wegas-mcqtabview .yui3-tab .status {
-    float:right;
-    padding-right:8px;
-}
-.wegas-mcqtabview .title {
-    font-weight: bold;
-    padding: 7px 5px 2px;
-    border-bottom: 1px solid lightgray;
-    font-size: 13px;
-}
-.wegas-mcqtabview .subtitle {
-    font-weight: bold;
-    padding: 2px 5px 0px;
-    border-bottom: 1px solid lightgray;
-}
-.wegas-mcqtabview  .description {
-    margin: 8px;
-    margin-bottom: 20px;
-}
-.wegas-mcqtabview  input {
-    float: right;
-}
-.wegas-mcqtabview .replies {
-    padding-bottom: 5px;
-}
-.wegas-mcqtabview .reply {
-    margin: 3px 8px 0px;
-}
-.wegas-mcqtabview .reply .name {
-    font-weight: bold;
-}
-.wegas-mcqtabview .reply content {
-    /*font-weight: bold;*/
-    margin-bottom:5px;
-}
-.wegas-mcqtabview .numberOfReplies{
-    float:right;
-}
-.wegas-mcqtabview .unread {
-    font-weight:bold;
-}
-
 /* --- employees --- */
 /*selectors*/
 .selectors{

@@ -166,9 +166,9 @@ YUI.add('wegas-mcq-tabview', function(Y) {
 
                     tab = new Y.Tab({
                         label: '<div class="'
-                            + ((this.get("showUnanswered") && cQuestionInstance.get("replies").length === 0) ? "unread" : "")
-                            + '"><div class="label">' + (cQuestion.get("title") || cQuestion.get("label") || "undefined") + '</div>'
-                            + '<div class="status">' + cReplyLabel
+                            + ((this.get("highlightUnanswered") && cQuestionInstance.get("replies").length === 0) ? "unread" : "")
+                            + '"><div class="index-label">' + (cQuestion.get("title") || cQuestion.get("label") || "undefined") + '</div>'
+                            + '<div class="index-status">' + cReplyLabel
                             + '</div></div>',
                         content: "<div class=\"wegas-loading-div\"><div>"
                     });
@@ -209,93 +209,73 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                 });
             }
         },
-        /**
-         *
-         * @param tab
-         * @param extendedQuestion
-         */
-        renderTab: function(tab, extendedQuestion) {
-            var j, ret, firstChild, cChoices, choiceDescriptor, reply, title,
-                cQuestion = tab.cQuestion,
-                cQuestionInstance = cQuestion.getInstance(),
-                firstChild = "first-child",
-                numberOfReplies, isReplied;
-            cChoices = cQuestion.get("items");
-            extendedQuestion = extendedQuestion || cQuestion;
+        renderTab: function(tab, question) {
+            var i, ret, allowMultiple = question.get("allowMultipleReplies"),
+                choices = tab.cQuestion.get("items"), choiceD, choiceI,
+                questionInstance = tab.cQuestion.getInstance(),
+                numberOfReplies = questionInstance.get("replies").length,
+                answerable = allowMultiple || numberOfReplies === 0,
+                reply;
 
-            ret = ['<div class="content">',
-                '<div class="title">', cQuestion.get("title") || cQuestion.get("label") || "undefined", '</div>',
-                '<div class="description">', extendedQuestion.get("description"), '</div>'];
 
-            if (cQuestionInstance.get("replies").length === 0                   // If the question is not replied,
-                || cQuestion.get("allowMultipleReplies")) {                 // or it allows to reply multiple times
-                ret.push('<div class="replies">');                              // we display its available replies
-                for (j = 0; j < cChoices.length; j += 1) {
-                    if (cChoices[j].getInstance().get("active")) {
+            ret = ['<div class="mcq-question">',
+                '<div class="mcq-question-details">',
+                '<div class="mcq-question-title">', question.get("title") || question.get("label") || "undefined", '</div>',
+                '<div class="mcq-question-description">', question.get("description"), '</div>',
+                '</div>'];
 
-                        numberOfReplies = '';                                   //add informations about number of replies for MultipleReplies questions
-                        isReplied = '';
-                        if (cQuestion.get("allowMultipleReplies")) {
-                            numberOfReplies = -1;
-                            numberOfReplies = this.getNumberOfReplies(cQuestionInstance, cChoices[j]);
-                            if (numberOfReplies === 0) {
-                                numberOfReplies = '<span class="numberOfReplies zeroReplie">' + 0 + '<span class="symbole">x</span></span>';
-                            } else if (numberOfReplies > 0) {
-                                isReplied = 'replied';
-                                numberOfReplies = '<span class="numberOfReplies">' + numberOfReplies + '<span class="symbole">x</span></span>';
-                            }
-                        }
-                        ret.push('<div class="reply ', firstChild, ' ', isReplied, '">',
-                            '<div class="name">', cChoices[j].get("title"), '</div>',
-                            //'<div class="content">', cChoices[j].get("description"), '</div>',
-                            '<div class="content">',
-                            extendedQuestion.get("items")[j].get("description"),
-                            '</div>',
-                            numberOfReplies,
-                            '<button class="yui3-button" id="', cChoices[j].get("id"), '">Submit</button>',
-                            '<div style="clear:both"></div>',
-                            '</div>');
-                        firstChild = "";
+            // Display choices
+            ret.push('<div class="mcq-choices">');
+            for (i = 0; i < choices.length; i += 1) {
+                choiceD = choices[i];
+                choiceI = choiceD.getInstance();
+                if (choiceI.get("active")) {
+                    if (answerable || questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id")) {
+                        ret.push('<div class="mcq-choice">');
+                    } else {
+                        ret.push('<div class="mcq-choice spurned">');
                     }
+                    ret.push('<div class="mcq-choice-name">', choiceD.get("title"), '</div>');
+                    ret.push('<div class="mcq-choice-description">', question.get("items")[i].get("description"), '</div>');
+
+                    if (allowMultiple) {
+                        ret.push('<span class="numberOfReplies">',
+                            "" + this.getNumberOfReplies(questionInstance, choiceD),
+                            '<span class="symbole">x</span></span>');
+                    }
+
+                    if (answerable) {
+                        ret.push('<button class="yui3-button" id="', choiceD.get("id"), '">Submit</button>');
+                    } else {
+                        ret.push('<button class="yui3-button" disabled id="', choiceD.get("id"), '">',"Submit"
+                            //questionInstance.get("replies")[0].getChoiceDescriptor().get("id") === choiceD.get("id") ? "Made" : "Spurned"
+                            , '</button>');
+                    }
+
+                    ret.push('<div style="clear:both"></div>');
+                    ret.push('</div>'); // end mcq-choice
                 }
-                ret.push('</div>');
             }
+            ret.push('</div>'); // end mcq-choices
 
-            // Display the selected replies
-            if (cQuestionInstance.get("replies").length > 0) {
-                if (cQuestion.get("allowMultipleReplies")) {
-                    ret.push('<div class="subtitle">Results</div><div class="replies ">');  //Selected replies
+
+            if (numberOfReplies > 0) {
+                ret.push('<div class="mcq-replies-title">Result', (numberOfReplies > 1 ? "s" : ""), '</div>');
+                ret.push('<div class="mcq-replies">');
+                for (i = numberOfReplies - 1; i >= 0; i -= 1) {
+                    reply = questionInstance.get("replies")[i];
+                    choiceD = reply.getChoiceDescriptor();
+                    ret.push('<div class="mcq-reply">');
+                    ret.push('<div class="mcq-reply-title">', choiceD.get("title"), '</div>');
+                    ret.push('<div class="mcq-reply-content">', reply.get("result").get("answer"), '</div>');
+                    ret.push('</div>'); // end mcq-reply
                 }
-                for (j = cQuestionInstance.get("replies").length - 1; j >= 0; j -= 1) {
-
-                    reply = cQuestionInstance.get("replies")[j];
-                    choiceDescriptor = reply.getChoiceDescriptor();
-                    title = Y.Lang.trim(choiceDescriptor.get("title"));
-
-                    ret.push('<div class="replyDiv ', ((j === cQuestionInstance.get("replies").length - 1) ? 'mostRecentReply' : 'olderReply'), '">');
-                    if (title) {
-                        ret.push('<div class="subtitle">Selected answer</div>');
-                    }
-                    ret.push('<div class="reply"><div class="name">', title, '</div>',
-                        '<div>',
-                        (!cQuestion.get("allowMultipleReplies") || !title) ? extendedQuestion.find(choiceDescriptor.get("id")).get("description") : "",
-                        '</div>',
-                        //'<div>', extendedQuestion.find(choiceDescriptor.get("id")).get("description"), '</div>',
-                        '<div style="clear:both"></div></div>');
-
-                    if (title) {
-                        ret.push('<div class="subtitle">Result</div>');
-                    }
-
-                    if (reply.get("result").get("answer")) {
-                        ret.push('<div class="replies"><div class="reply first-child">', reply.get("result").get("answer"), '</div></div></div>');
-                    }
-                }
-                ret.push("</div>");
+                ret.push('</div>'); // end mcq-replies
             }
-            ret.push("</div>");
+            ret.push('</div>'); // end mcq-question
 
             tab.set("content", ret.join(""));
+
         },
         /**
          * @function
@@ -363,10 +343,11 @@ YUI.add('wegas-mcq-tabview', function(Y) {
                     classFilter: ["ListDescriptor"]
                 }
             },
-            showUnanswered: {
+            highlightUnanswered: {
                 type: "boolean",
                 value: true,
                 _inputex: {
+                    label: "Higlight Unanswered",
                     wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
                 }
             }
