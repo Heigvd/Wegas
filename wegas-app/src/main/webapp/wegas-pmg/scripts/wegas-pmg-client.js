@@ -57,31 +57,36 @@
                     name: "takeInHandDuration",
                     label: "Take-in-hand duration",
                     type: NUMBER,
-                    value: 0
+                    value: 0,
+                    description: "[% of period]"
                 }, {
                     name: "competenceRatioInf",
                     label: "Competence coeff. inf.",
                     type: NUMBER,
-                    value: 1
+                    value: 1,
+                    description: "[0..3]"
                 }, {
                     name: "competenceRatioSup",
                     label: "Competence coeff. sup.",
                     type: NUMBER,
-                    value: 1
+                    value: 1,
+                    description: "[0..3]"
                 }, {
                     name: "coordinationRatioInf",
                     type: NUMBER,
                     label: "Coordination coeff. inf.",
-                    value: 1
+                    value: 1,
+                    description: "[0..2]"
                 }, {
                     name: "coordinationRatioSup",
                     label: "Coordination coeff. sup.",
                     type: NUMBER,
-                    value: 1
+                    value: 1,
+                    description: "[0..2]"
                 }, {
                     name: "progressionOfNeeds",
                     type: HIDDEN,
-                    value: 1
+                    value: 1,
                 }]
         };
 
@@ -92,27 +97,32 @@
                     name: "fixedCosts",
                     label: "Fixed costs",
                     type: NUMBER,
-                    value: 0
+                    value: 0,
+                    description: "[$]"
                 }, {
                     name: "randomDurationInf",
                     label: "Random duration delta inf.",
                     type: NUMBER,
-                    value: 0
+                    value: 0,
+                    description: "[0..4 period]"
                 }, {
                     name: "randomDurationSup",
                     label: "Random duration delta sup.",
                     type: NUMBER,
-                    value: 0
+                    value: 0,
+                    description: "[0..4 period]"
                 }, {
                     name: "predecessorsDependances",
                     label: "Predecessors dependency",
                     type: NUMBER,
-                    value: 1
+                    value: 1,
+                    description: "[0..1000]"
                 }, {
                     name: "bonusRatio",
                     label: "Bonus coeff.",
                     type: NUMBER,
-                    value: 1
+                    value: 1,
+                    description: "[0..1..4]"
                 }, {
                     name: "unworkedHoursCosts",
                     type: HIDDEN,
@@ -284,19 +294,23 @@
             fields: [{
                     label: "Activity rate coeff.",
                     name: "coef_activity",
-                    value: 1
+                    value: 1,
+                    description: "[0..1..2]"
                 }, {
                     label: "Motivation coeff.",
                     name: "coef_moral",
-                    value: 1
+                    value: 1,
+                    description: "[0..1..2]"
                 }, {
                     label: "Maximum % of billed unworked hours",
                     name: "maxBilledUnworkedHours",
-                    value: 10
+                    value: 10,
+                    description: "[0..100]"
                 }, {
                     label: "Engagement delay",
                     name: "engagementDelay",
-                    value: 0
+                    value: 0,
+                    description: "[period]"
                 }]
         };
 
@@ -306,15 +320,28 @@
                     name: "activityRate",
                     label: "Activity rate",
                     type: NUMBER,
-                    value: 100
+                    value: 100 ,
+                    description: "[0..100]"
+                    
                 }, {
                     name: "wage",
                     label: "Monthly wages (100%)",
                     type: NUMBER,
-                    value: 1000
+                    value: 1000,
+                    description: "[$]"
                 }]
         };
-
+        
+        persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.moral = {
+            type: NUMBER,
+            optional: false,
+            _inputex: {
+                label: "Motivation",
+                value: 7,
+                description: "[0..7..12]"
+            }
+        };
+        
         persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {
             optional: true,
             type: NUMBER,
@@ -672,3 +699,4 @@
     }
 
 }());
+
