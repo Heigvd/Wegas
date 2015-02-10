@@ -46,10 +46,12 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                 occupations = data.item(i).get("descriptor").getInstance().get("occupations");
                 for (ii = 0; ii < occupations.length; ii += 1) {
                     time = occupations[ii].get("time");
-                    if (time >= host.schedule.currentPeriod()
-                        || !occupations[ii].get("editable")) {                  //Affiche les occupations
-                        if (host.schedule.getCell(i, time)) {
-                            this.addColor(host.schedule.getCell(i, time), occupations[ii].get("editable"));
+                    if (time > 0) {
+                        if (time >= host.schedule.currentPeriod()
+                            || !occupations[ii].get("editable")) {                  //Affiche les occupations
+                            if (host.schedule.getCell(i, time)) {
+                                this.addColor(host.schedule.getCell(i, time), occupations[ii].get("editable"));
+                            }
                         }
                     }
                 }
