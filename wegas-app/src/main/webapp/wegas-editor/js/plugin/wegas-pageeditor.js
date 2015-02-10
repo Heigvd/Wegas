@@ -257,6 +257,7 @@ YUI.add('wegas-pageeditor', function(Y) {
             //host.get("widget").set("@pageId", host.get("widget")["@pageId"]);
             host.showOverlay();
             Wegas.Facade.Page.cache.patch(page, Y.bind(function() {
+                host.hideOverlay();
                 this.reload();
             }, host));
         },

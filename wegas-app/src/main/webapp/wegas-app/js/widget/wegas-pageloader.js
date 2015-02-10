@@ -121,6 +121,7 @@ YUI.add("wegas-pageloader", function(Y) {
             this.showOverlay();
             this._pageId = null;
             this.syncUI();
+            this.hideOverlay();
         },
         getEditorLabel: function() {
             return this.get("pageLoaderId");
