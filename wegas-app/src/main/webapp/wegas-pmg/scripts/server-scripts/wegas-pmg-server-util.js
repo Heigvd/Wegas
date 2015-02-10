@@ -98,10 +98,10 @@ Y.Array = {
         }
         return r;
     },
-    reduce : function(a, init, f, o){
+    reduce: function(a, init, f, o) {
         if (a.toArray)
             a = a.toArray();                                                    //convert list to array
-        for (var i=0; i < a.length; i++){
+        for (var i = 0; i < a.length; i++) {
             init = f.call(o, init, a[i], i, a);
         }
         return init;

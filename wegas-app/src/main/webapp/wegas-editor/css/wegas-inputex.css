@@ -104,7 +104,8 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-StringField-wrapper {
     display: inline-block;
     vertical-align: top;
-    width: 100%;
+    width: 80%;
+    float: left;
 }
 /* Set up fluid layout for inputex fields */
 .wegas-form > div > div > fieldset > div {
@@ -114,6 +115,9 @@ div.inputEx-fieldWrapper {
 }
 div.inputEx-description {
     white-space: normal;
+    clear: unset;
+    float: left;
+    margin-left: 4px;
 }
 .wegas-form > div > div > fieldset > div div.inputEx-label,
 .wegas-form div.inputEx-CombineField > div.inputEx-label,

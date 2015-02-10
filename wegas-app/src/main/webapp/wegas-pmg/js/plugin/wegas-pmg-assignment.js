@@ -255,8 +255,10 @@ YUI.add("wegas-pmg-assignment", function(Y) {
                 dataToDisplay = '<div class="field" style="padding:5px 10px">' + progress + '<p class="popupTitel">Description</p><p>' + fieldValue + '</p></div><div style="padding:5px 10px" class="requirements"><p class="popupTitel">Requirements</p>';
 
             for (i = 0; i < requirements.length; i += 1) {
-                dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
-                    + " " + Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
+                if (+requirements[i].get("quantity") > 0) {
+                    dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + Y.Wegas.persistence.Resources.GET_SKILL_LABEL(requirements[i].get("work"))
+                        + " " + Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
+                }
             }
             dataToDisplay = dataToDisplay + "</div>";
             this.menuDetails.get(CONTENTBOX).setHTML(dataToDisplay);
