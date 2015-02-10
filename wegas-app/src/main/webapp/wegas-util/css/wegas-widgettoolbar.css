@@ -63,8 +63,14 @@
     max-height: 200px;
     overflow-y: auto;
 }
-.wegas-toolbar .yui3-button {
+.wegas-toolbar-header > .yui3-button,
+.wegas-toolbar > .yui3-button {
     margin-right: 0.2em;
+    float: left;
+}
+.wegas-toolbar > .yui3-button.wegas-editor-closeposition {
+    margin-right: 0.2em;
+    float: right;
 }
 .wegas-toolbar .yui3-button:last-child {
     margin-right: 0;
