@@ -258,6 +258,11 @@ var PMGSimulation = (function() {
         return activity;
     }
 
+    function sumRequierementsQuantities(requirements) {
+        return Y.Array.sum(requirements, function(r) {
+            return (r.quantity > 0 ? r.quantity : 0);
+        });
+    }
 
     /**
      * 
@@ -265,9 +270,7 @@ var PMGSimulation = (function() {
      * @returns {Number}
      */
     function calculateTaskProgress(taskInst) {
-        var nbWork = Y.Array.sum(taskInst.requirements, function(r) {
-            return r.quantity;
-        }),
+        var nbWork = sumRequierementsQuantities(taskInst.requirements),
             skillsOverview = getSkillsOverview(taskInst),
             taskProgress = 0,
             skill;
@@ -449,7 +452,7 @@ var PMGSimulation = (function() {
                 req = taskInst.requirements.get(i);
                 d = Math.abs(parseInt(resourceInst.mainSkillLevel) - req.level);
                 if (req.work == skill) {
-                    if (deltaLevel > d && overview[skill].quantity > 0) {
+                    if (deltaLevel > d && req.quantity > 0) {
                         // Still work to do
                         if (req.completeness < overview[skill].maxLimit * nbRequiredResourceInTask / overview[skill].quantity) {
                             deltaLevel = d;
@@ -589,9 +592,7 @@ var PMGSimulation = (function() {
         debug("isSkillCompleted(" + taskInstance + ", " + skill + ")");
 
         var skillOverview = getSkillsOverview(taskInstance)[skill],
-            totalOfPersonneInTask = Y.Array.sum(taskInstance.requirements, function(r) {
-                return r.quantity;
-            });
+            totalOfPersonneInTask = sumRequierementsQuantities(taskInstance.requirements);
         //return (skillOverview && skillOverview.completeness >= skillOverview.maxLimit * totalOfPersonneInTask / skillOverview.quantity);
         return (skillOverview && skillOverview.completenessXquantity >= skillOverview.maxLimit * totalOfPersonneInTask);
     }
@@ -607,7 +608,7 @@ var PMGSimulation = (function() {
      * @returns {Object} works
      */
     function getSkillsOverview(taskInstance) {
-        var i, req, work, works = {},
+        var i, req, work, works = {}, effectiveQuantity,
             requirements = taskInstance.requirements;
         debug("getSkillsOverview() req: " + requirements);
 
@@ -622,10 +623,11 @@ var PMGSimulation = (function() {
                 completenessXquantity: 0
             };
             //keep the highest limit of all limits from each kind of work needed
+            effectiveQuantity = (req.quantity > 0 ? req.quantity : 0);
             work.maxLimit = Math.max(work.maxLimit, req.limit);
-            work.quantity += req.quantity;
+            work.quantity += effectiveQuantity;
             work.completeness += req.completeness;
-            work.completenessXquantity += req.quantity * req.completeness;
+            work.completenessXquantity += effectiveQuantity * req.completeness;
         }
 
         for (work in works) {
@@ -660,9 +662,8 @@ var PMGSimulation = (function() {
             work = getSkillsOverview(taskInst)[requirement.work],
             sameNeedActivities = getActivitiesFromRequirement(allActivities, requirement),
             effectiveTotalOfEmployees = sameNeedActivities.length,
-            totalOfEmployees = Y.Array.sum(taskInst.requirements, function(r) {
-                return r.quantity;
-            });
+            totalOfEmployees = sumRequierementsQuantities(taskInst.requirements);
+
         debug("baseAdvance : " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees);
         // Iterate through resources to sum various factor components
         for (i = 0; i < effectiveTotalOfEmployees; i += 1) {
@@ -1164,7 +1165,7 @@ var PMGSimulation = (function() {
      * **********************************************
      */
 
-    function getSkillLabel(skillName){
+    function getSkillLabel(skillName) {
         return Variable.findByName(gameModel, skillName).getLabel();
     }
 

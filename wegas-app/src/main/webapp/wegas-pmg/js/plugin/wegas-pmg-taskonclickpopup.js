@@ -110,8 +110,11 @@ YUI.add('wegas-pmg-taskonclickpopup', function(Y) {
                 + '<div style="padding:5px 10px" class="requirements"><p class="subtitle">Requirements</p>';
 
             for (i = 0; i < requirements.length; i += 1) {
-                dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " + requirements[i].get("work")
-                    + " " + Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
+                if (+requirements[i].get("quantity") > 0) {
+                    dataToDisplay = dataToDisplay + "<p>" + requirements[i].get("quantity") + "x " +
+                        Y.Wegas.persistence.Resources.GET_SKILL_LABEL(requirements[i].get("work"))
+                        + " " + Wegas.PmgDatatable.TEXTUAL_SKILL_LEVEL[requirements[i].get("level")];
+                }
             }
             dataToDisplay = dataToDisplay + "</div>";
             return dataToDisplay;
