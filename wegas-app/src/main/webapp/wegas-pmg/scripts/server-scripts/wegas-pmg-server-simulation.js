@@ -907,19 +907,13 @@ var PMGSimulation = (function() {
         Variable.find(gameModel, "currentTime").add(self, 1);
 
         if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
-            runSimulation();
-
-            currentPeriod.add(self, 1);
             if (PMGHelper.checkEndOfProject()) {                                              // If the project is over
                 currentPhase.add(self, 1);
                 Event.fire("nextPhase");
-                Event.fire("nextWeek");
-                Event.fire("nextPeriod");
             } else {
-                Event.fire("nextWeek");
-                Event.fire("nextPeriod");
+                runSimulation();
+                currentPeriod.add(self, 1);
             }
-
         } else if (currentPeriod.getValue(self) === currentPeriod.maxValueD) {      // If end of phase
             currentPhase.add(self, 1);
             //currentPeriod.setValue(self, 1);                                      // Why?
@@ -928,14 +922,13 @@ var PMGSimulation = (function() {
                 Variable.findByName(gameModel, 'taskPage').setValue(self, 12);
             }
             Event.fire("nextPhase");
-            Event.fire("nextWeek");
-            Event.fire("nextPeriod");
 
         } else {                                                                    // Otherwise pass to next period
             currentPeriod.add(self, 1);
-            Event.fire("nextWeek");
-            Event.fire("nextPeriod");
         }
+
+        Event.fire("nextWeek");
+        Event.fire("nextPeriod");
 
         // TODO #777 shall SaveHistory each time value changed rather than store once by period (ok for the time...)
         Variable.findByName(gameModel, 'managementApproval').getInstance(self).saveHistory();
@@ -951,7 +944,7 @@ var PMGSimulation = (function() {
      */
     function assertAdvancementLimit() {
         var phaseLimit, periodLimit, executionPeriods,
-            advLimitDesc;
+            advLimitDesc, currentPhase, currentPeriod;
         try {
             advLimitDesc = Variable.find(gameModel, "advancementLimit");
         } catch (e) {
@@ -960,10 +953,14 @@ var PMGSimulation = (function() {
             phaseLimit = Variable.find(gameModel, "phaseLimit").getValue(self);
             periodLimit = Variable.find(gameModel, "periodLimit").getValue(self);
             executionPeriods = Variable.find(gameModel, "executionPeriods").getValue(self);
-            if (!(PMGHelper.getCurrentPhaseNumber() === 3 && PMGHelper.getCurrentPeriodNumber() > executionPeriods)) {
-                if (PMGHelper.getCurrentPhaseNumber() >= phaseLimit && PMGHelper.getCurrentPeriodNumber() >= periodLimit) {
+            currentPhase = PMGHelper.getCurrentPhaseNumber();
+            currentPeriod = PMGHelper.getCurrentPeriodNumber();
+
+            if (!(currentPhase < phaseLimit) &&
+                !(currentPeriod < periodLimit) && 
+                !(currentPhase === 3 && !PMGHelper.checkEndOfProject()
+                && executionPeriods < periodLimit)){
                     throw new Error("StringMessage: Ask your course leader for permissions to continue.");
-                }
             }
         }
     }
