@@ -8,7 +8,6 @@
 package com.wegas.mcq.persistence;
 
 import com.wegas.core.Helper;
-import com.wegas.core.exception.WegasException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.game.Player;
@@ -17,13 +16,12 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-//import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 
@@ -154,7 +152,7 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
                 return r;
             }
         }
-        throw new WegasException("Result \"" + name + "\" not found");
+        throw WegasErrorMessage.error("Result \"" + name + "\" not found");
     }
 
     /**
