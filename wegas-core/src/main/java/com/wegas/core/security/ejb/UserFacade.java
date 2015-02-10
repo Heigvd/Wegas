@@ -397,7 +397,7 @@ public class UserFacade extends BaseFacade<User> {
      */
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) {
         Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
-            + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
+                + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
         try {
             AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
             for (Iterator<Permission> sit = account.getPermissions().iterator(); sit.hasNext();) {
@@ -405,10 +405,10 @@ public class UserFacade extends BaseFacade<User> {
                 String splitedPermission[] = p.split(":");
                 if (splitedPermission.length >= 3) {
                     if (splitedPermission[2].equals(instance)) {
-                        if(this.checkHasLastEditPermission(p, instance)){
+                        if (this.checkHasLastEditPermission(p, instance)) {
                             sit.remove();
-                        }else{
-                            // ToDo : Send error 400
+                        } else {
+                            throw WegasErrorMessage.warn("this is not possible because there must be at least one super user");
                         }
                     }
                 }
@@ -434,8 +434,8 @@ public class UserFacade extends BaseFacade<User> {
                 if (splitedPermission.length >= 3 && p.equals(permission)) {
                     if (this.checkHasLastEditPermission(permission, splitedPermission[2])) {
                         sit.remove();
-                    }else{
-                        // ToDo : Send error 400
+                    } else {
+                        throw WegasErrorMessage.warn("this is not possible because there must be at least one super user");
                     }
                 }
             }
@@ -534,18 +534,17 @@ public class UserFacade extends BaseFacade<User> {
             }
         }
     }
-    
-    
-    private boolean checkHasLastEditPermission(String permission, String instance){
+
+    private boolean checkHasLastEditPermission(String permission, String instance) {
         boolean isNotLastEdit = false;
-        if(permission.contains("Edit")){
+        if (permission.contains("Edit")) {
             Query getEditPermissions = em.createQuery("SELECT p FROM Permission p WHERE p.value LIKE :instance");
             getEditPermissions.setParameter("instance", "%Edit%:" + instance);
-            List<Permission> listEditPermissions = getEditPermissions.getResultList();  
-            if(listEditPermissions.size() > 1){
+            List<Permission> listEditPermissions = getEditPermissions.getResultList();
+            if (listEditPermissions.size() > 1) {
                 isNotLastEdit = true;
             }
-        }else{
+        } else {
             isNotLastEdit = true;
         }
         return isNotLastEdit;
