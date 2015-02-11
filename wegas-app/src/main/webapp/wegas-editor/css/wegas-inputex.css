@@ -115,7 +115,7 @@ div.inputEx-fieldWrapper {
 }
 div.inputEx-description {
     white-space: normal;
-    clear: unset;
+    clear: none;
     float: left;
     margin-left: 4px;
 }
@@ -262,6 +262,7 @@ div.inputEx-description {
     display: block !important;
     float: initial !important;
     margin-bottom: 2px;
+    clear: both;
 }
 .inputEx-WysiwygScript .wegas-method-sendmessage .inputEx-ListField-addButton + span {
     display: inline-block;
