@@ -53,6 +53,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
             ManagedResponse serverResponse = new ManagedResponse();
             List entities;
+            boolean rollbacked = false;
 
             /*
              * if response entity is kind of exception.
@@ -76,6 +77,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 // Set response http status code to 400
                 response.setStatus(HttpStatus.SC_BAD_REQUEST);
+                rollbacked = true;
             } else {
                 /* 
                  * Request has been processed without throwing a fatal exception lead
@@ -98,7 +100,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 response.setStatus(HttpStatus.SC_OK);
             }
 
-            if (!rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
+            if (!rollbacked && !rmf.getRequestManager().getUpdatedInstances().isEmpty()) {
                 List<VariableInstance> updatedInstances = rmf.getUpdatedInstances();
                 /*
                  * Merge updatedInstance within ManagedResponse entities

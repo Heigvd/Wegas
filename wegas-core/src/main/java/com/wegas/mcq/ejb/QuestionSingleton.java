@@ -79,4 +79,12 @@ public class QuestionSingleton {
     public Reply createReply(Long choiceId, Player player, Long startTime) {
         return createReplyUntransactionnal(choiceId, player, startTime);
     }
+
+    
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)                // cancelReply
+    public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
+        final Reply reply = em.find(Reply.class, replyId);
+        em.remove(reply);
+        return reply;
+    }
 }
