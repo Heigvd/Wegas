@@ -54,7 +54,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
-            this.handlers.push(this.toolbar.get('header').append("<div class='wegas-filter-input'><input size='15' placeholder='Search...'/></div>")
+            this.handlers.push(this.toolbar.get('header').append("<div class='wegas-filter-input'><input placeholder='Search...'/></div>")
                 .one(".wegas-filter-input input").on("valueChange", function(e) {
                 var arrSearch;
                 if (e.prevVal === "") {
@@ -133,6 +133,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     }, this)
                 }
             });
+            this._validateBttn.get(CONTENTBOX).setStyle("marginLeft", "8px");
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
                         nodeClass: "wegas-editor-questionitem",
