@@ -137,7 +137,7 @@
     display: block;
     clear: both;
 }
-//.wegas-game-keys .inputEx-ListField-childContainer:after,
+/*.wegas-game-keys .inputEx-ListField-childContainer:after,*/
 .wegas-game-users .inputEx-ListField-childContainer:after{
     content: "";
     display: block;
@@ -150,7 +150,7 @@
     float: left;
     margin-right: 5px;
     width: 330px;
-}keys
+}
 /*.wegas-game-keys .inputEx-ListField-childContainer > div:before {
     content: "Key: ";
     display: inline-block;
@@ -193,12 +193,12 @@
     width : auto;
     margin-right: 48px;
 }
-.wegas-game-users .addkey{
-    //.wegas-game-keys .addkey{
+.wegas-game-users .addkey
+    /*.wegas-game-keys .addkey*/{
     margin-top:0.5em;
 }
-.wegas-game-users .addkey input {
-    //.wegas-game-keys .addkey input {
+.wegas-game-users .addkey input
+    /*.wegas-game-keys .addkey input */ {
     width: 1.9em;
 }
 .wegas-game-users .addkey button span,
