@@ -104,6 +104,9 @@ div.inputEx-fieldWrapper {
 .wegas-form div.inputEx-StringField-wrapper {
     display: inline-block;
     vertical-align: top;
+    width: 100%;
+}
+.wegas-editmode .wegas-form div.inputEx-StringField-wrapper {
     width: 80%;
     float: left;
 }
@@ -115,6 +118,8 @@ div.inputEx-fieldWrapper {
 }
 div.inputEx-description {
     white-space: normal;
+}
+.wegas-editmode div.inputEx-description {
     clear: none;
     float: left;
     margin-left: 4px;
