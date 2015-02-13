@@ -61,11 +61,15 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                     savedState = this.treeView.saveState();
                 }
                 searchVal = Y.Lang.trim(e.newVal);
-                arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
-                arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
-                    return Y.Wegas.Helper.RegExpQuote(item);
-                });
-                searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";
+                /* 
+                 * Search AND element splited by ", "
+                 */
+                /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
+                 arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
+                 return Y.Wegas.Helper.RegExpQuote(item);
+                 });
+                 searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
+                searchRE = Y.Wegas.Helper.RegExpQuote(searchVal);
                 if (searchVal.length > 1) {
                     this._timer.reset();
                 } else {
@@ -88,7 +92,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                                 },
                                 searchVal: "--" + results.join("--")
                             });
-                        }, this.treeView.filter), true);
+                        }, this.treeView.filter), false/*Exact match*/);
                     }, this)
                 }
             });
@@ -205,7 +209,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
             //oldElement.set("label", e.entity.getEditorLabel());
         },
-        updateInstance: function(e) {  
+        updateInstance: function(e) {
             this.updateDescriptor({entity: Y.Wegas.Facade.Variable.cache.find("id", e.entity.get("descriptorId"))});
         },
         deleteEntity: function(e) {
