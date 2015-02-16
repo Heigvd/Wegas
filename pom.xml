@@ -95,6 +95,7 @@
         <war.plugin.version>2.3</war.plugin.version>
         <compiler-plugin-version>2.5.1</compiler-plugin-version>
 
+        <profile.dependent.scope>provided</profile.dependent.scope>
 
         <slf4j.version>1.7.7</slf4j.version>
         <logback.version>1.0.9</logback.version>
@@ -120,6 +121,7 @@
                 <wegas.debug>false</wegas.debug>
                 <wegas.clientErrorLogging>true</wegas.clientErrorLogging>
                 <wegas.useYUICDN>true</wegas.useYUICDN>
+                <profile.dependent.scope>compile</profile.dependent.scope>
             </properties>
         </profile>
         <profile>
@@ -140,6 +142,7 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
+                <scope>${profile.dependent.scope}</scope>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -288,7 +291,10 @@
                 <groupId>net.sf.ehcache</groupId>
                 <artifactId>ehcache</artifactId>
                 <version>2.9.0</version>
+                <scope>${profile.dependent.scope}</scope>
             </dependency>
+
+            <!-- Pusher -->
             <dependency>
                 <groupId>com.pusher</groupId>
                 <artifactId>pusher-rest-java</artifactId>
