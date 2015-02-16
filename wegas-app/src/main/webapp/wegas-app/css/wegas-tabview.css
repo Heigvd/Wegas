@@ -161,7 +161,7 @@
 }
 
 /** Close all tabs */
-.yui3-skin-sam .wegas-editor-closeposition {
+.yui3-skin-sam .wegas-toolbar-header > .yui3-button.wegas-editor-closeposition {
     float: right;
     padding: 0px 5px 3px;
     margin-right: 0px;
