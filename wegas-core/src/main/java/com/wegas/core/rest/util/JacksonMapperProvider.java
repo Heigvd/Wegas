@@ -8,6 +8,7 @@
 package com.wegas.core.rest.util;
 
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.MapperFeature;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.ext.Provider;
@@ -58,6 +59,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
         AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
         mapper.setAnnotationIntrospector(jackson);
+        mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
         return mapper;
     }
 }
