@@ -889,7 +889,7 @@ var PMGSimulation = (function() {
             });
         } else {
             var period = Variable.findByName(gameModel, "periodPhase3").getValue(self),
-                month = I18n.t("date.month.month" + ((period % 12) + 1)),
+                month = I18n.t("date.month.month" + (period % 12)),
                 day = step * 3 + 1;
             return I18n.t("date.formatter.date", {day: day, month: month});
         }
