@@ -171,44 +171,148 @@
                         }
                     }
                 ]
-            }, {
+            },
+            {
                 "type": "GaugeDisplay",
-                "label": "Management",
-                "maxValue": 200,
-                "variable": {
-                    "name": "managementApproval"
-                },
                 "plugins": [
                     {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
+                                "zIndex": "",
                                 "top": "4px",
-                                "left": "550px"
+                                "left": "550px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
                             }
                         }
                     }
-                ]
-            }, {
-                "type": "GaugeDisplay",
-                "label": "User",
-                "maxValue": 200,
+                ],
                 "variable": {
-                    "name": "userApproval"
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"managementApproval\");\n"
                 },
+                "label": "&nbsp;",
+                "minValue": "",
+                "maxValue": 200,
+                "cfg": {}
+            },
+            {
+                "type": "Template",
+                "cssClass": "wegas-gauge",
                 "plugins": [
                     {
                         "fn": "CSSPosition",
                         "cfg": {
                             "styles": {
                                 "position": "absolute",
-                                "top": "4px",
-                                "left": "616px"
+                                "zIndex": "10",
+                                "top": "49px",
+                                "left": "560px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "min-width": "80px",
+                                "height": ""
                             }
                         }
                     }
-                ]
+                ],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"managementApproval\");\n"
+                },
+                "data": {
+                    "label": "Indicator1"
+                },
+                "custom": "<center><%= this.variable.get(\"label\") %></center>"
+            },
+            {
+                "type": "GaugeDisplay",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "",
+                                "top": "4px",
+                                "left": "635px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "width": "",
+                                "height": ""
+                            }
+                        }
+                    }
+                ],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"userApproval\");\n"
+                },
+                "label": "&nbsp;",
+                "minValue": "",
+                "maxValue": 200,
+                "cfg": {}
+            },
+            {
+                "type": "Template",
+                "cssClass": "wegas-gauge",
+                "plugins": [
+                    {
+                        "fn": "CSSPosition",
+                        "cfg": {
+                            "styles": {
+                                "position": "absolute",
+                                "zIndex": "10",
+                                "top": "49px",
+                                "left": "645px",
+                                "bottom": "",
+                                "right": ""
+                            }
+                        }
+                    },
+                    {
+                        "fn": "CSSSize",
+                        "cfg": {
+                            "styles": {
+                                "min-width": "80px",
+                                "height": ""
+                            }
+                        }
+                    }
+                ],
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"userApproval\");\n"
+                },
+                "data": {
+                    "label": "Indicator2"
+                },
+                "custom": "<center><%= this.variable.get(\"label\") %></center>"
             }, {
                 "type": "GaugeDisplay",
                 "label": "Quality",
@@ -1097,7 +1201,7 @@
                         "name": "Wages",
                         "className": "right",
                         "key": "instance.properties.wages"
-                    },{
+                    }, {
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "formatter": "rounded",
