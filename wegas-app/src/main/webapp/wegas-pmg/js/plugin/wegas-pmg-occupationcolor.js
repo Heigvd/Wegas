@@ -99,12 +99,14 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
             var i, ii, cell, host = this.get("host"),
                 dt = host.datatable,
                 currentPeriod = host.schedule.currentPeriod(),
-                initialMaximum = host.schedule.initialMaximum();
+                initialMaximum = host.schedule.initialMaximum(),
+                period;
 
-            // Issue #795: disable engagment delay when currentPeriod > initial maximum
-            if (currentPeriod <= initialMaximum) {
-                for (i = 0; i < dt.data.size(); i += 1) {
-                    for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii += 1) {
+            for (i = 0; i < dt.data.size(); i += 1) {
+                for (ii = 0; ii < dt.data.item(i).get("properties.engagementDelay"); ii += 1) {
+                    period = currentPeriod + ii;
+                    // Issue #795: disable engagment delay when currentPeriod > initial maximum
+                    if (period <= initialMaximum) {
                         cell = host.schedule.getCell(i, currentPeriod + ii);
                         if (cell) {
                             if (!cell.getContent()) {
@@ -112,6 +114,8 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
                             }
                             cell.getDOMNode().className = "yui3-datatable-col-2 schedulecolumn delay yui3-datatable-cell";
                         }
+                    } else {
+                        break;
                     }
                 }
             }
