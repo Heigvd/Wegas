@@ -331,6 +331,11 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     top: 11px;
 }
 
+.yui3-skin-sam .wegas-layout-hd > div,
+.yui3-skin-sam .wegas-layout-hd > button {
+    float: left;
+}
+
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
     float: right !important;
     margin-right: 37px;
@@ -514,7 +519,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 }
 
 /** Editor chat widget */
-.yui3-skin-sam .yui3-wegas-editorchat {
+.yui3-skin-sam .wegas-layout-hd > div.yui3-wegas-editorchat {
     margin-top: 12px;
     float: right;
 }
