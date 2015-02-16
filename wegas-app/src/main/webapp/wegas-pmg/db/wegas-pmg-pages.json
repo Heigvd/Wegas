@@ -132,7 +132,6 @@
                             "condition": {
                                 "@class": "Script",
                                 "content": "var pCompleteness = Variable.find(gameModel, 'projectCompleteness').getValue(self), cPhase = Variable.find(gameModel, 'currentPhase').getValue(self), cPeriod = Variable.find(gameModel, 'currentPeriod').item(cPhase-1).getValue(self), lPhase = Variable.find(gameModel, 'phaseLimit').getValue(self), lPeriod = Variable.find(gameModel, 'periodLimit').getValue(self), executionPeriods = Variable.find(gameModel, 'executionPeriods').getValue(self); return ((cPhase >= lPhase) && (cPeriod >= lPeriod) && !((cPhase === 3) && (lPeriod > executionPeriods) && (pCompleteness < 100)))",
-                                
                                 "language": "JavaScript"
                             }
                         }
@@ -1088,6 +1087,17 @@
                         "key": "instance.properties.completeness",
                         "className": "right"
                     }, {
+                        "name": "Quality",
+                        "label": "Quality",
+                        "className": "right",
+                        "key": "instance.properties.quality",
+                        "formatter": "quality"
+                    }, {
+                        "label": "Wages",
+                        "name": "Wages",
+                        "className": "right",
+                        "key": "instance.properties.wages"
+                    },{
                         "label": "Fixed costs",
                         "name": "Fixedcosts",
                         "formatter": "rounded",
@@ -1098,17 +1108,6 @@
                         "name": "bac",
                         "className": "right",
                         "key": "instance.properties.bac"
-                    }, {
-                        "label": "Wages",
-                        "name": "Wages",
-                        "className": "right",
-                        "key": "instance.properties.wages"
-                    }, {
-                        "name": "Quality",
-                        "label": "Quality",
-                        "className": "right",
-                        "key": "instance.properties.quality",
-                        "formatter": "quality"
                     }, {
                         "key": "requirements",
                         "label": "Resources",
