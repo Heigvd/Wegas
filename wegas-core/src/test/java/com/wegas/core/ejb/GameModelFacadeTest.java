@@ -43,7 +43,9 @@ public class GameModelFacadeTest {
 
     @AfterClass
     public static void tearDown() {
-        ejbContainer.close();
+        if (ejbContainer != null) {
+            ejbContainer.close();
+        }
     }
 
     @Test
