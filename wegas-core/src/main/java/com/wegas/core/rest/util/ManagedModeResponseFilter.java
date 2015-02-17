@@ -23,8 +23,9 @@ import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
 import org.apache.http.HttpStatus;
 import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.UserFacade;
+import javax.ejb.EJB;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +36,9 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 public class ManagedModeResponseFilter implements ContainerResponseFilter {
+
+    @EJB
+    UserFacade userFacade;
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
 
@@ -48,6 +52,10 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
+
+        logger.info("Request Processed for user("
+                + userFacade.getCurrentUser().getId()
+                + "): " + request.getMethod() + ": " + request.getUriInfo().getPath() + " ==> " + response.getStatusInfo());
 
         if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))) {
 
@@ -105,8 +113,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 /*
                  * Merge updatedInstance within ManagedResponse entities
                  */
-                for (VariableInstance vi : updatedInstances){
-                    if (!entities.contains(vi)){
+                for (VariableInstance vi : updatedInstances) {
+                    if (!entities.contains(vi)) {
                         entities.add(vi);
                     }
                 }
