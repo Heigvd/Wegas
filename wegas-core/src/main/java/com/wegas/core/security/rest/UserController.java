@@ -22,6 +22,7 @@ import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
+import com.wegas.core.security.util.AuthenticationInformation;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,6 +47,8 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.UnauthorizedException;
 import org.apache.shiro.subject.SimplePrincipalCollection;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -56,6 +59,8 @@ import org.apache.shiro.subject.Subject;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserController {
+
+    private final static Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /**
      *
@@ -316,9 +321,7 @@ public class UserController {
      *
      * Allows to login using a post request
      *
-     * @param email
-     * @param password
-     * @param remember
+     * @param authInfo
      * @param request
      * @param response
      * @throws javax.servlet.ServletException
@@ -326,24 +329,22 @@ public class UserController {
      */
     @POST
     @Path("Authenticate")
-    public void login(@QueryParam("email") String email,
-            @QueryParam("password") String password,
-            @QueryParam("remember")
-            @DefaultValue("false") boolean remember,
-            @Context HttpServletRequest request, @Context HttpServletResponse response) throws ServletException, IOException {
+    public void login(AuthenticationInformation authInfo, 
+            @Context HttpServletRequest request, 
+            @Context HttpServletResponse response) throws ServletException, IOException {
 
         Subject subject = SecurityUtils.getSubject();
 
         //if (!currentUser.isAuthenticated()) {
-        UsernamePasswordToken token = new UsernamePasswordToken(email, password);
-        token.setRememberMe(remember);
+        UsernamePasswordToken token = new UsernamePasswordToken(authInfo.getLogin(), authInfo.getPassword());
+        token.setRememberMe(authInfo.isRemember());
         try {
             subject.login(token);                                               // try to log in.
         } catch (AuthenticationException aex) {
-            if (checkGameAccountKeylogin(email, password)) {
+            if (checkGameAccountKeylogin(authInfo.getLogin(), authInfo.getPassword())) {
                 try {
                     //Login failed, maybe create a GameAccount or fail
-                    gameFacade.findGameAccountKey(email);
+                    gameFacade.findGameAccountKey(authInfo.getLogin());
                     subject.login(token);
                 } catch (WegasNoResultException ex) {
                     throw WegasErrorMessage.error("Email/password combination not found");
@@ -651,4 +652,5 @@ public class UserController {
         }
         return false;
     }
+
 }

@@ -338,14 +338,20 @@ YUI.add('wegas-loginwidget', function(Y) {
          *  informations.
          */
         login: function(email, password, remember) {
-            this.loginRequest("/Authenticate/?email=" + email + "&password=" + password + "&remember=" + remember);
+            this.loginRequest("/Authenticate/", email, password, remember);
         },
-        loginRequest: function(url) {
+        loginRequest: function(url, login, password, remember) {
             Wegas.Facade.User.sendRequest({
                 request: url,
                 cfg: {
                     method: "POST",
-                    managed: "false"
+                    managed: "false",
+                    data: {
+                        "@class": "AuthenticationInformation",
+                        login: login,
+                        password : password,
+                        remember: remember
+                    }
                 },
                 on: {
                     success: Y.bind(function(e) {
