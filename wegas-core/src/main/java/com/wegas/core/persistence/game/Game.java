@@ -137,14 +137,14 @@ public class Game extends NamedEntity {
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("key")
+    @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
     private List<GameEnrolmentKey> keys = new ArrayList<>();
     /**
      *
      */
     @OneToMany(mappedBy = "game", cascade = CascadeType.ALL, orphanRemoval = true)
-    //@OrderBy("key")
+    @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
     private List<GameAccountKey> accountkeys = new ArrayList<>();
 
