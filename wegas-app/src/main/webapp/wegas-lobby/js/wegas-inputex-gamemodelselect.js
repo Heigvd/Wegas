@@ -101,7 +101,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
 
             if (value.used) {
                 Y.one(subfield.divEl).all("input").setStyle("textDecoration", "line-through");// strike through used tokens
-                Y.one(this.divEl).all(".inputEx-ListField-delButton").remove(true); // Remove delete button
+                //Y.one(subfield.divEl).all("+ .inputEx-ListField-delButton").remove(true); // Remove delete button
             }
             return subfield;
         },
@@ -125,7 +125,7 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             var i, total = parseInt(Y.one(this.fieldContainer).one('.addkey input ').get("value")),
                 game = this.parentField.parentWidget.get("entity"),
                 prefix = game.get("token"),
-                usedNumber, max;
+                usedNumber, max, num;
 
             usedNumber = this.subFields.map(function(e) {
                 return +e.getFieldByName("key").getValue().replace(/.*-.{2}-/, "");
@@ -138,8 +138,9 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
             }
 
             for (i = 1; i <= total; i += 1) {                                    // Add key fields
+                num = max + i;
                 this.addElement({
-                    key: prefix + "-" + (max + i)
+                    key: prefix + "-" + (num < 10 ? "0":"") + (num)
                 });
             }
             this.fireUpdatedEvt();                                              // Fire updated !
