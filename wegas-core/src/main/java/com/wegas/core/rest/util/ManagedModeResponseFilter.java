@@ -11,6 +11,7 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.event.client.EntityUpdatedEvent;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import org.apache.http.HttpStatus;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import javax.ejb.EJB;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
@@ -52,9 +54,14 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
+        User currentUser = null;
+        try {
+            userFacade.getCurrentUser();
+        } catch (WegasNotFoundException e) {
+        }
 
         logger.info("Request Processed for user("
-                + userFacade.getCurrentUser().getId()
+                + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous")
                 + "): " + request.getMethod() + ": " + request.getUriInfo().getPath() + " ==> " + response.getStatusInfo());
 
         if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))) {

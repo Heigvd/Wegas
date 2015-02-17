@@ -100,8 +100,18 @@ public class IntegrationTest {
     }
 
     public void login() throws IOException {
-        HttpUriRequest loginRequest = new HttpPost(baseURL + "/rest/User/Authenticate/?email=root@root.com&password=1234&remember=true");
-        HttpResponse loginResponse = client.execute(loginRequest);
+        HttpPost post = new HttpPost(baseURL + "/rest/User/Authenticate");
+        String content = "{\"@class\" : \"AuthenticationInformation\","+
+                "\"login\": \"root@root.com\"," +
+                "\"password\": \"1234\"," +
+                "\"remember\": \"true\"" +
+                "}";
+
+        StringEntity strEntity = new StringEntity(content);
+        strEntity.setContentType("application/json");
+        post.setEntity(strEntity);
+
+        HttpResponse loginResponse = client.execute(post);
 
         Assert.assertEquals(HttpStatus.SC_NO_CONTENT, loginResponse.getStatusLine().getStatusCode());
 
@@ -149,7 +159,7 @@ public class IntegrationTest {
     private String postJSON(String url, String jsonContent) throws IOException {
         HttpPost post = new HttpPost(baseURL + url);
         setHeaders(post);
-        
+
         StringEntity strEntity = new StringEntity(jsonContent);
         strEntity.setContentType("application/json");
         post.setEntity(strEntity);
@@ -180,8 +190,8 @@ public class IntegrationTest {
         JSONObject artosJson = new JSONObject(httpGetAsJSON("/rest/GameModel/" + this.artosId + "/VariableDescriptor"));
         artosJson.getJSONArray("entities");
     }
+
     @Test
-    
     public void manageModeTest() throws IOException, JSONException {
         JSONObject json = new JSONObject(httpGetAsJSON("/rest/GameModel"));
         json.get("@class");
