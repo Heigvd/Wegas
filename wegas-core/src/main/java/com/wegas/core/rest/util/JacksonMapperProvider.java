@@ -59,7 +59,7 @@ public class JacksonMapperProvider implements ContextResolver<ObjectMapper> {
 
         AnnotationIntrospector jackson = new JacksonAnnotationIntrospector();
         mapper.setAnnotationIntrospector(jackson);
-        mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
+        //mapper.disable(MapperFeature.USE_GETTERS_AS_SETTERS);
         return mapper;
     }
 }
