@@ -76,6 +76,20 @@ var PMGSimulation = (function() {
         }
     }
 
+    function disableCurrentPhaseQuestions() {
+        var i, qPhase, n, item;
+
+        qPhase = Variable.find(gameModel, "questions").item(PMGHelper.getCurrentPhaseNumber() - 1);
+        n = qPhase.getItems().size();
+
+        for (i = 0; i < n; i += 1) {
+            item = qPhase.item(i);
+            if (item.getClass().getSimpleName() === "QuestionDescriptor" && item.isActive(self)) {
+                item.desactivate(self);
+            }
+        }
+    }
+
     function closePeriod() {
         var resources = getResourceDescriptors();
 
@@ -910,6 +924,7 @@ var PMGSimulation = (function() {
         assertAllPeriodQuestionAnswered();                                                 // First Check if all questions are answered
         assertAdvancementLimit();
 
+        disableCurrentPhaseQuestions();
         Variable.find(gameModel, "currentTime").add(self, 1);
 
         if (currentPhase.getValue(self) === 3) {                                    // If current phase is the 'realisation' phase
@@ -963,10 +978,10 @@ var PMGSimulation = (function() {
             currentPeriod = PMGHelper.getCurrentPeriodNumber();
 
             if (!(currentPhase < phaseLimit) &&
-                !(currentPeriod < periodLimit) && 
+                !(currentPeriod < periodLimit) &&
                 !(currentPhase === 3 && !PMGHelper.checkEndOfProject()
-                && executionPeriods < periodLimit)){
-                    ErrorManager.throwInfo("Ask your course leader for permissions to continue.");
+                    && executionPeriods < periodLimit)) {
+                ErrorManager.throwInfo("Ask your course leader for permissions to continue.");
             }
         }
     }
