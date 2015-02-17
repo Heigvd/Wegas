@@ -93,7 +93,7 @@ public class StateMachineFacade {
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
         logger.debug("Received Reset event");
-        System.out.println("ResetEvent");
+        //System.out.println("ResetEvent");
         for (Player player : resetEvent.getConcernedPlayers()) {
             this.runForPlayer(player);
         }
