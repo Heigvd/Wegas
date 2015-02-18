@@ -63,6 +63,8 @@
     max-height: 200px;
     overflow-y: auto;
 }
+.wegas-toolbar-header > .inputEx-fieldWrapper,
+.wegas-toolbar > .inputEx-fieldWrapper,
 .wegas-toolbar-header > .yui3-button,
 .wegas-toolbar > .yui3-button {
     margin-right: 0.2em;
