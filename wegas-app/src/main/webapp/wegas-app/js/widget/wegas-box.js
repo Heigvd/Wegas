@@ -22,10 +22,19 @@ YUI.add("wegas-box", function(Y) {
      */
     var Box = Y.Base.create("wegas-box", Y.Widget, [Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable], {
         /** @lends Y.Wegas.Box# */
-        CONTENT_TEMPLATE: null
+        CONTENT_TEMPLATE: null,
+        getEditorLabel: function() {
+            return Y.Wegas.Helper.stripHtml(this.get("name"));
+        }
     }, {
         /** @lends Y.Wegas.Box */
-        EDITORNAME: "Box"
+        EDITORNAME: "Box",
+        ATTRS: {
+            name: {
+                value: "folder",
+                type: "string"
+            }
+        }
     });
     Y.Wegas.Box = Box;
 
