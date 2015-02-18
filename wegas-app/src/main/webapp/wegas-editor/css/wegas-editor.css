@@ -11,6 +11,9 @@
 
 
 /* Header toggle button */
+.yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
+    background-color : red;
+}
 .yui3-skin-sam .host-switchmode {
     /* margin-right: 10px; */
     padding: 3px 10px 3px 10px;
