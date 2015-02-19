@@ -7,6 +7,10 @@
  */
 package com.wegas.core;
 
+import com.wegas.core.persistence.NamedEntity;
+import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.VariableDescriptor;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,6 +37,9 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class Helper {
+
+    private static final String DEFAULT_VARIABLE_NAME = "variable";
+    private static final String DEFAULT_VARIABLE_LABEL = "Unnammed";
 
     private static final Logger logger = LoggerFactory.getLogger(Helper.class);
 
@@ -101,13 +108,117 @@ public class Helper {
         return lookupBy(type, type);
     }
 
+    public static boolean isNullOrEmpty(final String t) {
+        return t == null || t.isEmpty();
+    }
+
+    private static String findUniqueName(final String name, List<String> usedNames, String pattern, String preSuff, String postSuff) {
+
+        Pattern p = Pattern.compile(pattern);
+        Matcher matcher = p.matcher(name);
+
+        int suff;
+        final String baseName;
+        if (matcher.matches()) {
+            baseName = matcher.group(1);
+            suff = Integer.parseInt(matcher.group(2)) + 1;
+        } else {
+            baseName = name;
+            suff = 2;
+        }
+
+        String newName = name;
+        while (usedNames.contains(newName)) {
+            newName = baseName + preSuff + suff + postSuff;
+            suff++;
+        }
+
+        return newName;
+    }
+
+    public static String findUniqueName(final String name, List<String> usedNames) {
+        return findUniqueName(name, usedNames, "(.*)_(\\d+)", "_", "");
+    }
+
+    public static String findUniqueLabel(final String label, List<String> usedLabels) {
+        return findUniqueName(label, usedLabels, "(.*) \\((\\d+)\\)", " (", ")");
+    }
+
+    /**
+     *
+     * @param entity    entity to rename
+     * @param usedNames
+     */
+    public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames) {
+        if (isNullOrEmpty(entity.getName())) {
+            entity.setName(DEFAULT_VARIABLE_NAME);
+        } else {
+            entity.setName(encodeVariableName(entity.getName()));
+        }
+        String newName = findUniqueName(entity.getName(), usedNames);
+        entity.setName(newName);
+        usedNames.add(newName);
+    }
+
+    /**
+     * Set Unique Names for the given VariableDescriptor and its children
+     *
+     * @param vd
+     * @param usedLabels
+     */
+    public static void setUniqueLabel(final VariableDescriptor vd, List<String> usedLabels) {
+        if (isNullOrEmpty(vd.getLabel())) {
+            vd.setLabel(DEFAULT_VARIABLE_LABEL);
+        }
+        String newLabel = findUniqueLabel(vd.getLabel(), usedLabels);
+        vd.setLabel(newLabel);
+        usedLabels.add(newLabel);
+    }
+
+    /**
+     * Set Unique Names for the given VariableDescriptor and its children
+     *
+     * @param vd
+     * @param usedNames
+     */
+    public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames) {
+        setUniqueNameForEntity(vd, usedNames);
+        if (vd instanceof DescriptorListI) {
+            for (Object child : ((DescriptorListI) vd).getItems()) {            // Recursively find unique names for children
+                setUniqueName((VariableDescriptor) child, usedNames);
+            }
+        }
+    }
+
+    public static String encodeVariableName(String s) {
+        return replaceSpecialCharacters(camelCasify(s));
+    }
+
+    public static String replaceSpecialCharacters(String s) {
+        s = s.replaceAll(" ", "_");
+
+        s = s.replaceAll("[èéêë]", "e");
+        s = s.replaceAll("[ûù]", "u");
+        s = s.replaceAll("[ïî]", "i");
+        s = s.replaceAll("[àâ]", "a");
+        s = s.replaceAll("Ô", "o");
+
+        s = s.replaceAll("[ÈÉÊË]", "E");
+        s = s.replaceAll("[ÛÙ]", "U");
+        s = s.replaceAll("[ÏÎ]", "I");
+        s = s.replaceAll("[ÀÂ]", "A");
+        s = s.replaceAll("Ô", "O");
+
+        return s.replaceAll("[^\\w]|(^\\d)", "_$1");//Search for special chars or initial digit
+    }
+
     /**
      * Encode a String to look like a JavaScript variable.
      *
      * @param name String to encode
      * @return a String wich will be undestandable by JavaScript as a var
      */
-    public static String encodeVariableName(String name) {
+    public static String camelCasify(String name) {
         if (name.isEmpty()) {
             throw new NullPointerException("Name is empty");
         }
@@ -126,7 +237,7 @@ public class Helper {
             sb.append(tmp.substring(1));
             //sb.append(tmp.substring(1).toLowerCase());
         }
-        return sb.toString().replaceAll("[^\\w]|(^\\d)", "_$1");                //Replace special chars and initial digit with "_"
+        return sb.toString();
     }
 
     /**
@@ -179,7 +290,7 @@ public class Helper {
      * Generate an alphanumeric token based on system time.
      *
      * @param maxLength Token maximum length. The shorter, the sooner it will
-     * collide.
+     *                  collide.
      * @return String token
      */
     public static String genToken(Integer maxLength) {
@@ -411,7 +522,7 @@ public class Helper {
     /**
      * Insensitive contains
      *
-     * @param text text to search in
+     * @param text     text to search in
      * @param criteria criteria to search for
      * @return match
      */

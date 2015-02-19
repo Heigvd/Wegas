@@ -32,8 +32,6 @@ import javax.persistence.criteria.Root;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +44,6 @@ import org.slf4j.LoggerFactory;
 public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorFacade.class);
-    private static final String DEFAULT_VARIABLE_NAME = "variable";
-    private static final String DEFAULT_VARIABLE_LABEL = "Unnammed";
     /**
      *
      */
@@ -102,25 +98,23 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
      * @return
      */
     public DescriptorListI createChild(final GameModel gameModel, final DescriptorListI list, final VariableDescriptor entity) {
-        List<String> findDistinctNames = this.findDistinctNames(gameModel);
+        List<String> usedNames = this.findDistinctNames(gameModel);
+        List<String> usedLabels = this.findDistinctLabels(gameModel);
 
         list.addItem(entity);
 
-        if (isNullOrEmpty(entity.getLabel()) && !isNullOrEmpty(entity.getName())) { // 1st case: only name is provided
+        boolean hasName = !Helper.isNullOrEmpty(entity.getName());
+        boolean hasLabel = !Helper.isNullOrEmpty(entity.getLabel());
+
+        if (hasName && !hasLabel) {
             entity.setLabel(entity.getName());
-        } else if (!isNullOrEmpty(entity.getLabel()) && isNullOrEmpty(entity.getName())) { // 2nd case: fill name with label if it is empty
+        } else if (hasLabel && !hasName) {
             entity.setName(entity.getLabel());
         }
-        if (isNullOrEmpty(entity.getLabel())) {                                 // Still no label, place a default
-            entity.setLabel(DEFAULT_VARIABLE_LABEL);
-        }
-        if (isNullOrEmpty(entity.getName())) {                                  // Still no name, place a default
-            entity.setName(DEFAULT_VARIABLE_NAME);
-        }
-        entity.setName(Helper.encodeVariableName(entity.getName()));            // Camel casify the name
 
-        this.findUniqueName(entity, findDistinctNames);                         // Check name and label availability
-        this.findUniqueLabel(entity);
+        
+        Helper.setUniqueName(entity, usedNames);
+        Helper.setUniqueLabel(entity, usedLabels);
 
         this.revive(entity);
         return list;
@@ -208,95 +202,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
                 return vd.getGameModel();
             }
         }
-    }
-
-    /**
-     *
-     * @param vd
-     * @param usedNames
-     */
-    public void findUniqueName(final VariableDescriptor vd, List<String> usedNames) {
-        if (isNullOrEmpty(vd.getName())) {
-            vd.setName(DEFAULT_VARIABLE_NAME);
-        }
-
-        vd.setName(this.encodeVariableName(vd.getName()));
-
-        Pattern pattern = Pattern.compile("(.*)_(\\d*)");
-        Matcher matcher = pattern.matcher(vd.getName());
-        int suff;
-        final String baseName;
-        if (matcher.matches()) {
-            baseName = matcher.group(1);
-            suff = Integer.parseInt(matcher.group(2));
-        } else {
-            baseName = vd.getName();
-            suff = 1;
-        }
-        String newName = vd.getName();
-        while (usedNames.contains(newName)) {
-            newName = baseName + "_" + suff;
-            suff++;
-        }
-
-        vd.setName(newName);
-        usedNames.add(newName);
-        if (vd instanceof DescriptorListI) {
-            for (Object child : ((DescriptorListI) vd).getItems()) {            // Recursively find unique names for children
-                this.findUniqueName((VariableDescriptor) child, usedNames);
-            }
-        }
-    }
-
-    public String encodeVariableName(String s) {
-        s = s.replaceAll(" ", "_");
-
-        s = s.replaceAll("[èéêë]", "e");
-        s = s.replaceAll("[ûù]", "u");
-        s = s.replaceAll("[ïî]", "i");
-        s = s.replaceAll("[àâ]", "a");
-        s = s.replaceAll("Ô", "o");
-
-        s = s.replaceAll("[ÈÉÊË]", "E");
-        s = s.replaceAll("[ÛÙ]", "U");
-        s = s.replaceAll("[ÏÎ]", "I");
-        s = s.replaceAll("[ÀÂ]", "A");
-        s = s.replaceAll("Ô", "O");
-
-        return s.replaceAll("[^\\w]|(^\\d)", "_$1");                                //Search for special chars or initial digit
-    }
-
-    /**
-     *
-     * @param vd
-     */
-    public void findUniqueLabel(final VariableDescriptor vd) {
-        if (isNullOrEmpty(vd.getLabel())) {
-            vd.setLabel(DEFAULT_VARIABLE_LABEL);
-        }
-
-        int suff = 1;
-        final String baseLabel = Helper.stripLabelSuffix(vd.getLabel());
-        String newLabel = vd.getLabel();
-        boolean found = false;
-        while (!found) {
-            try {
-                VariableDescriptor findByLabel = this.findByLabel(vd.getGameModel(), newLabel);
-                if (findByLabel != vd) {
-                    newLabel = baseLabel + "(" + suff + ")";                        // Use with the same suffix for the editor label as the one used for the label
-                    suff++;
-                } else {
-                    found = true;
-                }
-            } catch (WegasNoResultException e) {
-                found = true;
-            } catch (NonUniqueResultException e) {
-                // Should never happen
-                newLabel = baseLabel + "(" + suff + ")";                        // Use with the same suffix for the editor label as the one used for the label
-                suff++;
-            }
-        }
-        vd.setLabel(newLabel);
     }
 
     /**
@@ -492,10 +397,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
     @Override
     protected EntityManager getEntityManager() {
         return em;
-    }
-
-    private boolean isNullOrEmpty(final String t) {
-        return t == null || t.isEmpty();
     }
 
     /**
