@@ -89,7 +89,7 @@ public class GameController {
         final Collection<Game> retGames = new ArrayList<>();
         final Collection<Game> games = (!gameModelId.isEmpty())
                 ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
-                : gameFacade.findAll("game.createdTime ASC");
+                : gameFacade.findAll(Game.Status.LIVE);
 
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
@@ -171,8 +171,8 @@ public class GameController {
 
         Game entity = gameFacade.find(entityId);
         SecurityHelper.checkPermission(entity, "Edit");
-
-        gameFacade.remove(entity);
+        gameFacade.bin(entity); //Do not really delete. Bin it instead
+//        gameFacade.remove(entity);
         return entity;
     }
 
