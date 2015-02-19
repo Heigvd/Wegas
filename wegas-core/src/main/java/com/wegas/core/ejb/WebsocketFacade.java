@@ -31,6 +31,7 @@ import javax.enterprise.event.Observes;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.MissingResourceException;
 
 /**
  * @author Yannick Lagger <lagger.yannick@gmail.com>
@@ -52,12 +53,23 @@ public class WebsocketFacade {
     @EJB
     private UserFacade userFacade;
 
+    private String getProperty(String property) {
+        try {
+            return Helper.getWegasProperty(property);
+        } catch (MissingResourceException ex) {
+            logger.warn("Pusher init failed: missing " + property + " property");
+            return null;
+        }
+    }
+
     public WebsocketFacade() {
         Pusher tmp;
         try {
-            tmp = new Pusher(Helper.getWegasProperty("pusher.appId"), Helper.getWegasProperty("pusher.key"), Helper.getWegasProperty("pusher.secret"));
+            tmp = new Pusher(getProperty("pusher.appId"), 
+                    getProperty("pusher.key"), getProperty("pusher.secret"));
         } catch (Exception e) {
-            logger.error("Pusher init failed", e);
+            logger.error("Pusher init failed, please check your configuration");
+            logger.debug("Pusher error details", e);
             tmp = null;
         }
         pusher = tmp;
