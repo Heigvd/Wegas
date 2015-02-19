@@ -61,10 +61,10 @@ public class GameController extends AbstractGameController {
         final ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
 
         if (this.playerId != null) {                                            // If a playerId is provided, we use it
-            currentPlayer = playerFacade.find(this.getPlayerId());
+            currentPlayer = playerFacade.findLive(this.getPlayerId());
         }
 
-        if (this.gameId != null) {                                              // If a playerId is provided, we use it
+        if (this.gameId != null) {                                              // If a gameId is provided, we use it
             try {
                 currentPlayer = playerFacade.findByGameIdAndUserId(this.gameId,
                         userFacade.getCurrentUser().getId());                   // Try to check if current shiro user is registered to the target game

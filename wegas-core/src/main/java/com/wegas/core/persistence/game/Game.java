@@ -17,28 +17,29 @@ import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.User;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.*;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Entity
 //@Table(uniqueConstraints = {
 //    @UniqueConstraint(columnNames = {"name"}), 
 //    @UniqueConstraint(columnNames = {"token"})
 //})
+@NamedQueries({
+        @NamedQuery(name="game.findByStatus", query = "SELECT DISTINCT g FROM Game g WHERE TYPE(g) != DebugGame AND g.status = :status ORDER BY g.createdTime ASC"),
+        @NamedQuery(name="game.findByToken", query = "SELECT DISTINCT g FROM Game g WHERE  g.status = :status AND g.token = :token")
+})
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Game extends NamedEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -46,12 +47,14 @@ public class Game extends NamedEntity {
     @Column(name = "game_id")
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @Basic(optional = false)
     //@Pattern(regexp = "^\\w+$")
     private String name;
+
     /**
      *
      */
@@ -59,16 +62,19 @@ public class Game extends NamedEntity {
     @Basic(optional = false)
     // @Pattern(regexp = "^\\w+$")
     private String token;
+
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
+
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedTime = new Date();
+
     /**
      *
      */
@@ -76,6 +82,7 @@ public class Game extends NamedEntity {
     //@XmlTransient
     @JsonIgnore
     private User createdBy;
+
     /**
      *
      */
@@ -83,6 +90,7 @@ public class Game extends NamedEntity {
     //@XmlTransient
     @JsonIgnore
     private Set<GameAccount> gameAccounts;
+
     /**
      *
      */
@@ -90,12 +98,14 @@ public class Game extends NamedEntity {
     @JsonManagedReference("game-team")
     @OrderBy("createdTime")
     private List<Team> teams = new ArrayList<>();
+
     /**
      *
      */
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "gamemodelid", nullable = false)
     private GameModel gameModel;
+
     /**
      *
      */
@@ -105,34 +115,15 @@ public class Game extends NamedEntity {
     /**
      *
      */
-    public enum GameAccess {
+    @Enumerated
+    private GameAccess access = GameAccess.SINGLEUSAGEENROLMENTKEY;
 
-        /**
-         *
-         */
-        OPEN,
-        /**
-         *
-         */
-        URL,
-        /**
-         *
-         */
-        ENROLMENTKEY,
-        /**
-         *
-         */
-        SINGLEUSAGEENROLMENTKEY,
-        /**
-         *
-         */
-        CLOSE
-    }
     /**
      *
      */
-    @Enumerated
-    private GameAccess access = GameAccess.SINGLEUSAGEENROLMENTKEY;
+    @Enumerated(value=EnumType.STRING)
+    private Status status = Status.LIVE;
+
     /**
      *
      */
@@ -140,6 +131,7 @@ public class Game extends NamedEntity {
     @OrderBy("key")
     @JsonView(Views.EditorExtendedI.class)
     private List<GameEnrolmentKey> keys = new ArrayList<>();
+
     /**
      *
      */
@@ -155,7 +147,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @param name
      */
     public Game(String name) {
@@ -163,7 +154,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @param name
      * @param token
      */
@@ -225,7 +215,24 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
+     * @param teams the teams to set
+     */
+    @JsonManagedReference("game-team")
+    public void setTeams(List<Team> teams) {
+        this.teams = teams;
+    }
+
+    @JsonIgnore
+    public Status getStatus() {
+        return status;
+    }
+
+    @JsonIgnore
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    /**
      * @return
      */
     @JsonIgnore
@@ -238,15 +245,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     * @param teams the teams to set
-     */
-    @JsonManagedReference("game-team")
-    public void setTeams(List<Team> teams) {
-        this.teams = teams;
-    }
-
-    /**
-     *
      * @param t
      */
     //@XmlTransient
@@ -272,7 +270,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -281,7 +278,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -290,7 +286,14 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
+     * @param name
+     */
+    @Override
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      * @return
      */
     @JsonIgnore
@@ -300,15 +303,6 @@ public class Game extends NamedEntity {
         } else {
             return this.name;
         }
-    }
-
-    /**
-     *
-     * @param name
-     */
-    @Override
-    public void setName(String name) {
-        this.name = name;
     }
 
     /**
@@ -369,7 +363,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @return
      */
     public String getCreatedByName() {
@@ -434,7 +427,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @return
      */
     public List<GameAccountKey> getAccountkeys() {
@@ -450,7 +442,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @param accountkeys
      */
     public void setAccountkeys(List<GameAccountKey> accountkeys) {
@@ -461,7 +452,6 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
      * @return
      */
     public String getGameModelName() {
@@ -475,7 +465,13 @@ public class Game extends NamedEntity {
     }
 
     /**
-     *
+     * @return
+     */
+    public GameModelProperties getProperties() {
+        return this.getGameModel().getProperties();
+    }
+
+    /**
      * @param p
      */
     public void setProperties(GameModelProperties p) {
@@ -484,9 +480,46 @@ public class Game extends NamedEntity {
 
     /**
      *
-     * @return
      */
-    public GameModelProperties getProperties() {
-        return this.getGameModel().getProperties();
+    public enum GameAccess {
+
+        /**
+         *
+         */
+        OPEN,
+        /**
+         *
+         */
+        URL,
+        /**
+         *
+         */
+        ENROLMENTKEY,
+        /**
+         *
+         */
+        SINGLEUSAGEENROLMENTKEY,
+        /**
+         *
+         */
+        CLOSE
+    }
+
+    /**
+     *
+     */
+    public enum Status {
+        /**
+         * Initial value, game is playable
+         */
+        LIVE,
+        /**
+         * Game in the wast bin
+         */
+        BIN,
+        /**
+         * Schedule for deletion
+         */
+        DELETE
     }
 }

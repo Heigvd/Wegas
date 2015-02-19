@@ -12,17 +12,14 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
-import java.util.List;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
+import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -34,11 +31,13 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
     /**
      *
      */
     @EJB
     private GameFacade gameFacade;
+
     /**
      *
      */
@@ -46,7 +45,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     private UserFacade userFacade;
 
     /**
-     *
      * @return
      */
     @Override
@@ -55,7 +53,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
      * @param teamId
      * @param player
      */
@@ -64,7 +61,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
      * @param gameId
      * @param userId
      * @return
@@ -72,17 +68,17 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
         try {
-            final Query findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId");
+            final TypedQuery<Player> findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
-            return (Player) findByGameIdAndUserId.getSingleResult();
+            findByGameIdAndUserId.setParameter("status", Game.Status.LIVE);
+            return findByGameIdAndUserId.getSingleResult();
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
     }
 
     /**
-     *
      * @param player
      * @return
      */
@@ -92,7 +88,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
      * @param player
      */
     @Override
@@ -105,7 +100,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
      * @param gameId
      * @return
      */
@@ -133,7 +127,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
      * @param gameModelId
      * @return
      */
@@ -144,7 +137,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
-     *
      * Returns the first available player in the target game model.
      *
      * @param gameModelId
@@ -162,7 +154,20 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
+     * Find a player for a live game
      *
+     * @param id player's id
+     * @return Player if found and game is live or null
+     */
+    public Player findLive(Long id) {
+        Player player = this.find(id);
+        if (player == null || !player.getGame().getStatus().equals(Game.Status.LIVE)) {
+            return null;
+        }
+        return player;
+    }
+
+    /**
      * @param g
      * @return
      * @throws com.wegas.core.exception.internal.WegasNoResultException

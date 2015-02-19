@@ -17,26 +17,23 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.Permission;
 import com.wegas.core.security.persistence.Role;
 import com.wegas.core.security.persistence.User;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -44,31 +41,37 @@ import org.slf4j.LoggerFactory;
 public class GameFacade extends BaseFacade<Game> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GameFacade.class);
+
     /**
      *
      */
     @EJB
     private GameModelFacade gameModelFacade;
+
     /**
      *
      */
     @EJB
     private RoleFacade roleFacade;
+
     /**
      *
      */
     @EJB
     private TeamFacade teamFacade;
+
     /**
      *
      */
     @EJB
     private UserFacade userFacade;
+
     /**
      *
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
     /**
      *
      */
@@ -83,7 +86,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param game
      * @throws IOException
@@ -101,7 +103,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param game
      */
@@ -110,7 +111,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param gameModel
      * @param game
      */
@@ -140,7 +140,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param game
      * @return
      */
@@ -239,20 +238,15 @@ public class GameFacade extends BaseFacade<Game> {
      * @return first game found or null
      */
     public Game findByToken(final String token) {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<Game> game = cq.from(Game.class);
-        cq.where(cb.equal(game.get(Game_.token), token));
-        Query q = em.createQuery(cq);
+        final TypedQuery<Game> tq = em.createNamedQuery("game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
         try {
-            return (Game) q.getSingleResult();
+            return tq.getSingleResult();
         } catch (NoResultException ex) {
             return null;
         }
     }
 
     /**
-     *
      * @param key
      * @return
      * @throws com.wegas.core.exception.internal.WegasNoResultException
@@ -271,7 +265,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param key
      * @return
      * @throws com.wegas.core.exception.internal.WegasNoResultException
@@ -290,7 +283,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param search
      * @return
      */
@@ -304,30 +296,26 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param orderBy
      * @return
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
         return em.createQuery("SELECT game FROM Game game "
-                + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC")
+                + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
                 .setParameter("gameModelId", gameModelId)
                 .getResultList();
     }
 
     /**
-     *
-     * @param orderBy
+     * @param status
      * @return
      */
-    public List<Game> findAll(final String orderBy) {
-        return em.createQuery("SELECT game FROM Game game WHERE TYPE(game) != DebugGame ORDER BY game.createdTime ASC")
-                .getResultList();
+    public List<Game> findAll(final Game.Status status) {
+        return em.createNamedQuery("game.findByStatus", Game.class).setParameter("status", status).getResultList();
     }
 
     /**
-     *
      * @param userId
      * @return
      */
@@ -335,15 +323,14 @@ public class GameFacade extends BaseFacade<Game> {
         final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
-                + "AND p.user.id = :userId "
-                + "ORDER BY p.joinTime ASC")
+                + "AND p.user.id = :userId AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
+                + "ORDER BY p.joinTime ASC", Game.class)
                 .setParameter("userId", userId);
 
         return this.findRegisterdGames(getByGameId);
     }
 
     /**
-     *
      * @param userId
      * @param gameModelId
      * @return
@@ -352,7 +339,8 @@ public class GameFacade extends BaseFacade<Game> {
         final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
-                + "ORDER BY p.joinTime ASC")
+                + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
+                + "ORDER BY p.joinTime ASC", Game.class)
                 .setParameter("userId", userId)
                 .setParameter("gameModelId", gameModelId);
 
@@ -360,7 +348,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param q
      * @return
      */
@@ -377,7 +364,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param roleName
      * @return
      */
@@ -399,7 +385,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param g
      * @param accountNumber
      * @return
@@ -416,7 +401,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param team
      * @param player
      */
@@ -429,7 +413,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param teamId
      * @param p
      * @return
@@ -441,7 +424,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param team
      * @param user
      * @return
@@ -456,7 +438,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param teamId
      * @param userId
      * @return
@@ -467,7 +448,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @param user
      * @param game
      */
@@ -478,11 +458,18 @@ public class GameFacade extends BaseFacade<Game> {
     }
 
     /**
-     *
      * @return
      */
     @Override
     public EntityManager getEntityManager() {
         return em;
+    }
+
+    /**
+     * Bin given game, changing it's status to {@link Game.Status#BIN}
+     * @param entity Game
+     */
+    public void bin(Game entity) {
+        entity.setStatus(Game.Status.BIN);
     }
 }
