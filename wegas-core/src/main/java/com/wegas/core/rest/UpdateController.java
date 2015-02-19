@@ -68,11 +68,12 @@ public class UpdateController {
     public String encode(@PathParam("gameModelId") Long gameModelId) {
         List<VariableDescriptor> findAll = descriptorFacade.findByGameModelId(gameModelId);
         for (VariableDescriptor vd : findAll) {
-            vd.setName(Helper.encodeVariableName(vd.getName()));
             List<String> findDistinctNames = descriptorFacade.findDistinctNames(vd.getGameModel());
+            List<String> findDistinctLabels = descriptorFacade.findDistinctLabels(vd.getGameModel());
             findDistinctNames.remove(vd.getName());
-            descriptorFacade.findUniqueName(vd, findDistinctNames);
-            descriptorFacade.findUniqueLabel(vd);
+            findDistinctLabels.remove(vd.getLabel());
+            Helper.setUniqueName(vd, findDistinctNames);
+            Helper.setUniqueLabel(vd, findDistinctLabels);
             descriptorFacade.flush();
         }
         return "Finished";
