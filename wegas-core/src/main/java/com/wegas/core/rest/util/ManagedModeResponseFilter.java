@@ -56,7 +56,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         RequestFacade rmf = RequestFacade.lookup();
         User currentUser = null;
         try {
-            userFacade.getCurrentUser();
+            currentUser = userFacade.getCurrentUser();
         } catch (WegasNotFoundException e) {
         }
 
