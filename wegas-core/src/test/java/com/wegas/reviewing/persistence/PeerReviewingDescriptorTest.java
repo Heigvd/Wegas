@@ -8,10 +8,8 @@
 
 package com.wegas.reviewing.persistence;
 
-import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
-import com.wegas.core.persistence.variable.scope.TeamScope;
 import com.wegas.core.rest.util.JacksonMapperProvider;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
@@ -19,9 +17,6 @@ import com.wegas.reviewing.persistence.evaluation.GradeDescriptor;
 import com.wegas.reviewing.persistence.evaluation.TextEvaluationDescriptor;
 import java.io.IOException;
 import java.util.List;
-import javax.persistence.Persistence;
-import javax.persistence.PersistenceUnit;
-import org.codehaus.jackson.map.ObjectMapper;
 
 import org.junit.After;
 import org.junit.Before;
@@ -72,7 +67,7 @@ public class PeerReviewingDescriptorTest {
 
         List<EvaluationDescriptor> feedback = initial.getFeedback();
         feedback.add(new TextEvaluationDescriptor("aText"));
-        feedback.add(new GradeDescriptor("Note", 1.0, 10.0));
+        feedback.add(new GradeDescriptor("Note", 1L, 10L));
 
         CategorizedEvaluationDescriptor cEvalD = new CategorizedEvaluationDescriptor("categ");
         cEvalD.addCategory("weak");
@@ -80,7 +75,7 @@ public class PeerReviewingDescriptorTest {
         feedback.add(cEvalD);
         
         List<EvaluationDescriptor> feedbackEvaluations = initial.getFeedbackEvaluations();
-        feedbackEvaluations.add(new GradeDescriptor("fevalG", 0.0, null));
+        feedbackEvaluations.add(new GradeDescriptor("fevalG", 0L, null));
 
         
         System.out.println("SETTED UP");

@@ -7,6 +7,7 @@
  */
 package com.wegas.reviewing.persistence;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
@@ -17,7 +18,6 @@ import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
-import org.codehaus.jackson.annotate.JsonIgnore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -7,14 +7,14 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.reviewing.persistence.PeerReviewingDescriptor;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  *

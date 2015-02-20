@@ -7,12 +7,12 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Objects;
 import javax.persistence.*;
-import org.codehaus.jackson.annotate.JsonIgnore;
-import org.codehaus.jackson.annotate.JsonSubTypes;
 
 /**
  * Evaluation instance is the abstract parent of different kind of evaluation.

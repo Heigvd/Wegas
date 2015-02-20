@@ -7,7 +7,7 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
-import com.wegas.core.exception.ConstraintViolationException;
+import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Entity;
 
@@ -40,14 +40,14 @@ public class GradeInstance extends EvaluationInstance {
     /**
      * Set the grade
      * @param value the grade to give
-     * @throws ConstraintViolationException when grade is out of bound
+     * @throws WegasOutOfBoundException when grade is out of bound
      */
     public void setValue(Double value) {
         if (this.getDescriptor() != null && this.getDescriptor() instanceof GradeDescriptor) {
             GradeDescriptor desc = (GradeDescriptor) this.getDescriptor();
             if ((desc.getMaxValue() != null && value > desc.getMaxValue())
                     || (desc.getMinValue() != null && value < desc.getMinValue())) {
-                throw new ConstraintViolationException(desc.getName() + " is out of bound.");
+                throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getName());
             }
         }
 
