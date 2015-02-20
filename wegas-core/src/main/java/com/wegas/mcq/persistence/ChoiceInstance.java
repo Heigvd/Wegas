@@ -9,12 +9,9 @@ package com.wegas.mcq.persistence;
 
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.rest.util.Views;
 import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.wegas.core.exception.client.WegasErrorMessage;
 
 /**
@@ -39,23 +36,18 @@ public class ChoiceInstance extends VariableInstance {
      *
      */
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "result_id", insertable = false, updatable = false)
+    @JoinColumn(name = "result_id")
     @JsonIgnore
-    //@XmlTransient
-    //@JsonBackReference
-    //@JsonDeserialize(using = JsonDeserializer.None.class)
     private Result currentResult;
-    /**
-     *
-     */
-    @Column(name = "result_id")
-    @JsonView(Views.Public.class)
-    private Long currentResultId;
+
     /**
      *
      */
     @Transient
-    private int currentResultIndex = -1;
+    private String currentResultName;
+
+    @Transient
+    private Integer currentResultIndex = null;
 
     public ChoiceInstance() {
     }
@@ -66,8 +58,8 @@ public class ChoiceInstance extends VariableInstance {
      */
     @JsonIgnore
     public Result getResult() {
-        if (this.currentResultId != null) {
-            return this.currentResult;
+        if (this.getCurrentResult() != null) {
+            return this.getCurrentResult();
         } else {
             try {
                 return ((ChoiceDescriptor) this.getDescriptor()).getResults().get(0);
@@ -79,52 +71,37 @@ public class ChoiceInstance extends VariableInstance {
     }
 
     /**
-     *
-     * @return
-     */
-    public Long getCurrentResultId() {
-        return this.currentResultId;
-    }
-
-    /**
-     *
-     * @param currentResultId
-     */
-    public void setCurrentResultId(Long currentResultId) {
-        this.currentResultId = currentResultId;
-    }
-
-    /**
      * @return the currentResultName
      */
-    @JsonView(Views.Export.class)
-    public int getCurrentResultIndex() {
-        if (this.getDefaultDescriptor() != null) {
-            return ((ChoiceDescriptor) this.getDefaultDescriptor()).getResults().indexOf(this.currentResult);
+    public String getCurrentResultName() {
+        if (this.getCurrentResult() != null) {
+            return getCurrentResult().getName();
         } else {
-            return -1;
+            return null;
         }
     }
 
-    /**
-     * @param currentResultIndex
-     */
-    public void setCurrentResultIndex(int currentResultIndex) {
-        this.currentResultIndex = currentResultIndex;
+    @JsonIgnore
+    public String getDeserializedCurrentResultName() {
+        return currentResultName;
     }
 
     /**
-     *
-     * @return
+     * @param currentResultName
      */
-    @JsonIgnore
-    public int getSerializedResultIndex() {
-        return this.currentResultIndex;
+    public void setCurrentResultName(String currentResultName) {
+        this.currentResultName = currentResultName;
     }
-//
-//    public void setCurrentResultName(String currentResultName) {
-//        this.currentResultName = currentResultName;
-//    }
+
+    @JsonIgnore
+    public Integer getCurrentResultIndex() {
+        return currentResultIndex;
+    }
+
+    @JsonProperty
+    public void setCurrentResultIndex(Integer index) {
+        this.currentResultIndex = index;
+    }
 
     /**
      *
@@ -136,16 +113,9 @@ public class ChoiceInstance extends VariableInstance {
         ChoiceInstance other = (ChoiceInstance) a;
         this.setActive(other.getActive());
         this.setUnread(other.getUnread());
-        this.setCurrentResultId(other.getCurrentResultId());
+        this.setCurrentResultName(other.getDeserializedCurrentResultName());
+        this.setCurrentResultIndex(other.getCurrentResultIndex());
         this.setCurrentResult(other.getCurrentResult());
-    }
-
-    /**
-     *
-     * @param index
-     */
-    public void setCurrentResultByIndex(int index) {
-        this.setCurrentResult(((ChoiceDescriptor) this.getDescriptor()).getResults().get(index));
     }
 
     /**

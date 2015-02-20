@@ -28,6 +28,7 @@ import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.persistence.User;
 import javax.ejb.EJB;
+import javax.ws.rs.core.MultivaluedMap;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,8 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
         } catch (WegasNotFoundException e) {
         }
 
+        //long duration = System.currentTimeMillis() - request.getDate().getTime();
+        //logger.info("Request Processed [" + duration + " ms] for user("
         logger.info("Request Processed for user("
                 + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous")
                 + "): " + request.getMethod() + ": " + request.getUriInfo().getPath() + " ==> " + response.getStatusInfo());

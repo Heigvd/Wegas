@@ -298,7 +298,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'ChoiceDescriptor':
                     children = Y.Array.map(entity.get("results"), function(result) {
                         return {
-                            label: result.get(NAME),
+                            label: result.getEditorLabel(),
                             selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
                             data: {
                                 entity: result,
