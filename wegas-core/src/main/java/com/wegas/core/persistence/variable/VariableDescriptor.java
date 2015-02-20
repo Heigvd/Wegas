@@ -7,6 +7,7 @@
  */
 package com.wegas.core.persistence.variable;
 
+import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.Helper;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
@@ -65,7 +66,7 @@ import org.eclipse.persistence.annotations.JoinFetch;
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)})
-abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable {
+abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -271,6 +272,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      * @return the label
      */
+    @Override
     public String getLabel() {
         return label;
     }
@@ -278,6 +280,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      * @param label the label to set
      */
+    @Override
     public void setLabel(String label) {
         this.label = label;
     }

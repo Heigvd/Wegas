@@ -47,7 +47,7 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
         choice.setName("testChoice");
-        Result r = new Result("1st result");
+        Result r = new Result("result");
         r.setImpact(new Script("mynumber.value = 10"));
         choice.addResult(r);
         vdf.createChild(question.getId(), choice);
@@ -65,46 +65,53 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
     public void testCurrentResult() throws Exception {
 
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
-        final String REPLYNAME1 = "1st reply";
-        final String REPLYNAME2 = "2nd reply";
 
-        QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
+        // Create a question descriptor
+        QuestionDescriptor question = new QuestionDescriptor();
         question.setDefaultInstance(new QuestionInstance());
         vdf.create(gameModel.getId(), question);
 
-        ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
+        // Add a choice descriptor w/ 2 replies
+        ChoiceDescriptor choice = new ChoiceDescriptor();
         choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result(REPLYNAME1);                                      // w/ 2 replies
+        Result r = new Result("result");
         choice.addResult(r);
-        Result r2 = new Result(REPLYNAME2);
+        Result r2 = new Result("result");
         choice.addResult(r2);
-        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); // And the default reply is the second
+        // And the default reply is the second
+        // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); 
         vdf.createChild(question.getId(), choice);
 
-        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultIndex(-1);
-        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResultId(r2.getId());// Set the default reply to the second one
+        // Set the default reply to the second one
+        //((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(null);
+        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2);
         choice = (ChoiceDescriptor) vdf.update(choice.getId(), choice);
 
-        gameModelFacade.reset(gameModel.getId());                               // Restart to propagate default instance value change
+        // Restart to propagate default instance value change
+        gameModelFacade.reset(gameModel.getId());
 
-        choice = (ChoiceDescriptor) vdf.find(choice.getId());                   // Retrieve entity
-        assertEquals(REPLYNAME2, choice.getInstance(player).getResult().getName());// And check the current result is stored
+        // Retrieve entity
+        choice = (ChoiceDescriptor) vdf.find(choice.getId());
+        // And check the current result is stored
+        assertEquals("result_2", choice.getInstance(player).getResult().getName());
 
         ChoiceDescriptor duplicate = (ChoiceDescriptor) vdf.duplicate(choice.getId());
 
-        gameModelFacade.reset(gameModel.getId());                               // Restart to propagate default instance value change
+        // Restart to propagate default instance value change
+        gameModelFacade.reset(gameModel.getId());
 
-        choice = (ChoiceDescriptor) vdf.find(duplicate.getId());                   // Retrieve entity
-        assertEquals(REPLYNAME2, choice.getInstance(player).getResult().getName());// And check the current result is stored
+        // Retrieve entity
+        choice = (ChoiceDescriptor) vdf.find(duplicate.getId());
+        // And check the current result is stored
+        assertEquals("result_2", choice.getInstance(player).getResult().getName());
 
-        vdf.remove(question.getId());                                           // Clean up
+        // Clean up
+        vdf.remove(question.getId());
     }
 
     @Test
     public void testRemoveResponse() throws NamingException {
         final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
-        final String REPLYNAME1 = "1st reply";
-        final String REPLYNAME2 = "2nd reply";
 
         QuestionDescriptor question = new QuestionDescriptor();                 // Create a question descriptor
         question.setDefaultInstance(new QuestionInstance());
@@ -112,9 +119,9 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
 
         ChoiceDescriptor choice = new ChoiceDescriptor();                       // Add a choice descriptor
         choice.setDefaultInstance(new ChoiceInstance());
-        Result r = new Result(REPLYNAME1);                                      // w/ 2 replies
+        Result r = new Result("result");                                      // w/ 2 replies
         choice.addResult(r);
-        Result r2 = new Result(REPLYNAME2);
+        Result r2 = new Result("result");
         choice.addResult(r2);
         // ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2); // And the default reply is the second
         vdf.createChild(question.getId(), choice);
@@ -122,7 +129,40 @@ public class QuestionDescriptorFacadeTest extends AbstractEJBTest {
         choice.getResults().remove(0);
         vdf.update(choice.getId(), choice);
 
-        assertEquals(REPLYNAME2, ((ChoiceDescriptor) vdf.find(choice.getId())).getResults().get(0).getName());
+        assertEquals("result_2", ((ChoiceDescriptor) vdf.find(choice.getId())).getResults().get(0).getName());
+        vdf.remove(question.getId());
+    }
+
+    @Test
+    public void testRemoveResponse2() throws NamingException {
+        final VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);// Lookup Ejb's
+
+        // Create a question descriptor
+        QuestionDescriptor question = new QuestionDescriptor();
+        question.setDefaultInstance(new QuestionInstance());
+        vdf.create(gameModel.getId(), question);
+
+        // Add a choice descriptor and 3 replies
+        ChoiceDescriptor choice = new ChoiceDescriptor();
+        choice.setDefaultInstance(new ChoiceInstance());
+        Result r = new Result("result");
+        choice.addResult(r);
+        Result r2 = new Result("result");
+        choice.addResult(r2);
+        Result r3 = new Result("result");
+        choice.addResult(r3);
+
+        vdf.createChild(question.getId(), choice);
+
+        // Set the second as default
+        ((ChoiceInstance) choice.getDefaultInstance()).setCurrentResult(r2);
+        choice = (ChoiceDescriptor) vdf.update(choice.getId(), choice);
+
+        // and remove it
+        choice.getResults().remove(1);
+        vdf.update(choice.getId(), choice);
+
+        assertEquals("result", ((ChoiceDescriptor) vdf.find(choice.getId())).getResults().get(0).getName());
         vdf.remove(question.getId());
     }
 }

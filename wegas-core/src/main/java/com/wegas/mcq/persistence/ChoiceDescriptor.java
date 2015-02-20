@@ -21,7 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
-import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.Scripted;
 
@@ -96,18 +96,30 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         this.setCost(other.getCost());
         ListUtils.mergeLists(this.getResults(), other.getResults());
 
-        // @hack In case a result was deleted and it was current result, set current result to null
-        ChoiceInstance defautlt = (ChoiceInstance) this.getDefaultInstance();
-        boolean found = false;
+        // Has currentResult been removed ? 
+        ChoiceInstance defaultInstance = (ChoiceInstance) this.getDefaultInstance();
+        if (!this.getResults().contains(defaultInstance.getCurrentResult())) {
+            defaultInstance.setCurrentResult(null);
+        }
+
+        // Detect new results 
+        List<String> labels = new ArrayList<>();
+        List<String> names = new ArrayList<>();
+        List<Result> newResults = new ArrayList<>();
+
         for (Result r : this.getResults()) {
-            if (defautlt.getCurrentResultId() != null && defautlt.getCurrentResultId().equals(r.getId())) {
-                found = true;
+            if (r.getId() != null) {
+                // Store name and label existing result
+                labels.add(r.getLabel());
+                names.add(r.getName());
+            } else {
+                newResults.add(r);
             }
         }
-//        if (!this.getResults().contains(defautlt.getCurrentResult())) {
-        if (!found) {
-            defautlt.setCurrentResult(null);
-            defautlt.setCurrentResultId(null);
+
+        // set names and labels unique
+        for (Result r : newResults) {
+            Helper.setNameAndLabelForResult(r, names, labels);
         }
     }
 
@@ -119,25 +131,16 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
         this.results.add(r);
         r.setChoiceDescriptor(this);
     }
+
     // ***  Sugar to use from scripts *** //
-
     /**
-     *
      * @param player
-     * @param index
+     * @param resultName
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public void setCurrentResultByIndex(Player player, int index) {
-        this.getInstance(player).setCurrentResultByIndex(index);
-    }
-
-    /**
-     * @deprecacted Using setCurrentResult(Player player, String resultName) in
-     * scripts so it works after an exportation
-     * @param player
-     * @param resultId
-     */
-    public void setCurrentResult(Player player, Long resultId) {
-        this.getInstance(player).setCurrentResultId(resultId);
+    public void setCurrentResult(Player player, String resultName) throws WegasNoResultException {
+        Result resultByName = getResultByName(resultName);
+        this.getInstance(player).setCurrentResult(resultByName);
     }
 
     /**
@@ -145,23 +148,15 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * <p>
      * @param name result-to-find's name
      * @return the specified result
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    private Result getResultByName(String name) {
+    public Result getResultByName(String name) throws WegasNoResultException {
         for (Result r : this.getResults()) {
             if (r.getName().equals(name)) {
                 return r;
             }
         }
-        throw WegasErrorMessage.error("Result \"" + name + "\" not found");
-    }
-
-    /**
-     *
-     * @param player
-     * @param resultName
-     */
-    public void setCurrentResult(Player player, String resultName) {
-        this.getInstance(player).setCurrentResultId(this.getResultByName(resultName).getId());
+        throw new WegasNoResultException();
     }
 
     /**
@@ -273,8 +268,9 @@ public class ChoiceDescriptor extends VariableDescriptor<ChoiceInstance> impleme
      * <p>
      * @return true if one or more question reply referencing the given result
      *         exist
+     * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
-    public boolean hasResultBeenApplied(Player p, String resultName) {
+    public boolean hasResultBeenApplied(Player p, String resultName) throws WegasNoResultException {
         return this.hasResultBeenApplied(p, this.getResultByName(resultName));
     }
 

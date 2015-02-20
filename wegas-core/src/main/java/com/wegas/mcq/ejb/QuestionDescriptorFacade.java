@@ -13,8 +13,10 @@ import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.ScriptFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
+import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.mcq.persistence.*;
 import javax.ejb.EJB;
@@ -26,6 +28,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +76,30 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     private ScriptEventFacade scriptEvent;
 
     /**
+     * Find a result identified by the given name belonging to the given
+     * descriptor
+     *
+     * @param choiceDescriptor
+     * @param name
+     * @return
+     * @throws WegasNoResultException
+     */
+    public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
+        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaQuery cq = cb.createQuery();
+        Root<Result> result = cq.from(Result.class);
+        cq.where(cb.and(
+                cb.equal(result.get("choiceDescriptor"), choiceDescriptor),
+                cb.like(result.get("name"), name)));
+        final Query q = em.createQuery(cq);
+        try {
+            return (Result) q.getSingleResult();
+        } catch (NoResultException ex) {
+            throw new WegasNoResultException(ex);
+        }
+    }
+
+    /**
      *
      * @param event
      */
@@ -80,11 +109,17 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (event.getEntity() instanceof ChoiceDescriptor) {
             ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
             ChoiceInstance defaultInstance = ((ChoiceInstance) choice.getDefaultInstance());
-            if (defaultInstance.getSerializedResultIndex() > -1
-                    && defaultInstance.getSerializedResultIndex() < choice.getResults().size()) {
-                Result cr = choice.getResults().get(defaultInstance.getSerializedResultIndex());
-
-                defaultInstance.setCurrentResultId(cr.getId());
+            if (defaultInstance.getDeserializedCurrentResultName() != null) {
+                try {
+                    Result cr = findResult(choice, defaultInstance.getDeserializedCurrentResultName());
+                    defaultInstance.setCurrentResult(cr);
+                } catch (WegasNoResultException ex) {
+                    throw WegasErrorMessage.error("Error while setting current result");
+                }
+            } else if (defaultInstance.getCurrentResultIndex() != null
+                    && defaultInstance.getCurrentResultIndex() >= 0
+                    && defaultInstance.getCurrentResultIndex() < choice.getResults().size()) {
+                Result cr = choice.getResults().get(defaultInstance.getCurrentResultIndex());
                 defaultInstance.setCurrentResult(cr);
             }
         }
@@ -232,9 +267,9 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
     public Reply cancelReplyTransactionnal(Long playerId, Long replyId) {
         Reply reply = questionSingleton.cancelReplyTransactionnal(playerId, replyId);
         //try {
-            //scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));// Throw an event
+        //scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));// Throw an event
         //} catch (WegasRuntimeException e) {
-            // GOTCHA no eventManager is instantiated
+        // GOTCHA no eventManager is instantiated
         //}
         return reply;
     }

@@ -15,12 +15,12 @@ import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
-////import javax.xml.bind.annotation.XmlTransient;
-//import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonTypeName;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.LabelledEntity;
+import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.Scripted;
 
 /**
@@ -31,9 +31,10 @@ import com.wegas.core.persistence.variable.Scripted;
 //@XmlType(name = "Result")
 @JsonTypeName(value = "Result")
 @Table(name = "MCQResult", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"})
+    @UniqueConstraint(columnNames = {"choicedescriptor_id", "name"}),
+    @UniqueConstraint(columnNames = {"choicedescriptor_id", "label"})
 })
-public class Result extends AbstractEntity implements Searchable, Scripted {
+public class Result extends NamedEntity implements Searchable, Scripted, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
     /**
@@ -44,9 +45,14 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
     @JsonView(Views.IndexI.class)
     private Long id;
     /**
-     *
+     * Internal Name
      */
     private String name;
+
+    /**
+     * Displayed name
+     */
+    private String label;
     /**
      *
      */
@@ -74,12 +80,6 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
     @JoinColumn(name = "choicedescriptor_id")
     private ChoiceDescriptor choiceDescriptor;
     /**
-     *
-     */
-    @Column(name = "choicedescriptor_id", updatable = false, insertable = false)
-    @JsonView(Views.IndexI.class)
-    private Long choiceDescriptorId;
-    /**
      * This link is here so the reference is updated on remove.
      */
     @OneToMany(mappedBy = "currentResult", cascade = CascadeType.MERGE)
@@ -106,6 +106,16 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
      */
     public Result(String name) {
         this.name = name;
+        this.label = name;
+    }
+
+    /**
+     *
+     * @param name
+     */
+    public Result(String name, String label) {
+        this.name = name;
+        this.label = label;
     }
 
     @Override
@@ -139,6 +149,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
     public void merge(AbstractEntity a) {
         Result other = (Result) a;
         this.setName(other.getName());
+        this.setLabel(other.getLabel());
         this.setAnswer(other.getAnswer());
         this.setImpact(other.getImpact());
         this.setFiles(other.getFiles());
@@ -181,7 +192,11 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
      * @return
      */
     public Long getChoiceDescriptorId() {
-        return this.choiceDescriptorId;
+        return choiceDescriptor.getId();
+    }
+
+    public void setChoiceDescriptorId(Long id) {
+        // NOTHING TO TO....
     }
 
     /**
@@ -215,6 +230,7 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
     /**
      * @return the name
      */
+    @Override
     public String getName() {
         return name;
     }
@@ -222,8 +238,25 @@ public class Result extends AbstractEntity implements Searchable, Scripted {
     /**
      * @param name the name to set
      */
+    @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     * @return the label
+     */
+    @Override
+    public String getLabel() {
+        return label;
+    }
+
+    /**
+     * @param label the label to set
+     */
+    @Override
+    public void setLabel(String label) {
+        this.label = label;
     }
 
     /**

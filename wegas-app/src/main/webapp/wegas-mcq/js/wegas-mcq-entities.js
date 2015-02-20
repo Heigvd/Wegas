@@ -258,13 +258,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             value: true
                         }
                     },
-                    currentResultId: {
+                    currentResultName: {
                         type: NUMBER,
                         optional: true,
                         _inputex: {
                             _type: "entityarrayfieldselect",
                             label: "Default result",
-                            returnAttr: "id",
+                            returnAttr: "name",
                             field: "results"
                         }
                     }
@@ -403,7 +403,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             value: true
                         }
                     },
-                    currentResultId: {
+                    currentResultName: {
                         type: STRING,
                         optional: true,
                         _inputex: {
@@ -429,6 +429,13 @@ YUI.add('wegas-mcq-entities', function(Y) {
                             }
                         },
                         name: {
+                            type: STRING,
+                            optional: true,
+                            _inputex: {
+                                _type: HIDDEN
+                            }
+                        },
+                        label: {
                             type: STRING,
                             optional: true,
                             _inputex: {
@@ -536,15 +543,41 @@ YUI.add('wegas-mcq-entities', function(Y) {
             return Wegas.Facade.Variable.cache.findById(this.get("choiceDescriptorId"));
         },
         getLabel: function() {
-            return this.get("name");
+            return this.get("label");
+        },
+        getEditorLabel: function(){
+            return this.get("label");
         }
     }, {
         ATTRS: {
             "@class": {
                 value: "Result"
             },
+            label: {
+                type: STRING,
+                "transient": false,
+                getter: function(val) {
+                    return val || this.get("name");
+                },
+                _inputex: {
+                    label: "Name",
+                    index: -1
+                }
+            },
             name: {
-                type: STRING
+                value: null,
+                type: STRING,
+                optional: true,
+                _inputex: {
+                    wrapperClassName: "wegas-advanced-feature",
+                    label: "Script alias",
+                    index: -1,
+                    //regexp: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/,
+                    description: "Alphanumeric characters,'_','$'. Without a digit as first character.<br/>Changing this may break your scripts."
+                },
+                validator: function(s) {
+                    return s === null || Y.Lang.isString(s);
+                }
             },
             answer: {
                 type: STRING,
@@ -632,7 +665,7 @@ YUI.add('wegas-mcq-entities', function(Y) {
                 value: true,
                 type: BOOLEAN
             },
-            currentResultId: {
+            currentResultName: {
                 type: STRING,
                 _inputex: {
                     _type: HIDDEN

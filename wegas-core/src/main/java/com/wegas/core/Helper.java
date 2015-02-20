@@ -7,9 +7,12 @@
  */
 package com.wegas.core;
 
+import com.wegas.core.persistence.LabelledEntity;
 import com.wegas.core.persistence.NamedEntity;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.mcq.persistence.ChoiceDescriptor;
+import com.wegas.mcq.persistence.Result;
 
 import java.io.File;
 import java.io.IOException;
@@ -150,8 +153,18 @@ public class Helper {
      * @param usedNames
      */
     public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames) {
+        setUniqueNameForEntity(entity, usedNames, DEFAULT_VARIABLE_NAME);
+    }
+
+    /**
+     *
+     * @param entity      entity to rename
+     * @param usedNames
+     * @param defaultName name to use if entity one is unset
+     */
+    public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames, String defaultName) {
         if (isNullOrEmpty(entity.getName())) {
-            entity.setName(DEFAULT_VARIABLE_NAME);
+            entity.setName(defaultName);
         } else {
             entity.setName(encodeVariableName(entity.getName()));
         }
@@ -163,16 +176,41 @@ public class Helper {
     /**
      * Set Unique Names for the given VariableDescriptor and its children
      *
-     * @param vd
+     * @param entity
      * @param usedLabels
      */
-    public static void setUniqueLabel(final VariableDescriptor vd, List<String> usedLabels) {
-        if (isNullOrEmpty(vd.getLabel())) {
-            vd.setLabel(DEFAULT_VARIABLE_LABEL);
+    public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels) {
+        setUniqueLabel(entity, usedLabels, DEFAULT_VARIABLE_LABEL);
+    }
+
+    /**
+     * Set Unique Names for the given VariableDescriptor and its children
+     *
+     * @param entity
+     * @param usedLabels
+     * @param defaultLabel label to set if entity one is unset
+     */
+    public static void setUniqueLabel(final LabelledEntity entity, List<String> usedLabels, String defaultLabel) {
+        if (isNullOrEmpty(entity.getLabel())) {
+            entity.setLabel(defaultLabel);
         }
-        String newLabel = findUniqueLabel(vd.getLabel(), usedLabels);
-        vd.setLabel(newLabel);
+        String newLabel = findUniqueLabel(entity.getLabel(), usedLabels);
+        entity.setLabel(newLabel);
         usedLabels.add(newLabel);
+    }
+
+    public static void setNameAndLabelForResult(Result r,
+            List<String> usedNames, List<String> usedLabels) {
+        boolean hasLabel = !isNullOrEmpty(r.getLabel());
+        boolean hasName = !isNullOrEmpty(r.getName());
+        if (hasLabel && !hasName) {
+            r.setName(r.getLabel());
+        }
+        if (hasName && !hasLabel) {
+            r.setLabel(r.getName());
+        }
+        setUniqueNameForEntity(r, usedNames, "result");
+        setUniqueLabel(r, usedLabels, "New Result");
     }
 
     /**
@@ -184,8 +222,16 @@ public class Helper {
     public static void setUniqueName(final VariableDescriptor vd, List<String> usedNames) {
         setUniqueNameForEntity(vd, usedNames);
         if (vd instanceof DescriptorListI) {
-            for (Object child : ((DescriptorListI) vd).getItems()) {            // Recursively find unique names for children
+            // Recursively find unique names for children
+            for (Object child : ((DescriptorListI) vd).getItems()) {
                 setUniqueName((VariableDescriptor) child, usedNames);
+            }
+        } else if (vd instanceof ChoiceDescriptor) {
+            ChoiceDescriptor cd = (ChoiceDescriptor) vd;
+            List<String> names = new ArrayList<>();
+            List<String> labels = new ArrayList<>();
+            for (Result r : cd.getResults()) {
+                setNameAndLabelForResult(r, names, labels);
             }
         }
     }
