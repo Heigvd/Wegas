@@ -13,10 +13,10 @@
     background-color: #3399FF;
     height: 14px;
 }
-.wegas-pmg-reservation .past .notEditable {
+.yui3-datatable-table .past .notEditable {
     background-color: #ffbdbd;
 }
-.wegas-pmg-reservation .past .editable {
+.yui3-datatable-table .past .editable {
     background-color: #bddeff;
     color: rgb(80, 80, 80);
     font-size: 6pt;
