@@ -221,7 +221,7 @@ YUI.add('wegas-datasource', function(Y) {
                             case "WegasOutOfBoundException":
                                 min = (val.min !== null ? val.min : "-∞");
                                 max = (val.max !== null ? val.max : "∞");
-                                node.showMessage("error", "Variable \"" + val.variableDescriptor.get("label") + "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])");
+                                node.showMessage("error", "Variable \"" + val.variableName + "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])");
                                 break;
                             case "WegasScriptException":
                                 node.showMessage("error", val.message + " at line " + val.lineNumber + " in script " + val.script);

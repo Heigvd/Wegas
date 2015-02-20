@@ -172,10 +172,10 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             if (!token.isEmpty()) {
                 token = "%" + token.toLowerCase() + "%";
                 List<Predicate> orPreds = new ArrayList<>();
-                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.firstname)), token));
-                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.lastname)), token));
-                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.email)), token));
-                orPreds.add(cb.like(cb.lower(jpaAccount.get(JpaAccount_.username)), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get("firstname")), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get("lastname")), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get("email")), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get("JpaAccount")), token));
                 
                 andPreds.add(cb.or(orPreds.toArray(prs)));
             }

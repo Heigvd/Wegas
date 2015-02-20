@@ -18,9 +18,9 @@ import javax.persistence.Entity;
 @Entity
 public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
-    private Double minValue;
+    private Long minValue;
 
-    private Double maxValue;
+    private Long maxValue;
 
     /**
      * Basic constructor
@@ -35,7 +35,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
      * @param minValue minimum allowed value (included) or NULL
      * @param maxValue maximum allowed value (included) or NULL
      */
-    public GradeDescriptor(String name, Double minValue, Double maxValue){
+    public GradeDescriptor(String name, Long minValue, Long maxValue){
         super(name);
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -46,7 +46,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
      *
      * @return minimum boundary
      */
-    public Double getMinValue() {
+    public Long getMinValue() {
         return minValue;
     }
 
@@ -55,7 +55,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
      *
      * @param minValue
      */
-    public void setMinValue(Double minValue) {
+    public void setMinValue(Long minValue) {
         this.minValue = minValue;
     }
 
@@ -64,7 +64,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
      *
      * @return minimum boundary
      */
-    public Double getMaxValue() {
+    public Long getMaxValue() {
         return maxValue;
     }
 
@@ -73,7 +73,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
      * 
      * @param minValue 
      */
-    public void setMaxValue(Double maxValue) {
+    public void setMaxValue(Long maxValue) {
         this.maxValue = maxValue;
     }
 
