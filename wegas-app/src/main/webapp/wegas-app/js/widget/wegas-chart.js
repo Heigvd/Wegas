@@ -145,7 +145,7 @@ YUI.add('wegas-chart', function(Y) {
 
             if (!vStep) {
                 // Default vStep is 10% of range value -> 11 ticks
-                vStep = (max - min) / 10;
+                vStep = Math.floor((max - min) / 10);
             }
 
             if (max >= axis.get("maximum")) {
@@ -171,7 +171,10 @@ YUI.add('wegas-chart', function(Y) {
             n = range / vStep; // how many ticks fit within 'maximum'
 
             // Math.log10(x) =~ Math.log(x)/Math.LN10...
-            n = Math.ceil(n / Math.pow(10, Math.ceil(Math.log(n) / Math.LN10) - 1)); // let n an integer \in ]1;10] 
+            //if (n > 11) {
+            //    n = Math.ceil(n / Math.pow(10, Math.ceil(Math.log(n) / Math.LN10) - 1)); // let n an integer \in ]1;10] 
+            //    Y.log("N Ticks: " + n);
+            //}
 
             if (n === range / vStep) {
                 n++; // need an extra tick
