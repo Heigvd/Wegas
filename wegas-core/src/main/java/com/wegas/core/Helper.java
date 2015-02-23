@@ -32,6 +32,7 @@ import java.util.regex.Pattern;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -443,6 +444,9 @@ public class Helper {
      * @return The translated string.
      */
     public static String unescape(String st) {
+        return StringEscapeUtils.unescapeJava(st);
+    }
+    /*public static String old_unescape(String st) {
 
         StringBuilder sb = new StringBuilder(st.length());
 
@@ -511,7 +515,7 @@ public class Helper {
             sb.append(ch);
         }
         return sb.toString();
-    }
+    }*/
 
     /**
      * print ENV variables to log
@@ -576,7 +580,8 @@ public class Helper {
         if (text == null) {
             return false;
         }
-        return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(text).find();
+        String unescapedText = StringEscapeUtils.unescapeJava(text);
+        return Pattern.compile(Pattern.quote(criteria), Pattern.CASE_INSENSITIVE).matcher(StringEscapeUtils.unescapeHtml4(text)).find();
     }
 
     public static Boolean insensitiveContainsAll(String text, List<String> criterias) {

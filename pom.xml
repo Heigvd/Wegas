@@ -251,6 +251,14 @@
                 <type>jar</type>
             </dependency>
 
+            <!-- For string escape utils -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.2.1</version>
+                <type>jar</type>
+            </dependency>
+
             <!-- Test -->
             <dependency>
                 <groupId>junit</groupId>
@@ -537,8 +545,8 @@
 
                         </check>
 
-                        </configuration>
-                    </plugin>-->
+                    </configuration>
+                </plugin>-->
             </plugins>
         </pluginManagement>
 
