@@ -603,9 +603,9 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                 }
             },
             index: {
-                type: NUMBER,
-                optional: true,
+                type: STRING,
                 _inputex: {
+                    label: "Number",
                     index: -1
                 }
             },

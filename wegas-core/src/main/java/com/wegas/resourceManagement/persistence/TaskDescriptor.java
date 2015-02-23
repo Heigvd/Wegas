@@ -48,7 +48,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
-    private Integer index;
+    private String index;
     /**
      *
      */
@@ -120,14 +120,14 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      * @return the index
      */
-    public Integer getIndex() {
+    public String getIndex() {
         return index;
     }
 
     /**
      * @param index the index to set
      */
-    public void setIndex(Integer index) {
+    public void setIndex(String index) {
         this.index = index;
     }
 
