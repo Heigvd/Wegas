@@ -28,6 +28,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.Helper;
 
 /**
  *
@@ -392,5 +393,11 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
      */
     public void setPredecessorNames(List<String> exportedPredecessors) {
         this.predecessorNames = exportedPredecessors;
+    }
+
+    @Override
+    public Boolean containsAll(List<String> criterias) {
+        return Helper.insensitiveContainsAll(this.getDescription(), criterias)
+                || super.containsAll(criterias);
     }
 }
