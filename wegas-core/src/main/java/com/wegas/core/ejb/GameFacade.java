@@ -8,6 +8,8 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.PlayerAction;
+import com.wegas.core.event.internal.lifecycle.EntityCreated;
+import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.*;
@@ -35,12 +37,25 @@ import java.util.List;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 @Stateless
 @LocalBean
 public class GameFacade extends BaseFacade<Game> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(GameFacade.class);
+
+    /**
+     * Fired once game created
+     */
+    @Inject
+    private Event<EntityCreated<Game>> gameCreatedEvent;
+
+    /**
+     * Fired pre Game removed
+     */
+    @Inject
+    private Event<PreEntityRemoved<Game>> gameRemovedEvent;
 
     /**
      *
@@ -137,6 +152,7 @@ public class GameFacade extends BaseFacade<Game> {
         } catch (WegasNoResultException ex) {
             logger.error("Unable to find Role: Public");
         }
+        gameCreatedEvent.fire(new EntityCreated(game));
     }
 
     /**
@@ -218,6 +234,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     @Override
     public void remove(final Game entity) {
+        gameRemovedEvent.fire(new PreEntityRemoved(entity));
         if (entity.getGameModel().getGames().size() <= 1
                 && !(entity.getGameModel().getGames().get(0) instanceof DebugGame)) {// This is for retrocompatibility w/ game models that do not habe DebugGame
             gameModelFacade.remove(entity.getGameModel());
@@ -225,6 +242,7 @@ public class GameFacade extends BaseFacade<Game> {
         for (Team t : entity.getTeams()) {
             teamFacade.remove(t);
         }
+
         super.remove(entity);
 
         userFacade.deleteAccountPermissionByInstance("g" + entity.getId());
@@ -467,6 +485,7 @@ public class GameFacade extends BaseFacade<Game> {
 
     /**
      * Bin given game, changing it's status to {@link Game.Status#BIN}
+     *
      * @param entity Game
      */
     public void bin(Game entity) {

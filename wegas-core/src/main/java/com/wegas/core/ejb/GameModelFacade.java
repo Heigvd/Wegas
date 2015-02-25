@@ -7,7 +7,11 @@
  */
 package com.wegas.core.ejb;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.event.internal.ResetEvent;
+import com.wegas.core.event.internal.lifecycle.EntityCreated;
+import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
+import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
 import com.wegas.core.jcr.content.ContentConnectorFactory;
@@ -20,32 +24,26 @@ import com.wegas.core.rest.util.Views;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import org.apache.shiro.SecurityUtils;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.jcr.RepositoryException;
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceContext;
+import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
-import org.apache.shiro.SecurityUtils;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wegas.core.exception.internal.WegasNoResultException;
-import javax.persistence.TypedQuery;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -56,26 +54,43 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      */
     final static String HISTORYPATH = "History";
+
     /**
      *
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
+
+    /**
+     * fire before GameModel is removed
+     */
+    @Inject
+    private Event<PreEntityRemoved<GameModel>> preRemovedGameModelEvent;
+
+    /**
+     * fire after GameModel is created
+     */
+    @Inject
+    private Event<EntityCreated<GameModel>> createdGameModelEvent;
+
     /**
      *
      */
     @EJB
     private UserFacade userFacade;
+
     /**
      *
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
     /**
      *
      */
     @Inject
     private Event<ResetEvent> resetEvent;
+
     /**
      *
      */
@@ -90,7 +105,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -99,8 +113,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
-     *
      * @param entity
      */
     @Override
@@ -112,14 +124,13 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         this.em.flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
-
+        createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Duplicate:gm" + entity.getId());
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:Instantiate:gm" + entity.getId());
     }
 
     /**
-     *
      * @param gm
      */
     public void createWithDebugGame(final GameModel gm) {
@@ -128,7 +139,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModel
      * @param game
      */
@@ -146,6 +156,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             userFacade.deleteAccountPermissionByInstance("g" + g.getId());
             userFacade.deleteRolePermissionsByInstance("g" + g.getId());
         }
+        preRemovedGameModelEvent.fire(new PreEntityRemoved<>(this.find(id)));
         super.remove(id);
         this.flush();
     }
@@ -191,7 +202,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @return
      * @throws IOException
@@ -209,7 +219,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         //Remove jcr repo.
         // @TODO : in fact, removes all files but not the workspace. 
         // @fx Why remove files? The may be referenced in other workspaces
-        try(ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {           
+        try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
         } catch (RepositoryException ex) {
             System.err.println(ex);
@@ -226,7 +236,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @return
      */
     public List<GameModel> findTemplateGameModels() {
@@ -240,7 +249,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param name
      * @return
      * @throws NoResultException
@@ -256,15 +264,14 @@ public class GameModelFacade extends BaseFacade<GameModel> {
 
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
         query.setParameter("name", name);
-        try{
-        return query.getSingleResult();
-        } catch (NoResultException ex){
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
     }
 
     /**
-     *
      * @param gameModelId
      */
     public void reset(final Long gameModelId) {
@@ -272,7 +279,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModel
      */
     public void reset(final GameModel gameModel) {
@@ -284,7 +290,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param name
      * @param serializedGameModel
@@ -303,7 +308,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param name
      * @throws RepositoryException
@@ -314,7 +318,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @throws IOException
      */
     //@Schedule(hour = "2")
@@ -351,7 +354,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     *
      * @param gameModelId
      * @param path
      * @return
