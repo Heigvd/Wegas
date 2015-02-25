@@ -29,6 +29,7 @@ public class ApplicationConfig extends ResourceConfig {
                  "com.wegas.mcq.rest", 
                  "com.wegas.messaging.rest", 
                  "com.wegas.proggame.rest", 
-                 "com.wegas.resourceManagement.rest");
+                 "com.wegas.resourceManagement.rest",
+                 "com.wegas.admin");
     }
 }
