@@ -673,11 +673,11 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                                         name: "quantity",
                                         type: NUMBER,
                                         required: true,
-                                        size: 3
+                                        size: 4
                                     }, {
                                         typeInvite: "limit",
                                         name: "limit",
-                                        size: 1,
+                                        size: 4,
                                         required: true,
                                         type: NUMBER
                                     }, {
