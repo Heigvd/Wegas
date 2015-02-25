@@ -53,9 +53,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
         findAll.addAll(gameFacade.findAll(Game.Status.BIN));
         findAll.addAll(gameFacade.findAll(Game.Status.DELETE));
         for (Game g : findAll) {
-            try {
-                this.findByGame(g.getId());
-            } catch (NoResultException ex) {
+            if (this.findByGame(g.getId()) == null) {
                 this.create(new GameAdmin(g));
             }
         }

@@ -343,9 +343,9 @@ public class Helper {
     public static String genToken(Integer maxLength) {
         final String digits = "abcdefghijklmnopqrstuvwxyzABCDEFGHYJKLMNOPQRSTUVWXYZ1234567890";
         final int digitSize = digits.length();
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         int modulo;
-        Long time = System.nanoTime();
+        long time = System.nanoTime();
         while (time > 0) {
             modulo = (int) (time % digitSize);
             sb.append(digits.substring(modulo, modulo + 1));
