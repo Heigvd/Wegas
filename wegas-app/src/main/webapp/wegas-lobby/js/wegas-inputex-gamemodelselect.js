@@ -80,7 +80,6 @@ YUI.add("wegas-inputex-gamemodelselect", function(Y) {
                     }, {
                         name: "key",
                         type: "string",
-                        size: 12,
                         disable: true
                             //type: "string"
                     }, {
