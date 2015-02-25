@@ -13,10 +13,15 @@ import com.fasterxml.jackson.jaxrs.cfg.EndpointConfigBase;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterModifier;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.exception.client.WegasNotFoundException;
+import com.wegas.core.security.ejb.UserFacade;
+import com.wegas.core.security.persistence.User;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.Locale;
+import javax.ejb.EJB;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
 import javax.ws.rs.container.PreMatching;
@@ -39,6 +44,12 @@ import org.slf4j.LoggerFactory;
 @PreMatching
 public class ViewRequestFilter implements ContainerRequestFilter {
 
+    @EJB
+    RequestIdentifierGenerator idGenerator;
+
+    @EJB
+    UserFacade userFacade;
+
     private final static Logger logger = LoggerFactory.getLogger(ViewRequestFilter.class);
 
     /**
@@ -48,6 +59,26 @@ public class ViewRequestFilter implements ContainerRequestFilter {
      */
     @Override
     public void filter(ContainerRequestContext cr) throws IOException {
+        String uniqueIdentifier = idGenerator.getUniqueIdentifier();
+        String date = Long.toString(System.currentTimeMillis(), 10);
+
+        cr.getHeaders().add("INTERNAL-ID", uniqueIdentifier);
+        cr.getHeaders().add("INTERNAL-DATE", date);
+
+        String userAgent = cr.getHeaderString("user-agent");
+
+        User currentUser = null;
+        try {
+            currentUser = userFacade.getCurrentUser();
+        } catch (WegasNotFoundException e) {
+        }
+
+        logger.info("Start Request Processing [" + uniqueIdentifier
+                + "] for user(" + (currentUser != null
+                        ? userFacade.getCurrentUser().getId() : "anonymous")
+                + "): " + userAgent + " " + cr.getMethod() + ": "
+                + cr.getUriInfo().getPath());
+
         RequestFacade rmf = RequestFacade.lookup();
         Class<?> view;
 
@@ -61,7 +92,6 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             rmf.setLocale(Locale.getDefault());
         }
 
-        
         String newUri = cr.getUriInfo().getRequestUri().toASCIIString();
         String firstPathSeg = cr.getUriInfo().getPathSegments().get(0).getPath();
 
@@ -103,7 +133,7 @@ public class ViewRequestFilter implements ContainerRequestFilter {
             //rmf.setView(this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0)));
             view = this.stringToView(cr.getUriInfo().getQueryParameters().get("view").get(0));
         }
-        
+
         // Propadate new view to ObjectWriter
         ObjectWriterInjector.set(new JsonViewModifier(view));
     }
@@ -143,12 +173,13 @@ public class ViewRequestFilter implements ContainerRequestFilter {
     }
 
     private static class JsonViewModifier extends ObjectWriterModifier {
+
         Class<?> view;
 
-        public JsonViewModifier(Class<?> view){
+        public JsonViewModifier(Class<?> view) {
             this.view = view;
         }
-        
+
         @Override
         public ObjectWriter modify(EndpointConfigBase<?> ecb, MultivaluedMap<String, Object> mm, Object o, ObjectWriter writer, JsonGenerator jg) throws IOException {
             //Class view = RequestFacade.lookup().getView();
