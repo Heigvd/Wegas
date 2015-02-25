@@ -11,7 +11,6 @@ import com.wegas.core.Helper;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.event.client.EntityUpdatedEvent;
-import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
 import java.util.ArrayList;
@@ -25,10 +24,6 @@ import javax.ws.rs.ext.Provider;
 import org.apache.http.HttpStatus;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.variable.VariableInstance;
-import com.wegas.core.security.ejb.UserFacade;
-import com.wegas.core.security.persistence.User;
-import javax.ejb.EJB;
-import javax.ws.rs.core.MultivaluedMap;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,9 +34,6 @@ import org.slf4j.LoggerFactory;
  */
 @Provider
 public class ManagedModeResponseFilter implements ContainerResponseFilter {
-
-    @EJB
-    UserFacade userFacade;
 
     private final static Logger logger = LoggerFactory.getLogger(ManagedModeResponseFilter.class);
 
@@ -55,17 +47,13 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
-        User currentUser = null;
-        try {
-            currentUser = userFacade.getCurrentUser();
-        } catch (WegasNotFoundException e) {
-        }
 
-        //long duration = System.currentTimeMillis() - request.getDate().getTime();
-        //logger.info("Request Processed [" + duration + " ms] for user("
-        logger.info("Request Processed for user("
-                + (currentUser != null ? userFacade.getCurrentUser().getId() : "anonymous")
-                + "): " + request.getMethod() + ": " + request.getUriInfo().getPath() + " ==> " + response.getStatusInfo());
+        String id = request.getHeaderString("INTERNAL-ID");
+        long duration = System.currentTimeMillis()
+                - Long.parseLong(request.getHeaderString("INTERNAL-DATE"), 10);
+
+        logger.info("Request [" + id + "] Processed in " + duration
+                + " [ms] => " + response.getStatusInfo());
 
         if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))) {
 
