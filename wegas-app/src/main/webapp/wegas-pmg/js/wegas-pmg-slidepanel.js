@@ -181,13 +181,13 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                             content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nNot Available</div>\n</div>"
                         }]
                 }).render(this.get(CONTENTBOX));
-                if (false && autoReserve) {
-                    panel.item(0).plug(Y.Plugin.AutoReservationColor, {
-                        taskList: {
-                            name: "tasks"
-                        }
-                    });
-                } else {
+                if (!autoReserve) {
+                    //panel.item(0).plug(Y.Plugin.AutoReservationColor, {
+                    //    taskList: {
+                    //        name: "tasks"
+                    //    }
+                    //});
+                //} else {
                     panel.item(0).plug(Y.Plugin.Reservation); // Player can click cell to reserve
                     panel.item(0).plug(Y.Plugin.EngagmentDelay);
                     panel.item(0).plug(Y.Plugin.PMGLineFilter, {
