@@ -1,0 +1,35 @@
+{{#link-to "games.index" (query-params type="todo") class="btn btn-default"}}ToDo{{/link-to}} {{#link-to "games.index" (query-params type="processed,charged") class="btn btn-default"}}Done{{/link-to}}
+<table class="table table-striped">
+    <tr>
+        <th>Creee</th>
+        <th>Creator</th>
+        <th>Name</th>
+        <th>Scenario</th>
+        <th>Teams</th>
+        <th>Players</th>
+        <th>Done</th>
+        <th>Charged</th>
+        <th>Game Status</th>
+        <th>Comments</th>
+        <th>To Game</th>
+    </tr>
+    {{#each game in model itemController="game" }}
+        <tr>
+            <td>{{game.createdTime}}</td>
+            <td>{{game.creator}}</td>
+            <td>{{game.gameName}}</td>
+            <td>{{game.gameModelName}}</td>
+            <td>{{game.teamCount}}</td>
+            <td {{bind-attr title="game.players"}}>{{game.playerCount}}</td>
+            <td>{{input type='checkbox' checked=game.isDone}}</td>
+            <td>{{input type='checkbox' checked=game.isCharged}}</td>
+            <td>{{game.gameStatus}}</td>
+            {{#if game.commentEdit}}
+                <td> {{textarea-edit class="form-control" value=game.comments focus-out="acceptComment" rows="5"}}</td>
+            {{else}}
+                <td {{action "editComment" on="click"}}>{{textarea class="form-control" value=game.comments focus-out="acceptComment" rows="1" disabled="true"}}</td>
+            {{/if}}
+            <td><a target="_blank" {{bind-attr href="game.gameLink"}}>View</a></td>
+        </tr>
+    {{/each}}
+</table>
