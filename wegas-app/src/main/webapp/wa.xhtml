@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:h="http://java.sun.com/jsf/html">
+    <h:head>
+
+        <meta charset="UTF-8"/>
+        <meta http-equiv="Content-Type" content="text/html"/>
+        <meta http-equiv="Content-Language" content="#{requestController.locale.toLanguageTag()}"/>
+        <title>Admin</title>
+        <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"></link>
+        <style type="text/css">
+            td{
+                position:relative;
+            }
+            input{
+                text-align: center;
+                width: 40px;
+                height: auto;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                margin: auto 0;
+                border: none;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+                -ms-appearance: none;
+                -o-appearance: none;
+                appearance: none;
+            }
+            input:checked:after {
+                color: #85ada7;
+                text-shadow: 0 1px 0 #669991;
+                bottom: 1px;
+                position: relative;
+            }
+            input:after {
+                content: '✔';
+                line-height: 43px;
+                font-size: 20px;
+                color: #d9d9d9;
+                text-shadow: 0 -1px 0 #bfbfbf;
+            }
+        </style>
+        <script type="application/javascript">
+            window.config={
+                debug: #{requestController.debugMode()},
+                contextPath:"#{request.contextPath}"
+            }
+        </script>
+    </h:head>
+    <h:body>
+
+        <ui:fragment rendered="#{!requestController.debugMode()}">
+            <script data-main="wegas-admin/js/loader" src="lib/require.js"></script>
+        </ui:fragment>
+        <ui:fragment rendered="#{requestController.debugMode()}">
+            <script data-main="wegas-admin/js/loader-bundle-min" src="lib/require.js"></script>
+        </ui:fragment>
+    </h:body>
+
+
+</html>
