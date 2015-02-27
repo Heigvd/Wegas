@@ -124,7 +124,7 @@
             <groupId>net.sf.ehcache</groupId>
             <artifactId>ehcache</artifactId>
         </dependency>
-        
+
         <!-- Jersey 
         <dependency>
             <groupId>com.sun.jersey</groupId>
@@ -225,6 +225,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${war.plugin.version}</version>
                 <configuration>
+                    <useCache>true</useCache>
                     <!--<packagingExcludes>%regex[(?!.*min).*\.js]</packagingExcludes>-->
                     <packagingExcludes>
                         wegas-leaderway/images/employees sources/**,
@@ -233,18 +234,92 @@
                     </packagingExcludes>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <warName>Wegas</warName>
-                    <overlays>
-                        <overlay>
-                            <id>wegaslibs</id>
-                            <groupId>com.wegas</groupId>
-                            <artifactId>wegas-resources</artifactId>
-                            <type>war</type>
-                            <includes>
-                                <include>lib/**</include>
-                            </includes>
-                        </overlay>
-                    </overlays>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>default-war</id>
+                        <phase>none</phase>
+                    </execution>
+                    <execution>
+                        <id>prepare-war</id>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                        <configuration>
+                            <overlays>
+                                <overlay>
+                                    <id>wegaslibs</id>
+                                    <groupId>com.wegas</groupId>
+                                    <artifactId>wegas-resources</artifactId>
+                                    <type>war</type>
+                                    <includes>
+                                        <include>lib/**</include>
+                                    </includes>
+                                </overlay>
+                            </overlays>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>war</id>
+                        <goals>
+                            <goal>war</goal>
+                        </goals>
+                        <phase>package</phase>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>com.github.eirslett</groupId>
+                <artifactId>frontend-maven-plugin</artifactId>
+                <version>0.0.20</version>
+                <configuration>
+                    <!--<workingDirectory>${project.build.directory}</workingDirectory>-->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>install node and npm</id>
+                        <goals>
+                            <goal>install-node-and-npm</goal>
+                        </goals>
+                        <phase>generate-resources</phase>
+                        <configuration>
+                            <nodeVersion>v0.12.0</nodeVersion>
+                            <npmVersion>2.5.1</npmVersion>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>npm install</id>
+                        <goals>
+                            <goal>npm</goal>
+                        </goals>
+
+                        <!-- optional: default phase is "generate-resources" -->
+                        <phase>process-resources</phase>
+
+                        <configuration>
+                            <!-- optional: The default argument is actually
+                            "install", so unless you need to run some other npm command,
+                            you can remove this whole <configuration> section.
+                            -->
+                            <arguments>install</arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>gulp build</id>
+                        <phase>prepare-package</phase>
+                        <!--<phase>none</phase>-->
+                        <goals>
+                            <goal>gulp</goal>
+                        </goals>
+                        <configuration>
+                            <arguments>--env dev</arguments>
+                            <!--<srcdir>${project.basedir}/src/main/webapp</srcdir>-->
+                            <!--<outputdir>${project.build.directory}/${project.build.finalName}</outputdir>-->
+                            <!--<arguments>&#45;&#45;verbose</arguments>-->
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -375,11 +450,13 @@
                 <artifactId>yuicompressor-maven-plugin</artifactId>
                 <executions>
                     <execution>
+                        <phase>none</phase>
                         <goals>
                             <goal>compress</goal>
                         </goals>
                         <configuration>
                             <encoding>${project.build.sourceEncoding}</encoding>
+                            <excludes><exclude>**/*-min.js</exclude></excludes>
                         </configuration>
                     </execution>
                 </executions>

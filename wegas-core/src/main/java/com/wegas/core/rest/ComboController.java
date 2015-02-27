@@ -10,6 +10,7 @@ package com.wegas.core.rest;
 import com.wegas.core.Helper;
 import com.wegas.core.rest.util.CacheManagerHolder;
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -24,10 +25,7 @@ import java.util.concurrent.TimeUnit;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.EntityTag;
 import javax.ws.rs.core.MediaType;
@@ -35,6 +33,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.ResponseBuilder;
 import javax.ws.rs.core.UriInfo;
+
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
 import org.apache.commons.io.IOUtils;
@@ -42,14 +41,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
  * This servlet allows to retrieve several resources in a single request. Used
  * to combine .js and .css files.
  *
+ * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  * @todo Resulting files should be cached. For example check
  * https://github.com/smaring/javascript-combo-service/blob/master/src/main/java/org/maring/util/js/JavascriptComboService.java
- *
- * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
 @Path("combo")
@@ -69,12 +66,15 @@ public class ComboController {
     private CacheManagerHolder cacheManagerHolder;
 
     private static final Logger logger = LoggerFactory.getLogger(ComboController.class);
+
     private final static String CACHE_NAME = "combo";
+
     /**
      *
      */
     @Context
     protected UriInfo uriInfo;
+
     /**
      *
      */
@@ -129,14 +129,14 @@ public class ComboController {
         //Response.ResponseBuilder responseBuilder = request.evaluatePreconditions(updateTimestamp, etag);
         return Response.ok(comboCache.getFiles())
                 .type(comboCache.getMediaType())
-                //    .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
+                        //    .expires(new Date(System.currentTimeMillis() + (1000 * 60 * 60 * 24 * 3)))
                 .tag(new EntityTag(comboCache.getETag()))
                 .build();
     }
 
     @DELETE
     @Produces(MediaType.WILDCARD)
-    public Response clear(){
+    public Response clear() {
         Ehcache cache = cacheManagerHolder.getInstance().getEhcache(CACHE_NAME);
         cache.removeAll();
         return Response.ok().build();
@@ -155,9 +155,9 @@ public class ComboController {
                     String dir = fileName.substring(0, fileName.lastIndexOf('/') + 1);
                     content = content.replaceAll("url\\(\"?\'?([^:\\)\"\']+)\"?\'?\\)",
                             "url(" + servletContext.getContextPath()
-                            + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
+                                    + dir + "$1)");                                     //Regexp to avoid rewriting protocol guess they contain ':' (http: data:)
                 }
-                acc.append(content);
+                acc.append(content).append("\n");
             } catch (NullPointerException e) {
                 logger.error("Resource not found : {}", fileName);
             }
@@ -168,8 +168,11 @@ public class ComboController {
     private static class CacheObject implements Serializable {
 
         private static final long serialVersionUID = 1L;
+
         private String ETag;
+
         private String files;
+
         private String mediaType;
 
         public CacheObject(String files, String mediaType) {
