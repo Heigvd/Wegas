@@ -22,7 +22,7 @@ public class CacheResponseFilter implements ContainerResponseFilter {
     /**
      *
      */
-    public static final String NO_CACHE = "no-cache, no-store";
+    public static final String NO_CACHE = "no-cache, no-store, must-revalidate";
     private final String headers;
 
     /**
@@ -45,6 +45,7 @@ public class CacheResponseFilter implements ContainerResponseFilter {
      *
      * @param request
      * @param response
+     * @throws java.io.IOException
      */
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) throws IOException {

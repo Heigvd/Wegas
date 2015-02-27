@@ -8,17 +8,16 @@
 package com.wegas.core.rest.util;
 
 import com.wegas.core.rest.util.annotations.CacheMaxAge;
-import com.wegas.core.rest.util.annotations.NoCache;
 import javax.ws.rs.container.DynamicFeature;
 import javax.ws.rs.container.ResourceInfo;
 import javax.ws.rs.core.FeatureContext;
 import javax.ws.rs.ext.Provider;
 
 /**
- * 
- * Feature-dependant CacheResponseFilter according to method or class "NoCache" and "MaxCacheAge"
- * annotations.
- * 
+ *
+ * Feature-dependant CacheResponseFilter according to method or class "NoCache"
+ * and "MaxCacheAge" annotations.
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Provider
@@ -32,21 +31,21 @@ public class DynamicCacheFilters implements DynamicFeature {
 
         /*Test method level*/
         CacheMaxAge cma = resourceInfo.getResourceMethod().getAnnotation(CacheMaxAge.class);
-        NoCache nc = resourceInfo.getResourceMethod().getAnnotation(NoCache.class);
+        //NoCache nc = resourceInfo.getResourceMethod().getAnnotation(NoCache.class);
 
+        // Max Age set on method -> override all
         if (cma != null) {
             context.register(new CacheResponseFilter(genCacheString(cma)));
-        } else if (nc != null) {
-            context.register(noCacheResponseFilter);
-        }
+        } else {
+            // No annotation -> check on class
+            cma = resourceInfo.getResourceClass().getAnnotation(CacheMaxAge.class);
 
-        cma = resourceInfo.getResourceClass().getAnnotation(CacheMaxAge.class);
-        nc = resourceInfo.getResourceMethod().getAnnotation(NoCache.class);
-
-        if (cma != null) {
-            context.register(new CacheResponseFilter(genCacheString(cma)));
-        } else if (nc != null) {
-            context.register(noCacheResponseFilter);
+            if (cma != null) {
+                context.register(new CacheResponseFilter(genCacheString(cma)));
+                //} else if (nc != null) {
+            } else {
+                context.register(noCacheResponseFilter);
+            }
         }
 
     }
