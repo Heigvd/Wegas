@@ -81,10 +81,10 @@ public class AdminRestController {
     }
 
     @DELETE
-    @Path("Game/delete/{gameId : ([1-9][0-9]*)}")
-    public GameAdmin deleteGame(@PathParam("gameId") Long gameId) {
+    @Path("Game/delete/{gameAdminId : ([1-9][0-9]*)}")
+    public GameAdmin deleteGame(@PathParam("gameAdminId") Long gameAdminId) {
         SecurityUtils.getSubject().checkRole("Administrator");
-        adminFacade.deleteGame(adminFacade.find(gameId));
-        return adminFacade.find(gameId);
+        adminFacade.deleteGame(adminFacade.find(gameAdminId));
+        return adminFacade.find(gameAdminId);
     }
 }

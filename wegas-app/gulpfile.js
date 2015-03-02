@@ -7,21 +7,21 @@ var gulp       = require('gulp'),
     sourcemaps = require("gulp-sourcemaps"),
     rename     = require("gulp-rename"),
     cache      = require("gulp-cache"),
-    replace    = require("gulp-replace");
+    replace    = require("gulp-replace"),
+    rootPath   = "/";
 
 gulp.task('default', ["submodule", "compress-css", "compress-js"], function() {
     "use strict";
     /*@Hack combo support ...*/
     gulp.src("target/Wegas/**/*-min.js")
-        .pipe(replace(/sourceMappingURL=([\.\/]*)map/g, "sourceMappingURL=/map"))
+        .pipe(replace(/sourceMappingURL=([\.\/]*)map/g, "sourceMappingURL=" + rootPath + "map"))
         .pipe(gulp.dest("target/Wegas"));
 });
-gulp.task("dev", ["submodule", "compress-css", "compress-js"], function(){
+gulp.task("dev", ["setup-dev", "default"]);
+gulp.task("setup-dev", function(cb){
     "use strict";
-    /*@Hack combo support ...*/
-    gulp.src("target/Wegas/**/*-min.js")
-        .pipe(replace(/sourceMappingURL=([\.\/]*)map/g, "sourceMappingURL=/Wegas/map"))
-        .pipe(gulp.dest("target/Wegas"));
+    rootPath ="/Wegas/";
+    cb();
 });
 gulp.task("submodule", function() {
     "use strict";
@@ -54,7 +54,7 @@ gulp.task("compress-js", function() {
         .pipe(sourcemaps.write("map",
             {
                 includeContent: false,
-                sourceRoot: "/"
+                sourceRoot: rootPath
             }))
 
         .pipe(gulp.dest("target/Wegas"));
