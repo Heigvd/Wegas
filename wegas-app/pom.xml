@@ -313,7 +313,6 @@
                             <goal>gulp</goal>
                         </goals>
                         <configuration>
-                            <arguments>--env dev</arguments>
                             <!--<srcdir>${project.basedir}/src/main/webapp</srcdir>-->
                             <!--<outputdir>${project.build.directory}/${project.build.finalName}</outputdir>-->
                             <!--<arguments>&#45;&#45;verbose</arguments>-->
