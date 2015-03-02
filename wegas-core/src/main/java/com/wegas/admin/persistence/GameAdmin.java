@@ -105,7 +105,7 @@ public class GameAdmin extends AbstractEntity {
         if (this.getGame() != null) {
             return this.getGame().getStatus();
         }
-        return Game.Status.DELETE;
+        return Game.Status.SUPPRESSED;
     }
 
     //
