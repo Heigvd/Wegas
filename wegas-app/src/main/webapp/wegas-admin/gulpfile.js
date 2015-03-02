@@ -29,5 +29,9 @@ gulp.task("compile-template", function() {
         .pipe(rename({extname: ".js"}))
         .pipe(gulp.dest("js/templates"));
 });
+gulp.task("watch", function() {
+    "use strict";
+    return gulp.watch("./**/*.hbs", ["compile-template"]);
+});
 
 
