@@ -27,7 +27,8 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
-        @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime ASC")
+        @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime ASC"),
+        @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameAdmin extends AbstractEntity {
@@ -175,8 +176,8 @@ public class GameAdmin extends AbstractEntity {
     public Integer getTeamCount() {
         if (this.getGame() != null) {
             int counter = 0;
-            for(Team t : this.getGame().getTeams()){
-                if(t.getClass() == Team.class){ // filter debugTeam
+            for (Team t : this.getGame().getTeams()) {
+                if (t.getClass() == Team.class) { // filter debugTeam
                     counter++;
                 }
             }
@@ -188,8 +189,8 @@ public class GameAdmin extends AbstractEntity {
     public List<String> getPlayers() {
         if (this.getGame() != null) {
             final List<Player> players = new ArrayList<>();
-            for(Team t : this.getGame().getTeams()){
-                if(t.getClass() == Team.class){ // filter debugTeam
+            for (Team t : this.getGame().getTeams()) {
+                if (t.getClass() == Team.class) { // filter debugTeam
                     players.addAll(t.getPlayers());
                 }
             }

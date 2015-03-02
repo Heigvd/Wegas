@@ -17,6 +17,7 @@ import com.wegas.core.persistence.game.GameModel;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.persistence.EntityManager;
@@ -147,6 +148,13 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
         for (Game g : gameModel.getGames()) {
             this.preGameDestroyed(new PreEntityRemoved<>(g));
         }
+    }
+
+    @Schedule(hour = "4", dayOfMonth = "Last Sun")
+    public void deleteGames() {
+        TypedQuery<GameAdmin> query = em.createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
+        final List<GameAdmin> resultList = query.getResultList();
+        resultList.forEach(this::deleteGame);
     }
 
 }
