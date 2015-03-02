@@ -520,6 +520,11 @@ public class Game extends NamedEntity {
         /**
          * Schedule for deletion
          */
-        DELETE
+        DELETE,
+        /**
+         * Does not exist anymore. Actually, this status should never persist.
+         * Used internally as game's missing.
+         */
+        SUPPRESSED
     }
 }
