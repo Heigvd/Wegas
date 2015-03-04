@@ -393,7 +393,10 @@ public class GameFacade extends BaseFacade<Game> {
             for (Permission permission : role.getPermissions()) {
                 if (permission.getValue().startsWith("Game:View")) {
                     Long gameId = Long.parseLong(permission.getValue().split(":g")[1]);
-                    games.add(this.find(gameId));
+                    Game game = this.find(gameId);
+                    if (game.getStatus() == Game.Status.LIVE) {
+                        games.add(game);
+                    }
                 }
             }
         } catch (WegasNoResultException ex) {
