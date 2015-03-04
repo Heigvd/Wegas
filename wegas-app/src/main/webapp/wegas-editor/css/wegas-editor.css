@@ -9,7 +9,7 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
 */
 
-
+ 
 /* Header toggle button */
 .yui3-skin-sam.wegas-editmode .wegas-layout-hd .yui3-button.host-switchmode{
     background-color : red;
@@ -29,7 +29,7 @@
     background: white;
     color: #072644;
 }
-
+ 
 
 /* Set font in the editor*/
 body, button, .yui3-skin-sam .yui3-datatable-table {
@@ -514,11 +514,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
     border: 1px solid #ededed;
     padding: 5px 3px 4px 19px;
     background: transparent url(../../wegas-app/images/wegas-app-sprite.png) 1px -706px no-repeat;
-    width: 0;
-    transition: width 0.15s;
-}
-.wegas-filter-input input:focus{
-    width: 300px;
 }
 
 /** Editor chat widget */
