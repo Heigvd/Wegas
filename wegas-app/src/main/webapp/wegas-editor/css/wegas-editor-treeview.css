@@ -56,7 +56,17 @@
 .wegas-editor-treeview-tablehd .yui3-u-col2 > div {
     padding-top: 6px;
 }
-
+.wegas-editor-treeview-content .wegas-filter-input{
+    width: 100%;
+    white-space: nowrap;
+    padding-right: 45px; /*space for right button*/
+    box-sizing: border-box;
+}
+.wegas-editor-treeview-content .wegas-filter-input input{
+    width: 100%;
+    min-width: 80px;
+    box-sizing: border-box;
+}
 /*.yui3-u-selected {
     background: url("../../wegas-app/images/wegas-icon-toggle.png") no-repeat 56px 11px;
 }*/
