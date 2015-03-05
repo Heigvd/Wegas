@@ -152,14 +152,14 @@ YUI.add("wegas-plugin", function(Y) {
                 type: "string",
                 value: "GET",
                 choices: [{
-                        value: "GET"
-                    }, {
-                        value: "POST"
-                    }, {
-                        value: "DELETE"
-                    }, {
-                        value: "PUT"
-                    }
+                    value: "GET"
+                }, {
+                    value: "POST"
+                }, {
+                    value: "DELETE"
+                }, {
+                    value: "PUT"
+                }
                 ],
                 _inputex: {
                     label: ""
@@ -207,12 +207,12 @@ YUI.add("wegas-plugin", function(Y) {
                 type: "string",
                 value: "blank",
                 choices: [{
-                        value: "blank",
-                        label: "In a new page"
-                    }, {
-                        value: "self",
-                        label: "In the same page"
-                    }],
+                    value: "blank",
+                    label: "In a new page"
+                }, {
+                    value: "self",
+                    label: "In the same page"
+                }],
                 _inputex: {
                     label: ""
                 }
@@ -245,7 +245,8 @@ YUI.add("wegas-plugin", function(Y) {
                 root = root.slice(0, -1);
             }
 
-            printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" + encodeURIComponent(root);
+            printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" +
+                       encodeURIComponent(root);
             window.open(printUrl);
         }
     }, {
@@ -289,10 +290,12 @@ YUI.add("wegas-plugin", function(Y) {
             this.afterHostEvent("render", function() {
                 var targetPageLoader = this._getTargetPageLoader();
                 if (targetPageLoader) {
-                    this.get(HOST).set("selected", ~~("" + targetPageLoader.get("pageId") === "" + this._subpage()));
+                    this.get(HOST).set("selected",
+                        ("" + targetPageLoader.get("pageId") === "" + this._subpage()) ? 2 : 0);
                     this.handlers.push(targetPageLoader.after("pageIdChange", function() {
                         try {
-                            this.get(HOST).set("selected", ~~("" + targetPageLoader.get("pageId") === "" + this._subpage()));
+                            this.get(HOST).set("selected",
+                                ("" + targetPageLoader.get("pageId") === "" + this._subpage()) ? 2 : 0);
                         } catch (e) {
                             //no more node...
                         }
@@ -421,7 +424,9 @@ YUI.add("wegas-plugin", function(Y) {
                 audio.play();
             } else {
                 new Wegas.Panel({
-                    bodyContent: "<div class=''> <span class=\"fa fa-4x fa-bullhorn\"></span> <span>Please listen to that <a target=\"_blank\" href=\"" + url + "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
+                    bodyContent: "<div class=''> <span class=\"fa fa-4x fa-bullhorn\"></span> <span>Please listen to that <a target=\"_blank\" href=\"" +
+                                 url +
+                                 "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
                 }).render();
             }
         }
@@ -487,7 +492,8 @@ YUI.add("wegas-plugin", function(Y) {
             }
 
             for (i in e.value) {
-                script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" + (e.value[i] + "").replace(/'/g, "\\'") + "');";
+                script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" +
+                          (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
             Wegas.Facade.Variable.script.run(script, {
