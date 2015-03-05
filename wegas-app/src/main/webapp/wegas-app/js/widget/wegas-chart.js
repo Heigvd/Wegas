@@ -145,7 +145,7 @@ YUI.add('wegas-chart', function(Y) {
 
             if (!vStep) {
                 // Default vStep is 10% of range value -> 11 ticks
-                vStep = Math.floor((max - min) / 10);
+                vStep = Math.floor((max - min) / 10) || 1;
             }
 
             if (max >= axis.get("maximum")) {
