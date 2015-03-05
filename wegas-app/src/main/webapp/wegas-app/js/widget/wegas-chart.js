@@ -143,29 +143,19 @@ YUI.add('wegas-chart', function(Y) {
             // Y-Axis scale
             axis = this.chart.getAxisByKey("values");  // i.e. Y-axis
 
+
             if (!vStep) {
                 // Default vStep is 10% of range value -> 11 ticks
                 vStep = Math.floor((max - min) / 10) || 1;
             }
-
-            if (max >= axis.get("maximum")) {
-                if (max !== 0) {
-                    max += vStep; // reserve some room
-                }
-                axis.set("maximum", max);
-            } else {
-                max = axis.get("maximum");
+            if (max !== 0) {
+                max += vStep; // reserve some room
             }
-
-            if (min <= axis.get("minimum")) {
-                if (min !== 0) {
-                    min -= vStep; // reserve some room too but avoid goind bellow zero
-                }
-                axis.set("minimum", min);
-            } else {
-                min = axis.get("minimum");
+            if (min !== 0) {
+                min -= vStep; // reserve some room too but avoid going bellow zero
             }
-
+            axis.set("maximum", max);
+            axis.set("minimum", min);
             range = max - min;
 
             n = range / vStep; // how many ticks fit within 'maximum'
