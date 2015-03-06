@@ -282,9 +282,9 @@ YUI.add('wegas-loginwidget', function(Y) {
             }, this);
 
             this.guestLoginButton.on("click", Y.bind(this.loginRequest, this,
-                "/GuestLogin/"));                                               // Guest login click even
+                "/GuestLogin/", "", "", true));                                               // Guest login click even
             this.guestTeacherLoginButton.on("click", Y.bind(this.loginRequest, this,
-                "/TeacherGuestLogin/"));                                        // Teacher guest login click event
+                "/TeacherGuestLogin/", "", "", true));                                        // Teacher guest login click event
 
             this.askPassButton.on("click", function() {                         // Password recovery click event
                 if (this.sendNewPasswordForm.validate()) {
@@ -341,6 +341,7 @@ YUI.add('wegas-loginwidget', function(Y) {
             this.loginRequest("/Authenticate/", email, password, remember);
         },
         loginRequest: function(url, login, password, remember) {
+            Y.log("LOGIN REQUEST: " + url + " ; login=" + login + " ; password=" + password + " ;rem=" + remember);
             Wegas.Facade.User.sendRequest({
                 request: url,
                 cfg: {
