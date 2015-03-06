@@ -357,19 +357,21 @@ public class UserController {
 
     /**
      *
+     * @param authInfo
      */
     @POST
     @Path("GuestLogin")
-    public void guestLogin() {
+    public void guestLogin(AuthenticationInformation authInfo) {
         userFacade.guestLogin();
     }
 
     /**
      *
+     * @param authInfo
      */
     @POST
     @Path("TeacherGuestLogin")
-    public void teacherGuestLogin() {
+    public void teacherGuestLogin(AuthenticationInformation authInfo) {
         User user = userFacade.guestLogin();
         try {
             user.getMainAccount().addRole(roleFacade.findByName("Scenarist"));
