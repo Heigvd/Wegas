@@ -79,6 +79,8 @@
                     });
 
                     app.after("render", function() {
+                        Y.one("body").addClass("wegas-lobby");
+
                         Y.Widget.getByNode("#centerTabView").on("selectionChange", function(e) {// On center tab change,
                             Y.later(10, this, Y.Plugin.EditEntityAction.hideRightTabs);
                         });
