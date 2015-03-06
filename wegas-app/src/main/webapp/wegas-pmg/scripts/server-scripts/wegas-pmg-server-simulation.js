@@ -16,7 +16,7 @@
  * @author Maxence Laurent <maxence.laurent@gmail.com>
  */
 
-/*global PMGHelper, Variable, debug, self, gameModel, Y, I18n */
+/*global Java, Event, ErrorManager, PMGHelper, Variable, debug, self, gameModel, Y, I18n */
 var PMGSimulation = (function() {
     "use strict";
 
@@ -132,8 +132,10 @@ var PMGSimulation = (function() {
         // Process assignments
         var activities = assignResources(currentStep), activity;
 
-        for (activity in activities) {
-            debug("activity : " + activity);
+        if (DEBUGMODE) {
+            for (activity in activities) {
+                debug("activity : " + activity);
+            }
         }
 
         // Calculate progress for each requirement
@@ -470,7 +472,7 @@ var PMGSimulation = (function() {
             }
             for (i = 0; i < taskInst.requirements.size(); i += 1) {
                 req = taskInst.requirements.get(i);
-                d = Math.abs(parseInt(resourceInst.mainSkillLevel) - req.level);
+                d = Math.abs(parseInt(resourceInst.mainSkillLevel, 10) - req.level);
                 if (req.work == skill) {
                     if (deltaLevel > d && req.quantity > 0) {
                         // Still work to do
@@ -503,6 +505,18 @@ var PMGSimulation = (function() {
             requirement: null,
             completed: false
         };
+    }
+
+
+    /**
+     * return a float with a length = to the given "numberOfDigit"
+     * @param {Number} number
+     * @param {Number} numberOfDigit
+     * @returns {Number}
+     */
+    function getFloat(number, numberOfDigit) {
+        numberOfDigit = Math.pow(10, (numberOfDigit > 1) ? numberOfDigit : 1);
+        return Math.round(number * numberOfDigit) / numberOfDigit;
     }
 
     /**
@@ -877,18 +891,6 @@ var PMGSimulation = (function() {
         return needQualityXNeedProgress / needProgress;
     }
 
-
-    /**
-     * return a float with a length = to the given "numberOfDigit"
-     * @param {Number} number
-     * @param {Number} numberOfDigit
-     * @returns {Number}
-     */
-    function getFloat(number, numberOfDigit) {
-        numberOfDigit = Math.pow(10, (numberOfDigit > 1) ? numberOfDigit : 1);
-        return Math.round(number * numberOfDigit) / numberOfDigit;
-    }
-
     /**
      * Return a name for each step.
      * @param {Number} step
@@ -986,31 +988,43 @@ var PMGSimulation = (function() {
         }
     }
 
+    function getCurrentQuestions() {
+        var currentPhase = PMGHelper.getCurrentPhaseNumber(),
+            currentPeriod = PMGHelper.getCurrentPeriodNumber(),
+            i, q,
+            items = [], item, itemType;
+
+        q = Variable.find(gameModel, 'questions').item(currentPhase - 1);
+        if (q) {
+            for (i in q.items) {
+                item = q.item(i);
+                itemType = item.getClass().getSimpleName();
+                if (itemType === 'QuestionDescriptor') {
+                    items.push(item);
+                } else if (i === currentPeriod - 1 && itemType === 'ListDescriptor') {
+                    items = items.concat(item.flatten());
+                }
+            }
+        }
+
+        return items;
+    }
+
     /**
      * Check if all questions from the current period are answered
      */
     function assertAllPeriodQuestionAnswered() {
-        var i, question, dir, questions, forceQuestion = Variable.findByName(gameModel, "forceQuestionReplies").getValue(self);
+        var i, question, questions, forceQuestion = Variable.findByName(gameModel, "forceQuestionReplies").getValue(self);
 
         if (!forceQuestion) {
             return;
         }
 
-        try {
-            dir = Variable.findByName(gameModel, "questions").items.get(PMGHelper.getCurrentPhaseNumber() - 1)
-                .items.get(PMGHelper.getCurrentPeriodNumber() - 1);
-        } catch (e) {
-            return;
-            // Unable to find question list for current phase
-        }
-        if (dir && dir.getClass().getSimpleName() == "ListDescriptor") { // DO NOT USE ===
-            questions = dir.items;
-            for (i = 0; i < questions.size(); i += 1) {
-                question = questions.get(i);
-                if (!question.isReplied(self) && question.isActive(self)) {
-                    ErrorManager.throwWarn("You have not answered all questions from this week.");
-                    //throw new Error("StringMessage: You have not answered all questions from this week.");
-                }
+        questions = getCurrentQuestions();
+        for (i = 0; i < questions.length; i += 1) {
+            question = questions[i];
+            if (!question.isReplied(self) && question.isActive(self)) {
+                ErrorManager.throwWarn("You have not answered all questions from this week.");
             }
         }
     }
