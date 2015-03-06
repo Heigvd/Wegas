@@ -68,6 +68,11 @@
 .wegas-toolbar-header > .yui3-button,
 .wegas-toolbar > .yui3-button {
     margin-right: 0.2em;
+    float: left;
+}
+.wegas-editmode .wegas-layout-left .wegas-toolbar-header > .yui3-button,
+.wegas-lobby .wegas-layout-center .wegas-toolbar-header > .yui3-button {
+    float: none;
 }
 .wegas-toolbar > .yui3-button.wegas-editor-closeposition {
     margin-right: 0.2em;
