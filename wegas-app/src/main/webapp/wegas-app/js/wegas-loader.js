@@ -643,7 +643,7 @@ YUI().use(function(Y) {
             "wegas-statemachineviewer": {
                 path: "js/widget/wegas-statemachineviewer-min.js",
                 requires: ["wegas-statemachineviewercss", "wegas-statemachine-entities",
-                    "dd-constrain", "jsplumb-yui", "button", "event-mousewheel",
+                    "dd-constrain", "jsplumb-dom", "button", "event-mousewheel",
                     "slider", "wegas-panel-node", "wegas-inputex-wysiwygscript"],
                 ws_provides: "StateMachineViewer"
             },
@@ -848,6 +848,9 @@ YUI().use(function(Y) {
         modules: {
             "jsplumb-yui": {
                 path: "jsPlumb/yui.jsPlumb-1.6.4-min.js"
+            },
+            "jsplumb-dom": {
+                path: "jsPlumb/dom.jsPlumb-1.7.3-min.js"
             },
             esprima: {
                 path: "esprima/esprima-min.js"
