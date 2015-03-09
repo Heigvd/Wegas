@@ -7,7 +7,7 @@
  */
 package com.wegas.reviewing.ejb;
 
-import com.wegas.reviewing.persistence.PeerReviewingDescriptor;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
@@ -66,22 +66,22 @@ public class ReviewingFacade {
     private ScriptEventFacade scriptEvent;
 
     /**
-     * Since PeerReviewingDescriptor toReview variable is only referenced by its
-     * own private name on the JSON side, we have to resolve those name to
-     * effective VariableDescriptor
-     *
-     * Moreover, as the variable may not yet exists (especially when posting a
-     * whole GameModel) when the PeerReviewingDescriptor is created, we'll have
-     * to wait to resolve such identifier.
+     * Since PeerReviewDescriptor toReview variable is only referenced by its
+ own private name on the JSON side, we have to resolve those name to
+ effective VariableDescriptor
+
+ Moreover, as the variable may not yet exists (especially when posting a
+ whole GameModel) when the PeerReviewDescriptor is created, we'll have
+ to wait to resolve such identifier.
      *
      * This is done by listening to DescriptorRevivedEvent
      *
      * @param event
      */
     public void descriptorRevivedEvent(@Observes DescriptorRevivedEvent event) {
-        if (event.getEntity() instanceof PeerReviewingDescriptor) {
+        if (event.getEntity() instanceof PeerReviewDescriptor) {
             logger.debug("Received DescriptorRevivedEvent event");
-            PeerReviewingDescriptor reviewD = (PeerReviewingDescriptor) event.getEntity();
+            PeerReviewDescriptor reviewD = (PeerReviewDescriptor) event.getEntity();
             try {
                 reviewD.setToReview(variableDescriptorFacade.find(reviewD.getGameModel(), reviewD.getImportedToReviewName()));
             } catch (WegasNoResultException ex) {

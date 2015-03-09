@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * PeerReviewingDescriptor allows peer-reviewing of variable between
- * (scope-dependent) Player/Team (ie the "author" and the "reviewers").
+ * PeerReviewDescriptor allows peer-reviewing of variable between
+ (scope-dependent) Player/Team (ie the "author" and the "reviewers").
  *
  * A review: <ul>
  * <li> is made for a specific variable ('toReview' VariableDescriptor)</li>
@@ -49,13 +49,13 @@ import org.slf4j.LoggerFactory;
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  * @see EvaluationDescriptor
- * @see PeerReviewingInstance
+ * @see PeerReviewInstance
  */
 @Entity
-public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingInstance> {
+public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(PeerReviewingDescriptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(PeerReviewDescriptor.class);
 
     /**
      * Define review states
@@ -102,7 +102,7 @@ public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingIns
     /**
      *
      */
-    public PeerReviewingDescriptor() {
+    public PeerReviewDescriptor() {
         super();
     }
 
@@ -110,7 +110,7 @@ public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingIns
      *
      * @param name variable unique name
      */
-    public PeerReviewingDescriptor(String name) {
+    public PeerReviewDescriptor(String name) {
         super(name);
     }
 
@@ -119,18 +119,18 @@ public class PeerReviewingDescriptor extends VariableDescriptor<PeerReviewingIns
      * @param name            variable unique name
      * @param defaultInstance
      */
-    public PeerReviewingDescriptor(String name, PeerReviewingInstance defaultInstance) {
+    public PeerReviewDescriptor(String name, PeerReviewInstance defaultInstance) {
         super(name, defaultInstance);
     }
 
     /**
      *
-     * @param a another PeerReviewingDescriptor
+     * @param a another PeerReviewDescriptor
      */
     @Override
     public void merge(AbstractEntity a) {
-        if (a instanceof PeerReviewingDescriptor) {
-            PeerReviewingDescriptor other = (PeerReviewingDescriptor) a;
+        if (a instanceof PeerReviewDescriptor) {
+            PeerReviewDescriptor other = (PeerReviewDescriptor) a;
             super.merge(a);
 
             this.setMaxNumberOfReview(other.getMaxNumberOfReview());

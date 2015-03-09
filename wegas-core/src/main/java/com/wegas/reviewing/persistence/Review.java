@@ -19,7 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
- * A review is linked to two PeerReviewingInstnace : the one who review and the
+ * A review is linked to two PeerReviewInstnace : the one who review and the
  * original reviewed 'author'
  *
  * A review is composed of the feedback (written by reviewers) and the feedback
@@ -35,16 +35,16 @@ public class Review extends AbstractEntity {
     private Long id;
 
     /**
-     * the PeerReviewingInstance that belongs to the reviewer
+     * the PeerReviewInstance that belongs to the reviewer
      */
     @ManyToOne
-    private PeerReviewingInstance reviewer;
+    private PeerReviewInstance reviewer;
 
     /**
-     * the PeerReviewingInstance that belongs to the reviewed author
+     * the PeerReviewInstance that belongs to the reviewed author
      */
     @ManyToOne
-    private PeerReviewingInstance author;
+    private PeerReviewInstance author;
 
     /**
      * List of evaluation instances that compose the feedback (writable by 'reviewer' only)
@@ -67,7 +67,7 @@ public class Review extends AbstractEntity {
      * get the PeerReviewInstance that belongs to the reviewer
      * @return the PeerReviewInstnace that belongs to the reviewer
      */
-    public PeerReviewingInstance getReviewer() {
+    public PeerReviewInstance getReviewer() {
         return reviewer;
     }
 
@@ -75,7 +75,7 @@ public class Review extends AbstractEntity {
      * set the PeerReviewInstance that belongs to the reviewer
      * @param reviewer the PeerReviewInstnace that belongs to the reviewer
      */
-    public void setReviewer(PeerReviewingInstance reviewer) {
+    public void setReviewer(PeerReviewInstance reviewer) {
         this.reviewer = reviewer;
     }
     
@@ -84,7 +84,7 @@ public class Review extends AbstractEntity {
      * get the PeerReviewInstance that belongs to the author
      * @return the PeerReviewInstnace that belongs to the author
      */
-    public PeerReviewingInstance getAuthor() {
+    public PeerReviewInstance getAuthor() {
         return author;
     }
 
@@ -92,7 +92,7 @@ public class Review extends AbstractEntity {
      * set the PeerReviewInstance that belongs to the author
      * @param author the PeerReviewInstnace that belongs to the author
      */
-    public void setAuthor(PeerReviewingInstance author) {
+    public void setAuthor(PeerReviewInstance author) {
         this.author = author;
     }
 

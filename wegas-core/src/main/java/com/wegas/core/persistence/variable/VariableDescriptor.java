@@ -28,7 +28,7 @@ import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
-import com.wegas.reviewing.persistence.PeerReviewingDescriptor;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -68,7 +68,7 @@ import org.eclipse.persistence.annotations.JoinFetch;
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
-    @JsonSubTypes.Type(name = "PeerReviewingDescriptor", value = PeerReviewingDescriptor.class)
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
 })
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
 

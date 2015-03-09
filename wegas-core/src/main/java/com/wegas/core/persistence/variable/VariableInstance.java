@@ -26,7 +26,7 @@ import com.wegas.mcq.persistence.QuestionInstance;
 import com.wegas.messaging.persistence.InboxInstance;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskInstance;
-import com.wegas.reviewing.persistence.PeerReviewingInstance;
+import com.wegas.reviewing.persistence.PeerReviewInstance;
 import javax.persistence.*;
 ////import javax.xml.bind.annotation.XmlTransient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -75,7 +75,7 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "ResourceInstance", value = ResourceInstance.class),
     @JsonSubTypes.Type(name = "TaskInstance", value = TaskInstance.class),
     @JsonSubTypes.Type(name = "ObjectInstance", value = ObjectInstance.class),
-    @JsonSubTypes.Type(name = "PeerReviewingInstance", value = PeerReviewingInstance.class)
+    @JsonSubTypes.Type(name = "PeerReviewInstance", value = PeerReviewInstance.class)
 })
 abstract public class VariableInstance extends AbstractEntity {
 

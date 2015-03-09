@@ -715,7 +715,7 @@ YUI().use(function(Y) {
         }
     });
     /**
-     * PeerReviewing
+     * PeerReview
      */
     YUI.addGroup("wegas-reviewing", {
         base: './wegas-reviewing/',
@@ -723,7 +723,7 @@ YUI().use(function(Y) {
         modules: {
             "wegas-reviewing-entities": {
                 requires: "wegas-entity",
-                ws_provides: "PeerReviewingDescriptor"
+                ws_provides: "PeerReviewDescriptor"
             }
         }
     });

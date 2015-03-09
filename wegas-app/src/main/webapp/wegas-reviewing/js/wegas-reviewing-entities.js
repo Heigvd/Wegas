@@ -10,7 +10,6 @@
  */
 YUI.add('wegas-reviewing-entities', function(Y) {
     "use strict";
-
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array",
         SELF = "self", BOOLEAN = "boolean", BUTTON = "Button", OBJECT = "object",
         HTML = "html", SCRIPT = "script", NUMBER = "number",
@@ -22,11 +21,10 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 _type: HIDDEN
             }
         };
-
     /**
-     * PeerReviewingescriptor mapper
+     * PeerReviewescriptor mapper
      */
-    persistence.PeerReviewingDescriptor = Y.Base.create("PeerReviewingDescriptor", persistence.VariableDescriptor, [], {
+    persistence.PeerReviewDescriptor = Y.Base.create("PeerReviewDescriptor", persistence.VariableDescriptor, [], {
         helloWorld: function() {
             return "hello, world!\n";
         }
@@ -34,7 +32,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         ATTRS: {
             "@class": {
                 type: STRING,
-                value: "PeerReviewingDescriptor"
+                value: "PeerReviewDescriptor"
             },
             maxNumberOfReview: {
                 type: NUMBER,
@@ -64,7 +62,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    label: "feedback",
+                    _type: HIDDEN,
                     index: 1
                 }
             },
@@ -72,7 +70,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: ARRAY,
                 value: [],
                 _inputex: {
-                    label: "feedback evaluation",
+                    _type: HIDDEN,
                     index: 2
                 }
             },
@@ -82,7 +80,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                         type: STRING,
                         _inputex: {
                             _type: HIDDEN,
-                            value: "PeerReviewingInstance"
+                            value: "PeerReviewInstance"
                         }
                     },
                     id: IDATTRDEF
@@ -94,6 +92,97 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         },
         EDITMENU: [{
                 type: "EditEntityButton"
+            },
+            {
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add feedback",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: [{
+                                    type: BUTTON,
+                                    label: "Grade",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "GradeDescriptor",
+                                                method: "POST",
+                                                attributeKey: "feedback",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Text",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "TextEvaluationDescriptor",
+                                                method: "POST",
+                                                attributeKey: "feedback",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Categorization",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "CategorizedEvaluationDescriptor",
+                                                method: "POST",
+                                                attributeKey: "feedback",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }]
+                        }
+                    }]
+            }, {
+                type: BUTTON,
+                label: "<span class=\"wegas-icon wegas-icon-new\"></span>Add fb eval",
+                plugins: [{
+                        fn: "WidgetMenu",
+                        cfg: {
+                            children: [{
+                                    type: BUTTON,
+                                    label: "Grade",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "GradeDescriptor",
+                                                method: "POST",
+                                                attributeKey: "feedbackEvaluations",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Text",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "TextEvaluationDescriptor",
+                                                method: "POST",
+                                                attributeKey: "feedbackEvaluations",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }, {
+                                    type: BUTTON,
+                                    label: "Categorization",
+                                    plugins: [{
+                                            fn: "EditEntityArrayFieldAction",
+                                            cfg: {
+                                                targetClass: "CategorizedEvaluationDescriptor",
+                                                method: "POST",
+                                                attributeKey: "feedbackEvaluations",
+                                                showEditionAfterRequest: true
+                                            }
+                                        }]
+                                }]
+                        }
+                    }]
             }, {
                 type: BUTTON,
                 label: "Copy",
@@ -109,17 +198,14 @@ YUI.add('wegas-reviewing-entities', function(Y) {
         METHODS: {
         }
     });
-
-
-
     /**
-     * PeerReviewingInstance mapper
+     * PeerReviewInstance mapper
      */
-    Wegas.persistence.PeerReviewingInstance = Y.Base.create("PeerReviewingInstance", Wegas.persistence.VariableInstance, [], {
+    Wegas.persistence.PeerReviewInstance = Y.Base.create("PeerReviewInstance", Wegas.persistence.VariableInstance, [], {
     }, {
         ATTRS: {
             "@class": {
-                value: "PeerReviewingInstance"
+                value: "PeerReviewInstance"
             },
             reviewState: {
                 type: STRING,
@@ -141,8 +227,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
-
     /**
      * EvaluationDescriptor
      */
@@ -156,15 +240,21 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                 type: STRING
             },
             feedbackEvaluationReviewDescriptor: {
-                type: persistence.PeerReviewingDescriptor
+                type: "PeerReviewDescriptor",
+                optional: true,
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             feedbackReviewDescriptor: {
-                type: persistence.PeerReviewingDescriptor
+                type: "PeerReviewDescriptor",
+                optional: true,
+                _inputex: {
+                    _type: HIDDEN
+                }
             }
         }
     });
-
-
     /**
      * TextEvaluationDescriptor
      */
@@ -176,7 +266,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
     /**
      * GradeDescriptor
      */
@@ -208,7 +297,6 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
     /**
      * CategorizedEvaluationDescriptor
      */
