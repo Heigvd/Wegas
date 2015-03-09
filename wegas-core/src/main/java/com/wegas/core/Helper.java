@@ -154,7 +154,7 @@ public class Helper {
      * @param usedNames
      */
     public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames) {
-        setUniqueNameForEntity(entity, usedNames, DEFAULT_VARIABLE_NAME);
+        setUniqueNameForEntity(entity, usedNames, DEFAULT_VARIABLE_NAME, true);
     }
 
     /**
@@ -162,11 +162,12 @@ public class Helper {
      * @param entity      entity to rename
      * @param usedNames
      * @param defaultName name to use if entity one is unset
+     * @param encodeName
      */
-    public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames, String defaultName) {
+    public static void setUniqueNameForEntity(final NamedEntity entity, List<String> usedNames, String defaultName, boolean encodeName) {
         if (isNullOrEmpty(entity.getName())) {
             entity.setName(defaultName);
-        } else {
+        } else if (encodeName){
             entity.setName(encodeVariableName(entity.getName()));
         }
         String newName = findUniqueName(entity.getName(), usedNames);
@@ -210,7 +211,7 @@ public class Helper {
         if (hasName && !hasLabel) {
             r.setLabel(r.getName());
         }
-        setUniqueNameForEntity(r, usedNames, "result");
+        setUniqueNameForEntity(r, usedNames, "result", false);
         setUniqueLabel(r, usedLabels, "New Result");
     }
 
