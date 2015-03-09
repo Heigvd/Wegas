@@ -11,7 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
-import com.wegas.reviewing.persistence.PeerReviewingDescriptor;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
@@ -54,18 +54,18 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private String name;
 
     /**
-     * Indicates that the parent PeerReviewingDescriptor defined this evaluation
-     * as composing a feedback
+     * Indicates that the parent PeerReviewDescriptor defined this evaluation
+ as composing a feedback
      */
     @ManyToOne
-    private PeerReviewingDescriptor feedbackReviewDescriptor;
+    private PeerReviewDescriptor feedbackReviewDescriptor;
 
     /**
-     * Indicates that the parent PeerReviewingDescriptor defined this evaluation
-     * as composing a feedback evaluation
+     * Indicates that the parent PeerReviewDescriptor defined this evaluation
+ as composing a feedback evaluation
      */
     @ManyToOne
-    private PeerReviewingDescriptor feedbackEvaluationReviewDescriptor;
+    private PeerReviewDescriptor feedbackEvaluationReviewDescriptor;
 
     /**
      * Basic constructor
@@ -152,7 +152,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      *         the feedback evaluation
      */
     @JsonIgnore
-    public PeerReviewingDescriptor getFeedbackEvaluationReviewDescriptor() {
+    public PeerReviewDescriptor getFeedbackEvaluationReviewDescriptor() {
         return this.feedbackEvaluationReviewDescriptor;
     }
 
@@ -162,7 +162,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      *
      * @param rd the parent
      */
-    public void setFeedbackEvaluationReviewDescriptor(PeerReviewingDescriptor rd) {
+    public void setFeedbackEvaluationReviewDescriptor(PeerReviewDescriptor rd) {
         this.feedbackEvaluationReviewDescriptor = rd;
     }
 
@@ -171,7 +171,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      *         the feedback
      */
     @JsonIgnore
-    public PeerReviewingDescriptor getFeedbackReviewDescriptor() {
+    public PeerReviewDescriptor getFeedbackReviewDescriptor() {
         return feedbackReviewDescriptor;
     }
 
@@ -180,7 +180,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      *
      * @param rd the parent
      */
-    public void setFeedbackReviewDescriptor(PeerReviewingDescriptor rd) {
+    public void setFeedbackReviewDescriptor(PeerReviewDescriptor rd) {
         this.feedbackReviewDescriptor = rd;
     }
 }

@@ -353,6 +353,33 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         iconCSS: "wegas-icon-choicedescriptor",
                         cssClass: "wegas-editor-questionitem " + erroredClass
                     };
+                case 'PeerReviewDescriptor':
+                    children = Y.Array.map(["feedback", "feedbackEvaluations"], function(category) {
+                        return {
+                            label: category,
+                            //selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
+                            data: {
+                                //entity: result,
+                                parentEntity: entity,
+                                children : []
+                            },
+                            iconCSS: "wegas-icon-result"
+                        };
+                    }, this);
+                    return {
+                        type: 'TreeNode',
+                        label: text,
+                        tooltip: tooltip,
+                        children: children,
+                        data: {
+                            entity: entity
+                        },
+                        collapsed: collapsed,
+                        selected: selected,
+                        //rightWidget: Y.Node.create(EDITBUTTONTPL),
+                        iconCSS: "fa fa-users fa-1",
+                        cssClass: "wegas-editor-questionitem " + erroredClass
+                    };
                 default:
                     return {
                         label: text,

@@ -47,16 +47,16 @@
             </column>
             <column name="value" type="FLOAT8(17)"/>
         </createTable>
-        <createTable tableName="peerreviewingdescriptor">
+        <createTable tableName="peerreviewdescriptor">
             <column name="variabledescriptor_id" type="int8">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="peerreviewingdescriptor_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="peerreviewdescriptor_pkey"/>
             </column>
             <column name="maxnumberofreviewer" type="int4"/>
             <column name="toreview_variabledescriptor_id" type="int8"/>
         </createTable>
-        <createTable tableName="peerreviewinginstance">
+        <createTable tableName="peerreviewinstance">
             <column name="variableinstance_id" type="int8">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="peerreviewinginstance_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="peerreviewinstance_pkey"/>
             </column>
             <column name="reviewstate" type="int4"/>
         </createTable>
@@ -88,9 +88,9 @@
         <addForeignKeyConstraint baseColumnNames="feedbackreview_id" baseTableName="evaluationinstance" baseTableSchemaName="public" constraintName="fk_evaluationinstance_feedbackreview_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="review" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="gradedescriptor" baseTableSchemaName="public" constraintName="fk_gradedescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="gradeinstance" baseTableSchemaName="public" constraintName="fk_gradeinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
-        <addForeignKeyConstraint baseColumnNames="toreview_variabledescriptor_id" baseTableName="peerreviewingdescriptor" baseTableSchemaName="public" constraintName="fk_peerreviewingdescriptor_toreview_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variabledescriptor_id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
-        <addForeignKeyConstraint baseColumnNames="variabledescriptor_id" baseTableName="peerreviewingdescriptor" baseTableSchemaName="public" constraintName="fk_peerreviewingdescriptor_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variabledescriptor_id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
-        <addForeignKeyConstraint baseColumnNames="variableinstance_id" baseTableName="peerreviewinginstance" baseTableSchemaName="public" constraintName="fk_peerreviewinginstance_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variableinstance_id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="toreview_variabledescriptor_id" baseTableName="peerreviewdescriptor" baseTableSchemaName="public" constraintName="fk_peerreviewingdescriptor_toreview_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variabledescriptor_id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="variabledescriptor_id" baseTableName="peerreviewdescriptor" baseTableSchemaName="public" constraintName="fk_peerreviewingdescriptor_variabledescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variabledescriptor_id" referencedTableName="variabledescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
+        <addForeignKeyConstraint baseColumnNames="variableinstance_id" baseTableName="peerreviewinstance" baseTableSchemaName="public" constraintName="fk_peerreviewinginstance_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variableinstance_id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
         <addForeignKeyConstraint baseColumnNames="author_variableinstance_id" baseTableName="review" baseTableSchemaName="public" constraintName="fk_review_author_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variableinstance_id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
         <addForeignKeyConstraint baseColumnNames="reviewer_variableinstance_id" baseTableName="review" baseTableSchemaName="public" constraintName="fk_review_reviewer_variableinstance_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="variableinstance_id" referencedTableName="variableinstance" referencedTableSchemaName="public" referencesUniqueColumn="false"/>
         <addForeignKeyConstraint baseColumnNames="id" baseTableName="textevaluationdescriptor" baseTableSchemaName="public" constraintName="fk_textevaluationdescriptor_id" deferrable="false" initiallyDeferred="false" onDelete="NO ACTION" onUpdate="NO ACTION" referencedColumnNames="id" referencedTableName="evaluationdescriptor" referencedTableSchemaName="public" referencesUniqueColumn="false"/>

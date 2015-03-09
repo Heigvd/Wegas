@@ -29,20 +29,20 @@ import static org.junit.Assert.*;
  */
 
 
-public class PeerReviewingDescriptorTest {
+public class PeerReviewDescriptorTest {
 
     ObjectMapper mapper;
     
     NumberDescriptor toBeReviewed;
     
-    PeerReviewingDescriptor initial;
+    PeerReviewDescriptor initial;
 
-    PeerReviewingInstance defaultInstance;
+    PeerReviewInstance defaultInstance;
 
     private final Integer MAX_NUM = 4;
     private final String VAR_NAME = "x";
     
-    public PeerReviewingDescriptorTest() {
+    public PeerReviewDescriptorTest() {
     }
     
     @Before
@@ -51,10 +51,10 @@ public class PeerReviewingDescriptorTest {
 
         toBeReviewed = new NumberDescriptor(VAR_NAME);
         
-        initial = new PeerReviewingDescriptor("myReview");
+        initial = new PeerReviewDescriptor("myReview");
 
-        defaultInstance = new PeerReviewingInstance();
-        defaultInstance.setReviewState(PeerReviewingDescriptor.ReviewingState.NOT_STARTED);
+        defaultInstance = new PeerReviewInstance();
+        defaultInstance.setReviewState(PeerReviewDescriptor.ReviewingState.NOT_STARTED);
         initial.setDefaultInstance(defaultInstance);
         
         System.out.println("Create REVIEW");
@@ -96,7 +96,7 @@ public class PeerReviewingDescriptorTest {
     }
 
     /**
-     * Test of merge method, of class PeerReviewingDescriptor.
+     * Test of merge method, of class PeerReviewDescriptor.
      * @throws java.io.IOException
      */
     @Test
@@ -106,7 +106,7 @@ public class PeerReviewingDescriptorTest {
         String json = mapper.writeValueAsString(initial);
         System.out.println("JSON: " + json);
 
-        PeerReviewingDescriptor read = mapper.readValue(json, PeerReviewingDescriptor.class);
+        PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
 
         assertEquals("Name", initial.getName(), read.getName());
         assertEquals("Comments", initial.getComments(), read.getComments());
@@ -122,8 +122,8 @@ public class PeerReviewingDescriptorTest {
         System.out.println("SERIALISE");
 
 
-        PeerReviewingDescriptor merged = new PeerReviewingDescriptor("another");
-        merged.setDefaultInstance(new PeerReviewingInstance());
+        PeerReviewDescriptor merged = new PeerReviewDescriptor("another");
+        merged.setDefaultInstance(new PeerReviewInstance());
 
         merged.merge(initial);
 

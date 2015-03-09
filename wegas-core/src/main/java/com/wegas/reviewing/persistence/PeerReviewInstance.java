@@ -19,26 +19,26 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Instance of the PeerReviewingDescriptor variable
- *
- * Author:<br />
+ * Instance of the PeerReviewDescriptor variable
+
+ Author:<br />
  * - has to review several other authors: <code>toReview</code> Review list<br />
  * - is reviewed by several other authors: <code>reviewed</code> Review list
+
+ The review is in a specific state, see PeerReviewDescriptor
  *
- * The review is in a specific state, see PeerReviewingDescriptor
  *
- *
- * @see PeerReviewingDescriptor
+ * @see PeerReviewDescriptor
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
 @Entity
-public class PeerReviewingInstance extends VariableInstance {
+public class PeerReviewInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(PeerReviewingInstance.class);
+    private static final Logger logger = LoggerFactory.getLogger(PeerReviewInstance.class);
 
-    private PeerReviewingDescriptor.ReviewingState reviewState = PeerReviewingDescriptor.ReviewingState.NOT_STARTED;
+    private PeerReviewDescriptor.ReviewingState reviewState = PeerReviewDescriptor.ReviewingState.NOT_STARTED;
 
     @OneToMany(mappedBy = "reviewer")
     private List<Review> toReview = new ArrayList<>();
@@ -46,13 +46,13 @@ public class PeerReviewingInstance extends VariableInstance {
     @OneToMany(mappedBy = "author")
     private List<Review> reviewed = new ArrayList<>();
 
-    public PeerReviewingInstance() {
+    public PeerReviewInstance() {
     }
 
     @Override
     public void merge(AbstractEntity a) {
-        if (a instanceof PeerReviewingInstance) {
-            PeerReviewingInstance o = (PeerReviewingInstance) a;
+        if (a instanceof PeerReviewInstance) {
+            PeerReviewInstance o = (PeerReviewInstance) a;
             this.setReviewState(o.getReviewState());
             this.setReviewed(ListUtils.mergeLists(this.getReviewed(), o.getReviewed()));
             this.setToReview(ListUtils.mergeLists(this.getToReview(), o.getToReview()));
@@ -64,7 +64,7 @@ public class PeerReviewingInstance extends VariableInstance {
      *
      * @return the current state
      */
-    public PeerReviewingDescriptor.ReviewingState getReviewState() {
+    public PeerReviewDescriptor.ReviewingState getReviewState() {
         return reviewState;
     }
 
@@ -73,7 +73,7 @@ public class PeerReviewingInstance extends VariableInstance {
      *
      * @param state the new current state
      */
-    public void setReviewState(PeerReviewingDescriptor.ReviewingState state) {
+    public void setReviewState(PeerReviewDescriptor.ReviewingState state) {
         this.reviewState = state;
     }
 
