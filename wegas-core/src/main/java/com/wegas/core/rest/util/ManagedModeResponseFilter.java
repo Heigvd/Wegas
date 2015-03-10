@@ -92,7 +92,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                  */
 
                 if (response.getEntity() instanceof List) {
-                    entities = (List<Object>) response.getEntity();
+                    entities = new ArrayList<>();
+                    for (Object o : (List)response.getEntity()){
+                        entities.add(o);
+                    }
+                    //entities = (List<Object>) response.getEntity();
                 } else if (response.getEntity() instanceof ScriptObjectMirror
                         && ((ScriptObjectMirror) response.getEntity()).isArray()) {
                     entities = new ArrayList(((ScriptObjectMirror) response.getEntity()).values());
