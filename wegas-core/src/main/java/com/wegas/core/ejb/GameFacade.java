@@ -273,7 +273,7 @@ public class GameFacade extends BaseFacade<Game> {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameEnrolmentKey> game = cq.from(GameEnrolmentKey.class);
-        cq.where(cb.equal(game.get(GameEnrolmentKey_.key), key));
+        cq.where(cb.equal(game.get("key"), key));
         Query q = em.createQuery(cq);
         try {
             return (GameEnrolmentKey) q.getSingleResult();
@@ -291,7 +291,7 @@ public class GameFacade extends BaseFacade<Game> {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
-        cq.where(cb.equal(gameAccount.get(GameAccountKey_.key), key));
+        cq.where(cb.equal(gameAccount.get("key"), key));
         Query q = em.createQuery(cq);
         try {
             return (GameAccountKey) q.getSingleResult();
@@ -308,7 +308,7 @@ public class GameFacade extends BaseFacade<Game> {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<Game> game = cq.from(Game.class);
-        cq.where(cb.like(game.get(Game_.name), search));
+        cq.where(cb.like(game.get("name"), search));
         Query q = em.createQuery(cq);
         return (List<Game>) q.getResultList();
     }
