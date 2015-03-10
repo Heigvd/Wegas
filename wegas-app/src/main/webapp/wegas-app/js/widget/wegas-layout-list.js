@@ -73,17 +73,14 @@ YUI.add('wegas-layout-list', function(Y) {
                 value: 'vertical',
                 type: "string",
                 choices: [{
-                    value: 'vertical'
-                }, {
-                    value: 'horizontal'
-                }]
+                        value: 'vertical'
+                    }, {
+                        value: 'horizontal'
+                    }]
             },
             name: {
                 value: "folder",
                 type: "string"
-            },
-            multiple: {
-                value: true
             }
 
             /**
