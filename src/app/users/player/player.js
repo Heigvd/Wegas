@@ -16,6 +16,8 @@ angular.module('users.player', [
     })
     .controller('UsersPlayerCtrl', function(UsersModel) {
         var usersPlayerCtrl = this;
-        usersPlayerCtrl.authenticateUser = UsersModel.getAuthenticateUser();
+        UsersModel.getAuthenticateUser().then(function(data){
+            usersPlayerCtrl.authenticateUser = data;
+        });
         usersPlayerCtrl.message = "Player zone";
     });

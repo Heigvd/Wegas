@@ -1,26 +1,36 @@
 'use strict';
 angular.module('wegas.models.users', [])
-    .service('UsersModel', function ($http) {
+    .service('UsersModel', function ($http, $q) {
         var model = this,
             users,
-            authenticateUser;
+            authenticateUser = null;
+
         model.getUser = function() {
-            return "Here is all users for a trainer";
+            return "Here is all users";
         };
         model.isLogged = function(){
-            var isLogged = false;
-            $http.get("http://localhost:8080/Wegas/rest/User/LoggedIn").success(function(data){
-                isLogged = data;
-                console.log("isLogged : " + data);
+            var deferred = $q.defer();
+            $http.get(ServiceURL + "rest/User/LoggedIn").success(function(data){
+                deferred.resolve(data);
             });
-            return isLogged;
+            return deferred.promise;
+
         };
         model.login = function(){
             authenticateUser = {id:6, login:"Raph", isPlayer:true, isTrainer:true, isScenarist:false};
         	return true;
         };
         model.getAuthenticateUser = function(){
-            return authenticateUser;
+            var deferred = $q.defer();
+            if(authenticateUser != null){
+                deferred.resolve(authenticateUser);
+            }else{
+                $http.get(ServiceURL + "rest/User/Current").success(function(data){
+                    authenticateUser = data;
+                    deferred.resolve(data);
+                });
+            }
+            return deferred.promise;
         };
     })
 ;

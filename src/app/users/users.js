@@ -23,17 +23,23 @@ angular.module('users', [
     })
     .controller('UsersCtrl', function($state, $stateParams, UsersModel) {
         var usersCtrl = this;
-        var authenticateUser = null;
-        if(UsersModel.isLogged()){
-            authenticateUser = UsersModel.getAuthenticateUser();
-            if(authenticateUser.isTrainer){
-                $state.go('wegas.users.trainer');
+        UsersModel.isLogged().then(function(data){
+            console.log(data);
+            if(data){
+                console.log("Hello");
+                UsersModel.getAuthenticateUser().then(function(data){
+                    console.log(data);
+                    if(data.isTrainer){
+                        $state.go('wegas.users.trainer');
+                    }else{
+                        $state.go('wegas.users.player');
+                    }
+                });
             }else{
-                $state.go('wegas.users.player');
+                console.log("Pas hello");
+                usersCtrl.message = "Public zone";
+                $state.go('wegas.users.login');
             }
-        }else{
-            usersCtrl.message = "Public zone";
-            $state.go('wegas.users.login');
-        }
+        });
     });
 ;
