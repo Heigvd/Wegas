@@ -1,0 +1,68 @@
+ .form{
+    display:block;
+    position:relative;
+    @include container-fixed(32px);
+    .form__title{
+        @include make-xs-column(12, 56px);
+        margin:32px 0px 16px 0px;
+    }
+    .form__row{
+        display:block;
+        position:relative;
+        @include make-row();
+        margin:12px 0px;
+
+        .form__row__label{
+            display:none;
+        }
+
+        .form__row__entry{
+            display:block;
+            position:relative;
+            @include make-xs-column(12);
+        }
+        .form__row__description{
+            display:block;
+            position:relative;
+            text-align:right;
+            color:$default-color-light;
+            @include make-xs-column(12);
+        }
+
+        .form__row__btn{
+            display:block;
+            float:right;
+        }
+
+        &.form__row--with-label{
+            .form__row__label{
+                display:block;
+                text-align:right;
+                @include make-xs-column(12);
+                @include make-md-column(4); 
+
+                @each $size in $sizes {
+                    $size-name: nth($size, 1);
+                    $size-value: nth($size, 2);
+                    &.form__row__label--#{$size-name}{
+                        height: $size-value;
+                        padding:$size-value/3 $size-value/2;
+                        font-size: $size-value / 3;
+                        line-height: $size-value/3;
+                        border-radius: $size-value/8;
+                    }
+                }
+
+            &.form__row__label--reverse{
+                color:$white;
+            }
+            }
+            .form__row__entry{
+                display:block;
+                position:relative;
+                @include make-xs-column(12);
+                @include make-md-column(8);
+            }
+        }
+    }
+}

@@ -1,0 +1,38 @@
+.illustration{
+	display:block;
+    position:relative;
+    padding:0px;
+    margin:0px;
+    overflow:hidden;
+    text-align:center;
+    img{
+	    position: absolute;
+	    border:none;
+	    width:auto;
+	    height:100%;
+	    margin:0px;
+	    padding:0px;
+	    left: 50%;
+	    top: 50%;
+	    -webkit-transform: translateY(-50%) translateX(-50%);
+	}
+
+	@each $size in $sizes{
+		$size-nom: nth($size, 1);
+		$size-value: nth($size, 2);
+		&.illustration--#{$size-nom}{
+			width:$size-value;
+			height:$size-value;
+		}
+	}
+	
+	&.illustration--round{
+		border-radius:50%;
+	}
+	&.illustration--round-square{
+		border-radius:5px;
+	}
+	&.illustration--center{
+		margin:0px auto;
+	}
+}

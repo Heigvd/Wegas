@@ -1,0 +1,40 @@
+.link{
+	display:inline-block;
+	position:relative;
+	width:auto;
+	height:24px;
+	line-height:12px;
+	color:$secondary-color;
+	padding:6px 12px 6px 12px;
+	margin:4px 8px;
+	font-size:12px;
+	text-transform: uppercase;
+	border-radius:12px;
+	background-color:lighten($background-default, 4%);
+	text-decoration: none;
+	transition: .5s;
+
+	&:hover, &:focus, &:active{
+		color:darken($secondary-color, 20%);
+		cursor:pointer;
+		text-decoration: none;
+		background-color:$white;
+		transition: .5s;
+	}
+
+	&:first-child{
+		margin-left:0px;
+	}
+	&:last-child{
+		margin-right:0px;
+	}
+
+	&.link--reverse{
+		color:white;
+		background-color:lighten($primary-color, 6%);
+		&:hover, &.focus, &.link.active{
+			color:white;
+			background-color:lighten($primary-color, 12%);
+		}
+	}
+}

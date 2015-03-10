@@ -1,0 +1,35 @@
+// Deprecated to view V2
+
+.sheet{
+    display:block;
+    position:absolute;
+    width:100%;
+    height:100%;
+    top:0px;
+    left:0px;
+    margin:0px;
+    padding:0px;
+    transition:0.5s;
+    @include set-sheet($background-default, 4);
+}
+
+.sheet--workspace{
+    // Même que .sheet
+}
+
+.sheet--menu{
+    @include set-sheet($background-white, 3);
+}
+
+.sheet--public{
+    @include set-sheet($background-reverse, 2);
+}
+
+.sheet--public-interaction{
+    @include set-sheet($background-reverse-light, 1);
+}
+
+.sheet--out-bottom{
+    top:100%;
+    transition:0.5s;
+}

@@ -33,6 +33,7 @@ gulp.task('styles', function () {
 
   return gulp.src([
     paths.src + '/app/index.scss',
+    paths.src + '/assets/sass/index.scss',    
     paths.src + '/app/vendor.scss'
   ])
     .pipe(indexFilter)

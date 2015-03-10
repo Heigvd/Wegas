@@ -1,0 +1,45 @@
+*{
+    font-family: $font-family;
+    color:$default-color;
+    font-weight:$font-weight-default;
+}
+
+body{ 
+    display:block;
+    position:absolute;
+    top:0px;
+    left:0px;
+    height:100%;
+    width:100%;
+    background-color:$background-default;
+    -webkit-perspective: 1200px;
+    -moz-perspective: 1200px;
+    perspective: 1200px;
+    overflow-x:hidden;
+    overflow-y:auto;
+    -webkit-backface-visibility: hidden;
+
+    &.guideline{
+        overflow:auto;
+    }
+}
+
+hr{
+    border-color:$border;
+    clear:both;
+} 
+
+.v1{
+    a{
+        color:$secondary-color-dark;
+        transition: all 0.5s ease;
+    }
+
+    a:hover, a:active{
+        color:$secondary-color;
+        transition: all 0.5s ease;
+    }
+}
+
+@import "base/headings";
+@import "base/forms";
