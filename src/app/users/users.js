@@ -24,11 +24,8 @@ angular.module('users', [
     .controller('UsersCtrl', function($state, $stateParams, UsersModel) {
         var usersCtrl = this;
         UsersModel.isLogged().then(function(data){
-            console.log(data);
             if(data){
-                console.log("Hello");
                 UsersModel.getAuthenticateUser().then(function(data){
-                    console.log(data);
                     if(data.isTrainer){
                         $state.go('wegas.users.trainer');
                     }else{
@@ -36,7 +33,6 @@ angular.module('users', [
                     }
                 });
             }else{
-                console.log("Pas hello");
                 usersCtrl.message = "Public zone";
                 $state.go('wegas.users.login');
             }

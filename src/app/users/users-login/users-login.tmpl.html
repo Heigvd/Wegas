@@ -1,2 +1,11 @@
-<h2>{{usersLoginCtrl.message}}</h2>
-<a href="#" ng-click="usersLoginCtrl.login()">Login</a>
+<form class="view__login-form form" ng-submit="usersLoginCtrl.login()">
+	<div class="form__row">
+    	<input class="form__row__entry input input--small input--primary" type="text" class="form-control" id="login" placeholder="email or username" autocomplete="off">
+	</div>
+	<div class="form__row">
+    	<input class="form__row__entry input input--small input--primary" type="password" class="form-control" id="password" placeholder="password" autocomplete="off">
+	</div>
+	<div class="form__row form__row--right">
+    	<input class="form__row__btn button button--default" type="submit" class="form-control" value="Login" />
+	</div>
+</form>
