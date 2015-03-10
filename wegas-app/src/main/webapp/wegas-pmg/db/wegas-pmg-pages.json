@@ -3,6 +3,7 @@
         "@name": "Main",
         "type": "AbsoluteLayout",
         "cssClass": "layout",
+        "multiple": true,
         "children": [
             {
                 "type": "Text",

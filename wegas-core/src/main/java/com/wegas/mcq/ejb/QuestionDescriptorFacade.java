@@ -109,7 +109,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
         if (event.getEntity() instanceof ChoiceDescriptor) {
             ChoiceDescriptor choice = (ChoiceDescriptor) event.getEntity();
             ChoiceInstance defaultInstance = ((ChoiceInstance) choice.getDefaultInstance());
-            if (defaultInstance.getDeserializedCurrentResultName() != null) {
+            if (defaultInstance.getDeserializedCurrentResultName() != null && !defaultInstance.getDeserializedCurrentResultName().isEmpty()) {
                 try {
                     Result cr = findResult(choice, defaultInstance.getDeserializedCurrentResultName());
                     defaultInstance.setCurrentResult(cr);

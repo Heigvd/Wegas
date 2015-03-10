@@ -21,59 +21,56 @@ YUI.add('wegas-layout-absolute', function(Y) {
      */
     AbsoluteLayout = Y.Base.create("wegas-absolutelayout", Y.Widget,
         [Y.WidgetParent, Y.WidgetChild, Y.Wegas.Editable, Y.Wegas.Parent], {
-            /**
-             * @lends Y.Wegas.AbsoluteLayout#
-             */
-            CONTENT_TEMPLATE: "<div style='position:relative'></div>",
-            /**
-             * @private
-             * @function
-             * @returns {undefined}
-             */
-            bindUI: function() {
-                this.after("addChild", function(e) {
-                    if (!e.child.CSSPosition) {
-                        e.child.plug(Y.Plugin.CSSPosition, {
-                            styles: {
+        /**
+         * @lends Y.Wegas.AbsoluteLayout#
+         */
+        CONTENT_TEMPLATE: "<div style='position:relative'></div>",
+        /**
+         * @private
+         * @function
+         * @returns {undefined}
+         */
+        bindUI: function() {
+            this.after("addChild", function(e) {
+                if (!e.child.CSSPosition) {
+                    e.child.plug(Y.Plugin.CSSPosition, {styles: {
+                            position: "absolute",
+                            top: "0px",
+                            left: "0px",
+                            zIndex: "10"
+                        }
+                    });
+                }
+                if (!e.child.CSSSize) {
+                    e.child.plug(Y.Plugin.CSSSize);
+                }
+            });
+            this.onceAfter("render", function(e) {
+                this.each(function(item) {
+                    if (!item.CSSPosition) {
+                        item.plug(Y.Plugin.CSSPosition, {styles: {
                                 position: "absolute",
                                 top: "0px",
-                                left: "0px",
-                                zIndex: "10"
+                                left: "0px"
                             }
                         });
                     }
-                    if (!e.child.CSSSize) {
-                        e.child.plug(Y.Plugin.CSSSize);
+                    if (!item.CSSSize) {
+                        item.plug(Y.Plugin.CSSSize);
                     }
                 });
-                this.onceAfter("render", function(e) {
-                    this.each(function(item) {
-                        if (!item.CSSPosition) {
-                            item.plug(Y.Plugin.CSSPosition, {
-                                styles: {
-                                    position: "absolute",
-                                    top: "0px",
-                                    left: "0px"
-                                }
-                            });
-                        }
-                        if (!item.CSSSize) {
-                            item.plug(Y.Plugin.CSSSize);
-                        }
-                    });
-                });
-            }
-        }, {
-            /**
-             * @lends Y.Wegas.AbsoluteLayout
-             */
-            NAME: "wegas-absolutelayout",
-            CSS_PREFIX: "wegas-absolutelayout",
-            EDITORNAME: "Layout",
-            ATTRS: {
-                multiple: {value: true}
-            }
-        });
+            });
+        }
+    }, {
+        /**
+         * @lends Y.Wegas.AbsoluteLayout
+         */
+        NAME: "wegas-absolutelayout",
+        CSS_PREFIX: "wegas-absolutelayout",
+        EDITORNAME: "Layout",
+        ATTRS: {
+        }
+    });
     /**
      * @deprecated use CSSPosition instead
      */
