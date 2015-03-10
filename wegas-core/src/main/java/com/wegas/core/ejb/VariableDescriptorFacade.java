@@ -231,9 +231,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<User> variableDescriptor = cq.from(VariableDescriptor.class);
-//        cq.where(cb.and(
-//                cb.equal(variableDescriptor.get(VariableDescriptor_.gameModel), gameModel),
-//                cb.equal(variableDescriptor.get(VariableDescriptor_.name), name)));
         cq.where(cb.and(
                 cb.equal(variableDescriptor.get("gameModel"), gameModel),
                 cb.equal(variableDescriptor.get("name"), name)));
@@ -352,7 +349,6 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final CriteriaBuilder cb = em.getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<User> variableDescriptor = cq.from(variableDescriptorClass);
-        // cq.where(cb.equal(variableDescriptor.get(VariableDescriptorEntity_.gameModel), gameModelId));
         cq.where(cb.equal(variableDescriptor.get("gameModel"), gamemodel));
         final Query q = em.createQuery(cq);
         return q.getResultList();

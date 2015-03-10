@@ -255,13 +255,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public GameModel findByName(final String name) throws NonUniqueResultException, WegasNoResultException {
-        /*final CriteriaBuilder cb = em.getCriteriaBuilder();
-        final CriteriaQuery cq = cb.createQuery();
-        final Root<GameModel> gameModel = cq.from(GameModel.class);
-        cq.where(cb.equal(gameModel.get(GameModel_.name), name));
-        final Query q = em.createQuery(cq);
-        return (GameModel) q.getSingleResult();*/
-
         final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByName", GameModel.class);
         query.setParameter("name", name);
         try {

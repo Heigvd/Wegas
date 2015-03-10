@@ -13,7 +13,6 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.jparealm.JpaAccount;
-import com.wegas.core.security.jparealm.JpaAccount_;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
@@ -27,7 +26,6 @@ import javax.ejb.Stateless;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
@@ -175,7 +173,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 orPreds.add(cb.like(cb.lower(jpaAccount.get("firstname")), token));
                 orPreds.add(cb.like(cb.lower(jpaAccount.get("lastname")), token));
                 orPreds.add(cb.like(cb.lower(jpaAccount.get("email")), token));
-                orPreds.add(cb.like(cb.lower(jpaAccount.get("JpaAccount")), token));
+                orPreds.add(cb.like(cb.lower(jpaAccount.get("username")), token));
                 
                 andPreds.add(cb.or(orPreds.toArray(prs)));
             }
@@ -243,13 +241,10 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 query = getEntityManager().createNamedQuery("JpaAccount.findByFullName", JpaAccount.class);
                 query.setParameter("firstname", value1);
                 query.setParameter("lastname", value2);
-                //cq.where(cb.and(cb.like(cb.lower(account.get(JpaAccount_.firstname)), value1.toLowerCase()),
-                //        cb.like(cb.lower(account.get(JpaAccount_.lastname)), value2.toLowerCase())));
                 break;
             case "email":
                 query = getEntityManager().createNamedQuery("JpaAccount.findByEmail", JpaAccount.class);
                 query.setParameter("email", value1);
-                //cq.where(cb.like(cb.lower(account.get(JpaAccount_.email)), value1.toLowerCase()));
                 break;
             default:
                 throw new UnsupportedOperationException("Unexpected parameter " + type);
