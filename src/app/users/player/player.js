@@ -17,9 +17,8 @@ angular.module('users.player', [
     .controller('UsersPlayerCtrl', function($state, $stateParams, UsersModel) {
         var usersPlayerCtrl = this;
             usersPlayerCtrl.message = "Player zone";
-        UsersModel.getAuthenticatedUser().then(function(data){
-            usersPlayerCtrl.authenticatedUser = data;
-            if(usersPlayerCtrl.authenticatedUser != null){
+        UsersModel.getAuthenticatedUser().then(function(AuthUser){
+            if(AuthUser != null){
                 // Do something
             }else{
                 $state.go("wegas.users.login");

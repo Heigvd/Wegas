@@ -14,7 +14,14 @@ angular.module('users.trainer', [
             })
         ;
     })
-    .controller('UsersTrainerCtrl', function() {
+    .controller('UsersTrainerCtrl', function($state, UsersModel) {
         var usersTrainerCtrl = this;
         usersTrainerCtrl.message = "Trainer zone";
+        UsersModel.getAuthenticatedUser().then(function(AuthUser){
+            if(AuthUser != null){
+                // Do something
+            }else{
+                $state.go("wegas.users.login");
+            }
+        });
     });
