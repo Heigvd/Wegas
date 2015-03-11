@@ -50,5 +50,22 @@ angular.module('wegas.models.users', [])
 
             return deferred.promise;
         }
+
+        model.remindPassword = function (email) {
+            var obj = {
+                "email" : email
+            };
+            var deferred = $q.defer();
+
+            $http.post(ServiceURL + "rest/User/SendNewPassword",obj)
+            .success(function (data){
+                deferred.resolve(true);
+            })
+            .error(function (data) {
+                deferred.resolve(data);
+            });
+
+            return deferred.promise;
+        }
     })
 ;
