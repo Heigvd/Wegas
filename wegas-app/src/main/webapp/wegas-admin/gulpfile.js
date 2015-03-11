@@ -1,10 +1,10 @@
 /*global require*/
-var gulp           = require('gulp'),
+var gulp = require('gulp'),
     emberTemplates = require('gulp-ember-templates'),
-    rename         = require("gulp-rename"),
-    rjs            = require("gulp-requirejs"),
-    uglify         = require("gulp-uglify"),
-    sourcemaps     = require("gulp-sourcemaps");
+    rename = require("gulp-rename"),
+    rjs = require("gulp-requirejs"),
+    uglify = require("gulp-uglify"),
+    sourcemaps = require("gulp-sourcemaps");
 gulp.task("default", ["compile-template"], function() {
     "use strict";
 
@@ -19,11 +19,15 @@ gulp.task("default", ["compile-template"], function() {
 
 gulp.task("compile-template", function() {
     "use strict";
-    return gulp.src('*.hbs', {cwd: "js/templates"})
+    return gulp.src('**/*.hbs', {cwd: "js/templates"})
         .pipe(emberTemplates({
             compiler: require('./js/ember-template-compiler-min'),
             isHTMLBars: true,
             type: "amd",
+            name: {
+                replace: /\\/g,
+                with: "/"
+            },
             moduleName: ""
         }))
         .pipe(rename({extname: ".js"}))

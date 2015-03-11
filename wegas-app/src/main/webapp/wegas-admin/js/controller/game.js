@@ -67,7 +67,7 @@ define(["ember"],function(Ember){
         }.property("players"),
         createdTime: function(key, value) {
             if (value === undefined) {
-                return new Date(this.get("model").get("createdTime")).toLocaleString();
+                return new Date(this.get("model").get("createdTime")).toLocaleDateString();
             }
         }.property("createdTime")
     });
