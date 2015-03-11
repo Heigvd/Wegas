@@ -11,19 +11,19 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 /**
- *
+ * @param <T> the type of objects that may be compared by this comparator
  * @author Cyril Junod <cyril.junod at gmail.com>
- * @param <T>
  */
 public class AlphanumericComparator<T extends CharSequence> implements Comparator<T>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
     /**
-     *
-     * @param left
-     * @param right
-     * @return
+     * @param left the first object to be compared.
+     * @param right the second object to be compared.
+     * @return a negative integer, zero, or a positive integer as the
+     * first argument is less than, equal to, or greater than the
+     * second.
      */
     @Override
     public int compare(T left, T right) {
@@ -35,7 +35,7 @@ public class AlphanumericComparator<T extends CharSequence> implements Comparato
         while (leftPos < lengthLeft && rightPos < lengthRight) {
             leftChar = left.charAt(leftPos);
             rightChar = right.charAt(rightPos);
-            diff = Character.compare(leftChar, rightChar);
+            diff= Character.valueOf(leftChar).compareTo(rightChar);
             if (diff == 0) {
                 leftPos += 1;
                 rightPos += 1;
