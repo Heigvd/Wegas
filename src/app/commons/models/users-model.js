@@ -52,5 +52,22 @@ angular.module('wegas.models.users', [])
             });
             return deferred.promise;
         };
+
+        model.signup = function (email, password) {
+            var obj = {
+                "@class"    : "JpaAccount",
+                "email"     : email,
+                "password"  : password
+            }
+            var deferred = $q.defer();
+            $http.post(ServiceURL + "rest/User/Signup",obj)
+            .success(function (data){
+                deferred.resolve(true);
+            })
+            .error(function (data) {
+                deferred.resolve(data);
+            });
+            return deferred.promise;
+        }
     })
 ;
