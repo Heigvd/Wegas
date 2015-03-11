@@ -17,7 +17,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         Plugin = Y.Plugin, Lang = Y.Lang, Action = Plugin.Action,
         Wegas = Y.Wegas, persistence = Wegas.persistence,
         EntityAction, EditFSMAction, EditEntityAction, NewEntityAction,
-        EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction,
+        EditEntityArrayFieldAction, AddEntityChildAction, DuplicateEntityAction, SortEntityAction,
         DeleteEntityAction, DeleteFSMAction, ToolbarMenu;
 
     /**
@@ -103,7 +103,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             case "Open":
                             case "Edit":
                                 i.label = '<span class="wegas-icon wegas-icon-' +
-                                    i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
+                                          i.label.replace(/ /g, "-").toLowerCase() + '"></span>' + i.label;
                         }
                     });
                     form.toolbar.add(menuItems);
@@ -114,8 +114,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             // panel won't pop in and out)
 
             if ((Wegas.persistence.VariableDescriptor &&
-                (entity instanceof Wegas.persistence.VariableDescriptor         // Those classes may not be loaded
-                    || entity instanceof Wegas.persistence.VariableInstance))
+                 (entity instanceof Wegas.persistence.VariableDescriptor         // Those classes may not be loaded
+                  || entity instanceof Wegas.persistence.VariableInstance))
                 || entity instanceof Wegas.persistence.JpaAccount
                 || entity instanceof Wegas.persistence.GameModel
                 || entity instanceof Wegas.persistence.Game) {                  // @fixme we may get extended mode for any entity, just need to check if it causes bugs
@@ -537,6 +537,26 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         NS: "DuplicateEntityAction"
     });
     Plugin.DuplicateEntityAction = DuplicateEntityAction;
+    /**
+     * @class
+     * @name Y.Plugin.SortEntityAction
+     * @extends Y.Plugin.EntityAction
+     * @constructor
+     */
+    SortEntityAction = Y.Base.create("SortEntityAction", EntityAction, [], {
+        execute: function() {
+            this.showOverlay();
+            this.get(DATASOURCE).cache.sortList(this.get(ENTITY), {
+                on: {
+                    success: Y.bind(this.hideOverlay, this),
+                    failure: Y.bind(this.hideOverlay, this)
+                }
+            });
+        }
+    }, {
+        NS: "SortEntityAction"
+    });
+    Plugin.SortEntityAction = SortEntityAction;
 
     /**
      * @class
@@ -549,9 +569,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             var entity = this.get(ENTITY), i;
 
             Wegas.Panel.confirm("Are you sure you want to delete the "
-                + entity.getType().toLowerCase().replace("descriptor", "") 
-                + " \"" + entity.get("label") + "\" " 
-                + "?",
+                                + entity.getType().toLowerCase().replace("descriptor", "")
+                                + " \"" + entity.get("label") + "\" "
+                                + "?",
                 Y.bind(function() {
                     this.showOverlay();
                     this.confirmDelete = true;
@@ -704,35 +724,35 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         execute: function() {
             var tab = Wegas.TabView.findTabAndLoadWidget("State machine", // Load and display the editor in a new tab
                 "#centerTabView", {}, Y.mix(this.get("viewerCfg"), {
-                type: "StateMachineViewer",
-                plugins: [{
+                    type: "StateMachineViewer",
+                    plugins: [{
                         fn: "WidgetToolbar"
                     }]
-            }), Y.bind(function(entity, widget, tab) {
-                tab.set("selected", 2);
-                widget.showOverlay();
-                EditEntityAction.showEditFormOverlay();
-                this.get(DATASOURCE).cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
-                    on: {
-                        success: function(e) {
-                            widget.set(ENTITY, e.response.entity);
-                            EditEntityAction.hideEditFormOverlay();
-                            widget.hideOverlay();
-                        },
-                        failure: function(){
-                            EditEntityAction.hideEditFormOverlay();
-                            widget.hideOverlay();
+                }), Y.bind(function(entity, widget, tab) {
+                    tab.set("selected", 2);
+                    widget.showOverlay();
+                    EditEntityAction.showEditFormOverlay();
+                    this.get(DATASOURCE).cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
+                        on: {
+                            success: function(e) {
+                                widget.set(ENTITY, e.response.entity);
+                                EditEntityAction.hideEditFormOverlay();
+                                widget.hideOverlay();
+                            },
+                            failure: function() {
+                                EditEntityAction.hideEditFormOverlay();
+                                widget.hideOverlay();
+                            }
                         }
-                    }
-                });
-            }, this, this.get(ENTITY)));
+                    });
+                }, this, this.get(ENTITY)));
 
             tab.plug(Plugin.Removeable, {
                 closeCallback: function() {
                     var entity = EditEntityAction.currentEntity;
                     if (/*entity instanceof persistence.FSMDescriptor
-                     ||*/ entity instanceof persistence.State
-                        || entity instanceof persistence.Transition) {
+                         ||*/ entity instanceof persistence.State
+                              || entity instanceof persistence.Transition) {
                         EditEntityAction.hideRightTabs();
                     }
                 }
@@ -780,7 +800,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     case "Open":
                     case "Edit":
                         i.label = '<span class="wegas-icon wegas-icon-' + i.label.replace(/ /g, "-").toLowerCase() +
-                            '"></span>' + i.label;
+                                  '"></span>' + i.label;
                 }
             });
             target.unplug(Plugin.WidgetToolbar);                                // Plug & and unplug to empty menu
