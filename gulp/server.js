@@ -10,6 +10,10 @@ var browserSync = require('browser-sync');
 
 var middleware = require('./proxy');
 
+var url = require('url');
+
+var proxy = require('proxy-middleware');
+
 function browserSyncInit(baseDir, files, browser) {
   browser = browser === undefined ? 'default' : browser;
 
@@ -20,11 +24,14 @@ function browserSyncInit(baseDir, files, browser) {
     };
   }
 
+  var proxyOptions = url.parse('http://localhost:8080/Wegas');
+  proxyOptions.route = '/api/';
+
   browserSync.instance = browserSync.init(files, {
     startPath: '/',
     server: {
       baseDir: baseDir,
-      middleware: middleware,
+      middleware: [proxy(proxyOptions)],
       routes: routes
     },
     browser: browser
