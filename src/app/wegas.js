@@ -1,5 +1,5 @@
 'use strict';
-var ServiceURL = "/api/"
+var ServiceURL =  "/api/" // "http://localhost:8080/Wegas/"; // "/api/"; 
 angular.module('Wegas', [
     'ui.router',
     'users'

@@ -14,10 +14,15 @@ angular.module('users.player', [
             })
         ;
     })
-    .controller('UsersPlayerCtrl', function(UsersModel) {
+    .controller('UsersPlayerCtrl', function($state, $stateParams, UsersModel) {
         var usersPlayerCtrl = this;
-        UsersModel.getAuthenticateUser().then(function(data){
-            usersPlayerCtrl.authenticateUser = data;
+            usersPlayerCtrl.message = "Player zone";
+        UsersModel.getAuthenticatedUser().then(function(data){
+            usersPlayerCtrl.authenticatedUser = data;
+            if(usersPlayerCtrl.authenticatedUser != null){
+                // Do something
+            }else{
+                $state.go("wegas.users.login");
+            }
         });
-        usersPlayerCtrl.message = "Player zone";
     });
