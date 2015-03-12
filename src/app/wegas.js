@@ -11,7 +11,7 @@ angular.module('Wegas', [
             views: {
                 'main@': {
                     controller: 'WegasMainCtrl as wegasMailCtrl',
-                    templateUrl: 'app/app.tmpl.html'
+                    templateUrl: 'app/wegas.tmpl.html'
                 }
             }
         })

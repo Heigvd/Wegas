@@ -5,7 +5,7 @@ angular.module('public.signup', [
         .state('wegas.public.signup', {
             url: '/signup',
             views: {
-                "form@": {
+                "form": {
                  	controller: 'PublicSignupCtrl as publicSignupCtrl',
             		templateUrl: 'app/public/public-signup/public-signup.tmpl.html'
                 }
