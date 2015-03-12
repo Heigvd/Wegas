@@ -48,7 +48,7 @@
             -webkit-animation: moveToBottom .7s ease-in-out both;
             animation: moveToBottom .7s ease-in-out both;
         }
-        
+
         &.view-moveFromTop {
             -webkit-animation: moveFromTop .6s ease both;
             animation: moveFromTop .6s ease both;
@@ -62,8 +62,8 @@
         position:relative;
         overflow-x:visible;
         overflow-y:visible;
-        
-        // Styles de positionnements 
+
+        // Styles de positionnements
         &.view--main{
             width:100%;
             height:100%;
@@ -92,7 +92,7 @@
                     height: auto;
                 }
             }
-        } 
+        }
 
         // Styles de décorations
         @each $level in $backgrounds-levels {
@@ -105,7 +105,7 @@
                 color:$white;
             }
             .view--#{$level-name}{
-                background-color: $level-color;    
+                background-color: $level-color;
             }
         }
 
@@ -125,12 +125,14 @@
             @include material-shadow(2);
         }
 
-        // Elements 
+        // Elements
         .view__first-header{
             display:block;
             position:relative;
             top:40%;
-            margin-top:-22px;
+            @media screen and (min-width: $screen-sm) {
+                margin-top:-22px;
+            }
             padding:0px 32px;
             text-align:right;
         }
@@ -147,9 +149,11 @@
         .view__login-form{
             width:100%;
             top:40%;
-            padding:0px 64px;
-            margin-top:-22px;
-        } 
+            @media screen and (min-width: $screen-sm) {
+                padding:0px 64px;
+                margin-top:-22px;
+            }
+        }
 
         .view__password-form{
             width:100%;

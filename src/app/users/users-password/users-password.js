@@ -11,8 +11,34 @@ angular.module('users.password', [
             })
         ;
     })
-    .controller('UsersPasswordCtrl', function() {
+    .controller('UsersPasswordCtrl', function ($scope, $state, $stateParams, UsersModel) {
         var usersPasswordCtrl = this;
-        usersPasswordCtrl.message = "Password zone";
+
+        $scope.formInfo = {};
+
+        var usersSignupCtrl = this;
+
+        var remindPassword = function () {
+
+            console.log("-> Reminding user password");
+
+            /* TODO: Implement correct form validation */
+            if ($scope.formInfo.email != "") {
+                UsersModel.remindPassword($scope.formInfo.email).then(function(result) {
+                    if(result === true) {
+                        /* TODO: Implement sweet and nice information/modal message */
+                        window.alert('Thanks. If the account exists, you will receive an email to reset your password!');
+                    } else {
+                        /* TODO: Implement sweet and nice information/modal message */
+                        /* It seems the services return always true */
+                        window.alert('Oups... An error has occurred...');
+                    }
+                });
+            } else {
+                /* TODO: Implement sweet and nice information/modal message */
+                window.alert('Username is empty..');
+            }
+        }
+        usersPasswordCtrl.remindPassword = remindPassword;
     })
 ;
