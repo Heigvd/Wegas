@@ -14,17 +14,15 @@ angular.module('users.login', [
     .controller('UsersLoginCtrl', function($state, $stateParams, UsersModel) {
         var usersLoginCtrl = this;
         usersLoginCtrl.message = "Login zone";
-
+        usersLoginCtrl.userToLogin = {};
         var login = function(){
             console.log("Login me please!");
-            if(UsersModel.login()){
-                var authUser = UsersModel.getAuthenticateUser();
-                if(authUser.isTrainer){
+            UsersModel.login(usersLoginCtrl.userToLogin.username, usersLoginCtrl.userToLogin.password).then(function(isConnected){
+                if(isConnected){
+                    usersLoginCtrl.userToLogin = {};
                     $state.go('wegas.users.trainer');
-                }else{
-                    $state.go('wegas.users.player');
                 }
-            }
+            });
         }
         usersLoginCtrl.login = login;
     })
