@@ -10,14 +10,17 @@ angular.module('private', [
             abstract:true,
             views: {
                 'main@': {
-                    controller: 'PrivateCtrl as privateCtrl',
+                    controller: 'PrivateCtrl',
                     templateUrl: 'app/private/private.tmpl.html'
                 }
             }
         })
     ;
 })
-.controller('PrivateCtrl', function PrivateCtrl($state) {
-    var privateCtrl = this;
-    console.log("Chargement private view");    
+.controller('PrivateCtrl', function PrivateCtrl($state, Auth) {
+    Auth.getAuthenticatedUser().then(function(user){
+        if(user == null){
+            $state.go("wegas.public");
+        }
+    }); 
 });

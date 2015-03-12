@@ -8,7 +8,7 @@ angular.module('private.trainer', [
             url: 'trainer',
             views: {
                 'workspace': {
-                    controller: 'TrainerCtrl as trainerCtrl',
+                    controller: 'TrainerCtrl',
                     templateUrl: 'app/private/trainer/trainer.tmpl.html'
                 },
                 'sessions-new@wegas.private.trainer':{
@@ -23,7 +23,12 @@ angular.module('private.trainer', [
         })
     ;
 })
-.controller('TrainerCtrl', function TrainerCtrl($state) {
-    var trainerCtrl = this;
-    console.log("Chargement trainer view");    
+.controller('TrainerCtrl', function TrainerCtrl($state, Auth) {
+    Auth.getAuthenticatedUser().then(function(user){
+        if(user != null){
+            if(!user.isTrainer){
+                $state.go("wegas.private.player");
+            }
+        }
+    });
 });

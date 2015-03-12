@@ -8,7 +8,7 @@ angular.module('private.scenarist', [
             url: 'scenarist',
             views: {
                 'workspace': {
-                    controller: 'ScenaristCtrl as scenaristCtrl',
+                    controller: 'ScenaristCtrl',
                     templateUrl: 'app/private/scenarist/scenarist.tmpl.html'
                 },
                 'scenarios-new@wegas.private.scenarist':{
@@ -23,7 +23,16 @@ angular.module('private.scenarist', [
         })
     ;
 })
-.controller('ScenaristCtrl', function ScenaristCtrl($state) {
-    var scenaristCtrl = this;
-    console.log("Chargement scenarist view");    
+.controller('ScenaristCtrl', function ScenaristCtrl($state, Auth) {
+    Auth.getAuthenticatedUser().then(function(user){
+        if(user != null){
+            if(!user.isScenarist){
+                if(user.isTrainer){
+                    $state.go("wegas.private.trainer");
+                }else{
+                    $state.go("wegas.private.player");
+                }
+            }
+        }
+    });
 });

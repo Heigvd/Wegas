@@ -1,6 +1,7 @@
 var ServiceURL =  "/api/"
 angular.module('Wegas', [
     'ui.router',
+    'wegas.service.auth',
     'public',
     'private'
 ])
@@ -10,15 +11,27 @@ angular.module('Wegas', [
             url: '/',
             views: {
                 'main@': {
-                    controller: 'WegasMainCtrl as wegasMailCtrl',
+                    controller: 'WegasMainCtrl',
                     templateUrl: 'app/wegas.tmpl.html'
                 }
             }
         })
     ;
     $urlRouterProvider.otherwise('/');
-}).controller('WegasMainCtrl', function WegasMainCtrl($state) {
-    var wegasMailCtrl = this;
-    console.log("Chargement main ctrl");    
-    $state.go("wegas.public");
+}).controller('WegasMainCtrl', function WegasMainCtrl($state, Auth) {
+    Auth.getAuthenticatedUser().then(function(user){
+    	if(user == null){
+    		$state.go("wegas.public");
+    	}else{
+    		if(user.isScenarist){
+	    		$state.go("wegas.private.scenarist");
+    		}else{
+    			if(user.isTrainer){
+	    			$state.go("wegas.private.trainer");
+	    		}else{
+	    			$state.go("wegas.private.player");
+	    		}
+    		}
+    	}
+    });
 });

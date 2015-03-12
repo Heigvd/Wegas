@@ -9,7 +9,7 @@ angular.module('public', [
             url: 'public',
             views: {
                 'main@': {
-                    controller: 'PublicIndexCtrl as publicIndexCtrl',
+                    controller: 'PublicIndexCtrl',
                     templateUrl: 'app/public/public.tmpl.html'
                 },
                 "form@wegas.public": {
@@ -20,7 +20,18 @@ angular.module('public', [
         })
     ;
 })
-.controller('PublicIndexCtrl', function PublicIndexCtrl($state) {
-    var publicIndexCtrl = this;
-    console.log("Chargement public index");    
+.controller('PublicIndexCtrl', function PublicIndexCtrl($state, Auth) {
+    Auth.getAuthenticatedUser().then(function(user){
+        if(user != null){
+            if(user.isScenarist){
+                $state.go("wegas.private.scenarist");
+            }else{
+                if(user.isTrainer){
+                    $state.go("wegas.private.trainer");
+                }else{
+                    $state.go("wegas.private.player");
+                }
+            }
+        }
+    });
 });
