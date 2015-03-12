@@ -29,6 +29,7 @@ YUI.add("wegas-panel-fileselect", function(Y) {
             this.explorer = new Y.Wegas.FileExplorer().render(this.panel.getStdModNode(Y.WidgetStdMod.BODY));
             this.explorer.treeView.filter.set("testFn", this.get("filter"));
             this.panel.get("boundingBox").addClass("wegas-panel-fileselect");
+            this.explorer.plug(Y.Plugin.PopupListener);
             this.bind();
         },
         bind: function() {
