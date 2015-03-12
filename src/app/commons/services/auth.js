@@ -47,7 +47,7 @@ angular.module('wegas.service.auth', [])
             var AuthenticationInformation = {"@class":"AuthenticationInformation","login":login,"password":password,"remember":true}
             $http.post(ServiceURL + "rest/User/Authenticate", AuthenticationInformation).success(function(data){
                 deferred.resolve(true);
-                model.getauthenticatedUser();
+                service.getAuthenticatedUser();
             }).error(function(data){
                 deferred.resolve(false);
             });

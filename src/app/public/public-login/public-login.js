@@ -13,7 +13,18 @@ angular.module('public.login', [
         })
     ;
 })
-.controller('PublicLoginCtrl', function PublicLoginCtrl() {
+.controller('PublicLoginCtrl', function PublicLoginCtrl($state, Auth) {
     var publicLoginCtrl = this;
-    console.log("Chargement public login");    
+        publicLoginCtrl.message = "Login zone";
+        publicLoginCtrl.userToLogin = {};
+    var login = function(){
+        console.log("Login me please!");
+        Auth.login(publicLoginCtrl.userToLogin.username, publicLoginCtrl.userToLogin.password).then(function(isConnected){
+            if(isConnected){
+                publicLoginCtrl.userToLogin = {};
+                $state.go('wegas');
+            }
+        });
+    }
+    publicLoginCtrl.login = login;  
 });
