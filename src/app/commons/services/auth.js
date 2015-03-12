@@ -36,7 +36,6 @@ angular.module('wegas.service.auth', [])
                 }).error(function(data){
                     authenticatedUser = null;
                     deferred.resolve(authenticatedUser);
-                    // deferred.resolve({id:15, isScenarist:true});
                 });
             }
             return deferred.promise;
