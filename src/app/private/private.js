@@ -43,7 +43,7 @@ angular.module('private', [
             Auth.logout().then(function(){
                 $state.go("wegas.public.login");
             });
-        }
+        };
     }
   };
 });

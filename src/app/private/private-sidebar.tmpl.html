@@ -3,12 +3,16 @@
     <label class="btn--menu" for="menu-toggler"></label>
     <div class="menu">
         <ul>
-            <li><a ui-sref="wegas.private.player" class="button button--default-reverse button--player"><span class="button__label">Player workspace</span></a></li>
+            <li>
+                <a ui-sref-active="button--active" ui-sref="wegas.private.player" class="button button--default-reverse button--player">
+                    <span class="button__label">Player workspace</span>
+                </a>
+            </li>
             <li ng-if="user.isTrainer">
-                <a ui-sref="wegas.private.trainer"  class="button button--default-reverse button--trainer"><span class="button__label">Trainer workspace</span></a>
+                <a ui-sref-active="button--active" ui-sref="wegas.private.trainer" class="button button--default-reverse button--trainer"><span class="button__label">Trainer workspace</span></a>
             </li>
             <li ng-if="user.isScenarist">
-                <a ui-sref="wegas.private.scenarist" class="button button--default-reverse button--scenarist"><span class="button__label">Scenarist workspace</span></a>
+                <a ui-sref-active="button--active" ui-sref="wegas.private.scenarist" class="button button--default-reverse button--scenarist"><span class="button__label">Scenarist workspace</span></a>
             </li>
             <li><hr/></li>
             <li>
