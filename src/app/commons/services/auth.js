@@ -36,7 +36,7 @@ angular.module('wegas.service.auth', [])
                 }).error(function(data){
                     authenticatedUser = null;
                     // Pour tester l'interface private
-                   /* authenticatedUser = {
+                    authenticatedUser = {
                         id: 5,
                         email: "raph@hat-owl.cc",
                         username: "",
@@ -44,7 +44,7 @@ angular.module('wegas.service.auth', [])
                         lastname: "",
                         isTrainer: true,
                         isScenarist: true
-                    }*/
+                    }
                     deferred.resolve(authenticatedUser);
                 });
             }
