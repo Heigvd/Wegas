@@ -256,7 +256,7 @@
 
                 &.button--active{
                     background-color:lighten($type-color, 40%);
-                    cursor:normal;
+                    cursor:default;
                 }
 
                 &.button--label-hover-left, &.button--label-hover-right{
@@ -282,7 +282,7 @@
 
                 &.button--active{
                     background-color:lighten($type-color, 50%);
-                    cursor:normal;
+                    cursor:default;
                 }
 
                 &.button--label-hover-left, &.button--label-hover-right{
