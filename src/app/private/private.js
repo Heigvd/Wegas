@@ -27,7 +27,7 @@ angular.module('private', [
         privateCtrl.user = user;
     }); 
 })
-.directive('privateSidebar', function(ViewInfos, Auth) {
+.directive('privateSidebar', function($state, ViewInfos, Auth) {
   return {
     templateUrl: 'app/private/private-sidebar.tmpl.html',
     link: function (scope, element, attrs) {
@@ -39,6 +39,11 @@ angular.module('private', [
         }, function(newVal, oldVal){
             scope.name = newVal;
         });
+        scope.logout = function(){
+            Auth.logout().then(function(){
+                $state.go("wegas.public.login");
+            });
+        }
     }
   };
 });

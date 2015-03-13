@@ -20,7 +20,7 @@ angular.module('wegas.service.auth', [])
                         isScenarist: false
                     };
                     $http.get(ServiceURL + "rest/Extended/User/" + authenticatedUser.id).success(function(data){
-                        rights = data.accounts.roles;
+                        rights = data.accounts[0].roles;
                         rights.forEach(function(elem){
                             switch(elem.name){
                                 case "Trainer":
@@ -36,15 +36,15 @@ angular.module('wegas.service.auth', [])
                 }).error(function(data){
                     authenticatedUser = null;
                     // Pour tester l'interface private
-                    authenticatedUser = {
+                   /* authenticatedUser = {
                         id: 5,
                         email: "raph@hat-owl.cc",
                         username: "",
                         firstname: "",
                         lastname: "",
                         isTrainer: true,
-                        isScenarist: false
-                    }
+                        isScenarist: true
+                    }*/
                     deferred.resolve(authenticatedUser);
                 });
             }
