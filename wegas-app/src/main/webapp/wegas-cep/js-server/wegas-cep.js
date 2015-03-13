@@ -9,25 +9,24 @@
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 
-/*global currentPhase, self, phases, Variable, humanResources, Event, gameModel */
+/*global self, Variable, Event, gameModel */
 
 function passPeriod() {
     "use strict";
-    var currentTime = phases.descriptor.items.get(currentPhase.value - 1),
-        currentTimeInstance = currentTime.getInstance(self);
-    if (currentTimeInstance.value == currentTime.maxValue) {
-        phases.value += 1;
-        currentPhase.value += 1;
+    var currentPhase = Variable.find(gameModel, "currentPhase"),
+        phases = Variable.find(gameModel, "phases"),
+        currentTime = phases.items.get(currentPhase.getValue(self) - 1),
+        currentTimeInstance = currentTime.getInstance(self),
+        humanResources = Variable.find(gameModel, "humanResources");
+    if (currentTimeInstance.value === currentTime.maxValue) {
+        phases.getInstance(self).value += 1;
+        currentPhase.getInstance(self).value += 1;
         //phases.descriptor.items.get(currentPhase.value - 1).getInstance(self).value += 1;
     } else {
         currentTimeInstance.value += 1;
     }
-    humanResources.value = humanResources.descriptor.defaultInstance.value;
-}
-function checkMoral() {
-    "use strict";
-    this.setTeamMotivation();
-    this.changePicture();
+
+    humanResources.setValue(self, humanResources.defaultInstance.value);
 }
 
 function boundConstrain(val, lowerBound, upperBound) {
@@ -37,10 +36,10 @@ function boundConstrain(val, lowerBound, upperBound) {
 
 function setTeamMotivation() {
     "use strict";
-    var i, gm = self.getGameModel(),
-        listEmployees = Variable.findByName(gm, 'employees'),
+    var i,
+        listEmployees = Variable.findByName(gameModel, 'employees'),
         employeeInstance,
-        teamMotivation = Variable.findByName(gm, 'teamMotivation'),
+        teamMotivation = Variable.findByName(gameModel, 'teamMotivation'),
         morals = [],
         mSum = 0,
         mAverage,
@@ -56,7 +55,7 @@ function setTeamMotivation() {
     // calcul arithmetic average of morals (on actives employees only)
     for (i = 0; i < listEmployees.items.size(); i += 1) {
         employeeInstance = listEmployees.items.get(i).getInstance(self);
-        if (employeeInstance.getActive() == true) {
+        if (employeeInstance.getActive() === true) {
             tmpVal = parseInt(employeeInstance.getMoral(), 10);
             //Bound moral between teamMotivation Min val and max val
             if (boundConstrain(tmpVal, teamMotivation.getMinValue(), teamMotivation.getMaxValue()) !== tmpVal) {
@@ -94,8 +93,8 @@ function setTeamMotivation() {
  */
 function changePicture() {
     "use strict";
-    var i, j, valueInst, valueDescr, gm = self.getGameModel(), oldImg, newImg, moral,
-        listEmployees = Variable.findByName(gm, 'employees'),
+    var i, j, valueInst, valueDescr, oldImg, newImg, moral,
+        listEmployees = Variable.findByName(gameModel, 'employees'),
         imgSuffixe = ['Triste', 'Neutre', 'Joie'];
     if (!listEmployees) {
         return;
@@ -106,36 +105,38 @@ function changePicture() {
         moral = parseInt(valueInst.getMoral(), 10);
         oldImg = valueInst.getProperty('picture');
         newImg = null;
-        switch (true) {
-            case moral < 40 :
-                for (j = 0; j < imgSuffixe.length; j += 1) {
-                    if (oldImg.indexOf(imgSuffixe[j]) > -1) {
-                        newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);
-                        break;
-                    }
+        if (moral < 40) {
+            for (j = 0; j < imgSuffixe.length; j += 1) {
+                if (oldImg.indexOf(imgSuffixe[j]) > -1) {
+                    newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[0]);
+                    break;
                 }
-                break;
-            case moral < 75 :
-                for (j = 0; j < imgSuffixe.length; j += 1) {
-                    if (oldImg.indexOf(imgSuffixe[j]) > -1) {
-                        newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);
-                        break;
-                    }
+            }
+        } else if (moral < 75) {
+            for (j = 0; j < imgSuffixe.length; j += 1) {
+                if (oldImg.indexOf(imgSuffixe[j]) > -1) {
+                    newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[1]);
+                    break;
                 }
-                break;
-            default :
-                for (j = 0; j < imgSuffixe.length; j += 1) {
-                    if (oldImg.indexOf(imgSuffixe[j]) > -1) {
-                        newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[2]);
-                        break;
-                    }
+            }
+        } else {
+            for (j = 0; j < imgSuffixe.length; j += 1) {
+                if (oldImg.indexOf(imgSuffixe[j]) > -1) {
+                    newImg = oldImg.replace(imgSuffixe[j], imgSuffixe[2]);
+                    break;
                 }
-                break;
+            }
         }
         if (newImg) {
             valueInst.setProperty('picture', newImg);
         }
     }
+}
+
+function checkMoral() {
+    "use strict";
+    setTeamMotivation();
+    changePicture();
 }
 
 /**
@@ -147,7 +148,9 @@ function changePicture() {
  */
 function sendHistory(type, title, msg) {
     "use strict";
-    var phase = phases.getDescriptor().item(currentPhase.value - 1),
+    var currentPhase = Variable.find(gameModel, "currentPhase"),
+        phases = Variable.find(gameModel, "phases"),
+        phase = phases.item(currentPhase.getValue(self) - 1),
         phaseText = type + " - " + phase.label + " (" + phase.getInstance().value + ")";
     Variable.find(gameModel, "history").sendMessage(self, phaseText, title, msg, []);
 }
