@@ -33,13 +33,11 @@ angular.module('private', [
     link: function (scope, element, attrs) {
         Auth.getAuthenticatedUser().then(function(user){
             scope.user = user;
-            console.log(scope.user);
         });
         scope.$watch(function(){
             return ViewInfos.name;
         }, function(newVal, oldVal){
             scope.name = newVal;
-            console.log(scope.name);
         });
     }
   };
