@@ -23,7 +23,7 @@ angular.module('private.scenarist', [
         })
     ;
 })
-.controller('ScenaristCtrl', function ScenaristCtrl($state, Auth) {
+.controller('ScenaristCtrl', function ScenaristCtrl($state, Auth, ViewInfos) {
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
             if(!user.isScenarist){
@@ -33,6 +33,7 @@ angular.module('private.scenarist', [
                     $state.go("wegas.private.player");
                 }
             }
+            ViewInfos.editName("Scenarist workspace");  
         }
     });
 });

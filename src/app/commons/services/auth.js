@@ -35,6 +35,16 @@ angular.module('wegas.service.auth', [])
                     });
                 }).error(function(data){
                     authenticatedUser = null;
+                    // Pour tester l'interface private
+                    authenticatedUser = {
+                        id: 5,
+                        email: "raph@hat-owl.cc",
+                        username: "",
+                        firstname: "",
+                        lastname: "",
+                        isTrainer: true,
+                        isScenarist: false
+                    }
                     deferred.resolve(authenticatedUser);
                 });
             }

@@ -23,8 +23,10 @@ angular.module('private.player', [
         })
     ;
 })
-.controller('PlayerCtrl', function PlayerCtrl($state) {
+.controller('PlayerCtrl', function PlayerCtrl($state, ViewInfos) {
     var playerCtrl = this;
-    console.log("Chargement player view");    
+    console.log("Chargement player view");  
+    ViewInfos.editName("Player workspace");  
+    playerCtrl.name = ViewInfos.name;
 });
 
