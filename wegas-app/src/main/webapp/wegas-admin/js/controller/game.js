@@ -54,17 +54,6 @@ define(["ember"],function(Ember){
         gameLink: function(key, value) {
             return "host.html?gameId=" + this.get("model").get("gameId");
         }.property("gameId"),
-        players: function(key, value) {
-            if (value === undefined) {
-                var players = this.get("model").get("players"), str = [];
-                players.forEach(function(p) {
-                    str.push(p.get("id"));
-                });
-                return str.join("\n");
-            } else {
-                return value;
-            }
-        }.property("players"),
         createdTime: function(key, value) {
             if (value === undefined) {
                 return new Date(this.get("model").get("createdTime")).toLocaleDateString();
