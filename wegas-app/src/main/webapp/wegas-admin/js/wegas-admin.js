@@ -7,7 +7,6 @@
  */
 /*global define, require, window*/
 define(["game",
-        "player",
         "ember-data",
         "ember",
 
@@ -19,7 +18,7 @@ define(["game",
         "component/modal-dialog",
         "templates/players",
         "textarea-edit"],
-    function(game, player, DS, Ember) {
+    function(game, DS, Ember) {
         "use strict";
         var Admin = Ember.Application.create();
         Admin.ApplicationAdapter = DS.RESTAdapter.extend({
@@ -47,7 +46,6 @@ define(["game",
             });
         });
         Admin.Game = game;
-        Admin.Player = player;
         Admin.GamesRoute = Ember.Route.extend({
             queryParams: {"type": {refreshModel: true}},
             model: function(params) {

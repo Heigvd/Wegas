@@ -22,7 +22,7 @@
             <td>{{game.creator}}</td>
             <td>{{game.gameName}}</td>
             <td>{{game.gameModelName}}</td>
-            <td class="mouse-pointer" {{bind-attr title="game.players"}} {{action 'openModal' "players" game}}>{{game.playerCount}}</td>
+            <td class="mouse-pointer" {{action 'openModal' "players" game}}>{{game.playerCount}}</td>
             <td>{{game.teamCount}}</td>
             <td>{{input type='checkbox' checked=game.isDone}}</td>
             <td>{{input type='checkbox' checked=game.isCharged}}</td>

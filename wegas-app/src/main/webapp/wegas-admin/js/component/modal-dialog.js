@@ -17,7 +17,7 @@ define(["ember", "templates/components/modal-dialog"], function(Ember) {
         }
     });
     Ember.Application.initializer({
-        name: "hh",
+        name: "modalDialog",
         initialize: function(container, application) {
             application.register("component:modal-dialog", ModalDialogComponent);
         }
