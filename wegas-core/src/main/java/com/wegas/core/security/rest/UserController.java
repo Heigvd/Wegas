@@ -472,6 +472,16 @@ public class UserController {
 
         return this.userFacade.findRolePermissionByInstance(instance);
     }
+    
+    /**
+     * Rend l'utilisateur connecté, Error 400 sinon. 
+     * @return user, l'utilisateur actuel
+     */
+    @GET
+    @Path("Current")
+    public User getCurrentUser() {
+        return userFacade.getCurrentUser();
+    }
 
     /**
      * Delete permission by role and permission
