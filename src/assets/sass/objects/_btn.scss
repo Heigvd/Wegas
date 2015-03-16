@@ -253,6 +253,12 @@
                 &:hover{
                     background-color:darken($type-color, 15%);
                 }
+
+                &.button--active{
+                    background-color:lighten($type-color, 40%);
+                    cursor:default;
+                }
+
                 &.button--label-hover-left, &.button--label-hover-right{
                     .button__label{
                         color:$default-color;
@@ -273,6 +279,12 @@
                 &:hover{
                     background-color:lighten($type-color, 60%);
                 }
+
+                &.button--active{
+                    background-color:lighten($type-color, 50%);
+                    cursor:default;
+                }
+
                 &.button--label-hover-left, &.button--label-hover-right{
                     .button__label{
                         color:$default-color;
