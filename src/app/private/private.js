@@ -1,8 +1,8 @@
 angular.module('private', [
-   'private.player',
-   'private.trainer',
-   'private.scenarist',
-    "wegas.service.viewInfos"
+    'private.player',
+    'private.trainer',
+    'private.scenarist',
+    'private.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -26,24 +26,4 @@ angular.module('private', [
         }
         privateCtrl.user = user;
     }); 
-})
-.directive('privateSidebar', function($state, ViewInfos, Auth) {
-  return {
-    templateUrl: 'app/private/private-sidebar.tmpl.html',
-    link: function (scope, element, attrs) {
-        Auth.getAuthenticatedUser().then(function(user){
-            scope.user = user;
-        });
-        scope.$watch(function(){
-            return ViewInfos.name;
-        }, function(newVal, oldVal){
-            scope.name = newVal;
-        });
-        scope.logout = function(){
-            Auth.logout().then(function(){
-                $state.go("wegas.public.login");
-            });
-        };
-    }
-  };
 });
