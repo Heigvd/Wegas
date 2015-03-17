@@ -1,6 +1,6 @@
 'use strict';
 angular.module('wegas.models.sessions', [])
-    .service('SessionsModel', function ($rootScope, $http, $q, Auth) {
+    .service('SessionsModel', function ($http, $q, Auth) {
         var model = this,
             managedSessions = null,
             playedSessions = null;
@@ -72,7 +72,6 @@ angular.module('wegas.models.sessions', [])
                             createdTime : data.createdTime,
                             comments : data.gameModel.comments
                         });
-                        $rootScope.$apply();
                         deferred.resolve(managedSessions[data.id]);
                     }).error(function(data){
                         // ToDo - Améliorer la gestion d'erreur
