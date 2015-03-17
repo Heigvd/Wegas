@@ -23,6 +23,7 @@ import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.script.ScriptEngine;
 import jdk.nashorn.api.scripting.ScriptUtils;
+import jdk.nashorn.internal.runtime.ScriptObject;
 
 /**
  *
@@ -164,7 +165,7 @@ public class RequestManager {
     public void sendCustomEvent(String type, Object payload) {
         // @hack check payload type against "jdk.nashorn.internal"
         if (payload.getClass().getName().startsWith("jdk.nashorn.internal")) {
-            this.addEvent(new CustomEvent(type, ScriptUtils.wrap(payload)));
+            this.addEvent(new CustomEvent(type, ScriptUtils.wrap((ScriptObject)payload)));
         } else {
             this.addEvent(new CustomEvent(type, payload));
         }
