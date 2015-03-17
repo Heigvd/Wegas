@@ -1,9 +1,28 @@
 angular.module('private.trainer.sessions.directives', [
 ])
-.directive('sessionsAddForm', function(ScenariosModel, SessionsModel) {
+.directive('managedSessionsIndex', function(SessionsModel){
+  return {
+    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
+    controller : function(){
+        var ctrl = this;
+        ctrl.sessions = [];
+        SessionsModel.getManagedSessions().then(function(sessions){
+            ctrl.sessions = sessions;
+        });
+        ctrl.updateSessions = function(){
+            SessionsModel.getManagedSessions().then(function(sessions){
+                ctrl.sessions = sessions;
+            });
+        }
+    }
+  };
+})
+.directive('managedSessionsAddForm', function(ScenariosModel, SessionsModel) {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
-    link : function(scope, element, attrs){
+    scope: false, 
+    require: "^managedSessionsIndex",
+    link : function(scope, element, attrs, parentCtrl){
         ScenariosModel.getScenarios().then(function(scenarios){
             scope.scenarios = scenarios;
         });
@@ -18,6 +37,7 @@ angular.module('private.trainer.sessions.directives', [
                         name : "",
                         scenarioId : 0 
                     };
+                    parentCtrl.updateSessions();
                 });   
             }else{
                 console.log("Todo - Send error callback - Choose scenarios");
@@ -26,12 +46,16 @@ angular.module('private.trainer.sessions.directives', [
     }
   };
 })
-.directive('sessionsList', function(ScenariosModel, SessionsModel) {
+.directive('managedSessionsList', function(ScenariosModel, SessionsModel) {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
-    link : function(scope, element, attrs){
-        SessionsModel.getManagedSessions().then(function(sessions){
-            scope.sessions = sessions;
+    scope: false,
+    require: "^managedSessionsIndex",
+    link : function(scope, element, attrs, parentCtrl){
+        scope.$watch(function(){
+            return parentCtrl.sessions
+        }, function(newSessions, oldSessions){
+            scope.sessions = newSessions;
         });
     }
   };

@@ -66,11 +66,12 @@ angular.module('wegas.models.sessions', [])
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id, newSession).success(function(data){
+                        console.log(data);
                         managedSessions.push({
                             id : data.id,
                             name : data.name,
                             createdTime : data.createdTime,
-                            comments : data.gameModel.comments
+                            comments : ""
                         });
                         deferred.resolve(managedSessions[data.id]);
                     }).error(function(data){
