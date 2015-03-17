@@ -33,6 +33,12 @@ angular.module('private.trainer', [
             SessionsModel.getManagedSessions().then(function(data){
                 console.log(data);
             });
+            SessionsModel.createManagedSession("HelloWorld2", 1).then(function(data){
+                console.log(data);
+                SessionsModel.getManagedSessions().then(function(data){
+                    console.log(data);
+                });
+            });
         }
     });
 });
