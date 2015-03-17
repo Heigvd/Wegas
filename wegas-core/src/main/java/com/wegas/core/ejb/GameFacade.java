@@ -84,12 +84,6 @@ public class GameFacade extends BaseFacade<Game> {
     /**
      *
      */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-
-    /**
-     *
-     */
     @Inject
     private Event<PlayerAction> playerActionEvent;
 
@@ -256,7 +250,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return first game found or null
      */
     public Game findByToken(final String token) {
-        final TypedQuery<Game> tq = em.createNamedQuery("game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
+        final TypedQuery<Game> tq = getEntityManager().createNamedQuery("game.findByToken", Game.class).setParameter("token", token).setParameter("status", Game.Status.LIVE);
         try {
             return tq.getSingleResult();
         } catch (NoResultException ex) {
@@ -270,11 +264,11 @@ public class GameFacade extends BaseFacade<Game> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public GameEnrolmentKey findGameEnrolmentKey(final String key) throws WegasNoResultException {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameEnrolmentKey> game = cq.from(GameEnrolmentKey.class);
         cq.where(cb.equal(game.get("key"), key));
-        Query q = em.createQuery(cq);
+        Query q = getEntityManager().createQuery(cq);
         try {
             return (GameEnrolmentKey) q.getSingleResult();
         } catch (NoResultException ex) {
@@ -288,11 +282,11 @@ public class GameFacade extends BaseFacade<Game> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public GameAccountKey findGameAccountKey(String key) throws WegasNoResultException {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<GameAccountKey> gameAccount = cq.from(GameAccountKey.class);
         cq.where(cb.equal(gameAccount.get("key"), key));
-        Query q = em.createQuery(cq);
+        Query q = getEntityManager().createQuery(cq);
         try {
             return (GameAccountKey) q.getSingleResult();
         } catch (NoResultException ex) {
@@ -305,11 +299,11 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findByName(String search) {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         final Root<Game> game = cq.from(Game.class);
         cq.where(cb.like(game.get("name"), search));
-        Query q = em.createQuery(cq);
+        Query q = getEntityManager().createQuery(cq);
         return (List<Game>) q.getResultList();
     }
 
@@ -319,7 +313,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findByGameModelId(final Long gameModelId, final String orderBy) {
-        return em.createQuery("SELECT game FROM Game game "
+        return getEntityManager().createQuery("SELECT game FROM Game game "
                 + "WHERE TYPE(game) != DebugGame AND game.gameModel.id = :gameModelId ORDER BY game.createdTime DESC", Game.class)
                 .setParameter("gameModelId", gameModelId)
                 .getResultList();
@@ -330,7 +324,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findAll(final Game.Status status) {
-        return em.createNamedQuery("game.findByStatus", Game.class).setParameter("status", status).getResultList();
+        return getEntityManager().createNamedQuery("game.findByStatus", Game.class).setParameter("status", status).getResultList();
     }
 
     /**
@@ -338,7 +332,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId) {
-        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
                 + "AND p.user.id = :userId AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
@@ -354,7 +348,7 @@ public class GameFacade extends BaseFacade<Game> {
      * @return
      */
     public List<Game> findRegisteredGames(final Long userId, final Long gameModelId) {
-        final Query getByGameId = em.createQuery("SELECT game, p FROM Game game "
+        final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id AND p.user.id = :userId AND game.gameModel.id = :gameModelId "
                 + "AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
@@ -374,7 +368,7 @@ public class GameFacade extends BaseFacade<Game> {
         for (Object ret : q.getResultList()) {                                // @hack Replace created time by player joined time
             final Object[] r = (Object[]) ret;
             final Game game = (Game) r[0];
-            this.em.detach(game);
+            this.getEntityManager().detach(game);
             game.setCreatedTime(((Player) r[1]).getJoinTime());
             games.add(game);
         }
@@ -427,7 +421,7 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void joinTeam(Team team, Player player) {
         team.addPlayer(player);
-        em.persist(player);
+        getEntityManager().persist(player);
 
         team.getGame().getGameModel().propagateDefaultInstance(false);
         playerActionEvent.fire(new PlayerAction(player));
@@ -476,14 +470,6 @@ public class GameFacade extends BaseFacade<Game> {
         user.getMainAccount().addPermission(
                 "Game:View:g" + game.getId(), // Add "View" right on game,
                 "GameModel:View:gm" + game.getGameModel().getId());             // and also "View" right on its associated game model
-    }
-
-    /**
-     * @return
-     */
-    @Override
-    public EntityManager getEntityManager() {
-        return em;
     }
 
     /**

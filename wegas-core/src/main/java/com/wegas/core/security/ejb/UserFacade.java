@@ -34,9 +34,7 @@ import javax.ejb.EJBTransactionRolledbackException;
 import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TemporalType;
 import org.apache.shiro.SecurityUtils;
@@ -54,11 +52,6 @@ import org.slf4j.LoggerFactory;
 public class UserFacade extends BaseFacade<User> {
 
     private static final org.slf4j.Logger logger = LoggerFactory.getLogger(UserFacade.class);
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
     /**
      *
      */
@@ -85,15 +78,6 @@ public class UserFacade extends BaseFacade<User> {
      */
     public UserFacade() {
         super(User.class);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     /**
@@ -156,7 +140,7 @@ public class UserFacade extends BaseFacade<User> {
             //logger.error("Unable to find Role: Registered", ex);
             logger.error("Unable to find Role: Registered");
         }
-        this.em.flush();
+        this.getEntityManager().flush();
     }
 
     /**
@@ -206,8 +190,8 @@ public class UserFacade extends BaseFacade<User> {
      * @return
      */
     public List<Map> findRolePermissionByInstance(String instance) {
-        Query findByToken = em.createQuery("SELECT DISTINCT roles FROM Role roles JOIN roles.permissions p WHERE p.value LIKE :instance");//@fixme Unable to select role with a like w/ embeddebale
-        // Query findByToken = em.createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
+        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT roles FROM Role roles JOIN roles.permissions p WHERE p.value LIKE :instance");//@fixme Unable to select role with a like w/ embeddebale
+        // Query findByToken = getEntityManager().createQuery("SELECT DISTINCT roles FROM Role roles WHERE roles.permissions.value = 'mm'");
         // SELECT DISTINCT roles FROM Role roles WHERE roles.permissions LIKE :gameId
         findByToken.setParameter("instance", "%:" + instance);
 
@@ -357,7 +341,7 @@ public class UserFacade extends BaseFacade<User> {
      * @return
      */
     public List<AbstractAccount> findAccountPermissionByInstance(String instance) {
-        Query findByToken = em.createNamedQuery("findUserPermissions");
+        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");
         findByToken.setParameter("instance", "%:" + instance);
         List<AbstractAccount> accounts = (List<AbstractAccount>) findByToken.getResultList();
         return accounts;
@@ -368,9 +352,9 @@ public class UserFacade extends BaseFacade<User> {
      * @param instance
      */
     public void deleteAccountPermissionByInstance(String instance) {
-        Query findByToken = em.createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
+        Query findByToken = getEntityManager().createNamedQuery("findUserPermissions");//@fixme Unable to select role with a like w/ embeddebale
         //  The queries below are all invalid, may be due to an old version of eclipselink
-        // Query findByToken = em.createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
+        // Query findByToken = getEntityManager().createQuery("SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount");
         // @NamedQuery(name = "findUserPermissions", query = "SELECT DISTINCT abstractaccount FROM AbstractAccount abstractaccount, IN(abstractaccount.permissions) p WHERE p.inducedPermission LIKE :gameId")
         // @NamedQuery(name = "findUserPermissions", query = "SELECT abstractaccount FROM AbstractAccount abstractaccount WHERE (select count(p) from abstractaccount.permissions p where p.value LIKE :gameId) > 0 ")
         // @NamedQuery(name = "findUserPermissions", query = "SELECT abstractaccount FROM AbstractAccount abstractaccount left outer join fetch abstractaccount.permissions p WHERE p.value LIKE :gameId")
@@ -396,7 +380,7 @@ public class UserFacade extends BaseFacade<User> {
      * @param accountId
      */
     public void deleteAccountPermissionByInstanceAndAccount(String instance, Long accountId) {
-        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
+        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '%:" + instance + "' AND p.account.id =" + accountId);
         try {
             AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
@@ -424,7 +408,7 @@ public class UserFacade extends BaseFacade<User> {
      * @param accountId
      */
     public void deleteAccountPermissionByPermissionAndAccount(String permission, Long accountId) {
-        Query findByToken = em.createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
+        Query findByToken = getEntityManager().createQuery("SELECT DISTINCT accounts FROM AbstractAccount accounts JOIN accounts.permissions p "
                 + "WHERE p.value LIKE '" + permission + "' AND p.account.id =" + accountId);
         try {
             AbstractAccount account = (AbstractAccount) findByToken.getSingleResult();
@@ -474,7 +458,7 @@ public class UserFacade extends BaseFacade<User> {
     @Schedule(hour = "4", minute = "12")
     public void removeIdleGuests() {
         logger.info("removeIdleGuests(): unused guest accounts will be removed");
-        Query findIdleGuests = em.createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
+        Query findIdleGuests = getEntityManager().createQuery("SELECT DISTINCT account FROM GuestJpaAccount account "
                 + "WHERE account.createdTime < :idletime");
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 3);
@@ -538,7 +522,7 @@ public class UserFacade extends BaseFacade<User> {
     private boolean checkHasLastEditPermission(String permission, String instance) {
         boolean isNotLastEdit = false;
         if (permission.contains("Edit")) {
-            Query getEditPermissions = em.createQuery("SELECT p FROM Permission p WHERE p.value LIKE :instance");
+            Query getEditPermissions = getEntityManager().createQuery("SELECT p FROM Permission p WHERE p.value LIKE :instance");
             getEditPermissions.setParameter("instance", "%Edit%:" + instance);
             List<Permission> listEditPermissions = getEditPermissions.getResultList();
             if (listEditPermissions.size() > 1) {

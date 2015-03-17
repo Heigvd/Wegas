@@ -8,13 +8,9 @@
 package com.wegas.core.security.rest;
 
 import com.wegas.core.ejb.GameFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameAccountKey;
-import com.wegas.core.persistence.game.Player;
 import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.RoleFacade;
 import com.wegas.core.security.ejb.UserFacade;
@@ -32,9 +28,6 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -71,11 +64,6 @@ public class UserController {
      *
      */
     @EJB
-    private PlayerFacade playerFacade;
-    /**
-     *
-     */
-    @EJB
     private RoleFacade roleFacade;
     /**
      *
@@ -87,17 +75,6 @@ public class UserController {
      */
     @EJB
     private GameFacade gameFacade;
-    /**
-     *
-     */
-    @Inject
-    private RequestManager requestManager;
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-
     /**
      *
      * @return
@@ -140,13 +117,7 @@ public class UserController {
     @GET
     @Path("AutoComplete/{value}")
     public List<JpaAccount> getAutoComplete(@PathParam("value") String value) {
-        if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
-            throw new UnauthorizedException();
-        }
-        //return accountFacade.findByNameOrEmail("%" + value + "%", true);
-        //return accountFacade.findByNameOrEmail("%" + value + "%", true);
-        //return accountFacade.findByNameEmailOrUsername("%" + value + "%");
-        return accountFacade.findByNameEmailOrUsername(value);
+        return accountFacade.getAutoComplete(value);
     }
 
     /**
@@ -160,21 +131,7 @@ public class UserController {
     @GET
     @Path("AutoCompleteFull/{value}/{gameId : [1-9][0-9]*}")
     public List<JpaAccount> getAutoCompleteFull(@PathParam("value") String value, @PathParam("gameId") Long gameId) {
-        List<JpaAccount> accounts = this.getAutoComplete(value);
-        for (int i = 0; i < accounts.size(); i++) {
-            JpaAccount ja = accounts.get(i);
-            em.detach(ja);
-            ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-            try {
-                Player p = playerFacade.findByGameIdAndUserId(gameId, ja.getUser().getId());
-                if (ja.getUser() == p.getUser()) {
-                    accounts.remove(i);
-                }
-            } catch (WegasNoResultException e) {
-                //Gotcha
-            }
-        }
-        return accounts;
+        return accountFacade.getAutoCompleteFull(value, gameId);
     }
 
     /**
@@ -189,20 +146,7 @@ public class UserController {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
-
-        ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
-
-        List<JpaAccount> returnValue = new ArrayList<>();
-        //for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
-        for (JpaAccount a : accountFacade.findByNameEmailOrUsername(value)) {
-            boolean hasRole = userFacade.hasRoles(roles, new ArrayList(a.getRoles()));
-            if (hasRole) {
-                em.detach(a);
-                a.setEmail(a.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
-                returnValue.add(a);
-            }
-        }
-        return returnValue;
+        return accountFacade.getAutoCompleteByRoles(value, rolesList);
     }
 
     /**
@@ -213,25 +157,7 @@ public class UserController {
     @GET
     @Path("FindAccountsByEmailValues")
     public List<Map> findAccountsByEmailValues(@QueryParam("values") List<String> values) {
-        List<Map> returnValue = new ArrayList<>();
-        List<String> notValidValue = new ArrayList<>();
-        for (String value : values) {
-            try {
-                Map account = new HashMap<>();
-                JpaAccount a = accountFacade.findByEmail(value.trim());
-                if (a.getFirstname() != null && a.getLastname() != null) {
-                    account.put("label", a.getFirstname() + " " + a.getLastname());
-                } else {
-                    account.put("label", a.getEmail());
-                }
-                account.put("value", a.getId());
-                returnValue.add(account);
-            } catch (WegasNoResultException e2) {
-                notValidValue.add(value);
-            }
-        }
-        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
-        return returnValue;
+        return accountFacade.findAccountsByEmailValues(values);
     }
 
     /**
@@ -245,19 +171,7 @@ public class UserController {
         if (!SecurityUtils.getSubject().isRemembered() && !SecurityUtils.getSubject().isAuthenticated()) {
             throw new UnauthorizedException();
         }
-        List<JpaAccount> returnValue = new ArrayList<>();
-        List<String> notValidValue = new ArrayList<>();
-        for (int i = 0; i < values.size(); i++) {
-            String s = values.get(i);
-            List<JpaAccount> temps = accountFacade.findByNameOrEmail(s, false);
-            if (temps.size() == 1) {
-                returnValue.addAll(temps);
-            } else {
-                notValidValue.add(s);
-            }
-        }
-        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
-        return returnValue;
+        return accountFacade.findAccountsByName(values);
     }
 
     /**

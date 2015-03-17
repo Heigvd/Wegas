@@ -8,6 +8,7 @@
 package com.wegas.messaging.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
@@ -20,8 +21,8 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
+import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +35,6 @@ import org.slf4j.LoggerFactory;
 public class MessageFacade extends BaseFacade<Message> {
 
     final static private Logger logger = LoggerFactory.getLogger(MessageFacade.class);
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
     /**
      *
      */
@@ -110,10 +106,5 @@ public class MessageFacade extends BaseFacade<Message> {
         msg.setAttachements(attachements);
         this.send(p, msg);
         return msg;
-    }
-
-    @Override
-    protected EntityManager getEntityManager() {
-        return this.em;
     }
 }

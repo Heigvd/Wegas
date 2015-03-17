@@ -8,6 +8,9 @@
 package com.wegas.core.security.ejb;
 
 import com.wegas.core.ejb.BaseFacade;
+import com.wegas.core.ejb.PlayerFacade;
+import com.wegas.core.ejb.RequestManager;
+import com.wegas.core.event.client.WarningEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Player;
@@ -16,13 +19,16 @@ import com.wegas.core.security.jparealm.JpaAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.Role;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.ejb.EJB;
 import javax.ejb.EJBException;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 import javax.persistence.*;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -45,28 +51,23 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     /**
      *
      */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-    /**
-     *
-     */
     @EJB
     private RoleFacade roleFacade;
 
+    @EJB
+    private PlayerFacade playerFacade;
+
+    @EJB
+    private UserFacade userFacade;
+
+    @Inject 
+    private RequestManager requestManager;
+    
     /**
      *
      */
     public AccountFacade() {
         super(AbstractAccount.class);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     /**
@@ -159,7 +160,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     public List<JpaAccount> findByNameEmailOrUsername(String input) {
         String[] tokens = input.split(" ");
 
-        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         CriteriaQuery cq = cb.createQuery();
         Root<JpaAccount> jpaAccount = cq.from(JpaAccount.class);
 
@@ -174,14 +175,14 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 orPreds.add(cb.like(cb.lower(jpaAccount.get("lastname")), token));
                 orPreds.add(cb.like(cb.lower(jpaAccount.get("email")), token));
                 orPreds.add(cb.like(cb.lower(jpaAccount.get("username")), token));
-                
+
                 andPreds.add(cb.or(orPreds.toArray(prs)));
             }
         }
 
         cq.where(cb.and(andPreds.toArray(prs)));
 
-        Query q = em.createQuery(cq);
+        Query q = getEntityManager().createQuery(cq);
         q.setMaxResults(MAXRESULT);
         return (List<JpaAccount>) q.getResultList();
     }
@@ -233,7 +234,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
 
         final TypedQuery<JpaAccount> query;
 
-        //CriteriaBuilder cb = em.getCriteriaBuilder();
+        //CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         //CriteriaQuery cq = cb.createQuery();
         //Root<JpaAccount> account = cq.from(JpaAccount.class);
         switch (type) {
@@ -249,7 +250,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
             default:
                 throw new UnsupportedOperationException("Unexpected parameter " + type);
         }
-        //Query q = em.createQuery(cq);
+        //Query q = getEntityManager().createQuery(cq);
         //q.setMaxResults(MAXRESULT);
         query.setMaxResults(MAXRESULT);
         return query.getResultList();
@@ -279,4 +280,81 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         }
         return result;
     }
+
+    public List<JpaAccount> getAutoComplete(String value) {
+        return findByNameEmailOrUsername(value);
+    }
+
+    public List<JpaAccount> getAutoCompleteFull(String value, Long gameId) {
+        List<JpaAccount> accounts = this.getAutoComplete(value);
+        for (int i = 0; i < accounts.size(); i++) {
+            JpaAccount ja = accounts.get(i);
+            getEntityManager().detach(ja);
+            ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+            try {
+                Player p = playerFacade.findByGameIdAndUserId(gameId, ja.getUser().getId());
+                if (ja.getUser() == p.getUser()) {
+                    accounts.remove(i);
+                }
+            } catch (WegasNoResultException e) {
+                //Gotcha
+            }
+        }
+        return accounts;
+    }
+
+    public List<JpaAccount> getAutoCompleteByRoles(String value, HashMap<String, Object> rolesList) {
+        ArrayList<String> roles = (ArrayList<String>) rolesList.get("rolesList");
+
+        List<JpaAccount> returnValue = new ArrayList<>();
+        //for (JpaAccount a : accountFacade.findByNameOrEmail("%" + value + "%", true)) {
+        for (JpaAccount a : findByNameEmailOrUsername(value)) {
+            boolean hasRole = userFacade.hasRoles(roles, new ArrayList(a.getRoles()));
+            if (hasRole) {
+                getEntityManager().detach(a);
+                a.setEmail(a.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+                returnValue.add(a);
+            }
+        }
+        return returnValue;
+    }
+
+    public List<Map> findAccountsByEmailValues(List<String> values) {
+        List<Map> returnValue = new ArrayList<>();
+        List<String> notValidValue = new ArrayList<>();
+        for (String value : values) {
+            try {
+                Map account = new HashMap<>();
+                JpaAccount a = findByEmail(value.trim());
+                if (a.getFirstname() != null && a.getLastname() != null) {
+                    account.put("label", a.getFirstname() + " " + a.getLastname());
+                } else {
+                    account.put("label", a.getEmail());
+                }
+                account.put("value", a.getId());
+                returnValue.add(account);
+            } catch (WegasNoResultException e2) {
+                notValidValue.add(value);
+            }
+        }
+        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
+        return returnValue;
+    }
+    public List<JpaAccount> findAccountsByName(List<String> values) {
+        List<JpaAccount> returnValue = new ArrayList<>();
+        List<String> notValidValue = new ArrayList<>();
+        for (int i = 0; i < values.size(); i++) {
+            String s = values.get(i);
+            List<JpaAccount> temps = findByNameOrEmail(s, false);
+            if (temps.size() == 1) {
+                returnValue.addAll(temps);
+            } else {
+                notValidValue.add(s);
+            }
+        }
+        requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
+        return returnValue;
+    }
+
+
 }
