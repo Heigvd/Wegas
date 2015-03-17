@@ -5,6 +5,15 @@ angular.module('wegas.models.sessions', [])
             managedSessions = null,
             playedSessions = null;
 
+        var findSession = function(sessions, id){
+            var session = null;
+            sessions.forEach(function(elem){
+                if(elem.id == id){
+                    session = elem;
+                }
+            });
+            return session;
+        };
         // Retourne toutes les sessions managées, un tableau vide si un utilisateur n'a aucune session.
         model.getManagedSessions = function () {
             var deferred = $q.defer();
@@ -14,10 +23,12 @@ angular.module('wegas.models.sessions', [])
                 managedSessions = [];
                 $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
                     data.forEach(function(elem){
-                        managedSessions[elem.id] = {
+                        managedSessions.push({
                             id : elem.id,
-                            name : elem.name
-                        };
+                            name : elem.name,
+                            createdTime : elem.createdTime,
+                            comments : elem.gameModel.comments
+                        });
                     });
                     deferred.resolve(managedSessions);
                 }).error(function(data){
@@ -33,10 +44,12 @@ angular.module('wegas.models.sessions', [])
             var deferred = $q.defer();
             if(managedSessions == null){
                 model.getManagedSessions().then(function(data){
-                    deferred.resolve(managedSessions[id]);
+                    var session = findSession(managedSessions, id);
+                    deferred.resolve(session);
                 });
             }else{
-                deferred.resolve(managedSessions[id]);
+                var session = findSession(managedSessions, id);
+                deferred.resolve(session);
             }
             return deferred.promise;
         };
@@ -46,6 +59,7 @@ angular.module('wegas.models.sessions', [])
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user){
                 if(user != null){
+                    // Todo Check Values ? 
                     var newSession = {
                         "@class": "Game",
                         "gameModelId": scenarioId,
@@ -79,10 +93,10 @@ angular.module('wegas.models.sessions', [])
                         playedSessions = [];
                         $http.get(ServiceURL + "rest/RegisteredGames/"+ user.id).success(function(data){
                             data.forEach(function(elem){
-                                playedSessions[elem.id] = {
+                                playedSessions.push({
                                     id : elem.id,
                                     name : elem.name
-                                };
+                                });
                             });
                             deferred.resolve(playedSessions);
                         }).error(function(data){
@@ -102,10 +116,12 @@ angular.module('wegas.models.sessions', [])
             var deferred = $q.defer();
             if(playedSessions == null){
                 model.getPlayedSessions().then(function(data){
-                    deferred.resolve(playedSessions[id]);
+                    var session = findSession(playedSessions, id);
+                    deferred.resolve(session);
                 });
             }else{
-                deferred.resolve(playedSessions[id]);
+                var session = findSession(playedSessions, id);
+                deferred.resolve(session);
             }
             return deferred.promise;
         };

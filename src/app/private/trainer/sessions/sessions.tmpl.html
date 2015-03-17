@@ -1,2 +1,13 @@
-<p>Sessions list</p>
-<p><em>End of Nested Route</em></p>
+<div class="view view--size-8">
+	<div class="card card--big card--session" ng-repeat="session in sessionsListCtrl.sessions | orderBy: 'createdTime':true">
+		<div class="card__illustration card__illustration--editable illustration illustration--big">
+           <img src="#" />
+        </div>
+		<div class="card__description card__description--one-line">
+            <p class="card__description__date">{{session.createdTime | date:"dd.MM.yyyy"}}</p>
+            <h4 class="card__description__titre">{{session.name}}</h4>
+            <p ng-if="session.comments" class="card__description__note">{{session.comments | limitTo: 48}}</p>
+            <p ng-if="!session.comments" class="card__description__no-note">Comment this scenario</p>
+        </div>
+   </div>
+</div>

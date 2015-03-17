@@ -20,7 +20,10 @@ angular.module('private.trainer.sessions', [
         })
     ;
 })
-.controller('SessionsListCtrl', function SessionsListCtrl($state) {
+.controller('SessionsListCtrl', function SessionsListCtrl($state, SessionsModel) {
     var sessionsListCtrl = this;
+    SessionsModel.getManagedSessions().then(function(sessions){
+        sessionsListCtrl.sessions = sessions;
+    });
     console.log("Chargement trainer sessions list");    
 });
