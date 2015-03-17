@@ -12,15 +12,17 @@ import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.AccountFacade;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
+import com.wegas.core.security.jparealm.JpaAccount;
+import com.wegas.core.security.persistence.AbstractAccount;
+import java.util.ArrayList;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
@@ -47,11 +49,22 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     @EJB
     private UserFacade userFacade;
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+
+    @EJB
+    private AccountFacade accountFacade;
+
+    public List<AbstractAccount> getDetachedAccounts(Long teamId) {
+        Team entity = this.find(teamId);
+        ArrayList<AbstractAccount> accounts = accountFacade.findByTeam(entity);
+        for (AbstractAccount account : accounts) {
+            if (account instanceof JpaAccount) {
+                JpaAccount ja = (JpaAccount) account;
+                getEntityManager().detach(ja);
+                ja.setEmail(ja.getEmail().replaceFirst("([^@]{1,4})[^@]*(@.*)", "$1****$2"));
+            }
+        }
+        return accounts;
+    }
 
     /**
      *
@@ -106,7 +119,7 @@ public class TeamFacade extends BaseFacade<Team> {
         g.addTeam(t);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
 
-        em.flush();
+        getEntityManager().flush();
         g.getGameModel().propagateDefaultInstance(false);
     }
 
@@ -120,9 +133,9 @@ public class TeamFacade extends BaseFacade<Team> {
             playerFacade.remove(p);
         }
         for (VariableInstance i : this.getAssociatedInstances(entity)) {
-            this.em.remove(i);
+            this.getEntityManager().remove(i);
         }
-        this.em.remove(entity);
+        this.getEntityManager().remove(entity);
     }
 
     /**
@@ -131,18 +144,9 @@ public class TeamFacade extends BaseFacade<Team> {
      * @return
      */
     public List<VariableInstance> getAssociatedInstances(Team team) {
-        Query findInstances = em.createNamedQuery("findTeamInstances");
+        Query findInstances = getEntityManager().createNamedQuery("findTeamInstances");
         findInstances.setParameter("teamid", team.getId());
         return findInstances.getResultList();
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     /**

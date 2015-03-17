@@ -24,9 +24,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -43,11 +41,6 @@ import org.slf4j.LoggerFactory;
 public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
 
     static final private Logger logger = LoggerFactory.getLogger(QuestionDescriptorFacade.class);
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
     /**
      *
      */
@@ -85,13 +78,13 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @throws WegasNoResultException
      */
     public Result findResult(final ChoiceDescriptor choiceDescriptor, final String name) throws WegasNoResultException {
-        final CriteriaBuilder cb = em.getCriteriaBuilder();
+        final CriteriaBuilder cb = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery cq = cb.createQuery();
         Root<Result> result = cq.from(Result.class);
         cq.where(cb.and(
                 cb.equal(result.get("choiceDescriptor"), choiceDescriptor),
                 cb.like(result.get("name"), name)));
-        final Query q = em.createQuery(cq);
+        final Query q = getEntityManager().createQuery(cq);
         try {
             return (Result) q.getSingleResult();
         } catch (NoResultException ex) {
@@ -139,7 +132,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return
      */
     public Reply updateReply(Long replyId, Reply r) {
-        final Reply oldEntity = this.em.find(Reply.class, replyId);
+        final Reply oldEntity = this.getEntityManager().find(Reply.class, replyId);
         oldEntity.merge(r);
         return oldEntity;
     }
@@ -149,7 +142,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @return
      */
     public int findReplyCount(Long instanceId) {
-        final Query query = em.createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
+        final Query query = getEntityManager().createQuery("SELECT COUNT(r) FROM Reply r WHERE r.questionInstance.id = :id");
         query.setParameter("id", instanceId);
         try {
             return ((Number) query.getSingleResult()).intValue();
@@ -282,8 +275,8 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public Reply cancelReply(Long playerId, Long replyId) {
 
-        final Reply reply = em.find(Reply.class, replyId);
-        em.remove(reply);
+        final Reply reply = getEntityManager().find(Reply.class, replyId);
+        getEntityManager().remove(reply);
 
         try {
             scriptEvent.fire(playerFacade.find(playerId), "replyCancel", new EventObject(reply));// Throw an event
@@ -319,7 +312,7 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      * @param replyVariableInstanceId
      */
     public void validateReply(Player player, Long replyVariableInstanceId) {
-        this.validateReply(player, em.find(Reply.class, replyVariableInstanceId));
+        this.validateReply(player, getEntityManager().find(Reply.class, replyVariableInstanceId));
     }
 
     /**
@@ -329,15 +322,6 @@ public class QuestionDescriptorFacade extends BaseFacade<ChoiceDescriptor> {
      */
     public void validateReply(Long playerId, Long replyVariableInstanceId) {
         this.validateReply(playerFacade.find(playerId), replyVariableInstanceId);
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     /**

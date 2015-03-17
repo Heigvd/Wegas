@@ -12,9 +12,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.security.persistence.Role;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
 /**
@@ -24,12 +22,6 @@ import javax.persistence.TypedQuery;
 @Stateless
 @LocalBean
 public class RoleFacade extends BaseFacade<Role> {
-
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     /**
      *
@@ -52,14 +44,5 @@ public class RoleFacade extends BaseFacade<Role> {
         } catch (NoResultException ex) {
             throw new WegasNoResultException(ex);
         }
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 }

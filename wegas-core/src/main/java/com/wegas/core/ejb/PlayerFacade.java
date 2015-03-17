@@ -29,12 +29,6 @@ public class PlayerFacade extends BaseFacade<Player> {
     /**
      *
      */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-
-    /**
-     *
-     */
     @EJB
     private GameFacade gameFacade;
 
@@ -43,14 +37,6 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private UserFacade userFacade;
-
-    /**
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
-    }
 
     /**
      * @param teamId
@@ -68,7 +54,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public Player findByGameIdAndUserId(final Long gameId, final Long userId) throws WegasNoResultException {
         try {
-            final TypedQuery<Player> findByGameIdAndUserId = em.createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
             findByGameIdAndUserId.setParameter("gameId", gameId);
             findByGameIdAndUserId.setParameter("userId", userId);
             findByGameIdAndUserId.setParameter("status", Game.Status.LIVE);
@@ -83,7 +69,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return
      */
     public List<VariableInstance> getAssociatedInstances(final Player player) {
-        final Query findPlayerInstance = em.createNamedQuery("findPlayerInstances");
+        final Query findPlayerInstance = getEntityManager().createNamedQuery("findPlayerInstances");
         return findPlayerInstance.setParameter("playerid", player.getId()).getResultList();
     }
 
@@ -93,9 +79,9 @@ public class PlayerFacade extends BaseFacade<Player> {
     @Override
     public void remove(final Player player) {
         List<VariableInstance> instances = this.getAssociatedInstances(player);
-        this.em.remove(player);
+        this.getEntityManager().remove(player);
         for (VariableInstance i : instances) {
-            this.em.remove(i);
+            this.getEntityManager().remove(i);
         }
     }
 
@@ -104,7 +90,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return
      */
     public List<Player> getByGameId(Long gameId) {
-        Query findByGameId = em.createNamedQuery("findPlayerByGameId");
+        Query findByGameId = getEntityManager().createNamedQuery("findPlayerByGameId");
         findByGameId.setParameter("gameId", gameId);
         return findByGameId.getResultList();
     }
@@ -117,7 +103,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameId(Long gameId) throws WegasNoResultException {
-        Query getByGameId = em.createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId");
+        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId");
         getByGameId.setParameter("gameId", gameId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();
@@ -131,7 +117,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @return
      */
     public List<Player> getByGameModelId(Long gameModelId) {
-        Query findByGameId = em.createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        Query findByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
         findByGameId.setParameter("gameModelId", gameModelId);
         return findByGameId.getResultList();
     }
@@ -144,7 +130,7 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameModelId(Long gameModelId) throws WegasNoResultException {
-        Query getByGameId = em.createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
+        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.gameModel.id = :gameModelId");
         getByGameId.setParameter("gameModelId", gameModelId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();

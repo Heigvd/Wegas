@@ -56,12 +56,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     final static String HISTORYPATH = "History";
 
     /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
-
-    /**
      * fire before GameModel is removed
      */
     @Inject
@@ -104,13 +98,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         super(GameModel.class);
     }
 
-    /**
-     * @return
-     */
-    @Override
-    public EntityManager getEntityManager() {
-        return em;
-    }
 
     /**
      * @param entity
@@ -122,7 +109,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        this.em.flush();
+        this.getEntityManager().flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
         createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
@@ -275,10 +262,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param gameModel
      */
     public void reset(final GameModel gameModel) {
-        em.flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        getEntityManager().flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
         gameModel.propagateGameModel();
         gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        em.flush();                                 // DA FU    ()
+        getEntityManager().flush();                                 // DA FU    ()
         resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
     }
 
