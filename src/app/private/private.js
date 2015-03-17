@@ -1,8 +1,9 @@
 angular.module('private', [
-   'private.player',
-   'private.trainer',
-   'private.scenarist',
-    "wegas.service.viewInfos"
+    'wegas.models.sessions',
+    'wegas.service.viewInfos',
+    'private.player',
+    'private.trainer',
+    'private.scenarist'
 ])
 .config(function ($stateProvider) {
     $stateProvider
