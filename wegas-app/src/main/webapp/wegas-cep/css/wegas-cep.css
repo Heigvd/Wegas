@@ -126,9 +126,15 @@ h3 {
 .wegas-template-valuebox-unit:last-child {
     border-right:none;
 }
-.wegas-template-valuebox-selected {
+.wegas-template-valuebox-unit {
     background-color:white;
     color: black;
+}
+.wegas-template-valuebox-selected {
+    background-color: #0981A9;
+    color: white;
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 .timeIndicators .wegas-template-title {
     padding-top:13px;
@@ -142,6 +148,12 @@ h3 {
     display: block;
     padding-top: 5px;
 }
+.timeIndicators .wegas-template-valuebox-units{
+    background-color: white;
+}
+.wegas-template-title div {
+    background-color: #0981A9;
+}
 .timeIndicators .wegas-template-valuebox-units,
 .wegas-template-title div {
     float:left;
@@ -149,7 +161,6 @@ h3 {
     padding:0px 2px;
     border: inset 1px solid #999;
     border-radius: 3px;
-    background-color: #0981A9;
     margin-top: 3px;
     color: white;
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#80ffffff',endColorstr='#00ffffff',GradientType=0);
