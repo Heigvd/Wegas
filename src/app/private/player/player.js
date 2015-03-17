@@ -12,7 +12,7 @@ angular.module('private.player', [
                     templateUrl: 'app/private/player/player.tmpl.html'
                 },
                 'sessions-join@wegas.private.player':{
-                    controller: 'SessionsNewCtrl as sessionsNewCtrl',
+                    controller: 'SessionsJoinCtrl as sessionsJoinCtrl',
                     templateUrl: 'app/private/player/sessions/sessions-join/sessions-join.tmpl.html'
                 },
                 'sessions-list@wegas.private.player':{

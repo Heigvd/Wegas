@@ -1,8 +1,8 @@
-angular.module('trainer.sessions.new.directives', [
+angular.module('private.trainer.sessions.directives', [
 ])
-.directive('addSessionForm', function(ScenariosModel, SessionsModel) {
+.directive('sessionsAddForm', function(ScenariosModel, SessionsModel) {
   return {
-    templateUrl: 'app/private/trainer/sessions/sessions-new/sessions-new-add-form.tmpl.html',
+    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
     link : function(scope, element, attrs){
         ScenariosModel.getScenarios().then(function(scenarios){
             scope.scenarios = scenarios;
@@ -23,6 +23,16 @@ angular.module('trainer.sessions.new.directives', [
                 console.log("Todo - Send error callback - Choose scenarios");
             }         
         };
+    }
+  };
+})
+.directive('sessionsList', function(ScenariosModel, SessionsModel) {
+  return {
+    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
+    link : function(scope, element, attrs){
+        SessionsModel.getManagedSessions().then(function(sessions){
+            scope.sessions = sessions;
+        });
     }
   };
 });

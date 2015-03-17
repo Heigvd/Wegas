@@ -1,6 +1,6 @@
 'use strict';
 angular.module('wegas.models.sessions', [])
-    .service('SessionsModel', function ($http, $q, Auth) {
+    .service('SessionsModel', function ($rootScope, $http, $q, Auth) {
         var model = this,
             managedSessions = null,
             playedSessions = null;
@@ -66,10 +66,13 @@ angular.module('wegas.models.sessions', [])
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id, newSession).success(function(data){
-                        managedSessions[data.id] = {
+                        managedSessions.push({
                             id : data.id,
-                            name : data.name
-                        };
+                            name : data.name,
+                            createdTime : data.createdTime,
+                            comments : data.gameModel.comments
+                        });
+                        $rootScope.$apply();
                         deferred.resolve(managedSessions[data.id]);
                     }).error(function(data){
                         // ToDo - Améliorer la gestion d'erreur
@@ -129,6 +132,6 @@ angular.module('wegas.models.sessions', [])
         model.clearCache = function(){
             managedSessions = null;
             playedSessions = null;
-        }
+        };
     })
 ;
