@@ -1,23 +1,24 @@
 'use strict';
 
 var gulp = require('gulp');
-
+var argv = require('yargs').argv;
 var paths = gulp.paths;
 
 var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
+
 gulp.task('partials', function () {
   return gulp.src([
     paths.src + '/{app,components}/**/*.html',
     paths.tmp + '/{app,components}/**/*.html'
   ])
-    .pipe($.minifyHtml({
-      empty: true,
-      spare: true,
-      quotes: true
-    }))
+    // .pipe($.minifyHtml({
+    //   empty: true,
+    //   spare: true,
+    //   quotes: true
+    // }))
     .pipe($.angularTemplatecache('templateCacheHtml.js', {
       module: 'Wegas'
     }))
@@ -37,27 +38,39 @@ gulp.task('html', ['inject', 'partials'], function () {
   var cssFilter = $.filter('**/*.css');
   var assets;
 
-  return gulp.src(paths.tmp + '/serve/*.html')
+  var gulped = gulp.src(paths.tmp + '/serve/*.html')
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe(assets = $.useref.assets())
     .pipe($.rev())
     .pipe(jsFilter)
-    .pipe($.ngAnnotate())
-    .pipe($.uglify({preserveComments: $.uglifySaveLicense}))
-    .pipe(jsFilter.restore())
-    .pipe(cssFilter)
-    .pipe($.csso())
-    .pipe(cssFilter.restore())
+    .pipe($.ngAnnotate());
+
+    if (argv.mini) {
+      gulped = gulped.pipe($.uglify({preserveComments: $.uglifySaveLicense}))
+    }
+
+    gulped = gulped.pipe(jsFilter.restore())
+    .pipe(cssFilter);
+
+    if (argv.mini) {
+      gulped = gulped.pipe($.csso())
+    }
+
+    gulped = gulped.pipe(cssFilter.restore())
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe($.revReplace())
-    .pipe(htmlFilter)
-    .pipe($.minifyHtml({
-      empty: true,
-      spare: true,
-      quotes: true
-    }))
-    .pipe(htmlFilter.restore())
+    .pipe(htmlFilter);
+
+    if (argv.mini) {
+      gulped = gulped.pipe($.minifyHtml({
+        empty: true,
+        spare: true,
+        quotes: true
+      }));
+    }
+
+    return gulped.pipe(htmlFilter.restore())
     .pipe(gulp.dest(paths.dist + '/'))
     .pipe($.size({ title: paths.dist + '/', showFiles: true }));
 });
