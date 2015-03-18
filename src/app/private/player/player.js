@@ -12,7 +12,7 @@ angular.module('private.player', [
                     templateUrl: 'app/private/player/player.tmpl.html'
                 },
                 'sessions-join@wegas.private.player':{
-                    controller: 'SessionsNewCtrl as sessionsNewCtrl',
+                    controller: 'SessionsJoinCtrl as sessionsJoinCtrl',
                     templateUrl: 'app/private/player/sessions/sessions-join/sessions-join.tmpl.html'
                 },
                 'sessions-list@wegas.private.player':{
@@ -23,10 +23,14 @@ angular.module('private.player', [
         })
     ;
 })
-.controller('PlayerCtrl', function PlayerCtrl($state, ViewInfos) {
+.controller('PlayerCtrl', function PlayerCtrl($state, ViewInfos, SessionsModel) {
     var playerCtrl = this;
     console.log("Chargement player view");  
     ViewInfos.editName("Player workspace");  
     playerCtrl.name = ViewInfos.name;
+    SessionsModel.getPlayedSessions().then(function(sessions){
+        console.log(sessions);
+    });
+
 });
 

@@ -1,6 +1,6 @@
 $inline-height:64px;
 $block-height:320px;
-.v1, .v2{
+.v1{
     .card{
         position:relative;
         display:block;
@@ -201,7 +201,7 @@ $block-height:320px;
     }
 }
 
-.v3{
+.v2{
     .card{
         position:relative;
         display:block;
@@ -259,6 +259,7 @@ $block-height:320px;
         }
 
         &.card--session{
+            margin:4px auto 4px auto;
             .card__description{
                 .card__description__titre{
                     padding:4px 16px;

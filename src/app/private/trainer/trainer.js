@@ -1,6 +1,5 @@
 angular.module('private.trainer', [
-    'private.trainer.sessions',
-    'private.trainer.sessions.new'
+    'private.trainer.sessions'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -8,15 +7,7 @@ angular.module('private.trainer', [
             url: 'trainer',
             views: {
                 'workspace': {
-                    controller: 'TrainerCtrl',
-                    templateUrl: 'app/private/trainer/trainer.tmpl.html'
-                },
-                'sessions-new@wegas.private.trainer':{
-                    controller: 'SessionsNewCtrl as sessionsNewCtrl',
-                    templateUrl: 'app/private/trainer/sessions/sessions-new/sessions-new.tmpl.html'
-                },
-                'sessions-list@wegas.private.trainer':{
-                    controller: 'SessionsListCtrl as sessionsListCtrl',
+                    controller: 'TrainerCtrl as trainerCtrl',
                     templateUrl: 'app/private/trainer/sessions/sessions.tmpl.html'
                 }
             }
@@ -24,6 +15,7 @@ angular.module('private.trainer', [
     ;
 })
 .controller('TrainerCtrl', function TrainerCtrl($state, Auth, ViewInfos) {
+    var trainerCtrl = this;
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
             if(!user.isTrainer){

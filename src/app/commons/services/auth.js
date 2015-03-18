@@ -1,4 +1,6 @@
-angular.module('wegas.service.auth', [])
+angular.module('wegas.service.auth', [
+    'wegas.models.sessions'
+    ])
     .service('Auth', function ($http, $q) {
         var service = this,
             authenticatedUser = null,
@@ -35,16 +37,6 @@ angular.module('wegas.service.auth', [])
                     });
                 }).error(function(data){
                     authenticatedUser = null;
-                    // Pour tester l'interface private
-                   /* authenticatedUser = {
-                        id: 5,
-                        email: "raph@hat-owl.cc",
-                        username: "",
-                        firstname: "",
-                        lastname: "",
-                        isTrainer: true,
-                        isScenarist: true
-                    }*/
                     deferred.resolve(authenticatedUser);
                 });
             }

@@ -1,4 +1,6 @@
 angular.module('private', [
+    'wegas.models.sessions',
+    'wegas.models.scenarios',
     'private.player',
     'private.trainer',
     'private.scenarist',

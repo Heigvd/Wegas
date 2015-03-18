@@ -18,7 +18,6 @@ angular.module('public.login', [
         publicLoginCtrl.message = "Login zone";
         publicLoginCtrl.userToLogin = {};
     var login = function(){
-        console.log("Login me please!");
         Auth.login(publicLoginCtrl.userToLogin.username, publicLoginCtrl.userToLogin.password).then(function(isConnected){
             if(isConnected){
                 publicLoginCtrl.userToLogin = {};
