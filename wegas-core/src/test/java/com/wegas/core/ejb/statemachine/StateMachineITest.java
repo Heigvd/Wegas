@@ -9,6 +9,7 @@ package com.wegas.core.ejb.statemachine;
 
 import com.wegas.core.ejb.AbstractEJBTest;
 import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
+import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
 import com.wegas.core.ejb.ScriptFacade;
@@ -78,7 +79,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger2.setTriggerEvent(new Script("true"));
         trigger2.setPostTriggerEvent(new Script("number2.value += 1 "));
         trigger2.setOneShot(Boolean.FALSE);
-
+        
         descriptorFacade.create(gameModel.getId(), testNumber);
         descriptorFacade.create(gameModel.getId(), testNumber2);
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -91,9 +92,9 @@ public class StateMachineITest extends AbstractEJBTest {
 
         team4.setGame(game);
 
-        teamFacade.create(team3);
+        teamFacade.create(game.getId(), team3);
+        teamFacade.create(game.getId(), team4);
 
-        teamFacade.create(team4);
         Player testPlayer0 = new Player("TestPlayer0");
         Player testPlayer1 = new Player("TestPlayer1");
 
