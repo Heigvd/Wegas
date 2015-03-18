@@ -6,13 +6,7 @@ angular.module('wegas.models.sessions', [])
             playedSessions = null;
 
         var findSession = function(sessions, id){
-            var session = null;
-            sessions.forEach(function(elem){
-                if(elem.id == id){
-                    session = elem;
-                }
-            });
-            return session;
+            return _.find(sessions, function (s) { return s.id == id; });
         };
         // Get all managed sessions
         model.getManagedSessions = function () {
