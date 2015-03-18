@@ -1,6 +1,5 @@
 angular.module('private.player', [
-    'private.player.sessions',
-    'private.player.sessions.join'
+    'private.player.sessions'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -9,28 +8,17 @@ angular.module('private.player', [
             views: {
                 'workspace': {
                     controller: 'PlayerCtrl as playerCtrl',
-                    templateUrl: 'app/private/player/player.tmpl.html'
-                },
-                'sessions-join@wegas.private.player':{
-                    controller: 'SessionsJoinCtrl as sessionsJoinCtrl',
-                    templateUrl: 'app/private/player/sessions/sessions-join/sessions-join.tmpl.html'
-                },
-                'sessions-list@wegas.private.player':{
-                    controller: 'SessionsListCtrl as sessionsListCtrl',
                     templateUrl: 'app/private/player/sessions/sessions.tmpl.html'
                 }
             }
         })
     ;
 })
-.controller('PlayerCtrl', function PlayerCtrl($state, ViewInfos, SessionsModel) {
+.controller('PlayerCtrl', function PlayerCtrl($state, Auth, ViewInfos) {
     var playerCtrl = this;
-    console.log("Chargement player view");  
-    ViewInfos.editName("Player workspace");  
-    playerCtrl.name = ViewInfos.name;
-    SessionsModel.getPlayedSessions().then(function(sessions){
-        console.log(sessions);
+    Auth.getAuthenticatedUser().then(function(user){
+        if(user != null){
+            ViewInfos.editName("Player workspace");
+        }
     });
-
 });
-

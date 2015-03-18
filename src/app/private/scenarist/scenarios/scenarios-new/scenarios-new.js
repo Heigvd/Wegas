@@ -19,5 +19,5 @@ angular.module('private.scenarist.scenarios.new', [
 })
 .controller('ScenariosNewCtrl', function ScenariosNewCtrl($state) {
     var scenariosNewCtrl = this;
-    console.log("Chargement new scenario");    
+    console.log("Loading new scenario");
 });

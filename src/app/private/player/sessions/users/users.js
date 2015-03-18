@@ -1,13 +1,13 @@
-angular.module('private.trainer.sessions.users', [
+angular.module('private.player.sessions.users', [
 ])
 .config(function ($stateProvider) {
     $stateProvider
-        .state('wegas.private.trainer.sessions.users', {
+        .state('wegas.private.player.sessions.users', {
             url: '/:id/users',
             views: {
                 'workspace@wegas.private':{
                     controller: 'SessionsUsersCtrl as sessionsUsersCtrl',
-                    templateUrl: 'app/private/trainer/sessions/users/users.tmpl.html'
+                    templateUrl: 'app/private/player/sessions/users/users.tmpl.html'
                 }
             }
         })
