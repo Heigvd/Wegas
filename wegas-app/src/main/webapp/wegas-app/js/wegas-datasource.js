@@ -85,7 +85,7 @@ YUI.add('wegas-datasource', function(Y) {
             request.on.failure = request.on.failure || Y.bind(this.fire, this, "failure");
             Y.mix(request.cfg.headers, {
                 'Content-Type': 'application/json;charset=UTF-8',
-                'Managed-Mode': 'true'
+                'Managed-Mode': Y.Wegas.app.get("socketId") || true
             });
             if (Lang.isObject(request.cfg.data)) { // Stringify data if required
                 request.cfg.data = Y.JSON.stringify(request.cfg.data);
