@@ -1,6 +1,5 @@
-.button{
+.button, .button:focus{
     $btn-default-size: nth(nth($sizes, 1),2);
-
     // Initialisation des couleurs "default" à la taille "small"
     position:relative;
     display:inline-block;
@@ -19,14 +18,16 @@
     -webkit-user-select: none;
     transition: 0.8s;
 
-    &:hover{
+    &:hover &:active{
         background-color:darken($default-color-button, 15%);
+        text-decoration: none;
     }
 
     // Affichage du label par défaut.
     .button__label{
         display:block;
         color:$white;
+        text-decoration: none;
     }
 
     // Cache le label
@@ -49,8 +50,6 @@
             width:$btn-default-size*12;
             padding:$btn-default-size/3 0px;
             color:$default-color;
-            // text-shadow: 1px 0px 2px #ffffff;
-
             visibility:hidden;
             opacity:0;
             transition:.6s;
@@ -102,11 +101,13 @@
             }
             &:hover{
                 background-color:darken($type-color, 15%);
+                text-decoration: none;
             }
 
             &.button--active{
                 background-color:lighten($type-color, 40%);
                 cursor:default;
+                text-decoration: none;
             }
 
             &.button--label-hover-left, &.button--label-hover-right{
@@ -128,11 +129,13 @@
             }
             &:hover{
                 background-color:lighten($type-color, 60%);
+                text-decoration: none;
             }
 
             &.button--active{
                 background-color:lighten($type-color, 50%);
                 cursor:default;
+                text-decoration: none;
             }
 
             &.button--label-hover-left, &.button--label-hover-right{

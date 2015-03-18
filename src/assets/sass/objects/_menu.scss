@@ -41,7 +41,7 @@ $color-btn-menu: #000;
 .menu {
   visibility: hidden;
   position: absolute;
-  top: 48px;
+  top: nth(nth($sizes, 1),2);
   background: white;
   margin: 0;
   //border-bottom-left-radius: 5px;
@@ -49,12 +49,12 @@ $color-btn-menu: #000;
   // border: 1px solid #d7d7d7;
   @include material-shadow(1);
   border-top: none;
-  padding: 1em;
+  padding: 0;
   z-index: 30;
-  // width: 0;
+  width: 0;
   height: 0;
   opacity: 0;
-  transition: all 0.1s ease, width 0s ease;
+  transition: all 0.5s ease, width 0s ease;
   overflow: hidden;
 
 
@@ -67,68 +67,19 @@ $color-btn-menu: #000;
     height: auto;
     opacity: 1;
   }
-
-  ul {
+  ul{
     padding: 0;
     margin: 0;
     list-style-type: none;
-  }
-  hr {
-    margin: 0;
-  }
-}
-
-.v2{
-  .btn--menu {
-    // padding: 5px 1em;
-    float:left;
-
-  }
-  .menu {
-    visibility: hidden;
-    position: absolute;
-    top: nth(nth($sizes, 1),2);
-    background: white;
-    margin: 0;
-    //border-bottom-left-radius: 5px;
-    border-bottom-right-radius: 5px;
-    // border: 1px solid #d7d7d7;
-    @include material-shadow(1);
-    border-top: none;
-    padding: 0;
-    z-index: 30;
-    width: 0;
-    height: 0;
-    opacity: 0;
-    transition: all 0.5s ease, width 0s ease;
-    overflow: hidden;
-
-
-    // Element that will trigger the menu
-    .menu--toggler:checked ~ &,
-    .menu--toggler.menu--toggler_active ~ & {
-      visibility: visible;
-      min-width: 305px;
-      min-height: 100px;
-      height: auto;
-      opacity: 1;
-    }
-
-    ul {
-      padding: 0;
-      margin: 0;
-      list-style-type: none;
-      width:320px;
-      li{
+    width:320px;
+    li{
+      width:100%;
+      .button{
         width:100%;
-        .button{
-          width:100%;
-
-        }
       }
     }
-    hr {
+  }
+  hr {
       margin: 0;
-    }
   }
 }

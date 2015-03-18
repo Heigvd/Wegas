@@ -48,12 +48,11 @@
         }
     }
 
-
     .card__description{
         float:left; 
     }
 
-    &.card--session{
+    &.card--trainer-session{
         margin:4px auto 4px auto;
         .card__description{
             .card__description__titre{
