@@ -1,11 +1,19 @@
 <h3>Your active sessions</h3>
-<div class="card card--big card--session" ng-repeat="session in sessions" ng:class="{true:'card--block', false:'card--inline'}[sessions.length <= 2]">
+<div class="card card--big card--player-session" ng-repeat="session in sessions" ng:class="{true:'card--block', false:'card--inline'}[sessions.length <= 2]">
   <div class="card__illustration illustration illustration--big">
     <img src="http://dummyimage.com/300x100/00ff00/123321" />
   </div>
   <div class="card__description">
     <h4 class="card__description__titre">{{ session.name }}</h4>
-    <p class="card__description__note">Based on <em>{{ session.gameModelName }}</em></p>
+    <p class="card__description__scenario">Based on <em>{{ session.gameModelName }}</em></p>
+  </div>
+  <div class="card__actions">
+    <a class="button button--big button--default-reverse button--label-off button--user" href="#">
+      <span class="button__label">User</span>
+    </a>
+    <a class="button button--big button--info button--label-off button--play" href="#">
+      <span class="button__label">Play</span>
+    </a>
   </div>
   <!--<ul class="card__actions">
     <li class="action">
@@ -13,10 +21,6 @@
         <span class="btn__label">Play</span>
       </a>
     </li>
-    <li class="action">
-      <a class="btn btn--icon btn--users">
-        <span class="btn__label">Manage users</span>
-      </a>
-    </li>
+    
   </ul> -->
 </div>

@@ -1,81 +1,3 @@
-$btn-size-default: 32px;
-$btn-size-big: $btn-size-default*3/2;
-
-%initIconBtn{
-    width:$btn-size-default;
-    height:$btn-size-default;
-    margin:4px;
-    cursor:pointer;
-
-    &:after{
-        display:block;
-        position:absolute;
-        left:0px;
-        top:0px;
-        width:$btn-size-default;
-        height:$btn-size-default;
-        line-height:$btn-size-default;
-        text-align:center;
-        font-family:"FontAwesome";
-        font-weight:normal;
-    }
-    &:hover{
-        width:$btn-size-default;
-        border-radius:$btn-size-default/2;
-        opacity:0.8;
-    }
-    &.btn--big{
-        width:$btn-size-big;
-        height:$btn-size-big;
-        margin:$btn-size-big/4;
-
-        &:after{
-            width:$btn-size-big;
-            height:$btn-size-big;
-            line-height:$btn-size-big;
-        }
-        &:hover{
-            width:$btn-size-big;
-            border-radius:$btn-size-big/2;
-            opacity:0.8;
-        }
-    }
-}
-
-@mixin setBtn($base-color){
-    background:$base-color;
-    @if $base-color != none {
-        &:hover, &:active &:focus{
-            background-color:darken($base-color, 15%);
-        }
-        &.btn--disabled{
-            background-color:lighten($base-color, 20%);
-            cursor:default;
-        }
-    }
-}
-
-@mixin setIconBtn($icon, $clr:$default-color, $clrHover:$white, $iconSize:16px, $clrNormal: $white){
-    background-color:$clrNormal;
-    border:solid 1px $clrNormal;
-
-    &:after{
-        font-size:$iconSize;
-        color:black;
-        content:$icon;
-    }
-
-
-    &:hover{
-        border:solid 1px darken($clrNormal, 15%);
-        background:darken($clrNormal, 10%);
-        &:after{
-            color:black;
-        }
-    }
-}
-// ---- V2 ----
-
 $buttons-icon : (
     (trash, $fa-var-trash),
     (sign-out, $fa-var-sign-out),
@@ -84,6 +6,7 @@ $buttons-icon : (
     (search, $fa-var-search),
     (user, $fa-var-user),
     (user-plus, $fa-var-user-plus),
+    (play, $fa-var-play),
     (workspaces, $fa-var-th),
     (player, $fa-var-gamepad),
     (trainer, $fa-var-tachometer),
