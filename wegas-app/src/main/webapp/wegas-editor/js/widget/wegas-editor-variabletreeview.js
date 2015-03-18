@@ -54,7 +54,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
-            this.handlers.push(this.treeView.get("boundingBox").prepend("<div class='wegas-filter-input' style='display: none'><input placeholder='Search...'/></div>")
+            this.handlers.push(this.get("contentBox").prepend("<div class='wegas-filter-input' style='display: none'><input placeholder='Search...'/></div>")
                 .one(".wegas-filter-input input").on("valueChange", function(e) {
                     var arrSearch;
                     if (e.prevVal === "") {
@@ -81,11 +81,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 label: "<span class='wegas-icon wegas-icon-zoom'></span>",
                 on: {
                     pressedChange: Y.bind(function(e) {
-                        var search = this.treeView.get("boundingBox").one(".wegas-filter-input");
+                        var search = this.get("boundingBox").one(".wegas-filter-input");
                         if (e.newVal) {
+                            this.treeView.get("boundingBox").setStyle("top", "25px");
                             search.show();
                             search.one("input").focus();
                         } else {
+                            this.treeView.get("boundingBox").setStyle("top", "");
                             search.hide();
                             search.one("input").set("value", "");
                             searchRE = "";
@@ -97,7 +99,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 }
             });
             this._searchBttn = new Y.Button({
-                render: this.treeView.get("boundingBox").one(".wegas-filter-input"),
+                render: this.get("boundingBox").one(".wegas-filter-input"),
                 label: "<span title='Search in every fields'>Full</span>",
                 on: {
                     click: Y.bind(function() {
