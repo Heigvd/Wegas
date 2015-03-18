@@ -119,7 +119,30 @@ angular.module('wegas.models.sessions', [])
     };
 
     model.joinSession = function (token) {
-        /* TODO */
+        var deferred = $q.defer();
+
+        Auth.getAuthenticatedUser().then(function(user) {
+            if(user != null) {
+                if(playedSessions == null) {
+                    model.getPlayedSessions().then(function(data){
+                        model.joinSession(token);
+                    });
+                } else {
+                    model.getPlayedSessions().then(function(data){
+                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token).success(function(data){
+                            playedSessions.push(data[0]);
+                            deferred.resolve(playedSessions);
+                        }).error(function(data){
+                            deferred.resolve(playedSessions);
+                        });
+                    });
+                }
+
+            } else {
+                deferred.resolve(playedSessions);
+            }
+        });
+        return deferred.promise;
     }
 
     model.clearCache = function(){
