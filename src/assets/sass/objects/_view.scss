@@ -83,6 +83,18 @@
             z-index:3;
         }
 
+        &.view--new-session,
+        &.view--join-session
+        {
+            @include make-xs-column(12);
+            @include make-sm-column(4);
+        }
+
+        &.view--sessions-list {
+            @include make-xs-column(12);
+            @include make-sm-column(8);
+        }
+
         @for $i from 1 through 12 {
             &.view--size-#{$i}{
                 height:100%;
