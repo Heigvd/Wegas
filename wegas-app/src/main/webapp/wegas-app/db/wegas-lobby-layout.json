@@ -78,12 +78,23 @@
                                 {
                                     "type": "Button",
                                     "label": "Clear Cache",
-                                    "plugins" : [
+                                    "plugins": [
                                         {
-                                            "fn" : "FireAndForgetRequestAction",
-                                            "cfg" : {
+                                            "fn": "FireAndForgetRequestAction",
+                                            "cfg": {
                                                 "url": "rest/combo",
-                                                "method" : "DELETE"
+                                                "method": "DELETE"
+                                            }
+                                        }
+                                    ]
+                                }, {
+                                    "type": "Button",
+                                    "label": "Admin page",
+                                    "plugins": [
+                                        {
+                                            "fn": "OpenUrlAction",
+                                            "cfg": {
+                                                "url":"wa.html"
                                             }
                                         }
                                     ]
