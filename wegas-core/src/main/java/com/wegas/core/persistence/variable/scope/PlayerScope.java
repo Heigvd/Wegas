@@ -79,28 +79,35 @@ public class PlayerScope extends AbstractScope {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(false);
+        this.propagateDefaultInstance(null);
     }
 
     /**
+     * Propagate instances for the given player
      *
-     * @param force
+     * @param p instance owner
      */
     @Override
-    public void propagateDefaultInstance(boolean force) {
-        VariableDescriptor vd = this.getVariableDescriptor();
-        GameModel gm = vd.getGameModel();
-        for (Game g : gm.getGames()) {
-            for (Team t : g.getTeams()) {
-                for (Player p : t.getPlayers()) {
-                    VariableInstance vi = this.variableInstances.get(p.getId());
-                    if (vi == null) {
-                        this.setVariableInstance(p.getId(), vd.getDefaultInstance().clone());
-                    } else if (force) {
-                        vi.merge(vd.getDefaultInstance());
-                    }
-                }
-            }
+    protected void propagate(Player p) {
+        VariableDescriptor vd = getVariableDescriptor();
+        VariableInstance vi = this.variableInstances.get(p.getId());
+        if (vi == null) {
+            this.setVariableInstance(p.getId(), vd.getDefaultInstance().clone());
+        } else {
+            vi.merge(vd.getDefaultInstance());
+        }
+    }
+
+    @Override
+    public void propagateDefaultInstance(Object context) {
+        if (context instanceof Player) {
+            propagate((Player) context);
+        } else if (context instanceof Team) {
+            propagate((Team) context);
+        } else if (context instanceof Game) {
+            propagate((Game) context);
+        } else { // instanceof GameModel or null
+            propagate(getVariableDescriptor().getGameModel());
         }
     }
 

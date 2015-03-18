@@ -18,6 +18,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  *
@@ -118,5 +119,23 @@ public class PlayerController {
         }
         playerFacade.remove(playerId);
         return p;
+    }
+
+    /**
+     * Resets all the variables of a given player
+     *
+     * @param playerId playerId
+     * @return OK
+     */
+    @GET
+    @Path("{playerId : [1-9][0-9]*}/Reset")
+    public Response reset(@PathParam("playerId") Long playerId) {
+        Player p = playerFacade.find(playerId);
+
+        if (!userFacade.getCurrentUser().equals(p.getUser())) {
+            SecurityHelper.checkPermission(p.getGame(), "Edit");
+        }
+        playerFacade.reset(p);
+        return Response.ok().build();
     }
 }

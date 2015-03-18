@@ -25,6 +25,7 @@ import javax.persistence.PrePersist;
 ////import javax.xml.bind.annotation.XmlTransient;
 //import javax.xml.bind.annotation.XmlType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.wegas.core.persistence.game.Team;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class GameScope extends AbstractScope {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(false);
+        this.propagateDefaultInstance(null);
     }
 
     @Override
@@ -74,18 +75,30 @@ public class GameScope extends AbstractScope {
     }
 
     @Override
-    public void propagateDefaultInstance(boolean force) {
+    protected void propagate(Game g) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        GameModel gm = vd.getGameModel();
-        for (Game g : gm.getGames()) {
-            VariableInstance vi = this.gameVariableInstances.get(g.getId());
-            if (vi == null) {
-                this.setVariableInstance(g.getId(), vd.getDefaultInstance().clone());
-            } else if (force) {
-                vi.merge(vd.getDefaultInstance());
-            }
+        VariableInstance vi = this.gameVariableInstances.get(g.getId());
+        if (vi == null) {
+            this.setVariableInstance(g.getId(), vd.getDefaultInstance().clone());
+        } else {
+            vi.merge(vd.getDefaultInstance());
         }
     }
+
+    @Override
+    public void propagateDefaultInstance(Object context) {
+        if (context instanceof Player){
+            // Since player's game already exists, nothing to propagate
+        } else if (context instanceof Team){
+            // Since teams's game already exists, nothing to propagate
+        } else if (context instanceof Game){
+            propagate((Game)context);
+        } else {
+            propagate(getVariableDescriptor().getGameModel());
+        }
+    }
+
+
 
     @Override
     public void merge(AbstractEntity a) {

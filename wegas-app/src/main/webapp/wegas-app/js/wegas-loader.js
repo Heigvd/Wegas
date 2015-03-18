@@ -658,6 +658,10 @@ YUI().use(function(Y) {
                 requires: "datatable",
                 ws_provides: "Dashboard"
             },
+            "wegas-resetter": {
+                path: "js/widget/wegas-resetter-min.js",
+                ws_provides: "Resetter"
+            },
             "wegas-presencecss": {
                 type: CSS
             },

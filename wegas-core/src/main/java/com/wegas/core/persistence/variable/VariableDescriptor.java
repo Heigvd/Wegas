@@ -36,7 +36,14 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.scope.GameModelScope;
+import com.wegas.core.persistence.variable.scope.GameScope;
+import com.wegas.core.persistence.variable.scope.PlayerScope;
 import org.eclipse.persistence.annotations.JoinFetch;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -69,6 +76,7 @@ import org.eclipse.persistence.annotations.JoinFetch;
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
@@ -372,10 +380,29 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      *
-     * @param force
+     * @param context allow to circumscribe the propagation within the given
+     *                context. It may be an instance of GameModel, Game, Team,
+     *                or Player
      */
-    public void propagateDefaultInstance(boolean force) {
-        this.getScope().propagateDefaultInstance(force);
+    public void propagateDefaultInstance(Object context) {
+        int sFlag = 0;
+        if (scope instanceof GameModelScope) { // gms
+            sFlag = 4;
+        } else if (scope instanceof GameScope) { // gs
+            sFlag = 3;
+        } else if (scope instanceof TeamScope) { // ts
+            sFlag = 2;
+        } else if (scope instanceof PlayerScope) { // ps
+            sFlag = 1;
+        }
+
+        if ((context == null) // no-context
+                || (context instanceof GameModel) // gm ctx -> do not skip anything
+                || (context instanceof Game && sFlag < 4) // g ctx -> skip gms
+                || (context instanceof Team && sFlag < 3) // t ctx -> skip gms, gs
+                || (context instanceof Player && sFlag < 2)) { // p ctx -> skip gms, gs, ts
+            scope.propagateDefaultInstance(context);
+        }
     }
 
     /**

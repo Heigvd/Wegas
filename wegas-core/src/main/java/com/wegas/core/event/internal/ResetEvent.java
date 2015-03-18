@@ -11,6 +11,7 @@ import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +25,24 @@ public class ResetEvent implements Serializable {
     private static final long serialVersionUID = 1L;
     private GameModel gameModel = null;
     private Game game = null;
+    private Team team = null;
+    private Player player = null;
+
+    /**
+     *
+     * @param player
+     */
+    public ResetEvent(Player player) {
+        this.player = player;
+    }
+
+    /**
+     *
+     * @param team
+     */
+    public ResetEvent(Team team) {
+        this.team = team;
+    }
 
     /**
      *
@@ -46,6 +65,8 @@ public class ResetEvent implements Serializable {
      * @param gameModel
      */
     public void setGameModel(GameModel gameModel) {
+        this.player = null;
+        this.team = null;
         this.game = null;
         this.gameModel = gameModel;
     }
@@ -55,8 +76,32 @@ public class ResetEvent implements Serializable {
      * @param game
      */
     public void setGame(Game game) {
+        this.player = null;
+        this.team = null;
         this.gameModel = null;
         this.game = game;
+    }
+
+    /**
+     *
+     * @param team
+     */
+    public void setTeam(Team team) {
+        this.gameModel = null;
+        this.game = null;
+        this.team = team;
+        this.player = null;
+    }
+
+    /**
+     *
+     * @param player
+     */
+    public void setPlayer(Player player) {
+        this.gameModel = null;
+        this.game = null;
+        this.team = null;
+        this.player = player;
     }
 
     /**
@@ -64,10 +109,14 @@ public class ResetEvent implements Serializable {
      * @return
      */
     public AbstractEntity getContext() {
-        if (this.game == null) {
-            return this.gameModel;
-        } else {
+        if (this.player != null) {
+            return player;
+        } else if (this.team != null) {
+            return team;
+        } else if (this.game != null) {
             return this.game;
+        } else {
+            return this.gameModel;
         }
     }
 
@@ -76,10 +125,16 @@ public class ResetEvent implements Serializable {
      * @return
      */
     public List<Player> getConcernedPlayers() {
-        if (this.getContext() instanceof Game) {
-            return ((Game) (this.getContext())).getPlayers();
+        if (this.getContext() instanceof Player) {
+            ArrayList<Player> pl = new ArrayList<>();
+            pl.add(player);
+            return pl;
+        } else if (this.getContext() instanceof Team) {
+            return team.getPlayers();
+        } else if (this.getContext() instanceof Game) {
+            return game.getPlayers();
         } else if (this.getContext() instanceof GameModel) {
-            return ((GameModel) (this.getContext())).getPlayers();
+            return gameModel.getPlayers();
         } else {
             return new ArrayList<>();
         }
