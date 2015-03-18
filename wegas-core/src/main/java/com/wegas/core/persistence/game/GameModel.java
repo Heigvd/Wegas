@@ -186,9 +186,9 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      *
      * @param force
      */
-    public void propagateDefaultInstance(boolean force) {
+    public void propagateDefaultInstance(Object context) {
         for (VariableDescriptor vd : this.getVariableDescriptors()) {
-            vd.propagateDefaultInstance(force);
+            vd.propagateDefaultInstance(context);
         }
     }
 

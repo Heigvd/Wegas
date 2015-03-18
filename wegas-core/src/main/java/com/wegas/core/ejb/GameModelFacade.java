@@ -98,7 +98,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         super(GameModel.class);
     }
 
-
     /**
      * @param entity
      */
@@ -262,11 +261,13 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param gameModel
      */
     public void reset(final GameModel gameModel) {
-        getEntityManager().flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        getEntityManager().flush();
         gameModel.propagateGameModel();
-        gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        getEntityManager().flush();                                 // DA FU    ()
-        resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
+        gameModel.propagateDefaultInstance(gameModel);
+        getEntityManager().flush(); // DA FU    ()
+        // Send an reset event (for the state machine and other)
+        resetEvent.fire(new ResetEvent(gameModel));
     }
 
     /**

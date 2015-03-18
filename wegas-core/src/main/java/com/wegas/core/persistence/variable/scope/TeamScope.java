@@ -97,28 +97,31 @@ public class TeamScope extends AbstractScope {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(false);
+        this.propagateDefaultInstance(null);
     }
 
-    /**
-     *
-     * @param force
-     */
     @Override
-    public void propagateDefaultInstance(boolean force) {
-        //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
-
+    protected void propagate(Team t) {
         VariableDescriptor vd = this.getVariableDescriptor();
-        GameModel gm = vd.getGameModel();
-        for (Game g : gm.getGames()) {
-            for (Team t : g.getTeams()) {
-                VariableInstance vi = this.teamVariableInstances.get(t.getId());
-                if (vi == null) {
-                    this.setVariableInstance(t.getId(), vd.getDefaultInstance().clone());
-                } else if (force) {
-                    vi.merge(vd.getDefaultInstance());
-                }
-            }
+        VariableInstance vi = this.teamVariableInstances.get(t.getId());
+        if (vi == null) {
+            this.setVariableInstance(t.getId(), vd.getDefaultInstance().clone());
+        } else {
+            vi.merge(vd.getDefaultInstance());
+        }
+    }
+
+    @Override
+    public void propagateDefaultInstance(Object context) {
+        //logger.info("Propagating default instance for VariableDescriptor: {}", this.getVariableDescriptor());
+        if (context instanceof Player) {
+            // No need to propagate since the team already exists
+        } else if (context instanceof Team) {
+            propagate((Team) context);
+        } else if (context instanceof Game) {
+            propagate((Game) context);
+        } else {
+            propagate(getVariableDescriptor().getGameModel());
         }
     }
 

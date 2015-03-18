@@ -8,6 +8,7 @@
 package com.wegas.core.ejb;
 
 import com.wegas.core.event.internal.PlayerAction;
+import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -86,6 +87,12 @@ public class GameFacade extends BaseFacade<Game> {
      */
     @Inject
     private Event<PlayerAction> playerActionEvent;
+
+    /**
+     *
+     */
+    @Inject
+    private Event<ResetEvent> resetEvent;
 
     /**
      *
@@ -423,7 +430,7 @@ public class GameFacade extends BaseFacade<Game> {
         team.addPlayer(player);
         getEntityManager().persist(player);
 
-        team.getGame().getGameModel().propagateDefaultInstance(false);
+        team.getGame().getGameModel().propagateDefaultInstance(player);
         playerActionEvent.fire(new PlayerAction(player));
     }
 
@@ -479,5 +486,26 @@ public class GameFacade extends BaseFacade<Game> {
      */
     public void bin(Game entity) {
         entity.setStatus(Game.Status.BIN);
+    }
+
+    /**
+     * Reset a game
+     * @param game the game to reset
+     */
+    public void reset(final Game game) {
+        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        getEntityManager().flush();
+        game.getGameModel().propagateDefaultInstance(game);
+        getEntityManager().flush(); // DA FU    ()
+        // Send an reset event (for the state machine and other)
+        resetEvent.fire(new ResetEvent(game));
+    }
+
+    /**
+     * Reset a game
+     * @param gameId  id of the game to reset
+     */
+    public void reset(Long gameId) {
+        this.reset(this.find(gameId));
     }
 }

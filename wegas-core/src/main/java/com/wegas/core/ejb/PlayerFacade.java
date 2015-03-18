@@ -7,6 +7,7 @@
  */
 package com.wegas.core.ejb;
 
+import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.Player;
@@ -18,6 +19,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.*;
 import java.util.List;
+import javax.enterprise.event.Event;
+import javax.inject.Inject;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -37,6 +40,9 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     @EJB
     private UserFacade userFacade;
+
+    @Inject
+    private Event<ResetEvent> resetEvent;
 
     /**
      * @param teamId
@@ -167,5 +173,27 @@ public class PlayerFacade extends BaseFacade<Player> {
      */
     public PlayerFacade() {
         super(Player.class);
+    }
+
+    /**
+     * Reset a player
+     * @param player the player to reset
+     */
+    public void reset(final Player player) {
+        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        getEntityManager().flush();
+        player.getGameModel().propagateDefaultInstance(player);
+        getEntityManager().flush();
+        // Send an reset event (for the state machine and other)
+        resetEvent.fire(new ResetEvent(player));
+    }
+
+
+    /**
+     * Reset a player
+     * @param playerId  id of the player to reset
+     */
+    public void reset(Long playerId) {
+        this.reset(this.find(playerId));
     }
 }

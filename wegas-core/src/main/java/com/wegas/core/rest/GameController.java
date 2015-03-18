@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 
 /**
@@ -374,5 +375,21 @@ public class GameController {
     @Path("/FindByToken/{token : .*}/")
     public Game findByToken(@PathParam("token") String token) {
         return gameFacade.findByToken(token);
+    }
+
+    /**
+     * Resets all the variables of a given game
+     *
+     * @param gameId gameId
+     * @return OK
+     */
+    @GET
+    @Path("{gameId : [1-9][0-9]*}/Reset")
+    public Response reset(@PathParam("gameId") Long gameId) {
+
+        SecurityUtils.getSubject().checkPermission("Game:Edit:g" + gameId);
+
+        gameFacade.reset(gameId);
+        return Response.ok().build();
     }
 }
