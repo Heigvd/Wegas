@@ -21,6 +21,7 @@
 		background-color:$white;
 		transition: .5s;
 	}
+
 	&.link--active{
 		color:darken($secondary-color, 20%);
 		cursor:default;
@@ -46,6 +47,30 @@
 			background-color:lighten($primary-color, 12%);
 			color:$white;
 			cursor:default;
+		}
+		i{
+			color:$white;
+		}
+	}
+
+    @each $button-type in $buttons-types{
+        $type-name : nth($button-type, 1); 
+        $type-color : nth($button-type, 2);
+		&.link--#{$type-name}{
+			color:$white;
+			background-color:lighten($type-color, 6%);
+			&:hover, &.focus, &.link.active{
+				color:$white;
+				background-color:lighten($type-color, 12%);
+			}
+			&.link--active{
+				background-color:lighten($type-color, 12%);
+				color:$white;
+				cursor:default;
+			}
+			i{
+				color:$white;
+			}
 		}
 	}
 }

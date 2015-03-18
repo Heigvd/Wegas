@@ -68,7 +68,16 @@ angular.module('private.trainer.sessions.directives', [
            session: '='
         },
         link : function(scope, element, attrs){
-            console.log(scope);
+            scope.editingName = false;
+            scope.toogleEditingName = function(){
+                console.log(element);
+                scope.editingName = (!scope.editingName);
+                $(element['context']).find(".titre__edition__input", function(elem){
+                    console.log("hello");
+                    console.log(elem);
+                });
+                console.log(scope.session.name);
+            };
         }
     }
 });
