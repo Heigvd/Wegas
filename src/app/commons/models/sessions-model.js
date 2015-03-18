@@ -14,7 +14,7 @@ angular.module('wegas.models.sessions', [])
             });
             return session;
         };
-        // Retourne toutes les sessions managées, un tableau vide si un utilisateur n'a aucune session.
+        // Get all managed sessions
         model.getManagedSessions = function () {
             var deferred = $q.defer();
             if(managedSessions != null){
@@ -39,15 +39,15 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
-        // Retourne la session managée correspondant à l'id, undefined sinon.
+        // Return a specific session based on her id
         model.getManagedSession = function(id){
             var deferred = $q.defer();
-            if(managedSessions == null){
+            if (managedSessions == null) {
                 model.getManagedSessions().then(function(data){
                     var session = findSession(managedSessions, id);
                     deferred.resolve(session);
                 });
-            }else{
+            } else {
                 var session = findSession(managedSessions, id);
                 deferred.resolve(session);
             }
@@ -58,8 +58,8 @@ angular.module('wegas.models.sessions', [])
         model.createManagedSession = function(sessionName, scenarioId){
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user){
-                if(user != null){
-                    // Todo Check Values ? 
+                if(user != null) {
+                    // Todo Check Values ?
                     var newSession = {
                         "@class": "Game",
                         "gameModelId": scenarioId,
@@ -75,7 +75,7 @@ angular.module('wegas.models.sessions', [])
                         });
                         deferred.resolve(managedSessions[data.id]);
                     }).error(function(data){
-                        // ToDo - Améliorer la gestion d'erreur
+                        // TODO - Improve error mgt
                         deferred.resolve(null);
                     });
                 }else{
