@@ -95,12 +95,7 @@ angular.module('wegas.models.sessions', [])
                     }else{
                         playedSessions = [];
                         $http.get(ServiceURL + "rest/RegisteredGames/"+ user.id).success(function(data){
-                            data.forEach(function(elem){
-                                playedSessions.push({
-                                    id : elem.id,
-                                    name : elem.name
-                                });
-                            });
+                            playedSessions = data
                             deferred.resolve(playedSessions);
                         }).error(function(data){
                             playedSessions = [];
