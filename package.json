@@ -2,7 +2,8 @@
   "name": "albasimchWww",
   "version": "0.0.0",
   "dependencies": {
-    "proxy-middleware": "^0.11.0"
+    "proxy-middleware": "^0.11.0",
+    "yargs": "^3.5.4"
   },
   "devDependencies": {
     "gulp": "~3.8.10",
