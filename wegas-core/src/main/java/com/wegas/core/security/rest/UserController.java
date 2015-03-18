@@ -474,8 +474,8 @@ public class UserController {
     }
     
     /**
-     * Rend l'utilisateur connecté, Error 400 sinon. 
-     * @return user, l'utilisateur actuel
+     * Get the current user, error 400 if there is no user logged. 
+     * @return user, the current user;
      */
     @GET
     @Path("Current")
