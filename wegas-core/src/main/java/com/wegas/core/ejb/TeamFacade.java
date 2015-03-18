@@ -42,6 +42,12 @@ public class TeamFacade extends BaseFacade<Team> {
      */
     @EJB
     private GameFacade gameFacade;
+
+    /**
+     *
+     */
+    @EJB
+    private TeamSingleton teamSingleton;
     /**
      *
      */
@@ -77,23 +83,6 @@ public class TeamFacade extends BaseFacade<Team> {
 
     /**
      *
-     * @param gameModelId
-     * @param name
-     * @return
-     */
-    private Team findByName(Long gameModelId, String name) throws WegasNoResultException {
-        final TypedQuery<Team> query = getEntityManager().createNamedQuery("Team.findByGameIdAndName", Team.class);
-        query.setParameter("gameId", gameModelId);
-        query.setParameter("name", name);
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException ex) {
-            throw new WegasNoResultException(ex);
-        }
-    }
-
-    /**
-     *
      * @param gameId
      * @param t
      */
@@ -106,26 +95,8 @@ public class TeamFacade extends BaseFacade<Team> {
             t.setName(((GameAccount) userFacade.getCurrentUser().getMainAccount()).getEmail());
         }
 
-        try {
-            this.findByName(gameId, t.getName());                               // If the provided name is already in use,
-            t.setName(null);                                                    // reset so it will be generated
-        } catch (WegasNoResultException e) {
-            // Gotcha
-        }
+        teamSingleton.addTeamToGame(g, t);
 
-        int suffix = g.getTeams().size();
-        String baseName = g.getShortName();
-        while (t.getName() == null) {                                           // If no name is provided,
-            String name = baseName + "-" + suffix;                              // generate one
-            try {
-                this.findByName(gameId, name);
-                suffix++;
-            } catch (WegasNoResultException e) {
-                t.setName(name);
-            }
-        }
-
-        g.addTeam(t);
         gameFacade.addRights(userFacade.getCurrentUser(), g);  // @fixme Should only be done for a player, but is done here since it will be needed in later requests to add a player
 
         getEntityManager().flush();
