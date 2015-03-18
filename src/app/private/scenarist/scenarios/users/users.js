@@ -15,5 +15,5 @@ angular.module('private.scenarist.scenarios.users', [
 })
 .controller('ScenariosUsersCtrl', function ScenariosUsersCtrl($state, $stateParams) {
     var scenariosUsersCtrl = this;
-    console.log("Chargement des users du scenarios No " + $stateParams.id);    
+    console.log("Loading users from scenarios #" + $stateParams.id);
 });
