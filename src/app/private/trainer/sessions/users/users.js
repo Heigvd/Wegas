@@ -15,5 +15,5 @@ angular.module('private.trainer.sessions.users', [
 })
 .controller('SessionsUsersCtrl', function SessionsUsersCtrl($state, $stateParams) {
     var sessionsUsersCtrl = this;
-    console.log("Chargement des users de la session No " + $stateParams.id);    
+    console.log("Loading users from session #" + $stateParams.id);
 });

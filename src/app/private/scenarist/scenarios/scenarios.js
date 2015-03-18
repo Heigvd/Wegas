@@ -23,5 +23,5 @@ angular.module('private.scenarist.scenarios', [
 })
 .controller('ScenariosListCtrl', function ScenariosListCtrl($state) {
     var scenariosListCtrl = this;
-    console.log("Chargement scenarist scenarios list");    
+    console.log("Loadings scenario list");
 });

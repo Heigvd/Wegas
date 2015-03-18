@@ -25,8 +25,8 @@ angular.module('private.player', [
 })
 .controller('PlayerCtrl', function PlayerCtrl($state, ViewInfos, SessionsModel) {
     var playerCtrl = this;
-    console.log("Chargement player view");  
     ViewInfos.editName("Player workspace");  
+    console.log("Loading player view");
     playerCtrl.name = ViewInfos.name;
     SessionsModel.getPlayedSessions().then(function(sessions){
         console.log(sessions);

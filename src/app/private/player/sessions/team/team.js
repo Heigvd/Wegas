@@ -15,5 +15,5 @@ angular.module('private.player.sessions.team', [
 })
 .controller('SessionsTeamCtrl', function SessionsTeamCtrl($state, $stateParams) {
     var sessionsTeamCtrl = this;
-    console.log("Chargement des users de la session No " + $stateParams.id);    
+    console.log("Loading users from session #" + $stateParams.id);
 });

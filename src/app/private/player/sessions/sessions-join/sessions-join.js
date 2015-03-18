@@ -19,5 +19,5 @@ angular.module('private.player.sessions.join', [
 })
 .controller('SessionsJoinCtrl', function SessionsJoinCtrl($state) {
     var sessionsJoinCtrl = this;
-    console.log("Chargement new session");    
+    console.log("Loading new session");
 });
