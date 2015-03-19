@@ -53,6 +53,7 @@ public class GameAdmin extends AbstractEntity {
     private Date createdTime;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(length = 24)
     private Status status = Status.TODO;
 
     private String prevName;

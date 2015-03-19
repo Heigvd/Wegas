@@ -176,7 +176,7 @@ public class GameModelController {
         SecurityUtils.getSubject().checkPermission("GameModel:Delete:gm" + entityId);
 
         GameModel entity = gameModelFacade.find(entityId);
-        gameModelFacade.remove(entityId);
+        gameModelFacade.asyncRemove(entityId);
         return entity;
     }
 

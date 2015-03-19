@@ -147,6 +147,9 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
     public void deleteGames() {
         TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
         final List<GameAdmin> resultList = query.getResultList();
-        resultList.forEach(this::deleteGame);
+        for(GameAdmin ga : resultList){
+            this.deleteGame(ga);
+        }
+        
     }
 }

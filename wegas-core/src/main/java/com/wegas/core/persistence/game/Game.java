@@ -122,6 +122,7 @@ public class Game extends NamedEntity {
      *
      */
     @Enumerated(value = EnumType.STRING)
+    @Column(length = 24)
     private Status status = Status.LIVE;
 
     /**
