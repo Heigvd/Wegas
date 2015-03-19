@@ -29,6 +29,7 @@ import javax.persistence.Transient;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.Helper;
+import javax.persistence.Column;
 
 /**
  *
@@ -49,6 +50,7 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
     /**
      *
      */
+    @Column(length = 24)
     private String index;
     /**
      *
