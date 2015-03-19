@@ -308,6 +308,7 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 /* Editor layout styles */
 .yui3-skin-sam .wegas-layout-hd {
     white-space: nowrap;
+    min-width: 900px;
 }
 
 .yui3-skin-sam .wegas-layout-hd > div {
@@ -332,11 +333,6 @@ body, button, .yui3-skin-sam .yui3-datatable-table {
 .yui3-skin-sam .wegas-layout-hd .yui3-button.wegas-widgetmenu-hassubmenu:after {
     background: url("../../wegas-app/images/wegas-icon-toggle.png") 0 -40px;
     top: 11px;
-}
-
-.yui3-skin-sam .wegas-layout-hd > div,
-.yui3-skin-sam .wegas-layout-hd > button {
-    float: left;
 }
 
 .yui3-skin-sam .wegas-layout-hd .wegas-login {
