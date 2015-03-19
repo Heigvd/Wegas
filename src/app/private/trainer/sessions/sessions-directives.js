@@ -1,6 +1,6 @@
 angular.module('private.trainer.sessions.directives', [
 ])
-.directive('managedSessionsIndex', function(SessionsModel){
+.directive('trainerSessionsIndex', function(SessionsModel){
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
     controller : function(){
@@ -17,11 +17,11 @@ angular.module('private.trainer.sessions.directives', [
     }
   };
 })
-.directive('managedSessionsAddForm', function(ScenariosModel, SessionsModel) {
+.directive('trainerSessionsAddForm', function(ScenariosModel, SessionsModel) {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
     scope: false, 
-    require: "^managedSessionsIndex",
+    require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         ScenariosModel.getScenarios().then(function(scenarios){
             scope.scenarios = scenarios;
@@ -46,11 +46,11 @@ angular.module('private.trainer.sessions.directives', [
     }
   };
 })
-.directive('managedSessionsList', function(ScenariosModel, SessionsModel) {
+.directive('trainerSessionsList', function() {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
     scope: false,
-    require: "^managedSessionsIndex",
+    require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         scope.$watch(function(){
             return parentCtrl.sessions
@@ -59,4 +59,25 @@ angular.module('private.trainer.sessions.directives', [
         });
     }
   };
+})
+.directive('trainerSession', function() {
+    return {
+        templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card.tmpl.html',
+        restrict: 'A',
+        scope: {
+           session: '='
+        },
+        link : function(scope, element, attrs){
+            scope.editingName = false;
+            scope.toogleEditingName = function(){
+                console.log(element);
+                scope.editingName = (!scope.editingName);
+                $(element['context']).find(".titre__edition__input", function(elem){
+                    console.log("hello");
+                    console.log(elem);
+                });
+                console.log(scope.session.name);
+            };
+        }
+    }
 });

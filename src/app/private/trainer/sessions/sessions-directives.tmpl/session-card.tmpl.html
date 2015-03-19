@@ -1,0 +1,16 @@
+<div class="card__illustration card__illustration--editable illustration illustration--big">
+    <img src="http://dummyimage.com/300x100/00ff00/123321" />
+</div>
+<div class="card__description card__description--one-line">
+    <p class="card__description__date">{{session.createdTime | date:"dd.MM.yyyy"}}</p>
+    <h4 class="card__description__titre">
+    	<span ng-if="!editingName" class="titre__display" ng-click="toogleEditingName()">{{session.name}}</span>
+    	<div ng-if="editingName" class="titre__edition">
+    		<input class="titre__edition__input" type="text" ng-model="session.name" />
+    		<a class="titre__edition__link link link--danger" ng-click="toogleEditingName()"><i class="fa fa-times"></i></a>
+    		<a class="titre__edition__link link link--success" ng-click="toogleEditingName()"><i class="fa fa-check"></i></a>
+    	</div>
+    </h4>
+    <p ng-if="session.comments" class="card__description__note">{{session.comments | limitTo: 48}}</p>
+    <p ng-if="!session.comments" class="card__description__note">Comment this session</p>
+</div>

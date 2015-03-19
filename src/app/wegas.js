@@ -1,4 +1,4 @@
-var ServiceURL =  "/api/"
+var ServiceURL = "/api/";
 angular.module('Wegas', [
     'ui.router',
     'wegas.service.auth',

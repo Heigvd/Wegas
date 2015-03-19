@@ -1,369 +1,63 @@
-$taille-btn: 48px; // Replaced by $height-small-btn
+.input{
+    $size-default:nth(nth($sizes, 1), 2);
+    background:none;
+    outline:none;
+    border:solid 1px $border;
+    box-sizing: border-box;
+    width:100%;
+    color:$default-color;
+    height:$size-default;
+    padding:0px $size-default/2;
+    font-size: $size-default/3;
+    line-height:$size-default;
+    border-radius:$size-default/8;
+    margin-bottom:8px;
+    transition:.8s;
 
-.v1{
-    .input{
-        @include make-row(0);
-        margin:4px 0px;
-        .input__label{
-            @include make-xs-column(12);
-            @include make-md-column(4);
-            display:block;
-            width:auto;
-            display:block;
-            position:relative;
-            font-weight:400;
-            font-size:13px;
-            height:$input-height;
-            line-height:$input-height;
-            padding:0px;
-            margin:$grid-gutter-width/8 0px;
-        } 
+    @each $size in $sizes {
+        $size-nom: nth($size, 1);
+        $size-value: nth($size, 2);
+        &.input--#{$size-nom}{
+            height: $size-value;
+            padding:$size-value/4 $size-value/2;
+            font-size: $size-value / 4;
+            line-height: $size-value/2;
+            border-radius: $size-value/8;
 
-        .input__entry{
-            @include make-xs-column(12);
-            @include make-md-column(8);
-        }
-        &.input--label-off{
-            .input__label{
-                display:none;
-            }
-            .input__entry{
-                @include make-md-column(12);
-            }
-        }
-
-        &.input--text{
-            @extend %default-input;
-        }
-        &.input--password{
-            @extend %default-input;
-        }
-        &.input--textarea{
-            @extend %default-input;
-            .input__entry{
-                height:3*$input-height;
-            }
-        }
-
-        &.input--select{
-            @extend %default-input;
-            .input__entry{
-                select{
-                    -webkit-appearance: none;
-                    -moz-appearance: none;
-                    appearance: none;
-                    display:block;
-                    position:absolute;
-                    top:0px;
-                    left:0px;
-                    width:100%;
-                    height:100%;
-                    background-color: lighten($background-default, 20%);
-                    padding:0px 16px;
-                    margin:0px;
-                    border:none;
-                    transition: 0.8s;
-                    outline:none;
-                    cursor:pointer;
-                }
-
-                &:after{
-                    display:block;
-                    position:absolute;
-                    top:0px;
-                    width:$input-height/4;
-                    height:$input-height/4;
-                    font-size:14px;
-                    line-height: 16px;
-                    right:0px;
-                    margin:10px $input-height/8;
-                    color:$border;
-                    font-family:"FontAwesome";
-                    content:$fa-var-sort;
-                }
-            }
-        }
-        &.input--checkbox{
-            .input__entry{
-                @include make-md-column-offset(3);
-                @include make-lg-column-offset(4);
-                @extend %default-box;
-            }
-        }
-        &.input--radios-group{
-            .input__entry{
-                padding-left:0px;
-                padding-right:0px;
-                .input__radio{
-                    @include make-md-column(6, 32px);
-                    @extend %default-box;
-                    input + label span{
-                        border-radius:50%;
-                    }
-                }
-            }
-        }
-
-        &.input--new{
-            display:block;
-            position:absolute;
-            width:320px;
-            height:$taille-btn;
-            border-radius:5px;
-            overflow:hidden;
-            transition:.4s;
-            border:solid 1px $border;
-
-            .input__group{
-                display:block;
-                position:absolute;
-                width:320px;
-                height:$taille-btn;
-                top:0px;
-                right:0px;
-                
-                input[type="text"]{
-                    width:272px;
-                    height:$taille-btn;
-                    line-height: $taille-btn;
-                    background-color:$background-default;
-                    transition: 0.8s;
-                    float:left;
-                    outline: none;
-                    border:none;
-                    margin:0px;
-                    padding:0px 16px;
-                    &:focus, &.focus{
-                        background-color:$white;
-                        outline: none;
-                    }
-                }
-                input[type="submit"], a{
-                    width:48px;
-                    height:48px;
-                    float:right;
-                    padding:0px;
-                    margin:0px;
-                    border-radius: 0px;
-                    cursor:pointer;
-                    &:before{
-                        content:$fa-var-plus;
-                        width:48px;
-                        height:48px;
-                        display:block;
-                        position:absolute;
-                        top:0px;
-                        left:0px;
-                        text-align:center;
-                        line-height:48px;
-                        font-size:14px;
-                        font-family: "FontAwesome";
-                    }
-                }
-            }
-
-            &.active{
-                width:320px;
-                transition:.4s;
-            }
-        }
-        &.input--join{
-            display:block;
-            position:absolute;
-            width:320px;
-            height:$taille-btn;
-            border-radius:5px;
-            overflow:hidden;
-            transition:.4s;
-            border:solid 1px $border;
-
-            .input__group{
-                display:block;
-                position:absolute;
-                width:320px;
-                height:$taille-btn;
-                top:0px;
-                right:0px;
-                
-                input[type="text"]{
-                    width:272px;
-                    height:$taille-btn;
-                    line-height: $taille-btn;
-                    background-color:lighten($background-default, 20%);
-                    transition: 0.8s;
-                    float:left;
-                    outline: none;
-                    border:none;
-                    margin:0px;
-                    padding:0px 16px;
-                    &:focus, &.focus{
-                        background-color:$white;
-                        outline: none;
-                    }
-                }
-                a{
-                    width:48px;
-                    height:48px;
-                    float:right;
-                    padding:0px;
-                    margin:0px;
-                    border-radius: 0px;
-                    cursor:pointer;
-                    &:before{
-                        content:$fa-var-plus;
-                        width:48px;
-                        height:48px;
-                        display:block;
-                        position:absolute;
-                        top:0px;
-                        left:0px;
-                        text-align:center;
-                        line-height:48px;
-                        font-size:14px;
-                        font-family: "FontAwesome";
-                    }
-                }
-            }
-        }
-        &.input--big{
-            height:$input-big-height;
-            .input__entry{
-                height:$input-big-height;
-                padding:0px 16px;
+            &.input--multi-lines{
+                height: $size-value * 3;
             }
         }
     }
-}
 
-/*
-.input--disabled input:hover{
-    cursor:text;
-}
-
-.input--warning input{
-    color:$warning-color;
-}
-
-.input--warning label:after{
-    display:block;
-    position:absolute;
-    width:18px;
-    height:18px;
-    font-size:18px;
-    right:16px;
-    top:48px;
-    font-family:FontAwesome;
-    color:$warning-color;
-    content:$fa-var-exclamation-triangle;
-}
-
-.input--warning input:focus{
-    color:$default-color;
-}
-
-.input--danger label:after{
-    display:block;
-    position:absolute;
-    width:18px;
-    height:18px;
-    font-size:18px;
-    right:16px;
-    top:48px;
-    font-family:FontAwesome;
-    color:$danger-color;
-    content:$fa-var-exclamation-circle;
-}
-
-.input--danger input{
-    color:$danger-color;
-}
-
-.input--success label:after{
-    display:block;
-    position:absolute;
-    width:18px;
-    height:18px;
-    font-size:18px;
-    right:16px;
-    top:48px;
-    font-family:FontAwesome;
-    color:$success-color;
-    content:$fa-var-check;
-}
-
-.input--success input{
-    color:$success-color;
-}
-
-.input--warning input:focus, .input--danger input:focus, .input--success input:focus{
-    color:$default-color;
-}
-*/
-
-// Only use for input type text or password, select and text area 
-
-.v2{
-    .input{
-        $size-default:nth(nth($sizes, 1), 2);
-        background:none;
-        outline:none;
-        border:solid 1px $border;
-        box-sizing: border-box;
-        width:100%;
-        color:$default-color;
-        height:$size-default;
-        padding:0px $size-default/2;
-        font-size: $size-default/3;
-        line-height:$size-default;
-        border-radius:$size-default/8;
-        margin-bottom:8px;
+    &:focus{
+        background-color:white;
         transition:.8s;
+    }
 
-        @each $size in $sizes {
-            $size-nom: nth($size, 1);
-            $size-value: nth($size, 2);
-            &.input--#{$size-nom}{
-                height: $size-value;
-                padding:$size-value/4 $size-value/2;
-                font-size: $size-value / 4;
-                line-height: $size-value/2;
-                border-radius: $size-value/8;
-
-                &.input--multi-lines{
-                    height: $size-value * 3;
-                }
-            }
-        }
-
+    &.input--primary{
+        background-color:$white;
+        border:none;
+        @include material-shadow(2);
         &:focus{
             background-color:white;
             transition:.8s;
-        }
-
-        &.input--primary{
-            background-color:$white;
-            border:none;
-            @include material-shadow(2);
-            &:focus{
-                background-color:white;
-                transition:.8s;
-                @include material-shadow(3);
-            }
+            @include material-shadow(3);
         }
     }
+}
 
-    .input--group{
-        .input{
-            border-bottom-left-radius: 6px;
-            border-bottom-right-radius:0px; 
-            border-top-left-radius: 6px;
-            border-top-right-radius: 0px;
-        }
-        .button{
-            border-bottom-left-radius: 0px;
-            border-bottom-right-radius:6px; 
-            border-top-left-radius: 0px;
-            border-top-right-radius: 6px;
-        }
+.input--group{
+    .input{
+        border-bottom-left-radius: 6px;
+        border-bottom-right-radius:0px; 
+        border-top-left-radius: 6px;
+        border-top-right-radius: 0px;
+    }
+    .button{
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius:6px; 
+        border-top-left-radius: 0px;
+        border-top-right-radius: 6px;
     }
 }

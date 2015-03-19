@@ -1,24 +1,18 @@
 <h3>Your active sessions</h3>
-<div class="v1">
-<div class="card card--session" ng-repeat="session in sessions" ng:class="{true:'card--block', false:'card--inline'}[sessions.length <= 2]">
-  <div class="card__illustration">
+<div class="card card--big card--player-session" ng-repeat="session in sessions" ng:class="{true:'card--block', false:'card--inline'}[sessions.length <= 2]">
+  <div class="card__illustration illustration illustration--big">
     <img src="http://dummyimage.com/300x100/00ff00/123321" />
   </div>
   <div class="card__description">
-    <h4>{{ session.name }}</h4>
-    <p>Based on <em>{{ session.gameModelName }}</em></p>
+    <h4 class="card__description__titre">{{ session.name }}</h4>
+    <p class="card__description__scenario">Based on <em>{{ session.gameModelName }}</em></p>
   </div>
-  <ul class="card__actions">
-    <li class="action">
-      <a href="http://wegas.albasim.ch/host.html?gameId={{ session.id }}" target="_blank" class="btn btn--icon btn--play">
-        <span class="btn__label">Play</span>
-      </a>
-    </li>
-    <li class="action">
-      <a class="btn btn--icon btn--users">
-        <span class="btn__label">Manage users</span>
-      </a>
-    </li>
-  </ul>
-</div>
+  <div class="card__actions">
+    <a class="button button--big button--default-reverse button--label-off button--user" title="Manage User" href="#">
+      <span class="button__label">Manage User</span>
+    </a>
+    <a class="button button--big button--info button--label-off button--play" title="Play session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
+      <span class="button__label">Play session</span>
+    </a>
+  </div>
 </div>
