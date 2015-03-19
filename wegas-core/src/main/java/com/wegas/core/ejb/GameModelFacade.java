@@ -26,6 +26,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
 import org.apache.shiro.SecurityUtils;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -133,6 +134,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.reset(gameModel);                                                  // Reset the game model
     }
 
+    @Asynchronous
+    public void asyncRemove(final Long id){
+        this.remove(id);
+    }
     @Override
     public void remove(final Long id) {
         userFacade.deleteAccountPermissionByInstance("gm" + id);

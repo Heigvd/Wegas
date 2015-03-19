@@ -62,6 +62,13 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
     @Basic(fetch = FetchType.LAZY)
     @JsonView(Views.ExtendedI.class)
     private String description;
+
+    /**
+     *
+     */
+    @Enumerated(value = EnumType.STRING)
+    @Column(length = 24)
+    private Status status = Status.LIVE;
     /**
      *
      */
@@ -301,6 +308,23 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
         this.name = name;
     }
 
+    /**
+     *
+     * @return Current GameModel's status
+     */
+    @JsonIgnore
+    public Status getStatus() {
+        return status;
+    }
+
+    /**
+     *
+     * @param status status to set
+     */
+    @JsonIgnore
+    public void setStatus(Status status) {
+        this.status = status;
+    }
     /**
      *
      * @return
@@ -604,6 +628,26 @@ public class GameModel extends NamedEntity implements DescriptorListI<VariableDe
      */
     public void setTemplate(Boolean template) {
         this.template = template;
+    }
+
+    public enum Status {
+        /**
+         * Initial value, game is playable
+         */
+        LIVE,
+        /**
+         * Game in the wast bin
+         */
+        BIN,
+        /**
+         * Schedule for deletion
+         */
+        DELETE,
+        /**
+         * Does not exist anymore. Actually, this status should never persist.
+         * Used internally as game's missing.
+         */
+        SUPPRESSED
     }
 
     /* try transient anotation on field "pages". Problem with anotation mixin'
