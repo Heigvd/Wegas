@@ -8,19 +8,11 @@
     <p class="card__description__scenario">Based on <em>{{ session.gameModelName }}</em></p>
   </div>
   <div class="card__actions">
-    <a class="button button--big button--default-reverse button--label-off button--user" href="#">
-      <span class="button__label">User</span>
+    <a class="button button--big button--default-reverse button--label-off button--user" title="Manage User" href="#">
+      <span class="button__label">Manage User</span>
     </a>
-    <a class="button button--big button--info button--label-off button--play" href="#">
-      <span class="button__label">Play</span>
+    <a class="button button--big button--info button--label-off button--play" title="Play session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
+      <span class="button__label">Play session</span>
     </a>
   </div>
-  <!--<ul class="card__actions">
-    <li class="action">
-      <a href="http://wegas.albasim.ch/host.html?gameId={{ session.id }}" target="_blank" class="btn btn--icon btn--play">
-        <span class="btn__label">Play</span>
-      </a>
-    </li>
-    
-  </ul> -->
 </div>
