@@ -62,7 +62,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSession', function() {
     return {
-        templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card.tmpl.html',
+        templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card-flat.tmpl.html',
         restrict: 'A',
         scope: {
            session: '='
