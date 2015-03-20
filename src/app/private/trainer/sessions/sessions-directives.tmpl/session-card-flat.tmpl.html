@@ -1,4 +1,4 @@
-<div class="card__illustration illustration illustration--big illustration--icon illustration--{{session.icon.color}}">
+<div class="card__illustration card__illustration--editable illustration illustration--big illustration--icon illustration--{{session.icon.color}}">
     <i class="fa fa-{{session.icon.name}}"></i>
 </div>
 <div class="card__description card__description--one-line">
@@ -11,6 +11,14 @@
     		<a class="titre__edition__link link link--success" ng-click="toogleEditingName()"><i class="fa fa-check"></i></a>
     	</div>
     </h4>
-    <p ng-if="session.comments" class="card__description__note">{{session.comments | limitTo: 48}}</p>
-    <p ng-if="!session.comments" class="card__description__note">Comment this session</p>
+    <p ng-if="session.gameModel.comments" class="card__description__note">{{session.gameModel.comments | limitTo: 48}}</p>
+    <p ng-if="!session.gameModel.comments" class="card__description__note">Comment this session</p>
+</div>
+<div class="card__actions">
+    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" href="#">
+      <span class="button__label">Manage User</span>
+    </a>
+    <a class="button button--medium button--round button--info-reverse button--label-off button--trainer" title="Monitoring session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
+      <span class="button__label">Monitoring session</span>
+    </a>
 </div>

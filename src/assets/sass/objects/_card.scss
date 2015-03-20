@@ -23,16 +23,18 @@
         border-top-left-radius:2px;
         border-bottom-left-radius:2px;
         &.card__illustration--editable{
+
             &:after{
                 display:block;
                 position:absolute;
                 opacity:0;
                 visibility: hidden;
+                border-radius:6px;
                 top:0px;
                 left:0px;
-                font-size:24px;
+                font-size:32px;
                 font-family:"FontAwesome";
-                content:$fa-var-cloud-upload;
+                content:$fa-var-paint-brush;
                 width:100%;
                 height:100%;
                 background-color:$default-color-button;
@@ -160,6 +162,7 @@
                 }
             }
         }
+        &.card--flat{}
 
     }
 
@@ -218,7 +221,22 @@
 
                 .card__description{
                     height:(nth($size, 2)) + 2*16px;
-                    padding:16px 0px;
+                    padding:15px 0px;
+                    .card__description__titre{
+                        height:21px;
+                        margin:0px;
+                        padding:0px;
+                        .titre__display{ 
+                            font-size:16px;
+                        }
+                    }
+
+                }
+                .card__actions{
+                    padding:32px 0px;
+                    @media screen and (max-width: $screen-xs) {
+                        padding:0px 0px;
+                    }
                 }
             }
         }
