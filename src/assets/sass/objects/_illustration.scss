@@ -1,4 +1,5 @@
 .illustration{
+	@include unselect();
 	display:block;
     position:relative;
     padding:0px;
@@ -23,8 +24,26 @@
 		&.illustration--#{$size-nom}{
 			width:$size-value;
 			height:$size-value;
+			&.illustration--icon{
+				i{
+					font-size:(nth($size, 2))/2;
+					line-height:nth($size, 2);
+				}
+			}
 		}
 	}
+	@each $color in $illustration-colors{
+		$name : nth($color, 1);
+		$value : nth($color, 2);
+		&.illustration--#{$name}{
+			background-color:$value;
+			color:$white;
+			i{
+				color:$white;
+			}
+		}
+	}
+
 	
 	&.illustration--round{
 		border-radius:50%;
