@@ -21,7 +21,7 @@
     &.view--workspace{
         @include make-row(0px);
         width:100%;
-        height:calc(100% - 48px);
+        height:calc(100% - 56px);
         z-index:3;
     }
 
@@ -53,6 +53,9 @@
     &.view--sessions-list {
         @include make-xs-column(12);
         @include make-sm-column(8);
+        height:100%;
+        overflow-x:hidden;
+        overflow-y:auto;
     }
 
     // Styles de décorations

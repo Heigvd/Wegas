@@ -9,9 +9,7 @@
     background:$white;
     border-radius:2px;
     transition:.3s;
-    &:after{
-        clear:both;
-    }
+    clear:both;
 
     @include material-shadow(1);
 
@@ -198,22 +196,32 @@
         box-shadow: none;
         background:none;
         width:100%;
-        .card__illustration{
-            border-radius:6px;
-            border-radius:6px;
-        }
          @each $size in $sizes{
             &.card--#{nth($size, 1)}{
                 width:100%;
-                height:nth($sizes,2) + 2*16px;
+                height:nth($size,2) + 2*16px;
+                &:after{
+                    display:block;
+                    position:relative;
+                    height:1px;
+                    width:auto;
+                    margin-left:nth($size, 2) + 16px;
+                    background-color:$border;
+                    content:"";
+                    clear:both;
+                    box-sizing: border-box;
+                }
                 .card__illustration{
                     height:nth($sizes,2);
                     margin:16px 0px;
+                    border-radius:6px;
+                    img{
+                        border-radius:6px;
+                    }
                 }
 
                 .card__description{
                     height:(nth($size, 2)) + 2*16px;
-                    border-bottom:solid 1px $border;
                 }
             }
         }
