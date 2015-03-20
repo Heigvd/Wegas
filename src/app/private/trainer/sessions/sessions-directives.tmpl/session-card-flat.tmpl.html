@@ -15,10 +15,13 @@
     <p ng-if="!session.gameModel.comments" class="card__description__note">Comment this session</p>
 </div>
 <div class="card__actions">
-    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" href="#">
-      <span class="button__label">Manage User</span>
-    </a>
     <a class="button button--medium button--round button--info-reverse button--label-off button--trainer" title="Monitoring session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
       <span class="button__label">Monitoring session</span>
     </a>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" href="#">
+      <span class="button__label">Manage User</span>
+    </a>
+    <a class="button button--medium button--round button--danger-reverse button--label-off button--archive" title="Archive session" href="#">
+      <span class="button__label">Archive session</span>
+    </a>   
 </div>
