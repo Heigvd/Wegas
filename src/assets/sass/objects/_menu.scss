@@ -6,6 +6,7 @@ $color-btn-menu: #000;
   left: -9999999px;
 }
 .btn--menu {
+	@include unselect();
   	float:left;
  	display: block; // Will inherit :before size
  	padding:0px;
@@ -16,6 +17,7 @@ $color-btn-menu: #000;
     	cursor: pointer;
   	}
   	span{
+    	@include unselect();
   	  	position: relative;
 		display:block;
   		width: 26px;
@@ -23,7 +25,6 @@ $color-btn-menu: #000;
 		height:2px;
 		background:$default-color;
 	    transition: all 0.3s ease-in-out;
-
 
 		&:before, &:after {
 		    content: "";
