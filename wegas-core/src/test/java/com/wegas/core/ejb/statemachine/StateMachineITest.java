@@ -7,44 +7,41 @@
  */
 package com.wegas.core.ejb.statemachine;
 
-import com.wegas.core.ejb.AbstractEJBTest;
-import static com.wegas.core.ejb.AbstractEJBTest.lookupBy;
-import com.wegas.core.ejb.GameModelFacade;
-import com.wegas.core.ejb.PlayerFacade;
-import com.wegas.core.ejb.RequestFacade;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.TeamFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.*;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.persistence.variable.scope.GameScope;
 import com.wegas.core.persistence.variable.scope.PlayerScope;
 import com.wegas.core.persistence.variable.statemachine.TriggerDescriptor;
 import com.wegas.core.persistence.variable.statemachine.TriggerInstance;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.naming.NamingException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import javax.naming.NamingException;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
- *
  * @author Cyril Junod <cyril.junod at gmail.com>
  */
 public class StateMachineITest extends AbstractEJBTest {
 
     private static TeamFacade teamFacade;
+
     private static PlayerFacade playerFacade;
+
     private static VariableInstanceFacade instanceFacade;
+
     private static final double FINAL_VALUE = 1;
+
     private static final String TEAM4_TOKEN = "Team4Token";
 
     static {
@@ -73,13 +70,15 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("number.value = " + FINAL_VALUE));
         trigger.setOneShot(Boolean.TRUE);
+        trigger.setDisableSelf(Boolean.FALSE);
 
         TriggerDescriptor trigger2 = new TriggerDescriptor();
         trigger2.setDefaultInstance(new TriggerInstance());
         trigger2.setTriggerEvent(new Script("true"));
         trigger2.setPostTriggerEvent(new Script("number2.value += 1 "));
         trigger2.setOneShot(Boolean.FALSE);
-        
+        trigger2.setDisableSelf(Boolean.FALSE);
+
         descriptorFacade.create(gameModel.getId(), testNumber);
         descriptorFacade.create(gameModel.getId(), testNumber2);
         descriptorFacade.create(gameModel.getId(), trigger);
@@ -161,6 +160,7 @@ public class StateMachineITest extends AbstractEJBTest {
         trigger.setTriggerEvent(new Script("1===1"));
         trigger.setPostTriggerEvent(new Script("numberTest.value = " + FINAL_VALUE));
         trigger.setOneShot(Boolean.FALSE);
+        trigger.setDisableSelf(Boolean.FALSE);
         descriptorFacade.create(gameModel.getId(), trigger);
 
         Player testPlayer = new Player("TestPlayer20");
@@ -244,5 +244,34 @@ public class StateMachineITest extends AbstractEJBTest {
         GameModel duplicateGm = gameModelFacade.duplicateWithDebugGame(gameModel.getId());
         TriggerDescriptor find = (TriggerDescriptor) vdf.find(duplicateGm, "trigger");
         Assert.assertEquals(find.getStates().size(), trigger.getStates().size());
+    }
+
+    @Test
+    public void disable() throws NamingException, IOException, WegasNoResultException {
+        NumberDescriptor testNumber;
+        testNumber = new NumberDescriptor("number");
+        testNumber.setDefaultInstance(new NumberInstance(0));
+        descriptorFacade.create(gameModel.getId(), testNumber);
+
+        VariableDescriptorFacade vdf = lookupBy(VariableDescriptorFacade.class);
+        TriggerDescriptor trigger = new TriggerDescriptor();
+        trigger.setName("trigger");
+        trigger.setDefaultInstance(new TriggerInstance());
+        trigger.setTriggerEvent(new Script("true"));
+        trigger.setPostTriggerEvent(new Script("VariableDescriptorFacade.findByName(gameModel, 'number').setValue(self, 5);"));
+        trigger.setOneShot(Boolean.FALSE);
+        trigger.setDisableSelf(Boolean.TRUE);
+        descriptorFacade.create(gameModel.getId(), trigger);
+        gameModelFacade.reset(gameModel.getId());
+        Assert.assertEquals( 5, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
+
+        //Set again
+        RequestFacade rf = lookupBy(RequestFacade.class);
+        rf.getRequestManager().setPlayer(null);
+        NumberInstance testInstance = (NumberInstance) instanceFacade.find(testNumber.getId(), player);
+        testInstance.setValue(0);
+        instanceFacade.update(testInstance.getId(), testInstance);
+        Assert.assertEquals(0, ((NumberInstance) instanceFacade.find(testNumber.getId(), player.getId())).getValue(), 0.001);
+
     }
 }
