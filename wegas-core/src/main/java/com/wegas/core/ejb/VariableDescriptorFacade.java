@@ -171,7 +171,7 @@ public class VariableDescriptorFacade extends BaseFacade<VariableDescriptor> {
         final String serialized = mapper.writerWithView(Views.Export.class).
                 writeValueAsString(oldEntity);                                  // Serialize the entity
         final VariableDescriptor newEntity
-                = mapper.readValue(serialized, VariableDescriptor.class);         // and deserialize it
+                = mapper.readValue(serialized, oldEntity.getClass());           // and deserialize it
 
         final DescriptorListI list = this.findParentList(oldEntity);
         this.createChild(oldEntity.getGameModel(), list, newEntity);
