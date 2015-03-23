@@ -55,6 +55,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 this.btnNew = new Y.Button({
                     label: "<span class=\"wegas-icon wegas-icon-new\"></span>New"
                 }).render(header);
+                this.btnNew.get(BOUNDING_BOX).addClass("wegas-advanced-feature");
                 header.append('<div style="width:10px;display:inline-block;"></div>'); // Add a separator
 
                 this.sliderZoom = new Y.Slider({
@@ -145,7 +146,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 jp = window.jsPlumb.getInstance({
                     Container: this.get(CONTENT_BOX).one(".sm-zoom").getDOMNode(),
                     Anchor: ["Continuous", {faces: ["top", "left", "bottom"]}],
-//                    Anchor: ["Perimeter", {shape: "Rectangle", anchorCount: 120}],
+                    //                    Anchor: ["Perimeter", {shape: "Rectangle", anchorCount: 120}],
                     ConnectionsDetachable: true,
                     ReattachConnections: true,
                     Endpoint: ["Dot", {
@@ -597,6 +598,10 @@ YUI.add("wegas-statemachineviewer", function(Y) {
          */
         deleteSelf: function() {
             var fsmViewer = this.get(PARENT);
+            if (this.get(SID) === fsmViewer.get(ENTITY).getInitialStateId()) {
+                fsmViewer.showMessage("info", "Unable to delete initial state");
+                return;
+            }
             Y.Array.each(this.transitionsTarget.slice(0), function(t) {
                 t.disconnect();
             });
@@ -606,14 +611,11 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 item.disconnect();
             });
             this.destroy();
-            if (this.get(SID) === fsmViewer.get(ENTITY).getInitialStateId()) {  // If the state was the initial state, find a new one
-                var id = +Y.Object.keys(fsmViewer.get(ENTITY).get(STATES))[0] || null;
-                if (id !== null) {
-                    fsmViewer.get(ENTITY).setInitialStateId(id);
-                    fsmViewer.get(BOUNDING_BOX).all(".initial-state").removeClass("initial-state");
-                    fsmViewer.nodes[id].syncUI();
-                }
-            }
+            //            if (this.get(SID) === fsmViewer.get(ENTITY).getInitialStateId()) {  // If the state was the
+            // initial state, find a new one var id = +Y.Object.keys(fsmViewer.get(ENTITY).get(STATES))[0] || null; if
+            // (id !== null) { fsmViewer.get(ENTITY).setInitialStateId(id);
+            // fsmViewer.get(BOUNDING_BOX).all(".initial-state").removeClass("initial-state");
+            // fsmViewer.nodes[id].syncUI(); } }
             fsmViewer.save();
         }
     }, {
