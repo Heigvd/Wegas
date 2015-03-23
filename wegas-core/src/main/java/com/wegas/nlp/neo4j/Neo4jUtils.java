@@ -9,16 +9,19 @@ package com.wegas.nlp.neo4j;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonNode;
-import com.fasterxml.jackson.core.map.ObjectMapper;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wegas.core.Helper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.ejb.Stateless;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -36,7 +39,7 @@ import java.util.Iterator;
 @Stateless
 public class Neo4jUtils {
 
-    private static final String NEO4J_SERVER_URL = "http://localhost:7474/db/data/";
+    private static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
 
     private static final Logger logger = LoggerFactory.getLogger(Neo4jUtils.class);
 
@@ -47,8 +50,10 @@ public class Neo4jUtils {
      * @return true if the neo4j database is running, false otherwise
      */
     protected static boolean checkDataBaseIsRunning() {
-        WebResource resource = Client.create().resource(NEO4J_SERVER_URL);
-        ClientResponse response = resource.get(ClientResponse.class);
+        if (NEO4J_SERVER_URL.isEmpty()) {
+            return false;
+        }
+        Response response = getBuilder(NEO4J_SERVER_URL).get();
         int status = response.getStatus();
         response.close();
         return status == 200;
@@ -60,11 +65,7 @@ public class Neo4jUtils {
      * @return the URI of the newly created node
      */
     protected static URI createNode() {
-        final String nodeURL = NEO4J_SERVER_URL + "node";
-        WebResource resource = Client.create().resource(nodeURL);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).entity("{}")
-                .post(ClientResponse.class);
+        Response response = getBuilder(NEO4J_SERVER_URL + "node").post(Entity.json("{}"));
         final URI nodeURI = response.getLocation();
         response.close();
         return nodeURI;
@@ -79,10 +80,7 @@ public class Neo4jUtils {
     protected static void addNodeLabel(URI nodeURI, String lValue) {
         final String labURL = nodeURI.toString() + "/labels";
         String entity = "\"" + lValue + "\"";
-        WebResource resource = Client.create().resource(labURL);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).entity(entity)
-                .post(ClientResponse.class);
+        Response response = getBuilder(labURL).post(Entity.json(entity));
         response.close();
     }
 
@@ -96,10 +94,7 @@ public class Neo4jUtils {
     protected static void addNodeProperty(URI nodeURI, String pName, String pValue) {
         final String propURL = nodeURI.toString() + "/properties/" + pName;
         String entity = "\"" + pValue + "\"";
-        WebResource resource = Client.create().resource(propURL);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).entity(entity)
-                .put(ClientResponse.class);
+        Response response = getBuilder(propURL).put(Entity.json(entity));
         response.close();
     }
 
@@ -113,10 +108,7 @@ public class Neo4jUtils {
     protected static void addNodeProperty(URI nodeURI, String pName, Long pValue) {
         final String propURL = nodeURI.toString() + "/properties/" + pName;
         String entity = Long.toString(pValue);
-        WebResource resource = Client.create().resource(propURL);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).entity(entity)
-                .put(ClientResponse.class);
+        Response response = getBuilder(propURL).put(Entity.json(entity));
         response.close();
     }
 
@@ -134,10 +126,7 @@ public class Neo4jUtils {
         final String relURL = sNode.toString() + "/relationships";
         String entity = createJsonRelation(eNode, rType, attribs);
         if (entity != null) {
-            WebResource resource = Client.create().resource(relURL);
-            ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                    .type(MediaType.APPLICATION_JSON).entity(entity)
-                    .post(ClientResponse.class);
+            Response response = getBuilder(relURL).post(Entity.json(entity));
             final URI relURI = response.getLocation();
             response.close();
             return relURI;
@@ -155,10 +144,7 @@ public class Neo4jUtils {
     protected static void addRelationMetadata(URI rUri, String pName, String pValue) {
         final String relURL = rUri.toString() + "/properties";
         String entity = String.format("{ \"%s\" : \"%s\" }", pName, pValue);
-        WebResource resource = Client.create().resource(relURL);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).entity(entity)
-                .put(ClientResponse.class);
+        Response response = getBuilder(relURL).put(Entity.json(entity));
         response.close();
     }
 
@@ -172,14 +158,18 @@ public class Neo4jUtils {
     protected static String queryDBString(String query) {
         final String qURL = NEO4J_SERVER_URL + "transaction/commit";
         String entity = "{ \"statements\" : [ { \"statement\" : \"" + query + "\" } ] }";
-        WebResource resource = Client.create().resource(qURL);
-        ClientResponse response = resource.accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).entity(entity)
-                .post(ClientResponse.class);
+        Response response = getBuilder(qURL).post(Entity.json(entity));
         String result = null;
-        if (checkValidHttpResponse(response.getStatus())) result = response.getEntity(String.class);
+        if (checkValidHttpResponse(response.getStatus())) {
+            result = response.readEntity(String.class);
+        }
         response.close();
         return result;
+    }
+
+    private static Invocation.Builder getBuilder(String URL) {
+        WebTarget target = ClientBuilder.newClient().target(URL);
+        return target.request().accept(MediaType.APPLICATION_JSON);
     }
 
     /**
@@ -194,11 +184,11 @@ public class Neo4jUtils {
         try {
             JsonNode jn = om.readTree(result);
             JsonNode jnErr = jn.path("errors");
-            Iterator<JsonNode> ite1 = jnErr.getElements();
+            Iterator<JsonNode> ite1 = jnErr.elements();
             String err = "";
             while (ite1.hasNext()) {
                 JsonNode jn1 = ite1.next();
-                err += ", " + jn1.getTextValue();
+                err += ", " + jn1.asText();
             }
             if ("".equals(err)) return null;
             return err.substring(2);
@@ -222,21 +212,24 @@ public class Neo4jUtils {
         try {
             JsonNode jn = om.readTree(result);
             JsonNode jnRes = jn.path("results");
-            Iterator<JsonNode> ite1 = jnRes.getElements();
+            Iterator<JsonNode> ite1 = jnRes.elements();
             while (ite1.hasNext()) {
                 JsonNode jn1 = ite1.next();
                 int nbCol = jn1.path("columns").size();
                 if (nbCol > 1) throw new IOException("To extract more than 1 column use an other method !");
                 JsonNode jnDat = jn1.path("data");
-                Iterator<JsonNode> ite2 = jnDat.getElements();
+                Iterator<JsonNode> ite2 = jnDat.elements();
                 while (ite2.hasNext()) {
                     JsonNode jn2 = ite2.next();
                     JsonNode jnRow = jn2.path("row");
-                    Iterator<JsonNode> ite3 = jnRow.getElements();
+                    Iterator<JsonNode> ite3 = jnRow.elements();
                     while (ite3.hasNext()) {
                         JsonNode jn3 = ite3.next();
-                        if (jn3.isLong()) al.add(Long.toString(jn3.getLongValue()));
-                        else al.add(jn3.getTextValue());
+                        if (jn3.isLong()) {
+                            al.add(Long.toString(jn3.asLong()));
+                        } else {
+                            al.add(jn3.asText());
+                        }
                     }
                 }
             }
