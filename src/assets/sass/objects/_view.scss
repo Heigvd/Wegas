@@ -22,6 +22,7 @@
         @include make-row(0px);
         width:100%;
         height:calc(100% - 56px);
+        min-height: 440px;
         z-index:3;
     }
 
@@ -47,6 +48,11 @@
         @include make-xs-column(12);
         @include make-sm-column(4);
         height:100%;
+        overflow-x:hidden;
+        overflow-y:auto;
+        @media screen and (max-width: $screen-sm) {
+            height: auto;
+        }
         .view__top-tools{
             display:block;
             position:absolute;
@@ -60,8 +66,27 @@
             }
         }
         .view__bottom-tools{
-
+            display:block;
+            position:absolute;
+            width:100%;
+            height:48px + 28px + 28px;
+            bottom:0px;
+            left:0px;
+            padding:28px 16px;
+            .tool--new-session{
+                display:block;
+                position:absolute;
+                bottom:16px;
+                left:16px;
+            }
+            .tool--archive{
+                display:block;
+                position:absolute;
+                bottom:16px;
+                right:16px;
+            }
         }
+
     }
 
 

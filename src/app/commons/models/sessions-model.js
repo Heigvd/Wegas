@@ -87,7 +87,11 @@ angular.module('wegas.models.sessions', [])
                         id : data.id,
                         name : data.name,
                         createdTime : data.createdTime,
-                        comments : ""
+                        comments : "",
+                        icon : {
+                            color: "orange", 
+                            name: "gamepad"
+                        }
                     });
                     deferred.resolve(managedSessions[data.id]);
                 }).error(function(data){
