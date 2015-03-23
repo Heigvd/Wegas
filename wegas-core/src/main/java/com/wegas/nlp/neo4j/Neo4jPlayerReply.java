@@ -7,10 +7,17 @@
  */
 package com.wegas.nlp.neo4j;
 
+import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.mcq.ejb.QuestionDescriptorFacade;
 import com.wegas.mcq.persistence.Reply;
 
+import javax.annotation.Resource;
+import javax.ejb.Asynchronous;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
+import javax.enterprise.event.TransactionPhase;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -26,6 +33,13 @@ import java.util.Date;
 @Stateless
 public class Neo4jPlayerReply {
 
+    @Resource
+    private SessionContext sessionContext;
+
+    public void onReplyValidate(@Observes(during = TransactionPhase.AFTER_COMPLETION) QuestionDescriptorFacade.ReplyValidate event) {
+        sessionContext.getBusinessObject(Neo4jPlayerReply.class).addPlayerReply(event.player, event.reply);
+    }
+
     /**
      * Creates or adds a player and its answer data in the graph belonging to
      * a given game.
@@ -33,8 +47,11 @@ public class Neo4jPlayerReply {
      * @param player the player data
      * @param reply  the player's answer data
      */
-    public static void addPlayerReply(Player player, Reply reply) {
-        if (!com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) return;
+    @Asynchronous
+    public void addPlayerReply(Player player, Reply reply) {
+        if (player.getGame() instanceof DebugGame || !com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) {
+            return;
+        }
         String key = generateKey(player);
         String game = player.getGameModel().getName();
         String query = "MATCH (n {key : '" + key + "'}) RETURN max(toint(n.starttime))";
