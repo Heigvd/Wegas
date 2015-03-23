@@ -14,7 +14,12 @@ angular.module('private.trainer.sessions.directives', [
             SessionsModel.getManagedSessions().then(function(sessions){
                 ctrl.sessions = sessions;
             });
-        }
+        };
+        ctrl.editName = function(sessionToSet){
+            SessionsModel.updateManagedSession(sessionToSet).then(function(data){
+                ctrl.updateSessions();
+            });
+        };
     }
   };
 })
@@ -62,7 +67,6 @@ angular.module('private.trainer.sessions.directives', [
             return parentCtrl.search
         }, function(newSearch, oldSearch){
             scope.search = newSearch;
-            console.log(scope.search);
         });
 
     }
@@ -72,20 +76,29 @@ angular.module('private.trainer.sessions.directives', [
     return {
         templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card-flat.tmpl.html',
         restrict: 'A',
+        require: "^trainerSessionsIndex",
         scope: {
            session: '='
         },
-        link : function(scope, element, attrs){
+        link : function(scope, element, attrs, parentCtrl){
             scope.editingName = false;
-            scope.toogleEditingName = function(){
-                console.log(element);
-                scope.editingName = (!scope.editingName);
-                $(element['context']).find(".titre__edition__input", function(elem){
-                    console.log("hello");
-                    console.log(elem);
-                });
-                console.log(scope.session.name);
+            scope.sessionToSet = {
+                id: scope.session.id,
+                name: scope.session.name
             };
+            scope.toogleEditingName = function(){
+                scope.editingName = (!scope.editingName);
+                scope.sessionToSet = {
+                    id: scope.session.id,
+                    name: scope.session.name
+                };
+            };
+            scope.editName = function(){
+                console.log(scope.sessionToSet);
+                parentCtrl.editName(scope.sessionToSet);
+                scope.toogleEditingName();
+            };
+
         }
     }
 });
