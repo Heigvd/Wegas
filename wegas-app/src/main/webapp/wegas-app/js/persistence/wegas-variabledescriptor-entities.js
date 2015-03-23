@@ -734,7 +734,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "State machine",
-                                    targetClass: "FSMDescriptor"
+                                    targetClass: "FSMDescriptor",
+                                    cfg: {
+                                        states: {
+                                            1: {
+                                                "@class": "State"
+                                            }
+                                        }
+                                    }
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Inbox",
@@ -757,7 +764,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Dialogue",
-                                    targetClass: "DialogueDescriptor"
+                                    targetClass: "DialogueDescriptor",
+                                    cfg: {
+                                        states: {
+                                            1: {
+                                                "@class": "DialogueState"
+                                            }
+                                        }
+                                    }
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Resource",

@@ -297,9 +297,9 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             }, this), null, this.get("formCfg"));
         },
         execute: function() {
-            Wegas.Editable.useAndRevive({
-                "@class": this.get("targetClass")                               // Load target class dependencies
-            }, Y.bind(function(entity) {
+            Wegas.Editable.useAndRevive(Y.merge({                                 // Load target class dependencies
+                "@class": this.get("targetClass")
+            }, Y.clone(this.get("cfg"))), Y.bind(function(entity) {
                 this.showAddForm(entity);                                       // and display the edition form
             }, this));
         }
@@ -307,6 +307,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
         NS: "NewEntityAction",
         ATTRS: {
             targetClass: {},
+            cfg:{},
             showEditionAfterRequest: {
                 value: true
             },
@@ -507,16 +508,17 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             }, this), null, this.get("formCfg"));
         },
         execute: function() {
-            Wegas.Editable.useAndRevive({// Load target class dependencies
+            Wegas.Editable.useAndRevive(Y.merge({// Load target class dependencies
                 "@class": this.get("targetClass")
-            }, Y.bind(function(entity) {
+            }, Y.clone(this.get("cfg"))), Y.bind(function(entity) {
                 this.showAddForm(entity, this.get(ENTITY));                     // and display the edition form
             }, this));
         }
     }, {
         NS: "AddEntityChildAction",
         ATTRS: {
-            targetClass: {}
+            targetClass: {},
+            cfg:{}
         }
     });
     Plugin.AddEntityChildAction = AddEntityChildAction;
