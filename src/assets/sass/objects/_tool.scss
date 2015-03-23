@@ -1,0 +1,58 @@
+.tool{
+	&.tool--search{
+		display:block;
+		position:relative;
+		width:48px;
+		height:48px;
+		background-color:$background-default-secondary;
+		border-radius:24px;
+		transition:.3s;
+		overflow:hidden;
+		.tool__link{
+			display:block;
+			position:relative;
+			width:48px;
+			height:48px;
+			float:left;
+			&:before{
+				content:$fa-var-search;
+				color:$border;
+				display:block;
+				position:absolute;
+				top:0px;
+				left:0px;
+				width:48px;
+				height:48px;
+				font-size:24px;
+				font-family:"FontAwesome";
+				line-height:48px;
+				text-align:center;
+				transition:.3s;
+				float:left;
+				cursor:pointer;
+			}
+		}
+		&:hover{
+			background-color:$white;
+			.tool__link{
+				&:before{
+					color:$default-color;
+				}
+			}
+		}
+
+		.tool__input{
+			width:calc(100% - 48px);
+			height:48px;
+			border:none;
+			background:none;
+			outline:none;
+			color:$default-color;
+			float:right;
+		}
+
+		&.tool--open{
+			width:100%;
+		}
+	}
+}

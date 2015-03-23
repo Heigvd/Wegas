@@ -43,6 +43,28 @@
         }
     }
 
+    &.view--trainer-tools{
+        @include make-xs-column(12);
+        @include make-sm-column(4);
+        height:100%;
+        .view__top-tools{
+            display:block;
+            position:absolute;
+            width:100%;
+            height:48px + 28px + 28px;
+            top:0px;
+            left:0px;
+            padding:28px 16px;
+            .tool--search{
+                float:right;
+            }
+        }
+        .view__bottom-tools{
+
+        }
+    }
+
+
     &.view--new-session,
     &.view--join-session
     {

@@ -5,6 +5,7 @@ angular.module('private.trainer.sessions.directives', [
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
     controller : function(){
         var ctrl = this;
+        ctrl.search = "";
         ctrl.sessions = [];
         SessionsModel.getManagedSessions().then(function(sessions){
             ctrl.sessions = sessions;
@@ -57,6 +58,13 @@ angular.module('private.trainer.sessions.directives', [
         }, function(newSessions, oldSessions){
             scope.sessions = newSessions;
         });
+        scope.$watch(function(){
+            return parentCtrl.search
+        }, function(newSearch, oldSearch){
+            scope.search = newSearch;
+            console.log(scope.search);
+        });
+
     }
   };
 })
