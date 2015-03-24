@@ -23,9 +23,9 @@ angular.module('private.trainer.sessions.directives', [
     }
   };
 })
-.directive('trainerSessionsAddTool', function(ScenariosModel, SessionsModel) {
+.directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel) {
   return {
-    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-tool.tmpl.html',
+    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
     scope: false, 
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){

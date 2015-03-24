@@ -94,12 +94,16 @@
     &.view--join-session
     {
         @include make-xs-column(12);
-        @include make-sm-column(4);
+        @include make-sm-column(3);
+        .form{
+            margin:0px;
+            padding:0px;
+        }
     }
 
     &.view--sessions-list {
         @include make-xs-column(12);
-        @include make-sm-column(8);
+        @include make-sm-column(9);
         height:100%;
         overflow-x:hidden;
         overflow-y:auto;
