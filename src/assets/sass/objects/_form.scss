@@ -33,13 +33,16 @@
             display:block;
             float:right;
         }
+        .form__row__select {
+            width: 100%;
+        }
 
         &.form__row--with-label{
             .form__row__label{
                 display:block;
                 text-align:right;
                 @include make-xs-column(12);
-                @include make-md-column(4); 
+                @include make-md-column(4);
 
                 @each $size in $sizes {
                     $size-name: nth($size, 1);

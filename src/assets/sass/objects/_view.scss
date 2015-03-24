@@ -84,15 +84,17 @@
         }
 
         &.view--new-session,
-        &.view--join-session
+        &.view--join-session,
+        &.view--create-scenario
         {
             @include make-xs-column(12);
-            @include make-sm-column(4);
+            @include make-md-column(4);
         }
 
-        &.view--sessions-list {
+        &.view--sessions-list,
+        &.view--scenarios-list {
             @include make-xs-column(12);
-            @include make-sm-column(8);
+            @include make-md-column(8);
         }
 
         @for $i from 1 through 12 {
