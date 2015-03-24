@@ -126,7 +126,7 @@
                         height:21px;
                         outline:none;
                         border:none;
-                        color:$border;
+                        color:$default-color-light;
                         background:none;
                         border-bottom:solid 1px $secondary-color;
                     }
@@ -144,26 +144,58 @@
                 margin:0px;
             }
             .card__description__note{
-                margin:4px 16px;
-                padding:0px 0px;
-                border:none;
-                font-size:13px;
-                font-weight:300;
-                transition:.2s;
+                margin:0px;
+                padding:0px;
 
-                &:hover{
-                    cursor:pointer;
+                .note__display{ 
+                    padding:4px 16px;
+                    font-size:13px;
+                    font-weight:300;
+                    margin:0px;
                     &:after{
+                        display:inline;
+                        position:relative;
+                        opacity:0;
+                        visibility:hidden;
                         content:$fa-var-pencil;
                         font-family: "FontAwesome";
+                        font-size:13px;
+                        margin:0px;
                         padding:0px 4px;
                         transition:.3s;
+                    }
+                    &:hover{
+                        cursor:pointer;
+                        &:after{
+                            opacity:1;
+                            visibility:visible;
+                            transition:.3s;
+                        }
+                    }
+                }
+
+                .note__edition{ 
+                    padding:0px 16px;
+                    font-size:14px;
+                    height:21px;
+                    font-weight:500;
+                    margin:0px;
+                    .note__edition__input{
+                        margin:0px 0px;
+                        padding:0px 0px;
+                        height:21px;
+                        outline:none;
+                        border:none;
+                        color:$default-color-light;
+                        background:none;
+                        border-bottom:solid 1px $secondary-color;
+                    }
+                    .note__edition__link{
+                        margin:0px;
                     }
                 }
             }
         }
-        &.card--flat{}
-
     }
 
     @each $size in $sizes{
