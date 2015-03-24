@@ -1,10 +1,11 @@
 angular.module('private.trainer.sessions.directives', [
 ])
-.directive('managedSessionsIndex', function(SessionsModel){
+.directive('trainerSessionsIndex', function(SessionsModel){
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
     controller : function(){
         var ctrl = this;
+        ctrl.search = "";
         ctrl.sessions = [];
         SessionsModel.getManagedSessions().then(function(sessions){
             ctrl.sessions = sessions;
@@ -13,15 +14,20 @@ angular.module('private.trainer.sessions.directives', [
             SessionsModel.getManagedSessions().then(function(sessions){
                 ctrl.sessions = sessions;
             });
-        }
+        };
+        ctrl.editName = function(sessionToSet){
+            SessionsModel.updateManagedSession(sessionToSet).then(function(data){
+                ctrl.updateSessions();
+            });
+        };
     }
   };
 })
-.directive('managedSessionsAddForm', function(ScenariosModel, SessionsModel) {
+.directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel) {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
     scope: false, 
-    require: "^managedSessionsIndex",
+    require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         ScenariosModel.getScenarios().then(function(scenarios){
             scope.scenarios = scenarios;
@@ -46,17 +52,53 @@ angular.module('private.trainer.sessions.directives', [
     }
   };
 })
-.directive('managedSessionsList', function(ScenariosModel, SessionsModel) {
+.directive('trainerSessionsList', function() {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
     scope: false,
-    require: "^managedSessionsIndex",
+    require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         scope.$watch(function(){
             return parentCtrl.sessions
         }, function(newSessions, oldSessions){
             scope.sessions = newSessions;
         });
+        scope.$watch(function(){
+            return parentCtrl.search
+        }, function(newSearch, oldSearch){
+            scope.search = newSearch;
+        });
+
     }
   };
+})
+.directive('trainerSession', function() {
+    return {
+        templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card-flat.tmpl.html',
+        restrict: 'A',
+        require: "^trainerSessionsIndex",
+        scope: {
+           session: '='
+        },
+        link : function(scope, element, attrs, parentCtrl){
+            scope.editingName = false;
+            scope.sessionToSet = {
+                id: scope.session.id,
+                name: scope.session.name
+            };
+            scope.toogleEditingName = function(){
+                scope.editingName = (!scope.editingName);
+                scope.sessionToSet = {
+                    id: scope.session.id,
+                    name: scope.session.name
+                };
+            };
+            scope.editName = function(){
+                console.log(scope.sessionToSet);
+                parentCtrl.editName(scope.sessionToSet);
+                scope.toogleEditingName();
+            };
+
+        }
+    }
 });

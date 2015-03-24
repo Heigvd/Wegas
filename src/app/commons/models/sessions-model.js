@@ -17,6 +17,28 @@ angular.module('wegas.models.sessions', [])
         }else{
             managedSessions = [];
             $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
+                data.forEach(function(session){
+                    var defaultIcon = {
+                        color:"orange", 
+                        name: "gamepad"
+                    },
+                    iconInfos = session.properties.iconUri;
+                    if(iconInfos == null || iconInfos == ""){
+                        session.icon = defaultIcon;
+                    }else{
+                        var infos = iconInfos.split("_");
+                        if(infos.length == 3){
+                            if(infos[0] == "ICON"){
+                                session.icon = {
+                                    color: infos[1], 
+                                    name: infos[2]
+                                };
+                            }
+                        }else{
+                            session.icon = defaultIcon; 
+                        }
+                    }
+                });
                 managedSessions = data;
                 deferred.resolve(managedSessions);
             }).error(function(data){
@@ -65,7 +87,11 @@ angular.module('wegas.models.sessions', [])
                         id : data.id,
                         name : data.name,
                         createdTime : data.createdTime,
-                        comments : ""
+                        comments : "",
+                        icon : {
+                            color: "orange", 
+                            name: "gamepad"
+                        }
                     });
                     deferred.resolve(managedSessions[data.id]);
                 }).error(function(data){
@@ -76,6 +102,22 @@ angular.module('wegas.models.sessions', [])
                 deferred.resolve(null);
             }
         });
+        return deferred.promise;
+    };
+
+    model.updateManagedSession = function(sessionToSet){
+        var deferred = $q.defer();
+        console.log(sessionToSet)
+        var sessionBeforeChange = findSession(managedSessions, sessionToSet.id);
+        if(sessionBeforeChange != undefined){
+            sessionBeforeChange.name = sessionToSet.name;
+            $http.put(ServiceURL + "rest/GameModel/Game/"+ sessionToSet.id, sessionBeforeChange).success(function(data){
+                deferred.resolve(data);
+                console.log(data);
+            }).error(function(data){
+                deferred.resolve(data);
+            });
+        }
         return deferred.promise;
     };
 
