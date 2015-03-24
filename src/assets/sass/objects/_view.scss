@@ -22,7 +22,7 @@
         @include make-row(0px);
         width:100%;
         height:calc(100% - 56px);
-        min-height: 440px;
+        min-height: 320px;
         z-index:3;
     }
 
@@ -105,8 +105,14 @@
         @include make-xs-column(12);
         @include make-sm-column(9);
         height:100%;
-        overflow-x:hidden;
-        overflow-y:auto;
+        .view__tools{
+            padding:12px 0px;
+        }
+        .view__list{
+            height:calc(100% - 156px);
+            overflow-x:hidden;
+            overflow-y:auto;
+        }
     }
 
     // Styles de décorations
