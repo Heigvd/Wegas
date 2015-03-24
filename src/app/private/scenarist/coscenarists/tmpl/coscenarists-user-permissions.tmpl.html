@@ -1,0 +1,23 @@
+<ul>
+  <li>
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canEdit" />Edit
+  </li>
+  <li>
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canDuplicate" ng-disabled="canEdit" />Duplicate
+  </li>
+  <li>
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canCreate" ng-disabled="canEdit" />Create
+  </li>
+</ul>
+<em>{{ result }}</em>
+<!-- <ul class="card__detailled-actions">
+  <li>
+    <label><input type="checkbox" name="edit-scenario">Edit scenario</label>
+  </li>
+  <li>
+    <label><input type="checkbox" name="duplicate-scenario">Create scenarios based on this scenario</label>
+  </li>
+  <li>
+    <label><input type="checkbox" name="create-game">Create scenarios based on this scenario</label>
+  </li>
+</ul> -->

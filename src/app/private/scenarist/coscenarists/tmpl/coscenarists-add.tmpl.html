@@ -1,0 +1,11 @@
+<h3>Add new user - <em>{{ scenario.name }}</em></h3>
+<form ng-submit="addNewCoscenarist()">
+  <div class="form__row">
+    <label class="input__label" for="name">Share with</label>
+    <input class="input input--small" type="text" id="name" auto-complete ui-items="names" ng-model="username" placeholder="mail or username" autocomplete="off">
+  </div>
+
+  <div class="form__row">
+    <input type="submit" class="btn btn--primary btn--right" id="send" value="Share it!">
+  </div>
+</form>
