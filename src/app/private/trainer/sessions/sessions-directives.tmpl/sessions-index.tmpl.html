@@ -1,7 +1,16 @@
-<div class="view view--new-session">
-    <h3>Create new session</h3>
-	<trainer-sessions-add-form></trainer-sessions-add-form>
+<div class="view view--new-session view--bottom">
+	<!-- IMPLEMENTER DANS LA LISTE
+	<div class="view__top-tools">
+		<div class="tool tool--search" tool-openable>
+			<a class="tool__link"></a>
+		   	<input class="tool__input" ng-model="search" type="text"/>
+	   	</div>
+   	</div> 
+   	-->
+   	<h3>Add session</h3>
+	<trainer-sessions-add></trainer-sessions-add>	
 </div>
-<div class="view view--sessions-list">
+<div class="view view--sessions-list view--middle">
+	<h3>Active sessions</h3>
 	<trainer-sessions-list></trainer-sessions-list>	
 </div>

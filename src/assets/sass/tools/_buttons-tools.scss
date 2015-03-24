@@ -1,5 +1,6 @@
 $buttons-icon : (
     (trash, $fa-var-trash),
+    (archive, $fa-var-archive),
     (sign-out, $fa-var-sign-out),
     (adn, $fa-var-adn),
     (ambulance, $fa-var-ambulance),
@@ -29,7 +30,7 @@ $buttons-icon : (
         width:$btn-default-size;
         height:$btn-default-size;   
         background:none;  
-        font-family:"FontAwesome";  
+        font-family:"FontAwesome"; 
         color:$white;
     }
 

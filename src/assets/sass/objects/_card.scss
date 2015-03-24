@@ -8,8 +8,11 @@
     box-sizing: border-box;
     background:$white;
     border-radius:2px;
-    @include material-shadow(1);
     transition:.3s;
+    clear:both;
+
+    @include material-shadow(1);
+
     &:hover{
         @include material-shadow(2);
     }
@@ -20,16 +23,18 @@
         border-top-left-radius:2px;
         border-bottom-left-radius:2px;
         &.card__illustration--editable{
+
             &:after{
                 display:block;
                 position:absolute;
                 opacity:0;
                 visibility: hidden;
+                border-radius:6px;
                 top:0px;
                 left:0px;
-                font-size:24px;
+                font-size:32px;
                 font-family:"FontAwesome";
-                content:$fa-var-cloud-upload;
+                content:$fa-var-paint-brush;
                 width:100%;
                 height:100%;
                 background-color:$default-color-button;
@@ -44,7 +49,6 @@
                     transition:.3s;
                 }
             }
-           
         }
     }
 
@@ -76,7 +80,6 @@
             margin:0px;
         }
     }
-
 
     &.card--trainer-session{
         margin:4px auto 4px auto;
@@ -124,6 +127,7 @@
                         outline:none;
                         border:none;
                         color:$border;
+                        background:none;
                         border-bottom:solid 1px $secondary-color;
                     }
                     .titre__edition__link{
@@ -147,12 +151,6 @@
                 font-weight:300;
                 transition:.2s;
 
-                &:after{
-                    content:$fa-var-info-circle;
-                    font-family: "FontAwesome";
-                    padding:0px 4px;
-                    transition:.3s;
-                }
                 &:hover{
                     cursor:pointer;
                     &:after{
@@ -164,6 +162,7 @@
                 }
             }
         }
+        &.card--flat{}
 
     }
 
@@ -189,5 +188,63 @@
                 }
             }
         }
+    }
+      &.card--flat{
+        box-shadow: none;
+        background:none;
+        width:100%;
+
+        @each $size in $sizes{
+            &.card--#{nth($size, 1)}{
+                width:100%;
+                height:nth($size,2) + 2*16px;
+                &:after{
+                    display:block;
+                    position:relative;
+                    height:1px;
+                    width:auto;
+                    margin:0px;
+                    background-color:$border;
+                    margin-left:nth($size,2) + 16px;
+                    content:"";
+                    clear:both;
+                    box-sizing: border-box;
+                }
+                .card__illustration{
+                    height:nth($sizes,2);
+                    margin:16px 0px;
+                    border-radius:6px;
+                    img{
+                        border-radius:6px;
+                    }
+                }
+
+                .card__description{
+                    height:(nth($size, 2)) + 2*16px;
+                    padding:18px 0px;
+                    .card__description__titre{
+                        height:21px;
+                        margin:0px;
+                        padding:0px;
+                        .titre__display{ 
+                            font-size:16px;
+                        }
+                    }
+
+                }
+                .card__actions{
+                    padding:32px 0px;
+                    @media screen and (max-width: $screen-xs) {
+                        padding:0px 0px;
+                    }
+                }
+            }
+        }
+        &:last-child{
+            &:after{
+                display:none;
+            }
+        }
+
     }
 }

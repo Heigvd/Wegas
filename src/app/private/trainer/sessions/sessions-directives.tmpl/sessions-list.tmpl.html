@@ -1,2 +1,1 @@
-<h3>Your active sessions</h3>
-<div class="card card--big card--trainer-session" ng-repeat="session in sessions | orderBy: 'createdTime':true" trainer-session session="session"></div>
+<div class="card card--flat card--big card--trainer-session" ng-repeat="session in sessions | orderBy: 'createdTime':true | filter:{name:search}" trainer-session session="session"></div>

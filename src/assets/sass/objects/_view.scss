@@ -21,7 +21,8 @@
     &.view--workspace{
         @include make-row(0px);
         width:100%;
-        height:calc(100% - 48px);
+        height:calc(100% - 56px);
+        min-height: 440px;
         z-index:3;
     }
 
@@ -43,16 +44,69 @@
         }
     }
 
+    &.view--trainer-tools{
+        @include make-xs-column(12);
+        @include make-sm-column(4);
+        height:100%;
+        overflow-x:hidden;
+        overflow-y:auto;
+        @media screen and (max-width: $screen-sm) {
+            height: auto;
+        }
+        .view__top-tools{
+            display:block;
+            position:absolute;
+            width:100%;
+            height:48px + 28px + 28px;
+            top:0px;
+            left:0px;
+            padding:28px 16px;
+            .tool--search{
+                float:right;
+            }
+        }
+        .view__bottom-tools{
+            display:block;
+            position:absolute;
+            width:100%;
+            height:48px + 28px + 28px;
+            bottom:0px;
+            left:0px;
+            padding:28px 16px;
+            .tool--new-session{
+                display:block;
+                position:absolute;
+                bottom:16px;
+                left:16px;
+            }
+            .tool--archive{
+                display:block;
+                position:absolute;
+                bottom:16px;
+                right:16px;
+            }
+        }
+
+    }
+
+
     &.view--new-session,
     &.view--join-session
     {
         @include make-xs-column(12);
-        @include make-sm-column(4);
+        @include make-sm-column(3);
+        .form{
+            margin:0px;
+            padding:0px;
+        }
     }
 
     &.view--sessions-list {
         @include make-xs-column(12);
-        @include make-sm-column(8);
+        @include make-sm-column(9);
+        height:100%;
+        overflow-x:hidden;
+        overflow-y:auto;
     }
 
     // Styles de décorations
