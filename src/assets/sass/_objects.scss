@@ -1,12 +1,13 @@
-@import "objects/view"; 
-@import "objects/illustration"; 
-@import "objects/card"; 
+@import "objects/view";
+@import "objects/illustration";
+@import "objects/card";
 @import "objects/button";
-@import "objects/tool"; 
-@import "objects/form"; 
+@import "objects/tool";
+@import "objects/form";
 @import "objects/input";
-@import "objects/link"; 
+@import "objects/link";
 @import "objects/menu";
+@import "objects/autocomplete";
 
 
 // Plugin animate.css
@@ -17,7 +18,7 @@
     &.hinge {
         @include animate-prefixer(animation-duration, $base-duration * 2);
     }
-} 
+}
 
 .me{
 	font-style: italic;
