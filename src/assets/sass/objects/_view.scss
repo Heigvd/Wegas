@@ -142,16 +142,27 @@
         @include make-xs-column(12);
         @include make-sm-column(9);
         height:100%;
+        h3{
+            padding:0px 16px;
+        }
 
-        .view__users-team{
-            clear:both;
-            & > h4{
+        .view__users-individual{
+            padding:0px 16px;
+        }
+
+        .view__users-teams{
+
+            & .view__users-team {
+                padding-bottom:16px;
+                clear:both;
+                & > h4{
+                margin:0px 16px 16px 16px;
                 padding:16px 0px;
                 font-size:15px;
                 font-weight:500;
                 border-bottom:solid 1px $border;
             }
-
+            }
         }
     }
 

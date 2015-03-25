@@ -18,4 +18,29 @@ angular.module('private.trainer.sessions.users.directives', [
             ctrl.session = session;
         });
     };
+}).directive('trainerSessionsUsersIndividualList', function() {
+    return {
+        templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-individual-list.tmpl.html',
+        restrict: 'A',
+        require: "^trainerSessionsUsersIndex",
+        scope: {
+           players: '='
+        },
+        link : function(scope, element, attrs, parentCtrl){
+            console.log("Implement actions on players");
+        }
+    }
+})
+.directive('trainerSessionsUsersTeamList', function() {
+    return {
+        templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-team-list.tmpl.html',
+        restrict: 'A',
+        require: "^trainerSessionsUsersIndex",
+        scope: {
+           teams: '='
+        },
+        link : function(scope, element, attrs, parentCtrl){
+            console.log("Implement actions on teams");
+        }
+    }
 });

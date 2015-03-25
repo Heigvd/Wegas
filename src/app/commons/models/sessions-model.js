@@ -38,6 +38,37 @@ angular.module('wegas.models.sessions', [])
                             session.icon = defaultIcon; 
                         }
                     }
+                    // Si la session est en team.
+                    if(!session.properties.freeForAll){
+                        var teams = session.teams;
+                        // Pour chaque team.
+                        teams.forEach(function(team){
+                            // Contrôle si il s'agit d'une debug team.
+                            if(team["@class"] == "DebugTeam"){
+                                // Enlève la debug team de la liste des teams.
+                                session.teams = _.without(session.teams, _.findWhere(session.teams, {id: team.id}));
+                            }
+                        });
+                    // Si la session est en individuel.
+                    }else{
+                        var teams = session.teams,
+                            players = [];
+                        // Pour chaque teams.
+                        teams.forEach(function(team){
+                            // Contrôle que la team n'est pas une debug team.
+                            if(team["@class"] != "DebugTeam"){
+                                // Pour chaques players.
+                                team.players.forEach(function(player){
+                                    // Ajoute le player à la liste des joueurs.
+                                    players.push(player);
+                                });
+                            }
+                        });
+                        // Ajoute la liste des joueurs à la session. 
+                        session.players = players;
+                        // Enlève la liste des teams à la session.
+                        delete session.teams;
+                    }
                 });
                 managedSessions = data;
                 deferred.resolve(managedSessions);
