@@ -105,15 +105,28 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
-    model.updateManagedSession = function(sessionToSet){
+    model.updateNameSession = function(sessionToSet){
         var deferred = $q.defer();
-        console.log(sessionToSet)
         var sessionBeforeChange = findSession(managedSessions, sessionToSet.id);
         if(sessionBeforeChange != undefined){
             sessionBeforeChange.name = sessionToSet.name;
             $http.put(ServiceURL + "rest/GameModel/Game/"+ sessionToSet.id, sessionBeforeChange).success(function(data){
                 deferred.resolve(data);
-                console.log(data);
+            }).error(function(data){
+                deferred.resolve(data);
+            });
+        }
+        return deferred.promise;
+    };
+
+    model.updateCommentsSession = function(sessionToSet){
+        var deferred = $q.defer();
+        var sessionBeforeChange = findSession(managedSessions, sessionToSet.id);
+        if(sessionBeforeChange != undefined){
+            scenarioBeforeChange = sessionBeforeChange.gameModel;
+            scenarioBeforeChange.comments = sessionToSet.comments;
+            $http.put(ServiceURL + "rest/Public/GameModel/"+ scenarioBeforeChange.id, scenarioBeforeChange).success(function(data){
+                deferred.resolve(data);
             }).error(function(data){
                 deferred.resolve(data);
             });

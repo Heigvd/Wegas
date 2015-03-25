@@ -1,6 +1,7 @@
 $buttons-icon : (
     (trash, $fa-var-trash),
     (archive, $fa-var-archive),
+    (fork, $fa-var-code-fork),
     (sign-out, $fa-var-sign-out),
     (adn, $fa-var-adn),
     (ambulance, $fa-var-ambulance),
@@ -20,7 +21,7 @@ $buttons-icon : (
     &:before{
         content:"A";
         display:block;
-        position:absolute; 
+        position:absolute;
         top:0px;
         left:0px;
         text-align:center;
@@ -28,9 +29,9 @@ $buttons-icon : (
         margin:0px;
         font-size:$btn-default-size/2.5;
         width:$btn-default-size;
-        height:$btn-default-size;   
-        background:none;  
-        font-family:"FontAwesome"; 
+        height:$btn-default-size;
+        background:none;
+        font-family:"FontAwesome";
         color:$white;
     }
 
@@ -43,7 +44,7 @@ $buttons-icon : (
                 padding:$size-pixel/4.5 0px;
                 font-size:$size-pixel/2.5;
                 width:$size-pixel;
-                height:$size-pixel;   
+                height:$size-pixel;
             }
         }
     }

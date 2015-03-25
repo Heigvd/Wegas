@@ -1,6 +1,7 @@
 angular.module('private', [
     'wegas.models.sessions',
     'wegas.models.scenarios',
+    'wegas.models.users',
     'private.player',
     'private.trainer',
     'private.scenarist',
@@ -27,5 +28,5 @@ angular.module('private', [
             $state.go("wegas.public");
         }
         privateCtrl.user = user;
-    }); 
+    });
 });
