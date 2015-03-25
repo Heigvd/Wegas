@@ -1,4 +1,5 @@
 angular.module('private.trainer.sessions.users', [
+    'private.trainer.sessions.users.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -6,14 +7,10 @@ angular.module('private.trainer.sessions.users', [
             url: '/:id/users',
             views: {
                 'workspace@wegas.private':{
-                    controller: 'SessionsUsersCtrl as sessionsUsersCtrl',
+                    controller: 'TrainerCtrl as trainerCtrl',
                     templateUrl: 'app/private/trainer/sessions/users/users.tmpl.html'
                 }
             }
         })
     ;
-})
-.controller('SessionsUsersCtrl', function SessionsUsersCtrl($state, $stateParams) {
-    var sessionsUsersCtrl = this;
-    console.log("Loading users from session #" + $stateParams.id);
 });

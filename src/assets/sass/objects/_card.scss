@@ -11,7 +11,6 @@
     border-radius:2px;
     transition:.3s;
     clear:both;
-
     @include material-shadow(1);
 
     &:hover{
@@ -21,16 +20,12 @@
     .card__illustration{
         display:block;
         float:left;
-        border-top-left-radius:2px;
-        border-bottom-left-radius:2px;
         &.card__illustration--editable{
-
             &:after{
                 display:block;
                 position:absolute;
                 opacity:0;
                 visibility: hidden;
-                border-radius:6px;
                 top:0px;
                 left:0px;
                 font-size:32px;
@@ -222,12 +217,24 @@
                 }
             }
         }
+        .card__actions{
+            padding:16px;
+        }
+    }
+
+    &.card--users{
+        .card__description__titre{
+            padding:16px;
+            font-weight:500;
+            font-size:14px;
+        }
     }
 
     @each $size in $sizes{
         &.card--#{nth($size, 1)}{
-            width:nth($size, 2)*6;
+            width:100%;
             height:nth($size, 2);
+            margin-bottom:8px;
 
             .card__illustration{
                 line-height:nth($size, 2);
@@ -235,102 +242,6 @@
             .card__description{
                 float:left;
             }
-
-            &.card--block{
-                height:nth($size, 2)*3;
-                .card__illustration{
-                    width:100%;
-                    height:(nth($size, 2)*2);
-                    border-top-left-radius:2px;
-                    border-top-right-radius:2px;
-                }
-            }
         }
-    }
-    &.card--flat{
-        box-shadow: none;
-        background:none;
-        width:100%;
-
-        &:hover {
-            background: #E5E5E5;
-        }
-
-        @each $size in $sizes{
-            &.card--#{nth($size, 1)}{
-                width:100%;
-                height:nth($size,2) + 2*16px;
-                &:after{
-                    display:block;
-                    position:relative;
-                    height:1px;
-                    width:auto;
-                    margin:0px;
-                    background-color:$border;
-                    margin-left:nth($size,2) + 16px;
-                    content:"";
-                    clear:both;
-                    box-sizing: border-box;
-                }
-                .card__illustration{
-                    height:nth($sizes,2);
-                    margin:16px 0px;
-                    border-radius:6px;
-                    img{
-                        border-radius:6px;
-                    }
-                }
-
-                .card__description{
-                    height:(nth($size, 2)) + 2*16px;
-                    padding:18px 0px;
-                    .card__description__titre{
-                        margin:0px;
-                        padding:0px;
-                        .titre__display{
-                            font-size:16px;
-                        }
-                    }
-
-                }
-                .card__actions{
-                    padding:32px 0px;
-                    @media screen and (max-width: $screen-xs) {
-                        padding:0px 0px;
-                    }
-                }
-
-                .card__detailled-actions ~ .card__actions {
-                    // float: left;
-                    height: auto;
-                    padding: 0;
-                    text-align: right;
-                    // width: 100%;
-                }
-
-                .card__detailled-actions {
-                    margin: 0;
-                    padding: 12px;
-                    ul {
-                        list-style-type: none;
-                    }
-                    li {
-                        padding-left: 15px;
-                        position: relative;
-                        input {
-                            position: absolute;
-                            left: 0;
-                            top: .25em;
-                        }
-                    }
-                }
-            }
-        }
-        &:last-child{
-            &:after{
-                display:none;
-            }
-        }
-
     }
 }
