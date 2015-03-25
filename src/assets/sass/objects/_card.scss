@@ -81,6 +81,14 @@
             margin:0px;
         }
     }
+    &.card--scenario {
+        &.ng-enter {
+            animation: bounceIn 1s;
+        }
+        &.ng-leave {
+          animation: bounceOut 1s;
+        }
+    }
     &.card--coscenarist-permission {
         @include make-row();
         &.ng-leave {

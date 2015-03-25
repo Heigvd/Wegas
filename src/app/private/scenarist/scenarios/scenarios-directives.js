@@ -24,7 +24,7 @@ angular.module('private.scenarist.scenarios.directives', [
     scope: false,
     require: "^scenaristScenariosIndex",
     link : function(scope, element, attrs, parentCtrl) {
-         scope.newScenario = {
+        scope.newScenario = {
             name : "",
             basedOn: parentCtrl.scenarios
         };
@@ -32,8 +32,18 @@ angular.module('private.scenarist.scenarios.directives', [
             scope.newScenario.basedOn = n;
         });
         scope.createScenario = function() {
-            // TODO
-            alert('Sorry... Not yet implemented...');
+            if (scope.newScenario.name === "") {
+                alert('Le nom ne peut pas être vide');
+                return;
+            }
+
+            ScenariosModel.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id).then(function(result) {
+                if (result.id !== undefined) {
+                    parentCtrl.scenarios.push(result);
+                } else {
+                    alert(result);
+                }
+            });
         };
     }
   };
