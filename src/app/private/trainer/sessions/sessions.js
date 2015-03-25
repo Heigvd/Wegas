@@ -1,5 +1,4 @@
 angular.module('private.trainer.sessions', [
-    'private.trainer.sessions.manage',
     'private.trainer.sessions.users',
     'private.trainer.sessions.directives'
 ])

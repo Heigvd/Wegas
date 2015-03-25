@@ -1,4 +1,5 @@
 angular.module('private.trainer.sessions.users', [
+    'private.trainer.sessions.users.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider

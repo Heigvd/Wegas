@@ -20,8 +20,6 @@
     .card__illustration{
         display:block;
         float:left;
-        border-top-left-radius:2px;
-        border-bottom-left-radius:2px;
         &.card__illustration--editable{
 
             &:after{
@@ -163,7 +161,10 @@
             }
         }
         &.card--flat{}
+    }
 
+    &.card--users{
+            
     }
 
     @each $size in $sizes{
@@ -183,21 +184,15 @@
                 .card__illustration{
                     width:100%;
                     height:(nth($size, 2)*2);
-                    border-top-left-radius:2px;
-                    border-top-right-radius:2px;
                 }
             }
-        }
-    }
-      &.card--flat{
-        box-shadow: none;
-        background:none;
-        width:100%;
 
-        @each $size in $sizes{
-            &.card--#{nth($size, 1)}{
+            &.card--flat{
+                box-shadow: none;
+                background:none;
                 width:100%;
                 height:nth($size,2) + 2*16px;
+
                 &:after{
                     display:block;
                     position:relative;
@@ -210,13 +205,10 @@
                     clear:both;
                     box-sizing: border-box;
                 }
+
                 .card__illustration{
                     height:nth($sizes,2);
                     margin:16px 0px;
-                    border-radius:6px;
-                    img{
-                        border-radius:6px;
-                    }
                 }
 
                 .card__description{
@@ -232,19 +224,20 @@
                     }
 
                 }
+
                 .card__actions{
-                    padding:32px 0px;
+                    padding:(($size/2) + 16px) 0px;
                     @media screen and (max-width: $screen-xs) {
                         padding:0px 0px;
                     }
                 }
-            }
-        }
-        &:last-child{
-            &:after{
-                display:none;
-            }
-        }
 
+                &:last-child{
+                    &:after{
+                        display:none;
+                    }
+                }
+            }
+        }
     }
 }

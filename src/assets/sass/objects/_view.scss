@@ -115,6 +115,28 @@
         }
     }
 
+    &.view--sessions-users-new{
+        @include make-xs-column(12);
+        @include make-sm-column(3);
+    }
+
+    &.view--sessions-users-list {
+        @include make-xs-column(12);
+        @include make-sm-column(9);
+        height:100%;
+
+        .view__users-team{
+            clear:both;
+            & > h4{
+                padding:16px 0px;
+                font-size:15px;
+                font-weight:500;
+                border-bottom:solid 1px $border;
+            }
+
+        }
+    }
+
     // Styles de décorations
     @each $level in $backgrounds-levels {
         $level-name : nth($level, 1);
