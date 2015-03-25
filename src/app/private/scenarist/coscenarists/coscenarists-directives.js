@@ -6,7 +6,7 @@ angular
 .directive('scenaristCoscenaristsIndex', function(ScenariosModel){
   return {
     templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-index.html',
-    controller : function($scope, $stateParams) {
+    controller : function($scope, $stateParams, $sce) {
         var ctrl = this,
         scenarios = [],
         scenario = null,
@@ -78,15 +78,15 @@ angular
                     for (var i = 0; i < matches.length; i++) {
                         var user = matches[i];
                         results.push({
-                            value: user.email,
+                            value: user.name + '('+user.email+')',
                             obj: user,
                             label:
                             '<div class="row">' +
                             ' <div class="col-xs-12">' +
-                            '  ' + highlight(user.name,term) + ''+
+                            '  ' + highlight(user.name, term) +
                             ' </div>' +
-                            ' <div class="col-xs-12 text-right text-muted">' +
-                             + highlight(user.email,term) +
+                            ' <div class="col-xs-12 text-right">' +
+                            highlight(user.email, term) +
                             ' </div>' +
                             '</div>'
 
@@ -152,10 +152,10 @@ angular
         link : function(scope, element, attrs, parentCtrl) {
 
             scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
-                            _.contains(scope.permission.permissions, "Instantiate") &&
-                            _.contains(scope.permission.permissions, "View") &&
-                            _.contains(scope.permission.permissions, "Edit") &&
-                            _.contains(scope.permission.permissions, "Delete");
+            _.contains(scope.permission.permissions, "Instantiate") &&
+            _.contains(scope.permission.permissions, "View") &&
+            _.contains(scope.permission.permissions, "Edit") &&
+            _.contains(scope.permission.permissions, "Delete");
 
             scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
             scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
