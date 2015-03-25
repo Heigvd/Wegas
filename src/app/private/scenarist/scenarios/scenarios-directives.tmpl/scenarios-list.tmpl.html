@@ -1,34 +1,25 @@
 <h3>Your active scenarios</h3>
-<div class="v1">
-  <div class="card card--session" ng-repeat="scenario in scenarios" ng:class="{true:'card--block', false:'card--inline'}[scenario.length <= 2]">
-    <div class="card__illustration">
-      <img src="http://dummyimage.com/300x100/00ff00/123321" />
-    </div>
-    <div class="card__description">
-      <h4>{{ scenario.name }}</h4>
-      <p>Created by <em>{{ scenario.createdByName }}</em></p>
-    </div>
-    <ul class="card__actions">
-      <li class="action">
-        <a href="#" class="btn btn--icon btn--edit" title="Monitoring">
-          <span class="btn__label">Monitoring</span>
-        </a>
-      </li>
-      <li class="action">
-        <a ui-sref=".coscenarists({scenarioId: scenario.id})" class="btn btn--icon btn--users" title="Manage users">
-          <span class="btn__label">Manage users</span>
-        </a>
-      </li>
-      <li class="action">
-        <a href="scenarist_scenario_versions.html" class="btn btn--icon btn--copy" ttle="Manage versions">
-          <span class="btn__label">Copies</span>
-        </a>
-      </li>
-      <li class="action">
-        <a href="#" class="btn btn--icon btn--archive">
-          <span class="btn__label">Archive</span>
-        </a>
-      </li>
-    </ul>
+<div class="card card--flat card--big" ng-repeat="scenario in scenarios" ng:class="{true:'card--block', false:'card--inline'}[scenario.length <= 2]">
+  <div class="card__illustration illustration illustration--big illustration--icon illustration--{{scenario.icon.color}}">
+    <i class="fa fa-{{scenario.icon.name}}"></i>
+  </div>
+
+  <div class="card__description card__description--one-line">
+    <p class="card__description__date">{{scenario.createdTime | date:"dd.MM.yyyy"}}</p>
+    <h4 class="card__description__titre">{{scenario.name}}</h4>
+  </div>
+  <div class="card__actions">
+    <a class="button button--medium button--round button--info-reverse button--label-off button--scenarist" title="Edit scenario" href="http://wegas.albasim.ch/host.html?gameId={{scenario.id}}" target="_blank">
+    <span class="button__label">Edit session</span>
+    </a>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" ui-sref=".coscenarists({scenarioId: scenario.id})">
+      <span class="button__label">Manage User</span>
+    </a>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="Manage User" ui-sref=".coscenarists({scenarioId: scenario.id})">
+      <span class="button__label">Fork</span>
+    </a>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive session" href="#">
+      <span class="button__label">Archive session</span>
+    </a>
   </div>
 </div>

@@ -1,18 +1,25 @@
   <h1>Actual users</h1>
-<div class="v1">
-    <article class="card card--inline" ng-repeat="permission in permissions">
-    <div class="card__illustration">
-      <img src="https://randomuser.me/api/portraits/med/men/55.jpg" alt="Alvin Price">
+    <article class="card card--flat card--big card--coscenarist-permission my-repeat-animation" ng-repeat="permission in permissions" permission="permission">
+    <div class="card__illustration illustration illustration--big illustration--icon illustration--{{scenario.icon.color}}">
+      <i class="fa fa-{{scenario.icon.name}}"></i>
     </div>
+    <!-- <div class="card__illustration">
+      <img src="https://randomuser.me/api/portraits/med/men/55.jpg" alt="Alvin Price">
+    </div> -->
     <div class="card__description">
+    <h4 class="card__description__titre">{{ permission.user.name }}</h4>
+      <p class="card__description__date">{{ permission.user.email }}</p>
+
+    </div>
+    <!-- <div class="card__description">
       <h4>{{ permission.user.name }} {{ permission.user.lastname }}</h4>
       <p>{{ permission.user.email }}</p>
-    </div>
+    </div> -->
 
-    <scenarist-coscenarists-user-permissions permission="{{ permission.permission }}"></scenarist-coscenarists-user-permissions>
-    <ul class="card__actions">
-      <li class="action"><a href="#" class="btn btn--icon btn--trash"><span class="btn__label">Drop</span></a></li>
-    </ul>
+    <scenarist-coscenarists-user-permissions class="card__detailled-actions" permission="{{ permission.permission }}"></scenarist-coscenarists-user-permissions>
+    <div class="card__actions">
+      <a class="button button--medium button--round button--default-reverse button--label-off button--trash" title="Archive session" ng-click="removeUser(scenario.id, permission.user.id)">
+      <span class="button__label">Remove user</span>
+    </a>
+  </div>
   </article>
-</div>
-
