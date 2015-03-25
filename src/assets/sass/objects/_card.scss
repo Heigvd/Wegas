@@ -1,3 +1,4 @@
+
 .card{
     position:relative;
     display:block;
@@ -53,10 +54,10 @@
     }
 
     .card__description{
-        float:left; 
+        float:left;
     }
     .card__actions{
-        float:right; 
+        float:right;
     }
 
     &.card--player-session{
@@ -80,8 +81,11 @@
             margin:0px;
         }
     }
-
     &.card--coscenarist-permission {
+        @include make-row();
+        &.ng-leave {
+          animation: bounceOut 1s;
+        }
         .card__illustration {
             @include make-xs-column(2);
         }
@@ -102,7 +106,7 @@
                 height:21px;
                 margin:0px;
                 padding:0px;
-                .titre__display{ 
+                .titre__display{
                     padding:4px 16px;
                     font-size:14px;
                     font-weight:500;
@@ -128,7 +132,7 @@
                         }
                     }
                 }
-                .titre__edition{ 
+                .titre__edition{
                     padding:0px 16px;
                     font-size:14px;
                     height:21px;
@@ -189,7 +193,7 @@
                 line-height:nth($size, 2);
             }
             .card__description{
-                float:left;    
+                float:left;
             }
 
             &.card--block{
@@ -203,7 +207,7 @@
             }
         }
     }
-      &.card--flat{
+    &.card--flat{
         box-shadow: none;
         background:none;
         width:100%;
@@ -211,6 +215,7 @@
         &:hover {
             background: #E5E5E5;
         }
+
         @each $size in $sizes{
             &.card--#{nth($size, 1)}{
                 width:100%;
@@ -242,7 +247,7 @@
                     .card__description__titre{
                         margin:0px;
                         padding:0px;
-                        .titre__display{ 
+                        .titre__display{
                             font-size:16px;
                         }
                     }
@@ -254,6 +259,7 @@
                         padding:0px 0px;
                     }
                 }
+
                 .card__detailled-actions ~ .card__actions {
                     // float: left;
                     height: auto;
