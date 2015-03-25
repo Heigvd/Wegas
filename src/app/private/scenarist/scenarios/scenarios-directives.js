@@ -35,6 +35,9 @@ angular.module('private.scenarist.scenarios.directives', [
             if (scope.newScenario.name === "") {
                 alert('Le nom ne peut pas être vide');
                 return;
+            } else if (scope.newScenario.basedOn.id === undefined) {
+                alert('Il faut choisir un scenario de base');
+                return
             }
 
             ScenariosModel.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id).then(function(result) {
