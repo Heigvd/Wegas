@@ -20,5 +20,4 @@ angular.module('private.scenarist.coscenarists', [
             ViewInfos.editName("Scenarist workspace");
         }
     });
-    $scope.items = ["A", "List", "Of", "Five", "Items"];
 });
