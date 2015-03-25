@@ -7,7 +7,9 @@ angular.module('private.trainer.sessions.users.directives', [
   	};
 }).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel){
 	var ctrl = this;
-    ctrl.session = {};
+    ctrl.session = {},
+    ctrl.playersViewActived = true;
+
 
     SessionsModel.getManagedSession($stateParams.id).then(function(session){
         ctrl.session = session;
@@ -18,6 +20,14 @@ angular.module('private.trainer.sessions.users.directives', [
             ctrl.session = session;
         });
     };
+    ctrl.activePlayersView = function(){
+        ctrl.playersViewActived = true;
+    };
+
+    ctrl.activeTrainersView = function(){
+        ctrl.playersViewActived = false;
+    };
+
 }).directive('trainerSessionsUsersIndividualList', function() {
     return {
         templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-individual-list.tmpl.html',

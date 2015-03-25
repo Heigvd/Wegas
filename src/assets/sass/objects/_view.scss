@@ -135,15 +135,34 @@
 
     &.view--sessions-users-new{
         @include make-xs-column(12);
-        @include make-sm-column(3);
+        @include make-sm-column(4);
+        margin:0px;
+        padding:0px;
+        float:none;
+        clear:both;
+        .view__users-tabs{
+            .button{
+                width:50%;
+                float:left;
+                text-align:center;
+            }
+        }
+        .view__users-add{
+            h3{
+                padding:64px 16px 16px 16px;
+            }
+        }
+
     }
 
     &.view--sessions-users-list {
         @include make-xs-column(12);
-        @include make-sm-column(9);
+        @include make-sm-column(8);
         height:100%;
+        overflow-y:auto;
+        overflow-x:hidden;
         h3{
-            padding:0px 16px;
+            padding:64px 16px 16px 16px;
         }
 
         .view__users-individual{

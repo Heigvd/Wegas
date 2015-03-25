@@ -1,0 +1,27 @@
+<div class="view view--sessions-users-new view--bottom">
+	<!-- Display à améliorer -->
+	<div class="view__users-tabs">
+	   	<a class="button button--medium button--default" ng-class="{'button--default': !usersIndexCtrl.playersViewActived, 'button--info': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">
+	   		<span class="button__label">Players</span>
+	    </a> 
+	   	<a class="button button--medium"  ng-class="{'button--default': usersIndexCtrl.playersViewActived, 'button--info': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">
+	   		<span class="button__label">Trainers</span>
+	    </a> 
+    </div>
+    <div ng-if="!usersIndexCtrl.playersViewActived" class="view__users-add">
+		<h3>Add trainer</h3>
+    </div>
+    <div ng-if="usersIndexCtrl.playersViewActived" class="view__users-add">
+		<h3>Add player</h3>
+    </div>
+</div>
+<div class="view view--sessions-users-list view--middle">
+	<div ng-if="!usersIndexCtrl.playersViewActived"class="view view__players">
+		<h3>Trainers - <em>{{usersIndexCtrl.session.name}}</em></h3>
+	</div>
+	<div ng-if="usersIndexCtrl.playersViewActived"class="view view__players">
+		<h3>Players - <em>{{usersIndexCtrl.session.name}}</em></h3>
+		<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
+		<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
+	</div>
+</div>
