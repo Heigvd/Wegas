@@ -95,23 +95,34 @@
     &.view--create-scenario
     {
         @include make-xs-column(12);
-        @include make-md-column(4);
+        @include make-md-column(3);
         .form{
             margin:0px;
             padding:0px;
         }
     }
 
+
+
     &.view--sessions-list,
     &.view--scenarios-list {
         @include make-xs-column(12);
-        @include make-md-column(8);
+        @include make-md-column(9);
         height:100%;
         .view__tools{
-            padding:12px 0px;
+            @include make-md-column(12);
+            @include make-lg-column(4);
+            h3{
+                padding-bottom:12px;
+            }
+
         }
         .view__list{
-            height:calc(100% - 156px);
+            @include make-md-column(12);
+            @include make-lg-column(8);
+            height:100%;
+            padding:68px 16px 32px 16px;
+            box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
         }
@@ -144,6 +155,7 @@
         border-#{$position}: solid 1px $border-reverse;
       }
     }
+
     .view--separate-shadow{
         @include material-shadow(2);
     }
@@ -177,12 +189,14 @@
             margin-top:-22px;
         }
     }
+
     .view__password-form{
         width:100%;
         top:40%;
         padding:0px 64px;
         margin-top:-72px;
     }
+
     .view__signup-form{
         width:100%;
         top:40%;
@@ -197,6 +211,7 @@
         @include make-md-column-offset(4);
         margin-top:128px;
     }
+
     .view__menu-workspaces{
         display:block;
         position:relative;
@@ -210,6 +225,7 @@
         float:left;
         color:black;
     }
+
     .view__menu-secondary{
         display:block;
         position:relative;
