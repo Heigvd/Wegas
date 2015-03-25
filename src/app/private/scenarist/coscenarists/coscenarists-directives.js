@@ -25,6 +25,7 @@ angular
 
             });
         };
+
         ctrl.updateScenario();
 
 
@@ -51,8 +52,7 @@ angular
         } , function(n,o) {
             scope.scenario = n;
         });
-        scope.names = ["john", "bill", "charlie", "robert", "alban", "oscar", "marie", "celine", "brad", "drew", "rebecca", "michel", "francis", "jean", "paul", "pierre", "nicolas", "alfred", "gerard", "louis", "albert", "edouard", "benoit", "guillaume", "nicolas", "joseph"];
-        parentCtrl.updateScenario();
+
         scope.addNewCoscenarist = function() {
             // TODO
             alert('Sorry... Not yet implemented...');
@@ -60,18 +60,7 @@ angular
     }
 };
 })
-.directive('autoComplete', function($timeout) {
-    return function(scope, iElement, iAttrs) {
-            iElement.autocomplete({
-                source: scope[iAttrs.uiItems],
-                select: function() {
-                    $timeout(function() {
-                      iElement.trigger('input');
-                    }, 0);
-                }
-            });
-    };
-})
+
 .directive('scenaristCoscenaristsList', function(ScenariosModel) {
     return {
         templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-list.tmpl.html',
@@ -83,19 +72,19 @@ angular
             }, function(newPermissions, permissions) {
                 scope.permissions = newPermissions;
             });
-        },
-        // controller: function ($scope) {
-        //     $scope.$watch(function() {
-        //         return parentCtrl.permissions
-        //     }, function(newPermissions, permissions) {
-        //         $scope.permissions = newPermissions;
-        //     });
 
-        //     $scope.$on('change', function () {
-        //         // Save the new permissions
-        //         alert('asd');
-        //     });
-        // }
+            scope.removeUser = function (scenarioId, userId) {
+                ScenariosModel.deletePermissions(scenarioId, userId).then(function(result) {
+                    if (result === true) {
+                        var index = scope.permissions.indexOf(this.permission);
+                        scope.permissions.splice(index,1);
+                    } else {
+                        alert(result.message);
+                    }
+                });
+            }
+
+        },
     };
 })
 
@@ -106,7 +95,6 @@ angular
         require: "^scenaristCoscenaristsIndex",
         link : function(scope, element, attrs, parentCtrl) {
 
-
             scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
                             _.contains(scope.permission.permissions, "Instantiate") &&
                             _.contains(scope.permission.permissions, "View") &&
@@ -116,9 +104,16 @@ angular
             scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
             scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
 
+
             scope.updatePermissions = function() {
-                this.$emit('permissions-changed');
+
+                ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (result) {
+                    if (result === true) {
+                        parentCtrl.updateScenario();
+                    }
+                });
             };
+
         }
     };
 });
