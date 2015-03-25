@@ -81,6 +81,20 @@
         }
     }
 
+    &.card--coscenarist-permission {
+        .card__illustration {
+            @include make-xs-column(2);
+        }
+        .card__description {
+            @include make-xs-column(4);
+        }
+        .card__detailled-actions {
+            @include make-xs-column(4);
+        }
+        .card__actions {
+            @include make-xs-column(2);
+        }
+    }
     &.card--trainer-session{
         margin:4px auto 4px auto;
         .card__description{
@@ -194,6 +208,9 @@
         background:none;
         width:100%;
 
+        &:hover {
+            background: #E5E5E5;
+        }
         @each $size in $sizes{
             &.card--#{nth($size, 1)}{
                 width:100%;
@@ -235,6 +252,30 @@
                     padding:32px 0px;
                     @media screen and (max-width: $screen-xs) {
                         padding:0px 0px;
+                    }
+                }
+                .card__detailled-actions ~ .card__actions {
+                    // float: left;
+                    height: auto;
+                    padding: 0;
+                    text-align: right;
+                    // width: 100%;
+                }
+
+                .card__detailled-actions {
+                    margin: 0;
+                    padding: 12px;
+                    ul {
+                        list-style-type: none;
+                    }
+                    li {
+                        padding-left: 15px;
+                        position: relative;
+                        input {
+                            position: absolute;
+                            left: 0;
+                            top: .25em;
+                        }
                     }
                 }
             }
