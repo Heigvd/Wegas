@@ -89,31 +89,6 @@ angular.module('wegas.models.scenarios', [])
     return _.find(scenarios, function (s) { return s.id == id; });
   }
 
-  function applyIcon(data) {
-      var defaultIcon = {
-        color:"orange",
-        name: "gamepad"
-      };
-      data.forEach(function(scenario){
-        var iconInfos = scenario.properties.iconUri;
-        if(iconInfos == null || iconInfos == "") {
-          scenario.icon = defaultIcon;
-        } else {
-          var infos = iconInfos.split("_");
-          if(infos.length == 3 && infos[0] == "ICON") {
-            scenario.icon = {
-              color: infos[1],
-              name: infos[2]
-            };
-
-          } else {
-            scenario.icon = defaultIcon;
-          }
-        }
-      });
-      return data
-    }
-
   model.createScenario = function(name, templateId) {
     var deferred = $q.defer();
 
@@ -123,7 +98,7 @@ angular.module('wegas.models.scenarios', [])
       "name": name,
       "properties":{}
     }).success(function(data){
-      deferred.resolve(applyIcon([data])[0]);
+      deferred.resolve(data);
     }).error(function(data){
       deferred.resolve(data);
     });
@@ -143,15 +118,14 @@ angular.module('wegas.models.scenarios', [])
     } else {
       scenarios = [];
       $http.get(ServiceURL + "rest/Public/GameModel/?view=EditorExtended").success(function(data){
-
-        scenarios = applyIcon(data);
+        scenarios = data;
         deferred.resolve(scenarios);
       }).error(function(data){
         scenarios = [];
-        deferred.resolve([]);
+        deferred.resolve(scenarios);
       });
-}
-return deferred.promise;
+    }
+    return deferred.promise;
 };
 
 model.getScenario = function (scenarioId) {
