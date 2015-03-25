@@ -13,7 +13,7 @@
     </h4>
     <div class="card__description__note">
         <span ng-if="session.gameModel.comments && !editingComments" class="note__display" ng-click="toogleEditingComments()">
-            {{session.gameModel.comments | limitTo: 48}}
+            {{session.gameModel.comments | limitTo: 36}}
         </span>
         <span ng-if="!session.gameModel.comments && !editingComments" class="note__display" ng-click="toogleEditingComments()"> 
             Comment this session
@@ -26,13 +26,14 @@
     </div>
 </div>
 <div class="card__actions">
-    <a class="button button--medium button--round button--info-reverse button--label-off button--trainer" title="Monitoring session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
-      <span class="button__label">Monitoring session</span>
-    </a>
+    
     <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" href="#">
       <span class="button__label">Manage User</span>
     </a>
     <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive session" href="#">
       <span class="button__label">Archive session</span>
     </a>   
+    <a class="button button--medium button--round button--info button--label-off button--trainer" title="Monitoring session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
+      <span class="button__label">Monitoring session</span>
+    </a>
 </div>
