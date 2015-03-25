@@ -1,3 +1,4 @@
+
 .card{
     position:relative;
     display:block;
@@ -53,10 +54,10 @@
     }
 
     .card__description{
-        float:left; 
+        float:left;
     }
     .card__actions{
-        float:right; 
+        float:right;
     }
 
     &.card--player-session{
@@ -80,7 +81,24 @@
             margin:0px;
         }
     }
-
+    &.card--coscenarist-permission {
+        @include make-row();
+        &.ng-leave {
+          animation: bounceOut 1s;
+        }
+        .card__illustration {
+            @include make-xs-column(2);
+        }
+        .card__description {
+            @include make-xs-column(4);
+        }
+        .card__detailled-actions {
+            @include make-xs-column(4);
+        }
+        .card__actions {
+            @include make-xs-column(2);
+        }
+    }
     &.card--trainer-session{
         margin:4px auto 4px auto;
         .card__description{
@@ -88,7 +106,7 @@
                 height:21px;
                 margin:0px;
                 padding:0px;
-                .titre__display{ 
+                .titre__display{
                     padding:4px 16px;
                     font-size:14px;
                     font-weight:500;
@@ -114,7 +132,7 @@
                         }
                     }
                 }
-                .titre__edition{ 
+                .titre__edition{
                     padding:0px 16px;
                     font-size:14px;
                     height:21px;
@@ -207,7 +225,7 @@
                 line-height:nth($size, 2);
             }
             .card__description{
-                float:left;    
+                float:left;
             }
 
             &.card--block{
@@ -221,10 +239,14 @@
             }
         }
     }
-      &.card--flat{
+    &.card--flat{
         box-shadow: none;
         background:none;
         width:100%;
+
+        &:hover {
+            background: #E5E5E5;
+        }
 
         @each $size in $sizes{
             &.card--#{nth($size, 1)}{
@@ -255,10 +277,9 @@
                     height:(nth($size, 2)) + 2*16px;
                     padding:18px 0px;
                     .card__description__titre{
-                        height:21px;
                         margin:0px;
                         padding:0px;
-                        .titre__display{ 
+                        .titre__display{
                             font-size:16px;
                         }
                     }
@@ -268,6 +289,31 @@
                     padding:32px 0px;
                     @media screen and (max-width: $screen-xs) {
                         padding:0px 0px;
+                    }
+                }
+
+                .card__detailled-actions ~ .card__actions {
+                    // float: left;
+                    height: auto;
+                    padding: 0;
+                    text-align: right;
+                    // width: 100%;
+                }
+
+                .card__detailled-actions {
+                    margin: 0;
+                    padding: 12px;
+                    ul {
+                        list-style-type: none;
+                    }
+                    li {
+                        padding-left: 15px;
+                        position: relative;
+                        input {
+                            position: absolute;
+                            left: 0;
+                            top: .25em;
+                        }
                     }
                 }
             }

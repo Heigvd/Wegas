@@ -86,24 +86,26 @@
                 right:16px;
             }
         }
-
     }
 
 
+
     &.view--new-session,
-    &.view--join-session
+    &.view--join-session,
+    &.view--create-scenario
     {
         @include make-xs-column(12);
-        @include make-sm-column(3);
+        @include make-md-column(4);
         .form{
             margin:0px;
             padding:0px;
         }
     }
 
-    &.view--sessions-list {
+    &.view--sessions-list,
+    &.view--scenarios-list {
         @include make-xs-column(12);
-        @include make-sm-column(9);
+        @include make-md-column(8);
         height:100%;
         .view__tools{
             padding:12px 0px;

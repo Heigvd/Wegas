@@ -1,6 +1,8 @@
 angular.module('private.scenarist', [
+    'private.scenarist.sessions',
     'private.scenarist.scenarios',
-    'private.scenarist.scenarios.new'
+    'private.scenarist.coscenarists'
+
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -8,15 +10,7 @@ angular.module('private.scenarist', [
             url: 'scenarist',
             views: {
                 'workspace': {
-                    controller: 'ScenaristCtrl',
-                    templateUrl: 'app/private/scenarist/scenarist.tmpl.html'
-                },
-                'scenarios-new@wegas.private.scenarist':{
-                    controller: 'ScenariosNewCtrl as scenariosNewCtrl',
-                    templateUrl: 'app/private/scenarist/scenarios/scenarios-new/scenarios-new.tmpl.html'
-                },
-                'scenarios-list@wegas.private.scenarist':{
-                    controller: 'ScenariosListCtrl as scenariosListCtrl',
+                    controller: 'ScenaristCtrl as scenaristCtrl',
                     templateUrl: 'app/private/scenarist/scenarios/scenarios.tmpl.html'
                 }
             }
@@ -24,16 +18,10 @@ angular.module('private.scenarist', [
     ;
 })
 .controller('ScenaristCtrl', function ScenaristCtrl($state, Auth, ViewInfos) {
+    var scenaristCtrl = this;
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
-            if(!user.isScenarist){
-                if(user.isTrainer){
-                    $state.go("wegas.private.trainer");
-                }else{
-                    $state.go("wegas.private.player");
-                }
-            }
-            ViewInfos.editName("Scenarist workspace");  
+            ViewInfos.editName("Scenarist workspace");
         }
     });
 });
