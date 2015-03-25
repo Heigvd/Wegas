@@ -89,6 +89,46 @@ angular.module('wegas.models.scenarios', [])
     return _.find(scenarios, function (s) { return s.id == id; });
   }
 
+  function applyIcon(data) {
+      var defaultIcon = {
+        color:"orange",
+        name: "gamepad"
+      };
+      data.forEach(function(scenario){
+        var iconInfos = scenario.properties.iconUri;
+        if(iconInfos == null || iconInfos == "") {
+          scenario.icon = defaultIcon;
+        } else {
+          var infos = iconInfos.split("_");
+          if(infos.length == 3 && infos[0] == "ICON") {
+            scenario.icon = {
+              color: infos[1],
+              name: infos[2]
+            };
+
+          } else {
+            scenario.icon = defaultIcon;
+          }
+        }
+      });
+      return data
+    }
+
+  model.createScenario = function(name, templateId) {
+    var deferred = $q.defer();
+
+    $http.post(ServiceURL + "rest/Public/GameModel/" + templateId, {
+      "@class":"GameModel",
+      "templateId": templateId,
+      "name": name,
+      "properties":{}
+    }).success(function(data){
+      deferred.resolve(applyIcon([data])[0]);
+    }).error(function(data){
+      deferred.resolve(data);
+    });
+    return deferred.promise;
+  }
   model.deletePermissions = function(scenarioId, userId) {
     return PermissionModel.deletePermissions(scenarioId, userId);
   }
@@ -103,29 +143,8 @@ angular.module('wegas.models.scenarios', [])
     } else {
       scenarios = [];
       $http.get(ServiceURL + "rest/Public/GameModel/?view=EditorExtended").success(function(data){
-        data.forEach(function(scenario){
-          var defaultIcon = {
-            color:"orange",
-            name: "gamepad"
-          },
-          iconInfos = scenario.properties.iconUri;
-          if(iconInfos == null || iconInfos == ""){
-            scenario.icon = defaultIcon;
-          }else{
-            var infos = iconInfos.split("_");
-            if(infos.length == 3){
-              if(infos[0] == "ICON"){
-                scenario.icon = {
-                  color: infos[1],
-                  name: infos[2]
-                };
-              }
-            }else{
-              scenario.icon = defaultIcon;
-            }
-          }
-        });
-        scenarios = data;
+
+        scenarios = applyIcon(data);
         deferred.resolve(scenarios);
       }).error(function(data){
         scenarios = [];
