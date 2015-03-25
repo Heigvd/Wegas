@@ -164,7 +164,11 @@
     }
 
     &.card--users{
-            
+        .card__description__titre{
+            padding:16px;
+            font-weight:500;
+            font-size:14px;
+        }
     }
 
     @each $size in $sizes{
