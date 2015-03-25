@@ -16,7 +16,12 @@ angular.module('private.trainer.sessions.directives', [
             });
         };
         ctrl.editName = function(sessionToSet){
-            SessionsModel.updateManagedSession(sessionToSet).then(function(data){
+            SessionsModel.updateNameSession(sessionToSet).then(function(data){
+                ctrl.updateSessions();
+            });
+        };
+        ctrl.editComments = function(sessionToSet){
+            SessionsModel.updateCommentsSession(sessionToSet).then(function(data){
                 ctrl.updateSessions();
             });
         };
@@ -81,22 +86,48 @@ angular.module('private.trainer.sessions.directives', [
            session: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            scope.editingName = false;
-            scope.sessionToSet = {
-                id: scope.session.id,
-                name: scope.session.name
-            };
-            scope.toogleEditingName = function(){
-                scope.editingName = (!scope.editingName);
+            // Private function 
+            var resetSessionToSet = function(){
                 scope.sessionToSet = {
                     id: scope.session.id,
-                    name: scope.session.name
+                    name: scope.session.name,
+                    comments: scope.session.gameModel.comments
                 };
+            }
+
+            // Public parameters
+            scope.editingName = false;
+            scope.editingComments = false;
+            resetSessionToSet();
+
+            // Public function 
+            scope.toogleEditingName = function(){
+                if(scope.editingComments){
+                    scope.toogleEditingComments();
+                }
+                scope.editingName = (!scope.editingName);
+                resetSessionToSet();
             };
+            
+            // Public function 
             scope.editName = function(){
-                console.log(scope.sessionToSet);
                 parentCtrl.editName(scope.sessionToSet);
                 scope.toogleEditingName();
+            };
+            
+            // Public function 
+            scope.toogleEditingComments = function(){
+                if(scope.editingName){
+                    scope.toogleEditingName();
+                }
+                scope.editingComments = (!scope.editingComments);
+                resetSessionToSet();
+            };
+            
+            // Public function 
+            scope.editComments = function(){
+                parentCtrl.editComments(scope.sessionToSet);
+                scope.toogleEditingComments();
             };
 
         }
