@@ -109,7 +109,6 @@ angular
 
                 ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (result) {
                     if (result === true) {
-                        parentCtrl.updateScenario();
                     }
                 });
             };
