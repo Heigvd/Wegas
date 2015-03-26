@@ -6,6 +6,7 @@ angular.module('private.scenarist.scenarios.directives', [
     controller : function(){
         var ctrl = this;
         ctrl.scenarios = [];
+        ctrl.search = "";
         ScenariosModel.getScenarios().then(function(scenarios) {
             ctrl.scenarios = scenarios;
         });
@@ -71,6 +72,11 @@ angular.module('private.scenarist.scenarios.directives', [
             return parentCtrl.scenarios
         }, function(newScenario, oldScenario){
             scope.scenarios = newScenario;
+        });
+        scope.$watch(function(){
+            return parentCtrl.search
+        }, function(newSearch, oldSearch){
+            scope.search = newSearch;
         });
     }
   };
