@@ -7,6 +7,20 @@
   <div class="card__description card__description--one-line">
     <p class="card__description__date">{{scenario.createdTime | date:"dd.MM.yyyy"}}</p>
     <h4 class="card__description__titre">{{scenario.name}}</h4>
+    <p>{{scenario.comments}}</p>
+    <div class="card__description__note">
+        <span ng-if="scenario.comments && !editingComments" class="note__display" ng-click="toogleEditingComments()">
+            {{scenario.comments | limitTo: 36}}
+        </span>
+        <span ng-if="!scenario.comments && !editingComments" class="note__display" ng-click="toogleEditingComments()">
+            Comment this scenario
+        </span>
+        <div ng-if="editingComments" class="note__edition">
+            <input class="note__edition__input" type="text" ng-model="sessionToSet.comments" placehoder="new comment"/>
+            <a class="note__edition__link link link--danger" ng-click="toogleEditingComments()"><i class="fa fa-times"></i></a>
+            <a class="note__edition__link link link--success" ng-click="editComments()"><i class="fa fa-check"></i></a>
+        </div>
+    </div>
   </div>
   <div class="card__actions">
     <a class="button button--medium button--round button--info-reverse button--label-off button--scenarist" title="Edit scenario" href="http://wegas.albasim.ch/host.html?gameId={{scenario.id}}" target="_blank">
