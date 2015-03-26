@@ -48,11 +48,48 @@ angular
 .directive('scenaristHistoryDownload', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-download.html',
-        controller : function($scope, $stateParams, $sce) {
-            var ctrl = this,
-            scenarios = [],
-            scenario = null,
-            history = null;
+        scope: false,
+        require: "^scenaristHistoryIndex",
+        link : function(scope, element, attrs, parentCtrl) {
+
+        }
+    };
+})
+.directive('scenaristHistoryDownloadJson', function(ScenariosModel){
+    return {
+        scope: false,
+        link : function(scope, element, attrs, parentCtrl) {
+            $jsonElement = element;
+            scope.$watch("scenario", function(n,o) {
+                if (_.contains([false,undefined], n)) {
+                    $jsonElement.addClass('disabled').attr('href', '#');
+                } else {
+                    var url = ServiceURL + "rest/Export/GameModel/" + n.id + "/" + n.name + ".json";
+                    $jsonElement.removeClass('disabled').attr('href', url);
+                }
+                scope.scenario = n;
+            });
+
+
+        }
+    };
+})
+.directive('scenaristHistoryDownloadPdf', function(ScenariosModel){
+    return {
+        scope: false,
+        link : function(scope, element, attrs, parentCtrl) {
+            $pdfElement = element;
+
+            scope.$watch("scenario", function(n,o) {
+                if (_.contains([false,undefined], n)) {
+                    $pdfElement.addClass('disabled').attr('href', '#');
+                } else {
+                    var url = ServiceURL + "print.html?gameModelId=" + n.id
+                            + "&outputType=pdf&mode=editor&defaultValues=true";
+                    $pdfElement.removeClass('disabled').attr('href', url);
+                }
+                scope.scenario = n;
+            });
 
 
         }
@@ -65,7 +102,11 @@ angular
         require: "^scenaristHistoryIndex",
         link : function(scope, element, attrs, parentCtrl) {
 
-
+            scope.$watch(function() {
+                return parentCtrl.scenario
+            } , function(n,o) {
+                scope.scenario = n;
+            });
             scope.$watch(function() {
                 return parentCtrl.versions
             } , function(n,o) {
