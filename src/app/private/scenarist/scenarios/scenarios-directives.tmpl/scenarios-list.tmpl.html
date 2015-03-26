@@ -1,0 +1,2 @@
+<h3>Your active scenarios</h3>
+<div class="card card--big card--trainer-session" ng-repeat="scenario in scenarios | orderBy:'createdTime':true" ng:class="{true:'card--block', false:'card--inline'}[scenario.length <= 2]" scenario="scenario" scenario-card></div>
