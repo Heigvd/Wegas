@@ -5,13 +5,15 @@ angular.module('private.trainer.sessions.users.directives', [
     	templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-index.tmpl.html',
     	controller : "TrainerSessionsUsersIndexCtrl as usersIndexCtrl"
   	};
-}).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel){
+}).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($scope, $stateParams, SessionsModel){
 	var ctrl = this;
     ctrl.session = {},
+
     ctrl.playersViewActived = true;
     SessionsModel.getManagedSession($stateParams.id).then(function(session){
         ctrl.session = session;
     });
+
     ctrl.updateSession = function(){
         SessionsModel.getManagedSession($stateParams.id).then(function(session){
             ctrl.session = session;

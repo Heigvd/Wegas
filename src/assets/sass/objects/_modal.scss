@@ -18,6 +18,11 @@
 		opacity:1;
 		transition:.5s;
 	}
+
+	.modal__header{
+		border-bottom:solid 1px $border;
+		
+	}
 }
 
 .shadow{
