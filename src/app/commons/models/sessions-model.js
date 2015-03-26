@@ -18,26 +18,6 @@ angular.module('wegas.models.sessions', [])
             managedSessions = [];
             $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
                 data.forEach(function(session){
-                    var defaultIcon = {
-                        color:"orange", 
-                        name: "gamepad"
-                    },
-                    iconInfos = session.properties.iconUri;
-                    if(iconInfos == null || iconInfos == ""){
-                        session.icon = defaultIcon;
-                    }else{
-                        var infos = iconInfos.split("_");
-                        if(infos.length == 3){
-                            if(infos[0] == "ICON"){
-                                session.icon = {
-                                    color: infos[1], 
-                                    name: infos[2]
-                                };
-                            }
-                        }else{
-                            session.icon = defaultIcon; 
-                        }
-                    }
                     // Si la session est en team.
                     if(!session.properties.freeForAll){
                         var teams = session.teams;

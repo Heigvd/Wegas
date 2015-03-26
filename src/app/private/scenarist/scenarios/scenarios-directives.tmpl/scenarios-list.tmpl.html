@@ -1,9 +1,6 @@
 <h3>Your active scenarios</h3>
-<div class="card card--flat card--big" ng-repeat="scenario in scenarios" ng:class="{true:'card--block', false:'card--inline'}[scenario.length <= 2]">
-  <div class="card__illustration illustration illustration--big illustration--icon illustration--{{scenario.icon.color}}">
-    <i class="fa fa-{{scenario.icon.name}}"></i>
-  </div>
-
+<div class="card card--big card--scenario" ng-repeat="scenario in scenarios | orderBy:'createdTime':true" ng:class="{true:'card--block', false:'card--inline'}[scenario.length <= 2]">
+  <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{scenario.properties.iconUri}}" illustration-editable></div>
   <div class="card__description card__description--one-line">
     <p class="card__description__date">{{scenario.createdTime | date:"dd.MM.yyyy"}}</p>
     <h4 class="card__description__titre">{{scenario.name}}</h4>

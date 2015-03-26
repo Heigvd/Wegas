@@ -3,6 +3,7 @@ angular.module('Wegas', [
     'ui.router',
     'ngAnimate',
     'wegas.service.auth',
+    'wegas.directives.illustrations',
     'wegas.behaviours.tools',
     'public',
     'private'
