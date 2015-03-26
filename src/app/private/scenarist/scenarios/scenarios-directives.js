@@ -14,6 +14,16 @@ angular.module('private.scenarist.scenarios.directives', [
                 ctrl.scenarios = scenarios;
             });
         };
+        ctrl.editName = function(scenario) {
+            ScenariosModel.updateScenario(scenario).then(function(data) {
+                ctrl.updateScenario();
+            });
+        };
+        ctrl.editComments = function(scenario) {
+            ScenariosModel.updateScenario(scenario).then(function(data) {
+                ctrl.updateScenario();
+            });
+        };
     }
   };
 })
@@ -64,4 +74,57 @@ angular.module('private.scenarist.scenarios.directives', [
         });
     }
   };
+})
+.directive('scenarioCard', function() {
+    return {
+        templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-card.tmpl.html',
+        restrict: 'A',
+        require: "^scenaristScenariosIndex",
+        scope: {
+           scenario: '='
+        },
+        link : function(scope, element, attrs, parentCtrl){
+            // Private function
+            var resetScenarioToSet = function(){
+                scope.copy = scope.scenario;
+            }
+            scope.copy = scope.scenario;
+
+            // Public parameters
+            scope.editingName = false;
+            scope.editingComments = false;
+            resetScenarioToSet();
+
+            // Public function
+            scope.toogleEditingName = function(){
+                if(scope.editingComments){
+                    scope.toogleEditingComments();
+                }
+                scope.editingName = (!scope.editingName);
+                resetScenarioToSet();
+            };
+
+            // Public function
+            scope.editName = function(){
+                parentCtrl.editName(scope.copy);
+                scope.toogleEditingName();
+            };
+
+            // Public function
+            scope.toogleEditingComments = function(){
+                if(scope.editingName){
+                    scope.toogleEditingName();
+                }
+                scope.editingComments = (!scope.editingComments);
+                resetScenarioToSet();
+            };
+
+            // Public function
+            scope.editComments = function(){
+                parentCtrl.editComments(scope.copy);
+                scope.toogleEditingComments();
+            };
+
+        }
+    }
 });
