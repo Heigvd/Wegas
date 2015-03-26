@@ -1,5 +1,12 @@
+<div class="modal__header">
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{usersIndexCtrl.session.properties.iconUri}}"></div>
+	<h5 class="modal__title">{{usersIndexCtrl.session.name}}</h5>
+	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+   		<span class="button__label">Close</span>
+	</a>
+</div>
+<!--
 <div class="view view--sessions-users-new view--bottom">
-	<!-- Display à améliorer -->
 	<div class="view__users-tabs">
 	   	<a class="button button--medium button--default" ng-class="{'button--default': !usersIndexCtrl.playersViewActived, 'button--info': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">
 	   		<span class="button__label">Players</span>
@@ -24,4 +31,4 @@
 		<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
 		<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
 	</div>
-</div>
+</div>-->
