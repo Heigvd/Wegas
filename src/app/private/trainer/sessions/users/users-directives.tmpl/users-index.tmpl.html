@@ -6,9 +6,7 @@
 	<div class="view__users-team" ng-repeat="team in usersIndexCtrl.session.teams">
 		<h4>Group {{team.id}}</h4>
 		<div class="card card--medium card--users" ng-repeat="player in team.players">
-			<div class="card__illustration illustration illustration--medium illustration--icon illustration--grey">
-			    <i class="fa fa-user"></i>
-			</div>
+			<div class="card__illustration illustration illustration--icon illustration--medium" illustration="ICON_grey_user"></div>
 			<div class="card__description card__description--one-line">
 			    <h4 class="card__description__titre">{{player.name}}</h4>
 			</div>
