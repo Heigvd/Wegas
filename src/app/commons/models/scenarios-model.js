@@ -1,12 +1,5 @@
 'use strict';
 angular.module('wegas.models.scenarios', [])
-  .controller('tutu', function() {
-
-    var scenario = ScenariosModel.findScenario(123);
-    PermissionModel.scenarioId = scenario.id;
-    scope.permissions = PermissionModel.getPermissions();
-
-  })
   .service('PermissionModel', function($http, $q) {
     var model = this;
 
