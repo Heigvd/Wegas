@@ -88,6 +88,15 @@
         }
     }
 
+    &.view--history-download {
+        p {
+            @include make-xs-column(6);
+            @include make-md-column(12);
+            button {
+                width: 100%;
+            }
+        }
+    }
 
 
     &.view--new-session,
