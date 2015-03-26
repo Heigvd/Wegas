@@ -12,7 +12,8 @@ $buttons-icon : (
     (workspaces, $fa-var-th),
     (player, $fa-var-gamepad),
     (trainer, $fa-var-tachometer),
-    (scenarist, $fa-var-magic)
+    (scenarist, $fa-var-magic),
+    (add, $fa-var-plus-circle)
 );
 
 %button--with-icon{
