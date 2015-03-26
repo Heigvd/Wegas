@@ -1,87 +1,124 @@
 'use strict';
 angular.module('wegas.models.sessions', [])
-.service('SessionsModel', function ($http, $q, Auth) {
-
+.service('SessionsModel', function ($http, $q, $interval, Auth) {
+    /* Namespace for model accessibility. */
     var model = this,
+    /* Caches for data */
     managedSessions = null,
     playedSessions = null;
-
-    var findSession = function(sessions, id){
+    /* Tools to prevent asynchronous error. */
+    managedSessionsLoading = false,
+    waitManagedSessions = null,
+    
+    /* Return a session in a sessions cache. */
+    findSession = function(sessions, id){
         return _.find(sessions, function (s) { return s.id == id; });
-    }
-    /* Get all managed sessions */
-    model.getManagedSessions = function () {
-        var deferred = $q.defer();
-        if(managedSessions != null){
-            deferred.resolve(managedSessions);
-        }else{
-            managedSessions = [];
-            $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
-                data.forEach(function(session){
-                    // Si la session est en team.
-                    if(!session.properties.freeForAll){
-                        var teams = session.teams;
-                        // Pour chaque team.
-                        teams.forEach(function(team){
-                            // Contrôle si il s'agit d'une debug team.
-                            if(team["@class"] == "DebugTeam"){
-                                // Enlève la debug team de la liste des teams.
-                                session.teams = _.without(session.teams, _.findWhere(session.teams, {id: team.id}));
-                            }
-                        });
-                    // Si la session est en individuel.
-                    }else{
-                        var teams = session.teams,
-                            players = [];
-                        // Pour chaque teams.
-                        teams.forEach(function(team){
-                            // Contrôle que la team n'est pas une debug team.
-                            if(team["@class"] != "DebugTeam"){
-                                // Pour chaques players.
-                                team.players.forEach(function(player){
-                                    // Ajoute le player à la liste des joueurs.
-                                    players.push(player);
-                                });
-                            }
-                        });
-                        // Ajoute la liste des joueurs à la session. 
-                        session.players = players;
-                        // Enlève la liste des teams à la session.
-                        delete session.teams;
+    },
+    /* Format players in a list, individualy or grouped by team. */ 
+    formatPlayers = function(data){
+        data.forEach(function(session){
+            if(!session.properties.freeForAll){
+                var teams = session.teams;
+                teams.forEach(function(team){
+                    if(team["@class"] == "DebugTeam"){
+                        session.teams = _.without(session.teams, _.findWhere(session.teams, {id: team.id}));
                     }
                 });
-                managedSessions = data;
-                deferred.resolve(managedSessions);
-            }).error(function(data){
-                managedSessions = [];
-                managedSessions.push({
-                    id: 1,
-                    name: "lorem ipsum",
-                    createdTime: "17.03.2015",
-                    comments: "no comment"
+            }else{
+                var teams = session.teams,
+                    players = [];
+                teams.forEach(function(team){
+                    if(team["@class"] != "DebugTeam"){
+                        team.players.forEach(function(player){
+                            players.push(player);
+                        });
+                    }
                 });
+                session.players = players;
+                delete session.teams;
+            }
+        });
+        return data;
+    },
+
+    /* Call the REST service for getting managed sessions. */
+    cacheManagedSessions = function () {
+        var deferred = $q.defer();
+        console.log("Load HTTP");
+        $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
+            data = formatPlayers(data);
+            managedSessions = data;
+            console.log("Data loadded");
+            deferred.resolve(managedSessions);
+        }).error(function(data){
+            managedSessions = [];
+            deferred.resolve(managedSessions);
+        });
+        return deferred.promise;
+    },
+
+    /* Stop waiting for simultanate sessions asking. */
+    stopWaiting = function(waitFunction){
+        $interval.cancel(waitFunction);
+    },
+
+    /* Do wait during data loading. */ 
+    waitForManagedSessions = function(){
+        var deferred = $q.defer();
+        waitManagedSessions = $interval(function() {
+            if(!managedSessionsLoading){
+                stopWaiting(waitManagedSessions);
+                deferred.resolve(true)
+            }   
+        }, 500);
+        return deferred.promise;
+    };
+
+    /* Ask for all managed sessions. */
+    model.getManagedSessions = function(){
+        var deferred = $q.defer();
+        if(managedSessionsLoading){
+            waitForManagedSessions.then(function(){
                 deferred.resolve(managedSessions);
             });
+        }else{
+            if(managedSessions != null){
+                deferred.resolve(managedSessions);
+            }else{
+                managedSessionsLoading = true;
+                cacheManagedSessions().then(function(){
+                    deferred.resolve(managedSessions);
+                    managedSessionsLoading = false;
+                });
+            }
         }
         return deferred.promise;
     };
 
-    /* Return a specific session based on her id */
+    /* Ask for one managed session. */
     model.getManagedSession = function(id){
-        var deferred = $q.defer();
-        if (managedSessions == null) {
-            model.getManagedSessions().then(function(data){
-                var session = findSession(managedSessions, id);
+        var deferred = $q.defer(),
+            session;
+        if(managedSessionsLoading){
+            waitForManagedSessions().then(function(){
+                session = findSession(managedSessions, id);
                 deferred.resolve(session);
             });
-        } else {
-            var session = findSession(managedSessions, id);
-            deferred.resolve(session);
+        }else{
+            if(managedSessions == null) {
+                model.getManagedSessions().then(function(){
+                    session = findSession(managedSessions, id);
+                    deferred.resolve(managedSessions);
+                });
+            }else{
+                session = findSession(managedSessions, id);
+                deferred.resolve(session);
+            }
         }
         return deferred.promise;
     };
 
-    /* Crée une nouvelle session managée */
+    /* Create a new session. */
     model.createManagedSession = function(sessionName, scenarioId){
         var deferred = $q.defer();
         Auth.getAuthenticatedUser().then(function(user){
@@ -94,17 +131,8 @@ angular.module('wegas.models.sessions', [])
                 };
                 $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id, newSession).success(function(data){
                     console.log(data);
-                    managedSessions.push({
-                        id : data.id,
-                        name : data.name,
-                        createdTime : data.createdTime,
-                        comments : "",
-                        icon : {
-                            color: "orange", 
-                            name: "gamepad"
-                        }
-                    });
-                    deferred.resolve(managedSessions[data.id]);
+                    managedSessions.push(data);
+                    deferred.resolve(data);
                 }).error(function(data){
                     /* TODO - Improve error mgt */
                     deferred.resolve(null);
@@ -116,6 +144,7 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
+    /* Update a name of a session. */ 
     model.updateNameSession = function(sessionToSet){
         var deferred = $q.defer();
         var sessionBeforeChange = findSession(managedSessions, sessionToSet.id);
@@ -130,6 +159,7 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
+    /* Update the comment of a session. */ 
     model.updateCommentsSession = function(sessionToSet){
         var deferred = $q.defer();
         var sessionBeforeChange = findSession(managedSessions, sessionToSet.id);
@@ -169,7 +199,7 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
-    /* Retourne la session jouée correspondant à l'id, undefined sinon. */
+    /* Get a played session form id, undefined otherwise. */
     model.getPlayedSession = function(id){
         var deferred = $q.defer();
         if(playedSessions == null){
@@ -184,6 +214,7 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
+    /* Join a session for current player */ 
     model.joinSession = function (token) {
         var deferred = $q.defer();
 
@@ -211,6 +242,7 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     }
 
+    /* Remove data from sessions caches */
     model.clearCache = function(){
         managedSessions = null;
         playedSessions = null;
