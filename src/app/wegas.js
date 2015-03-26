@@ -2,6 +2,7 @@ var ServiceURL = "/api/";
 angular.module('Wegas', [
     'ui.router',
     'ngAnimate',
+    'angularModalService',
     'wegas.service.auth',
     'wegas.directives.illustrations',
     'wegas.behaviours.tools',
