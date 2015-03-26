@@ -12,10 +12,7 @@
     "angular": "~1.3.4",
     "underscore": "~1.8.2",
     "angular-mass-autocomplete": "~0.2.3",
-<<<<<<< HEAD
     "angular-loading-bar": "~0.7.1",
-=======
->>>>>>> origin/master
     "angular-modal-service": "~0.6.6"
   },
   "devDependencies": {
