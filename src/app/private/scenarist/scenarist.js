@@ -1,7 +1,8 @@
 angular.module('private.scenarist', [
     'private.scenarist.sessions',
     'private.scenarist.scenarios',
-    'private.scenarist.coscenarists'
+    'private.scenarist.coscenarists',
+    'private.scenarist.history'
 
 ])
 .config(function ($stateProvider) {

@@ -21,6 +21,7 @@
     &:hover &:active{
         background-color:darken($default-color-button, 15%);
         text-decoration: none;
+        cursor: pointer;
     }
 
     // Affichage du label par défaut.
@@ -28,6 +29,10 @@
         display:block;
         color:$white;
         text-decoration: none;
+        &:hover {
+            text-decoration: none;
+            cursor: pointer;
+        }
     }
 
     // Cache le label
@@ -70,7 +75,7 @@
 
             }
         }
-    } 
+    }
 
     // Montre le label en hover à droite
     &.button--label-hover-right{
@@ -85,11 +90,11 @@
             right:$btn-default-size + $btn-default-size/8;
             text-align: right;
         }
-    } 
+    }
 
     // Modifie la couleur selon le type de bouton (Default, Info, Primary, Success, Warning, Danger)
     @each $button-type in $buttons-types{
-        $type-name : nth($button-type, 1); 
+        $type-name : nth($button-type, 1);
         $type-color : nth($button-type, 2);
 
         &.button--#{$type-name}{
@@ -168,9 +173,9 @@
                         padding:$size-pixel/3 $size-pixel/4;
                     }
                 }
-            } 
+            }
             &.button--label-hover-right{
-                .button__label{                     
+                .button__label{
                     left:$size-pixel + $size-pixel/8;
                 }
             }
@@ -180,7 +185,7 @@
                     right:$size-pixel + $size-pixel/8;
                     text-align: right;
                 }
-            } 
+            }
         }
     }
 
@@ -188,7 +193,7 @@
     @each $button-icon in $buttons-icon{
         $icon-name : nth($button-icon, 1);
         $icon-content : nth($button-icon, 2);
-    
+
         &.button--#{$icon-name}{
             @extend %button--with-icon;
             &:before{
@@ -202,7 +207,7 @@
         border-radius:50%;
     }
 
-    // Arrondi les angles du bouton. 
+    // Arrondi les angles du bouton.
     &.button--round-square{
         border-radius:6px;
     }

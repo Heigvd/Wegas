@@ -88,11 +88,21 @@
         }
     }
 
+    &.view--history-download {
+        p {
+            @include make-xs-column(6);
+            @include make-md-column(12);
+            button {
+                width: 100%;
+            }
+        }
+    }
 
 
     &.view--new-session,
     &.view--join-session,
-    &.view--create-scenario
+    &.view--create-scenario,
+    &.view--history-download
     {
         @include make-xs-column(12);
         @include make-md-column(4);
@@ -105,7 +115,8 @@
 
 
     &.view--sessions-list,
-    &.view--scenarios-list {
+    &.view--scenarios-list,
+    &.view--history-list {
         @include make-xs-column(12);
         @include make-md-column(8);
         height:100%;
