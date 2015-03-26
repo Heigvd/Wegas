@@ -1,20 +1,27 @@
 <div class="view view--sessions-users-new view--bottom">
-   	<h3>{{usersIndexCtrl.session.name}}</h3>
+	<!-- Display à améliorer -->
+	<div class="view__users-tabs">
+	   	<a class="button button--medium button--default" ng-class="{'button--default': !usersIndexCtrl.playersViewActived, 'button--info': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">
+	   		<span class="button__label">Players</span>
+	    </a> 
+	   	<a class="button button--medium"  ng-class="{'button--default': usersIndexCtrl.playersViewActived, 'button--info': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">
+	   		<span class="button__label">Trainers</span>
+	    </a> 
+    </div>
+    <div ng-if="!usersIndexCtrl.playersViewActived" class="view__users-add">
+		<h3>Add trainer</h3>
+    </div>
+    <div ng-if="usersIndexCtrl.playersViewActived" class="view__users-add">
+		<h3>Add player</h3>
+    </div>
 </div>
 <div class="view view--sessions-users-list view--middle">
-	<h3>Player of the session</h3>
-	<div class="view__users-team" ng-repeat="team in usersIndexCtrl.session.teams">
-		<h4>Group {{team.id}}</h4>
-		<div class="card card--medium card--users" ng-repeat="player in team.players">
-			<div class="card__illustration illustration illustration--icon illustration--medium" illustration="ICON_grey_user"></div>
-			<div class="card__description card__description--one-line">
-			    <h4 class="card__description__titre">{{player.name}}</h4>
-			</div>
-			<div class="card__actions">
-			    <a class="button button--medium button--round button--danger-reverse button--label-off button--archive" title="Archive session" href="#">
-			      <span class="button__label">Remove player</span>
-			    </a>   
-			</div>
-		</div>
+	<div ng-if="!usersIndexCtrl.playersViewActived"class="view view__players">
+		<h3>Trainers - <em>{{usersIndexCtrl.session.name}}</em></h3>
+	</div>
+	<div ng-if="usersIndexCtrl.playersViewActived"class="view view__players">
+		<h3>Players - <em>{{usersIndexCtrl.session.name}}</em></h3>
+		<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
+		<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
 	</div>
 </div>

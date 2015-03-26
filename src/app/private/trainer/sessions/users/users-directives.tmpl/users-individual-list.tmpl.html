@@ -1,0 +1,13 @@
+<div class="card card--medium card--users" ng-repeat="player in players">
+	<div class="card__illustration illustration illustration--medium illustration--icon illustration--grey">
+	    <i class="fa fa-user"></i>
+	</div>
+	<div class="card__description card__description--one-line">
+	    <h4 class="card__description__titre">{{player.name}}</h4>
+	</div>
+	<div class="card__actions">
+	    <a class="button button--medium button--round button--danger-reverse button--label-off button--archive" title="Archive session" href="#">
+	      <span class="button__label">Remove player</span>
+	    </a>   
+	</div>
+</div>
