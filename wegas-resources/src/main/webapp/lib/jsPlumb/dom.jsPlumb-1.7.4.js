@@ -1230,7 +1230,7 @@
 
  http://mrsharpoblunto.github.io/foswig.js/
 
- copyright 2014 jsPlumb
+ copyright 2015 jsPlumb
  */
 
 ;(function() {
@@ -1279,6 +1279,8 @@
             }
             return rv;
         })(),
+        DEFAULT_GRID_X = 50,
+        DEFAULT_GRID_Y = 50,
         isIELT9 = iev > -1 && iev < 9,
         _pl = function(e) {
             if (isIELT9) {
@@ -1398,12 +1400,38 @@
             scroll = this.params.scroll,
             _multipleDrop = params.multipleDrop !== false;
 
+        var snapThreshold = params.snapThreshold || 5,
+            _snap = function(pos, x, y, thresholdX, thresholdY) {
+                thresholdX = thresholdX || snapThreshold;
+                thresholdY = thresholdY || snapThreshold;
+                var _dx = Math.floor(pos[0] / x),
+                    _dxl = x * _dx,
+                    _dxt = _dxl + x,
+                    _x = Math.abs(pos[0] - _dxl) <= thresholdX ? _dxl : Math.abs(_dxt - pos[0]) <= thresholdX ? _dxt : pos[0];
+
+                var _dy = Math.floor(pos[1] / y),
+                    _dyl = y * _dy,
+                    _dyt = _dyl + y,
+                    _y = Math.abs(pos[1] - _dyl) <= thresholdY ? _dyl : Math.abs(_dyt - pos[1]) <= thresholdY ? _dyt : pos[1];
+
+                return [ _x, _y];
+            };
+
         this.toGrid = function(pos) {
-            return this.params.grid == null ? pos :
-                [
-                        this.params.grid[0] * Math.floor(pos[0] / this.params.grid[0]),
-                        this.params.grid[1] * Math.floor(pos[1] / this.params.grid[1])
-                ];
+            if (this.params.grid == null) {
+                return pos;
+            }
+            else {
+                return _snap(pos, this.params.grid[0], this.params.grid[1]);
+            }
+        };
+
+        this.snap = function(x, y) {
+            if (dragEl == null) return;
+            x = x || (this.params.grid ? this.params.grid[0] : DEFAULT_GRID_X);
+            y = y || (this.params.grid ? this.params.grid[1] : DEFAULT_GRID_Y);
+            var p = this.params.getPosition(dragEl);
+            this.params.setPosition(dragEl, _snap(p, x, y, x, y));
         };
 
         this.constrain = typeof this.params.constrain === "function" ? this.params.constrain  : (this.params.constrain || this.params.containment) ? function(pos) {
@@ -1506,7 +1534,6 @@
                         this.mark();
                         moving = true;
                     }
-
                 }
 
                 // it is possible that the start event caused the drag to be aborted. So we check
@@ -1529,7 +1556,6 @@
                 this.params.unbind(document, "mousemove", this.moveListener);
                 this.params.unbind(document, "mouseup", this.upListener);
                 this.params.removeClass(document.body, css.noSelect);
-                this.params.removeClass(dragEl, this.params.dragClass || css.drag);
                 this.unmark(e);
                 k.unmarkSelection(this, e);
                 this.stop(e);
@@ -1588,6 +1614,7 @@
         };
         this.unmark = function(e) {
             _setDroppablesActive(matchingDroppables, false, true, this);
+            this.params.removeClass(dragEl, this.params.dragClass || css.drag);
             matchingDroppables.length = 0;
             for (var i = 0; i < intersectingDroppables.length; i++) {
                 var retVal = intersectingDroppables[i].drop(this, e);
@@ -1917,6 +1944,12 @@
             }.bind(this);
         }.bind(this));
 
+        this.snapToGrid = function(x, y) {
+            for (var s in this._dragsByScope) {
+                _foreach(this._dragsByScope[s], function(d) { d.snap(x, y); });
+            }
+        };
+
         this.getDragsForScope = function(s) { return this._dragsByScope[s]; };
         this.getDropsForScope = function(s) { return this._dropsByScope[s]; };
 
@@ -1947,13 +1980,13 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
  * This file contains utility functions that run in both browsers and headless.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  *
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -2407,13 +2440,13 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
- * This file contains utility functions that run browsers only.
+ * This file contains utility functions that run in browsers only.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  *
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -2480,7 +2513,7 @@
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
@@ -2931,7 +2964,7 @@
                 return el.currentStyle[prop];
             }
         },
-        getOffset:function(el, _instance, relativeToRoot) {
+        getOffsetOld:function(el, _instance, relativeToRoot) {
             el = jsPlumb.getDOMElement(el);
             var container = _instance.getContainer();
             var out = {
@@ -2943,6 +2976,43 @@
             while (op != null) {
                 out.left += op.offsetLeft;
                 out.top += op.offsetTop;
+                op = relativeToRoot ? op.offsetParent :
+                        op.offsetParent == container ? null : op.offsetParent;
+            }
+
+            // if container is scrolled and the element (or its offset parent) is not absolute or fixed, adjust accordingly.
+            if (container != null && !relativeToRoot && (container.scrollTop > 0 || container.scrollLeft > 0)) {
+                var pp = el.offsetParent != null ? this.getStyle(el.offsetParent, "position") : "static",
+                    p = this.getStyle(el, "position");
+                if (p !== "absolute" && p !== "fixed" && pp !== "absolute" && pp != "fixed") {
+                    out.left -= container.scrollLeft;
+                    out.top -= container.scrollTop;
+                }
+            }
+            return out;
+        },
+        getOffset:function(el, _instance, relativeToRoot) {
+            el = jsPlumb.getDOMElement(el);
+            var container = _instance.getContainer();
+            var out = {
+                    left: el.offsetLeft,
+                    top: el.offsetTop
+                },
+                op = (relativeToRoot  || (container != null && el.offsetParent != container)) ?  el.offsetParent : null,
+                _maybeAdjustScroll = function(offsetParent) {
+                    if (offsetParent != null && (offsetParent.scrollTop > 0 || offsetParent.scrollLeft > 0)) {
+                        var p = this.getStyle(el, "position");
+                        if (p !== "fixed") {
+                            out.left -= offsetParent.scrollLeft;
+                            out.top -= offsetParent.scrollTop;
+                        }
+                    }
+                }.bind(this);
+
+            while (op != null) {
+                out.left += op.offsetLeft;
+                out.top += op.offsetTop;
+                _maybeAdjustScroll(op);
                 op = relativeToRoot ? op.offsetParent :
                         op.offsetParent == container ? null : op.offsetParent;
             }
@@ -3038,13 +3108,13 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
  * This file contains the core code.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  * 
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -3055,11 +3125,12 @@
 
     "use strict";
 
+    var root = this;
     var connectorTypes = [], rendererTypes = ["svg", "vml"];
 
-    var _ju = jsPlumbUtil,
+    var _ju = root.jsPlumbUtil,
         _getOffset = function (el, _instance, relativeToRoot) {
-            return jsPlumbAdapter.getOffset(el, _instance, relativeToRoot);
+            return root.jsPlumbAdapter.getOffset(el, _instance, relativeToRoot);
         },
 
         /**
@@ -5649,18 +5720,17 @@
             return _currentInstance;
         };
 
-        this.revalidate = function (el) {
-            var elId = _currentInstance.getId(el);
-            _currentInstance.updateOffset({ elId: elId, recalc: true });
+        this.revalidate = function (el, timestamp, isIdAlready) {
+            var elId = isIdAlready ? el : _currentInstance.getId(el);
+            _currentInstance.updateOffset({ elId: elId, recalc: true, timestamp:timestamp });
             return _currentInstance.repaint(el);
         };
 
         // repaint every endpoint and connection.
-        this.repaintEverything = function (clearEdits) {
+        this.repaintEverything = function () {
             // TODO this timestamp causes continuous anchors to not repaint properly.
             // fix this. do not just take out the timestamp. it runs a lot faster with
             // the timestamp included.
-            //var timestamp = null;
             var timestamp = _timestamp(), elId;
 
             for (elId in endpointsByElement) {
@@ -5668,8 +5738,9 @@
             }
 
             for (elId in endpointsByElement) {
-                _draw(elId, null, timestamp, clearEdits);
+                _draw(elId, null, timestamp);
             }
+
             return this;
         };
 
@@ -6034,9 +6105,28 @@
 
 // --------------------- end static instance + AMD registration -------------------------------------------		
 
-})();
+}).call(this);
 
+/*
+ * jsPlumb
+ *
+ * Title:jsPlumb 1.7.4
+ *
+ * Provides a way to visually connect elements on an HTML page, using SVG or VML.
+ *
+ * This file contains code for components that support overlays.
+ *
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
+ *
+ * http://jsplumbtoolkit.com
+ * http://github.com/sporritt/jsplumb
+ *
+ * Dual licensed under the MIT and GPL2 licenses.
+ */
 ;(function() {
+
+    "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
 
     // ------------------------------ BEGIN OverlayCapablejsPlumbUIComponent --------------------------------------------
 
@@ -6054,26 +6144,26 @@
                 },
                 mergedParams = jsPlumb.extend(_params, params);
 
-            return new jsPlumb.Overlays[component._jsPlumb.instance.getRenderMode()].Label(mergedParams);
+            return new _jp.Overlays[component._jsPlumb.instance.getRenderMode()].Label(mergedParams);
         },
         _processOverlay = function (component, o) {
             var _newOverlay = null;
-            if (jsPlumbUtil.isArray(o)) {	// this is for the shorthand ["Arrow", { width:50 }] syntax
+            if (_ju.isArray(o)) {	// this is for the shorthand ["Arrow", { width:50 }] syntax
                 // there's also a three arg version:
                 // ["Arrow", { width:50 }, {location:0.7}]
                 // which merges the 3rd arg into the 2nd.
                 var type = o[0],
                 // make a copy of the object so as not to mess up anyone else's reference...
-                    p = jsPlumb.extend({component: component, _jsPlumb: component._jsPlumb.instance}, o[1]);
-                if (o.length == 3) jsPlumb.extend(p, o[2]);
-                _newOverlay = new jsPlumb.Overlays[component._jsPlumb.instance.getRenderMode()][type](p);
+                    p = _jp.extend({component: component, _jsPlumb: component._jsPlumb.instance}, o[1]);
+                if (o.length == 3) _jp.extend(p, o[2]);
+                _newOverlay = new _jp.Overlays[component._jsPlumb.instance.getRenderMode()][type](p);
             } else if (o.constructor == String) {
-                _newOverlay = new jsPlumb.Overlays[component._jsPlumb.instance.getRenderMode()][o]({component: component, _jsPlumb: component._jsPlumb.instance});
+                _newOverlay = new _jp.Overlays[component._jsPlumb.instance.getRenderMode()][o]({component: component, _jsPlumb: component._jsPlumb.instance});
             } else {
                 _newOverlay = o;
             }
 
-            _newOverlay.id = _newOverlay.id || jsPlumbUtil.uuid();
+            _newOverlay.id = _newOverlay.id || _ju.uuid();
             component.cacheTypeItem("overlay", _newOverlay, _newOverlay.id);
             //component._jsPlumb.overlays.push(_newOverlay);
             component._jsPlumb.overlays[_newOverlay.id] = _newOverlay;
@@ -6081,7 +6171,7 @@
             return _newOverlay;
         };
 
-    jsPlumb.OverlayCapableJsPlumbUIComponent = function (params) {
+    _jp.OverlayCapableJsPlumbUIComponent = function (params) {
 
         jsPlumbUIComponent.apply(this, arguments);
         this._jsPlumb.overlays = {};
@@ -6104,7 +6194,7 @@
         };
     };
 
-    jsPlumb.OverlayCapableJsPlumbUIComponent.applyType = function (component, t) {
+    _jp.OverlayCapableJsPlumbUIComponent.applyType = function (component, t) {
         if (t.overlays) {
             // loop through the ones in the type. if already present on the component,
             // dont remove or re-add.
@@ -6141,7 +6231,7 @@
         }
     };
 
-    jsPlumbUtil.extend(jsPlumb.OverlayCapableJsPlumbUIComponent, jsPlumbUIComponent, {
+    _ju.extend(_jp.OverlayCapableJsPlumbUIComponent, jsPlumbUIComponent, {
 
         setHover: function (hover, ignoreAttachedElements) {
             if (this._jsPlumb && !this._jsPlumb.instance.isConnectionBeingDragged()) {
@@ -6265,17 +6355,17 @@
 
 // ------------------------------ END OverlayCapablejsPlumbUIComponent --------------------------------------------
 
-})();
+}).call(this);
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
  * This file contains the code for Endpoints.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  * 
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -6285,6 +6375,7 @@
 (function () {
 
     "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil, _ja = root.jsPlumbAdapter;
 
     // create the drag handler for a connection
     var _makeConnectionDragHandler = function (placeholder, _jsPlumb) {
@@ -6295,10 +6386,10 @@
                     stopped = false;
                     return true;
                 }
-                var _ui = jsPlumb.getUIPosition(arguments, _jsPlumb.getZoom());
+                var _ui = _jp.getUIPosition(arguments, _jsPlumb.getZoom());
 
                 if (placeholder.element) {
-                    jsPlumbAdapter.setPosition(placeholder.element, _ui);
+                    _ja.setPosition(placeholder.element, _ui);
                     _jsPlumb.repaint(placeholder.element, _ui);
                 }
             },
@@ -6324,7 +6415,7 @@
 
     // create a floating endpoint (for drag connections)
     var _makeFloatingEndpoint = function (paintStyle, referenceAnchor, endpoint, referenceCanvas, sourceElement, _jsPlumb, _newEndpoint, scope) {
-        var floatingAnchor = new jsPlumb.FloatingAnchor({ reference: referenceAnchor, referenceCanvas: referenceCanvas, jsPlumbInstance: _jsPlumb });
+        var floatingAnchor = new _jp.FloatingAnchor({ reference: referenceAnchor, referenceCanvas: referenceCanvas, jsPlumbInstance: _jsPlumb });
         //setting the scope here should not be the way to fix that mootools issue.  it should be fixed by not
         // adding the floating endpoint as a droppable.  that makes more sense anyway!
         return _newEndpoint({ paintStyle: paintStyle, endpoint: endpoint, anchor: floatingAnchor, source: sourceElement, scope: scope });
@@ -6350,30 +6441,29 @@
     };
 
     var findConnectionIndex = function (conn, ep) {
-        return jsPlumbUtil.findWithFunction(ep.connections, function (c) {
+        return _ju.findWithFunction(ep.connections, function (c) {
             return c.id == conn.id;
         });
     };
 
-    jsPlumb.Endpoint = function (params) {
+    _jp.Endpoint = function (params) {
         var _jsPlumb = params._jsPlumb,
-            _gel = jsPlumb.getElementObject,
-            _ju = jsPlumbUtil,
+            _gel = _jp.getElementObject,
             _newConnection = params.newConnection,
             _newEndpoint = params.newEndpoint;
 
         this.idPrefix = "_jsplumb_e_";
         this.defaultLabelLocation = [ 0.5, 0.5 ];
         this.defaultOverlayKeys = ["Overlays", "EndpointOverlays"];
-        jsPlumb.OverlayCapableJsPlumbUIComponent.apply(this, arguments);
+        _jp.OverlayCapableJsPlumbUIComponent.apply(this, arguments);
 
 // TYPE
 
         this.appendToDefaultType({
             connectionType:params.connectionType,
             maxConnections: params.maxConnections == null ? this._jsPlumb.instance.Defaults.MaxConnections : params.maxConnections, // maximum number of connections this endpoint can be the source of.,
-            paintStyle: params.endpointStyle || params.paintStyle || params.style || this._jsPlumb.instance.Defaults.EndpointStyle || jsPlumb.Defaults.EndpointStyle,
-            hoverPaintStyle: params.endpointHoverStyle || params.hoverPaintStyle || this._jsPlumb.instance.Defaults.EndpointHoverStyle || jsPlumb.Defaults.EndpointHoverStyle,
+            paintStyle: params.endpointStyle || params.paintStyle || params.style || this._jsPlumb.instance.Defaults.EndpointStyle || _jp.Defaults.EndpointStyle,
+            hoverPaintStyle: params.endpointHoverStyle || params.hoverPaintStyle || this._jsPlumb.instance.Defaults.EndpointHoverStyle || _jp.Defaults.EndpointHoverStyle,
             connectorStyle: params.connectorStyle,
             connectorHoverStyle: params.connectorHoverStyle,
             connectorClass: params.connectorClass,
@@ -6387,7 +6477,7 @@
 
         this._jsPlumb.enabled = !(params.enabled === false);
         this._jsPlumb.visible = true;
-        this.element = jsPlumb.getDOMElement(params.source);
+        this.element = _jp.getDOMElement(params.source);
         this._jsPlumb.uuid = params.uuid;
         this._jsPlumb.floatingEndpoint = null;
         var inPlaceCopy = null;
@@ -6408,7 +6498,7 @@
             this.removeClass(oldAnchorClass);
             this.addClass(anchorClass);
             // add and remove at the same time to reduce the number of reflows.
-            jsPlumbAdapter.updateClasses(this.element, anchorClass, oldAnchorClass);
+            _ja.updateClasses(this.element, anchorClass, oldAnchorClass);
         }.bind(this);
 
         this.prepareAnchor = function(anchorParams) {
@@ -6460,7 +6550,7 @@
         this.prepareEndpoint = function(ep, typeId) {
             var _e = function (t, p) {
                 var rm = _jsPlumb.getRenderMode();
-                if (jsPlumb.Endpoints[rm][t]) return new jsPlumb.Endpoints[rm][t](p);
+                if (_jp.Endpoints[rm][t]) return new _jp.Endpoints[rm][t](p);
                 if (!_jsPlumb.Defaults.DoNotThrowErrors)
                     throw { msg: "jsPlumb: unknown endpoint type '" + t + "'" };
             };
@@ -6520,7 +6610,7 @@
             this.canvas = this.endpoint.canvas;
         };
 
-        jsPlumb.extend(this, params, typeParameters);
+        _jp.extend(this, params, typeParameters);
 
         this.isSource = params.isSource || false;
         this.isTemporarySource = params.isTemporarySource || false;
@@ -6664,7 +6754,8 @@
                 paintStyle: this.getPaintStyle(),
                 endpoint: params.hideOnDrag ? "Blank" : this.endpoint,
                 _transient: true,
-                scope: this.scope
+                scope: this.scope,
+                reference:this
             });
         };
 
@@ -6713,11 +6804,13 @@
                     this.timestamp = timestamp;
 
                     // paint overlays
-                    for (var i = 0; i < this._jsPlumb.overlays.length; i++) {
-                        var o = this._jsPlumb.overlays[i];
-                        if (o.isVisible()) {
-                            this._jsPlumb.overlayPlacements[i] = o.draw(this.endpoint, this._jsPlumb.paintStyleInUse);
-                            o.paint(this._jsPlumb.overlayPlacements[i]);
+                    for (var i in this._jsPlumb.overlays) {
+                        if (this._jsPlumb.overlays.hasOwnProperty(i)) {
+                            var o = this._jsPlumb.overlays[i];
+                            if (o.isVisible()) {
+                                this._jsPlumb.overlayPlacements[i] = o.draw(this.endpoint, this._jsPlumb.paintStyleInUse);
+                                o.paint(this._jsPlumb.overlayPlacements[i]);
+                            }
                         }
                     }
                 }
@@ -6738,7 +6831,7 @@
 
             // is this a connection source? we make it draggable and have the
             // drag listener maintain a connection with a floating endpoint.
-            if (!draggingInitialised && jsPlumb.isDragSupported(this.element)) {
+            if (!draggingInitialised && _jp.isDragSupported(this.element)) {
                 var placeholderInfo = { id: null, element: null },
                     jpc = null,
                     existingJpc = false,
@@ -6746,9 +6839,9 @@
                     _dragHandler = _makeConnectionDragHandler(placeholderInfo, _jsPlumb),
                     dragOptions = params.dragOptions || {},
                     defaultOpts = {},
-                    startEvent = jsPlumb.dragEvents.start,
-                    stopEvent = jsPlumb.dragEvents.stop,
-                    dragEvent = jsPlumb.dragEvents.drag;
+                    startEvent = _jp.dragEvents.start,
+                    stopEvent = _jp.dragEvents.stop,
+                    dragEvent = _jp.dragEvents.drag;
 
                 var start = function () {
                     // drag might have started on an endpoint that is not actually a source, but which has
@@ -6804,10 +6897,10 @@
                     // TODO merge this code with the code in both Anchor and FloatingAnchor, because it
                     // does the same stuff.
                     var ipcoel = _gel(inPlaceCopy.canvas),
-                        ipco = jsPlumbAdapter.getOffset(ipcoel, this._jsPlumb.instance),
+                        ipco = _ja.getOffset(ipcoel, this._jsPlumb.instance),
                         canvasElement = _gel(this.canvas);
 
-                    jsPlumbAdapter.setPosition(placeholderInfo.element, ipco);
+                    _ja.setPosition(placeholderInfo.element, ipco);
 
                     // when using makeSource and a parent, we first draw the source anchor on the source element, then
                     // move it to the parent.  note that this happens after drawing the placeholder for the
@@ -6981,16 +7074,14 @@
 
                         // although the connection is no longer valid, there are use cases where this is useful.
                         _jsPlumb.fire("connectionDragStop", jpc, originalEvent);
-
                         // tell jsplumb that dragging is finished.
                         _jsPlumb.currentlyDragging = false;
-
                         jpc = null;
                     }
 
                 }.bind(this);
 
-                dragOptions = jsPlumb.extend(defaultOpts, dragOptions);
+                dragOptions = _jp.extend(defaultOpts, dragOptions);
                 dragOptions.scope = this.scope || dragOptions.scope;
                 dragOptions[startEvent] = _ju.wrap(dragOptions[startEvent], start, false);
                 // extracted drag handler function so can be used by makeSource
@@ -7010,7 +7101,7 @@
             }
         };
 
-        var ep = params.endpoint || this._jsPlumb.instance.Defaults.Endpoint || jsPlumb.Defaults.Endpoint;
+        var ep = params.endpoint || this._jsPlumb.instance.Defaults.Endpoint || _jp.Defaults.Endpoint;
         this.setEndpoint(ep, true);
         //params.anchor || this._jsPlumb.instance.Defaults.Anchor || jsPlumb.Defaults.Anchor || "Top"
         var anchorParamsToUse = params.anchor ? params.anchor : params.anchors ? params.anchors : (_jsPlumb.Defaults.Anchor || "Top");
@@ -7029,15 +7120,15 @@
 
         // pulled this out into a function so we can reuse it for the inPlaceCopy canvas; you can now drop detached connections
         // back onto the endpoint you detached it from.
-        var _initDropTarget = function (canvas, forceInit, isTransient, endpoint) {
+        var _initDropTarget = function (canvas, forceInit, isTransient, endpoint, referenceEndpoint) {
 
-            if ((this.isTarget || forceInit) && jsPlumb.isDropSupported(this.element)) {
-                var dropOptions = params.dropOptions || _jsPlumb.Defaults.DropOptions || jsPlumb.Defaults.DropOptions;
-                dropOptions = jsPlumb.extend({}, dropOptions);
+            if ((this.isTarget || forceInit) && _jp.isDropSupported(this.element)) {
+                var dropOptions = params.dropOptions || _jsPlumb.Defaults.DropOptions || _jp.Defaults.DropOptions;
+                dropOptions = _jp.extend({}, dropOptions);
                 dropOptions.scope = dropOptions.scope || this.scope;
-                var dropEvent = jsPlumb.dragEvents.drop,
-                    overEvent = jsPlumb.dragEvents.over,
-                    outEvent = jsPlumb.dragEvents.out,
+                var dropEvent = _jp.dragEvents.drop,
+                    overEvent = _jp.dragEvents.over,
+                    outEvent = _jp.dragEvents.out,
                     _ep = this,
                     drop = _jsPlumb.EndpointDropHandler({
                         getEndpoint: function () {
@@ -7062,19 +7153,20 @@
                         },
                         isDropAllowed: function () {
                             return _ep.isDropAllowed.apply(_ep, arguments);
-                        }
+                        },
+                        reference:referenceEndpoint
                     });
 
                 dropOptions[dropEvent] = _ju.wrap(dropOptions[dropEvent], drop, true);
                 dropOptions[overEvent] = _ju.wrap(dropOptions[overEvent], function () {
-                    var draggable = jsPlumb.getDragObject(arguments),
-                        id = _jsPlumb.getAttribute(jsPlumb.getDOMElement(draggable), "dragId"),
+                    var draggable = _jp.getDragObject(arguments),
+                        id = _jsPlumb.getAttribute(_jp.getDOMElement(draggable), "dragId"),
                         _jpc = _jsPlumb.floatingConnections[id];
 
                     if (_jpc != null) {
                         var idx = _jsPlumb.getFloatingAnchorIndex(_jpc);
                         // here we should fire the 'over' event if we are a target and this is a new connection,
-                        // or we are the same as the floating endpoint.								
+                        // or we are the same as the floating endpoint.
                         var _cont = (this.isTarget && idx !== 0) || (_jpc.suspendedEndpoint && this.referenceEndpoint && this.referenceEndpoint.id == _jpc.suspendedEndpoint.id);
                         if (_cont) {
                             var bb = _jsPlumb.checkCondition("checkDropAllowed", {
@@ -7090,8 +7182,8 @@
                 }.bind(this));
 
                 dropOptions[outEvent] = _ju.wrap(dropOptions[outEvent], function () {
-                    var draggable = jsPlumb.getDragObject(arguments),
-                        id = draggable == null ? null : _jsPlumb.getAttribute(jsPlumb.getDOMElement(draggable), "dragId"),
+                    var draggable = _jp.getDragObject(arguments),
+                        id = draggable == null ? null : _jsPlumb.getAttribute(_jp.getDOMElement(draggable), "dragId"),
                         _jpc = id ? _jsPlumb.floatingConnections[id] : null;
 
                     if (_jpc != null) {
@@ -7112,13 +7204,13 @@
         // Initialise the endpoint's canvas as a drop target. The drop handler will take care of the logic of whether
         // something can actually be dropped.
         if (!this.anchor.isFloating)
-            _initDropTarget(_gel(this.canvas), true, !(params._transient || this.anchor.isFloating), this);
+            _initDropTarget(_gel(this.canvas), true, !(params._transient || this.anchor.isFloating), this, params.reference);
 
 
         return this;
     };
 
-    jsPlumbUtil.extend(jsPlumb.Endpoint, jsPlumb.OverlayCapableJsPlumbUIComponent, {
+    _ju.extend(_jp.Endpoint, _jp.OverlayCapableJsPlumbUIComponent, {
 
         setVisible: function (v, doNotChangeConnections, doNotNotifyOtherEndpoint) {
             this._jsPlumb.visible = v;
@@ -7143,9 +7235,9 @@
             this.setHoverPaintStyle(t.endpointHoverStyle || t.hoverPaintStyle, doNotRepaint);
             if (t.maxConnections != null) this._jsPlumb.maxConnections = t.maxConnections;
             if (t.scope) this.scope = t.scope;
-            jsPlumb.extend(this, t, typeParameters);
+            _jp.extend(this, t, typeParameters);
             if (t.cssClass != null && this.canvas) this._jsPlumb.instance.addClass(this.canvas, t.cssClass);
-            jsPlumb.OverlayCapableJsPlumbUIComponent.applyType(this, t);
+            _jp.OverlayCapableJsPlumbUIComponent.applyType(this, t);
         },
         isEnabled: function () {
             return this._jsPlumb.enabled;
@@ -7155,13 +7247,13 @@
         },
         cleanup: function () {
             var anchorClass = this._jsPlumb.instance.endpointAnchorClassPrefix + (this._jsPlumb.currentAnchorClass ? "_" + this._jsPlumb.currentAnchorClass : "");
-            jsPlumbAdapter.removeClass(this.element, anchorClass);
+            _ja.removeClass(this.element, anchorClass);
             this.anchor = null;
             this.endpoint.cleanup();
             this.endpoint.destroy();
             this.endpoint = null;
             // drag/drop
-            var i = jsPlumb.getElementObject(this.canvas);
+            var i = _jp.getElementObject(this.canvas);
             this._jsPlumb.instance.destroyDraggable(i, "internal");
             this._jsPlumb.instance.destroyDroppable(i, "internal");
         },
@@ -7207,7 +7299,7 @@
             this.anchor.elementId = _elId;
         },
         setReferenceElement: function (_el) {
-            this.element = jsPlumb.getDOMElement(_el);
+            this.element = _jp.getDOMElement(_el);
         },
         setDragAllowedWhenFull: function (allowed) {
             this.dragAllowedWhenFull = allowed;
@@ -7223,7 +7315,7 @@
         }
     });
 
-    jsPlumbInstance.prototype.EndpointDropHandler = function (dhParams) {
+    root.jsPlumbInstance.prototype.EndpointDropHandler = function (dhParams) {
         return function (e) {
 
             var _jsPlumb = dhParams.jsPlumb;
@@ -7247,6 +7339,16 @@
             // if suspended endpoint has been cleaned up, bail.
             if (jpc.suspendedEndpoint && jpc.suspendedEndpoint._jsPlumb == null) return;
 
+            // if this is a drop back where the connection came from, mark it force rettach and
+            // return; the stop handler will reattach. without firing an event.
+            var redrop = jpc.suspendedEndpoint && dhParams.reference && (jpc.suspendedEndpoint.id === dhParams.reference.id);
+            if (redrop) {
+                jpc._forceReattach = true;
+                jpc.setHover(false);
+                if (dhParams.maybeCleanup) dhParams.maybeCleanup(_ep);
+                return;
+            }
+
             // ensure we dont bother trying to drop sources on non-source eps, and same for target.
             var idx = _jsPlumb.getFloatingAnchorIndex(jpc);
             if (idx === 0 && !dhParams.isSource) return;
@@ -7255,17 +7357,6 @@
             var _ep = dhParams.getEndpoint(jpc);
 
             if (dhParams.onDrop) dhParams.onDrop(jpc);
-
-            // if this is a drop back where the connection came from, mark it force rettach and
-            // return; the stop handler will reattach. without firing an event.
-            var redrop = jpc.suspendedEndpoint && (jpc.suspendedEndpoint.id == _ep.id ||
-                _ep.referenceEndpoint && jpc.suspendedEndpoint.id == _ep.referenceEndpoint.id);
-            if (redrop) {
-                jpc._forceReattach = true;
-                jpc.setHover(false);
-                if (dhParams.maybeCleanup) dhParams.maybeCleanup(_ep);
-                return;
-            }
 
             // restore the original scope if necessary (issue 57)
             if (scope) _jsPlumb.setDragScope(draggable, scope);
@@ -7407,18 +7498,18 @@
             _jsPlumb.currentlyDragging = false;
         };
     };
-})();
+}).call(this);
 
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
  * This file contains the code for Connections.
  *
- * Copyright (c) 2010 - 2014 jsPlumb (hello@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  * 
  * http://jsplumbtoolkit.com
  * http://jsplumb.org
@@ -7430,12 +7521,16 @@
 (function () {
 
     "use strict";
+    var root = this,
+        _jp = root.jsPlumb,
+        _ju = root.jsPlumbUtil;
+
 
     var makeConnector = function (_jsPlumb, renderMode, connectorName, connectorArgs, forComponent) {
             if (!_jsPlumb.Defaults.DoNotThrowErrors && jsPlumb.Connectors[renderMode][connectorName] == null)
                 throw { msg: "jsPlumb: unknown connector type '" + connectorName + "'" };
 
-            return new jsPlumb.Connectors[renderMode][connectorName](connectorArgs, forComponent);
+            return new _jp.Connectors[renderMode][connectorName](connectorArgs, forComponent);
         },
         _makeAnchor = function (anchorParams, elementId, _jsPlumb) {
             return (anchorParams) ? _jsPlumb.makeAnchor(anchorParams, elementId, _jsPlumb) : null;
@@ -7448,7 +7543,7 @@
                 else
                     element._jsPlumbConnections[conn.id] = true;
 
-                if (jsPlumbUtil.isEmpty(element._jsPlumbConnections)) {
+                if (_ju.isEmpty(element._jsPlumbConnections)) {
                     _jsPlumb.removeClass(element, _jsPlumb.connectedClass);
                 }
                 else
@@ -7456,8 +7551,8 @@
             }
         };
 
-    jsPlumb.Connection = function (params) {
-        var _newEndpoint = params.newEndpoint, _ju = jsPlumbUtil;
+    _jp.Connection = function (params) {
+        var _newEndpoint = params.newEndpoint;
 
         this.id = params.id;
         this.connector = null;
@@ -7468,15 +7563,15 @@
         // will have that Connection in it. listeners for the jsPlumbConnection event can look for that
         // member and take action if they need to.
         this.previousConnection = params.previousConnection;
-        this.source = jsPlumb.getDOMElement(params.source);
-        this.target = jsPlumb.getDOMElement(params.target);
+        this.source = _jp.getDOMElement(params.source);
+        this.target = _jp.getDOMElement(params.target);
         // sourceEndpoint and targetEndpoint override source/target, if they are present. but 
         // source is not overridden if the Endpoint has declared it is not the final target of a connection;
         // instead we use the source that the Endpoint declares will be the final source element.
         if (params.sourceEndpoint) this.source = params.sourceEndpoint.getElement();
         if (params.targetEndpoint) this.target = params.targetEndpoint.getElement();
 
-        jsPlumb.OverlayCapableJsPlumbUIComponent.apply(this, arguments);
+        _jp.OverlayCapableJsPlumbUIComponent.apply(this, arguments);
 
         this.sourceId = this._jsPlumb.instance.getId(this.source);
         this.targetId = this._jsPlumb.instance.getId(this.target);
@@ -7509,8 +7604,6 @@
         }.bind(this));
 
 // INITIALISATION CODE
-
-        // wrapped the main function to return null if no input given. this lets us cascade defaults properly.
 
         this.makeEndpoint = function (isSource, el, elId, ep) {
             elId = elId || this._jsPlumb.instance.getId(el);
@@ -7595,7 +7688,7 @@
             this._jsPlumb.detachable = detachable === true;
         };
         this.isReattach = function () {
-            return this._jsPlumb.reattach === true;
+            return this._jsPlumb.reattach === true || this.endpoints[0].reattachConnections === true || this.endpoints[1].reattachConnections === true;
         };
         this.setReattach = function (reattach) {
             this._jsPlumb.reattach = reattach === true;
@@ -7617,14 +7710,14 @@
         // on the connection take precedence; then source endpoint params, then
         // finally target endpoint params.
         var _p = jsPlumb.extend({}, this.endpoints[1].getParameters());
-        jsPlumb.extend(_p, this.endpoints[0].getParameters());
-        jsPlumb.extend(_p, this.getParameters());
+        _jp.extend(_p, this.endpoints[0].getParameters());
+        _jp.extend(_p, this.getParameters());
         this.setParameters(_p);
 // END PARAMETERS
 
 // PAINTING
 
-        this.setConnector(this.endpoints[0].connector || this.endpoints[1].connector || params.connector || _jsPlumb.Defaults.Connector || jsPlumb.Defaults.Connector, true);
+        this.setConnector(this.endpoints[0].connector || this.endpoints[1].connector || params.connector || _jsPlumb.Defaults.Connector || _jp.Defaults.Connector, true);
         this.getData = function() { return params.data; };
 
         // the very last thing we do is apply types, if there are any.
@@ -7637,7 +7730,7 @@
 // END PAINTING    
     };
 
-    jsPlumbUtil.extend(jsPlumb.Connection, jsPlumb.OverlayCapableJsPlumbUIComponent, {
+    _ju.extend(_jp.Connection, _jp.OverlayCapableJsPlumbUIComponent, {
         applyType: function (t, doNotRepaint, typeMap) {
 
             // none of these things result in the creation of objects so can be ignored.
@@ -7672,7 +7765,7 @@
                 this.endpoints[1].anchor = _anchors[1];
             }
 
-            jsPlumb.OverlayCapableJsPlumbUIComponent.applyType(this, t);
+            _jp.OverlayCapableJsPlumbUIComponent.applyType(this, t);
         },
         addClass: function (c, informEndpoints) {
             if (informEndpoints) {
@@ -7721,8 +7814,8 @@
         setHover: function (state) {
             if (this.connector && this._jsPlumb && !this._jsPlumb.instance.isConnectionBeingDragged()) {
                 this.connector.setHover(state);
-                jsPlumbAdapter[state ? "addClass" : "removeClass"](this.source, this._jsPlumb.instance.hoverSourceClass);
-                jsPlumbAdapter[state ? "addClass" : "removeClass"](this.target, this._jsPlumb.instance.hoverTargetClass);
+                root.jsPlumbAdapter[state ? "addClass" : "removeClass"](this.source, this._jsPlumb.instance.hoverSourceClass);
+                root.jsPlumbAdapter[state ? "addClass" : "removeClass"](this.target, this._jsPlumb.instance.hoverTargetClass);
             }
         },
         getCost: function () {
@@ -7747,13 +7840,13 @@
                 renderMode = this._jsPlumb.instance.getRenderMode(),
                 connector;
 
-            if (jsPlumbUtil.isString(connectorSpec))
+            if (_ju.isString(connectorSpec))
                 connector = makeConnector(this._jsPlumb.instance, renderMode, connectorSpec, connectorArgs, this); // lets you use a string as shorthand.
-            else if (jsPlumbUtil.isArray(connectorSpec)) {
+            else if (_ju.isArray(connectorSpec)) {
                 if (connectorSpec.length == 1)
                     connector = makeConnector(this._jsPlumb.instance, renderMode, connectorSpec[0], connectorArgs, this);
                 else
-                    connector = makeConnector(this._jsPlumb.instance, renderMode, connectorSpec[0], jsPlumbUtil.merge(connectorSpec[1], connectorArgs), this);
+                    connector = makeConnector(this._jsPlumb.instance, renderMode, connectorSpec[0], _ju.merge(connectorSpec[1], connectorArgs), this);
             }
             if (typeId != null) connector.typeId = typeId;
             return connector;
@@ -7902,9 +7995,9 @@
                 var a = params.anchors ? params.anchors[index] :
                         params.anchor ? params.anchor :
                             _makeAnchor(_jsPlumb.Defaults.Anchors[index], elementId, _jsPlumb) ||
-                            _makeAnchor(jsPlumb.Defaults.Anchors[index], elementId, _jsPlumb) ||
+                            _makeAnchor(_jp.Defaults.Anchors[index], elementId, _jsPlumb) ||
                             _makeAnchor(_jsPlumb.Defaults.Anchor, elementId, _jsPlumb) ||
-                            _makeAnchor(jsPlumb.Defaults.Anchor, elementId, _jsPlumb),
+                            _makeAnchor(_jp.Defaults.Anchor, elementId, _jsPlumb),
                     u = params.uuids ? params.uuids[index] : null;
 
                 e = _newEndpoint({
@@ -7922,12 +8015,12 @@
         }
 
     }); // END Connection class            
-})();
+}).call(this);
 
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -7945,10 +8038,14 @@
 
     "use strict";
 
+    var root = this,
+        _ju = root.jsPlumbUtil,
+        _jp = root.jsPlumb;
+
     //
     // manages anchors for all elements.
     //
-    jsPlumb.AnchorManager = function (params) {
+    _jp.AnchorManager = function (params) {
         var _amEndpoints = {},
             continuousAnchorLocations = {},
             userDefinedContinuousAnchorLocations = {},
@@ -8135,7 +8232,7 @@
                         conn._jsPlumb.instance.removeElement(ep[1].canvas);
                         doRegisterTarget = false;
                     }
-                    jsPlumbUtil.addToList(connectionsByElementId, elId, [c, otherEndpoint, otherAnchor.constructor == jsPlumb.DynamicAnchor]);
+                    _ju.addToList(connectionsByElementId, elId, [c, otherEndpoint, otherAnchor.constructor == _jp.DynamicAnchor]);
                 };
 
             registerConnection(0, ep[0], ep[0].anchor, targetId, conn);
@@ -8148,10 +8245,10 @@
                     var f = function (e) {
                         return e[4] == eId;
                     };
-                    jsPlumbUtil.removeWithFunction(list.top, f);
-                    jsPlumbUtil.removeWithFunction(list.left, f);
-                    jsPlumbUtil.removeWithFunction(list.bottom, f);
-                    jsPlumbUtil.removeWithFunction(list.right, f);
+                    _ju.removeWithFunction(list.top, f);
+                    _ju.removeWithFunction(list.left, f);
+                    _ju.removeWithFunction(list.bottom, f);
+                    _ju.removeWithFunction(list.right, f);
                 }
             })(anchorLists[endpoint.elementId], endpoint.id);
         };
@@ -8161,11 +8258,11 @@
                 targetId = connInfo.targetId,
                 ep = connection.endpoints,
                 removeConnection = function (otherIndex, otherEndpoint, otherAnchor, elId, c) {
-                    if (otherAnchor != null && otherAnchor.constructor == jsPlumb.FloatingAnchor) {
+                    if (otherAnchor != null && otherAnchor.constructor == _jp.FloatingAnchor) {
                         // no-op
                     }
                     else {
-                        jsPlumbUtil.removeWithFunction(connectionsByElementId[elId], function (_c) {
+                        _ju.removeWithFunction(connectionsByElementId[elId], function (_c) {
                             return _c[0].id == c.id;
                         });
                     }
@@ -8182,7 +8279,7 @@
             self.redraw(connection.targetId);
         };
         this.add = function (endpoint, elementId) {
-            jsPlumbUtil.addToList(_amEndpoints, elementId, endpoint);
+            _ju.addToList(_amEndpoints, elementId, endpoint);
         };
         this.changeId = function (oldId, newId) {
             connectionsByElementId[newId] = connectionsByElementId[oldId];
@@ -8197,7 +8294,7 @@
             return _amEndpoints[elementId] || [];
         };
         this.deleteEndpoint = function (endpoint) {
-            jsPlumbUtil.removeWithFunction(_amEndpoints[endpoint.elementId], function (e) {
+            _ju.removeWithFunction(_amEndpoints[endpoint.elementId], function (e) {
                 return e.id == endpoint.id;
             });
             removeEndpointFromAnchorLists(endpoint);
@@ -8231,7 +8328,7 @@
                 candidate;
 
             if (listToRemoveFrom) {
-                var rIdx = jsPlumbUtil.findWithFunction(listToRemoveFrom, function (e) {
+                var rIdx = _ju.findWithFunction(listToRemoveFrom, function (e) {
                     return e[4] == endpointId;
                 });
                 if (rIdx != -1) {
@@ -8239,13 +8336,13 @@
                     // get all connections from this list
                     for (i = 0; i < listToRemoveFrom.length; i++) {
                         candidate = listToRemoveFrom[i][1];
-                        jsPlumbUtil.addWithFunction(connsToPaint, candidate, function (c) {
+                        _ju.addWithFunction(connsToPaint, candidate, function (c) {
                             return c.id == candidate.id;
                         });
-                        jsPlumbUtil.addWithFunction(endpointsToPaint, listToRemoveFrom[i][1].endpoints[idx], function (e) {
+                        _ju.addWithFunction(endpointsToPaint, listToRemoveFrom[i][1].endpoints[idx], function (e) {
                             return e.id == candidate.endpoints[idx].id;
                         });
-                        jsPlumbUtil.addWithFunction(endpointsToPaint, listToRemoveFrom[i][1].endpoints[oIdx], function (e) {
+                        _ju.addWithFunction(endpointsToPaint, listToRemoveFrom[i][1].endpoints[oIdx], function (e) {
                             return e.id == candidate.endpoints[oIdx].id;
                         });
                     }
@@ -8256,13 +8353,13 @@
                 candidate = listToAddTo[i][1];
                 if (params.idx == 1 && listToAddTo[i][3] === otherElId && firstMatchingElIdx == -1)
                     firstMatchingElIdx = i;
-                jsPlumbUtil.addWithFunction(connsToPaint, candidate, function (c) {
+                _ju.addWithFunction(connsToPaint, candidate, function (c) {
                     return c.id == candidate.id;
                 });
-                jsPlumbUtil.addWithFunction(endpointsToPaint, listToAddTo[i][1].endpoints[idx], function (e) {
+                _ju.addWithFunction(endpointsToPaint, listToAddTo[i][1].endpoints[idx], function (e) {
                     return e.id == candidate.endpoints[idx].id;
                 });
-                jsPlumbUtil.addWithFunction(endpointsToPaint, listToAddTo[i][1].endpoints[oIdx], function (e) {
+                _ju.addWithFunction(endpointsToPaint, listToAddTo[i][1].endpoints[oIdx], function (e) {
                     return e.id == candidate.endpoints[oIdx].id;
                 });
             }
@@ -8284,10 +8381,10 @@
         // 
         //
         this.updateOtherEndpoint = function (elId, oldTargetId, newTargetId, connection) {
-            var sIndex = jsPlumbUtil.findWithFunction(connectionsByElementId[elId], function (i) {
+            var sIndex = _ju.findWithFunction(connectionsByElementId[elId], function (i) {
                     return i[0].id === connection.id;
                 }),
-                tIndex = jsPlumbUtil.findWithFunction(connectionsByElementId[oldTargetId], function (i) {
+                tIndex = _ju.findWithFunction(connectionsByElementId[oldTargetId], function (i) {
                     return i[0].id === connection.id;
                 });
 
@@ -8295,14 +8392,14 @@
             if (sIndex != -1) {
                 connectionsByElementId[elId][sIndex][0] = connection;
                 connectionsByElementId[elId][sIndex][1] = connection.endpoints[1];
-                connectionsByElementId[elId][sIndex][2] = connection.endpoints[1].anchor.constructor == jsPlumb.DynamicAnchor;
+                connectionsByElementId[elId][sIndex][2] = connection.endpoints[1].anchor.constructor == _jp.DynamicAnchor;
             }
 
             // remove entry for previous target (if there)
             if (tIndex > -1) {
                 connectionsByElementId[oldTargetId].splice(tIndex, 1);
                 // add entry for new target
-                jsPlumbUtil.addToList(connectionsByElementId, newTargetId, [connection, connection.endpoints[0], connection.endpoints[0].anchor.constructor == jsPlumb.DynamicAnchor]);
+                _ju.addToList(connectionsByElementId, newTargetId, [connection, connection.endpoints[0], connection.endpoints[0].anchor.constructor == _jp.DynamicAnchor]);
             }
 
             connection.updateConnectedClass();
@@ -8318,20 +8415,20 @@
         this.sourceChanged = function (originalId, newId, connection) {
             if (originalId !== newId) {
                 // remove the entry that points from the old source to the target
-                jsPlumbUtil.removeWithFunction(connectionsByElementId[originalId], function (info) {
+                _ju.removeWithFunction(connectionsByElementId[originalId], function (info) {
                     return info[0].id === connection.id;
                 });
                 // find entry for target and update it
-                var tIdx = jsPlumbUtil.findWithFunction(connectionsByElementId[connection.targetId], function (i) {
+                var tIdx = _ju.findWithFunction(connectionsByElementId[connection.targetId], function (i) {
                     return i[0].id === connection.id;
                 });
                 if (tIdx > -1) {
                     connectionsByElementId[connection.targetId][tIdx][0] = connection;
                     connectionsByElementId[connection.targetId][tIdx][1] = connection.endpoints[0];
-                    connectionsByElementId[connection.targetId][tIdx][2] = connection.endpoints[0].anchor.constructor == jsPlumb.DynamicAnchor;
+                    connectionsByElementId[connection.targetId][tIdx][2] = connection.endpoints[0].anchor.constructor == _jp.DynamicAnchor;
                 }
                 // add entry for new source
-                jsPlumbUtil.addToList(connectionsByElementId, newId, [connection, connection.endpoints[1], connection.endpoints[1].anchor.constructor == jsPlumb.DynamicAnchor]);
+                _ju.addToList(connectionsByElementId, newId, [connection, connection.endpoints[1], connection.endpoints[1].anchor.constructor == _jp.DynamicAnchor]);
 
                 connection.updateConnectedClass();
             }
@@ -8351,7 +8448,7 @@
                 elementId = jsPlumbInstance.getId(element);
 
             if (elementId !== currentId) {
-                var idx = jsPlumbUtil.indexOf(eps, ep);
+                var idx = _ju.indexOf(eps, ep);
                 if (idx > -1) {
                     var _ep = eps.splice(idx, 1)[0];
                     self.add(_ep, elementId);
@@ -8454,17 +8551,17 @@
                             if (targetContinuous) _updateAnchorList(anchorLists[targetId], o.theta2, -1, conn, true, sourceId, 1, true, o.a[1], targetId, connectionsToPaint, endpointsToPaint);
                         }
 
-                        if (sourceContinuous) jsPlumbUtil.addWithFunction(anchorsToUpdate, sourceId, function (a) {
+                        if (sourceContinuous) _ju.addWithFunction(anchorsToUpdate, sourceId, function (a) {
                             return a === sourceId;
                         });
-                        if (targetContinuous) jsPlumbUtil.addWithFunction(anchorsToUpdate, targetId, function (a) {
+                        if (targetContinuous) _ju.addWithFunction(anchorsToUpdate, targetId, function (a) {
                             return a === targetId;
                         });
-                        jsPlumbUtil.addWithFunction(connectionsToPaint, conn, function (c) {
+                        _ju.addWithFunction(connectionsToPaint, conn, function (c) {
                             return c.id == conn.id;
                         });
                         if ((sourceContinuous && oIdx === 0) || (targetContinuous && oIdx === 1))
-                            jsPlumbUtil.addWithFunction(endpointsToPaint, conn.endpoints[oIdx], function (e) {
+                            _ju.addWithFunction(endpointsToPaint, conn.endpoints[oIdx], function (e) {
                                 return e.id == conn.endpoints[oIdx].id;
                             });
                     }
@@ -8476,7 +8573,7 @@
                         if (!anchorLists[elementId]) anchorLists[elementId] = { top: [], right: [], bottom: [], left: [] };
                         _updateAnchorList(anchorLists[elementId], -Math.PI / 2, 0, {endpoints: [ep[i], ep[i]], paint: function () {
                         }}, false, elementId, 0, false, ep[i].anchor.getDefaultFace(), elementId, connectionsToPaint, endpointsToPaint);
-                        jsPlumbUtil.addWithFunction(anchorsToUpdate, elementId, function (a) {
+                        _ju.addWithFunction(anchorsToUpdate, elementId, function (a) {
                             return a === elementId;
                         });
                     }
@@ -8507,20 +8604,20 @@
                 // TODO we could have compiled a list of these in the first pass through connections; might save some time.
                 for (i = 0; i < endpointConnections.length; i++) {
                     var otherEndpoint = endpointConnections[i][1];
-                    if (otherEndpoint.anchor.constructor == jsPlumb.DynamicAnchor) {
+                    if (otherEndpoint.anchor.constructor == _jp.DynamicAnchor) {
                         otherEndpoint.paint({ elementWithPrecedence: elementId, timestamp: timestamp });
-                        jsPlumbUtil.addWithFunction(connectionsToPaint, endpointConnections[i][0], function (c) {
+                        _ju.addWithFunction(connectionsToPaint, endpointConnections[i][0], function (c) {
                             return c.id == endpointConnections[i][0].id;
                         });
                         // all the connections for the other endpoint now need to be repainted
                         for (var k = 0; k < otherEndpoint.connections.length; k++) {
                             if (otherEndpoint.connections[k] !== endpointConnections[i][0])
-                                jsPlumbUtil.addWithFunction(connectionsToPaint, otherEndpoint.connections[k], function (c) {
+                                _ju.addWithFunction(connectionsToPaint, otherEndpoint.connections[k], function (c) {
                                     return c.id == otherEndpoint.connections[k].id;
                                 });
                         }
-                    } else if (otherEndpoint.anchor.constructor == jsPlumb.Anchor) {
-                        jsPlumbUtil.addWithFunction(connectionsToPaint, endpointConnections[i][0], function (c) {
+                    } else if (otherEndpoint.anchor.constructor == _jp.Anchor) {
+                        _ju.addWithFunction(connectionsToPaint, endpointConnections[i][0], function (c) {
                             return c.id == endpointConnections[i][0].id;
                         });
                     }
@@ -8539,7 +8636,7 @@
         };
 
         var ContinuousAnchor = function (anchorParams) {
-            jsPlumbUtil.EventGenerator.apply(this);
+            _ju.EventGenerator.apply(this);
             this.type = "Continuous";
             this.isDynamic = true;
             this.isContinuous = true;
@@ -8613,7 +8710,7 @@
      * or by an array describing their coordinates (eg. [ 0, 0.5, 0, -1 ], which is the same as "TopMiddle").  jsPlumb now handles all of the
      * creation of Anchors without user intervention.
      */
-    jsPlumb.Anchor = function (params) {
+    _jp.Anchor = function (params) {
         this.x = params.x || 0;
         this.y = params.y || 0;
         this.elementId = params.elementId;
@@ -8624,7 +8721,7 @@
         this.offsets = params.offsets || [ 0, 0 ];
         this.timestamp = null;
 
-        jsPlumbUtil.EventGenerator.apply(this);
+        _ju.EventGenerator.apply(this);
 
         this.compute = function (params) {
 
@@ -8651,7 +8748,7 @@
             return (this.lastReturnValue == null || (params.timestamp != null && this.timestamp != params.timestamp)) ? this.compute(params) : this.lastReturnValue;
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Anchor, jsPlumbUtil.EventGenerator, {
+    _ju.extend(_jp.Anchor, _ju.EventGenerator, {
         equals: function (anchor) {
             if (!anchor) return false;
             var ao = anchor.getOrientation(),
@@ -8682,16 +8779,16 @@
      *
      * TODO FloatingAnchor could totally be refactored to extend Anchor just slightly.
      */
-    jsPlumb.FloatingAnchor = function (params) {
+    _jp.FloatingAnchor = function (params) {
 
-        jsPlumb.Anchor.apply(this, arguments);
+        _jp.Anchor.apply(this, arguments);
 
         // this is the anchor that this floating anchor is referenced to for
         // purposes of calculating the orientation.
         var ref = params.reference,
             // the canvas this refers to.
             refCanvas = params.referenceCanvas,
-            size = jsPlumb.getSize(refCanvas),
+            size = _jp.getSize(refCanvas),
             // these are used to store the current relative position of our
             // anchor wrt the reference anchor. they only indicate
             // direction, so have a value of 1 or -1 (or, very rarely, 0). these
@@ -8755,10 +8852,10 @@
             return _lastResult == null ? this.compute(params) : _lastResult;
         };
     };
-    jsPlumbUtil.extend(jsPlumb.FloatingAnchor, jsPlumb.Anchor);
+    _ju.extend(_jp.FloatingAnchor, _jp.Anchor);
 
     var _convertAnchor = function (anchor, jsPlumbInstance, elementId) {
-        return anchor.constructor == jsPlumb.Anchor ? anchor : jsPlumbInstance.makeAnchor(anchor, elementId, jsPlumbInstance);
+        return anchor.constructor == _jp.Anchor ? anchor : jsPlumbInstance.makeAnchor(anchor, elementId, jsPlumbInstance);
     };
 
     /* 
@@ -8770,8 +8867,8 @@
      * feature for some applications.
      * 
      */
-    jsPlumb.DynamicAnchor = function (params) {
-        jsPlumb.Anchor.apply(this, arguments);
+    _jp.DynamicAnchor = function (params) {
+        _jp.Anchor.apply(this, arguments);
 
         this.isDynamic = true;
         this.anchors = [];
@@ -8864,11 +8961,11 @@
             return (_curAnchor && _curAnchor.getCssClass()) || "";
         };
     };
-    jsPlumbUtil.extend(jsPlumb.DynamicAnchor, jsPlumb.Anchor);
+    _ju.extend(_jp.DynamicAnchor, _jp.Anchor);
 
 // -------- basic anchors ------------------    
     var _curryAnchor = function (x, y, ox, oy, type, fnInit) {
-        jsPlumb.Anchors[type] = function (params) {
+        _jp.Anchors[type] = function (params) {
             var a = params.jsPlumbInstance.makeAnchor([ x, y, ox, oy, 0, 0 ], params.elementId, params.jsPlumbInstance);
             a.type = type;
             if (fnInit) fnInit(a, params);
@@ -8894,13 +8991,13 @@
 // ------- dynamic anchors -------------------    
 
     // default dynamic anchors chooses from Top, Right, Bottom, Left
-    jsPlumb.Defaults.DynamicAnchors = function (params) {
+    _jp.Defaults.DynamicAnchors = function (params) {
         return params.jsPlumbInstance.makeAnchors(["TopCenter", "RightMiddle", "BottomCenter", "LeftMiddle"], params.elementId, params.jsPlumbInstance);
     };
 
     // default dynamic anchors bound to name 'AutoDefault'
-    jsPlumb.Anchors.AutoDefault = function (params) {
-        var a = params.jsPlumbInstance.makeDynamicAnchor(jsPlumb.Defaults.DynamicAnchors(params));
+    _jp.Anchors.AutoDefault = function (params) {
+        var a = params.jsPlumbInstance.makeDynamicAnchor(_jp.Defaults.DynamicAnchors(params));
         a.type = "AutoDefault";
         return a;
     };
@@ -8908,14 +9005,14 @@
 // ------- continuous anchors -------------------    
 
     var _curryContinuousAnchor = function (type, faces) {
-        jsPlumb.Anchors[type] = function (params) {
+        _jp.Anchors[type] = function (params) {
             var a = params.jsPlumbInstance.makeAnchor(["Continuous", { faces: faces }], params.elementId, params.jsPlumbInstance);
             a.type = type;
             return a;
         };
     };
 
-    jsPlumb.Anchors.Continuous = function (params) {
+    _jp.Anchors.Continuous = function (params) {
         return params.jsPlumbInstance.continuousAnchorFactory.get(params);
     };
 
@@ -8955,7 +9052,7 @@
 
 // ------- perimeter anchors -------------------    
 
-    jsPlumb.Anchors.Perimeter = function (params) {
+    _jp.Anchors.Perimeter = function (params) {
         params = params || {};
         var anchorCount = params.anchorCount || 60,
             shape = params.shape;
@@ -9065,17 +9162,17 @@
         a.type = "Perimeter";
         return a;
     };
-})();
+}).call(this);
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
  * This file contains the default Connectors, Endpoint and Overlay definitions.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  * 
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -9086,8 +9183,9 @@
 (function () {
 
     "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil, _jg = root.Biltong;
 
-    jsPlumb.Segments = {
+    _jp.Segments = {
 
         /*
          * Class: AbstractSegment
@@ -9130,11 +9228,11 @@
             };
         },
         Straight: function (params) {
-            var _super = jsPlumb.Segments.AbstractSegment.apply(this, arguments),
+            var _super = _jp.Segments.AbstractSegment.apply(this, arguments),
                 length, m, m2, x1, x2, y1, y2,
                 _recalc = function () {
                     length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
-                    m = Biltong.gradient({x: x1, y: y1}, {x: x2, y: y2});
+                    m = _jg.gradient({x: x1, y: y1}, {x: x2, y: y2});
                     m2 = -1 / m;
                 };
 
@@ -9179,7 +9277,7 @@
                     return { x: x2, y: y2 };
                 else {
                     var l = absolute ? location > 0 ? location : length + location : location * length;
-                    return Biltong.pointOnLine({x: x1, y: y1}, {x: x2, y: y2}, l);
+                    return _jg.pointOnLine({x: x1, y: y1}, {x: x2, y: y2}, l);
                 }
             };
 
@@ -9208,7 +9306,7 @@
 
                 if (distance <= 0 && Math.abs(distance) > 1) distance *= -1;
 
-                return Biltong.pointOnLine(p, farAwayPoint, distance);
+                return _jg.pointOnLine(p, farAwayPoint, distance);
             };
 
             // is c between a and b?
@@ -9260,8 +9358,8 @@
                     out.y = within(y1, y2, _y1) ? _y1 : closest(y1, y2, _y1);//_y1;
                 }
 
-                var fractionInSegment = Biltong.lineLength([ out.x, out.y ], [ x1, y1 ]);
-                out.d = Biltong.lineLength([x, y], [out.x, out.y]);
+                var fractionInSegment = _jg.lineLength([ out.x, out.y ], [ x1, y1 ]);
+                out.d = _jg.lineLength([x, y], [out.x, out.y]);
                 out.l = fractionInSegment / length;
                 return out;
             };
@@ -9289,9 +9387,9 @@
 
          */
         Arc: function (params) {
-            var _super = jsPlumb.Segments.AbstractSegment.apply(this, arguments),
+            var _super = _jp.Segments.AbstractSegment.apply(this, arguments),
                 _calcAngle = function (_x, _y) {
-                    return Biltong.theta([params.cx, params.cy], [_x, _y]);
+                    return _jg.theta([params.cx, params.cy], [_x, _y]);
                 },
                 _calcAngleForLocation = function (segment, location) {
                     if (segment.anticlockwise) {
@@ -9333,7 +9431,7 @@
             if (this.startAngle < 0) this.startAngle += TWO_PI;
 
             // segment is used by vml     
-            this.segment = Biltong.quadrant([this.x1, this.y1], [this.x2, this.y2]);
+            this.segment = _jg.quadrant([this.x1, this.y1], [this.x2, this.y2]);
 
             // we now have startAngle and endAngle as positive numbers, meaning the
             // absolute difference (|d|) between them is the sweep (s) of this arc, unless the
@@ -9398,7 +9496,7 @@
              */
             this.gradientAtPoint = function (location, absolute) {
                 var p = this.pointOnPath(location, absolute);
-                var m = Biltong.normal([ params.cx, params.cy ], [p.x, p.y ]);
+                var m = _jg.normal([ params.cx, params.cy ], [p.x, p.y ]);
                 if (!this.anticlockwise && (m == Infinity || m == -Infinity)) m *= -1;
                 return m;
             };
@@ -9423,7 +9521,7 @@
                 { x: params.x2, y: params.y2 }
             ];
 
-            var _super = jsPlumb.Segments.AbstractSegment.apply(this, arguments);
+            var _super = _jp.Segments.AbstractSegment.apply(this, arguments);
             // although this is not a strictly rigorous determination of bounds
             // of a bezier curve, it works for the types of curves that this segment
             // type produces.
@@ -9438,7 +9536,7 @@
 
             var _translateLocation = function (_curve, location, absolute) {
                 if (absolute)
-                    location = jsBezier.locationAlongCurveFrom(_curve, location > 0 ? 0 : 1, location);
+                    location = root.jsBezier.locationAlongCurveFrom(_curve, location > 0 ? 0 : 1, location);
 
                 return location;
             };
@@ -9449,7 +9547,7 @@
              */
             this.pointOnPath = function (location, absolute) {
                 location = _translateLocation(this.curve, location, absolute);
-                return jsBezier.pointOnCurve(this.curve, location);
+                return root.jsBezier.pointOnCurve(this.curve, location);
             };
 
             /**
@@ -9457,16 +9555,16 @@
              */
             this.gradientAtPoint = function (location, absolute) {
                 location = _translateLocation(this.curve, location, absolute);
-                return jsBezier.gradientAtPoint(this.curve, location);
+                return root.jsBezier.gradientAtPoint(this.curve, location);
             };
 
             this.pointAlongPathFrom = function (location, distance, absolute) {
                 location = _translateLocation(this.curve, location, absolute);
-                return jsBezier.pointAlongCurveFrom(this.curve, location, distance);
+                return root.jsBezier.pointAlongCurveFrom(this.curve, location, distance);
             };
 
             this.getLength = function () {
-                return jsBezier.getLength(this.curve);
+                return root.jsBezier.getLength(this.curve);
             };
 
             this.getBounds = function () {
@@ -9496,7 +9594,7 @@
      * their cumulative ratios to the total length.  Then when the right segment is found it is a simple case of dispatching
      * the request to it (and adjusting 'location' so that it is relative to the beginning of that segment.)
      */
-    jsPlumb.Connectors.AbstractConnector = function (params) {
+    _jp.Connectors.AbstractConnector = function (params) {
 
         AbstractComponent.apply(this, arguments);
 
@@ -9505,11 +9603,11 @@
             segmentProportions = [],
             segmentProportionalLengths = [],
             stub = params.stub || 0,
-            sourceStub = jsPlumbUtil.isArray(stub) ? stub[0] : stub,
-            targetStub = jsPlumbUtil.isArray(stub) ? stub[1] : stub,
+            sourceStub = _ju.isArray(stub) ? stub[0] : stub,
+            targetStub = _ju.isArray(stub) ? stub[1] : stub,
             gap = params.gap || 0,
-            sourceGap = jsPlumbUtil.isArray(gap) ? gap[0] : gap,
-            targetGap = jsPlumbUtil.isArray(gap) ? gap[1] : gap,
+            sourceGap = _ju.isArray(gap) ? gap[0] : gap,
+            targetGap = _ju.isArray(gap) ? gap[1] : gap,
             userProvidedSegments = null,
             edited = false,
             paintInfo = null;
@@ -9588,7 +9686,7 @@
             },
             _addSegment = function (conn, type, params) {
                 if (params.x1 == params.x2 && params.y1 == params.y2) return;
-                var s = new jsPlumb.Segments[type](params);
+                var s = new _jp.Segments[type](params);
                 segments.push(s);
                 totalLength += s.getLength();
                 conn.updateBounds(s);
@@ -9608,7 +9706,7 @@
 
         var _prepareCompute = function (params) {
             this.lineWidth = params.lineWidth;
-            var segment = Biltong.quadrant(params.sourcePos, params.targetPos),
+            var segment = _jg.quadrant(params.sourcePos, params.targetPos),
                 swapX = params.targetPos[0] < params.sourcePos[0],
                 swapY = params.targetPos[1] < params.sourcePos[1],
                 lw = params.lineWidth || 1,
@@ -9722,15 +9820,15 @@
             maxGap: Math.max(sourceGap, targetGap)
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Connectors.AbstractConnector, AbstractComponent);
+    _ju.extend(_jp.Connectors.AbstractConnector, AbstractComponent);
 
     /**
      * Class: Connectors.Straight
      * The Straight connector draws a simple straight line between the two anchor points.  It does not have any constructor parameters.
      */
-    var Straight = jsPlumb.Connectors.Straight = function () {
+    var Straight = _jp.Connectors.Straight = function () {
         this.type = "Straight";
-        var _super = jsPlumb.Connectors.AbstractConnector.apply(this, arguments);
+        var _super = _jp.Connectors.AbstractConnector.apply(this, arguments);
 
         this._compute = function (paintInfo, _) {
             _super.addSegment(this, "Straight", {x1: paintInfo.sx, y1: paintInfo.sy, x2: paintInfo.startStubX, y2: paintInfo.startStubY});
@@ -9738,15 +9836,15 @@
             _super.addSegment(this, "Straight", {x1: paintInfo.endStubX, y1: paintInfo.endStubY, x2: paintInfo.tx, y2: paintInfo.ty});
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Connectors.Straight, jsPlumb.Connectors.AbstractConnector);
-    jsPlumb.registerConnectorType(Straight, "Straight");
+    _ju.extend(_jp.Connectors.Straight, _jp.Connectors.AbstractConnector);
+    _jp.registerConnectorType(Straight, "Straight");
 
 
     // ********************************* END OF CONNECTOR TYPES *******************************************************************
 
     // ********************************* ENDPOINT TYPES *******************************************************************
 
-    jsPlumb.Endpoints.AbstractEndpoint = function (params) {
+    _jp.Endpoints.AbstractEndpoint = function (params) {
         AbstractComponent.apply(this, arguments);
         var compute = this.compute = function (anchorPoint, orientation, endpointStyle, connectorPaintStyle) {
             var out = this._compute.apply(this, arguments);
@@ -9765,7 +9863,7 @@
             cssClass: params.cssClass
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.AbstractEndpoint, AbstractComponent);
+    _ju.extend(_jp.Endpoints.AbstractEndpoint, AbstractComponent);
 
     /**
      * Class: Endpoints.Dot
@@ -9779,9 +9877,9 @@
      *
      *    radius    -    radius of the endpoint.  defaults to 10 pixels.
      */
-    jsPlumb.Endpoints.Dot = function (params) {
+    _jp.Endpoints.Dot = function (params) {
         this.type = "Dot";
-        var _super = jsPlumb.Endpoints.AbstractEndpoint.apply(this, arguments);
+        var _super = _jp.Endpoints.AbstractEndpoint.apply(this, arguments);
         params = params || {};
         this.radius = params.radius || 10;
         this.defaultOffset = 0.5 * this.radius;
@@ -9804,11 +9902,11 @@
             return [ x, y, w, h, this.radius ];
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.Dot, jsPlumb.Endpoints.AbstractEndpoint);
+    _ju.extend(_jp.Endpoints.Dot, _jp.Endpoints.AbstractEndpoint);
 
-    jsPlumb.Endpoints.Rectangle = function (params) {
+    _jp.Endpoints.Rectangle = function (params) {
         this.type = "Rectangle";
-        var _super = jsPlumb.Endpoints.AbstractEndpoint.apply(this, arguments);
+        var _super = _jp.Endpoints.AbstractEndpoint.apply(this, arguments);
         params = params || {};
         this.width = params.width || 20;
         this.height = params.height || 20;
@@ -9822,13 +9920,13 @@
             return [ x, y, width, height];
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.Rectangle, jsPlumb.Endpoints.AbstractEndpoint);
+    _ju.extend(_jp.Endpoints.Rectangle, _jp.Endpoints.AbstractEndpoint);
 
     var DOMElementEndpoint = function (params) {
-        jsPlumb.jsPlumbUIComponent.apply(this, arguments);
+        _jp.jsPlumbUIComponent.apply(this, arguments);
         this._jsPlumb.displayElements = [];
     };
-    jsPlumbUtil.extend(DOMElementEndpoint, jsPlumb.jsPlumbUIComponent, {
+    _ju.extend(DOMElementEndpoint, _jp.jsPlumbUIComponent, {
         getDisplayElements: function () {
             return this._jsPlumb.displayElements;
         },
@@ -9851,14 +9949,14 @@
      TODO: multiple references to self. not sure quite how to get rid of them entirely. perhaps self = null in the cleanup
      function will suffice
 
-     TODO this class still leaks memory.
+     TODO this class still might leak memory.
 
      */
-    jsPlumb.Endpoints.Image = function (params) {
+    _jp.Endpoints.Image = function (params) {
 
         this.type = "Image";
         DOMElementEndpoint.apply(this, arguments);
-        jsPlumb.Endpoints.AbstractEndpoint.apply(this, arguments);
+        _jp.Endpoints.AbstractEndpoint.apply(this, arguments);
 
         var _onload = params.onload,
             src = params.src || params.url,
@@ -9927,7 +10025,7 @@
                 }
                 var x = this.anchorPoint[0] - (this._jsPlumb.widthToUse / 2),
                     y = this.anchorPoint[1] - (this._jsPlumb.heightToUse / 2);
-                jsPlumbUtil.sizeElement(this.canvas, x, y, this._jsPlumb.widthToUse, this._jsPlumb.heightToUse);
+                _ju.sizeElement(this.canvas, x, y, this._jsPlumb.widthToUse, this._jsPlumb.heightToUse);
             }
         };
 
@@ -9937,14 +10035,14 @@
                     this.actuallyPaint(style, anchor);
                 }
                 else {
-                    window.setTimeout(function () {
+                    root.setTimeout(function () {
                         this.paint(style, anchor);
                     }.bind(this), 200);
                 }
             }
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.Image, [ DOMElementEndpoint, jsPlumb.Endpoints.AbstractEndpoint ], {
+    _ju.extend(_jp.Endpoints.Image, [ DOMElementEndpoint, _jp.Endpoints.AbstractEndpoint ], {
         cleanup: function (force) {
             if (force) {
                 this._jsPlumb.deleted = true;
@@ -9958,8 +10056,8 @@
      * Class: Endpoints.Blank
      * An Endpoint that paints nothing (visible) on the screen.  Supports cssClass and hoverClass parameters like all Endpoints.
      */
-    jsPlumb.Endpoints.Blank = function (params) {
-        var _super = jsPlumb.Endpoints.AbstractEndpoint.apply(this, arguments);
+    _jp.Endpoints.Blank = function (params) {
+        var _super = _jp.Endpoints.AbstractEndpoint.apply(this, arguments);
         this.type = "Blank";
         DOMElementEndpoint.apply(this, arguments);
         this._compute = function (anchorPoint, orientation, endpointStyle, connectorPaintStyle) {
@@ -9978,10 +10076,10 @@
         this._jsPlumb.instance.appendElement(this.canvas);
 
         this.paint = function (style, anchor) {
-            jsPlumbUtil.sizeElement(this.canvas, this.x, this.y, this.w, this.h);
+            _ju.sizeElement(this.canvas, this.x, this.y, this.w, this.h);
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.Blank, [jsPlumb.Endpoints.AbstractEndpoint, DOMElementEndpoint], {
+    _ju.extend(_jp.Endpoints.Blank, [_jp.Endpoints.AbstractEndpoint, DOMElementEndpoint], {
         cleanup: function () {
             if (this.canvas && this.canvas.parentNode) {
                 this.canvas.parentNode.removeChild(this.canvas);
@@ -10001,9 +10099,9 @@
      * 	width	-	width of the triangle's base.  defaults to 55 pixels.
      * 	height	-	height of the triangle from base to apex.  defaults to 55 pixels.
      */
-    jsPlumb.Endpoints.Triangle = function (params) {
+    _jp.Endpoints.Triangle = function (params) {
         this.type = "Triangle";
-        jsPlumb.Endpoints.AbstractEndpoint.apply(this, arguments);
+        _jp.Endpoints.AbstractEndpoint.apply(this, arguments);
         params = params || {  };
         params.width = params.width || 55;
         params.height = params.height || 55;
@@ -10022,7 +10120,7 @@
 
 // ********************************* OVERLAY DEFINITIONS ***********************************************************************    
 
-    var AbstractOverlay = jsPlumb.Overlays.AbstractOverlay = function (params) {
+    var AbstractOverlay = _jp.Overlays.AbstractOverlay = function (params) {
         this.visible = true;
         this.isAppendedAtTopLevel = true;
         this.component = params.component;
@@ -10090,12 +10188,11 @@
      * 	location - distance (as a decimal from 0 to 1 inclusive) marking where the arrow should sit on the connector. defaults to 0.5.
      * 	direction - indicates the direction the arrow points in. valid values are -1 and 1; 1 is default.
      */
-    jsPlumb.Overlays.Arrow = function (params) {
+    _jp.Overlays.Arrow = function (params) {
         this.type = "Arrow";
         AbstractOverlay.apply(this, arguments);
         this.isAppendedAtTopLevel = false;
         params = params || {};
-        var _ju = jsPlumbUtil, _jg = Biltong;
 
         this.length = params.length || 20;
         this.width = params.width || 20;
@@ -10171,7 +10268,7 @@
             else return {component: component, minX: 0, maxX: 0, minY: 0, maxY: 0};
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.Arrow, AbstractOverlay, {
+    _ju.extend(_jp.Overlays.Arrow, AbstractOverlay, {
         updateFrom:function(d) {
             this.length = d.length || this.length;
             this.width = d.width|| this.width;
@@ -10191,13 +10288,13 @@
      * Function: Constructor
      * See <Overlays.Arrow> for allowed parameters for this overlay.
      */
-    jsPlumb.Overlays.PlainArrow = function (params) {
+    _jp.Overlays.PlainArrow = function (params) {
         params = params || {};
-        var p = jsPlumb.extend(params, {foldback: 1});
-        jsPlumb.Overlays.Arrow.call(this, p);
+        var p = _jp.extend(params, {foldback: 1});
+        _jp.Overlays.Arrow.call(this, p);
         this.type = "PlainArrow";
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.PlainArrow, jsPlumb.Overlays.Arrow);
+    _ju.extend(_jp.Overlays.PlainArrow, _jp.Overlays.Arrow);
 
     /*
      * Class: Overlays.Diamond
@@ -10214,14 +10311,14 @@
      * Function: Constructor
      * See <Overlays.Arrow> for allowed parameters for this overlay.
      */
-    jsPlumb.Overlays.Diamond = function (params) {
+    _jp.Overlays.Diamond = function (params) {
         params = params || {};
         var l = params.length || 40,
             p = jsPlumb.extend(params, {length: l / 2, foldback: 2});
-        jsPlumb.Overlays.Arrow.call(this, p);
+        _jp.Overlays.Arrow.call(this, p);
         this.type = "Diamond";
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.Diamond, jsPlumb.Overlays.Arrow);
+    _ju.extend(_jp.Overlays.Diamond, _jp.Overlays.Arrow);
 
     var _getDimensions = function (component, forceRefresh) {
         if (component._jsPlumb.cachedDimensions == null || forceRefresh)
@@ -10231,7 +10328,7 @@
 
     // abstract superclass for overlays that add an element to the DOM.
     var AbstractDOMOverlay = function (params) {
-        jsPlumb.jsPlumbUIComponent.apply(this, arguments);
+        _jp.jsPlumbUIComponent.apply(this, arguments);
         AbstractOverlay.apply(this, arguments);
 
         // hand off fired events to associated component.
@@ -10290,7 +10387,7 @@
                 }
                 else if (component.pointOnPath) {
                     var loc = this.loc, absolute = false;
-                    if (jsPlumbUtil.isString(this.loc) || this.loc < 0 || this.loc > 1) {
+                    if (_ju.isString(this.loc) || this.loc < 0 || this.loc > 1) {
                         loc = parseInt(this.loc, 10);
                         absolute = true;
                     }
@@ -10317,10 +10414,10 @@
             else return {minX: 0, maxX: 0, minY: 0, maxY: 0};
         };
     };
-    jsPlumbUtil.extend(AbstractDOMOverlay, [jsPlumb.jsPlumbUIComponent, AbstractOverlay], {
+    _ju.extend(AbstractDOMOverlay, [_jp.jsPlumbUIComponent, AbstractOverlay], {
         getDimensions: function () {
 // still support the old way, for now, for IE8. But from 2.0.0 this whole method will be gone. 
-            return jsPlumbUtil.oldIE ? jsPlumb.getSize(this.getElement()) : [1, 1];
+            return _ju.oldIE ? _jp.getSize(this.getElement()) : [1, 1];
         },
         setVisible: function (state) {
             if (this._jsPlumb.div) {
@@ -10392,26 +10489,26 @@
      * 	id - optional id to use for later retrieval of this overlay.
      * 	
      */
-    jsPlumb.Overlays.Custom = function (params) {
+    _jp.Overlays.Custom = function (params) {
         this.type = "Custom";
         AbstractDOMOverlay.apply(this, arguments);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.Custom, AbstractDOMOverlay);
+    _ju.extend(_jp.Overlays.Custom, AbstractDOMOverlay);
 
-    jsPlumb.Overlays.GuideLines = function () {
+    _jp.Overlays.GuideLines = function () {
         var self = this;
         self.length = 50;
         self.lineWidth = 5;
         this.type = "GuideLines";
         AbstractOverlay.apply(this, arguments);
-        jsPlumb.jsPlumbUIComponent.apply(this, arguments);
+        _jp.jsPlumbUIComponent.apply(this, arguments);
         this.draw = function (connector, currentConnectionPaintStyle) {
 
             var head = connector.pointAlongPathFrom(self.loc, self.length / 2),
                 mid = connector.pointOnPath(self.loc),
-                tail = Biltong.pointOnLine(head, mid, self.length),
-                tailLine = Biltong.perpendicularLineTo(head, tail, 40),
-                headLine = Biltong.perpendicularLineTo(tail, head, 20);
+                tail = _jg.pointOnLine(head, mid, self.length),
+                tailLine = _jg.perpendicularLineTo(head, tail, 40),
+                headLine = _jg.perpendicularLineTo(tail, head, 20);
 
             return {
                 connector: connector,
@@ -10446,16 +10543,16 @@
      * 
      * 	
      */
-    jsPlumb.Overlays.Label = function (params) {
+    _jp.Overlays.Label = function (params) {
         this.labelStyle = params.labelStyle;
 
         var labelWidth = null, labelHeight = null, labelText = null, labelPadding = null;
         this.cssClass = this.labelStyle != null ? this.labelStyle.cssClass : null;
-        var p = jsPlumb.extend({
+        var p = _jp.extend({
             create: function () {
                 return document.createElement("div");
             }}, params);
-        jsPlumb.Overlays.Custom.call(this, p);
+        _jp.Overlays.Custom.call(this, p);
         this.type = "Label";
         this.label = params.label || "";
         this.labelText = null;
@@ -10473,7 +10570,7 @@
         }
 
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.Label, jsPlumb.Overlays.Custom, {
+    _ju.extend(_jp.Overlays.Label, _jp.Overlays.Custom, {
         cleanup: function (force) {
             if (force) {
                 this.div = null;
@@ -10523,20 +10620,18 @@
 
     // ********************************* END OF OVERLAY DEFINITIONS ***********************************************************************
 
-})();
+}).call(this);
 
 /*
  * jsPlumb
  *
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  *
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.
  *
- * This file contains the base class for library adapters. From 1.7.3 onwards all event management internal to jsPlumb is handled
- * through Mottle, regardless of the underlying library. Dragging - and the events associated with it - is still handled
- * by the library.
+ * This file contains the base class for library adapters.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  *
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -10545,16 +10640,18 @@
  */
 ;(function() {
     "use strict";
+    var root = this,
+        _jp = root.jsPlumb;
 
     var _getEventManager = function(instance) {
         var e = instance._mottle;
         if (!e) {
-            e = instance._mottle = new Mottle();
+            e = instance._mottle = new root.Mottle();
         }
         return e;
     };
 
-    jsPlumb.extend(jsPlumbInstance.prototype, {
+    _jp.extend(root.jsPlumbInstance.prototype, {
         getEventManager:function() {
             return _getEventManager(this);
         },
@@ -10579,7 +10676,7 @@
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -10596,13 +10693,14 @@
 (function () {
 
     "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
 
     var Flowchart = function (params) {
         this.type = "Flowchart";
         params = params || {};
         params.stub = params.stub == null ? 30 : params.stub;
         var segments,
-            _super = jsPlumb.Connectors.AbstractConnector.apply(this, arguments),
+            _super = _jp.Connectors.AbstractConnector.apply(this, arguments),
             midpoint = params.midpoint == null ? 0.5 : params.midpoint,
             alwaysRespectStubs = params.alwaysRespectStubs === true,
             userSuppliedSegments = null,
@@ -10958,13 +11056,13 @@
         };
     };
 
-    jsPlumbUtil.extend(Flowchart, jsPlumb.Connectors.AbstractConnector);
-    jsPlumb.registerConnectorType(Flowchart, "Flowchart");
-})();
+    _ju.extend(Flowchart, _jp.Connectors.AbstractConnector);
+    _jp.registerConnectorType(Flowchart, "Flowchart");
+}).call(this);
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -10981,6 +11079,7 @@
 (function () {
 
     "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
 
     var _segment = function (x1, y1, x2, y2) {
             if (x1 <= x2 && y2 <= y1) return 1;
@@ -11035,7 +11134,7 @@
         params = params || {};
         this.type = "StateMachine";
 
-        var _super = jsPlumb.Connectors.AbstractConnector.apply(this, arguments),
+        var _super = _jp.Connectors.AbstractConnector.apply(this, arguments),
             curviness = params.curviness || 10,
             margin = params.margin || 5,
             proximityLimit = params.proximityLimit || 80,
@@ -11136,13 +11235,13 @@
             }
         };
     };
-    jsPlumbUtil.extend(StateMachine, jsPlumb.Connectors.AbstractConnector);
-    jsPlumb.registerConnectorType(StateMachine, "StateMachine");
-})();
+    _ju.extend(StateMachine, _jp.Connectors.AbstractConnector);
+    _jp.registerConnectorType(StateMachine, "StateMachine");
+}).call(this);
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -11158,10 +11257,13 @@
 ;
 (function () {
 
+    "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
+
     var Bezier = function (params) {
         params = params || {};
 
-        var _super = jsPlumb.Connectors.AbstractConnector.apply(this, arguments),
+        var _super = _jp.Connectors.AbstractConnector.apply(this, arguments),
             majorAnchor = params.curviness || 150,
             minorAnchor = 10;
 
@@ -11219,14 +11321,14 @@
         };
     };
 
-    jsPlumbUtil.extend(Bezier, jsPlumb.Connectors.AbstractConnector);
-    jsPlumb.registerConnectorType(Bezier, "Bezier");
+    _ju.extend(Bezier, _jp.Connectors.AbstractConnector);
+    _jp.registerConnectorType(Bezier, "Bezier");
 
-})();
+}).call(this);
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
@@ -11245,6 +11347,7 @@
 // ************************** SVG utility methods ********************************************	
 
     "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
 
     var svgAttributeMap = {
             "joinstyle": "stroke-linejoin",
@@ -11311,28 +11414,24 @@
             var defs = _node(DEFS);
             parent.appendChild(defs);
             defs.appendChild(g);
-            //parent.appendChild(g);
 
             // the svg radial gradient seems to treat stops in the reverse
             // order to how canvas does it.  so we want to keep all the maths the same, but
             // iterate the actual style declarations in reverse order, if the x indexes are not in order.
             for (var i = 0; i < style.gradient.stops.length; i++) {
                 var styleToUse = uiComponent.segment == 1 || uiComponent.segment == 2 ? i : style.gradient.stops.length - 1 - i,
-                    stopColor = jsPlumbUtil.convertStyle(style.gradient.stops[styleToUse][1], true),
+                    stopColor = _ju.convertStyle(style.gradient.stops[styleToUse][1], true),
                     s = _node(STOP, {"offset": Math.floor(style.gradient.stops[i][0] * 100) + "%", "stop-color": stopColor});
 
                 g.appendChild(s);
             }
             var applyGradientTo = style.strokeStyle ? STROKE : FILL;
-            //node.setAttribute(STYLE, applyGradientTo + ":url(" + /[^#]+/.exec(document.location.toString()) + "#" + id + ")");
-            //node.setAttribute(STYLE, applyGradientTo + ":url(#" + id + ")");
-            //node.setAttribute(applyGradientTo,  "url(" + /[^#]+/.exec(document.location.toString()) + "#" + id + ")");
             node.setAttribute(applyGradientTo, "url(#" + id + ")");
         },
         _applyStyles = function (parent, node, style, dimensions, uiComponent) {
 
-            node.setAttribute(FILL, style.fillStyle ? jsPlumbUtil.convertStyle(style.fillStyle, true) : NONE);
-            node.setAttribute(STROKE, style.strokeStyle ? jsPlumbUtil.convertStyle(style.strokeStyle, true) : NONE);
+            node.setAttribute(FILL, style.fillStyle ? _ju.convertStyle(style.fillStyle, true) : NONE);
+            node.setAttribute(STROKE, style.strokeStyle ? _ju.convertStyle(style.strokeStyle, true) : NONE);
 
             if (style.gradient) {
                 _updateGradient(parent, node, style, dimensions, uiComponent);
@@ -11342,7 +11441,6 @@
                 _clearGradient(parent);
                 node.setAttribute(STYLE, "");
             }
-
 
             if (style.lineWidth) {
                 node.setAttribute(STROKE_WIDTH, style.lineWidth);
@@ -11392,7 +11490,7 @@
     /**
      utility methods for other objects to use.
      */
-    jsPlumbUtil.svg = {
+    _ju.svg = {
         node: _node,
         attr: _attr,
         pos: _pos
@@ -11406,7 +11504,7 @@
     var SvgComponent = function (params) {
         var pointerEventsSpec = params.pointerEventsSpec || "all", renderer = {};
 
-        jsPlumb.jsPlumbUIComponent.apply(this, params.originalArgs);
+        _jp.jsPlumbUIComponent.apply(this, params.originalArgs);
         this.canvas = null;
         this.path = null;
         this.svg = null;
@@ -11426,7 +11524,7 @@
         if (params.useDivWrapper) {
             this.canvas = document.createElement("div");
             this.canvas.style.position = "absolute";
-            jsPlumbUtil.sizeElement(this.canvas, 0, 0, 1, 1);
+            _ju.sizeElement(this.canvas, 0, 0, 1, 1);
             this.canvas.className = clazz;
         }
         else {
@@ -11460,7 +11558,7 @@
                 }
 
                 if (params.useDivWrapper) {
-                    jsPlumbUtil.sizeElement(this.canvas, xy[0], xy[1], wh[0], wh[1]);
+                    _ju.sizeElement(this.canvas, xy[0], xy[1], wh[0], wh[1]);
                     xy[0] = 0;
                     xy[1] = 0;
                     p = _pos([ 0, 0 ]);
@@ -11483,7 +11581,7 @@
         };
     };
 
-    jsPlumbUtil.extend(SvgComponent, jsPlumb.jsPlumbUIComponent, {
+    _ju.extend(SvgComponent, _jp.jsPlumbUIComponent, {
         cleanup: function (force) {
             if (force || this.typeId == null) {
                 if (this.canvas) this.canvas._jsPlumb = null;
@@ -11521,7 +11619,7 @@
     /*
      * Base class for SVG connectors.
      */
-    jsPlumb.ConnectorRenderers.svg = function (params) {
+    _jp.ConnectorRenderers.svg = function (params) {
         var self = this,
             _super = SvgComponent.apply(this, [
                 {
@@ -11531,12 +11629,6 @@
                     _jsPlumb: params._jsPlumb
                 }
             ]);
-
-        /*this.pointOnPath = function(location, absolute) {
-         if (!self.path) return [0,0];
-         var p = absolute ? location : location * self.path.getTotalLength();
-         return self.path.getPointAtLength(p);
-         };*/
 
         _super.renderer.paint = function (style, anchor, extents) {
 
@@ -11548,7 +11640,7 @@
 
                 // create path from segments.
                 for (var i = 0; i < segments.length; i++) {
-                    p += jsPlumb.Segments.svg.SegmentRenderer.getPath(segments[i]);
+                    p += _jp.Segments.svg.SegmentRenderer.getPath(segments[i]);
                     p += " ";
                 }
 
@@ -11564,9 +11656,9 @@
                 if (style.outlineColor) {
                     var outlineWidth = style.outlineWidth || 1,
                         outlineStrokeWidth = style.lineWidth + (2 * outlineWidth);
-                    outlineStyle = jsPlumb.extend({}, style);
+                    outlineStyle = _jp.extend({}, style);
                     delete outlineStyle.gradient;
-                    outlineStyle.strokeStyle = jsPlumbUtil.convertStyle(style.outlineColor);
+                    outlineStyle.strokeStyle = _ju.convertStyle(style.outlineColor);
                     outlineStyle.lineWidth = outlineStrokeWidth;
 
                     if (self.bgPath == null) {
@@ -11592,11 +11684,11 @@
             }
         };
     };
-    jsPlumbUtil.extend(jsPlumb.ConnectorRenderers.svg, SvgComponent);
+    _ju.extend(_jp.ConnectorRenderers.svg, SvgComponent);
 
 // ******************************* svg segment renderer *****************************************************	
 
-    jsPlumb.Segments.svg = {
+    _jp.Segments.svg = {
         SegmentRenderer: {
             getPath: function (segment) {
                 return ({
@@ -11626,7 +11718,7 @@
     /*
      * Base class for SVG endpoints.
      */
-    var SvgEndpoint = window.SvgEndpoint = function (params) {
+    var SvgEndpoint = _jp.SvgEndpoint = function (params) {
         var _super = SvgComponent.apply(this, [
             {
                 cssClass: params._jsPlumb.endpointClass,
@@ -11638,10 +11730,10 @@
         ]);
 
         _super.renderer.paint = function (style) {
-            var s = jsPlumb.extend({}, style);
+            var s = _jp.extend({}, style);
             if (s.outlineColor) {
                 s.strokeWidth = s.outlineWidth;
-                s.strokeStyle = jsPlumbUtil.convertStyle(s.outlineColor, true);
+                s.strokeStyle = _ju.convertStyle(s.outlineColor, true);
             }
 
             if (this.node == null) {
@@ -11656,13 +11748,13 @@
         }.bind(this);
 
     };
-    jsPlumbUtil.extend(SvgEndpoint, SvgComponent);
+    _ju.extend(SvgEndpoint, SvgComponent);
 
     /*
      * SVG Dot Endpoint
      */
-    jsPlumb.Endpoints.svg.Dot = function () {
-        jsPlumb.Endpoints.Dot.apply(this, arguments);
+    _jp.Endpoints.svg.Dot = function () {
+        _jp.Endpoints.Dot.apply(this, arguments);
         SvgEndpoint.apply(this, arguments);
         this.makeNode = function (style) {
             return _node("circle", {
@@ -11679,13 +11771,13 @@
             });
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.svg.Dot, [jsPlumb.Endpoints.Dot, SvgEndpoint]);
+    _ju.extend(_jp.Endpoints.svg.Dot, [_jp.Endpoints.Dot, SvgEndpoint]);
 
     /*
      * SVG Rectangle Endpoint
      */
-    jsPlumb.Endpoints.svg.Rectangle = function () {
-        jsPlumb.Endpoints.Rectangle.apply(this, arguments);
+    _jp.Endpoints.svg.Rectangle = function () {
+        _jp.Endpoints.Rectangle.apply(this, arguments);
         SvgEndpoint.apply(this, arguments);
         this.makeNode = function (style) {
             return _node("rect", {
@@ -11700,28 +11792,28 @@
             });
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Endpoints.svg.Rectangle, [jsPlumb.Endpoints.Rectangle, SvgEndpoint]);
+    _ju.extend(_jp.Endpoints.svg.Rectangle, [_jp.Endpoints.Rectangle, SvgEndpoint]);
 
     /*
      * SVG Image Endpoint is the default image endpoint.
      */
-    jsPlumb.Endpoints.svg.Image = jsPlumb.Endpoints.Image;
+    _jp.Endpoints.svg.Image = _jp.Endpoints.Image;
     /*
      * Blank endpoint in svg renderer is the default Blank endpoint.
      */
-    jsPlumb.Endpoints.svg.Blank = jsPlumb.Endpoints.Blank;
+    _jp.Endpoints.svg.Blank = _jp.Endpoints.Blank;
     /*
      * Label overlay in svg renderer is the default Label overlay.
      */
-    jsPlumb.Overlays.svg.Label = jsPlumb.Overlays.Label;
+    _jp.Overlays.svg.Label = _jp.Overlays.Label;
     /*
      * Custom overlay in svg renderer is the default Custom overlay.
      */
-    jsPlumb.Overlays.svg.Custom = jsPlumb.Overlays.Custom;
+    _jp.Overlays.svg.Custom = _jp.Overlays.Custom;
 
     var AbstractSvgArrowOverlay = function (superclass, originalArgs) {
         superclass.apply(this, originalArgs);
-        jsPlumb.jsPlumbUIComponent.apply(this, originalArgs);
+        _jp.jsPlumbUIComponent.apply(this, originalArgs);
         this.isAppendedAtTopLevel = false;
         var self = this;
         this.path = null;
@@ -11765,7 +11857,7 @@
             }
         };
     };
-    jsPlumbUtil.extend(AbstractSvgArrowOverlay, [jsPlumb.jsPlumbUIComponent, jsPlumb.Overlays.AbstractOverlay], {
+    _ju.extend(AbstractSvgArrowOverlay, [_jp.jsPlumbUIComponent, _jp.Overlays.AbstractOverlay], {
         cleanup: function (force) {
             if (this.path != null) {
                 if (force)
@@ -11784,25 +11876,25 @@
         }
     });
 
-    jsPlumb.Overlays.svg.Arrow = function () {
-        AbstractSvgArrowOverlay.apply(this, [jsPlumb.Overlays.Arrow, arguments]);
+    _jp.Overlays.svg.Arrow = function () {
+        AbstractSvgArrowOverlay.apply(this, [_jp.Overlays.Arrow, arguments]);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.svg.Arrow, [ jsPlumb.Overlays.Arrow, AbstractSvgArrowOverlay ]);
+    _ju.extend(_jp.Overlays.svg.Arrow, [ _jp.Overlays.Arrow, AbstractSvgArrowOverlay ]);
 
-    jsPlumb.Overlays.svg.PlainArrow = function () {
-        AbstractSvgArrowOverlay.apply(this, [jsPlumb.Overlays.PlainArrow, arguments]);
+    _jp.Overlays.svg.PlainArrow = function () {
+        AbstractSvgArrowOverlay.apply(this, [_jp.Overlays.PlainArrow, arguments]);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.svg.PlainArrow, [ jsPlumb.Overlays.PlainArrow, AbstractSvgArrowOverlay ]);
+    _ju.extend(_jp.Overlays.svg.PlainArrow, [ _jp.Overlays.PlainArrow, AbstractSvgArrowOverlay ]);
 
-    jsPlumb.Overlays.svg.Diamond = function () {
-        AbstractSvgArrowOverlay.apply(this, [jsPlumb.Overlays.Diamond, arguments]);
+    _jp.Overlays.svg.Diamond = function () {
+        AbstractSvgArrowOverlay.apply(this, [_jp.Overlays.Diamond, arguments]);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.svg.Diamond, [ jsPlumb.Overlays.Diamond, AbstractSvgArrowOverlay ]);
+    _ju.extend(_jp.Overlays.svg.Diamond, [ _jp.Overlays.Diamond, AbstractSvgArrowOverlay ]);
 
     // a test
-    jsPlumb.Overlays.svg.GuideLines = function () {
+    _jp.Overlays.svg.GuideLines = function () {
         var path = null, self = this, p1_1, p1_2;
-        jsPlumb.Overlays.GuideLines.apply(this, arguments);
+        _jp.Overlays.GuideLines.apply(this, arguments);
         this.paint = function (params, containerExtents) {
             if (path == null) {
                 path = _node("path");
@@ -11852,19 +11944,19 @@
                 " L" + d2.x + "," + d2.y;
         };
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.svg.GuideLines, jsPlumb.Overlays.GuideLines);
-})();
+    _ju.extend(_jp.Overlays.svg.GuideLines, _jp.Overlays.GuideLines);
+}).call(this);
 
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
  * This file contains the VML renderers.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  * 
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -11872,496 +11964,518 @@
  * Dual licensed under the MIT and GPL2 licenses.
  */
 
-;(function() {
-	
-	"use strict";
-	
-	// http://ajaxian.com/archives/the-vml-changes-in-ie-8
-	// http://www.nczonline.net/blog/2010/01/19/internet-explorer-8-document-and-browser-modes/
-	// http://www.louisremi.com/2009/03/30/changes-in-vml-for-ie8-or-what-feature-can-the-ie-dev-team-break-for-you-today/
-	
-	var vmlAttributeMap = {
-		"stroke-linejoin":"joinstyle",
-		"joinstyle":"joinstyle",		
-		"endcap":"endcap",
-		"miterlimit":"miterlimit"
-	},
-	jsPlumbStylesheet = null;
-	
-	if (document.createStyleSheet && document.namespaces) {			
-		
-		var ruleClasses = [
-				".jsplumb_vml", "jsplumb\\:textbox", "jsplumb\\:oval", "jsplumb\\:rect", 
-				"jsplumb\\:stroke", "jsplumb\\:shape", "jsplumb\\:group"
-			],
-			rule = "behavior:url(#default#VML);position:absolute;";
+;
+(function () {
 
-		jsPlumbStylesheet = document.createStyleSheet();
+    "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil;
 
-		for (var i = 0; i < ruleClasses.length; i++)
-			jsPlumbStylesheet.addRule(ruleClasses[i], rule);
+    // http://ajaxian.com/archives/the-vml-changes-in-ie-8
+    // http://www.nczonline.net/blog/2010/01/19/internet-explorer-8-document-and-browser-modes/
+    // http://www.louisremi.com/2009/03/30/changes-in-vml-for-ie8-or-what-feature-can-the-ie-dev-team-break-for-you-today/
 
-		// in this page it is also mentioned that IE requires the extra arg to the namespace
-		// http://www.louisremi.com/2009/03/30/changes-in-vml-for-ie8-or-what-feature-can-the-ie-dev-team-break-for-you-today/
-		// but someone commented saying they didn't need it, and it seems jsPlumb doesnt need it either.
-		// var iev = document.documentMode;
-		//if (!iev || iev < 8)
-			document.namespaces.add("jsplumb", "urn:schemas-microsoft-com:vml");
-		//else
-		//	document.namespaces.add("jsplumb", "urn:schemas-microsoft-com:vml", "#default#VML");
-	}
-	
-	jsPlumb.vml = {};
-	
-	var scale = 1000,
-    
-	_atts = function(o, atts) {
-		for (var i in atts) { 
-			// IE8 fix: setattribute does not work after an element has been added to the dom!
-			// http://www.louisremi.com/2009/03/30/changes-in-vml-for-ie8-or-what-feature-can-the-ie-dev-team-break-for-you-today/
-			//o.setAttribute(i, atts[i]);
+    var vmlAttributeMap = {
+            "stroke-linejoin": "joinstyle",
+            "joinstyle": "joinstyle",
+            "endcap": "endcap",
+            "miterlimit": "miterlimit"
+        },
+        jsPlumbStylesheet = null;
 
-			/*There is an additional problem when accessing VML elements by using get/setAttribute. The simple solution is following:
+    if (document.createStyleSheet && document.namespaces) {
 
-			if (document.documentMode==8) {
-			ele.opacity=1;
-			} else {
-			ele.setAttribute(‘opacity’,1);
-			}
-			*/
+        var ruleClasses = [
+                ".jsplumb_vml", "jsplumb\\:textbox", "jsplumb\\:oval", "jsplumb\\:rect",
+                "jsplumb\\:stroke", "jsplumb\\:shape", "jsplumb\\:group"
+            ],
+            rule = "behavior:url(#default#VML);position:absolute;";
 
-			o[i] = atts[i];
-		}
-	},
-	_node = function(name, d, atts, parent, _jsPlumb, deferToJsPlumbContainer) {
-		atts = atts || {};
-		var o = document.createElement("jsplumb:" + name);
-		if (deferToJsPlumbContainer)
-			_jsPlumb.appendElement(o, parent);
-		else
-			// TODO is this failing? that would be because parent is not a plain DOM element.
-			// IF SO, uncomment the line below this one and remove this one.
-			parent.appendChild(o);
-			//jsPlumb.getDOMElement(parent).appendChild(o);
-			
-		o.className = (atts["class"] ? atts["class"] + " " : "") + "jsplumb_vml";
-		_pos(o, d);
-		_atts(o, atts);
-		return o;
-	},
-	_pos = function(o,d, zIndex) {
-		o.style.left = d[0] + "px";		
-		o.style.top =  d[1] + "px";
-		o.style.width= d[2] + "px";
-		o.style.height= d[3] + "px";
-		o.style.position = "absolute";
-		if (zIndex)
-			o.style.zIndex = zIndex;
-	},
-	_conv = jsPlumb.vml.convertValue = function(v) {
-		return Math.floor(v * scale);
-	},	
-	// tests if the given style is "transparent" and then sets the appropriate opacity node to 0 if so,
-	// or 1 if not.  TODO in the future, support variable opacity.
-	_maybeSetOpacity = function(styleToWrite, styleToCheck, type, component) {
-		if ("transparent" === styleToCheck)
-			component.setOpacity(type, "0.0");
-		else
-			component.setOpacity(type, "1.0");
-	},
-	_applyStyles = function(node, style, component, _jsPlumb) {
-		var styleToWrite = {};
-		if (style.strokeStyle) {
-			styleToWrite.stroked = "true";
-			var strokeColor = jsPlumbUtil.convertStyle(style.strokeStyle, true);
-			styleToWrite.strokecolor = strokeColor;
-			_maybeSetOpacity(styleToWrite, strokeColor, "stroke", component);
-			styleToWrite.strokeweight = style.lineWidth + "px";
-		}
-		else styleToWrite.stroked = "false";
-		
-		if (style.fillStyle) {
-			styleToWrite.filled = "true";
-			var fillColor = jsPlumbUtil.convertStyle(style.fillStyle, true);
-			styleToWrite.fillcolor = fillColor;
-			_maybeSetOpacity(styleToWrite, fillColor, "fill", component);
-		}
-		else styleToWrite.filled = "false";
-		
-		if(style.dashstyle) {
-			if (component.strokeNode == null) {
-				component.strokeNode = _node("stroke", [0,0,0,0], { dashstyle:style.dashstyle }, node, _jsPlumb);				
-			}
-			else
-				component.strokeNode.dashstyle = style.dashstyle;
-		}					
-		else if (style["stroke-dasharray"] && style.lineWidth) {
-			var sep = style["stroke-dasharray"].indexOf(",") == -1 ? " " : ",",
-			parts = style["stroke-dasharray"].split(sep),
-			styleToUse = "";
-			for(var i = 0; i < parts.length; i++) {
-				styleToUse += (Math.floor(parts[i] / style.lineWidth) + sep);
-			}
-			if (component.strokeNode == null) {
-				component.strokeNode = _node("stroke", [0,0,0,0], { dashstyle:styleToUse }, node, _jsPlumb);				
-			}
-			else
-				component.strokeNode.dashstyle = styleToUse;
-		}
-		
-		_atts(node, styleToWrite);
-	},
-	/*
-	 * Base class for Vml endpoints and connectors. Extends jsPlumbUIComponent. 
-	 */
-	VmlComponent = function() {				
-		var self = this, renderer = {};
-		jsPlumb.jsPlumbUIComponent.apply(this, arguments);	
+        jsPlumbStylesheet = document.createStyleSheet();
 
-		this.opacityNodes = {
-			"stroke":null,
-			"fill":null
-		};
-		this.initOpacityNodes = function(vml) {
-			self.opacityNodes.stroke = _node("stroke", [0,0,1,1], {opacity:"0.0"}, vml, self._jsPlumb.instance);
-			self.opacityNodes.fill = _node("fill", [0,0,1,1], {opacity:"0.0"}, vml, self._jsPlumb.instance);							
-		};
-		this.setOpacity = function(type, value) {
-			var node = self.opacityNodes[type];
-			if (node) node.opacity = "" + value;
-		};
-		var displayElements = [ ];
-		this.getDisplayElements = function() { 
-			return displayElements; 
-		};
-		
-		this.appendDisplayElement = function(el, doNotAppendToCanvas) {
-			if (!doNotAppendToCanvas) self.canvas.parentNode.appendChild(el);
-			displayElements.push(el);
-		};
-	};
-	jsPlumbUtil.extend(VmlComponent, jsPlumb.jsPlumbUIComponent, {
-		cleanup:function() {			
-			if (this.bgCanvas) this.bgCanvas.parentNode.removeChild(this.bgCanvas);
-			if (this.canvas) this.canvas.parentNode.removeChild(this.canvas);
-		}
-	});
+        for (var i = 0; i < ruleClasses.length; i++)
+            jsPlumbStylesheet.addRule(ruleClasses[i], rule);
 
-	/*
-	 * Base class for Vml connectors. extends VmlComponent.
-	 */
-	var VmlConnector = jsPlumb.ConnectorRenderers.vml = function(params, component) {
-		this.strokeNode = null;
-		this.canvas = null;
-		VmlComponent.apply(this, arguments);
-		var clazz = this._jsPlumb.instance.connectorClass + (params.cssClass ? (" " + params.cssClass) : "");
-		this.paint = function(style) {		
-			if (style !== null) {			
+        // in this page it is also mentioned that IE requires the extra arg to the namespace
+        // http://www.louisremi.com/2009/03/30/changes-in-vml-for-ie8-or-what-feature-can-the-ie-dev-team-break-for-you-today/
+        // but someone commented saying they didn't need it, and it seems jsPlumb doesnt need it either.
+        // var iev = document.documentMode;
+        //if (!iev || iev < 8)
+        document.namespaces.add("jsplumb", "urn:schemas-microsoft-com:vml");
+        //else
+        //	document.namespaces.add("jsplumb", "urn:schemas-microsoft-com:vml", "#default#VML");
+    }
 
-				// we need to be at least 1 pixel in each direction, because otherwise coordsize gets set to
-				// 0 and overlays cannot paint.
-				this.w = Math.max(this.w, 1);
-				this.h = Math.max(this.h, 1);
+    _jp.vml = {};
 
-				var segments = this.getSegments(), p = { "path":"" },
+    var scale = 1000,
+
+        _atts = function (o, atts) {
+            for (var i in atts) {
+                // IE8 fix: setattribute does not work after an element has been added to the dom!
+                // http://www.louisremi.com/2009/03/30/changes-in-vml-for-ie8-or-what-feature-can-the-ie-dev-team-break-for-you-today/
+                //o.setAttribute(i, atts[i]);
+
+                /*There is an additional problem when accessing VML elements by using get/setAttribute. The simple solution is following:
+
+                 if (document.documentMode==8) {
+                 ele.opacity=1;
+                 } else {
+                 ele.setAttribute(‘opacity’,1);
+                 }
+                 */
+
+                o[i] = atts[i];
+            }
+        },
+        _node = function (name, d, atts, parent, _jsPlumb, deferToJsPlumbContainer) {
+            atts = atts || {};
+            var o = document.createElement("jsplumb:" + name);
+            if (deferToJsPlumbContainer)
+                _jsPlumb.appendElement(o, parent);
+            else
+            // TODO is this failing? that would be because parent is not a plain DOM element.
+            // IF SO, uncomment the line below this one and remove this one.
+                parent.appendChild(o);
+            //jsPlumb.getDOMElement(parent).appendChild(o);
+
+            o.className = (atts["class"] ? atts["class"] + " " : "") + "jsplumb_vml";
+            _pos(o, d);
+            _atts(o, atts);
+            return o;
+        },
+        _pos = function (o, d, zIndex) {
+            o.style.left = d[0] + "px";
+            o.style.top = d[1] + "px";
+            o.style.width = d[2] + "px";
+            o.style.height = d[3] + "px";
+            o.style.position = "absolute";
+            if (zIndex)
+                o.style.zIndex = zIndex;
+        },
+        _conv = _jp.vml.convertValue = function (v) {
+            return Math.floor(v * scale);
+        },
+    // tests if the given style is "transparent" and then sets the appropriate opacity node to 0 if so,
+    // or 1 if not.  TODO in the future, support variable opacity.
+        _maybeSetOpacity = function (styleToWrite, styleToCheck, type, component) {
+            if ("transparent" === styleToCheck)
+                component.setOpacity(type, "0.0");
+            else
+                component.setOpacity(type, "1.0");
+        },
+        _applyStyles = function (node, style, component, _jsPlumb) {
+            var styleToWrite = {};
+            if (style.strokeStyle) {
+                styleToWrite.stroked = "true";
+                var strokeColor = _ju.convertStyle(style.strokeStyle, true);
+                styleToWrite.strokecolor = strokeColor;
+                _maybeSetOpacity(styleToWrite, strokeColor, "stroke", component);
+                styleToWrite.strokeweight = style.lineWidth + "px";
+            }
+            else styleToWrite.stroked = "false";
+
+            if (style.fillStyle) {
+                styleToWrite.filled = "true";
+                var fillColor = _ju.convertStyle(style.fillStyle, true);
+                styleToWrite.fillcolor = fillColor;
+                _maybeSetOpacity(styleToWrite, fillColor, "fill", component);
+            }
+            else styleToWrite.filled = "false";
+
+            if (style.dashstyle) {
+                if (component.strokeNode == null) {
+                    component.strokeNode = _node("stroke", [0, 0, 0, 0], { dashstyle: style.dashstyle }, node, _jsPlumb);
+                }
+                else
+                    component.strokeNode.dashstyle = style.dashstyle;
+            }
+            else if (style["stroke-dasharray"] && style.lineWidth) {
+                var sep = style["stroke-dasharray"].indexOf(",") == -1 ? " " : ",",
+                    parts = style["stroke-dasharray"].split(sep),
+                    styleToUse = "";
+                for (var i = 0; i < parts.length; i++) {
+                    styleToUse += (Math.floor(parts[i] / style.lineWidth) + sep);
+                }
+                if (component.strokeNode == null) {
+                    component.strokeNode = _node("stroke", [0, 0, 0, 0], { dashstyle: styleToUse }, node, _jsPlumb);
+                }
+                else
+                    component.strokeNode.dashstyle = styleToUse;
+            }
+
+            _atts(node, styleToWrite);
+        },
+    /*
+     * Base class for Vml endpoints and connectors. Extends jsPlumbUIComponent.
+     */
+        VmlComponent = function () {
+            var self = this, renderer = {};
+            _jp.jsPlumbUIComponent.apply(this, arguments);
+
+            this.opacityNodes = {
+                "stroke": null,
+                "fill": null
+            };
+            this.initOpacityNodes = function (vml) {
+                self.opacityNodes.stroke = _node("stroke", [0, 0, 1, 1], {opacity: "0.0"}, vml, self._jsPlumb.instance);
+                self.opacityNodes.fill = _node("fill", [0, 0, 1, 1], {opacity: "0.0"}, vml, self._jsPlumb.instance);
+            };
+            this.setOpacity = function (type, value) {
+                var node = self.opacityNodes[type];
+                if (node) node.opacity = "" + value;
+            };
+            var displayElements = [ ];
+            this.getDisplayElements = function () {
+                return displayElements;
+            };
+
+            this.appendDisplayElement = function (el, doNotAppendToCanvas) {
+                if (!doNotAppendToCanvas) self.canvas.parentNode.appendChild(el);
+                displayElements.push(el);
+            };
+        };
+    _ju.extend(VmlComponent, _jp.jsPlumbUIComponent, {
+        cleanup: function () {
+            if (this.bgCanvas) this.bgCanvas.parentNode.removeChild(this.bgCanvas);
+            if (this.canvas) this.canvas.parentNode.removeChild(this.canvas);
+        }
+    });
+
+    /*
+     * Base class for Vml connectors. extends VmlComponent.
+     */
+    var VmlConnector = _jp.ConnectorRenderers.vml = function (params, component) {
+        this.strokeNode = null;
+        this.canvas = null;
+        VmlComponent.apply(this, arguments);
+        var clazz = this._jsPlumb.instance.connectorClass + (params.cssClass ? (" " + params.cssClass) : "");
+        this.paint = function (style) {
+            if (style !== null) {
+
+                // we need to be at least 1 pixel in each direction, because otherwise coordsize gets set to
+                // 0 and overlays cannot paint.
+                this.w = Math.max(this.w, 1);
+                this.h = Math.max(this.h, 1);
+
+                var segments = this.getSegments(), p = { "path": "" },
                     d = [this.x, this.y, this.w, this.h];
-				
-				// create path from segments.	
-				for (var i = 0; i < segments.length; i++) {
-					p.path += jsPlumb.Segments.vml.SegmentRenderer.getPath(segments[i]);
-					p.path += " ";
-				}
+
+                // create path from segments.
+                for (var i = 0; i < segments.length; i++) {
+                    p.path += _jp.Segments.vml.SegmentRenderer.getPath(segments[i]);
+                    p.path += " ";
+                }
 
                 //*
-				if (style.outlineColor) {
-					var outlineWidth = style.outlineWidth || 1,
-					outlineStrokeWidth = style.lineWidth + (2 * outlineWidth),
-					outlineStyle = {
-						strokeStyle : jsPlumbUtil.convertStyle(style.outlineColor),
-						lineWidth : outlineStrokeWidth
-					};
-					for (var aa in vmlAttributeMap) outlineStyle[aa] = style[aa];
-					
-					if (this.bgCanvas == null) {						
-						p["class"] = clazz;
-						p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
-						this.bgCanvas = _node("shape", d, p, params.parent, this._jsPlumb.instance, true);						
-						_pos(this.bgCanvas, d);
-						this.appendDisplayElement(this.bgCanvas, true);
-						this.initOpacityNodes(this.bgCanvas, ["stroke"]);
+                if (style.outlineColor) {
+                    var outlineWidth = style.outlineWidth || 1,
+                        outlineStrokeWidth = style.lineWidth + (2 * outlineWidth),
+                        outlineStyle = {
+                            strokeStyle: _ju.convertStyle(style.outlineColor),
+                            lineWidth: outlineStrokeWidth
+                        };
+                    for (var aa in vmlAttributeMap) outlineStyle[aa] = style[aa];
+
+                    if (this.bgCanvas == null) {
+                        p["class"] = clazz;
+                        p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
+                        this.bgCanvas = _node("shape", d, p, params.parent, this._jsPlumb.instance, true);
+                        _pos(this.bgCanvas, d);
+                        this.appendDisplayElement(this.bgCanvas, true);
+                        this.initOpacityNodes(this.bgCanvas, ["stroke"]);
                         this.bgCanvas._jsPlumb = component;
-					}
-					else {
-						p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
-						_pos(this.bgCanvas, d);
-						_atts(this.bgCanvas, p);
-					}
-					
-					_applyStyles(this.bgCanvas, outlineStyle, this);
-				}
-				//*/
-				
-				if (this.canvas == null) {										
-					p["class"] = clazz;
-					p.coordsize = (d[2] * scale) + "," + (d[3] * scale);					
-					this.canvas = _node("shape", d, p, params.parent, this._jsPlumb.instance, true);					                                    
-					this.appendDisplayElement(this.canvas, true);
-					this.initOpacityNodes(this.canvas, ["stroke"]);
+                    }
+                    else {
+                        p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
+                        _pos(this.bgCanvas, d);
+                        _atts(this.bgCanvas, p);
+                    }
+
+                    _applyStyles(this.bgCanvas, outlineStyle, this);
+                }
+                //*/
+
+                if (this.canvas == null) {
+                    p["class"] = clazz;
+                    p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
+                    this.canvas = _node("shape", d, p, params.parent, this._jsPlumb.instance, true);
+                    this.appendDisplayElement(this.canvas, true);
+                    this.initOpacityNodes(this.canvas, ["stroke"]);
                     this.canvas._jsPlumb = component;
-				}
-				else {
-					p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
-					_pos(this.canvas, d);
-					_atts(this.canvas, p);
-				}
-				
-				_applyStyles(this.canvas, style, this, this._jsPlumb.instance);
-			}
-		};	
-				
-	};
-	jsPlumbUtil.extend(VmlConnector, VmlComponent, {
-		setVisible:function(v) {
-			if (this.canvas) {
-				this.canvas.style.display = v ? "block" : "none";
-			}
-			if (this.bgCanvas) {
-				this.bgCanvas.style.display = v ? "block" : "none";
-			}
-		}
-	});	
-	
-	/*
-	 * 
-	 * Base class for Vml Endpoints. extends VmlComponent.
-	 * 
-	 */
-	var VmlEndpoint = window.VmlEndpoint = function(params) {
-		VmlComponent.apply(this, arguments);
-		this._jsPlumb.vml = null;//, opacityStrokeNode = null, opacityFillNode = null;
-		this.canvas = document.createElement("div");
-		this.canvas.style.position = "absolute";
-		this._jsPlumb.clazz = this._jsPlumb.instance.endpointClass + (params.cssClass ? (" " + params.cssClass) : "");
+                }
+                else {
+                    p.coordsize = (d[2] * scale) + "," + (d[3] * scale);
+                    _pos(this.canvas, d);
+                    _atts(this.canvas, p);
+                }
 
-		// TODO vml endpoint adds class to VML at constructor time.  but the addClass method adds VML
-		// to the enclosing DIV. what to do?  seems like it would be better to just target the div.
-		// HOWEVER...vml connection has no containing div.  why not? it feels like it should.
+                _applyStyles(this.canvas, style, this, this._jsPlumb.instance);
+            }
+        };
 
-		params._jsPlumb.appendElement(this.canvas, params.parent);
+    };
+    _ju.extend(VmlConnector, VmlComponent, {
+        setVisible: function (v) {
+            if (this.canvas) {
+                this.canvas.style.display = v ? "block" : "none";
+            }
+            if (this.bgCanvas) {
+                this.bgCanvas.style.display = v ? "block" : "none";
+            }
+        }
+    });
 
-		this.paint = function(style, anchor) {
-			var p = { }, vml = this._jsPlumb.vml;				
-			
-			jsPlumbUtil.sizeElement(this.canvas, this.x, this.y, this.w, this.h);
-			if (this._jsPlumb.vml == null) {
-				p["class"] = this._jsPlumb.clazz;
-				vml = this._jsPlumb.vml = this.getVml([0,0, this.w, this.h], p, anchor, this.canvas, this._jsPlumb.instance);				
+    /*
+     *
+     * Base class for Vml Endpoints. extends VmlComponent.
+     *
+     */
+    var VmlEndpoint = _jp.VmlEndpoint = function (params) {
+        VmlComponent.apply(this, arguments);
+        this._jsPlumb.vml = null;//, opacityStrokeNode = null, opacityFillNode = null;
+        this.canvas = document.createElement("div");
+        this.canvas.style.position = "absolute";
+        this._jsPlumb.clazz = this._jsPlumb.instance.endpointClass + (params.cssClass ? (" " + params.cssClass) : "");
+
+        // TODO vml endpoint adds class to VML at constructor time.  but the addClass method adds VML
+        // to the enclosing DIV. what to do?  seems like it would be better to just target the div.
+        // HOWEVER...vml connection has no containing div.  why not? it feels like it should.
+
+        params._jsPlumb.appendElement(this.canvas, params.parent);
+
+        this.paint = function (style, anchor) {
+            var p = { }, vml = this._jsPlumb.vml;
+
+            _ju.sizeElement(this.canvas, this.x, this.y, this.w, this.h);
+            if (this._jsPlumb.vml == null) {
+                p["class"] = this._jsPlumb.clazz;
+                vml = this._jsPlumb.vml = this.getVml([0, 0, this.w, this.h], p, anchor, this.canvas, this._jsPlumb.instance);
 
                 this.appendDisplayElement(vml, true);
-				this.appendDisplayElement(this.canvas, true);
-				
-				this.initOpacityNodes(vml, ["fill"]);			
-			}
-			else {				
-				_pos(vml, [0,0, this.w, this.h]);
-				_atts(vml, p);
-			}
-			
-			_applyStyles(vml, style, this);
-		};		
-	};
-	jsPlumbUtil.extend(VmlEndpoint, VmlComponent);
-	
+                this.appendDisplayElement(this.canvas, true);
+
+                this.initOpacityNodes(vml, ["fill"]);
+            }
+            else {
+                _pos(vml, [0, 0, this.w, this.h]);
+                _atts(vml, p);
+            }
+
+            _applyStyles(vml, style, this);
+        };
+    };
+    _ju.extend(VmlEndpoint, VmlComponent);
+
 // ******************************* vml segments *****************************************************	
-		
-	jsPlumb.Segments.vml = {
-		SegmentRenderer : {		
-			getPath : function(segment) {
-				return ({
-					"Straight":function(segment) {
-						var d = segment.params;
-						return "m" + _conv(d.x1) + "," + _conv(d.y1) + " l" + _conv(d.x2) + "," + _conv(d.y2) + " e";
-					},
-					"Bezier":function(segment) {
-						var d = segment.params;
-						return "m" + _conv(d.x1) + "," + _conv(d.y1) + 
-				   			" c" + _conv(d.cp1x) + "," + _conv(d.cp1y) + "," + _conv(d.cp2x) + "," + _conv(d.cp2y) + "," + _conv(d.x2) + "," + _conv(d.y2) + " e";
-					},
-					"Arc":function(segment) {					
-						var d = segment.params,
-							xmin = Math.min(d.x1, d.x2),
-							xmax = Math.max(d.x1, d.x2),
-							ymin = Math.min(d.y1, d.y2),
-							ymax = Math.max(d.y1, d.y2),														
-							sf = segment.anticlockwise ? 1 : 0,
-							pathType = (segment.anticlockwise ? "at " : "wa "),
-							makePosString = function() {
-								if (d.loopback)
-									return "0,0," + _conv(2*d.r) + "," + _conv(2 * d.r);
 
-								var xy = [
-										null,
-										[ function() { return [xmin, ymin ];}, function() { return [xmin - d.r, ymin - d.r ];}],
-										[ function() { return [xmin - d.r, ymin ];}, function() { return [xmin, ymin - d.r ];}],
-										[ function() { return [xmin - d.r, ymin - d.r ];}, function() { return [xmin, ymin ];}],
-										[ function() { return [xmin, ymin - d.r ];}, function() { return [xmin - d.r, ymin ];}]
-									][segment.segment][sf]();
+    _jp.Segments.vml = {
+        SegmentRenderer: {
+            getPath: function (segment) {
+                return ({
+                    "Straight": function (segment) {
+                        var d = segment.params;
+                        return "m" + _conv(d.x1) + "," + _conv(d.y1) + " l" + _conv(d.x2) + "," + _conv(d.y2) + " e";
+                    },
+                    "Bezier": function (segment) {
+                        var d = segment.params;
+                        return "m" + _conv(d.x1) + "," + _conv(d.y1) +
+                            " c" + _conv(d.cp1x) + "," + _conv(d.cp1y) + "," + _conv(d.cp2x) + "," + _conv(d.cp2y) + "," + _conv(d.x2) + "," + _conv(d.y2) + " e";
+                    },
+                    "Arc": function (segment) {
+                        var d = segment.params,
+                            xmin = Math.min(d.x1, d.x2),
+                            xmax = Math.max(d.x1, d.x2),
+                            ymin = Math.min(d.y1, d.y2),
+                            ymax = Math.max(d.y1, d.y2),
+                            sf = segment.anticlockwise ? 1 : 0,
+                            pathType = (segment.anticlockwise ? "at " : "wa "),
+                            makePosString = function () {
+                                if (d.loopback)
+                                    return "0,0," + _conv(2 * d.r) + "," + _conv(2 * d.r);
 
-								return _conv(xy[0]) + "," + _conv(xy[1]) + "," + _conv(xy[0] + (2*d.r)) + "," + _conv(xy[1] + (2*d.r));
-							};
+                                var xy = [
+                                    null,
+                                    [ function () {
+                                        return [xmin, ymin ];
+                                    }, function () {
+                                        return [xmin - d.r, ymin - d.r ];
+                                    }],
+                                    [ function () {
+                                        return [xmin - d.r, ymin ];
+                                    }, function () {
+                                        return [xmin, ymin - d.r ];
+                                    }],
+                                    [ function () {
+                                        return [xmin - d.r, ymin - d.r ];
+                                    }, function () {
+                                        return [xmin, ymin ];
+                                    }],
+                                    [ function () {
+                                        return [xmin, ymin - d.r ];
+                                    }, function () {
+                                        return [xmin - d.r, ymin ];
+                                    }]
+                                ][segment.segment][sf]();
 
-						return pathType + " " + makePosString() + "," + _conv(d.x1) + "," + _conv(d.y1) + "," + _conv(d.x2) + "," + _conv(d.y2) + " e";												
-					}
-						
-				})[segment.type](segment);	
-			}
-		}
-	};
-	
+                                return _conv(xy[0]) + "," + _conv(xy[1]) + "," + _conv(xy[0] + (2 * d.r)) + "," + _conv(xy[1] + (2 * d.r));
+                            };
+
+                        return pathType + " " + makePosString() + "," + _conv(d.x1) + "," + _conv(d.y1) + "," + _conv(d.x2) + "," + _conv(d.y2) + " e";
+                    }
+
+                })[segment.type](segment);
+            }
+        }
+    };
+
 // ******************************* /vml segments *****************************************************	
 
 // ******************************* vml endpoints *****************************************************
-	
-	jsPlumb.Endpoints.vml.Dot = function() {
-		jsPlumb.Endpoints.Dot.apply(this, arguments);
-		VmlEndpoint.apply(this, arguments);
-		this.getVml = function(d, atts, anchor, parent, _jsPlumb) { return _node("oval", d, atts, parent, _jsPlumb); };
-	};
-	jsPlumbUtil.extend(jsPlumb.Endpoints.vml.Dot, VmlEndpoint);
-	
-	jsPlumb.Endpoints.vml.Rectangle = function() {
-		jsPlumb.Endpoints.Rectangle.apply(this, arguments);
-		VmlEndpoint.apply(this, arguments);
-		this.getVml = function(d, atts, anchor, parent, _jsPlumb) { return _node("rect", d, atts, parent, _jsPlumb); };
-	};
-	jsPlumbUtil.extend(jsPlumb.Endpoints.vml.Rectangle, VmlEndpoint);
-	
-	/*
-	 * VML Image Endpoint is the same as the default image endpoint.
-	 */
-	jsPlumb.Endpoints.vml.Image = jsPlumb.Endpoints.Image;
-	
-	/**
-	 * placeholder for Blank endpoint in vml renderer.
-	 */
-	jsPlumb.Endpoints.vml.Blank = jsPlumb.Endpoints.Blank;
-	
+
+    _jp.Endpoints.vml.Dot = function () {
+        _jp.Endpoints.Dot.apply(this, arguments);
+        VmlEndpoint.apply(this, arguments);
+        this.getVml = function (d, atts, anchor, parent, _jsPlumb) {
+            return _node("oval", d, atts, parent, _jsPlumb);
+        };
+    };
+    _ju.extend(_jp.Endpoints.vml.Dot, VmlEndpoint);
+
+    _jp.Endpoints.vml.Rectangle = function () {
+        _jp.Endpoints.Rectangle.apply(this, arguments);
+        VmlEndpoint.apply(this, arguments);
+        this.getVml = function (d, atts, anchor, parent, _jsPlumb) {
+            return _node("rect", d, atts, parent, _jsPlumb);
+        };
+    };
+    _ju.extend(_jp.Endpoints.vml.Rectangle, VmlEndpoint);
+
+    /*
+     * VML Image Endpoint is the same as the default image endpoint.
+     */
+    _jp.Endpoints.vml.Image = _jp.Endpoints.Image;
+
+    /**
+     * placeholder for Blank endpoint in vml renderer.
+     */
+    _jp.Endpoints.vml.Blank = _jp.Endpoints.Blank;
+
 // ******************************* /vml endpoints *****************************************************	
 
 // ******************************* vml overlays *****************************************************
-	
-	/**
-	 * VML Label renderer. uses the default label renderer (which adds an element to the DOM)
-	 */
-	jsPlumb.Overlays.vml.Label  = jsPlumb.Overlays.Label;
-	
-	/**
-	 * VML Custom renderer. uses the default Custom renderer (which adds an element to the DOM)
-	 */
-	jsPlumb.Overlays.vml.Custom = jsPlumb.Overlays.Custom;
-	
-	/**
-	 * Abstract VML arrow superclass
-	 */
-	var AbstractVmlArrowOverlay = function(superclass, originalArgs) {
-    	superclass.apply(this, originalArgs);
-    	VmlComponent.apply(this, originalArgs);
-    	var self = this, path = null;
-    	this.canvas = null; 
-    	this.isAppendedAtTopLevel = true;
-    	var getPath = function(d) {    		
-    		return "m " + _conv(d.hxy.x) + "," + _conv(d.hxy.y) +
-    		       " l " + _conv(d.tail[0].x) + "," + _conv(d.tail[0].y) + 
-    		       " " + _conv(d.cxy.x) + "," + _conv(d.cxy.y) + 
-    		       " " + _conv(d.tail[1].x) + "," + _conv(d.tail[1].y) + 
-    		       " x e";
-    	};
-    	this.paint = function(params, containerExtents) {
-    		// only draws for connectors, not endpoints.
-    		if (params.component.canvas && containerExtents) {
-	    		var p = {}, d = params.d, connector = params.component;
-				if (params.strokeStyle) {
-					p.stroked = "true";
-					p.strokecolor = jsPlumbUtil.convertStyle(params.strokeStyle, true);    				
-				}
-				if (params.lineWidth) p.strokeweight = params.lineWidth + "px";
-				if (params.fillStyle) {
-					p.filled = "true";
-					p.fillcolor = params.fillStyle;
-				}			
 
-				var xmin = Math.min(d.hxy.x, d.tail[0].x, d.tail[1].x, d.cxy.x),
-					ymin = Math.min(d.hxy.y, d.tail[0].y, d.tail[1].y, d.cxy.y),
-					xmax = Math.max(d.hxy.x, d.tail[0].x, d.tail[1].x, d.cxy.x),
-					ymax = Math.max(d.hxy.y, d.tail[0].y, d.tail[1].y, d.cxy.y),
-					w = Math.abs(xmax - xmin),
-					h = Math.abs(ymax - ymin),
-					dim = [xmin, ymin, w, h];
+    /**
+     * VML Label renderer. uses the default label renderer (which adds an element to the DOM)
+     */
+    _jp.Overlays.vml.Label = _jp.Overlays.Label;
 
-				// for VML, we create overlays using shapes that have the same dimensions and
-				// coordsize as their connector - overlays calculate themselves relative to the
-				// connector (it's how it's been done since the original canvas implementation, because
-				// for canvas that makes sense).
-				p.path = getPath(d);
-				p.coordsize = (connector.w * scale) + "," + (connector.h * scale);			
-				
-				dim[0] = connector.x;
-				dim[1] = connector.y;
-				dim[2] = connector.w;
-				dim[3] = connector.h;
-				
-	    		if (self.canvas == null) {
-	    			var overlayClass = connector._jsPlumb.overlayClass || "";
-	    			var clazz = originalArgs && (originalArgs.length == 1) ? (originalArgs[0].cssClass || "") : "";
-	    			p["class"] = clazz + " " + overlayClass;
-					self.canvas = _node("shape", dim, p, connector.canvas.parentNode, connector._jsPlumb.instance, true);								
-					connector.appendDisplayElement(self.canvas, true);
-				}
-				else {				
-					_pos(self.canvas, dim);
-					_atts(self.canvas, p);
-				}    		
-			}
-    	};
-		this.cleanup = function() {
-    		if (this.canvas != null) this._jsPlumb.instance.removeElement(this.canvas);
-    	};
+    /**
+     * VML Custom renderer. uses the default Custom renderer (which adds an element to the DOM)
+     */
+    _jp.Overlays.vml.Custom = _jp.Overlays.Custom;
+
+    /**
+     * Abstract VML arrow superclass
+     */
+    var AbstractVmlArrowOverlay = function (superclass, originalArgs) {
+        superclass.apply(this, originalArgs);
+        VmlComponent.apply(this, originalArgs);
+        var self = this, path = null;
+        this.canvas = null;
+        this.isAppendedAtTopLevel = true;
+        var getPath = function (d) {
+            return "m " + _conv(d.hxy.x) + "," + _conv(d.hxy.y) +
+                " l " + _conv(d.tail[0].x) + "," + _conv(d.tail[0].y) +
+                " " + _conv(d.cxy.x) + "," + _conv(d.cxy.y) +
+                " " + _conv(d.tail[1].x) + "," + _conv(d.tail[1].y) +
+                " x e";
+        };
+        this.paint = function (params, containerExtents) {
+            // only draws for connectors, not endpoints.
+            if (params.component.canvas && containerExtents) {
+                var p = {}, d = params.d, connector = params.component;
+                if (params.strokeStyle) {
+                    p.stroked = "true";
+                    p.strokecolor = _ju.convertStyle(params.strokeStyle, true);
+                }
+                if (params.lineWidth) p.strokeweight = params.lineWidth + "px";
+                if (params.fillStyle) {
+                    p.filled = "true";
+                    p.fillcolor = params.fillStyle;
+                }
+
+                var xmin = Math.min(d.hxy.x, d.tail[0].x, d.tail[1].x, d.cxy.x),
+                    ymin = Math.min(d.hxy.y, d.tail[0].y, d.tail[1].y, d.cxy.y),
+                    xmax = Math.max(d.hxy.x, d.tail[0].x, d.tail[1].x, d.cxy.x),
+                    ymax = Math.max(d.hxy.y, d.tail[0].y, d.tail[1].y, d.cxy.y),
+                    w = Math.abs(xmax - xmin),
+                    h = Math.abs(ymax - ymin),
+                    dim = [xmin, ymin, w, h];
+
+                // for VML, we create overlays using shapes that have the same dimensions and
+                // coordsize as their connector - overlays calculate themselves relative to the
+                // connector (it's how it's been done since the original canvas implementation, because
+                // for canvas that makes sense).
+                p.path = getPath(d);
+                p.coordsize = (connector.w * scale) + "," + (connector.h * scale);
+
+                dim[0] = connector.x;
+                dim[1] = connector.y;
+                dim[2] = connector.w;
+                dim[3] = connector.h;
+
+                if (self.canvas == null) {
+                    var overlayClass = connector._jsPlumb.overlayClass || "";
+                    var clazz = originalArgs && (originalArgs.length == 1) ? (originalArgs[0].cssClass || "") : "";
+                    p["class"] = clazz + " " + overlayClass;
+                    self.canvas = _node("shape", dim, p, connector.canvas.parentNode, connector._jsPlumb.instance, true);
+                    connector.appendDisplayElement(self.canvas, true);
+                }
+                else {
+                    _pos(self.canvas, dim);
+                    _atts(self.canvas, p);
+                }
+            }
+        };
+        this.cleanup = function () {
+            if (this.canvas != null) this._jsPlumb.instance.removeElement(this.canvas);
+        };
     };
-    jsPlumbUtil.extend(AbstractVmlArrowOverlay, [VmlComponent, jsPlumb.Overlays.AbstractOverlay], {
-    	setVisible : function(state) {
-    	    this.canvas.style.display = state ? "block" : "none";
-    	}
+    _ju.extend(AbstractVmlArrowOverlay, [VmlComponent, _jp.Overlays.AbstractOverlay], {
+        setVisible: function (state) {
+            this.canvas.style.display = state ? "block" : "none";
+        }
     });
-	
-	jsPlumb.Overlays.vml.Arrow = function() {
-    	AbstractVmlArrowOverlay.apply(this, [jsPlumb.Overlays.Arrow, arguments]);    	
+
+    _jp.Overlays.vml.Arrow = function () {
+        AbstractVmlArrowOverlay.apply(this, [_jp.Overlays.Arrow, arguments]);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.vml.Arrow, [ jsPlumb.Overlays.Arrow, AbstractVmlArrowOverlay ]);
-    
-    jsPlumb.Overlays.vml.PlainArrow = function() {
-    	AbstractVmlArrowOverlay.apply(this, [jsPlumb.Overlays.PlainArrow, arguments]);    	
+    _ju.extend(_jp.Overlays.vml.Arrow, [ _jp.Overlays.Arrow, AbstractVmlArrowOverlay ]);
+
+    _jp.Overlays.vml.PlainArrow = function () {
+        AbstractVmlArrowOverlay.apply(this, [_jp.Overlays.PlainArrow, arguments]);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.vml.PlainArrow, [ jsPlumb.Overlays.PlainArrow, AbstractVmlArrowOverlay ]);
-    
-    jsPlumb.Overlays.vml.Diamond = function() {
-    	AbstractVmlArrowOverlay.apply(this, [jsPlumb.Overlays.Diamond, arguments]);    	
+    _ju.extend(_jp.Overlays.vml.PlainArrow, [ _jp.Overlays.PlainArrow, AbstractVmlArrowOverlay ]);
+
+    _jp.Overlays.vml.Diamond = function () {
+        AbstractVmlArrowOverlay.apply(this, [_jp.Overlays.Diamond, arguments]);
     };
-    jsPlumbUtil.extend(jsPlumb.Overlays.vml.Diamond, [ jsPlumb.Overlays.Diamond, AbstractVmlArrowOverlay ]);
-    
+    _ju.extend(_jp.Overlays.vml.Diamond, [ _jp.Overlays.Diamond, AbstractVmlArrowOverlay ]);
+
 // ******************************* /vml overlays *****************************************************    
-    
-})();
+
+}).call(this);
 
 /*
  * jsPlumb
  * 
- * Title:jsPlumb 1.7.3
+ * Title:jsPlumb 1.7.4
  * 
  * Provides a way to visually connect elements on an HTML page, using SVG or VML.  
  * 
  * This file contains the 'vanilla' adapter - having no external dependencies other than bundled libs.
  *
- * Copyright (c) 2010 - 2014 Simon Porritt (simon@jsplumbtoolkit.com)
+ * Copyright (c) 2010 - 2015 jsPlumb (hello@jsplumbtoolkit.com)
  * 
  * http://jsplumbtoolkit.com
  * http://github.com/sporritt/jsplumb
@@ -12372,6 +12486,8 @@
 (function () {
 
     "use strict";
+    var root = this, _jp = root.jsPlumb, _ju = root.jsPlumbUtil,
+        _jk = root.Katavorio, _ja = root.jsPlumbAdapter, _jg = root.Biltong;
 
     var _getDragManager = function (instance, category) {
 
@@ -12381,22 +12497,22 @@
             e = instance.getEventManager();
 
         if (!k) {
-            k = new Katavorio({
+            k = new _jk({
                 bind: e.on,
                 unbind: e.off,
                 getSize: jsPlumb.getSize,
                 getPosition: function (el) {
-                    var o = jsPlumbAdapter.getOffset(el, instance);
+                    var o = _ja.getOffset(el, instance);
                     return [o.left, o.top];
                 },
                 setPosition: function (el, xy) {
                     el.style.left = xy[0] + "px";
                     el.style.top = xy[1] + "px";
                 },
-                addClass: jsPlumbAdapter.addClass,
-                removeClass: jsPlumbAdapter.removeClass,
-                intersects: Biltong.intersects,
-                indexOf: jsPlumbUtil.indexOf,
+                addClass: _ja.addClass,
+                removeClass: _ja.removeClass,
+                intersects: _jg.intersects,
+                indexOf: _ju.indexOf,
                 css: {
                     noSelect: instance.dragSelectClass,
                     droppable: "jsplumb-droppable",
@@ -12416,7 +12532,7 @@
     var _animProps = function (o, p) {
         var _one = function (pName) {
             if (p[pName]) {
-                if (jsPlumbUtil.isString(p[pName])) {
+                if (_ju.isString(p[pName])) {
                     var m = p[pName].match(/-=/) ? -1 : 1,
                         v = p[pName].substring(2);
                     return o[pName] + (m * v);
@@ -12429,7 +12545,7 @@
         return [ _one("left"), _one("top") ];
     };
 
-    jsPlumb.extend(jsPlumbInstance.prototype, {
+    _jp.extend(root.jsPlumbInstance.prototype, {
 
         scopeChange: function (el, elId, endpoints, scope, types) {
 
@@ -12463,7 +12579,7 @@
         //
         doAnimate: function (el, properties, options) {
             options = options || {};
-            var o = jsPlumbAdapter.getOffset(el, this),
+            var o = _ja.getOffset(el, this),
                 ap = _animProps(o, properties),
                 ldist = ap[0] - o.left,
                 tdist = ap[1] - o.top,
@@ -12473,7 +12589,7 @@
                 tinc = (step / d) * tdist,
                 idx = 0,
                 int = setInterval(function () {
-                    jsPlumbAdapter.setPosition(el, {
+                    _ja.setPosition(el, {
                         left: o.left + (linc * (idx + 1)),
                         top: o.top + (tinc * (idx + 1))
                     });
@@ -12593,6 +12709,6 @@
 
         _do();
     };
-    ready(jsPlumb.init);
+    ready(_jp.init);
 
 }).call(this);
