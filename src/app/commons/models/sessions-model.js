@@ -57,6 +57,21 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     },
 
+    cacheCoTrainersSession = function () {
+        var deferred = $q.defer();
+        console.log("Load HTTP");
+        $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
+            data = formatPlayers(data);
+            managedSessions = data;
+            console.log("Data loadded");
+            deferred.resolve(managedSessions);
+        }).error(function(data){
+            managedSessions = [];
+            deferred.resolve(managedSessions);
+        });
+        return deferred.promise;
+    },
+
     /* Stop waiting for simultanate sessions asking. */
     stopWaiting = function(waitFunction){
         $interval.cancel(waitFunction);
