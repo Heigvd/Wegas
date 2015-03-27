@@ -77,11 +77,30 @@
         }
     }
     &.card--scenario {
+        &.card--big {
+            height: inherit;
+            overflow: auto;
+        }
         &.ng-enter {
             animation: bounceIn 1s;
         }
         &.ng-leave {
           animation: bounceOut 1s;
+        }
+        .card__illustration {
+            width: 96px;
+        }
+        .card__content {
+            @include make-xs-column(12);
+            width: calc(100% - 96px);
+            .card__description {
+                @include make-xs-column(7.5);
+                width: calc(100% - 273px)
+            }
+            .card__actions {
+                @include make-xs-column(5.5);
+                width: 273px;
+            }
         }
     }
     &.card--coscenarist-permission {
