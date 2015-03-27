@@ -10,8 +10,8 @@
    	<a class="modal__nav__tab modal__nav__tab--right"  ng-class="{'modal__nav__tab--active': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">Trainers</a> 
 </div>
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content" trainer-sessions-users-trainers-list trainers="usersIndexCtrl.session.trainers"></div>
-<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools">
-	<p>Add Trainer</p>
+<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools" mass-autocomplete>
+	<div class="modal__tools__autocomplete" search-users input-style="modal__tools__add-trainer" callback="addTrainer" placeholder="Add trainer"></div>
 </div>
 <div ng-if="usersIndexCtrl.playersViewActived"class="modal__content modal__content--tools-off">
 	<div 

@@ -1,4 +1,5 @@
 angular.module('private.trainer.sessions.users.directives', [
+    'wegas.directives.search.users'
 ])
 .directive('trainerSessionsUsersIndex', function(){
 	return {
@@ -29,6 +30,10 @@ angular.module('private.trainer.sessions.users.directives', [
     ctrl.activeTrainersView = function(){
         ctrl.playersViewActived = false;
     };
+
+    ctrl.addTrainer = function(){
+        // Not implemented
+    }
 
 })
 .directive('trainerSessionsUsersTrainersList', function() {
