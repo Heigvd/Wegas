@@ -12,6 +12,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.Helper;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +40,7 @@ import java.util.Iterator;
 @Stateless
 public class Neo4jUtils {
 
-    private static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
+    protected static final String NEO4J_SERVER_URL = Helper.getWegasProperty("neo4j.server.url");
 
     private static final Logger logger = LoggerFactory.getLogger(Neo4jUtils.class);
 
@@ -66,6 +67,13 @@ public class Neo4jUtils {
      */
     protected static URI createNode() {
         Response response = getBuilder(NEO4J_SERVER_URL + "node").post(Entity.json("{}"));
+        final URI nodeURI = response.getLocation();
+        response.close();
+        return nodeURI;
+    }
+
+    protected static URI createNode(String node) {
+        Response response = getBuilder(NEO4J_SERVER_URL + "node").post(Entity.json(node));
         final URI nodeURI = response.getLocation();
         response.close();
         return nodeURI;
@@ -157,7 +165,7 @@ public class Neo4jUtils {
      */
     protected static String queryDBString(String query) {
         final String qURL = NEO4J_SERVER_URL + "transaction/commit";
-        String entity = "{ \"statements\" : [ { \"statement\" : \"" + query + "\" } ] }";
+        String entity = "{ \"statements\" : [ { \"statement\" : \"" + StringEscapeUtils.escapeJson(query) + "\" } ] }";
         Response response = getBuilder(qURL).post(Entity.json(entity));
         String result = null;
         if (checkValidHttpResponse(response.getStatus())) {

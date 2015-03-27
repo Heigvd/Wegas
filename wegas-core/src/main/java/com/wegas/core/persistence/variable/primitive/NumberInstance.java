@@ -9,12 +9,14 @@ package com.wegas.core.persistence.variable.primitive;
 
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.NumberListener;
 import com.wegas.core.persistence.variable.VariableInstance;
 import com.wegas.core.rest.util.Views;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.OrderColumn;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.slf4j.Logger;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
+@EntityListeners(NumberListener.class)
 public class NumberInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
