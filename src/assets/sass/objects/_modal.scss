@@ -126,7 +126,31 @@
 		height:64px;
 		border-top:solid 1px $border;
 	}
+	&.modal--coscenarists {
+		.modal__header {}
+		.modal__content { padding: 1em; }
 
+		.modal__tools {
+			padding: 1em;
+			.form__row:nth-child(1) {
+				@include make-xs-column(9);
+
+				label {
+					@include make-xs-column(3);
+				}
+				input {
+					@include make-xs-column(9);
+				}
+			}
+			.form__row:nth-child(2) {
+				@include make-xs-column(3);
+				input {
+					@include make-xs-column(12);
+				}
+			}
+
+		}
+	}
 	&.modal--history {
 		.modal__header {
 

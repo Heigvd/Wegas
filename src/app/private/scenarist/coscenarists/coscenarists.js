@@ -1,4 +1,5 @@
-angular.module('private.scenarist.coscenarists', [
+angular
+.module('private.scenarist.coscenarists', [
     'private.scenarist.coscenarists.directives'
 ])
 .config(function ($stateProvider) {
@@ -6,18 +7,27 @@ angular.module('private.scenarist.coscenarists', [
         .state('wegas.private.scenarist.coscenarists', {
             url: '/:scenarioId/coscenarists',
             views: {
-                'workspace@wegas.private': {
-                    controller: 'CoscenaristsCtrl as coscenaristsCtrl',
-                    templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists.tmpl.html'
+                'modal@wegas.private': {
+                    controller: 'CoscenaristsCtrl'
                 }
             }
         });
 })
-.controller('CoscenaristsCtrl', function CoscenaristsCtrl($state, Auth, ViewInfos, $scope) {
-    var scenaristCtrl = this;
-    Auth.getAuthenticatedUser().then(function(user){
-        if(user != null){
-            ViewInfos.editName("Scenarist workspace");
-        }
+.controller('CoscenaristsCtrl', function CoscenaristsCtrl($animate, $state, ModalService) {
+    ModalService.showModal({
+        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists.tmpl.html',
+        controller: "ModalsController as modalsCtrl"
+    }).then(function(modal) {
+        var box = $(".modal"),
+            shadow = $(".shadow");
+
+        $('body').addClass('modal-displayed');
+        $animate.addClass(box, "modal--open");
+        $animate.addClass(shadow, "shadow--show");
+
+        modal.close.then(function(result) {
+            $('body').removeClass('modal-displayed');
+            $state.go("^");
+        });
     });
 });
