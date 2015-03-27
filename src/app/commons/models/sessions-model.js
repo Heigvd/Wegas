@@ -14,6 +14,7 @@ angular.module('wegas.models.sessions', [])
     findSession = function(sessions, id){
         return _.find(sessions, function (s) { return s.id == id; });
     },
+
     /* Format players in a list, individualy or grouped by team. */ 
     formatPlayers = function(data){
         data.forEach(function(session){
@@ -44,16 +45,54 @@ angular.module('wegas.models.sessions', [])
     /* Call the REST service for getting managed sessions. */
     cacheManagedSessions = function () {
         var deferred = $q.defer();
-        console.log("Load HTTP");
         $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
             data = formatPlayers(data);
             managedSessions = data;
-            console.log("Data loadded");
             deferred.resolve(managedSessions);
         }).error(function(data){
             managedSessions = [];
             deferred.resolve(managedSessions);
         });
+        return deferred.promise;
+    },
+    
+    /* Get all co-trainers for a managed session. */
+    cacheTrainersForSession = function (id) {
+        var deferred = $q.defer();
+        session = findSession(managedSessions, id);
+        if(session){
+            if(session.trainers){
+                deferred.resolve(session.trainers);
+            }else{
+                $http.get(ServiceURL + "rest/Extended/User/FindAccountPermissionByInstance/g" + session.id).success(function(data){
+                    managedSessions[_.indexOf(managedSessions, session)].trainers = data;
+                    deferred.resolve(data);
+                }).error(function(data){
+                    deferred.resolve(false);
+                });
+            }
+        }else{
+            deferred.resolve(false);
+        }
+        return deferred.promise;
+    },
+
+    /* Add trainers to a session in cache. */
+    addTrainersToSession = function(id){
+        var deferred = $q.defer(),
+            session = findSession(managedSessions, id);
+        if(session){
+            if(session.trainers){
+                deferred.resolve(session);
+            }else{
+                cacheTrainersForSession(session.id).then(function(data){
+                    session = findSession(managedSessions, id);
+                    deferred.resolve(session);
+                });
+            }
+        }else{
+            deferred.resolve(false);
+        }
         return deferred.promise;
     },
 
@@ -97,22 +136,24 @@ angular.module('wegas.models.sessions', [])
 
     /* Ask for one managed session. */
     model.getManagedSession = function(id){
-        var deferred = $q.defer(),
-            session;
+        var deferred = $q.defer();
         if(managedSessionsLoading){
             waitForManagedSessions().then(function(){
-                session = findSession(managedSessions, id);
-                deferred.resolve(session);
+                addTrainersToSession(id).then(function(data){
+                    deferred.resolve(data);
+                });
             });
         }else{
             if(managedSessions == null) {
                 model.getManagedSessions().then(function(){
-                    session = findSession(managedSessions, id);
-                    deferred.resolve(managedSessions);
+                    addTrainersToSession(id).then(function(data){
+                        deferred.resolve(data);
+                    });
                 });
             }else{
-                session = findSession(managedSessions, id);
-                deferred.resolve(session);
+                addTrainersToSession(id).then(function(data){
+                    deferred.resolve(data);
+                });
             }
         }
         return deferred.promise;

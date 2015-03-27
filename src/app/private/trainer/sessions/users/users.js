@@ -23,7 +23,7 @@ angular.module('private.trainer.sessions.users', [
         $animate.addClass(shadow, "shadow--show");
 
         modal.close.then(function(result) {
-            $state.go("wegas.private.trainer.sessions");
+            $state.go("^");
         });
     }); 
     

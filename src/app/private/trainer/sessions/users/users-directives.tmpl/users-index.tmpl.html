@@ -9,9 +9,7 @@
    	<a class="modal__nav__tab modal__nav__tab--left" ng-class="{'modal__nav__tab--active': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">Players</a> 
    	<a class="modal__nav__tab modal__nav__tab--right"  ng-class="{'modal__nav__tab--active': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">Trainers</a> 
 </div>
-<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content">
-	<p>Coming soon</p>
-</div>
+<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content" trainer-sessions-users-trainers-list trainers="usersIndexCtrl.session.trainers"></div>
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools">
 	<p>Add Trainer</p>
 </div>

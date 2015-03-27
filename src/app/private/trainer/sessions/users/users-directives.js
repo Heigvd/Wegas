@@ -30,7 +30,21 @@ angular.module('private.trainer.sessions.users.directives', [
         ctrl.playersViewActived = false;
     };
 
-}).directive('trainerSessionsUsersIndividualList', function() {
+})
+.directive('trainerSessionsUsersTrainersList', function() {
+    return {
+        templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-trainers-list.tmpl.html',
+        restrict: 'A',
+        require: "^trainerSessionsUsersIndex",
+        scope: {
+           trainers: '='
+        },
+        link : function(scope, element, attrs, parentCtrl){
+            // Implement actions on trainers
+        }
+    }
+})
+.directive('trainerSessionsUsersIndividualList', function() {
     return {
         templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-individual-list.tmpl.html',
         restrict: 'A',
@@ -39,7 +53,7 @@ angular.module('private.trainer.sessions.users.directives', [
            players: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            console.log("Implement actions on players");
+            // Implement actions on individual players 
         }
     }
 })
@@ -50,9 +64,6 @@ angular.module('private.trainer.sessions.users.directives', [
         require: "^trainerSessionsUsersIndex",
         scope: {
            teams: '='
-        },
-        link : function(scope, element, attrs, parentCtrl){
-            console.log("Implement actions on teams");
         }
     }
 });
