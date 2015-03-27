@@ -6,16 +6,13 @@ angular
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-index.html',
         controller : function($scope, $stateParams, $sce) {
-            var ctrl = this,
-            scenarios = [],
-            versions = [];
+            var ctrl = this;
 
             $scope.scenario = {};
-
-            ctrl.scenarioId = $stateParams.scenarioId;
+            $scope.scenarioId = $stateParams.scenarioId;
 
             ctrl.updateVersions = function () {
-                ScenariosModel.getVersionsHistory($stateParams.scenarioId).then(function(results) {
+                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(results) {
                     if (results === false) {
                         window.alert('Whooops.');
                     } else {
@@ -23,8 +20,7 @@ angular
                     }
                 });
             }
-            ScenariosModel.getScenario($stateParams.scenarioId).then(function (scenario) {
-                ctrl.scenario = scenario;
+            ScenariosModel.getScenario($scope.scenarioId).then(function (scenario) {
                 $scope.scenario = scenario;
                 ctrl.updateVersions();
             });
@@ -119,7 +115,7 @@ angular
         link : function($scope, element, attrs, parentCtrl) {
 
             $scope.deleteFork = function(name) {
-                ScenariosModel.deleteVersionHistory(parentCtrl.scenarioId, name).then(function (result) {
+                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result === true) {
                         parentCtrl.updateVersions();
                     }
@@ -127,7 +123,7 @@ angular
             };
 
             $scope.createFork = function(name) {
-                ScenariosModel.restoreVersionHistory(parentCtrl.scenarioId, name).then(function (result) {
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result !== false) {
                         alert('Scenario has been duplicated with name: "'+result.name+'"');
                     }
