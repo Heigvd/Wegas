@@ -155,7 +155,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     EndpointStyle: {fillStyle: "none"},
                     //                EndpointHoverStyle: {fillStyle: "#456"},
                     Connector: ["Straight"],
-                    ConnectionOverlays: [["Arrow", {
+                    Overlays: [["Arrow", {
                         location: 1,
                         width: 10,
                         length: 10,
@@ -163,9 +163,12 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     }]],
                     PaintStyle: {
                         lineWidth: 2,
-                        strokeStyle: "#777",
-                        outlineColor: "none",
-                        outlineWidth: 3
+                        outlineColor: "white",
+                        strokeStyle: "darkgray",
+                        outlineWidth: 4
+                    },
+                    HoverPaintStyle: {
+                        strokeStyle: "#072644"
                     }
                 });
                 jp.bind("connectionDetached", Y.bind(function(e) {
@@ -184,10 +187,25 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     }
                 }, this));
                 jp.bind("connectionMoved", function(e) {
-                    Y.soon(function() {                                             // let move finish
-                        e.connection.getParameter("transition").disconnect();
-                    });
                     Y.log("connectionMoved", "info", "Wegas.StateMachineViewer");
+                    var s = Y.Widget.getByNode("#" + e.newSourceId),
+                        t = Y.Widget.getByNode("#" + e.newTargetId),
+                        trans = e.connection.getParameter("transition");
+                    Y.soon(function() {                                             // let move finish remove the old one
+                        trans.disconnect();
+                    });
+                });
+                jp.bind("connection", function(e, oe) {
+                    if (oe && oe.constructor === MouseEvent) { //done with mouse
+                        var s = Y.Widget.getByNode(e.source),
+                            t = Y.Widget.getByNode(e.target);
+                        s.addTransition(t, e.connection.getParameter("transition")); //make a programmatic connection
+                        Y.soon(function() {                                          //remove the "drawn" one
+                            jp.detach(e.connection, {
+                                fireEvent: false
+                            });
+                        });
+                    }
                 });
                 this.jpLoaded = true;
                 this.setZoom(1, true);
@@ -343,7 +361,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                     return;
                 }
                 this.get(BOUNDING_BOX).all(".currentState").removeClass("currentState");
-                currentStateNode = this.nodes[Wegas.Facade.Variable.cache.findById(sm.get("id")).getInstance().get("currentStateId")]; // Need to lookup in cache because current enttity doesn't have instances
+                currentStateNode = this.nodes[Wegas.Facade.Variable.cache.findById(sm.get("id")).getInstance().get("currentStateId")]; // Need to lookup in cache because current entity doesn't have instances
                 if (currentStateNode) {
                     currentStateNode.get(BOUNDING_BOX).addClass("currentState");
                 }
@@ -354,7 +372,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
              * @returns {undefined}
              */
             highlightUnusedStates: function() {
-                return;                                                             //disable
+                return "DISABLED";                                                             //disable
                 /*   var currentState, i,
                  initialNode = this.nodes[this.get(ENTITY).getInitialStateId()],
                  listStates = Y.Object.keys(this.nodes), // Prepare data
@@ -376,7 +394,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
         },
         {
             MIN_ZOOM: 0.3,
-            MAX_ZOOM: 1.9, // DRAG problems over 1.9.
+            MAX_ZOOM: 2,
             FACTOR_ZOOM: 1000,
             ATTRS: {
                 entity: {
@@ -435,36 +453,15 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             jp.draggable(bb.getDOMNode(), {
                 containment: stateMachine.get(BOUNDING_BOX).one(".sm-zoom").getDOMNode(),
                 stop: Y.bind(this.dragEnd, this)
-                /*
-                 plugins:[{
-                 fn:Plugin.DDConstrained,
-                 cfg:{
-                 constrain:this.get(PARENT).get(CONTENT_BOX), gutter: "30 10 10 10"}
-                 }, {
-                 fn:Plugin.DDNodeScroll,
-                 cfg:{
-                 node:this.get(PARENT).get(BOUNDING_BOX).get("parentNode")
-                 }
-                 }]*/
             });
             jp.makeTarget(bb.getDOMNode(), {
                 dropOptions: {
                     hoverClass: "droppable-state"
-                },
-                //                uniqueEndpoint: false,
-                //                deleteEndpointsOnDetach: true,
-                //                connectionDetachable: true,
-                beforeDrop: function(e) {
-                    var s = Y.Widget.getByNode("#" + e.sourceId),
-                        t = Y.Widget.getByNode("#" + e.targetId),
-                        moved = e.connection.getParameter("transition") !== undefined; //finish move event
-
-                    s.addTransition(t, e.connection.getParameter("transition"));
-                    return moved;
                 }
             });
             jp.makeSource(bb.getDOMNode(), {
-                filter: ".transition-start"
+                filter: ".transition-start",
+                maxConnections: 20
             });
             //bb.delegate(CLICK, this.deleteSelf, ".state-delete", this); // Delete state button
             //bb.delegate(CLICK, function(e) {
@@ -566,7 +563,7 @@ YUI.add("wegas-statemachineviewer", function(Y) {
             });
             this.syncUI();
         },
-        addTransition: function(target, transition) {
+        addTransition: function(target, transition, connection) {
             var tr, fsmViewer = this.get(PARENT),
                 availableTransitions = fsmViewer.get("availableTransitions"), newTr;
             if (transition) {
@@ -586,7 +583,8 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 return;
             }
             newTr = this.add(new Wegas.Transition({
-                entity: tr
+                entity: tr,
+                connection: connection
             })).item(0);
             this.get(ENTITY).get("transitions").push(tr);
             this.get(PARENT).save();
@@ -636,6 +634,9 @@ YUI.add("wegas-statemachineviewer", function(Y) {
      *
      */
     Transition = Y.Base.create("wegas-transition", Y.Widget, [Y.WidgetParent, Y.WidgetChild], {
+        initializer: function(cfg) {
+            this.connection = cfg.connection;
+        },
         renderUI: function() {
             var connection, parentTransitions,
                 source = this.get(PARENT),
@@ -676,37 +677,20 @@ YUI.add("wegas-statemachineviewer", function(Y) {
                 stateMachineViewer.save();
                 return;
             }
+            //            if (!this.connection) {
             connection = this.connection = this.connection || jp.connect({
                 source: source.get(BOUNDING_BOX).getDOMNode(),
                 target: target.get(BOUNDING_BOX).getDOMNode(),
                 deleteEndpointsOnDetach: true,
-                //reattach: true,
-                uniqueEndpoint: false,
-                paintStyle: {
-                    lineWidth: 2,
-                    //strokeStyle: this.get(ENTITY) instanceof Wegas.persistence.DialogueTransition ? "#4372C4" :
-                    // "#072644",
-                    outlineColor: "white",
-                    strokeStyle: "darkgray",
-                    outlineWidth: 4
-                },
-                hoverPaintStyle: {
-                    strokeStyle: "#072644"
-                },
-                parameters: {
-                    transition: this
-                },
-                overlays: [
-                    ["Label", {
-                        id: "toolbox",
-                        location: 0.8,
-                        //  label: "<div class='transition-edit'></div><div class='transition-delete'></div>",
-                        cssClass: "transition-toolbox"
-                    }]
-                ],
                 connector: source.get(SID) === target.get(SID) ? ["StateMachine", {margin: 5}] : "Straight"
+
+                //                parameters: {
+                //                    transition: this
+                //                }
             });
+            connection.setParameter("transition", this);
             target.transitionsTarget.push(this);
+            //            }
             this.updateLabel();
             connection.canvas.setAttribute("cursor", "pointer");
             connection.canvas.onclick = editAction;
