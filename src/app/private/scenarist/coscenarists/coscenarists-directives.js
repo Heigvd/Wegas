@@ -8,21 +8,18 @@ angular
     templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-index.html',
     controller : function($scope, $stateParams, $sce) {
         var ctrl = this,
-        scenarios = [],
-        scenario = null,
-        permissions = null;
-
+        $scope.scenarios = [];
 
         ctrl.updateScenario = function() {
             ScenariosModel.getScenarios().then(function(scenarios) {
-                ctrl.scenarios = scenarios;
+                $scope.scenarios = scenarios;
                 // Searching for current scenario
                 ScenariosModel.getScenario($stateParams.scenarioId).then(function(scenario) {
-                    ctrl.scenario = scenario;
+                    $scope.scenario = scenario;
 
                     // Loading permissions
                     ScenariosModel.getPermissions($stateParams.scenarioId).then(function(permissions) {
-                        ctrl.permissions = permissions;
+                        $scope.permissions = permissions;
                     });
                 });
 
@@ -30,14 +27,6 @@ angular
         };
 
         ctrl.updateScenario();
-
-
-        $scope.$on('permissions-changed', function () {
-            // Save the new permissions
-            // alert('asd');
-            console.info('I should update');
-        });
-
     }
 };
 })
