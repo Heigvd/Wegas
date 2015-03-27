@@ -1,8 +1,8 @@
 <h3>Add new user - <em>{{ scenario.name }}</em></h3>
-<form ng-submit="addNewCoscenarist()">
+<form>
   <div class="form__row" mass-autocomplete>
       <label class="input__label" for="name">Share with</label>
-      <input class="input input--small" ng-model="dirty.value" mass-autocomplete-item="autocomplete_options">
+      <div search-users input-style="input input--small" callback="callbackSearchUser" placeholder="Add user"></div>
   </div>
   <div class="form__row form__row--right">
     <input class="form__row__btn button button--default" type="submit" value="share" />
