@@ -44,7 +44,7 @@ angular
 
 .directive('scenaristCoscenaristsAdd', function(ScenariosModel, UsersModel) {
     return {
-        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-add.tmpl.html',
+        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-add.html',
         scope: false,
         require: "^scenaristCoscenaristsIndex",
         link : function(scope, element, attrs, parentCtrl) {
@@ -119,7 +119,7 @@ angular
 })
 .directive('scenaristCoscenaristsList', function(ScenariosModel) {
     return {
-        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-list.tmpl.html',
+        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-list.html',
         scope: false,
         require: "^scenaristCoscenaristsIndex",
         link : function(scope, element, attrs, parentCtrl) {
@@ -146,7 +146,7 @@ angular
 
 .directive('scenaristCoscenaristsUserPermissions', function(ScenariosModel) {
     return {
-        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-user-permissions.tmpl.html',
+        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-user-permissions.html',
         scope: false,
         require: "^scenaristCoscenaristsIndex",
         link : function(scope, element, attrs, parentCtrl) {
