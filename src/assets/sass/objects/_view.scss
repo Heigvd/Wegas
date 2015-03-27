@@ -2,7 +2,7 @@
     display:block;
     position:relative;
     overflow-x:visible;
-    overflow-y:visible;
+    overflow-y:auto;
 
     // Styles de positionnements
     &.view--main{
