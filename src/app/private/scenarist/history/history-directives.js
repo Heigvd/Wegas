@@ -129,7 +129,7 @@ angular
             $scope.createFork = function(name) {
                 ScenariosModel.restoreVersionHistory(parentCtrl.scenarioId, name).then(function (result) {
                     if (result !== false) {
-                        alert('Le scenario a été dupliqué sous le nom "'+result.name+'"');
+                        alert('Scenario has been duplicated with name: "'+result.name+'"');
                     }
                 });
             };
