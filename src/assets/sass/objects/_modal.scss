@@ -117,12 +117,27 @@
 			height:415px;			
 		}
 	}
+
 	.modal__tools{
 		display:block;
 		position:relative;
 		width:100%;
 		height:64px;
 		border-top:solid 1px $border;
+		.modal__tools__autocomplete{
+			display:block;
+			position:relative;
+			width:100%;
+			height:100%;
+		}
+		.modal__tools__add-trainer{
+			width:100%;
+			height:100%;
+			border:none;
+			outline:none;
+			box-sizing: content-box;
+			padding:0px 1em;
+		}
 	}
 }
 
