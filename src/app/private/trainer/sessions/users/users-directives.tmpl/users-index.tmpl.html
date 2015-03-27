@@ -1,34 +1,25 @@
 <div class="modal__header">
 	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{usersIndexCtrl.session.properties.iconUri}}"></div>
-	<h5 class="modal__title">{{usersIndexCtrl.session.name}}</h5>
+	<h5 class="modal__title">Users of {{usersIndexCtrl.session.name}}</h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">Close</span>
 	</a>
 </div>
-<!--
-<div class="view view--sessions-users-new view--bottom">
-	<div class="view__users-tabs">
-	   	<a class="button button--medium button--default" ng-class="{'button--default': !usersIndexCtrl.playersViewActived, 'button--info': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">
-	   		<span class="button__label">Players</span>
-	    </a> 
-	   	<a class="button button--medium"  ng-class="{'button--default': usersIndexCtrl.playersViewActived, 'button--info': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">
-	   		<span class="button__label">Trainers</span>
-	    </a> 
-    </div>
-    <div ng-if="!usersIndexCtrl.playersViewActived" class="view__users-add">
-		<h3>Add trainer</h3>
-    </div>
-    <div ng-if="usersIndexCtrl.playersViewActived" class="view__users-add">
-		<h3>Add player</h3>
-    </div>
+<div class="modal__nav modal__nav--2tab">
+   	<a class="modal__nav__tab modal__nav__tab--left" ng-class="{'modal__nav__tab--active': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">Players</a> 
+   	<a class="modal__nav__tab modal__nav__tab--right"  ng-class="{'modal__nav__tab--active': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">Trainers</a> 
 </div>
-<div class="view view--sessions-users-list view--middle">
-	<div ng-if="!usersIndexCtrl.playersViewActived"class="view view__players">
-		<h3>Trainers - <em>{{usersIndexCtrl.session.name}}</em></h3>
-	</div>
-	<div ng-if="usersIndexCtrl.playersViewActived"class="view view__players">
-		<h3>Players - <em>{{usersIndexCtrl.session.name}}</em></h3>
-		<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
-		<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
-	</div>
-</div>-->
+<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content">
+	<p>Coming soon</p>
+</div>
+<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools">
+	<p>Add Trainer</p>
+</div>
+<div ng-if="usersIndexCtrl.playersViewActived"class="modal__content modal__content--tools-off">
+	<div 
+		ng-if="(!usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.teams.length < 1) 
+		|| (usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.players.length < 1)" 
+		class="modal__content__empty">No players</div>
+	<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
+	<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
+</div>
