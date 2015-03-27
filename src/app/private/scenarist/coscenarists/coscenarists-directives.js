@@ -7,7 +7,7 @@ angular
   return {
     templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-index.html',
     controller : function($scope, $stateParams, $sce) {
-        var ctrl = this,
+        var ctrl = this;
         $scope.scenarios = [];
 
         ctrl.updateScenario = function() {
