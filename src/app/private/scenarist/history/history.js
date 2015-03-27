@@ -28,7 +28,7 @@ angular
 
         modal.close.then(function(result) {
             $('body').removeClass('modal-displayed');
-            $state.go("");
+            $state.go("^");
         });
     });
 
