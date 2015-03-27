@@ -1,4 +1,11 @@
-<div class="view view--history-download view--bottom" scenarist-history-download>
+<div class="modal__header">
+  <div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
+  <h5 class="modal__title">Versions of {{scenario.name}}</h5>
+  <a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="modalsCtrl.close()">
+    <span class="button__label">Close</span>
+  </a>
 </div>
-<div class="view view--history-list view--middle" scenarist-history-list>
-</div>
+
+<div class="modal__content" scenarist-history-list></div>
+
+<div class="modal__tools" scenarist-history-actions></div>

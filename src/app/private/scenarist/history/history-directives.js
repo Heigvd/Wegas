@@ -8,8 +8,9 @@ angular
         controller : function($scope, $stateParams, $sce) {
             var ctrl = this,
             scenarios = [],
-            scenario = null,
             versions = [];
+
+            $scope.scenario = {};
 
             ctrl.scenarioId = $stateParams.scenarioId;
 
@@ -24,34 +25,28 @@ angular
             }
             ScenariosModel.getScenario($stateParams.scenarioId).then(function (scenario) {
                 ctrl.scenario = scenario;
+                $scope.scenario = scenario;
                 ctrl.updateVersions();
             });
-
-            $scope.addVersion = function() {
-                if($stateParams.scenarioId !== "") {
-                    ScenariosModel.addVersionHistory($stateParams.scenarioId).then(function (result) {
+        }
+    };
+})
+.directive('scenaristHistoryActions', function(ScenariosModel){
+    return {
+        templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
+        scope: false,
+        require: "^scenaristHistoryIndex",
+        link : function(scope, element, attrs, parentCtrl) {
+            $parent = parentCtrl;
+            scope.addVersion = function() {
+                if(scope.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory(scope.scenario.id).then(function (result) {
                         if (result === true) {
-                            ctrl.updateVersions();
+                            $parent.updateVersions();
                         }
                     });
                 }
             };
-
-
-
-
-
-
-        }
-    };
-})
-.directive('scenaristHistoryDownload', function(ScenariosModel){
-    return {
-        templateUrl: 'app/private/scenarist/history/tmpl/history-download.html',
-        scope: false,
-        require: "^scenaristHistoryIndex",
-        link : function(scope, element, attrs, parentCtrl) {
-
         }
     };
 })

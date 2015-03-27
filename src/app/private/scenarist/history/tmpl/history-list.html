@@ -1,7 +1,1 @@
-<h1>Available versions for {{ scenario.name }}</h1>
-<p><a class="button button--medium  button--add" title="Add a new version">
-  <span class="button__label" ng-click="addVersion()">Add a new version</span>
-</a></p>
-
-
 <article class="card card--big card--scenario-history" ng-repeat="version in versions | orderBy:'createdTime':true" ng:class="{true:'card--block', false:'card--inline'}[versions.length <= 2]" version="version" scenarist-history-card></article>
