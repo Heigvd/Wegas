@@ -15,7 +15,6 @@ angular.module('private.trainer.sessions.users.directives', [
     ctrl.playersViewActived = true;
     SessionsModel.getManagedSession($stateParams.id).then(function(session){
         ctrl.session = session;
-        console.log(session);
     });
 
     ctrl.updateSession = function(){

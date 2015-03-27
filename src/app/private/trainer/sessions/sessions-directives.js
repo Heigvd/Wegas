@@ -9,7 +9,6 @@ angular.module('private.trainer.sessions.directives', [
         ctrl.sessions = [];
         SessionsModel.getManagedSessions().then(function(sessions){
             ctrl.sessions = sessions;
-            console.log(sessions);
         });
         ctrl.updateSessions = function(){
             SessionsModel.getManagedSessions().then(function(sessions){
