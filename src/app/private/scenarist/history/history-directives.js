@@ -6,15 +6,13 @@ angular
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-index.html',
         controller : function($scope, $stateParams, $sce) {
-            var ctrl = this,
-            scenarios = [],
-            scenario = null,
-            versions = [];
+            var ctrl = this;
 
-            ctrl.scenarioId = $stateParams.scenarioId;
+            $scope.scenario = {};
+            $scope.scenarioId = $stateParams.scenarioId;
 
             ctrl.updateVersions = function () {
-                ScenariosModel.getVersionsHistory($stateParams.scenarioId).then(function(results) {
+                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(results) {
                     if (results === false) {
                         window.alert('Whooops.');
                     } else {
@@ -22,36 +20,29 @@ angular
                     }
                 });
             }
-            ScenariosModel.getScenario($stateParams.scenarioId).then(function (scenario) {
-                ctrl.scenario = scenario;
+            ScenariosModel.getScenario($scope.scenarioId).then(function (scenario) {
+                $scope.scenario = scenario;
                 ctrl.updateVersions();
             });
-
-            $scope.addVersion = function() {
-                if($stateParams.scenarioId !== "") {
-                    ScenariosModel.addVersionHistory($stateParams.scenarioId).then(function (result) {
+        }
+    };
+})
+.directive('scenaristHistoryActions', function(ScenariosModel){
+    return {
+        templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
+        scope: false,
+        require: "^scenaristHistoryIndex",
+        link : function(scope, element, attrs, parentCtrl) {
+            $parent = parentCtrl;
+            scope.addVersion = function() {
+                if(scope.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory(scope.scenario.id).then(function (result) {
                         if (result === true) {
-                            ctrl.updateVersions();
+                            $parent.updateVersions();
                         }
                     });
                 }
             };
-
-
-
-
-
-
-        }
-    };
-})
-.directive('scenaristHistoryDownload', function(ScenariosModel){
-    return {
-        templateUrl: 'app/private/scenarist/history/tmpl/history-download.html',
-        scope: false,
-        require: "^scenaristHistoryIndex",
-        link : function(scope, element, attrs, parentCtrl) {
-
         }
     };
 })
@@ -124,7 +115,7 @@ angular
         link : function($scope, element, attrs, parentCtrl) {
 
             $scope.deleteFork = function(name) {
-                ScenariosModel.deleteVersionHistory(parentCtrl.scenarioId, name).then(function (result) {
+                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result === true) {
                         parentCtrl.updateVersions();
                     }
@@ -132,9 +123,9 @@ angular
             };
 
             $scope.createFork = function(name) {
-                ScenariosModel.restoreVersionHistory(parentCtrl.scenarioId, name).then(function (result) {
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result !== false) {
-                        alert('Le scenario a été dupliqué sous le nom "'+result.name+'"');
+                        alert('Scenario has been duplicated with name: "'+result.name+'"');
                     }
                 });
             };

@@ -6,6 +6,7 @@ angular.module('Wegas', [
     'angularModalService',
     'wegas.service.auth',
     'wegas.directives.illustrations',
+    'wegas.behaviours.modals',
     'wegas.behaviours.tools',
     'public',
     'private'

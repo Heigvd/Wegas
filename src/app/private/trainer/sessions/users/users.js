@@ -7,17 +7,15 @@ angular.module('private.trainer.sessions.users', [
             url: '/:id/users',
             views: {
                 'modal@wegas.private':{
-                    controller: 'TrainerSessionsUsers as trainerSessionsUsers'
+                    controller: 'TrainerSessionsUsers'
                 }
             }
         })
     ;
 }).controller("TrainerSessionsUsers", function TrainerSessionsUsers($animate, $state, ModalService){
-    var trainerSessionsUsers = this;
-
     ModalService.showModal({
         templateUrl: 'app/private/trainer/sessions/users/users.tmpl.html',
-        controller: "TrainerModalController as trainerModalCtrl"
+        controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),
             shadow = $(".shadow");      
@@ -29,15 +27,4 @@ angular.module('private.trainer.sessions.users', [
         });
     }); 
     
-}).controller('TrainerModalController', function TrainerModalController($animate, close) {
-    trainerModalCtrl = this;    
-    trainerModalCtrl.close = function() {
-        var box = $(".modal"),
-            shadow = $(".shadow");      
-        $animate.removeClass(shadow, "shadow--show");
-        $animate.removeClass(box, "modal--open").then(function(){
-            close();
-        });
-    };
-})
-;
+});
