@@ -31,8 +31,15 @@ angular.module('private.trainer.sessions.users.directives', [
     ctrl.activeTrainersView = function(){
         ctrl.playersViewActived = false;
     };
-    ctrl.addTrainer = function(){
-        // Not implemented
+    ctrl.addTrainer = function(selection){
+        SessionsModel.addTrainerToSession($stateParams.id, selection).then(function(data){
+            ctrl.updateSession();
+        });
+    }
+    ctrl.removeTrainer = function(idTrainer){
+        SessionsModel.removeTrainerToSession($stateParams.id, idTrainer).then(function(data){
+            ctrl.updateSession();
+        });
     }
 
 })
@@ -45,7 +52,10 @@ angular.module('private.trainer.sessions.users.directives', [
            trainers: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            // Implement actions on trainers
+            scope.remove = function(idTrainer){
+                console.log("Hello, remove me please");
+                parentCtrl.removeTrainer(idTrainer);
+            }
         }
     }
 })

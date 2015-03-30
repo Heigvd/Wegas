@@ -216,6 +216,51 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
+    /* Add a new trainer to the session */ 
+    model.addTrainerToSession = function(idSession, trainer){
+        var deferred = $q.defer(),
+            session = findSession(managedSessions, idSession);
+            if(session){
+                var alreadyIn = false;
+                session.trainers.forEach(function(elem){
+                    if(elem.id == trainer.id){
+                        alreadyIn = true;
+                    }
+                });
+                if(!alreadyIn){
+                    $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g"+ session.id + "/" + trainer.id).success(function(data){
+                        managedSessions[_.indexOf(managedSessions, session)].trainers.push(trainer);
+                        deferred.resolve(trainer);
+                    }).error(function(data){
+                        deferred.resolve(data);
+                    });
+                }
+            }else{
+                deferred.resolve(false);
+            }
+        return deferred.promise;
+    };
+
+    /* Remove a trainer from a session */ 
+    model.removeTrainerToSession = function(idSession, idTrainer){
+        var deferred = $q.defer(),
+            session = findSession(managedSessions, idSession);
+            if(session){
+                trainer = _.find(session.trainers, function (t) { return t.id == idTrainer; });
+                if(trainer){
+                    $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g"+ session.id + "/" + trainer.id).success(function(data){
+                        managedSessions[_.indexOf(managedSessions, session)].trainers = _.without(session.trainers, trainer);
+                        deferred.resolve(trainer);
+                    }).error(function(data){
+                        deferred.resolve(data);
+                    });
+                }
+            }else{
+                deferred.resolve(false);
+            }
+        return deferred.promise;
+    };
+
     /* Return all played sessions */
     model.getPlayedSessions = function () {
         var deferred = $q.defer();
