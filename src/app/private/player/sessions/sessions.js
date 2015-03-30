@@ -1,5 +1,5 @@
 angular.module('private.player.sessions', [
-    'private.player.sessions.play',
+    'private.player.sessions.join',
     'private.player.sessions.users',
     'private.player.sessions.directives'
 ])

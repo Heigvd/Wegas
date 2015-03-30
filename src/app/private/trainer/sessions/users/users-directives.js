@@ -72,10 +72,7 @@ angular.module('private.trainer.sessions.users.directives', [
            players: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            console.log(scope.players);
             scope.remove = function(playerId, teamId){
-                console.log(playerId);
-                console.log(teamId);
                 parentCtrl.removePlayer(playerId, teamId);
             }
         }

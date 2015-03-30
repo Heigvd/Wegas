@@ -1,13 +1,13 @@
-angular.module('private.player.sessions.play', [
+angular.module('private.player.sessions.join', [
 ])
 .config(function ($stateProvider) {
     $stateProvider
-        .state('wegas.private.player.sessions.play', {
-            url: '/:id/play',
+        .state('wegas.private.player.sessions.join', {
+            url: '/:id/join',
             views: {
                 'main@': {
                     controller: 'SessionsPlayCtrl as sessionsPlayCtrl',
-                    templateUrl: 'app/private/player/sessions/sessions-play/sessions-play.tmpl.html'
+                    templateUrl: 'app/private/player/sessions/sessions-join/sessions-join.tmpl.html'
                 }
             }
         })

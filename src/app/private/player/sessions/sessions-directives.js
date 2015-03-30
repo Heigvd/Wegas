@@ -18,18 +18,30 @@ angular.module('private.player.sessions.directives', [
   };
 })
 
-.directive('playerSessionJoin', function(ScenariosModel, SessionsModel) {
+.directive('playerSessionJoin', function($state, ScenariosModel, SessionsModel) {
   return {
     templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join.tmpl.html',
     scope: false,
     require: "^playerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
-         scope.newSession = {
+        scope.sessionToJoin = {
             token : ""
         };
         scope.joinSession = function(){
-            // TODO
-            alert('Sorry... Not yet implemented...');
+            SessionsModel.findSessionToJoin(scope.sessionToJoin.token).then(function(session){
+                if(session){
+                    if(session.properties.freeForAll){
+                        SessionsModel.joinSession(scope.sessionToJoin.token).then(function(data){
+                            scope.sessionToJoin.token = "";
+                            parentCtrl.updateSessions;
+                        });
+                    }else{
+                        $state.go("wegas.private.player.sessions.join", {"id": session.id});
+                    }
+                }else{
+                    console.log("Error - No session found");
+                }
+            });
         };
     }
   };
