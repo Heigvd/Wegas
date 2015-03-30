@@ -8,13 +8,16 @@ angular.module('wegas.models.users', [])
         return "Here is all users";
     };
 
-    model.autocomplete = function(pattern) {
+    /* Find user with a pattern in a list of groups (Player, Trainer, Scenarist, Administrator) */
+    model.autocomplete = function(pattern, rolesList) {
         var deferred = $q.defer();
 
         var url = "rest/User/AutoComplete/" + pattern;
 
         $http
-        .get(ServiceURL + url)
+        .post(ServiceURL + url, {
+            "rolesList": rolesList
+        })
         .success(function(data){
             deferred.resolve(data);
         }).error(function(data) {

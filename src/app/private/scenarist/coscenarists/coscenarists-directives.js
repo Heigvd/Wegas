@@ -42,6 +42,8 @@ angular
                 scope.scenario = n;
             });
 
+            scope.restrictRoles = ["Administrator", "Scenarist"];
+
             scope.callbackSearchUser = function(selection) {
                 scope.selected_user = selection;
                 scope.addNewCoscenarist();

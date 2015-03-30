@@ -12,7 +12,8 @@ angular.module('private.trainer.sessions.users.directives', [
 }).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel){
 	var ctrl = this;
     ctrl.session = {},
-
+    ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
+    
     ctrl.playersViewActived = true;
     SessionsModel.getManagedSession($stateParams.id).then(function(session){
         ctrl.session = session;
@@ -30,7 +31,6 @@ angular.module('private.trainer.sessions.users.directives', [
     ctrl.activeTrainersView = function(){
         ctrl.playersViewActived = false;
     };
-
     ctrl.addTrainer = function(){
         // Not implemented
     }

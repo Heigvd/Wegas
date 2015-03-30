@@ -9,11 +9,12 @@ angular.module('wegas.directives.search.users', [
         scope: {
             callback: "=",
             placeholder: "@",
-            inputStyle: "@"
+            inputStyle: "@",
+            restrictRoles: "="
         },
         link: function(scope, element, attrs) {
             function suggest_obj(term) {
-                return UsersModel.autocomplete(term).then(function(matches) {
+                return UsersModel.autocomplete(term, scope.restrictRoles).then(function(matches) {
                     var results = [];
 
                     function highlight(str, term) {
