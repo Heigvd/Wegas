@@ -36,8 +36,13 @@ angular.module('private.trainer.sessions.users.directives', [
             ctrl.updateSession();
         });
     }
-    ctrl.removeTrainer = function(idTrainer){
-        SessionsModel.removeTrainerToSession($stateParams.id, idTrainer).then(function(data){
+    ctrl.removeTrainer = function(trainerId){
+        SessionsModel.removeTrainerToSession($stateParams.id, trainerId).then(function(data){
+            ctrl.updateSession();
+        });
+    }
+    ctrl.removePlayer = function(playerId, teamId){
+        SessionsModel.removePlayerToSession($stateParams.id, playerId, teamId).then(function(data){
             ctrl.updateSession();
         });
     }
@@ -52,9 +57,8 @@ angular.module('private.trainer.sessions.users.directives', [
            trainers: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            scope.remove = function(idTrainer){
-                console.log("Hello, remove me please");
-                parentCtrl.removeTrainer(idTrainer);
+            scope.remove = function(trainerId){
+                parentCtrl.removeTrainer(trainerId);
             }
         }
     }
@@ -68,7 +72,12 @@ angular.module('private.trainer.sessions.users.directives', [
            players: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            // Implement actions on individual players 
+            console.log(scope.players);
+            scope.remove = function(playerId, teamId){
+                console.log(playerId);
+                console.log(teamId);
+                parentCtrl.removePlayer(playerId, teamId);
+            }
         }
     }
 })

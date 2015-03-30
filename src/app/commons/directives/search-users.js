@@ -45,6 +45,7 @@ angular.module('wegas.directives.search.users', [
             }
             function selectUser(selected) {
               scope.callback(selected.obj);
+              scope.dirty.value = "";
             };
             scope.autocomplete_options = {
                 suggest: suggest_obj,

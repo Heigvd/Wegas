@@ -217,9 +217,9 @@ angular.module('wegas.models.sessions', [])
     };
 
     /* Add a new trainer to the session */ 
-    model.addTrainerToSession = function(idSession, trainer){
+    model.addTrainerToSession = function(sessionId, trainer){
         var deferred = $q.defer(),
-            session = findSession(managedSessions, idSession);
+            session = findSession(managedSessions, sessionId);
             if(session){
                 var alreadyIn = false;
                 session.trainers.forEach(function(elem){
@@ -242,11 +242,11 @@ angular.module('wegas.models.sessions', [])
     };
 
     /* Remove a trainer from a session */ 
-    model.removeTrainerToSession = function(idSession, idTrainer){
+    model.removeTrainerToSession = function(sessionId, trainerId){
         var deferred = $q.defer(),
-            session = findSession(managedSessions, idSession);
+            session = findSession(managedSessions, sessionId);
             if(session){
-                trainer = _.find(session.trainers, function (t) { return t.id == idTrainer; });
+                trainer = _.find(session.trainers, function (t) { return t.id == trainerId; });
                 if(trainer){
                     $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g"+ session.id + "/" + trainer.id).success(function(data){
                         managedSessions[_.indexOf(managedSessions, session)].trainers = _.without(session.trainers, trainer);
@@ -254,6 +254,43 @@ angular.module('wegas.models.sessions', [])
                     }).error(function(data){
                         deferred.resolve(data);
                     });
+                }
+            }else{
+                deferred.resolve(false);
+            }
+        return deferred.promise;
+    };
+
+    /* Remove a trainer from a session */ 
+    model.removePlayerToSession = function(sessionId, playerId, teamId){
+        var deferred = $q.defer(),
+            session = findSession(managedSessions, sessionId);
+            if(session){
+                if(!session.properties.freeForAll){
+                    session.teams.forEach(function(team){
+                        if(team.id == teamId){
+                            team.players.forEach(function(player){
+                                if(player.id == playerId){
+                                    $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data){
+                                        team.players = _.without(team.players, player);
+                                        deferred.resolve(player);                                       
+                                    }).error(function(data){
+                                        deferred.resolve(data);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                }else{
+                    player = _.find(session.players, function (t) { return t.id == playerId; });
+                    if(player){
+                        $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data){
+                            managedSessions[_.indexOf(managedSessions, session)].players = _.without(session.players, player);
+                            deferred.resolve(player);
+                        }).error(function(data){
+                            deferred.resolve(data);
+                        });
+                    }
                 }
             }else{
                 deferred.resolve(false);
