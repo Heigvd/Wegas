@@ -9,6 +9,7 @@
  * @fileoverview
  */
 YUI.add("wegas-statemachine-entities", function(Y) {
+    "use strict";
 
     var STRING = "string", HIDDEN = "hidden", SELF = "self", BOOLEAN = "boolean",
         NUMBER = "number", BUTTON = "Button", SCRIPT = "script", TEXT = "text",
@@ -46,11 +47,11 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 type: "uneditable",
                 _inputex: {
                     label: "Transition History"
-                        //,
-                        //elementType:{
-                        //    type:NUMBER,
-                        //    readonly:true
-                        //}
+                    //,
+                    //elementType:{
+                    //    type:NUMBER,
+                    //    readonly:true
+                    //}
                 }
             }
         },
@@ -70,10 +71,12 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             var i, t, states = this.get(STATES),
                 trs;
             for (i in states) {
-                trs = states[i].get("transitions");
-                for (t in trs) {
-                    if (+trs[t].get(ID) === +id) {
-                        return trs[t];
+                if (states.hasOwnProperty(i)) {
+                    trs = states[i].get("transitions");
+                    for (t in trs) {
+                        if (+trs[t].get(ID) === +id) {
+                            return trs[t];
+                        }
                     }
                 }
             }
@@ -85,13 +88,13 @@ YUI.add("wegas-statemachine-entities", function(Y) {
          *  @return {Array} An array containing alternatively state/transition.
          */
         getFullHistory: function(transitionHistory) {
-            var i, transitionHistory = transitionHistory || this.getInstance().get("transitionHistory"),
+            var i, trH = transitionHistory || this.getInstance().get("transitionHistory"),
                 fullHistory = [],
                 tmpTransition = null;
 
             fullHistory.push(this.getState(this.getInitialStateId()));
-            for (i = 0; i < transitionHistory.length; i += 1) {
-                tmpTransition = this.getTransitionById(transitionHistory[i]);
+            for (i = 0; i < trH.length; i += 1) {
+                tmpTransition = this.getTransitionById(trH[i]);
                 fullHistory.push(tmpTransition);
                 fullHistory.push(this.getState(tmpTransition.get("nextStateId")));
             }
@@ -132,7 +135,7 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     },
                     id: {
                         type: NUMBER,
-                        optional: true, // The id is optional for entites that have not been persisted
+                        optional: true, // The id is optional for entities that have not been persisted
                         _inputex: {
                             _type: HIDDEN
                         }
@@ -164,40 +167,40 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         EDITORNAME: "State Machine",
         EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction"
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteFSMButton"
-            }],
+            type: "EditEntityButton",
+            plugins: [{
+                fn: "EditFSMAction"
+            }]
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteFSMButton"
+        }],
         METHODS: {
             enable: {
                 label: "activate",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             disable: {
                 label: "desactivate",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
+                    type: HIDDEN,
+                    value: SELF
+                }]
             },
             isEnabled: {
                 label: "is active",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
+                    type: HIDDEN,
+                    value: SELF
+                }],
                 returns: BOOLEAN,
                 localEval: function(self) {
                     return this.getInstance(self).get("enabled");
@@ -206,9 +209,9 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             isDisabled: {
                 label: "is inactive",
                 arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
+                    type: HIDDEN,
+                    value: SELF
+                }],
                 returns: BOOLEAN,
                 localEval: function(self) {
                     return !this.getInstance(self).get("enabled");
@@ -338,11 +341,20 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                     }
                 }
             },
-            oneShot: {
+            disableSelf: {
                 type: BOOLEAN,
                 value: true,
                 _inputex: {
-                    label: 'Only once'
+                    label: 'Disable itself',
+                    description: 'Disable once triggered.<br> May be rearmed afterwards'
+                }
+            },
+            oneShot: {
+                type: BOOLEAN,
+                value: false,
+                _inputex: {
+                    label: 'Only once',
+                    description: 'Allowed to trigger only once'
                 }
             },
             triggerEvent: {
@@ -364,16 +376,16 @@ YUI.add("wegas-statemachine-entities", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton"
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteEntityButton"
+            type: "EditEntityButton"
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "DuplicateEntityAction"
             }]
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
     /*
      * TriggerInstance Entity
@@ -403,19 +415,22 @@ YUI.add("wegas-statemachine-entities", function(Y) {
     persistence.DialogueDescriptor = Y.Base.create("DialogueDescriptor", persistence.FSMDescriptor, [], {
         /**
          * Triggers a Dialogue Transition programmatically
-         * @param {sitionnsition} transition - the transition object to trigger.
-         * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to execute.
+         * @param {Transition} transition - the transition object to trigger.
+         * @param {Object} callbacks - {success:Function|String, failure:Function|String} - the callback functions to
+         *     execute.
          */
         doTransition: function(transition, callbacks) {
             var request;
             if (transition instanceof persistence.DialogueTransition) {
                 if (!this.get(ID) || !transition.get(ID)) {
-                    Y.error("Trying to call an unpersisted transition", new Error("Calling a detached entity"), "Y.Wegas.persistence.DialogueDescriptor");
+                    Y.error("Trying to call an unpersisted transition",
+                        new Error("Calling a detached entity"),
+                        "Y.Wegas.persistence.DialogueDescriptor");
                     return false;
                 }
-                request = "/StateMachine/" + this.get(ID)
-                    + "/Player/" + Wegas.Facade.Game.get('currentPlayerId')
-                    + "/Do/" + transition.get(ID);
+                request = "/StateMachine/" + this.get(ID) +
+                          "/Player/" + Wegas.Facade.Game.get('currentPlayerId') +
+                          "/Do/" + transition.get(ID);
                 try {
                     Wegas.Facade.Variable.sendRequest({
                         request: request,
@@ -447,25 +462,25 @@ YUI.add("wegas-statemachine-entities", function(Y) {
         },
         EDITORNAME: "Dialog",
         EDITMENU: [{
-                type: "EditEntityButton",
-                plugins: [{
-                        fn: "EditFSMAction",
-                        cfg: {
-                            viewerCfg: {
-                                availableStates: [/*"State",*/ "DialogueState"],
-                                availableTransitions: [/*"Transition",*/ "DialogueTransition"]
-                            }
-                        }
-                    }]
-            }, {
-                type: BUTTON,
-                label: "Copy",
-                plugins: [{
-                        fn: "DuplicateEntityAction"
-                    }]
-            }, {
-                type: "DeleteFSMButton"
+            type: "EditEntityButton",
+            plugins: [{
+                fn: "EditFSMAction",
+                cfg: {
+                    viewerCfg: {
+                        availableStates: [/*"State",*/ "DialogueState"],
+                        availableTransitions: [/*"Transition",*/ "DialogueTransition"]
+                    }
+                }
             }]
+        }, {
+            type: BUTTON,
+            label: "Copy",
+            plugins: [{
+                fn: "DuplicateEntityAction"
+            }]
+        }, {
+            type: "DeleteFSMButton"
+        }]
     });
 
     /**
@@ -511,21 +526,26 @@ YUI.add("wegas-statemachine-entities", function(Y) {
                 ctrlObj = {
                     availableActions: [],
                     toEval: 0
+                }, checkToRun = function(e, o, ctrlObj, transition, callback) {
+                    ctrlObj.toEval -= 1;
+                    if (o === true) {
+                        ctrlObj.availableActions.push(transition);
+                    }
+                    if (ctrlObj.toEval === 0) {
+                        callback(ctrlObj.availableActions);
+                    }
                 };
             for (i in transitions) {
                 if (transitions[i] instanceof persistence.DialogueTransition) {
                     if (!transitions[i].get("triggerCondition")) {
                         ctrlObj.availableActions.push(transitions[i]);
                     } else {
-                        transitions[i].get("triggerCondition").once("Script:evaluated", function(e, o, ctrlObj, transition, callback) {
-                            ctrlObj.toEval -= 1;
-                            if (o === true) {
-                                ctrlObj.availableActions.push(transition);
-                            }
-                            if (ctrlObj.toEval === 0) {
-                                callback(ctrlObj.availableActions);
-                            }
-                        }, this, ctrlObj, transitions[i], callback);
+                        transitions[i].get("triggerCondition").once("Script:evaluated",
+                            checkToRun,
+                            this,
+                            ctrlObj,
+                            transitions[i],
+                            callback);
                         ctrlObj.toEval += 1;
                         transitions[i].get("triggerCondition").localEval();
                     }

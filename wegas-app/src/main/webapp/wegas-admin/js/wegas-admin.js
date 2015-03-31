@@ -7,16 +7,18 @@
  */
 /*global define, require, window*/
 define(["game",
-        "player",
         "ember-data",
         "ember",
 
         //no function param dependencies
         "controller/game",
         "controller/games",
+        "controller/players",
         "templates/games",
+        "component/modal-dialog",
+        "templates/players",
         "textarea-edit"],
-    function(game, player, DS, Ember) {
+    function(game, DS, Ember) {
         "use strict";
         var Admin = Ember.Application.create();
         Admin.ApplicationAdapter = DS.RESTAdapter.extend({
@@ -44,11 +46,26 @@ define(["game",
             });
         });
         Admin.Game = game;
-        Admin.Player = player;
         Admin.GamesRoute = Ember.Route.extend({
             queryParams: {"type": {refreshModel: true}},
             model: function(params) {
                 return this.store.find("game", {type: params.type});
+            },
+            actions: {
+                openModal: function(modalName, model) {
+                    this.controllerFor(modalName).set("model", model);
+                    return this.render("players", {
+                        outlet: "modal",
+                        into: "games",
+                        controller: modalName
+                    });
+                },
+                closeModal: function() {
+                    return this.disconnectOutlet({
+                        outlet: "modal",
+                        parentView: "games"
+                    });
+                }
             }
         });
         Admin.GameRoute = Ember.Route.extend({
@@ -56,14 +73,15 @@ define(["game",
                 this.model.find("Game", params.id);
             }
         });
-        Admin.GamesController =require("controller/games");
+        Admin.GamesController = require("controller/games");
         Admin.GameController = require("controller/game");
-
+        Admin.PlayersController = require("controller/players");
         Admin.GameSerializer = DS.RESTSerializer.extend({
             extractArray: function(store, type, payload) {
                 return payload;
             }
         });
+
     });
 
 

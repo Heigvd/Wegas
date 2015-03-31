@@ -26,6 +26,7 @@ import com.wegas.core.security.guest.GuestJpaAccount;
 import com.wegas.core.security.persistence.User;
 import org.apache.shiro.SecurityUtils;
 
+import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -54,12 +55,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      *
      */
     final static String HISTORYPATH = "History";
-
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     /**
      * fire before GameModel is removed
@@ -105,14 +100,6 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     /**
-     * @return
-     */
-    @Override
-    public EntityManager getEntityManager() {
-        return em;
-    }
-
-    /**
      * @param entity
      */
     @Override
@@ -122,7 +109,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         final User currentUser = userFacade.getCurrentUser();
         entity.setCreatedBy(!(currentUser.getMainAccount() instanceof GuestJpaAccount) ? currentUser : null); // @hack @fixme, guest are not stored in the db so link wont work
 
-        this.em.flush();
+        this.getEntityManager().flush();
         variableDescriptorFacade.reviveItems(entity);                           // Revive entities
         createdGameModelEvent.fire(new EntityCreated<>(entity));
         userFacade.getCurrentUser().getMainAccount().addPermission("GameModel:View,Edit,Delete,Duplicate,Instantiate:gm" + entity.getId());
@@ -147,6 +134,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         this.reset(gameModel);                                                  // Reset the game model
     }
 
+    @Asynchronous
+    public void asyncRemove(final Long id){
+        this.remove(id);
+    }
     @Override
     public void remove(final Long id) {
         userFacade.deleteAccountPermissionByInstance("gm" + id);
@@ -275,11 +266,13 @@ public class GameModelFacade extends BaseFacade<GameModel> {
      * @param gameModel
      */
     public void reset(final GameModel gameModel) {
-        em.flush();                                                             // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        // Need to flush so prepersit events will be thrown (for example Game will add default teams)
+        getEntityManager().flush();
         gameModel.propagateGameModel();
-        gameModel.propagateDefaultInstance(true);                               // Propagate default instances
-        em.flush();                                 // DA FU    ()
-        resetEvent.fire(new ResetEvent(gameModel));                             // Send an reset event (for the state machine and other)
+        gameModel.propagateDefaultInstance(gameModel);
+        getEntityManager().flush(); // DA FU    ()
+        // Send an reset event (for the state machine and other)
+        resetEvent.fire(new ResetEvent(gameModel));
     }
 
     /**

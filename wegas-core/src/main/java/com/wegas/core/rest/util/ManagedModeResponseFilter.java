@@ -13,23 +13,23 @@ import com.wegas.core.ejb.WebsocketFacade;
 import com.wegas.core.event.client.EntityUpdatedEvent;
 import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasWrappedException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Level;
+import com.wegas.core.exception.internal.NoPlayerException;
+import com.wegas.core.persistence.variable.VariableInstance;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.naming.NamingException;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerResponseContext;
 import javax.ws.rs.container.ContainerResponseFilter;
 import javax.ws.rs.ext.Provider;
-import org.apache.http.HttpStatus;
-import com.wegas.core.exception.internal.NoPlayerException;
-import com.wegas.core.persistence.variable.VariableInstance;
-import jdk.nashorn.api.scripting.ScriptObjectMirror;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Provider
@@ -47,7 +47,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
     @Override
     public void filter(ContainerRequestContext request, ContainerResponseContext response) {
         RequestFacade rmf = RequestFacade.lookup();
-
+        final String managedMode = request.getHeaderString("managed-mode");
         String id = request.getHeaderString("INTERNAL-ID");
         long duration = System.currentTimeMillis()
                 - Long.parseLong(request.getHeaderString("INTERNAL-DATE"), 10);
@@ -58,7 +58,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
             logger.warn("Problem : " + response.getEntity());
         }
 
-        if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))) {
+        if (managedMode != null && !managedMode.toLowerCase().equals("false")) {
 
             ManagedResponse serverResponse = new ManagedResponse();
             List entities;
@@ -96,7 +96,7 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
                 if (response.getEntity() instanceof List) {
                     entities = new ArrayList<>();
-                    for (Object o : (List)response.getEntity()){
+                    for (Object o : (List) response.getEntity()) {
                         entities.add(o);
                     }
                     //entities = (List<Object>) response.getEntity();
@@ -130,7 +130,11 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
                 //serverResponse.getEvents().add(e);
                 try {
                     WebsocketFacade websocketFacade = Helper.lookupBy(WebsocketFacade.class, WebsocketFacade.class);
-                    websocketFacade.onRequestCommit(e);
+                    if (managedMode.matches("^[\\d\\.]+$")) { //Socket id
+                        websocketFacade.onRequestCommit(e, managedMode);
+                    } else {
+                        websocketFacade.onRequestCommit(e);
+                    }
                 } catch (NamingException | NoPlayerException ex) {
                     java.util.logging.Logger.getLogger(ManagedModeResponseFilter.class.getName()).log(Level.SEVERE, null, ex);
                 }

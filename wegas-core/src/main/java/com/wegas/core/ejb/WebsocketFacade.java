@@ -27,7 +27,6 @@ import javax.ejb.Asynchronous;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.enterprise.event.Observes;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,12 +40,15 @@ import java.util.MissingResourceException;
 public class WebsocketFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(WebsocketFacade.class);
+
     private final Pusher pusher;
+
     /**
      *
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
+
     /**
      *
      */
@@ -65,7 +67,7 @@ public class WebsocketFacade {
     public WebsocketFacade() {
         Pusher tmp;
         try {
-            tmp = new Pusher(getProperty("pusher.appId"), 
+            tmp = new Pusher(getProperty("pusher.appId"),
                     getProperty("pusher.key"), getProperty("pusher.secret"));
         } catch (Exception e) {
             logger.error("Pusher init failed, please check your configuration");
@@ -93,17 +95,28 @@ public class WebsocketFacade {
     /**
      * fire and forget pusher events
      *
-     * @param events
+     * @param events Event to send
      */
     @Asynchronous
-    public void onRequestCommit(@Observes EntityUpdatedEvent events) throws NoPlayerException {
+    public void onRequestCommit(final EntityUpdatedEvent events) throws NoPlayerException {
+        this.onRequestCommit(events, null);
+    }
+
+    /**
+     * fire and forget pusher events
+     *
+     * @param events   Event to send
+     * @param socketId Client's socket id. Prevent that specific client to receive this particular message
+     */
+    @Asynchronous
+    public void onRequestCommit(final EntityUpdatedEvent events, final String socketId) throws NoPlayerException {
         if (this.pusher == null) {
             return;
         }
         VariableInstance v;
-        EntityUpdatedEvent player = new EntityUpdatedEvent();
-        EntityUpdatedEvent team = new EntityUpdatedEvent();
-        EntityUpdatedEvent game = new EntityUpdatedEvent();
+        final EntityUpdatedEvent player = new EntityUpdatedEvent();
+        final EntityUpdatedEvent team = new EntityUpdatedEvent();
+        final EntityUpdatedEvent game = new EntityUpdatedEvent();
         Long playerId = null;
         Long teamId = null;
         Long gameId = null;
@@ -135,21 +148,21 @@ public class WebsocketFacade {
         }
         if (game.getUpdatedEntities().size() > 0) {
             try {
-                pusher.trigger("Game-" + gameId, "EntityUpdatedEvent", game.toJson());
+                pusher.trigger("Game-" + gameId, "EntityUpdatedEvent", game.toJson(), socketId);
             } catch (IOException ex) {
                 //
             }
         }
         if (team.getUpdatedEntities().size() > 0) {
             try {
-                pusher.trigger("Team-" + teamId, "EntityUpdatedEvent", team.toJson());
+                pusher.trigger("Team-" + teamId, "EntityUpdatedEvent", team.toJson(), socketId);
             } catch (IOException ex) {
                 //
             }
         }
         if (player.getUpdatedEntities().size() > 0) {
             try {
-                pusher.trigger("Player-" + playerId, "EntityUpdatedEvent", player.toJson());
+                pusher.trigger("Player-" + playerId, "EntityUpdatedEvent", player.toJson(), socketId);
             } catch (IOException ex) {
             }
         }

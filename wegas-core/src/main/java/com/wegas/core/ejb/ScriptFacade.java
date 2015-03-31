@@ -33,8 +33,6 @@ import javax.enterprise.event.Event;
 import javax.enterprise.event.ObserverException;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -50,11 +48,6 @@ import org.slf4j.LoggerFactory;
 public class ScriptFacade {
 
     private static final Logger logger = LoggerFactory.getLogger(ScriptFacade.class);
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
     /**
      *
      */

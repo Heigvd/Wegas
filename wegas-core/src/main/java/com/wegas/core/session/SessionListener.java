@@ -14,13 +14,13 @@ import javax.servlet.http.HttpSessionListener;
  *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-public class SessionListener implements HttpSessionListener {
+public class SessionListener /*implements HttpSessionListener*/ {
 
     /**
      *
      * @param se
      */
-    @Override
+    //@Override
     public void sessionDestroyed(HttpSessionEvent se) {
         //HttpSession session = se.getSession();
         //dispatcher.destroyAllSession(session.getId());
@@ -30,7 +30,7 @@ public class SessionListener implements HttpSessionListener {
      *
      * @param se
      */
-    @Override
+    //@Override
     public void sessionCreated(HttpSessionEvent se) {
     }
 }

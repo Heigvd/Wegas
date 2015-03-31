@@ -46,7 +46,6 @@ YUI.add('wegas-layout-resizable', function(Y) {
              */
             initializer: function() {
                 this.oldWidth = {};
-                window.a = this;
                 this.handlers = [];
                 this.anims = {};
                 this.widgets = [];
@@ -332,6 +331,9 @@ YUI.add('wegas-layout-resizable', function(Y) {
             if (this.__h) {
                 this.__h.detach();
             }
+            if (this.__wh) {
+                this.__wh.detach();
+            }
         },
         hideCenter: function() {
             if (this.oldRight) {
@@ -346,12 +348,15 @@ YUI.add('wegas-layout-resizable', function(Y) {
             this.__h = this.resizeRight.after(["resize", "end"], function(e) {
                 this.getPosition("left").setStyle("width", e.info.left);
             }, this);
+            this.__wh = Y.on("windowresize", Y.bind(function() {
+                this.getPosition("right").setStyle("left", this.getPosition("left").getStyle("width"));
+            }, this));
         },
         showCenter: function() {
             if (!this.oldRight) {
                 return;
             }
-            this.__h.detach();
+            this._destruct();
             this.showPosition("center");
             this.getPosition("right").setStyles({
                 "width": this.oldRight

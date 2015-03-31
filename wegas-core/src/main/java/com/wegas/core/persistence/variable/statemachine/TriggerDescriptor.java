@@ -35,7 +35,14 @@ public class TriggerDescriptor extends StateMachineDescriptor {
      *
      */
     @JsonView(Views.EditorExtendedI.class)
-    private Boolean oneShot = true;
+    private Boolean oneShot = false;
+
+    /**
+     *
+     */
+
+    @JsonView(Views.EditorExtendedI.class)
+    private Boolean disableSelf = true;
     /**
      *
      */
@@ -72,6 +79,13 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         this.oneShot = oneShot;
     }
 
+    public Boolean isDisableSelf() {
+        return disableSelf;
+    }
+
+    public void setDisableSelf(Boolean disableSelf) {
+        this.disableSelf = disableSelf;
+    }
     /**
      *
      * @return
@@ -139,6 +153,7 @@ public class TriggerDescriptor extends StateMachineDescriptor {
         TriggerDescriptor entity = (TriggerDescriptor) a;
         entity.buildStateMachine();
         this.oneShot = entity.isOneShot();
+        this.disableSelf = entity.isDisableSelf();
         this.postTriggerEvent = entity.getPostTriggerEvent();
         this.triggerEvent = entity.getTriggerEvent();
         super.merge(entity);

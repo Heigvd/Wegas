@@ -5,13 +5,15 @@
  * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
 */
-.yui3-uploader-hidden{
-    display:none;
+.yui3-uploader-hidden {
+    display: none;
 }
-.wegas-fileexplorer .yui3-button{
-    padding:2px 5px;
+
+.wegas-fileexplorer .yui3-button {
+    padding: 2px 5px;
 }
-.wegas-fileexplorer-content>.yui3-treeview{
+
+.wegas-fileexplorer-content > .yui3-treeview {
     position: absolute;
     top: 0;
     bottom: 20px;
@@ -19,7 +21,13 @@
     left: 0;
     right: 0;
 }
-.fupload{
+
+.wegas-fileexplorer-content > .yui3-treeview > .yui3-treeview-content {
+    height: 100%;
+    box-sizing: border-box;
+}
+
+.fupload {
     width: 50%;
     position: absolute;
     bottom: 0px;
@@ -30,28 +38,34 @@
     border-top-right-radius: 7px;
     border-top-left-radius: 7px;
 }
-.fupload-hidden{
-    display:none;
+
+.fupload-hidden {
+    display: none;
 }
-.fupload-content{
+
+.fupload-content {
     max-height: 200px;
-    width:100%;
+    width: 100%;
     overflow-y: auto;
     overflow-x: hidden;
 }
-.fupload > .yui3-wegas-progressbar{
-    float:right;
+
+.fupload > .yui3-wegas-progressbar {
+    float: right;
     margin-top: 2px;
 }
-.fupload-descriptor{
+
+.fupload-descriptor {
     background-color: white;
 }
-.fupload-progress{
+
+.fupload-progress {
     background-color: white;
-    border-top:1px solid lightgrey;
+    border-top: 1px solid lightgrey;
     font-weight: bold;
 }
-.fupload-detail{
+
+.fupload-detail {
     background-color: white;
     overflow: hidden;
     max-height: 0px;
@@ -80,24 +94,28 @@
     transition-timing-function: linear;
     transition-delay: 0.1s;
 }
-.fupload-descriptor:hover > .fupload-detail{
+
+.fupload-descriptor:hover > .fupload-detail {
     max-height: 50px;
 }
-.fileexplorer-drag-over{
+
+.fileexplorer-drag-over {
     box-shadow: 0 0 5px green;
 }
 
 /* treeview + wegas-menu hack */
-.wegas-fileexplorer .wegas-toolbar .wegas-menu{
-    display:inline;
+.wegas-fileexplorer .wegas-toolbar .wegas-menu {
+    display: inline;
 }
-.wegas-fileexplorer-content > .yui3-treenode > .yui3-treenode-content-header .wegas-menu-itemlist-horizontal > ul{
-    margin-right:0;
-    right:0;
+
+.wegas-fileexplorer-content > .yui3-treenode > .yui3-treenode-content-header .wegas-menu-itemlist-horizontal > ul {
+    margin-right: 0;
+    right: 0;
 }
+
 .wegas-fileexplorer yui3-treeleaf-content-icon,
 .wegas-fileexplorer .yui3-treeleaf-content-label {
-    cursor:pointer;
+    cursor: pointer;
 }
 
 /* Icon styles */
@@ -108,21 +126,27 @@
     margin: -4px 0 -6px;
     height: 24px;
 }
+
 .wegas-icon-application-pdf {
     background-position: 1px 2px;
 }
+
 .wegas-icon-application-mspowerpoint {
     background-position: 1px -87px;
 }
+
 .wegas-icon-application-msexcel {
     background-position: 1px -31px
 }
+
 .wegas-icon-application-msaccess {
     background-position: 1px -59px;
 }
+
 .wegas-icon-application-msword {
     background-position: 1px -141px
 }
+
 .wegas-icon-image-png,
 .wegas-icon-image-jpg,
 .wegas-icon-image-jpeg,
@@ -130,46 +154,55 @@
     /*background-position: 1px -197px;*/
     background-position: 1px -253px;
 }
+
 .wegas-icon-video-mp4 {
     background-position: 1px -290px;
 }
 
-.wegas-fileexplorer > .treeview-search{
+.wegas-fileexplorer > .treeview-search {
     position: absolute;
     top: 35px;
     left: 50%;
-    z-index:3;
+    z-index: 3;
 }
-.wegas-fileexplorer > .wegas-toolbar .treeview-search{
+
+.wegas-fileexplorer > .wegas-toolbar .treeview-search {
 }
-.wegas-fileexplorer-content > .fileexplorer-footer{
+
+.wegas-fileexplorer-content > .fileexplorer-footer {
     position: absolute;
-    bottom:0px;
+    bottom: 0px;
     width: 100%;
     height: 20px;
     text-align: center;
-    color: rgb(160,160,160);
+    color: rgb(160, 160, 160);
     font-style: italic;
     overflow: hidden;
 }
 
 /** FILE SELECT **/
-.wegas-panel-fileselect .yui3-treeview-content .filter-no-match > div > .content-header{
-    padding-top:0;
+.wegas-panel-fileselect .yui3-treeview-content .filter-no-match > div > .content-header {
+    padding-top: 0;
     padding-bottom: 0;
     max-height: 0;
 }
-.wegas-panel-fileselect .yui3-treeview-content .filter-no-match > div > .content-header{
+.wegas-panel-fileselect .yui3-treeview-content>.yui3-treenode{
+    height: 100%;
+}
+.wegas-panel-fileselect .yui3-treeview-content .filter-no-match > div > .content-header {
     max-height: 0px;
 }
+
 .wegas-panel-fileselect .yui3-treeview-content .wegas-menu [title="Edit"] {
     display: none;
 }
+
 /** Skin toolbar buttons such they look like buttons **/
-.wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li:hover{
-    background-image: linear-gradient(transparent,rgba(0,0,0,0.05) 40%,rgba(0,0,0,0.15));
+.wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li:hover {
+    background-image: linear-gradient(transparent, rgba(0, 0, 0, 0.05) 40%, rgba(0, 0, 0, 0.15));
 }
-.wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li{
+
+.wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li {
     background-color: #ededed;
     background-image: linear-gradient(rgba(255, 255, 255, 0.298039), rgba(255, 255, 255, 0.14902) 40%, transparent);
     border: none;
@@ -196,10 +229,12 @@
     white-space: nowrap;
     word-spacing: 0px;
 }
-.wegas-fileexplorer .wegas-toolbar-header .wegas-menu{
+
+.wegas-fileexplorer .wegas-toolbar-header .wegas-menu {
     display: inline-block;
 }
-.wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li span{
+
+.wegas-fileexplorer .wegas-toolbar-header .wegas-menu > ul > li span {
     display: inline-block;
     vertical-align: middle;
     margin: -3px 2px 0 0;

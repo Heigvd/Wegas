@@ -24,8 +24,6 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,11 +61,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
      */
     @EJB
     private GameFacade gameFacade;
-    /**
-     *
-     */
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
 
     /**
      *
@@ -249,15 +242,6 @@ public class VariableInstanceFacade extends BaseFacade<VariableInstance> {
         VariableInstance ret = super.update(entityId, entity);
         requestFacade.commit();
         return ret;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @Override
-    protected EntityManager getEntityManager() {
-        return em;
     }
 
     /**
