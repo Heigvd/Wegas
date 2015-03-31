@@ -12,16 +12,16 @@
  */
 YUI.add('wegas-editor-variabletreeview', function(Y) {
     "use strict";
-    var ID               = "id",
-        CLASS            = "@class",
-        NAME             = "name",
-        CONTENTBOX       = "contentBox",
-        DATASOURCE       = "dataSource",
-        Wegas            = Y.Wegas,
-        Plugin           = Y.Plugin,
+    var ID = "id",
+        CLASS = "@class",
+        NAME = "name",
+        CONTENTBOX = "contentBox",
+        DATASOURCE = "dataSource",
+        Wegas = Y.Wegas,
+        Plugin = Y.Plugin,
         VariableTreeView,
         scriptCheckLabel = "<span title='Search for errors (May take some time)'>Check</span>",
-        searchFn         = function(val) {
+        searchFn = function(val) {
             var e = this.get("data.entity");
             return !val.length || ((e.getEditorLabel) && (new RegExp(val, "i")).test(e.getEditorLabel()));
         };
@@ -31,7 +31,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
      * @constructor
      * @class
      */
-    VariableTreeView     = Y.Base.create("wegas-editor-treeview", Wegas.EditorTreeView, [], {
+    VariableTreeView = Y.Base.create("wegas-editor-treeview", Wegas.EditorTreeView, [], {
         /** @lends Y.Wegas.VariableTreeView# */
         // *** Private fields ** //
         CONTENT_TEMPLATE: "<div class=\"wegas-editor-variabletreeview\"></div>",
@@ -45,37 +45,37 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this.plug(Plugin.EditorTVDefaultMenuClick); // Open edit tab on left click
             this.treeView.plug(Plugin.TreeViewFilter, {
                 testFn: searchFn
-                /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
-                 e.get("name"),
-                 e.get("title"),
-                 e.get("label"),
-                 e.get("comments")
-                 ].join("|"));*/
-                //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
+                    /*  return val === "" || (e instanceof Wegas.persistence.VariableDescriptor) && (new RegExp(val, "i")).test([
+                     e.get("name"),
+                     e.get("title"),
+                     e.get("label"),
+                     e.get("comments")
+                     ].join("|"));*/
+                    //&& (new RegExp(searchVal, "i")).test(Y.Object.values(e.toJSON()).join('|'));
 
             });
             this.handlers.push(this.treeView.get("boundingBox").prepend("<div class='wegas-filter-input' style='display: none'><input placeholder='Search...'/></div>")
                 .one(".wegas-filter-input input").on("valueChange", function(e) {
-                    var arrSearch;
-                    if (e.prevVal === "") {
-                        savedState = this.treeView.saveState();
-                    }
-                    searchVal = Y.Lang.trim(e.newVal);
-                    /*
-                     * Search AND element splited by ", "
-                     */
-                    /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
-                     arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
-                     return Y.Wegas.Helper.RegExpQuote(item);
-                     });
-                     searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
-                    searchRE = Y.Wegas.Helper.RegExpQuote(searchVal);
-                    //                if (searchVal.length) {
-                    this._timer.reset();
-                    //                } else {
-                    //                    this._timer.timeOut();
-                    //                }
-                }, this));
+                var arrSearch;
+                if (e.prevVal === "") {
+                    savedState = this.treeView.saveState();
+                }
+                searchVal = Y.Lang.trim(e.newVal);
+                /*
+                 * Search AND element splited by ", "
+                 */
+                /*arrSearch = Y.Array.filter(searchVal.split(/[, ]+/), Boolean); // remove emtpy elements array
+                 arrSearch = Y.Array.map(arrSearch, function(item) { //Quote elements
+                 return Y.Wegas.Helper.RegExpQuote(item);
+                 });
+                 searchRE = ".*(?=.*" + arrSearch.join(")(?=.*") + ").*";*/
+                searchRE = Y.Wegas.Helper.RegExpQuote(searchVal);
+                //                if (searchVal.length) {
+                this._timer.reset();
+                //                } else {
+                //                    this._timer.timeOut();
+                //                }
+            }, this));
             this._toggleSearchBtn = new Y.ToggleButton({
                 render: this.toolbar.get("header"),
                 label: "<span class='wegas-icon wegas-icon-zoom'></span>",
@@ -154,21 +154,21 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             this._validateBttn.get(CONTENTBOX).setStyle("marginLeft", "8px");
             this.treeView.plug(Plugin.TreeViewSortable, {
                 nodeGroups: [{
-                    nodeClass: "wegas-editor-questionitem",
-                    parentNode: ".wegas-editor-question"
-                }, {
-                    nodeClass: "wegas-editor-listitem",
-                    parentNode: ".wegas-editor-list"
-                }]
+                        nodeClass: "wegas-editor-questionitem",
+                        parentNode: ".wegas-editor-question"
+                    }, {
+                        nodeClass: "wegas-editor-listitem",
+                        parentNode: ".wegas-editor-list"
+                    }]
             }); // Add sortable plugin to the treeview
             this.treeView.sortable.on("sort", function(e) { // On sort event,
-                var entity     = e.dragWidget.get("data.entity"),
+                var entity = e.dragWidget.get("data.entity"),
                     dropEntity = e.dropWidget.get("data.entity");
                 Wegas.Facade.Variable.cache.move(entity, dropEntity, e.index); // call facade method
             });
         },
         bindUI: function() {
-            var ds      = this.get(DATASOURCE),
+            var ds = this.get(DATASOURCE),
                 request = this.get("request");
             if (ds) {
                 this.handlers.push(ds.after("failure", this.defaultFailureHandler, this)); // GLOBAL error message
@@ -245,13 +245,13 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          */
         genTreeViewElement: function(entity) {
             var children, elClass = entity.get(CLASS),
-                collapsed         = !this.isNodeExpanded(entity),
-                selected          = (this.currentSelection === entity.get(ID)) ? 2 : 0,
-                text              = entity.getEditorLabel(),
+                collapsed = !this.isNodeExpanded(entity),
+                selected = (this.currentSelection === entity.get(ID)) ? 2 : 0,
+                text = entity.getEditorLabel(),
                 /* + "  <span class='treeview-sub'>" + el.getType().replace("Descriptor", "") + "</span>"*/
-                tooltip           = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),
-                erroredClass      = Y.Object.hasKey(Y.Wegas.Facade.Variable.script.errored, entity.get(ID)) ?
-                    "variable-error" : "";
+                tooltip = entity.getType().replace("Descriptor", "") + ": " + entity.getEditorLabel(),
+                erroredClass = Y.Object.hasKey(Y.Wegas.Facade.Variable.script.errored, entity.get(ID)) ?
+                "variable-error" : "";
             if (entity.get("items")) {
                 collapsed = collapsed && !Y.Array.find(entity.get("items"), function(e) {
                     return this.currentSelection === e.get(ID);
@@ -354,16 +354,31 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                         cssClass: "wegas-editor-questionitem " + erroredClass
                     };
                 case 'PeerReviewDescriptor':
-                    children = Y.Array.map(["feedback", "feedbackEvaluations"], function(category) {
+                    children = Y.Array.map(["feedback", "feedbackEvaluation"], function(category) {
+                        var container = entity.get(category),
+                            children = Y.Array.map(container.get("evaluations"), function(ev) {
+                                return {
+                                    label: ev.get("name"),
+                                    selected: (ev.get(ID) === this.currentSelection) ? 2 : 0,
+                                    data: {
+                                        entity: ev,
+                                        parentEntity: container
+                                    },
+                                    iconCSS: "fa fa-star-half-o fa-1"
+                                };
+                            }, this);
                         return {
+                            type: 'TreeNode',
                             label: category,
-                            //selected: (result.get(ID) === this.currentSelection) ? 2 : 0,
+                            children: children,
+                            selected: (container.get(ID) === this.currentSelection) ? 2 : 0,
+                            collapsed: false, // Always opened
                             data: {
-                                //entity: result,
-                                parentEntity: entity,
-                                children : []
+                                entity: container,
+                                parentEntity: entity
                             },
-                            iconCSS: "wegas-icon-result"
+                            //iconCSS: "wegas-icon-result"
+                            iconCSS: "fa fa-eye fa-1"
                         };
                     }, this);
                     return {
@@ -396,7 +411,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
          * @private
          */
         genScopeTreeViewElements: function(el) {
-            var children  = [],
+            var children = [],
                 i, label, team, player, instance,
                 instances = el.get("scope").get("variableInstances");
             for (i in instances) {
@@ -450,7 +465,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
                 case 'QuestionInstance':
                     return {
                         label: label +
-                               ((el.get("replies").length > 0) ? ': ' + el.get("replies").get(NAME) : ': unanswered'),
+                            ((el.get("replies").length > 0) ? ': ' + el.get("replies").get(NAME) : ': unanswered'),
                         selected: selected,
                         data: {
                             entity: el
@@ -486,7 +501,7 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             }
         }
     });
-    Wegas.VariableTreeView    = VariableTreeView;
+    Wegas.VariableTreeView = VariableTreeView;
     /**
      * @class When a descriptor node is toggled, expand it
      * @constructor
@@ -511,16 +526,16 @@ YUI.add('wegas-editor-variabletreeview', function(Y) {
             // nodes });
         },
         fillsLeaf: function(e) {
-            var node   = e.node,
+            var node = e.node,
                 entity = node.get("data.entity"),
-                id     = entity.get(ID);
+                id = entity.get(ID);
             if (entity instanceof Wegas.persistence.ListDescriptor) {
                 if (node.size() > 0) {
                     return;
                 }
                 node.add(this.get("host").genTreeViewElements(entity.get("items")));
             } else if (entity instanceof Wegas.persistence.VariableDescriptor &&
-                       !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
+                !(Wegas.persistence.ChoiceDescriptor && entity instanceof Wegas.persistence.ChoiceDescriptor)) { // @hack
 
                 if (node.size() > 1) { /* @fixme @hack What if there is only 1 player in the game ? */
                     return;

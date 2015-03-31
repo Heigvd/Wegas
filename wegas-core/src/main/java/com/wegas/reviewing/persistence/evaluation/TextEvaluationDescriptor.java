@@ -41,4 +41,9 @@ public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluatio
             // Nothing to merge
         }
     }
+
+    @Override
+    public TextEvaluationInstance createInstance() {
+        return new TextEvaluationInstance(this);
+    }
 }

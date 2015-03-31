@@ -58,6 +58,7 @@
     min-height: 50px;
     box-shadow: 1px 1px 0px lightgray inset, -1px -1px 0px lightgray inset;
 }
+.wegas-pageeditor-designmode .wegas-review-subpage:after,
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader:after{
     content:"" url(../../wegas-editor/images/webpage.png) " Sub page zone, edit page by choosing it in the left tab"  no-repeat center darkgray !important ;
     /*color: white;*/
@@ -70,6 +71,7 @@
     text-align: center;
     vertical-align: middle;
 }
+.wegas-pageeditor-designmode .wegas-review-subpage *,
 .wegas-pageeditor-designmode > .wegas-pageloader-content .wegas-pageloader-content *{
     visibility: hidden !important;
 }

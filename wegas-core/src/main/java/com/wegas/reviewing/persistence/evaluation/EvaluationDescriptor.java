@@ -7,11 +7,13 @@
  */
 package com.wegas.reviewing.persistence.evaluation;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.NamedEntity;
-import com.wegas.reviewing.persistence.PeerReviewDescriptor;
+import com.wegas.core.rest.util.Views;
 import java.util.List;
 import java.util.Objects;
 import javax.persistence.*;
@@ -46,6 +48,8 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      *
      */
     @Id
+    @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
 
     /**
@@ -54,18 +58,11 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private String name;
 
     /**
-     * Indicates that the parent PeerReviewDescriptor defined this evaluation
- as composing a feedback
+     *
      */
     @ManyToOne
-    private PeerReviewDescriptor feedbackReviewDescriptor;
-
-    /**
-     * Indicates that the parent PeerReviewDescriptor defined this evaluation
- as composing a feedback evaluation
-     */
-    @ManyToOne
-    private PeerReviewDescriptor feedbackEvaluationReviewDescriptor;
+    @JsonBackReference
+    private EvaluationDescriptorContainer container;
 
     /**
      * Basic constructor
@@ -148,39 +145,22 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     }
 
     /**
-     * @return the review descriptor that define this evaluation as composing
-     *         the feedback evaluation
+     * @return the container that define this evaluation
      */
     @JsonIgnore
-    public PeerReviewDescriptor getFeedbackEvaluationReviewDescriptor() {
-        return this.feedbackEvaluationReviewDescriptor;
+    public EvaluationDescriptorContainer getContainer() {
+        return this.container;
     }
 
     /**
-     * Set the review descriptor that contains this evaluation descriptor as
-     * composing the feedback evaluation
+     * Set the evaluation descriptor owner
      *
-     * @param rd the parent
+     * @param container the parent
      */
-    public void setFeedbackEvaluationReviewDescriptor(PeerReviewDescriptor rd) {
-        this.feedbackEvaluationReviewDescriptor = rd;
+    public void setContainer(EvaluationDescriptorContainer container) {
+        this.container = container;
     }
 
-    /**
-     * @return the review descriptor that define this evaluation as composing
-     *         the feedback
-     */
-    @JsonIgnore
-    public PeerReviewDescriptor getFeedbackReviewDescriptor() {
-        return feedbackReviewDescriptor;
-    }
+    public abstract T createInstance();
 
-    /**
-     * Set the review descriptor that contains this evaluation descriptor
-     *
-     * @param rd the parent
-     */
-    public void setFeedbackReviewDescriptor(PeerReviewDescriptor rd) {
-        this.feedbackReviewDescriptor = rd;
-    }
 }

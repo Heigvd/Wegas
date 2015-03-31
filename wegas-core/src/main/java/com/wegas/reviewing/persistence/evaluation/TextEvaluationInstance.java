@@ -27,10 +27,14 @@ public class TextEvaluationInstance extends EvaluationInstance {
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
-    private String text;
+    private String value;
 
     public TextEvaluationInstance() {
         super();
+    }
+
+    public TextEvaluationInstance(TextEvaluationDescriptor ed) {
+        super(ed);
     }
 
     /**
@@ -38,17 +42,17 @@ public class TextEvaluationInstance extends EvaluationInstance {
      *
      * @return the evaluation
      */
-    public String getText() {
-        return text;
+    public String getValue() {
+        return value;
     }
 
     /**
      * set the evaluation
      *
-     * @param text the evaluation
+     * @param value the evaluation
      */
-    public void setText(String text) {
-        this.text = text;
+    public void setValue(String value) {
+        this.value = value;
     }
 
     @Override
@@ -56,7 +60,7 @@ public class TextEvaluationInstance extends EvaluationInstance {
         if (a instanceof TextEvaluationInstance) {
             TextEvaluationInstance o = (TextEvaluationInstance) a;
             super.merge(a);
-            this.setText(o.getText());
+            this.setValue(o.getValue());
         }
     }
 }

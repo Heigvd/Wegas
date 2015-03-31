@@ -54,6 +54,9 @@ public class ManagedModeResponseFilter implements ContainerResponseFilter {
 
         logger.info("Request [" + id + "] Processed in " + duration
                 + " [ms] => " + response.getStatusInfo());
+        if (response.getStatusInfo().getStatusCode() >= 400){
+            logger.warn("Problem : " + response.getEntity());
+        }
 
         if (Boolean.parseBoolean(request.getHeaderString("managed-mode"))) {
 

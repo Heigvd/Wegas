@@ -20,14 +20,18 @@ import javax.persistence.Entity;
 @Entity
 public class GradeInstance extends EvaluationInstance {
 
-    public GradeInstance() {
-        super();
-    }
-
     /**
      * given grade
      */
     private Double value;
+
+    public GradeInstance() {
+        super();
+    }
+
+    public GradeInstance(GradeDescriptor ed) {
+        super(ed);
+    }
 
     /**
      * get the given grade or null if not yet given

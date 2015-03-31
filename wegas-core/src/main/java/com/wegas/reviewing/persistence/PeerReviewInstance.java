@@ -12,6 +12,7 @@ import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToMany;
 import org.slf4j.Logger;
@@ -43,7 +44,7 @@ public class PeerReviewInstance extends VariableInstance {
     @OneToMany(mappedBy = "reviewer")
     private List<Review> toReview = new ArrayList<>();
 
-    @OneToMany(mappedBy = "author")
+    @OneToMany(mappedBy = "author", cascade =CascadeType.ALL, orphanRemoval = true)
     private List<Review> reviewed = new ArrayList<>();
 
     public PeerReviewInstance() {

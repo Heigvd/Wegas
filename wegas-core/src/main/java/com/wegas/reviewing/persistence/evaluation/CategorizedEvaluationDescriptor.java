@@ -93,4 +93,9 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
             this.categories.addAll(o.getCategories());
         }
     }
+
+    @Override
+    public CategorizedEvaluationInstance createInstance() {
+        return new CategorizedEvaluationInstance(this);
+    }
 }

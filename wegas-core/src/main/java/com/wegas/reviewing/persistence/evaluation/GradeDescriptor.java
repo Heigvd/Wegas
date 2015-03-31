@@ -86,4 +86,9 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
             this.setMaxValue(o.getMaxValue());
         }
     }
+
+    @Override
+    public GradeInstance createInstance() {
+        return new GradeInstance(this);
+    }
 }
