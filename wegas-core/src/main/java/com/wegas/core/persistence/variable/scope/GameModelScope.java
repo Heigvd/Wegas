@@ -10,7 +10,10 @@ package com.wegas.core.persistence.variable.scope;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
 import java.util.HashMap;
@@ -46,23 +49,35 @@ public class GameModelScope extends AbstractScope {
      */
     @PrePersist
     public void prePersist() {
-        this.propagateDefaultInstance(false);
+        this.propagateDefaultInstance(null);
     }
 
-    /**
-     *
-     * @param force
-     */
     @Override
-    //@XmlTransient
-    @JsonIgnore
-    public void propagateDefaultInstance(boolean force) {
+    protected void propagate(GameModel gameModel) {
         VariableDescriptor vd = this.getVariableDescriptor();
         VariableInstance vi = this.getVariableInstance();
         if (vi == null) {
             this.setVariableInstance(Long.valueOf(0), vd.getDefaultInstance().clone());
-        } else if (force) {
+        } else {
             vi.merge(vd.getDefaultInstance());
+        }
+    }
+
+    /**
+     *
+     * @param context
+     */
+    @JsonIgnore
+    @Override
+    public void propagateDefaultInstance(Object context) {
+        if (context instanceof Player) {
+            // Since player's gamemodel already exists, nothing to propagate
+        } else if (context instanceof Team) {
+            // Since team's gamemodel already exists, nothing to propagate
+        } else if (context instanceof Game) {
+            // Since game's gamemodel already exists, nothing to propagate
+        } else {
+            propagate(getVariableDescriptor().getGameModel());
         }
     }
 

@@ -17,6 +17,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,7 +26,7 @@ import org.slf4j.LoggerFactory;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
-@Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}/Team")
+@Path("GameModel/{gameModelId: ([1-9][0-9]*)?}{s: /?}Game/{gameId : ([1-9][0-9]*)?}{s2: /?}Team")
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
 public class TeamController {
@@ -107,6 +108,24 @@ public class TeamController {
         teamFacade.remove(entity);
         return entity;
     }
+
+    /**
+     * Resets all the variables of a given team
+     *
+     * @param teamId teamId
+     * @return OK
+     */
+    @GET
+    @Path("{teamId: [1-9][0-9]*}/Reset")
+    public Response reset(@PathParam("teamId") Long teamId) {
+        Team team = teamFacade.find(teamId);
+
+        SecurityHelper.checkPermission(team.getGame(), "Edit");
+
+        teamFacade.reset(team);
+        return Response.ok().build();
+    }
+    
     /**
      *
      * @param teamId

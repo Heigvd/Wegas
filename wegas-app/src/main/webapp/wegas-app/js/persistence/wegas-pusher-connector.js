@@ -56,6 +56,7 @@ YUI.add('wegas-pusher-connector', function(Y) {
             });
             pusherInstance.connection.bind("state_change", function(state) {
                 this._set("status", state.current);
+                Y.Wegas.app.set("socketId", pusherInstance.connection.socket_id); // Store current socket id into app
             }, this);
             this._set("status", pusherInstance.connection.state);
             pusherInstance.subscribe('Game-' +

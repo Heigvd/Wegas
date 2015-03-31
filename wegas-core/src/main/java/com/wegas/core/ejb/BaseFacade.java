@@ -13,9 +13,11 @@ import java.io.IOException;
 import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+
 
 /**
  * This is the default implementation of the AbstractFacade pattern defined in
@@ -25,6 +27,17 @@ import javax.persistence.criteria.Root;
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFacade<T> {
+
+    @PersistenceContext(unitName = "wegasPU")
+    private EntityManager em;
+
+    /**
+     *
+     * @return
+     */
+    protected EntityManager getEntityManager() {
+        return em;
+    }
 
     /**
      *
@@ -38,12 +51,6 @@ public abstract class BaseFacade<T extends AbstractEntity> implements AbstractFa
     public BaseFacade(final Class<T> entityClass) {
         this.entityClass = entityClass;
     }
-
-    /**
-     *
-     * @return
-     */
-    protected abstract EntityManager getEntityManager();
 
     /**
      *

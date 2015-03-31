@@ -49,6 +49,10 @@ public class ResourceFacade {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
+    private EntityManager getEntityManager(){
+        return em;
+    }
+
     /**
      *
      */
@@ -188,7 +192,7 @@ public class ResourceFacade {
      * @return
      */
     public ResourceInstance moveAssignment(final Long assignementId, final int index) {
-        final Assignment assignement = this.em.find(Assignment.class, assignementId);
+        final Assignment assignement = this.getEntityManager().find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
         assignement.getResourceInstance().getAssignments().add(index, assignement);
         return assignement.getResourceInstance();
@@ -200,7 +204,7 @@ public class ResourceFacade {
      * @return
      */
     public ResourceInstance removeAssignment(final Long assignementId) {
-        final Assignment assignement = this.em.find(Assignment.class, assignementId);
+        final Assignment assignement = this.getEntityManager().find(Assignment.class, assignementId);
         assignement.getResourceInstance().getAssignments().remove(assignement);
         return assignement.getResourceInstance();
     }
@@ -247,15 +251,15 @@ public class ResourceFacade {
         switch (type) {
             case "occupations":
                 Occupation o = this.findOccupation(abstractAssignementId);
-                em.remove(o);
+                getEntityManager().remove(o);
                 break;
             case "assignment":
                 Assignment a = this.findAssignment(abstractAssignementId);
-                em.remove(a);
+                getEntityManager().remove(a);
                 break;
             default:
                 Activity ac = this.findActivity(abstractAssignementId);
-                em.remove(ac);
+                getEntityManager().remove(ac);
         }
     }
 
@@ -265,7 +269,7 @@ public class ResourceFacade {
      * @return
      */
     public Occupation findOccupation(Long id) {
-        return em.find(Occupation.class, id);
+        return getEntityManager().find(Occupation.class, id);
     }
 
     /**
@@ -274,7 +278,7 @@ public class ResourceFacade {
      * @return
      */
     public Activity findActivity(Long id) {
-        return em.find(Activity.class, id);
+        return getEntityManager().find(Activity.class, id);
     }
 
     /**
@@ -283,7 +287,7 @@ public class ResourceFacade {
      * @return
      */
     public Assignment findAssignment(Long id) {
-        return em.find(Assignment.class, id);
+        return getEntityManager().find(Assignment.class, id);
     }
 
     /**
@@ -292,7 +296,7 @@ public class ResourceFacade {
      * @return
      */
     public TaskInstance findTaskInstance(Long id) {
-        return em.find(TaskInstance.class, id);
+        return getEntityManager().find(TaskInstance.class, id);
     }
 
     /**

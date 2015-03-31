@@ -11,23 +11,24 @@ import com.wegas.core.ejb.GameModelFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
+import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import org.apache.shiro.SecurityUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -37,11 +38,13 @@ import org.slf4j.LoggerFactory;
 public class VariableDescriptorController {
 
     private static final Logger logger = LoggerFactory.getLogger(VariableDescriptorController.class);
+
     /**
      *
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
     /**
      *
      */
@@ -49,7 +52,6 @@ public class VariableDescriptorController {
     private GameModelFacade gameModelFacade;
 
     /**
-     *
      * @param gameModelId
      * @return
      */
@@ -63,7 +65,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param entityId
      * @return
      */
@@ -78,14 +79,13 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param entity
      * @return
      */
     @POST
     public VariableDescriptor create(@PathParam("gameModelId") Long gameModelId,
-            VariableDescriptor entity) {
+                                     VariableDescriptor entity) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + gameModelId);
 
@@ -94,7 +94,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param entityId
      * @param entity
      * @return
@@ -110,7 +109,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param entityId
      * @param entity
      * @return
@@ -125,7 +123,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param descriptorId
      * @param index
      */
@@ -139,7 +136,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param descriptorId
      * @param parentDescriptorId
      * @param index
@@ -147,8 +143,8 @@ public class VariableDescriptorController {
     @PUT
     @Path("{descriptorId: [1-9][0-9]*}/Move/{parentDescriptorId: [1-9][0-9]*}/{index: [0-9]*}")
     public void move(@PathParam("descriptorId") Long descriptorId,
-            @PathParam("parentDescriptorId") Long parentDescriptorId,
-            @PathParam("index") int index) {
+                     @PathParam("parentDescriptorId") Long parentDescriptorId,
+                     @PathParam("index") int index) {
 
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(descriptorId).getGameModelId());
 
@@ -156,7 +152,6 @@ public class VariableDescriptorController {
     }
 
     /**
-     *
      * @param entityId
      * @return
      * @throws IOException
@@ -176,8 +171,14 @@ public class VariableDescriptorController {
         }
     }
 
+    @GET
+    @Path("{entityId: [1-9][0-9]*}/Sort")
+    public VariableDescriptor sort(@PathParam("entityId") Long entityId) {
+        SecurityUtils.getSubject().checkPermission("GameModel:Edit:gm" + variableDescriptorFacade.find(entityId).getGameModelId());
+        return variableDescriptorFacade.sort(entityId);
+    }
+
     /**
-     *
      * @param entityId
      * @return
      */

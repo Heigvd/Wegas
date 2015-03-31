@@ -27,7 +27,7 @@ import java.util.List;
 @Entity
 @NamedQueries({
         @NamedQuery(name = "GameAdmin.findByGame", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.game.id = :gameId"),
-        @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime ASC"),
+        @NamedQuery(name = "GameAdmin.findByStatus", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status = :status ORDER BY ga.createdTime DESC"),
         @NamedQuery(name = "GameAdmin.GamesToDelete", query = "SELECT DISTINCT ga FROM GameAdmin ga WHERE ga.status != com.wegas.admin.persistence.GameAdmin.Status.TODO AND ga.game.status = com.wegas.core.persistence.game.Game.Status.DELETE")
 })
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -53,6 +53,7 @@ public class GameAdmin extends AbstractEntity {
     private Date createdTime;
 
     @Enumerated(value = EnumType.STRING)
+    @Column(length = 24)
     private Status status = Status.TODO;
 
     private String prevName;

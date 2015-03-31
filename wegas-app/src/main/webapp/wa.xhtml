@@ -43,6 +43,20 @@
                 color: #d9d9d9;
                 text-shadow: 0 -1px 0 #bfbfbf;
             }
+            textarea[disabled="true"]{
+                cursor: pointer !important;
+            }
+            .mouse-pointer{
+                cursor: pointer;
+            }
+            .overlay {
+                height: 100%;
+                width: 100%;
+                position: fixed;
+                top: 0;
+                left: 0;
+                background-color: rgba(0, 0, 0, 0.2);
+            }
         </style>
         <script type="application/javascript">
             window.config={
@@ -53,10 +67,10 @@
     </h:head>
     <h:body>
 
-        <ui:fragment rendered="#{!requestController.debugMode()}">
+        <ui:fragment rendered="#{requestController.debugMode()}">
             <script data-main="wegas-admin/js/loader" src="lib/require.js"></script>
         </ui:fragment>
-        <ui:fragment rendered="#{requestController.debugMode()}">
+        <ui:fragment rendered="#{!requestController.debugMode()}">
             <script data-main="wegas-admin/js/loader-bundle-min" src="lib/require.js"></script>
         </ui:fragment>
     </h:body>

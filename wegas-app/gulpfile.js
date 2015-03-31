@@ -1,14 +1,14 @@
 /*global require*/
 
-var gulp       = require('gulp'),
-    chug       = require('gulp-chug'),
-    uglify     = require("gulp-uglify"),
-    minifycss  = require('gulp-cssmin'),
+var gulp = require('gulp'),
+    chug = require('gulp-chug'),
+    uglify = require("gulp-uglify"),
+    minifycss = require('gulp-cssmin'),
     sourcemaps = require("gulp-sourcemaps"),
-    rename     = require("gulp-rename"),
-    cache      = require("gulp-cache"),
-    replace    = require("gulp-replace"),
-    rootPath   = "/";
+    rename = require("gulp-rename"),
+    cache = require("gulp-cache"),
+    replace = require("gulp-replace"),
+    rootPath = "/";
 
 gulp.task('default', ["submodule", "compress-css", "compress-js"], function() {
     "use strict";
@@ -18,9 +18,9 @@ gulp.task('default', ["submodule", "compress-css", "compress-js"], function() {
         .pipe(gulp.dest("target/Wegas"));
 });
 gulp.task("dev", ["setup-dev", "default"]);
-gulp.task("setup-dev", function(cb){
+gulp.task("setup-dev", function(cb) {
     "use strict";
-    rootPath ="/Wegas/";
+    rootPath = "/Wegas/";
     cb();
 });
 gulp.task("submodule", function() {
@@ -28,7 +28,7 @@ gulp.task("submodule", function() {
     return gulp.src('target/Wegas/*/gulpfile.js', {readFile: false})
         .pipe(chug());
 });
-gulp.task("compress-css", function() {
+gulp.task("compress-css", ["submodule"], function() {
     "use strict";
     return gulp.src(["target/Wegas/**/*.css",
             "!target/Wegas/lib/**",
@@ -41,7 +41,7 @@ gulp.task("compress-css", function() {
 
         .pipe(gulp.dest("target/Wegas"));
 });
-gulp.task("compress-js", function() {
+gulp.task("compress-js", ["submodule"], function() {
     "use strict";
     return gulp.src(["target/Wegas/**/*.js",
             "!target/Wegas/lib/**",

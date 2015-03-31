@@ -5,7 +5,8 @@
  * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
-define(["ember-data"], function(DS) {
+/*global define*/
+define(["ember-data", "tool/rawtransform"], function(DS) {
     "use strict";
 
     var attr = DS.attr, game = DS.Model.extend({
@@ -18,7 +19,7 @@ define(["ember-data"], function(DS) {
         playerCount: function() {
             return this.get("players").length;
         }.property("players"),
-        players: DS.hasMany("player"),
+        players: attr("raw"),
         gameId: attr("number"),
         teamCount: attr("number"),
         status: attr("string"),

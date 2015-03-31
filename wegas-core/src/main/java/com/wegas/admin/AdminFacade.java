@@ -20,12 +20,12 @@ import javax.ejb.LocalBean;
 import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
-import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Cyril Junod <cyril.junod at gmail.com>
@@ -33,20 +33,13 @@ import java.util.List;
 @Stateless
 @LocalBean
 public class AdminFacade extends BaseFacade<GameAdmin> {
-
-    @PersistenceContext(unitName = "wegasPU")
-    private EntityManager em;
+    private final Logger logger = LoggerFactory.getLogger(AdminFacade.class);
 
     @EJB
     private GameFacade gameFacade;
 
     public AdminFacade() {
         super(GameAdmin.class);
-    }
-
-    @Override
-    public EntityManager getEntityManager() {
-        return this.em;
     }
 
     public void rebuild() {
@@ -73,7 +66,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     public List<GameAdmin> findByStatus(GameAdmin.Status... status) {
         List<GameAdmin> res = new ArrayList<>();
-        final TypedQuery<GameAdmin> findByStatus = em.createNamedQuery("GameAdmin.findByStatus", GameAdmin.class);
+        final TypedQuery<GameAdmin> findByStatus = getEntityManager().createNamedQuery("GameAdmin.findByStatus", GameAdmin.class);
         for (GameAdmin.Status s : status) {
             findByStatus.setParameter("status", s);
             res.addAll(findByStatus.getResultList());
@@ -88,7 +81,7 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
      * @return GameAdmin found or null if none was found
      */
     public GameAdmin findByGame(final Long gameId) {
-        final TypedQuery<GameAdmin> findByGame = em.createNamedQuery("GameAdmin.findByGame", GameAdmin.class);
+        final TypedQuery<GameAdmin> findByGame = getEntityManager().createNamedQuery("GameAdmin.findByGame", GameAdmin.class);
         findByGame.setParameter("gameId", gameId);
         try {
             return findByGame.getSingleResult();
@@ -152,9 +145,11 @@ public class AdminFacade extends BaseFacade<GameAdmin> {
 
     @Schedule(hour = "4", dayOfMonth = "Last Sun")
     public void deleteGames() {
-        TypedQuery<GameAdmin> query = em.createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
+        TypedQuery<GameAdmin> query = getEntityManager().createNamedQuery("GameAdmin.GamesToDelete", GameAdmin.class);
         final List<GameAdmin> resultList = query.getResultList();
-        resultList.forEach(this::deleteGame);
+        for(GameAdmin ga : resultList){
+            this.deleteGame(ga);
+        }
+        
     }
-
 }

@@ -88,8 +88,8 @@ YUI.add("wegas-template", function(Y) {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
-                    label: "variable",
-                    classFilter: ["NumberDescriptor"]
+                    label: "variable"
+                    //classFilter: ["NumberDescriptor"]
                 }
             },
             data: {
@@ -170,7 +170,7 @@ YUI.add("wegas-template", function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "variable",
-                    classFilter: ["TextDescriptor"]
+                    classFilter: ["TextDescriptor", "StringDescriptor"]
                 }
             }
         }

@@ -19,6 +19,9 @@ import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
+import com.wegas.core.persistence.game.Team;
 
 /**
  *
@@ -77,7 +80,7 @@ abstract public class AbstractScope extends AbstractEntity {
     /**
      *
      * @return The variable instance associated to the current player, which is
-     * stored in the RequestManager.
+     *         stored in the RequestManager.
      */
     @JsonView(Views.SinglePlayerI.class)
     //@XmlAttribute(name = "variableInstances")
@@ -94,10 +97,53 @@ abstract public class AbstractScope extends AbstractEntity {
     }
 
     /**
+     * Propagate instances for the given player
      *
-     * @param force
+     * @param p instance owner
      */
-    abstract public void propagateDefaultInstance(boolean force);
+    protected void propagate(Player p) {
+    }
+
+    /**
+     * Propagate instances for the given team
+     *
+     * @param t the team
+     */
+    protected void propagate(Team t) {
+        for (Player p : t.getPlayers()) {
+            propagate(p);
+        }
+    }
+
+    /**
+     * Propagate instances for the given Game
+     *
+     * @param g the game
+     */
+    protected void propagate(Game g) {
+        for (Team t : g.getTeams()) {
+            propagate(t);
+        }
+    }
+
+    /**
+     * Propagate instances for the given GameModel
+     *
+     * @param gm the gameModel
+     */
+    protected void propagate(GameModel gm) {
+        for (Game g : gm.getGames()) {
+            propagate(g);
+        }
+    }
+
+    /**
+     * Propagate default instance for given context
+     *
+     * @param context instance (GameModel, Game, Team, Player) to propagate
+     *                instances to (null means propagate to everybody)
+     */
+    abstract public void propagateDefaultInstance(Object context);
 
     /**
      *

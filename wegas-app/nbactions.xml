@@ -134,5 +134,21 @@
             <goal>cobertura:cobertura</goal>
         </goals>
     </action>
+    <action>
+            <actionName>profile</actionName>
+            <packagings>
+                <packaging>ejb</packaging>
+                <packaging>ear</packaging>
+                <packaging>war</packaging>
+            </packagings>
+            <goals>
+                <goal>package</goal>
+            </goals>
+            <properties>
+                <skipTests>true</skipTests>
+                <netbeans.deploy>true</netbeans.deploy>
+                <netbeans.deploy.profilemode>true</netbeans.deploy.profilemode>
+            </properties>
+        </action>
 
 </actions>

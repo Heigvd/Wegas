@@ -1,26 +1,29 @@
 {{#link-to "games.index" (query-params type="todo") class="btn btn-default"}}ToDo{{/link-to}} {{#link-to "games.index" (query-params type="processed,charged") class="btn btn-default"}}Done{{/link-to}}
 <table class="table table-striped">
+    <thead>
     <tr>
         <th>Creee</th>
         <th>Creator</th>
         <th>Name</th>
         <th>Scenario</th>
-        <th>Teams</th>
         <th>Players</th>
+        <th>Teams</th>
         <th>Done</th>
         <th>Charged</th>
         <th>Game Status</th>
         <th>Comments</th>
         <th>To Game</th>
     </tr>
+    </thead>
+    <tbody>
     {{#each game in model itemController="game" }}
         <tr>
             <td>{{game.createdTime}}</td>
             <td>{{game.creator}}</td>
             <td>{{game.gameName}}</td>
             <td>{{game.gameModelName}}</td>
+            <td class="mouse-pointer" {{action 'openModal' "players" game}}>{{game.playerCount}}</td>
             <td>{{game.teamCount}}</td>
-            <td {{bind-attr title="game.players"}}>{{game.playerCount}}</td>
             <td>{{input type='checkbox' checked=game.isDone}}</td>
             <td>{{input type='checkbox' checked=game.isCharged}}</td>
             <td>{{game.gameStatus}}</td>
@@ -32,4 +35,6 @@
             <td><a target="_blank" {{bind-attr href="game.gameLink"}}>View</a></td>
         </tr>
     {{/each}}
+    </tbody>
 </table>
+{{outlet "modal"}}

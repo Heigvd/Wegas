@@ -19,7 +19,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         Wegas = Y.Wegas, persistence = Wegas.persistence, Base = Y.Base,
         IDATTRDEF = {
             type: STRING,
-            optional: true, //                                                  // The id is optional for entites that have not been persisted
+            optional: true, //                                                  // The id is optional for entites that
+            // have not been persisted
             _inputex: {
                 _type: HIDDEN
             }
@@ -30,7 +31,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
      */
     persistence.VariableDescriptor = Base.create("VariableDescriptor", persistence.Entity, [], {
         /**
-         * 
+         *
          */
         initializer: function() {
             persistence.VariableDescriptor.superclass.constructor.apply(this, arguments);
@@ -41,7 +42,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             }, this);
         },
         /**
-         * 
+         *
          * @param {Y.Wegas.persistence.Player} player
          * @returns {Y.Wegas.persistence.VariableInstance}
          */
@@ -49,7 +50,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             return this.get("scope").getInstance(player || Wegas.Facade.Game.get("currentPlayer"));
         },
         /**
-         * 
+         *
          * @returns {String}
          */
         getLabel: function() {
@@ -94,7 +95,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
             },
             scope: {
                 valueFn: function() {
-                    return new persistence.TeamScope();                         // Should the default scope be set server or client side?
+                    return new persistence.TeamScope();                         // Should the default scope be set
+                    // server or client side?
                 },
                 validator: function(o) {
                     return o instanceof persistence.Scope;
@@ -310,101 +312,138 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     /**
      * StringDescriptor mapper
      */
-    persistence.StringDescriptor = Base.create("StringDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
-        ATTRS: {
-            "@class": {
-                value: "StringDescriptor"
-            },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        _inputex: {
-                            value: "StringInstance",
-                            _type: HIDDEN
+    persistence.StringDescriptor = Base.create("StringDescriptor",
+        persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor],
+        {},
+        {
+            ATTRS: {
+                "@class": {
+                    value: "StringDescriptor"
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            _inputex: {
+                                value: "StringInstance",
+                                _type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        value: {
+                            type: STRING,
+                            _inputex: {
+                                label: "Default value"
+                            }
                         }
-                    },
-                    id: IDATTRDEF,
-                    value: {
-                        type: STRING,
-                        _inputex: {
-                            label: "Default value"
-                        }
-                    }
 
+                    }
+                }
+            },
+            METHODS: {
+                setValue: {
+                    label: "set",
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: STRING,
+                            value: "",
+                            scriptType: STRING,
+                            required: true
+                        }]
+                },
+                getValue: {
+                    label: VALUE,
+                    returns: STRING,
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }],
+                    localEval: function(player) {
+                        return this.getInstance(player).get(VALUE);
+                    }
                 }
             }
-        }
-    });
+        });
     /**
      * StringInstance mapper
      */
-    persistence.StringInstance = Base.create("StringInstance", persistence.VariableInstance, [persistence.PrimitiveDescriptor], {}, {
-        ATTRS: {
-            "@class": {
-                value: "StringInstance"
-            },
-            value: {
-                type: STRING
+    persistence.StringInstance = Base.create("StringInstance",
+        persistence.VariableInstance,
+        [persistence.PrimitiveDescriptor],
+        {},
+        {
+            ATTRS: {
+                "@class": {
+                    value: "StringInstance"
+                },
+                value: {
+                    type: STRING
+                }
             }
-        }
-    });
+        });
     /**
      * StringDescriptor mapper
      */
-    persistence.TextDescriptor = Base.create("TextDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
-        ATTRS: {
-            "@class": {
-                value: "TextDescriptor"
-            },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: STRING,
-                        _inputex: {
-                            value: "TextInstance",
-                            _type: HIDDEN
+    persistence.TextDescriptor = Base.create("TextDescriptor",
+        persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor],
+        {},
+        {
+            ATTRS: {
+                "@class": {
+                    value: "TextDescriptor"
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: STRING,
+                            _inputex: {
+                                value: "TextInstance",
+                                _type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        value: {
+                            type: HTML,
+                            optional: true,
+                            _inputex: {
+                                label: "Default value"
+                            }
                         }
-                    },
-                    id: IDATTRDEF,
-                    value: {
-                        type: HTML,
-                        optional: true,
-                        _inputex: {
-                            label: "Default value"
-                        }
-                    }
 
+                    }
                 }
-            }
-        },
-        METHODS: {
-            setValue: {
-                label: "set",
-                className: "wegas-method-returnline",
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: HTML,
-                        value: "",
-                        scriptType: STRING,
-                        required: true
-                    }]
             },
-            getValue: {
-                label: VALUE,
-                returns: STRING,
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }],
-                localEval: function(player) {
-                    return this.getInstance(player).get(VALUE);
+            METHODS: {
+                setValue: {
+                    label: "set",
+                    className: "wegas-method-returnline",
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: HTML,
+                            value: "",
+                            scriptType: STRING,
+                            required: true
+                        }]
+                },
+                getValue: {
+                    label: VALUE,
+                    returns: STRING,
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }],
+                    localEval: function(player) {
+                        return this.getInstance(player).get(VALUE);
+                    }
                 }
             }
-        }
-    });
+        });
     /**
      * TextInstance mapper
      */
@@ -423,14 +462,18 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     /**
      * NumberDescriptor mapper
      */
-    persistence.NumberDescriptor = Base.create("NumberDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {
-        getMaxValue: function() {
-            return this.get("maxValue");
+    persistence.NumberDescriptor = Base.create("NumberDescriptor",
+        persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor],
+        {
+            getMaxValue: function() {
+                return this.get("maxValue");
+            },
+            getMinValue: function() {
+                return this.get("minValue");
+            }
         },
-        getMinValue: function() {
-            return this.get("minValue");
-        }
-    }, {
+    {
         ATTRS: {
             "@class": {
                 value: "NumberDescriptor"
@@ -691,7 +734,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "State machine",
-                                    targetClass: "FSMDescriptor"
+                                    targetClass: "FSMDescriptor",
+                                    cfg: {
+                                        states: {
+                                            1: {
+                                                "@class": "State"
+                                            }
+                                        }
+                                    }
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Inbox",
@@ -714,7 +764,14 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Dialogue",
-                                    targetClass: "DialogueDescriptor"
+                                    targetClass: "DialogueDescriptor",
+                                    cfg: {
+                                        states: {
+                                            1: {
+                                                "@class": "DialogueState"
+                                            }
+                                        }
+                                    }
                                 }, {
                                     type: "AddEntityChildButton",
                                     label: "Resource",
@@ -732,6 +789,12 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                                     //cssClass: "wegas-advanced-feature"
                                 }]
                         }
+                    }]
+            }, {
+                type: BUTTON,
+                label: '<span class="wegas-icon wegas-icon-sort"></span>Sort',
+                plugins: [{
+                        fn: "SortEntityAction"
                     }]
             }, {
                 type: BUTTON,
@@ -794,8 +857,7 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
         }
     });
 
-    persistence.InboxDescriptor = Base.create("InboxDescriptor", persistence.VariableDescriptor, [], {
-    }, {
+    persistence.InboxDescriptor = Base.create("InboxDescriptor", persistence.VariableDescriptor, [], {}, {
         ATTRS: {
             "@class": {
                 value: "InboxDescriptor"
@@ -976,7 +1038,8 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
                             this._result = false;
                             this._inProgress = false;
                             this.fire("evaluated", false);
-                        }, this)});
+                        }, this)
+                    });
                 } else {
                     Y.log("evaluation in progress");
                 }
@@ -1024,73 +1087,77 @@ YUI.add("wegas-variabledescriptor-entities", function(Y) {
     /**
      * BooleanDescriptor mapper
      */
-    persistence.BooleanDescriptor = Base.create("BooleanDescriptor", persistence.VariableDescriptor, [persistence.PrimitiveDescriptor], {}, {
-        ATTRS: {
-            "@class": {
-                value: "BooleanDescriptor"
-            },
-            value: {
-                "transient": true,
-                getter: function() {
-                    if (this.getInstance()) {
-                        return this.getInstance().get(VALUE);
-                    } else {
-                        return null;
-                    }
-                }
-            },
-            defaultValue: {
-                type: BOOLEAN,
-                value: false,
-                "transient": true
-            },
-            defaultInstance: {
-                properties: {
-                    "@class": {
-                        type: BOOLEAN,
-                        _inputex: {
-                            value: "BooleanInstance",
-                            _type: HIDDEN
-                        }
-                    },
-                    id: IDATTRDEF,
-                    value: {
-                        type: BOOLEAN,
-                        _inputex: {
-                            label: "Default value",
-                            _type: "select",
-                            choices: [true, false]
+    persistence.BooleanDescriptor = Base.create("BooleanDescriptor",
+        persistence.VariableDescriptor,
+        [persistence.PrimitiveDescriptor],
+        {},
+        {
+            ATTRS: {
+                "@class": {
+                    value: "BooleanDescriptor"
+                },
+                value: {
+                    "transient": true,
+                    getter: function() {
+                        if (this.getInstance()) {
+                            return this.getInstance().get(VALUE);
+                        } else {
+                            return null;
                         }
                     }
+                },
+                defaultValue: {
+                    type: BOOLEAN,
+                    value: false,
+                    "transient": true
+                },
+                defaultInstance: {
+                    properties: {
+                        "@class": {
+                            type: BOOLEAN,
+                            _inputex: {
+                                value: "BooleanInstance",
+                                _type: HIDDEN
+                            }
+                        },
+                        id: IDATTRDEF,
+                        value: {
+                            type: BOOLEAN,
+                            _inputex: {
+                                label: "Default value",
+                                _type: "select",
+                                choices: [true, false]
+                            }
+                        }
 
+                    }
+                }
+            },
+            /**
+             * Defines methods available in wysiwyge script editor
+             */
+            METHODS: {
+                setValue: {
+                    label: "set",
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }, {
+                            type: "select",
+                            required: true,
+                            choices: [true, false]
+                        }]
+                },
+                getValue: {
+                    label: VALUE,
+                    returns: BOOLEAN,
+                    "arguments": [{
+                            type: HIDDEN,
+                            value: SELF
+                        }]
                 }
             }
-        },
-        /**
-         * Defines methods available in wysiwyge script editor
-         */
-        METHODS: {
-            setValue: {
-                label: "set",
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: "select",
-                        required: true,
-                        choices: [true, false]
-                    }]
-            },
-            getValue: {
-                label: VALUE,
-                returns: BOOLEAN,
-                "arguments": [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            }
-        }
-    });
+        });
     /**
      * BooleanInstance mapper
      */

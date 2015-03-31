@@ -663,6 +663,10 @@ YUI().use(function(Y) {
                 requires: "datatable",
                 ws_provides: "Dashboard"
             },
+            "wegas-resetter": {
+                path: "js/widget/wegas-resetter-min.js",
+                ws_provides: "Resetter"
+            },
             "wegas-presencecss": {
                 type: CSS
             },
@@ -869,11 +873,8 @@ YUI().use(function(Y) {
         base: YUI_config.Wegas.base + "/lib/",
         root: "/lib/",
         modules: {
-            "jsplumb-yui": {
-                path: "jsPlumb/yui.jsPlumb-1.6.4-min.js"
-            },
             "jsplumb-dom": {
-                path: "jsPlumb/dom.jsPlumb-1.7.3-min.js"
+                path: "jsPlumb/dom.jsPlumb-1.7.4-min.js"
             },
             esprima: {
                 path: "esprima/esprima-min.js"

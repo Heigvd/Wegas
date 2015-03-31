@@ -7,11 +7,7 @@
  */
 package com.wegas.core.ejb.statemachine;
 
-import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.ScriptEventFacade;
-import com.wegas.core.ejb.ScriptFacade;
-import com.wegas.core.ejb.VariableDescriptorFacade;
-import com.wegas.core.ejb.VariableInstanceFacade;
+import com.wegas.core.ejb.*;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
@@ -20,13 +16,9 @@ import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Script;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import com.wegas.core.persistence.variable.statemachine.StateMachineDescriptor;
-import com.wegas.core.persistence.variable.statemachine.StateMachineInstance;
-import com.wegas.core.persistence.variable.statemachine.Transition;
-import com.wegas.core.persistence.variable.statemachine.DialogueTransition;
-import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import com.wegas.core.persistence.variable.statemachine.*;
+import org.slf4j.LoggerFactory;
+
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -34,7 +26,12 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import javax.script.Invocable;
 import javax.script.ScriptException;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Run state machines.
@@ -46,22 +43,28 @@ import org.slf4j.LoggerFactory;
 public class StateMachineFacade {
 
     static final private org.slf4j.Logger logger = LoggerFactory.getLogger(StateMachineFacade.class);
+
     /**
      * Event parameter will be passed in a function with named parameter
      * {@value #EVENT_PARAMETER_NAME}
      */
     static final private String EVENT_PARAMETER_NAME = "param";
+
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
+
     @EJB
     private ScriptFacade scriptManager;
 
     @Inject
     private RequestManager requestManager;
+
     @Inject
     private ScriptEventFacade scriptEvent;
+
     /**
      * Manage internal event transition.
      */
@@ -74,7 +77,6 @@ public class StateMachineFacade {
     }
 
     /**
-     *
      * @param playerAction
      * @throws com.wegas.core.exception.internal.NoPlayerException
      */
@@ -88,7 +90,6 @@ public class StateMachineFacade {
     }
 
     /**
-     *
      * @param resetEvent
      */
     public void resetEventListener(@Observes ResetEvent resetEvent) throws WegasScriptException {
@@ -124,7 +125,7 @@ public class StateMachineFacade {
             }
             transitions = smi.getCurrentState().getTransitions();
             for (Transition transition : transitions) {
-                if(validTransition){
+                if (validTransition) {
                     break; // already have a valid transition
                 }
                 if (transition instanceof DialogueTransition
@@ -180,6 +181,12 @@ public class StateMachineFacade {
                         impacts.add(smi.getCurrentState().getOnEnterEvent());
                         smi.transitionHistoryAdd(transition.getId());
                         transitionPassed = true;
+                        if (sm instanceof TriggerDescriptor) {
+                            TriggerDescriptor td = (TriggerDescriptor) sm;
+                            if (td.isDisableSelf()) {
+                                smi.setEnabled(false);
+                            }
+                        }
                     }
                 }
             }
@@ -205,9 +212,9 @@ public class StateMachineFacade {
     /**
      * Manage event transition
      *
-     * @param player current {@link Player}
+     * @param player     current {@link Player}
      * @param transition the event transition
-     * @param smi current {@link StateMachineInstance} passing transition
+     * @param smi        current {@link StateMachineInstance} passing transition
      * @return
      */
     private Boolean eventTransition(Player player, Transition transition, StateMachineInstance smi) throws WegasScriptException {
@@ -247,7 +254,7 @@ public class StateMachineFacade {
      * {@value #EVENT_PARAMETER_NAME} to access passed parameter.
      *
      * @param script the script to run
-     * @param param the parameter to pass to the script
+     * @param param  the parameter to pass to the script
      * @see #EVENT_PARAMETER_NAME
      */
     private void evalEventImpact(Player player, final Script script, final Object param) throws WegasScriptException {

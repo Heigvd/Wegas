@@ -23,50 +23,74 @@
 .wegas-page-editor .yui3-treeview > ul > li {
     box-shadow: 0px -1px 0px #f1f1f1;
 }
+
 .wegas-editor-treeview-content .yui3-treeview > ul > li:last-child,
-.wegas-page-editor .yui3-treeview > ul > li:last-child{
+.wegas-page-editor .yui3-treeview > ul > li:last-child {
     box-shadow: 0px -1px 0px #f1f1f1, 0px 1px 0px #f1f1f1;
 }
+
 .wegas-editor-treeview-table {
     padding-right: 450px;
 }
+
 .wegas-editor-treeview-table .yui3-u-col1 {
     width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
 .wegas-editor-treeview-table .yui3-u-col2 {
     margin-right: -450px;
     width: 450px;
 }
+
 .wegas-editor-treeview-table .yui3-u-col2 > div {
     overflow: hidden;
     text-overflow: ellipsis;
     /*text-align: center;*/
 }
+
 .wegas-editor-treeview-tablehd {
     font-weight: bold;
     font-size: 90%;
     padding-left: 18px;
     padding-bottom: 4px;
 }
+
 .wegas-editor-treeview-tablehd .yui3-u-col1 {
     font-family: Verdana, Geneva, sans-serif;
 }
+
 .wegas-editor-treeview-tablehd .yui3-u-col2 > div {
     padding-top: 6px;
 }
-.wegas-editor-treeview-content .wegas-filter-input{
+
+/* FILTER */
+.wegas-editor-treeview div.wegas-editor-treeview-content {
+    overflow: hidden;
+}
+
+.wegas-editor-treeview-content .yui3-treeview {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    top: 0;
+    overflow: auto;
+}
+
+.wegas-editor-treeview-content .wegas-filter-input {
     width: 100%;
     white-space: nowrap;
     padding-right: 45px; /*space for right button*/
     box-sizing: border-box;
 }
-.wegas-editor-treeview-content .wegas-filter-input input{
+
+.wegas-editor-treeview-content .wegas-filter-input input {
     width: 100%;
     min-width: 80px;
     box-sizing: border-box;
 }
+
 /*.yui3-u-selected {
     background: url("../../wegas-app/images/wegas-icon-toggle.png") no-repeat 56px 11px;
 }*/
@@ -77,9 +101,11 @@
     /*cursor: url(../images/openhand.cur) 7 5, default;*/
     cursor: move;
 }
+
 .yui3-treenode-collapsed > ul > .wegas-editor-dummy {
-    display:none;
+    display: none;
 }
+
 .wegas-editor-dummy {
     /*height: 10px;*/
     /*font-style: italic;*/
@@ -97,54 +123,67 @@
 .yui3-skin-sam .wegas-icon-inboxdescriptor,
 .yui3-skin-sam .wegas-icon-fsmdescriptor,
 .yui3-skin-sam .wegas-icon-numberdescriptor,
-.yui3-skin-sam  .wegas-icon-resourcedescriptor {
+.yui3-skin-sam .wegas-icon-resourcedescriptor {
     margin: -6px 0 -8px;
     height: 24px;
     background-repeat: no-repeat;
     background-image: url(../../wegas-app/images/wegas-app-sprite.png);
 }
+
 .wegas-icon-variabledescriptor {
     background-position: 0 -976px;
 }
+
 .yui3-skin-sam .wegas-icon-questiondescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -758px no-repeat;
 }
+
 .yui3-skin-sam .wegas-icon-choicedescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -847px no-repeat;
-} 
+}
+
 .yui3-skin-sam .wegas-icon-dialoguedescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -1012px no-repeat;
 }
+
 .yui3-skin-sam .wegas-icon-triggerdescriptor,
 .yui3-skin-sam .wegas-icon-result {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -942px no-repeat;
-    margin: -6px 0 -8px;      height: 24px;      background-repeat: no-repeat;
+    margin: -6px 0 -8px;
+    height: 24px;
+    background-repeat: no-repeat;
 }
+
 .yui3-skin-sam .wegas-icon-fsmdescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -649px no-repeat;
 }
+
 .yui3-skin-sam .wegas-icon-numberdescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -1050px no-repeat;
 }
+
 .yui3-skin-sam .wegas-icon-textdescriptor,
 .yui3-skin-sam .wegas-page-editor .wegas-icon-text {
     background: url(../images/wegas-icon-pages.png) 2px -59px no-repeat;
 }
+
 .yui3-skin-sam .wegas-icon-inboxdescriptor {
     background: transparent url(../../wegas-editor/images/wegas-icon-pages.png) 0 -426px no-repeat;
 }
-.yui3-skin-sam  .wegas-icon-resourcedescriptor {
+
+.yui3-skin-sam .wegas-icon-resourcedescriptor {
     background-position: 0 -590px;
 }
 
 /* Team treeview */
 .wegas-editor-treeview-team .description {
     font-style: italic;
-    margin:20px 10px 10px;
+    margin: 20px 10px 10px;
     padding: 10px;
     background: #f6f6f6;
 }
-.yui3-skin-sam .wegas-editor-variabletreeview .variable-error > .content-header{
+
+.yui3-skin-sam .wegas-editor-variabletreeview .variable-error > .content-header {
     -moz-box-shadow: 0px 0px 10px red;
     -webkit-box-shadow: 0px 0px 10px red;
     -o-box-shadow: 0px 0px 10px red;
