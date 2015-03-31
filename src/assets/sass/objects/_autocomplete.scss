@@ -47,7 +47,8 @@
 
 .ac-container {
   position: absolute;
-  top: 100% !important;
+  top: auto !important;
+  bottom:64px !important;
   left: 0 !important;
   width: 100% !important;
 }

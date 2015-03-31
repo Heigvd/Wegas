@@ -27,6 +27,7 @@
 		position:relative;
 		width:100%;
 		height:65px;
+		box-sizing: border-box;
 		border-bottom:solid 1px $border;
 
 		.modal__illustration{
@@ -37,11 +38,11 @@
 			float:left;
 			width:auto;
 			height:64px;
+			box-sizing: border-box;
 			padding:20px;
 			font-size:24px;
 			font-weight:200px;
 			margin:0px;
-			box-sizing: border-box;
 		}
 
 		.modal__close{
@@ -50,8 +51,9 @@
 	}
 	.modal__nav{
 		width:100%;
-		height:48px;
+		height:49px;
 		border-bottom:solid 1px $border;
+		box-sizing: border-box;
 
 		.modal__nav__tab{
 			display:block;
@@ -104,27 +106,45 @@
 	}
 	.modal__content{
 		width:100%;
-		height:340px;
+		height:301px;
+		box-sizing: border-box;
 		background: $background-default-secondary;
 		padding: 1em;
 		overflow-x:hidden;
 		overflow-y:auto;
 		&.modal__content--nav-off{
-			height:366px;
+			height:350px;
 		}
 		&.modal__content--tools-off{
-			height:350px;
+			height:366px;
 		}
 		&.modal__content--nav-tools-off{
 			height:415px;
 		}
 	}
+
 	.modal__tools{
 		display:block;
 		position:relative;
 		width:100%;
-		height:64px;
+		height:65px;
 		border-top:solid 1px $border;
+		box-sizing: border-box;
+
+		.modal__tools__autocomplete{
+			display:block;
+			position:relative;
+			width:100%;
+			height:100%;
+		}
+		.modal__tools__add-trainer{
+			width:100%;
+			height:100%;
+			box-sizing: border-box;
+			border:none;
+			outline:none;
+			padding:0px 1em;
+		}
 	}
 	&.modal--coscenarists {
 		.modal__header {}
@@ -160,7 +180,7 @@
 		}
 
 		.modal__tools {
-			padding: 1em;
+			padding: .5em 1em;
 			a.button:nth-child(1),
 			a.button:nth-child(2) {
 				float: right;
