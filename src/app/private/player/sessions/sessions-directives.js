@@ -46,37 +46,16 @@ angular.module('private.player.sessions.directives', [])
                 ctrl.sessionToJoin = sessionUpdated;
             }
         });
-
     };
 })
-.directive('playerSessionJoin', function($state, ScenariosModel, SessionsModel) {
+.directive('playerSessionJoinForm', function($state, ScenariosModel, SessionsModel) {
   return {
-    templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join.tmpl.html',
+    templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join-form.tmpl.html',
     scope: false,
     require: "^playerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         scope.sessionToJoin = {
-            token : "",
-            joinable: false
-        };
-
-        var valideToken = function(session){
-            if($("#session-token").hasClass("input--state-danger")){
-                $("#session-token").removeClass("input--state-danger");
-            }
-            $("#session-token").addClass("input--state-success").attr("disabled", "disabled");
-            scope.sessionToJoin.joinable = true;
-            parentCtrl.changeSessionToJoin(session);
-
-            scope.teamToSelect = {
-                name : ""
-            }
-
-            scope.$watch(function(){
-                return scope.teamToSelect.name
-            }, function(newName, oldName){
-                parentCtrl.updateSearchTeam(newName)
-            });
+            token : ""
         };
 
         var invalideToken = function(){
@@ -92,7 +71,7 @@ angular.module('private.player.sessions.directives', [])
                             parentCtrl.updateSessions;
                         });
                     }else{
-                        valideToken(session);
+                        $state.go('wegas.private.player.sessions.join', {token: session.token});                        
                     }
                 }else{
                     invalideToken();
@@ -113,25 +92,6 @@ angular.module('private.player.sessions.directives', [])
         }, function(newSessions, oldSessions){
             scope.sessions = newSessions;
         });
-    }
-  };
-})
-.directive('playerSessionTeams', function() {
-  return {
-    templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-teams.tmpl.html',
-    scope: {
-        sessionToJoin : "=",
-        searchTeam : "="
-    },
-    require: "^playerSessionsIndex",
-    link : function(scope, element, attrs, parentCtrl){
-        scope.joinTeam = function(teamId){
-            parentCtrl.joinTeam(teamId);
-        }
-        scope.createAndJoinTeam = function(teamName){
-            parentCtrl.createAndJoinTeam(teamName);
-        };
-
     }
   };
 })
