@@ -118,7 +118,9 @@ angular.module('wegas.models.scenarios', [])
         "name": name,
         "properties": {}
       }).success(function(data) {
-        deferred.resolve(applyIcon([data])[0]);
+        var scenario = applyIcon([data])[0];
+        scenarios.push(scenario);
+        deferred.resolve(scenario);
       }).error(function(data) {
         deferred.resolve(data);
       });
@@ -158,7 +160,7 @@ angular.module('wegas.models.scenarios', [])
         deferred.resolve(scenarios);
       } else {
         scenarios = [];
-        $http.get(ServiceURL + "rest/Public/GameModel/?view=EditorExtended").success(function(data) {
+        $http.get(ServiceURL + "rest/GameModel").success(function(data) {
 
           scenarios = applyIcon(data);
           deferred.resolve(scenarios);
@@ -173,19 +175,22 @@ angular.module('wegas.models.scenarios', [])
 
     model.getScenario = function(scenarioId) {
       var deferred = $q.defer();
-      if (scenarios === null) {
-        this.getScenarios().then(function() {
-          return deferred.resolve(this.getScenario(scenarioId));
-        });
-      } else {
+      if (scenarios.lenth > 0) {
         var scenario = findScenario(scenarios, scenarioId);
-
-        // TODO: Fake
-        if (scenario === undefined) {
-          scenario = findScenario(scenarios, 23234);
+        if (scenario !== null) {
+          deferred.resolve(scenario);
+          return deferred.promise;
         }
-        deferred.resolve(scenario);
       }
+
+      var url = "rest/Public/GameModel/" + scenarioId + "?view=EditorExtended";
+        $http.get(ServiceURL + url).success(function(data) {
+          scenarios = applyIcon([data]);
+          deferred.resolve(scenarios[0]);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
       return deferred.promise;
     };
 
@@ -227,7 +232,8 @@ angular.module('wegas.models.scenarios', [])
       if (scenario === null) {
         deferred.resolve({});
       } else {
-        $http.get(ServiceURL + "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId).success(function(data) {
+        var url = "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId
+        $http.get(ServiceURL + url).success(function(data) {
           var permissions = mapPermissions(data);
           deferred.resolve(permissions);
         }).error(function(data) {
