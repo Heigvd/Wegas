@@ -8,10 +8,10 @@
                     <span class="button__label">Player workspace</span>
                 </a>
             </li>
-            <li ng-if="user.isTrainer">
+            <li ng-if="user.isTrainer || user.isAdmin">
                 <a ui-sref-active="button--active" ui-sref="wegas.private.trainer" class="button button--default-reverse button--trainer"><span class="button__label">Trainer workspace</span></a>
             </li>
-            <li ng-if="user.isScenarist">
+            <li ng-if="user.isScenarist || user.isAdmin">
                 <a ui-sref-active="button--active" ui-sref="wegas.private.scenarist" class="button button--default-reverse button--scenarist"><span class="button__label">Scenarist workspace</span></a>
             </li>
             <li><hr/></li>
