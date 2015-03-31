@@ -30,13 +30,13 @@ angular
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
-        scope: false,
+        scope: true,
         require: "^scenaristHistoryIndex",
-        link : function(scope, element, attrs, parentCtrl) {
+        link : function($scope, element, attrs, parentCtrl) {
             $parent = parentCtrl;
-            scope.addVersion = function() {
-                if(scope.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory(scope.scenario.id).then(function (result) {
+            $scope.addVersion = function() {
+                if($scope.$parent.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory($scope.$parent.scenario.id).then(function (result) {
                         if (result === true) {
                             $parent.updateVersions();
                         }

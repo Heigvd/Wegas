@@ -46,7 +46,7 @@ angular
 
             scope.addNewCoscenarist = function() {
                 if (scope.selected_user.id) {
-                    ScenariosModel.updatePermissions(parentCtrl.scenario.id,
+                    ScenariosModel.updatePermissions(scope.scenario.id,
                         scope.selected_user.id, true,false,false).then(function (result) {
                             parentCtrl.updateScenario();
                     });
