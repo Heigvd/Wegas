@@ -8,10 +8,9 @@ angular
     controller : function($scope, $stateParams, $sce) {
         var ctrl = this;
         $scope.scenarios = [];
+        $scope.scenario = {};
 
         ctrl.updateScenario = function() {
-            ScenariosModel.getScenarios().then(function(scenarios) {
-                $scope.scenarios = scenarios;
                 // Searching for current scenario
                 ScenariosModel.getScenario($stateParams.scenarioId).then(function(scenario) {
                     $scope.scenario = scenario;
@@ -21,8 +20,6 @@ angular
                         $scope.permissions = permissions;
                     });
                 });
-
-            });
         };
 
         ctrl.updateScenario();

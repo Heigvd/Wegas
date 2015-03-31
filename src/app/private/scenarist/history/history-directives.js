@@ -33,10 +33,16 @@ angular
         scope: true,
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
+
+            $scope.$watch(function() {
+                return $scope.$parent.scenario
+            } , function(n,o) {
+                $scope.scenario = n;
+            });
             $parent = parentCtrl;
             $scope.addVersion = function() {
-                if($scope.$parent.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory($scope.$parent.scenario.id).then(function (result) {
+                if($scope.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory($scope.scenario.id).then(function (result) {
                         if (result === true) {
                             $parent.updateVersions();
                         }
