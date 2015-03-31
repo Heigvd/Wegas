@@ -1,0 +1,19 @@
+<h3>Teams of {{sessionToJoin.name}}</h3>
+<div ng-if="(sessionToJoin.teams | filter:{name:searchTeam}).length > 0" class="view__list">
+	<div class="card card--medium card--users" ng-repeat="team in sessionToJoin.teams | filter:{name:searchTeam}">
+		<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
+		<div class="card__description card__description--one-line">
+		    <h4 class="card__description__titre">{{team.name}} - ({{team.players.length}} players)</h4>
+		</div>
+		<div class="card__actions">
+		    <a class="button button--medium button--round button--info-reverse button--label-off button--user-plus" title="Join Team" href="#" ng-click="join(team.id)">
+		      <span class="button__label">Join Team</span>
+		    </a>   
+		</div>
+	</div>
+
+</div>
+<div ng-if="(sessionToJoin.teams | filter:{name:searchTeam}).length < 1" class="view view__no-group">
+	<p>No team found</p>
+	<a href="#">Create and join team "{{searchTeam}}"</a>		
+</div>

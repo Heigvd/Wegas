@@ -1,4 +1,16 @@
-<div class="view view--join-session view--bottom" player-session-join>
+<div 
+	class="view view--join-session view--bottom" 
+	player-session-join>
 </div>
-<div class="view view--sessions-list view--middle" player-sessions-list>
+<div 
+	ng-if="!playerSessionsIndexCtrl.sessionJoinable"
+	class="view view--sessions-list view--middle" 
+	player-sessions-list>
+</div>
+<div 
+	ng-if="playerSessionsIndexCtrl.sessionJoinable" 
+	class="view view--sessions-list view--middle"  
+	session-to-join="playerSessionsIndexCtrl.sessionToJoin" 
+	search-team="playerSessionsIndexCtrl.searchTeam"
+	player-session-teams>
 </div>

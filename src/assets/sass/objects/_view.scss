@@ -143,6 +143,15 @@
             overflow-x:hidden;
             overflow-y:auto;
         }
+        .view__no-group{
+            @include make-xs-column(12);
+            height:calc(100% - 82px);
+            padding:8px 16px 32px 16px;
+            box-sizing: border-box;
+            overflow-x:hidden;
+            overflow-y:auto;
+        }
+
     }
 
     &.view--sessions-users-new{
