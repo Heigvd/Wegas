@@ -1,4 +1,5 @@
 angular.module('private.trainer.sessions.users.directives', [
+    'wegas.directives.search.users'
 ])
 .directive('trainerSessionsUsersIndex', function(){
 	return {
@@ -11,7 +12,8 @@ angular.module('private.trainer.sessions.users.directives', [
 }).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel){
 	var ctrl = this;
     ctrl.session = {},
-
+    ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
+    
     ctrl.playersViewActived = true;
     SessionsModel.getManagedSession($stateParams.id).then(function(session){
         ctrl.session = session;
@@ -29,6 +31,21 @@ angular.module('private.trainer.sessions.users.directives', [
     ctrl.activeTrainersView = function(){
         ctrl.playersViewActived = false;
     };
+    ctrl.addTrainer = function(selection){
+        SessionsModel.addTrainerToSession($stateParams.id, selection).then(function(data){
+            ctrl.updateSession();
+        });
+    }
+    ctrl.removeTrainer = function(trainerId){
+        SessionsModel.removeTrainerToSession($stateParams.id, trainerId).then(function(data){
+            ctrl.updateSession();
+        });
+    }
+    ctrl.removePlayer = function(playerId, teamId){
+        SessionsModel.removePlayerToSession($stateParams.id, playerId, teamId).then(function(data){
+            ctrl.updateSession();
+        });
+    }
 
 })
 .directive('trainerSessionsUsersTrainersList', function() {
@@ -40,7 +57,9 @@ angular.module('private.trainer.sessions.users.directives', [
            trainers: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            // Implement actions on trainers
+            scope.remove = function(trainerId){
+                parentCtrl.removeTrainer(trainerId);
+            }
         }
     }
 })
@@ -53,7 +72,12 @@ angular.module('private.trainer.sessions.users.directives', [
            players: '='
         },
         link : function(scope, element, attrs, parentCtrl){
-            // Implement actions on individual players 
+            console.log(scope.players);
+            scope.remove = function(playerId, teamId){
+                console.log(playerId);
+                console.log(teamId);
+                parentCtrl.removePlayer(playerId, teamId);
+            }
         }
     }
 })
