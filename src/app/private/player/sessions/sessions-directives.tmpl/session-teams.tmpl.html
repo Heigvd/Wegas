@@ -15,5 +15,5 @@
 </div>
 <div ng-if="(sessionToJoin.teams | filter:{name:searchTeam}).length < 1" class="view view__no-group">
 	<p>No team found</p>
-	<a href="#">Create and join team "{{searchTeam}}"</a>		
+	<a ng-click="createAndJoinTeam(searchTeam)">Create and join team "{{searchTeam}}"</a>		
 </div>

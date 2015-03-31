@@ -29,6 +29,16 @@ angular.module('private.player.sessions.directives', [])
     ctrl.updateSearchTeam = function(newName){
         ctrl.searchTeam = newName;
     };
+    
+    ctrl.createAndJoinTeam = function(teamName){
+        SessionsModel.createTeam(ctrl.sessionToJoin.id, teamName).then(function(data){
+            SessionsModel.joinTeam(ctrl.sessionToJoin.id, data.id).then(function(sessionUpdated){
+                if(sessionUpdated){
+                    ctrl.sessionToJoin = sessionUpdated;
+                }
+            });
+        });
+    };
 
     ctrl.joinTeam = function(teamId){
         SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(sessionUpdated){
@@ -116,10 +126,11 @@ angular.module('private.player.sessions.directives', [])
     require: "^playerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         scope.joinTeam = function(teamId){
-            console.log("join team");
-            console.log(teamId);
             parentCtrl.joinTeam(teamId);
         }
+        scope.createAndJoinTeam = function(teamName){
+            parentCtrl.createAndJoinTeam(teamName);
+        };
 
     }
   };
