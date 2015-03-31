@@ -243,4 +243,66 @@ angular.module('wegas.models.scenarios', [])
       return deferred.promise;
     };
 
+
+    model.getVersionsHistory = function(scenarioId) {
+      var deferred = $q.defer();
+      var url = "rest/Public/GameModel/" + scenarioId + "/File/list/History";
+
+      $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
+        .success(function(data) {
+          deferred.resolve(data.entities);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+    }
+    model.addVersionHistory = function(scenarioId) {
+      var deferred = $q.defer();
+
+      var url = "rest/Public/GameModel/" + scenarioId + "/CreateVersion";
+      $http.post(ServiceURL + url)
+        .success(function(data) {
+          deferred.resolve(true);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+    }
+    model.deleteVersionHistory = function(scenarioId, version) {
+      var deferred = $q.defer();
+      var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
+
+      $http.delete(ServiceURL + url)
+        .success(function(data) {
+          deferred.resolve(true);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+
+    }
+    model.restoreVersionHistory = function(scenarioId, version) {
+
+      var deferred = $q.defer();
+      var url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
+
+      $http.get(ServiceURL + url)
+        .success(function(data) {
+          var newScenario = data;
+          deferred.resolve(newScenario);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+    }
+
+
   });
