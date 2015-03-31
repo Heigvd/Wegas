@@ -10,9 +10,11 @@ angular.module('private.player.sessions.directives', [])
     ctrl.searchTeam = "";
     ctrl.sessionJoinable = false;
     ctrl.sessionToJoin = {};
+
     SessionsModel.getPlayedSessions().then(function(sessions){
         ctrl.sessions = sessions;
     });
+
     ctrl.updateSessions = function(){
         SessionsModel.getPlayedSessions().then(function(sessions){
             ctrl.sessions = sessions;
@@ -26,6 +28,15 @@ angular.module('private.player.sessions.directives', [])
 
     ctrl.updateSearchTeam = function(newName){
         ctrl.searchTeam = newName;
+    };
+
+    ctrl.joinTeam = function(teamId){
+        SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(sessionUpdated){
+            if(sessionUpdated){
+                ctrl.sessionToJoin = sessionUpdated;
+            }
+        });
+
     };
 })
 .directive('playerSessionJoin', function($state, ScenariosModel, SessionsModel) {
@@ -56,10 +67,11 @@ angular.module('private.player.sessions.directives', [])
             }, function(newName, oldName){
                 parentCtrl.updateSearchTeam(newName)
             });
-        }
+        };
+
         var invalideToken = function(){
             $("#session-token").addClass("input--state-danger");
-        }
+        };
 
         scope.joinSession = function(){
             SessionsModel.findSessionToJoin(scope.sessionToJoin.token).then(function(session){
@@ -80,7 +92,7 @@ angular.module('private.player.sessions.directives', [])
     }
   };
 })
-.directive('playerSessionsList', function(ScenariosModel, SessionsModel) {
+.directive('playerSessionsList', function() {
   return {
     templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
     scope: false,
@@ -94,7 +106,7 @@ angular.module('private.player.sessions.directives', [])
     }
   };
 })
-.directive('playerSessionTeams', function(ScenariosModel, SessionsModel) {
+.directive('playerSessionTeams', function() {
   return {
     templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-teams.tmpl.html',
     scope: {
@@ -103,6 +115,11 @@ angular.module('private.player.sessions.directives', [])
     },
     require: "^playerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
+        scope.joinTeam = function(teamId){
+            console.log("join team");
+            console.log(teamId);
+            parentCtrl.joinTeam(teamId);
+        }
 
     }
   };

@@ -377,6 +377,29 @@ angular.module('wegas.models.sessions', [])
         });
         return deferred.promise;
     }
+    /* Join a team for current player */ 
+    model.joinTeam = function (sessionId, teamId) {
+        var deferred = $q.defer();
+        Auth.getAuthenticatedUser().then(function(user) {
+            if(user != null) {
+                var cachedSession = findSession(playedSessions, sessionId);
+                if(cachedSession){
+                    deferred.resolve(false);
+                }else{
+                    $http.get(ServiceURL + "rest/GameModel/Game/JoinTeam/"+ teamId).success(function(session){
+                        session = formatPlayers(session);
+                        playedSessions.push(session);
+                        deferred.resolve(session);
+                    }).error(function(data){
+                        deferred.resolve(data);
+                    });
+                }
+            } else {
+                deferred.resolve(false);
+            }
+        });
+        return deferred.promise;
+    }
 
     /* Remove data from sessions caches */
     model.clearCache = function(){
