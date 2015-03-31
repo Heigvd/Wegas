@@ -186,7 +186,7 @@ YUI().use(function(Y) {
                 "wegas-text-input": {
                     path: "js/widget/wegas-text-input-min.js",
                     ws_provides: "TextInput",
-                    requires: ["wegas-widget", "tinymce"]
+                    requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect"]
                 },
                 "wegas-text": {
                     path: "js/widget/wegas-text-min.js",
@@ -721,9 +721,16 @@ YUI().use(function(Y) {
         base: './wegas-reviewing/',
         root: '/wegas-reviewing/',
         modules: {
+            "wegas-review-css": {
+                type : CSS
+            },
             "wegas-reviewing-entities": {
                 requires: "wegas-entity",
                 ws_provides: "PeerReviewDescriptor"
+            },
+            "wegas-review-widgets": {
+                requires: ["wegas-review-css", "wegas-reviewing-entities", "slider", "wegas-text-input"],
+                ws_provides: ["ReviewVariableEditor", "ReviewOrchestrator", "ReviewTabView", "ReviewWidget", "GradeInput", "TextEvalInput", "CategorizationInput"]
             }
         }
     });

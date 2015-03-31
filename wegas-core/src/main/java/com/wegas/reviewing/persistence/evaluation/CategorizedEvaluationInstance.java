@@ -21,14 +21,19 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
     /**
      * the chosen category (null means un-chosen)
      */
-    private String value = null;
+    private String value;
 
     public CategorizedEvaluationInstance() {
         super();
     }
 
+    public CategorizedEvaluationInstance(CategorizedEvaluationDescriptor ed) {
+        super(ed);
+    }
+
     /**
      * get the chosen category
+     *
      * @return the chosen category or null is not yet chosen
      */
     public String getValue() {

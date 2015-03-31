@@ -1,0 +1,43 @@
+ /*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+*/
+
+/*   Created on : 26-Mar-2015, 11:32:03
+ *    Author     : Maxence Laurent (maxence.laurent at gmail.com)
+ */
+
+
+.wegas-review-widget-title {
+    font-size: 1.2em;
+}
+
+
+.wegas-review-widget-content .wegas-review-widget-feedback > div,
+.wegas-review-widget-content .wegas-review-widget-feedbackEv > div {
+    border: 1px solid grey;
+}
+
+
+.wegas-review-widget-content .wegas-review-widget-feedback,
+.wegas-review-widget-content .wegas-review-widget-feedbackEv {
+    margin: 10px;
+}
+
+.wegas-review-widget-content .wegas-review-widget-toReview,
+.wegas-review-widget-content .wegas-review-widget-feedback,
+.wegas-review-widget-content .wegas-review-widget-feedbackEv {
+    margin: 5px;
+}
+
+
+wegas-review-texteval-label,
+wegas-review-grade-instance-label{
+    font-weight: 400;
+}
+
+
+

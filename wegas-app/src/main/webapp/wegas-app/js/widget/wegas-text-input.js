@@ -25,9 +25,12 @@ YUI.add("wegas-text-input", function(Y) {
         /** @lends Y.Wegas.TextInput# */
 
 
-        CONTENT_TEMPLATE: "<div class=\"wegas-text-input-editor\"></div>"
-            + "<div class=\"wegas-text-input-toolbar\"></div>",
+        CONTENT_TEMPLATE: "<div>" +
+            "<div class=\"wegas-text-input-editor\"></div>" +
+            "<div class=\"wegas-text-input-toolbar\"><span class=\"status\"></span></div>" +
+            "</div>",
         initializer: function() {
+            this.handlers = [];
         },
         /**
          * @function
@@ -35,83 +38,106 @@ YUI.add("wegas-text-input", function(Y) {
          */
         syncUI: function() {
             Y.once("domready", function() {
-                this.editor = new tinymce.Editor(this.get("boundingBox").one(".wegas-text-input-editor").getDOMNode(), {
-                    plugins: [
-                        "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
-                            //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
-                    ],
-                    external_plugins: {
-                        "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
-                    },
-                    //toolbar1: "bold italic bullist | link image media code addToolbarButton",
-                    toolbar1: "bold italic bullist | link code addToolbarButton",
-                    toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
-                    toolbar3: "fontselect fontsizeselect styleselect",
-                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
-                    // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
-                    menubar: false,
-                    statusbar: false,
-                    relative_urls: false,
-                    toolbar_items_size: 'small',
-                    hidden_tootlbar: [2, 3],
-                    setup: Y.bind(function(editor) {
-                        editor.on('change', Y.bind(this.fireUpdatedEvt, this));
-                        this.editor = editor;
-                    }, this),
-                    image_advtab: true,
-                    autoresize_min_height: 35,
-                    autoresize_max_height: 500,
-                    content_css: [
-                        Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
-                    ],
-                    style_formats: [{// Style formats
-                            title: 'Title 1',
-                            block: 'h1'
-                        }, {
-                            title: 'Title 2',
-                            block: 'h2'
-                                // styles : {
-                                //    color : '#ff0000'
-                                // }
-                        }, {
-                            title: 'Title 3',
-                            block: 'h3'
-                        }, {
-                            title: 'Normal',
-                            inline: 'span'
-                        }, {
-                            title: "Code",
-                            //icon: "code",
-                            block: "code"
-                        }]}, tinymce.EditorManager);
+                if (this.get("readonly")) {
+                    this.get("contentBox").one(".wegas-text-input-editor").setContent(this.getInitialContent());
+                } else {
+                    this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(), {
+                        plugins: [
+                            "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
+                                //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                        ],
+                        external_plugins: {
+                            "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                        },
+                        //toolbar1: "bold italic bullist | link image media code addToolbarButton",
+                        toolbar1: "bold italic bullist | link code addToolbarButton",
+                        toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
+                        toolbar3: "fontselect fontsizeselect styleselect",
+                        // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
+                        // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
+                        menubar: false,
+                        statusbar: false,
+                        relative_urls: false,
+                        toolbar_items_size: 'small',
+                        hidden_tootlbar: [2, 3],
+                        setup: Y.bind(function(editor) {
+                            this.editor = editor;
+                        }, this),
+                        image_advtab: true,
+                        autoresize_min_height: 35,
+                        autoresize_max_height: 500,
+                        content_css: [
+                            Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
+                        ],
+                        style_formats: [{// Style formats
+                                title: 'Title 1',
+                                block: 'h1'
+                            }, {
+                                title: 'Title 2',
+                                block: 'h2'
+                                    // styles : {
+                                    //    color : '#ff0000'
+                                    // }
+                            }, {
+                                title: 'Title 3',
+                                block: 'h3'
+                            }, {
+                                title: 'Normal',
+                                inline: 'span'
+                            }, {
+                                title: "Code",
+                                //icon: "code",
+                                block: "code"
+                            }]}, tinymce.EditorManager);
 
-                //this.editor.on('change', Y.bind(this.sendUpdatedEvt, this));    // Update on editor update
-                this.editor.render();
+                    this.editor.on('change', Y.bind(this.onChange, this));    // Update on editor update
 
-                this.editor.setContent(this.get("variable.evaluated").getInstance().get("value"));
+                    this.editor.render();
 
-                this.addButton = new Wegas.Button({
-                    label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
-                    tooltip: "Save",
-                    cssClass: "wegas-text-input-save",
-                    on: {
-                        click: Y.bind(this.save, this)
-                    }
-                }).render(this.get("boundingBox").one(".wegas-text-input-toolbar"));
+                    this.setContent();
+                    this.addButton = new Wegas.Button({
+                        label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
+                        tooltip: "Save",
+                        cssClass: "wegas-text-input-save",
+                        on: {
+                            click: Y.bind(this.onSave, this)
+                        }
+                    }).render(this.get("contentBox").one(".wegas-text-input-toolbar"));
+                }
             }, this);
+        },
+        setContent: function() {
+            this.editor.setContent(this.getInitialContent());
+        },
+        getInitialContent: function() {
+            return this.get("variable.evaluated").getInstance().get("value");
+        },
+        setStatus: function(msg){
+            this.get("contentBox").one(".status").setContent("<p>" + msg + "</p>");
+        },
+        onChange: function() {
+            this.setStatus("Not saved");
+        },
+        onSave: function() {
+            var msg = (this.save() ? "Saved" : "Something went wrong");
+            this.setStatus(msg);
+            Y.later("2000", this, function() {
+                this.setStatus("");
+            });
         },
         save: function() {
             var theVar = this.get("variable.evaluated").getInstance();
             theVar.set("value", this.editor.getContent());
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject());
+            return true;
         },
         getEditorLabel: function() {
             return this.get(CONTENTBOX).get("text");
         },
-        /**
-         * Render the field
-         */
-        renderUI: function() {
+        destructor: function() {
+            Y.Array.each(this.handlers, function(h) {
+                h.detach();
+            });
         }
     }, {
         /** @lends Y.Wegas.TextInput */
@@ -129,7 +155,7 @@ YUI.add("wegas-text-input", function(Y) {
                     classFilter: ["TextDescriptor"]
                 }
             },
-            userEditable: {
+            readonly: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 optional: true,
                 _inputex: {

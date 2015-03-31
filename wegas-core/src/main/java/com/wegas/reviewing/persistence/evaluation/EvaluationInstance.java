@@ -9,7 +9,9 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.Review;
 import java.util.Objects;
 import javax.persistence.*;
@@ -38,12 +40,16 @@ public abstract class EvaluationInstance extends AbstractEntity {
     private static final long serialVersionUID = 1L;
 
     @Id
+    @GeneratedValue
+    @JsonView(Views.IndexI.class)
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     private Review feedbackReview;
 
     @ManyToOne
+    @JsonIgnore
     private Review feedbackEvaluationReview;
 
     @ManyToOne
@@ -70,7 +76,7 @@ public abstract class EvaluationInstance extends AbstractEntity {
      *
      * @param ed corresponding EvaluationDescriptor
      */
-    public void setEvaluationDescriptor(EvaluationDescriptor ed) {
+    public void setDescriptor(EvaluationDescriptor ed) {
         this.evaluationDescriptor = ed;
     }
 
@@ -106,6 +112,16 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @Override
     public Long getId() {
         return this.id;
+    }
+
+
+    @JsonIgnore
+    public Review getEffectiveReview(){
+        if (this.getFeedbackEvaluationReview() != null){
+            return this.getFeedbackEvaluationReview();
+        } else {
+            return this.getFeedbackReview();
+        }
     }
 
     /**

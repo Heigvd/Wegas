@@ -8,43 +8,47 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
-import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableDescriptor;
-import java.util.ArrayList;
-import java.util.List;
+import com.wegas.core.rest.util.Views;
+import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
  * PeerReviewDescriptor allows peer-reviewing of variable between
- (scope-dependent) Player/Team (ie the "author" and the "reviewers").
+ * (scope-dependent) Player/Team (ie the "author" and the "reviewers").
  *
  * A review: <ul>
  * <li> is made for a specific variable ('toReview' VariableDescriptor)</li>
- * <li> is define as, at least, one evaluation, defined as a 'feedback'</li>
+ * <li> is define as, at least, one evaluation, defined as a 'feedback', wrapped
+ * within a container</li>
  * <li> is done by several players/teams (reviewers) (up to
  * 'maxNumberOfReviewer'). Each author is reviewed the given number of times and
  * is a 'reviewer' for the same number of others authors</li>
  * </ul>
  *
  * Moreover, feedbacks can be evaluated by the author. Such an evaluation is
- * define by a EvaluationDescriptor list ('feedbacksEvaluations', can be empty)
+ * define within an EvaluationDescriptorContainer('feedbacksEvaluation', nested
+ * list can be empty)
  *
  * The reviewing process consists of X stage:
  * <ol>
- * <li> no-started: author edit its 'toReview' variable instance</li>
+ * <li> not-started: author edit its 'toReview' variable instance</li>
+ * <li> submitted: 'toReview' instances no longer editable </li>
  * <li> dispatched: variable turns read-only, reviewers are chosen by such an
- * algorithm, feedback is editable by reviewers</li>
- * <li> reviewed: feedback turns read-only and become visible by the author,
- * feedback evaluation is possible</li>
- * <li> closed: feedback evaluation turns read-onlyA<li>
+ * algorithm</li>
  * </ol>
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
@@ -61,8 +65,9 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * Define review states
      */
     public enum ReviewingState {
-
-        NOT_STARTED, DISPATCHED, REVIEWED, CLOSED
+        NOT_STARTED, // author can edit toReview
+        SUBMITTED,   // authors can't edit toReview anymore
+        DISPATCHED   // toReview are dispatched, state became review dependent
     }
 
     /**
@@ -89,15 +94,19 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      * List of evaluations that compose one feedback. Here, en empty list does
      * not make any sense
      */
-    @OneToMany(mappedBy = "feedbackReviewDescriptor")
-    private List<EvaluationDescriptor> feedback = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonView(Views.EditorI.class)
+    @NotNull
+    private EvaluationDescriptorContainer feedback;
 
     /**
      * List of evaluations that compose the feedbacks evaluations. Empty list is
      * allowed
      */
-    @OneToMany(mappedBy = "feedbackEvaluationReviewDescriptor")
-    private List<EvaluationDescriptor> feedbackEvaluations = new ArrayList<>();
+    @OneToOne(cascade = CascadeType.ALL)
+    @JsonView(Views.EditorI.class)
+    @NotNull
+    private EvaluationDescriptorContainer feedbackEvaluation;
 
     /**
      *
@@ -134,10 +143,10 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             super.merge(a);
 
             this.setMaxNumberOfReview(other.getMaxNumberOfReview());
+            this.setToReview(other.getToReview());
             this.setToReviewName(other.getToReviewName());
-
-            this.feedback = ListUtils.mergeLists(this.getFeedback(), other.getFeedback());
-            this.feedbackEvaluations = ListUtils.mergeLists(this.getFeedbackEvaluations(), other.getFeedbackEvaluations());
+            this.feedback.merge(other.getFeedback());
+            this.feedbackEvaluation.merge(other.getFeedbackEvaluation());
         }
     }
 
@@ -215,7 +224,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @return a list of EvaluationDescriptor
      */
-    public List<EvaluationDescriptor> getFeedback() {
+    public EvaluationDescriptorContainer getFeedback() {
         return feedback;
     }
 
@@ -224,8 +233,11 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @param feedback s list of EvaluationDescriptor
      */
-    public void setFeedback(List<EvaluationDescriptor> feedback) {
+    public void setFeedback(EvaluationDescriptorContainer feedback) {
         this.feedback = feedback;
+        if (feedback != null) {
+            //feedback.setParent(this);
+        }
     }
 
     /**
@@ -233,18 +245,21 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @return list of EvaluationDescriptor
      */
-    public List<EvaluationDescriptor> getFeedbackEvaluations() {
-        return feedbackEvaluations;
+    public EvaluationDescriptorContainer getFeedbackEvaluation() {
+        return feedbackEvaluation;
     }
 
     /**
      *
      * set the feedback evaluation description
      *
-     * @param feedbackEvaluations list of evaluation descriptor
+     * @param feedbackEvaluation list of evaluation descriptor
      */
-    public void setFeedbacksEvaluations(List<EvaluationDescriptor> feedbackEvaluations) {
-        this.feedbackEvaluations = feedbackEvaluations;
+    public void setFeedbacksEvaluation(EvaluationDescriptorContainer feedbackEvaluation) {
+        this.feedbackEvaluation = feedbackEvaluation;
+        if (feedbackEvaluation != null) {
+            //feedbackEvaluation.setParent(this);
+        }
     }
 
 }

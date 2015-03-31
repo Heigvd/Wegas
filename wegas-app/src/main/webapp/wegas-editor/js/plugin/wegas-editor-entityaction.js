@@ -331,7 +331,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
      */
     EditEntityArrayFieldAction = Y.Base.create("EditEntityArrayFieldAction", EntityAction, [], {
         execute: function() {
-            var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) : this.get("parentEntity");
+            var entity = (this.get("method").toLowerCase() === "post") ? this.get(ENTITY) : this.get("parentEntity"), descriptor;
 
             if (entity instanceof Wegas.persistence.VariableDescriptor) {
                 this.get(DATASOURCE).cache.getWithView(entity, "EditorExtended", {// just need to check if it causes bugs
@@ -341,18 +341,30 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                         }, this)
                     }
                 });
+            } else if (entity instanceof Wegas.persistence.EvaluationDescriptorContainer) {
+                descriptor = Y.Array.find(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
+                    function(item) {
+                        return item.get("feedback").get("id") === entity.get("id") ||
+                            item.get("feedbackEvaluation").get("id") === entity.get("id");
+                    });
+
+                this.doExecute(entity, descriptor);
             } else {
-                this.doExecute(entity);
+                this.doExecute(entity); // ???? 
             }
         },
-        doExecute: function(descriptor) {
+        doExecute: function(container, descriptor) {
             var entity = this.get(ENTITY),
                 dataSource = this.get(DATASOURCE),
                 newEntity, targetArray, child, menuItems, form;
 
+            if (!descriptor) {
+                descriptor = container;
+            }
+
             switch (this.get("method").toString().toLowerCase()) {
                 case "put":
-                    child = Y.Array.find(descriptor.get(this.get("attributeKey")), function(i) {
+                    child = Y.Array.find(container.get(this.get("attributeKey")), function(i) {
                         return i.get(ID) === entity.get(ID);
                     });
                     menuItems = Y.Array.filter(child.getMenuCfg({dataSource: dataSource}).slice(1), function(i) {
@@ -382,7 +394,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     EditEntityAction.hideRightTabs();                           // Hide all active tabs
                     EditEntityAction.showEditForm(newEntity, Y.bind(function(newVal) {
                         newEntity.setAttrs(newVal);
-                        descriptor.get(this.get("attributeKey")).push(newEntity);
+                        container.get(this.get("attributeKey")).push(newEntity);
                         dataSource.cache.put(descriptor.toObject(), {
                             on: {
                                 success: Y.bind(function(e) {
@@ -404,7 +416,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     break;
                 case "delete":
                     Wegas.Panel.confirm("Are you sure you want to delete this item?", Y.bind(function() {
-                        targetArray = descriptor.get(this.get("attributeKey"));
+                        targetArray = container.get(this.get("attributeKey"));
                         Y.Array.find(targetArray, function(e, i, a) {
                             if (e.get(ID) === entity.get(ID)) {
                                 a.splice(i, 1);
@@ -425,7 +437,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                     }, this));
                     break;
                 case "copy":
-                    targetArray = descriptor.get(this.get("attributeKey"));
+                    targetArray = container.get(this.get("attributeKey"));
                     Y.Array.find(targetArray, function(e, i, a) {
                         if (e.get(ID) === entity.get(ID)) {
                             newEntity = new entity.constructor(entity.toObject(ID));
@@ -549,8 +561,8 @@ YUI.add("wegas-editor-entityaction", function(Y) {
             var entity = this.get(ENTITY), i;
 
             Wegas.Panel.confirm("Are you sure you want to delete the "
-                + entity.getType().toLowerCase().replace("descriptor", "") 
-                + " \"" + entity.get("label") + "\" " 
+                + entity.getType().toLowerCase().replace("descriptor", "")
+                + " \"" + entity.get("label") + "\" "
                 + "?",
                 Y.bind(function() {
                     this.showOverlay();
@@ -719,7 +731,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                             EditEntityAction.hideEditFormOverlay();
                             widget.hideOverlay();
                         },
-                        failure: function(){
+                        failure: function() {
                             EditEntityAction.hideEditFormOverlay();
                             widget.hideOverlay();
                         }
