@@ -48,6 +48,7 @@
         }
     }
 
+
     .card__description{
         float:left;
     }
@@ -82,10 +83,10 @@
             overflow: auto;
         }
         &.ng-enter {
-            animation: bounceIn 1s;
+            animation: fadeIn .6s;
         }
         &.ng-leave {
-          animation: bounceOut 1s;
+          animation: fadeOut .6s;
         }
         .card__illustration {
             width: 96px;
