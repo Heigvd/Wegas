@@ -13,6 +13,9 @@ angular.module('private.directives', [
         }, function(newVal, oldVal){
             scope.name = newVal;
         });
+        scope.profile = function () {
+          alert('Sorry... Not yet implemented');
+        }
         scope.logout = function(){
             Auth.logout().then(function(){
                 $state.go("wegas.public.login");
