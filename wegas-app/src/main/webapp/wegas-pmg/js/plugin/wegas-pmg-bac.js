@@ -70,17 +70,26 @@ YUI.add('wegas-pmg-bac', function(Y) {
             return true;
         },
         request: function(taskDescriptor) {
+            this.get("host").bypassSync();
             Wegas.Facade.Variable.sendQueuedRequest({
                 request: "/Script/Run/" + Wegas.Facade.Game.get('currentPlayerId'),
                 cfg: {
                     method: "POST",
-                    updateCache: false,
-                    updateEvent: false,
+                    //updateCache: false,
+                    //updateEvent: false,
                     data: {
                         "@class": "Script",
                         //content: "Variable.findByName(self.getGameModel(), '" + taskDescriptor.get("name") + "').getInstance(self).setProperty('bac', '" + taskDescriptor.get("instance").properties.bac + "');"
                         content: "PMGHelper.updateBAC('" + taskDescriptor.get("name") + "','" + taskDescriptor.get("instance").properties.bac + "');"
                     }
+                },
+                on: {
+                    success: Y.bind(function() {
+                        this.get("host").unbypassSync();
+                    }, this),
+                    failure: Y.bind(function() {
+                        this.get("host").unbypassSync();
+                    }, this)
                 }
             });
         },
