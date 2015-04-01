@@ -14,10 +14,10 @@ angular.module('wegas.service.auth', [
                 $http.get(ServiceURL + "rest/User/Current").success(function(data){
                     authenticatedUser = {
                         id: data.id,
-                        email: data.accounts.email,
-                        username: data.accounts.username,
-                        firstname: data.accounts.firstname,
-                        lastname: data.accounts.lastname,
+                        email: data.accounts[0].email,
+                        username: data.accounts[0].username,
+                        firstname: data.accounts[0].firstname,
+                        lastname: data.accounts[0].lastname,
                         isTrainer: false,
                         isScenarist: false,
                         isAdmin: false
