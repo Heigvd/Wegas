@@ -120,9 +120,7 @@
             @include make-xs-column(2);
         }
     }
-    &.card--trainer-session{
-        margin:4px auto 4px auto;
-        .card__description{
+    .card__description{
             .card__description__titre{
                 margin:0px;
                 padding:0px;
@@ -231,6 +229,10 @@
                 }
             }
         }
+
+    &.card--trainer-session{
+        margin:4px auto 4px auto;
+
         .card__actions{
             padding:16px;
         }
