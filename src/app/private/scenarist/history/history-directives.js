@@ -121,9 +121,15 @@ angular
         link : function($scope, element, attrs, parentCtrl) {
 
             $scope.deleteFork = function(name) {
+                var forkName = name;
                 ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result === true) {
-                        parentCtrl.updateVersions();
+                        var index = _.findIndex($scope.versions, function(v) {
+                            return v.name === name;
+                        });
+                        if (index > -1) {
+                            $scope.versions.splice(index, 1);
+                        }
                     }
                 });
             };
