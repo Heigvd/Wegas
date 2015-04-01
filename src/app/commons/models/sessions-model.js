@@ -352,19 +352,18 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
-    /* Join a session for current player */ 
-    model.joinSession = function (token) {
+    /* Join an individual session for current player */ 
+    model.joinIndividualSession = function (token) {
         var deferred = $q.defer();
         Auth.getAuthenticatedUser().then(function(user) {
             if(user != null) {
-                if(playedSessions == null) {
-                    model.getPlayedSessions().then(function(data){
-                        model.joinSession(token);
-                    });
-                } else {
+                var cachedSession = _.find(playedSessions, function (s) { return s.token == token; });
+                if(cachedSession){
+                    deferred.resolve(false);
+                }else{
                     model.getPlayedSessions().then(function(data){
                         $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token + "?view=Extended").success(function(data){
-                            playedSessions.push(data[0]);
+                            playedSessions.push(data[1]);
                             deferred.resolve(playedSessions);
                         }).error(function(data){
                             deferred.resolve(playedSessions);
@@ -372,7 +371,7 @@ angular.module('wegas.models.sessions', [])
                     });
                 }
             } else {
-                deferred.resolve(playedSessions);
+                deferred.resolve(false);
             }
         });
         return deferred.promise;

@@ -24,4 +24,5 @@ angular.module('private.trainer', [
             ViewInfos.editName("Trainer workspace");
         }
     });
-});
+})
+;

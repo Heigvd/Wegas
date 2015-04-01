@@ -23,8 +23,8 @@ angular.module('private.player.sessions.directives', [])
         SessionsModel.findSessionToJoin(token).then(function(session){
             if(session){
                 if(session.properties.freeForAll){
-                    SessionsModel.joinSession(token).then(function(data){
-                        ctrl.updateSessions;
+                    SessionsModel.joinIndividualSession(token).then(function(data){
+                        updateSessions;
                     });
                 }else{
                     $state.go('wegas.private.player.sessions.join', {token: session.token});                        
@@ -36,7 +36,7 @@ angular.module('private.player.sessions.directives', [])
     /* Listen for new session */
     $rootScope.$on('newSession', function(e, hasNewData){
         if(hasNewData){
-            ctrl.updateSessions();
+            updateSessions();
         }
     });
 

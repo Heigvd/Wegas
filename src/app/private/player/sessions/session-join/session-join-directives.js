@@ -1,38 +1,68 @@
 angular.module('private.player.session.join.directives', [])
+.directive('playerSessionJoinIndex', function(){
+    return {
+        templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-index.tmpl.html',
+        scope:{
+            close: "&"
+        },
+        controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
+    };
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, SessionsModel){
+    /* Assure access to ctrl. */
+    var ctrl = this;
+
+    /* Container for datas */
+    ctrl.sessionToJoin = {};
+
+    /* Method used to create new team and join this new team in the session. */
+    ctrl.createAndJoinTeam = function(teamName){
+        SessionsModel.createTeam(ctrl.sessionToJoin.id, teamName).then(function(data){
+            SessionsModel.joinTeam(ctrl.sessionToJoin.id, data.id).then(function(sessionUpdated){
+                if(sessionUpdated){
+                    $rootScope.$emit('newSession', true);
+                    $scope.close();
+                }
+            });
+        });
+    };
+
+    /* Method used to join existing team in the session. */
+    ctrl.joinTeam = function(teamId){
+        SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(sessionUpdated){
+            if(sessionUpdated){
+                $rootScope.$emit('newSession', true);
+                $scope.close();
+            }
+        });
+    };
+
+    /* Initialize datas */
+    SessionsModel.findSessionToJoin($stateParams.token).then(function(session){
+        if(session){
+            if(!session.properties.freeForAll){
+                ctrl.sessionToJoin = session;
+            }else{
+                $scope.close();
+            }
+        }else{
+            $scope.close();
+        }
+    });
+})
 .directive('playerSessionJoinTeam', function(){
     return {
-    templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join-team.tmpl.html',
-    scope: {
-        
-    },
-    require: "^playerSessionsIndex",
-    link : function(scope, element, attrs, parentCtrl){
-        scope.joinTeam = function(teamId){
-            parentCtrl.joinTeam(teamId);
+        templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join-team.tmpl.html',
+        scope: {
+            createAndJoinTeam: "="    
         }
-        scope.createAndJoinTeam = function(teamName){
-            parentCtrl.createAndJoinTeam(teamName);
-        };
-
-    }
-  };
+    };
 })
 .directive('playerSessionTeamsList', function() {
   return {
-    templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-teams.tmpl.html',
+    templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-teams-list.tmpl.html',
     scope: {
-        sessionToJoin : "=",
-        searchTeam : "="
-    },
-    require: "^playerSessionsIndex",
-    link : function(scope, element, attrs, parentCtrl){
-        scope.joinTeam = function(teamId){
-            parentCtrl.joinTeam(teamId);
-        }
-        scope.createAndJoinTeam = function(teamName){
-            parentCtrl.createAndJoinTeam(teamName);
-        };
-
+        teams : "=",
+        joinTeam : "="
     }
   };
 });
