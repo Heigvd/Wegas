@@ -92,7 +92,7 @@
         }
         .card__content {
             @include make-xs-column(12);
-            width: calc(100% - 64px);
+            width: calc(100% - 96px);
 
             .card__description {
                 @include make-xs-column(7.5);
