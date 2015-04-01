@@ -112,6 +112,11 @@
 		padding: 1em;
 		overflow-x:hidden;
 		overflow-y:auto;
+		h2 {
+			margin: 0;
+			margin-bottom: 8px;
+			font-size: 18px;
+		}
 		&.modal__content--nav-off{
 			height:350px;
 		}
