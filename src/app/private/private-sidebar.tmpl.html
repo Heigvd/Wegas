@@ -14,14 +14,15 @@
             <li ng-if="user.isScenarist || user.isAdmin">
                 <a ui-sref-active="button--active" ui-sref="wegas.private.scenarist" class="button button--default-reverse button--scenarist"><span class="button__label">Scenarist workspace</span></a>
             </li>
-            <li><hr/></li>
-            <li>
-                <a href="#" class="button button--default-reverse button--user"><span class="button__label">Edit profile</span></a>
-            </li>
-            <li>
-                <a ng-click="logout()" class="button button--default-reverse button--sign-out"><span class="button__label">Logout</span></a>
-            </li>
         </ul>
     </div>
     <h2 class="view__headding-workspace">{{name}}</h2>
+    <ul class="view__sub-menu">
+        <li class="action">
+            <a ng-click="profile()" class="button button--default-reverse button--user button-without-label"><span class="button__label">{{ user.username }}</span></a>
+        </li>
+        <li class="action">
+            <a ng-click="logout()" class="button button--default-reverse button--label-off button--sign-out"><span class="button__label">Logout</span></a>
+        </li>
+    </ul>
 </div>
