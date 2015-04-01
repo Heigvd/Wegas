@@ -249,6 +249,13 @@
         }
     }
 
+
+    &.card--player-session{
+        .card__actions{
+            padding:16px;
+        }
+    }
+    
     @each $size in $sizes{
         &.card--#{nth($size, 1)}{
             width:100%;

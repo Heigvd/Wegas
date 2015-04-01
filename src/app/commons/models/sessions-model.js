@@ -16,37 +16,37 @@ angular.module('wegas.models.sessions', [])
     },
 
     /* Format players in a list, individualy or grouped by team. */ 
-    formatPlayers = function(data){
-        data.forEach(function(session){
-            if(!session.properties.freeForAll){
-                var teams = session.teams;
-                teams.forEach(function(team){
-                    if(team["@class"] == "DebugTeam" || team.players.length < 1){
-                        session.teams = _.without(session.teams, _.findWhere(session.teams, {id: team.id}));
-                    }
-                });
-            }else{
-                var teams = session.teams,
-                    players = [];
-                teams.forEach(function(team){
-                    if(team["@class"] != "DebugTeam"){
-                        team.players.forEach(function(player){
-                            players.push(player);
-                        });
-                    }
-                });
-                session.players = players;
-                delete session.teams;
-            }
-        });
-        return data;
+    formatPlayers = function(session){
+        if(!session.properties.freeForAll){
+            var teams = session.teams;
+            teams.forEach(function(team){
+                if(team["@class"] == "DebugTeam" || team.players.length < 1){
+                    session.teams = _.without(session.teams, _.findWhere(session.teams, {id: team.id}));
+                }
+            });
+        }else{
+            var teams = session.teams,
+                players = [];
+            teams.forEach(function(team){
+                if(team["@class"] != "DebugTeam"){
+                    team.players.forEach(function(player){
+                        players.push(player);
+                    });
+                }
+            });
+            session.players = players;
+            delete session.teams;
+        }
+        return session;
     },
 
     /* Call the REST service for getting managed sessions. */
     cacheManagedSessions = function () {
         var deferred = $q.defer();
         $http.get(ServiceURL + "rest/GameModel/Game?view=EditorExtended").success(function(data){
-            data = formatPlayers(data);
+            data.forEach(function(session){
+                session = formatPlayers(session)
+            });
             managedSessions = data;
             deferred.resolve(managedSessions);
         }).error(function(data){
@@ -168,6 +168,7 @@ angular.module('wegas.models.sessions', [])
                 var newSession = {
                     "@class": "Game",
                     "gameModelId": scenarioId,
+                    "access": "ENROLMENTKEY",
                     "name": sessionName
                 };
                 $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id, newSession).success(function(data){
@@ -337,29 +338,85 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
-    /* Join a session for current player */ 
-    model.joinSession = function (token) {
+    /* Get a session form token, undefined otherwise. */
+    model.findSessionToJoin = function(token){
         var deferred = $q.defer();
+        $http.get(ServiceURL + "rest/GameModel/Game/FindByToken/" + token).success(function(data){
+            if(data){
+                data = formatPlayers(data)
+            }
+            deferred.resolve(data);
+        }).error(function(data){
+            deferred.resolve(false);
+        });
+        return deferred.promise;
+    };
 
+    /* Join an individual session for current player */ 
+    model.joinIndividualSession = function (token) {
+        var deferred = $q.defer();
         Auth.getAuthenticatedUser().then(function(user) {
             if(user != null) {
-                if(playedSessions == null) {
+                var cachedSession = _.find(playedSessions, function (s) { return s.token == token; });
+                if(cachedSession){
+                    deferred.resolve(false);
+                }else{
                     model.getPlayedSessions().then(function(data){
-                        model.joinSession(token);
-                    });
-                } else {
-                    model.getPlayedSessions().then(function(data){
-                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token).success(function(data){
-                            playedSessions.push(data[0]);
+                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token + "?view=Extended").success(function(data){
+                            playedSessions.push(data[1]);
                             deferred.resolve(playedSessions);
                         }).error(function(data){
                             deferred.resolve(playedSessions);
                         });
                     });
                 }
-
             } else {
-                deferred.resolve(playedSessions);
+                deferred.resolve(false);
+            }
+        });
+        return deferred.promise;
+    }
+    /* Join a team for current player */ 
+    model.joinTeam = function (sessionId, teamId) {
+        var deferred = $q.defer();
+        Auth.getAuthenticatedUser().then(function(user) {
+            if(user != null) {
+                var cachedSession = findSession(playedSessions, sessionId);
+                if(cachedSession){
+                    deferred.resolve(false);
+                }else{
+                    $http.get(ServiceURL + "rest/GameModel/Game/JoinTeam/"+ teamId).success(function(session){
+                        session = formatPlayers(session);
+                        playedSessions.push(session);
+                        deferred.resolve(session);
+                    }).error(function(data){
+                        deferred.resolve(data);
+                    });
+                }
+            } else {
+                deferred.resolve(false);
+            }
+        });
+        return deferred.promise;
+    }
+    /* Join a team for current player */ 
+    model.createTeam = function (sessionId, teamName) {
+        var deferred = $q.defer();
+        Auth.getAuthenticatedUser().then(function(user) {
+            if(user != null) {
+                var cachedSession = findSession(playedSessions, sessionId);
+                if(cachedSession){
+                    deferred.resolve(false);
+                }else{
+                    $http.post(ServiceURL + "rest/GameModel/Game/" + sessionId + "/CreateTeam/" + teamName).success(function(session){
+                        console.log(session);
+                        deferred.resolve(session);
+                    }).error(function(data){
+                        deferred.resolve(data);
+                    });
+                }
+            } else {
+                deferred.resolve(false);
             }
         });
         return deferred.promise;

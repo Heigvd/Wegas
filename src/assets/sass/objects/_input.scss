@@ -45,6 +45,14 @@
             @include material-shadow(3);
         }
     }
+
+    @each $buttons-type in $buttons-types {
+        $type-name: nth($buttons-type, 1);
+        $type-color: nth($buttons-type, 2);
+        &.input--state-#{$type-name}{
+            border-color:$type-color;
+        }
+    }
 }
 
 .input--group{
