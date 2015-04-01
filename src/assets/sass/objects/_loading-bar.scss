@@ -1,4 +1,13 @@
 div#loading-bar .bar {
-  background: $secondary-color;
+  background: $primary-color;
   height: 5px;
+
+}
+
+// Needs to be improved
+.view.view--menu.view--top.view--separate-shadow.view--separate-primary.ng-scope {
+  transition: border 0.3s ease;
+  &.view--loading {
+    border-top: solid 5px #666;
+  }
 }
