@@ -6,11 +6,20 @@
         @include make-xs-column(12, 56px);
         margin:32px 0px 16px 0px;
     }
+    &.form__create-scenario {
+        .ng-hide-remove {
+            animation: fadeIn .6s;
+        }
+        .ng-hide {
+            animation: fadeOut .6s;
+        }
+    }
     .form__row{
         display:block;
         position:relative;
         @include make-row();
         margin:12px 0px;
+
 
         .form__row__label{
             display:none;
