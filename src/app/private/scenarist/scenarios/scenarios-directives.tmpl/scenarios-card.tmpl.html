@@ -1,5 +1,5 @@
-
-  <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
+<div class="card__illustration illustration illustration--big illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
+<div class="card__content">
   <div class="card__description card__description--one-line">
     <p class="card__description__date">{{scenario.createdTime | date:"dd.MM.yyyy"}}</p>
     <h4 class="card__description__titre">
@@ -25,16 +25,18 @@
     </div>
   </div>
   <div class="card__actions">
-  <a class="button button--medium button--round button--info-reverse button--label-off button--scenarist" title="Edit scenario" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
-      <span class="button__label">Edit scenario</span>
-    </a>
+
     <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" ui-sref=".coscenarists({scenarioId: scenario.id})">
       <span class="button__label">Manage User</span>
     </a>
     <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="Manage User" ui-sref=".history({scenarioId: scenario.id})">
       <span class="button__label">Fork</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive scenario" href="#">
+    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive scenario" ui-sref=".history({scenarioId: scenario.id})">
       <span class="button__label">Archive scenario</span>
     </a>
+    <a class="button button--medium button--round button--info-reverse button--label-off button--scenarist" title="Edit scenario" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
+      <span class="button__label">Edit scenario</span>
+    </a>
   </div>
+</div>

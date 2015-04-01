@@ -30,13 +30,19 @@ angular
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
-        scope: false,
+        scope: true,
         require: "^scenaristHistoryIndex",
-        link : function(scope, element, attrs, parentCtrl) {
+        link : function($scope, element, attrs, parentCtrl) {
+
+            $scope.$watch(function() {
+                return $scope.$parent.scenario
+            } , function(n,o) {
+                $scope.scenario = n;
+            });
             $parent = parentCtrl;
-            scope.addVersion = function() {
-                if(scope.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory(scope.scenario.id).then(function (result) {
+            $scope.addVersion = function() {
+                if($scope.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory($scope.scenario.id).then(function (result) {
                         if (result === true) {
                             $parent.updateVersions();
                         }
@@ -115,9 +121,15 @@ angular
         link : function($scope, element, attrs, parentCtrl) {
 
             $scope.deleteFork = function(name) {
+                var forkName = name;
                 ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result === true) {
-                        parentCtrl.updateVersions();
+                        var index = _.findIndex($scope.versions, function(v) {
+                            return v.name === name;
+                        });
+                        if (index > -1) {
+                            $scope.versions.splice(index, 1);
+                        }
                     }
                 });
             };

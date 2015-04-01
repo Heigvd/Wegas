@@ -1,29 +1,17 @@
 <h3>Add scenario</h3>
 
-<form class="form" ng-submit="createScenario()">
+<form class="form form__create-scenario" ng-submit="createScenario()">
   <div class="form__row">
     <input class="input" type="text" id="session-token" ng-model="newScenario.name" placeholder="Scenario name" autocomplete="off">
   </div>
-  <div class="form__row">
+  <div class="form__row" ng-hide="newScenario.name == ''">
     <label class="input__label" for="select">Based on</label>
     <div class="input__entry">
-      <select class="form__row__select"
-              ng-model="newScenario.basedOn"
-              ng-options="opt as opt.name for opt in scenarios">
-    </select>
-  </div>
-  <div class="form__row">
-    <div class="input__radio">
-      <input type="radio" id="joingroup" name="radio" value="group" checked />
-      <label for="joingroup"><span></span>in teams</label>
-    </div>
-    <div class="input__radio">
-      <input type="radio" id="joinsolo" name="radio" value="individual" />
-      <label for="joinsolo"><span></span>individualy</label>
+      <select class="input" ng-model="newScenario.basedOn" ng-options="opt as opt.name for opt in scenarios">
+      </select>
     </div>
   </div>
-</div>
-<div class="form__row form__row--right">
-<input class="form__row__btn button button--default" type="submit" value="Create" />
-</div>
+  <div class="form__row form__row--right">
+    <input class="form__row__btn button button--default" type="submit" value="Create" />
+  </div>
 </form>

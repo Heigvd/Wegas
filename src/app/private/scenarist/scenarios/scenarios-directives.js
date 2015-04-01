@@ -1,4 +1,5 @@
 angular.module('private.scenarist.scenarios.directives', [
+'infinite-scroll'
 ])
 .directive('scenaristScenariosIndex', function(ScenariosModel){
   return {
@@ -26,7 +27,7 @@ angular.module('private.scenarist.scenarios.directives', [
             });
         };
     }
-  };
+};
 })
 
 .directive('scenaristScenarioCreate', function(ScenariosModel) {
@@ -60,26 +61,51 @@ angular.module('private.scenarist.scenarios.directives', [
             });
         };
     }
-  };
+};
 })
 .directive('scenaristScenariosList', function(ScenariosModel) {
   return {
     templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-list.tmpl.html',
     scope: false,
     require: "^scenaristScenariosIndex",
-    link : function(scope, element, attrs, parentCtrl){
-        scope.$watch(function(){
+    link : function($scope, element, attrs, parentCtrl) {
+        $scope.visibleScenarios = [];
+        $scope.busy = false;
+        $scope.search = '';
+
+        $scope.filter = function () {
+            if ($scope.search == '') {
+                $scope.visibleScenarios = [];
+                $scope.loadMore();
+            } else if ($scope.search == '*') {
+                $scope.visibleScenarios = $scope.scenarios;
+            } else {
+                $scope.visibleScenarios = _.filter($scope.scenarios, function(s) {
+                    return s.name.toLowerCase().indexOf($scope.search.toLowerCase()) > -1;
+                });
+
+            }
+        }
+        $scope.loadMore = function() {
+            if ($scope.busy || $scope.search != '' || $scope.scenarios.length == 0) return;
+            $scope.busy = true;
+            var last = $scope.visibleScenarios.length;
+            for(var i = last; i < last + 13; i++) {
+                $scope.visibleScenarios.push($scope.scenarios[i]);
+            }
+            $scope.busy = false;
+        };
+
+        $scope.$watch(function(){
             return parentCtrl.scenarios
         }, function(newScenario, oldScenario){
-            scope.scenarios = newScenario;
-        });
-        scope.$watch(function(){
-            return parentCtrl.search
-        }, function(newSearch, oldSearch){
-            scope.search = newSearch;
+            $scope.scenarios = _.sortBy(newScenario, function(s) {
+                return s.name.toLowerCase();
+            });
+            $scope.loadMore();
         });
     }
-  };
+};
 })
 .directive('scenarioCard', function() {
     return {
@@ -87,9 +113,9 @@ angular.module('private.scenarist.scenarios.directives', [
         restrict: 'A',
         require: "^scenaristScenariosIndex",
         scope: {
-           scenario: '='
-        },
-        link : function(scope, element, attrs, parentCtrl){
+         scenario: '='
+     },
+     link : function(scope, element, attrs, parentCtrl){
             // Private function
             var resetScenarioToSet = function(){
                 scope.copy = scope.scenario;
