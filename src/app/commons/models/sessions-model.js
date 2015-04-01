@@ -172,7 +172,6 @@ angular.module('wegas.models.sessions', [])
                     "name": sessionName
                 };
                 $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id, newSession).success(function(data){
-                    console.log(data);
                     managedSessions.push(data);
                     deferred.resolve(data);
                 }).error(function(data){
@@ -221,24 +220,24 @@ angular.module('wegas.models.sessions', [])
     model.addTrainerToSession = function(sessionId, trainer){
         var deferred = $q.defer(),
             session = findSession(managedSessions, sessionId);
-            if(session){
-                var alreadyIn = false;
-                session.trainers.forEach(function(elem){
-                    if(elem.id == trainer.id){
-                        alreadyIn = true;
-                    }
-                });
-                if(!alreadyIn){
-                    $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g"+ session.id + "/" + trainer.id).success(function(data){
-                        managedSessions[_.indexOf(managedSessions, session)].trainers.push(trainer);
-                        deferred.resolve(trainer);
-                    }).error(function(data){
-                        deferred.resolve(data);
-                    });
+        if(session){
+            var alreadyIn = false;
+            session.trainers.forEach(function(elem){
+                if(elem.id == trainer.id){
+                    alreadyIn = true;
                 }
-            }else{
-                deferred.resolve(false);
+            });
+            if(!alreadyIn){
+                $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g"+ session.id + "/" + trainer.id).success(function(data){
+                    managedSessions[_.indexOf(managedSessions, session)].trainers.push(trainer);
+                    deferred.resolve(trainer);
+                }).error(function(data){
+                    deferred.resolve(data);
+                });
             }
+        }else{
+            deferred.resolve(false);
+        }
         return deferred.promise;
     };
 
@@ -262,31 +261,65 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
-    /* Remove a trainer from a session */ 
+    /* Remove a player from a session */ 
     model.removePlayerToSession = function(sessionId, playerId, teamId){
         var deferred = $q.defer(),
-            session = findSession(managedSessions, sessionId);
+            managedSession = findSession(managedSessions, sessionId),
+            playedSession = findSession(playedSessions, sessionId),
+            session = undefined;
+            if(managedSession){
+                session = managedSession;
+            }else{
+                if(playedSession){
+                    session = playedSession;
+                }
+            }
             if(session){
                 if(!session.properties.freeForAll){
                     session.teams.forEach(function(team){
                         if(team.id == teamId){
-                            team.players.forEach(function(player){
-                                if(player.id == playerId){
-                                    $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data){
-                                        team.players = _.without(team.players, player);
-                                        deferred.resolve(player);                                       
-                                    }).error(function(data){
-                                        deferred.resolve(data);
-                                    });
-                                }
-                            });
+                            if(team.players.length == 1){
+                                $http.delete(ServiceURL + "rest/GameModel/Game/" + sessionId + "/Team/" + teamId).success(function(data){
+                                    if(managedSession){
+                                        managedSession.teams = _.without(managedSession.teams, team);
+                                    }
+                                    if(playedSession){
+                                        playedSession.teams = _.without(playedSession.teams, team);
+                                    }
+                                    deferred.resolve(data);
+                                }).error(function(data){
+                                    deferred.resolve(data);
+                                });
+                            }else{
+                                team.players.forEach(function(player){
+                                    if(player.id == playerId){
+                                        $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data){
+                                            if(managedSession){
+                                                managedSession.teams[_.indexOf(managedSession.teams, team)].players = _.without(team.players, player);
+                                            }
+                                            if(playedSession){
+                                                playedSession.teams[_.indexOf(playedSession.teams, team)].players = _.without(team.players, player);
+                                            }
+                                            deferred.resolve(player);     
+                                        }).error(function(data){
+                                            deferred.resolve(data);
+                                        });
+                                    }
+                                });
+                            }
                         }
                     });
                 }else{
                     player = _.find(session.players, function (t) { return t.id == playerId; });
                     if(player){
-                        $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data){
-                            managedSessions[_.indexOf(managedSessions, session)].players = _.without(session.players, player);
+                        // Delete team of 1 personne (Individual practice). 
+                        $http.delete(ServiceURL + "rest/GameModel/Game/" + sessionId + "/Team/" + player.teamId).success(function(data){
+                            if(managedSession){
+                                managedSession.players = _.without(managedSession.players, player);
+                            }
+                            if(playedSession){
+                                playedSession.players = _.without(playedSession.players, player);
+                            }
                             deferred.resolve(player);
                         }).error(function(data){
                             deferred.resolve(data);
@@ -309,7 +342,10 @@ angular.module('wegas.models.sessions', [])
                 } else {
                     playedSessions = [];
                     $http.get(ServiceURL + "rest/RegisteredGames/"+ user.id).success(function(data){
-                        playedSessions = data
+                        data.forEach(function(session){
+                            session = formatPlayers(session);
+                        });
+                        playedSessions = data;
                         deferred.resolve(playedSessions);
                     }).error(function(data){
                         playedSessions = [];
@@ -362,11 +398,23 @@ angular.module('wegas.models.sessions', [])
                     deferred.resolve(false);
                 }else{
                     model.getPlayedSessions().then(function(data){
-                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token + "?view=Extended").success(function(data){
-                            playedSessions.push(data[1]);
-                            deferred.resolve(playedSessions);
+                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token + "?view=Extended").success(function(data){                            
+                            var team = _.find(data[1].teams, function (t) { return t.id == data[0].id; });
+                            if(team){
+                                var player = _.find(team.players, function (p) { return p.id == data[0].players[0].id; });
+                                if(player){
+                                    player.teamId = data[0].id;
+                                    player.userId = user.id;                            
+                                    playedSessions.push(formatPlayers(data[1]));
+                                    deferred.resolve(playedSessions);
+                                }else{
+                                    deferred.resolve(false);
+                                }
+                            }else{
+                                deferred.resolve(false);
+                            }
                         }).error(function(data){
-                            deferred.resolve(playedSessions);
+                            deferred.resolve(false);
                         });
                     });
                 }
@@ -386,9 +434,21 @@ angular.module('wegas.models.sessions', [])
                     deferred.resolve(false);
                 }else{
                     $http.get(ServiceURL + "rest/GameModel/Game/JoinTeam/"+ teamId).success(function(session){
-                        session = formatPlayers(session);
-                        playedSessions.push(session);
-                        deferred.resolve(session);
+                        var team = _.find(session.teams, function (t) { return t.id == teamId; });
+                        if(team){
+                            var player = _.find(team.players, function (p) { return p.id == user.id; });
+                            if(player){
+                                player.teamId = teamId;
+                                player.userId = user.id;                            
+                                session = formatPlayers(session);
+                                playedSessions.push(session);
+                                deferred.resolve(session);
+                            }else{
+                                deferred.resolve(false);
+                            }
+                        }else{
+                            deferred.resolve(false);
+                        }
                     }).error(function(data){
                         deferred.resolve(data);
                     });
@@ -398,18 +458,18 @@ angular.module('wegas.models.sessions', [])
             }
         });
         return deferred.promise;
-    }
+    };
+
     /* Join a team for current player */ 
     model.createTeam = function (sessionId, teamName) {
         var deferred = $q.defer();
-        Auth.getAuthenticatedUser().then(function(user) {
-            if(user != null) {
+        Auth.getAuthenticatedUser().then(function(u) {
+            if(u != null) {
                 var cachedSession = findSession(playedSessions, sessionId);
                 if(cachedSession){
                     deferred.resolve(false);
                 }else{
                     $http.post(ServiceURL + "rest/GameModel/Game/" + sessionId + "/CreateTeam/" + teamName).success(function(session){
-                        console.log(session);
                         deferred.resolve(session);
                     }).error(function(data){
                         deferred.resolve(data);
@@ -420,12 +480,54 @@ angular.module('wegas.models.sessions', [])
             }
         });
         return deferred.promise;
-    }
+    };
 
-    /* Remove data from sessions caches */
-    model.clearCache = function(){
-        managedSessions = null;
-        playedSessions = null;
+    /* Leave a session for current player */ 
+    model.leaveSession = function (sessionId) {
+        var deferred = $q.defer();
+        Auth.getAuthenticatedUser().then(function(u) {
+            if(u != null) {
+                var cachedSession = findSession(playedSessions, sessionId);
+                if(!cachedSession){
+                    deferred.resolve(false);
+                }else{
+                    if(cachedSession.properties.freeForAll){
+                        var isRemoved = false;
+                        cachedSession.players.forEach(function(player){
+                            if(player.userId == u.id){
+                                isRemoved = true;
+                                model.removePlayerToSession(cachedSession.id, player.id, player.teamId).then(function(data){
+                                    playedSessions = _.without(playedSessions, cachedSession);
+                                    deferred.resolve(isRemoved);
+                                });
+                            }
+                        });
+                        if(!isRemoved){
+                            deferred.resolve(false);
+                        }
+                    }else{
+                        var isRemoved = false;
+                        cachedSession.teams.forEach(function(team){
+                            team.players.forEach(function(player){
+                                if(player.userId == u.id){
+                                    isRemoved = true;
+                                    model.removePlayerToSession(cachedSession.id, player.id, player.teamId).then(function(data){
+                                        playedSessions = _.without(playedSessions, cachedSession);
+                                        deferred.resolve(isRemoved);
+                                    });
+                                }
+                            });
+                        });
+                        if(!isRemoved){
+                            deferred.resolve(false);
+                        }
+                    }
+                }
+            } else {
+                deferred.resolve(false);
+            }
+        });
+        return deferred.promise;
     };
 })
 ;

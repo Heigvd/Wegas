@@ -29,6 +29,7 @@ angular.module('private.player.session.join.directives', [])
     /* Method used to join existing team in the session. */
     ctrl.joinTeam = function(teamId){
         SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(sessionUpdated){
+            console.log(sessionUpdated);
             if(sessionUpdated){
                 $rootScope.$emit('newSession', true);
                 $scope.close();
