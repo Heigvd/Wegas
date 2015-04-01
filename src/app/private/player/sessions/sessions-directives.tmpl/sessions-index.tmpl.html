@@ -1,17 +1,10 @@
 <div 
 	class="view view--join-session view--bottom" 
-	player-session-join-form>
+	check-token="playerSessionsCtrl.checkToken"
+	player-session-join-form >
 </div>
 <div 
-	class="view view--sessions-list view--middle" 
-	player-sessions-list>
+	class="view view--sessions-list view--middle"
+	sessions="playerSessionsCtrl.sessions" 
+	player-sessions-list >
 </div>
-<!--
-<div 
-	ng-if="playerSessionsIndexCtrl.sessionJoinable" 
-	class="view view--sessions-list view--middle"  
-	session-to-join="playerSessionsIndexCtrl.sessionToJoin" 
-	search-team="playerSessionsIndexCtrl.searchTeam"
-	player-session-teams>
-</div>
--->
