@@ -104,7 +104,6 @@
         }
     }
     &.card--coscenarist-permission {
-        @include make-row();
         &.ng-leave {
           animation: bounceOut 1s;
         }
