@@ -92,14 +92,16 @@
         }
         .card__content {
             @include make-xs-column(12);
-            width: calc(100% - 96px);
+            width: calc(100% - 64px);
+
             .card__description {
                 @include make-xs-column(7.5);
-                width: calc(100% - 305px)
+                width: calc(100% - 275px)
             }
             .card__actions {
                 @include make-xs-column(5.5);
-                width: 305px;
+                width: 275px;
+                padding: 15px 0 0 0;
             }
         }
     }
