@@ -144,6 +144,29 @@ angular.module('wegas.models.scenarios', [])
       return deferred.promise;
     }
 
+    model.archiveScenario = function (scenario) {
+      var deferred = $q.defer();
+      var url = "rest/GameModel/" + scenario.id;
+      $http.delete(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        }).success(function(data) {
+
+        // Remove scenario from scenarios
+        var index = scenarios.indexOf(scenario);
+        if (index > -1) {
+          scenarios.splice(index, 1);
+        }
+
+        deferred.resolve(true);
+      }).error(function(data) {
+        deferred.resolve(false);
+      });
+
+      return deferred.promise;
+    }
+
     model.deletePermissions = function(scenarioId, userId) {
       return PermissionModel.deletePermissions(scenarioId, userId);
     }
