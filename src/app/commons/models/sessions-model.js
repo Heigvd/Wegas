@@ -436,7 +436,7 @@ angular.module('wegas.models.sessions', [])
                     $http.get(ServiceURL + "rest/GameModel/Game/JoinTeam/"+ teamId).success(function(session){
                         var team = _.find(session.teams, function (t) { return t.id == teamId; });
                         if(team){
-                            var player = _.find(team.players, function (p) { return p.id == user.id; });
+                            var player = _.find(team.players, function (p) { return (p.teamId == null && p.userId == null); });
                             if(player){
                                 player.teamId = teamId;
                                 player.userId = user.id;                            
