@@ -4,7 +4,7 @@ angular.module('private.scenarist.scenarios.directives', [
 .directive('scenaristScenariosIndex', function(ScenariosModel){
   return {
     templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-index.tmpl.html',
-    controller : function($scope){
+    controller : function($scope, $rootScope) {
         var ctrl = this;
         $scope.scenarios = [];
 
@@ -15,6 +15,11 @@ angular.module('private.scenarist.scenarios.directives', [
                 });
             });
         };
+        $rootScope.$on('scenarios', function(e, newScenarios){
+            if (newScenarios) {
+                ctrl.updateScenarios();
+            }
+        });
         ctrl.updateScenarios();
 
         ctrl.editName = function(scenario) {
@@ -131,9 +136,9 @@ angular.module('private.scenarist.scenarios.directives', [
         restrict: 'A',
         require: "^scenaristScenariosIndex",
         scope: {
-           scenario: '='
-       },
-       link : function(scope, element, attrs, parentCtrl){
+         scenario: '='
+     },
+     link : function(scope, element, attrs, parentCtrl){
             // Private function
             var resetScenarioToSet = function(){
                 scope.copy = scope.scenario;
