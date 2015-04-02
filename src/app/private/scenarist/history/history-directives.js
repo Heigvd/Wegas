@@ -1,11 +1,13 @@
 angular
 .module('private.scenarist.history.directives', [
     'ngSanitize',
+    'private.scenarist.scenarios.directives'
     ])
 .directive('scenaristHistoryIndex', function(ScenariosModel){
     return {
+
         templateUrl: 'app/private/scenarist/history/tmpl/history-index.html',
-        controller : function($scope, $stateParams, $sce) {
+        controller : function($scope, $stateParams, $sce, $rootScope) {
             var ctrl = this;
 
             $scope.scenario = {};
@@ -17,6 +19,14 @@ angular
                         window.alert('Whooops.');
                     } else {
                         ctrl.versions = results;
+                    }
+                });
+            }
+            ctrl.createFork = function (name) {
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
+                    if (result !== false) {
+                        alert('Scenario has been duplicated with name: "'+result.name+'"');
+                        $rootScope.$emit('scenarios', true);
                     }
                 });
             }
@@ -135,11 +145,7 @@ angular
             };
 
             $scope.createFork = function(name) {
-                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
-                    if (result !== false) {
-                        alert('Scenario has been duplicated with name: "'+result.name+'"');
-                    }
-                });
+                parentCtrl.createFork(name);
             };
 
         }
