@@ -74,12 +74,12 @@ angular.module('wegas.models.scenarios', [])
     }
   })
   .service('ScenariosModel', function($http, $q, PermissionModel) {
-    var model = this,
-      scenarios = null;
+    var model = this;
+    model.scenarios = null;
 
 
-    function findScenario(scenarios, id) {
-      return _.find(scenarios, function(s) {
+    function findScenario(id) {
+      return _.find(model.scenarios, function(s) {
         return s.id == id;
       });
     }
@@ -118,7 +118,9 @@ angular.module('wegas.models.scenarios', [])
         "name": name,
         "properties": {}
       }).success(function(data) {
-        deferred.resolve(applyIcon([data])[0]);
+        var scenario = applyIcon([data])[0];
+        model.scenarios.push(scenario);
+        deferred.resolve(scenario);
       }).error(function(data) {
         deferred.resolve(data);
       });
@@ -142,6 +144,29 @@ angular.module('wegas.models.scenarios', [])
       return deferred.promise;
     }
 
+    model.archiveScenario = function (scenario) {
+      var deferred = $q.defer();
+      var url = "rest/GameModel/" + scenario.id;
+      $http.delete(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        }).success(function(data) {
+
+        // Remove scenario from scenarios
+        var index = model.scenarios.indexOf(scenario);
+        if (index > -1) {
+          model.scenarios.splice(index, 1);
+        }
+
+        deferred.resolve(true);
+      }).error(function(data) {
+        deferred.resolve(false);
+      });
+
+      return deferred.promise;
+    }
+
     model.deletePermissions = function(scenarioId, userId) {
       return PermissionModel.deletePermissions(scenarioId, userId);
     }
@@ -153,17 +178,17 @@ angular.module('wegas.models.scenarios', [])
 
 
       var deferred = $q.defer();
-      if (scenarios !== null) {
+      if (model.scenarios !== null) {
 
-        deferred.resolve(scenarios);
+        deferred.resolve(model.scenarios);
       } else {
-        scenarios = [];
-        $http.get(ServiceURL + "rest/Public/GameModel/?view=EditorExtended").success(function(data) {
+        model.scenarios = [];
+        $http.get(ServiceURL + "rest/GameModel").success(function(data) {
 
-          scenarios = applyIcon(data);
-          deferred.resolve(scenarios);
+          model.scenarios = applyIcon(data);
+          deferred.resolve(model.scenarios);
         }).error(function(data) {
-          scenarios = [];
+          model.scenarios = [];
           deferred.resolve([]);
 
         });
@@ -173,19 +198,23 @@ angular.module('wegas.models.scenarios', [])
 
     model.getScenario = function(scenarioId) {
       var deferred = $q.defer();
-      if (scenarios === null) {
-        this.getScenarios().then(function() {
-          return deferred.resolve(this.getScenario(scenarioId));
-        });
-      } else {
-        var scenario = findScenario(scenarios, scenarioId);
-
-        // TODO: Fake
-        if (scenario === undefined) {
-          scenario = findScenario(scenarios, 23234);
+      if (model.scenarios.length > 0) {
+        var scenario = findScenario(scenarioId);
+        if (scenario !== null) {
+          deferred.resolve(scenario);
+          return deferred.promise;
         }
-        deferred.resolve(scenario);
       }
+
+      var url = "rest/Public/GameModel/" + scenarioId + "?view=EditorExtended";
+        $http.get(ServiceURL + url).success(function(data) {
+          var scenario = applyIcon([data]);
+          model.scenarios.push(scenario);
+          deferred.resolve(scenario);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
       return deferred.promise;
     };
 
@@ -223,11 +252,12 @@ angular.module('wegas.models.scenarios', [])
       }
 
       var deferred = $q.defer();
-      var scenario = findScenario(scenarios, scenarioId);
+      var scenario = findScenario(scenarioId);
       if (scenario === null) {
         deferred.resolve({});
       } else {
-        $http.get(ServiceURL + "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId).success(function(data) {
+        var url = "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId
+        $http.get(ServiceURL + url).success(function(data) {
           var permissions = mapPermissions(data);
           deferred.resolve(permissions);
         }).error(function(data) {
@@ -236,5 +266,68 @@ angular.module('wegas.models.scenarios', [])
       }
       return deferred.promise;
     };
+
+
+    model.getVersionsHistory = function(scenarioId) {
+      var deferred = $q.defer();
+      var url = "rest/Public/GameModel/" + scenarioId + "/File/list/History";
+
+      $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
+        .success(function(data) {
+          deferred.resolve(data.entities);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+    }
+    model.addVersionHistory = function(scenarioId) {
+      var deferred = $q.defer();
+
+      var url = "rest/Public/GameModel/" + scenarioId + "/CreateVersion";
+      $http.post(ServiceURL + url)
+        .success(function(data) {
+          deferred.resolve(true);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+    }
+    model.deleteVersionHistory = function(scenarioId, version) {
+      var deferred = $q.defer();
+      var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
+
+      $http.delete(ServiceURL + url)
+        .success(function(data) {
+          deferred.resolve(true);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+
+    }
+    model.restoreVersionHistory = function(scenarioId, version) {
+
+      var deferred = $q.defer();
+      var url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
+
+      $http.get(ServiceURL + url)
+        .success(function(data) {
+          var newScenario = data;
+          model.scenarios.push(newScenario);
+          deferred.resolve(newScenario);
+        }).error(function(data) {
+          deferred.resolve(false);
+        });
+
+      return deferred.promise;
+    }
+
 
   });

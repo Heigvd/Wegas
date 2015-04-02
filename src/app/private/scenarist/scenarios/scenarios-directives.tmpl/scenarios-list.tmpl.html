@@ -1,8 +1,21 @@
-<h3>Active scenarios</h3>
+<h3>Current scenarios</h3>
 <div class="view__tools">
-    <div class="tool tool--search tool--open">
-      <a class="tool__link"></a>
-      <input class="tool__input" ng-model="search" type="text"/>
-    </div>
+  <div class="tool tool--search tool--open">
+    <a class="tool__link"></a>
+    <input class="tool__input" ng-model="search" ng-model-options="{debounce: 500}" ng-change="filter()" type="text" />
   </div>
-<div class="card card--big card--scenario" ng-repeat="scenario in scenarios | orderBy:'createdTime':true  | filter:{name:search}" ng:class="{true:'card--block', false:'card--inline'}[scenario.length <= 2]" scenario="scenario" scenario-card></div>
+</div>
+
+<div class="view__list">
+  <div infinite-scroll='loadMore()' infinite-scroll-disabled='busy' infinite-scroll-container='".view__list"' infinite-scroll-distance='1'>
+    <div class="card card--big card--scenario"
+    ng-repeat="scenario in visibleScenarios track by scenario.id"
+    scenario="scenario"
+    scenario-card
+    post-repeat-directive></div>
+
+  </div>
+
+  <div class="col-xs-12" ng-if="!scenariosLoaded">Loading data... Please wait...</div>
+  <div class="col-xs-12" ng-if="visibleScenarios.length == 0 && scenariosLoaded">Sorry... no scenario correspond to your criteria</div>
+</div>

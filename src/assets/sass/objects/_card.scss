@@ -48,6 +48,7 @@
         }
     }
 
+
     .card__description{
         float:left;
     }
@@ -82,10 +83,10 @@
             overflow: auto;
         }
         &.ng-enter {
-            animation: bounceIn 1s;
+            animation: fadeIn .6s;
         }
         &.ng-leave {
-          animation: bounceOut 1s;
+          animation: fadeOut .6s;
         }
         .card__illustration {
             width: 96px;
@@ -93,18 +94,19 @@
         .card__content {
             @include make-xs-column(12);
             width: calc(100% - 96px);
+
             .card__description {
                 @include make-xs-column(7.5);
-                width: calc(100% - 305px)
+                width: calc(100% - 275px)
             }
             .card__actions {
                 @include make-xs-column(5.5);
-                width: 305px;
+                width: 275px;
+                padding: 15px 0 0 0;
             }
         }
     }
     &.card--coscenarist-permission {
-        @include make-row();
         &.ng-leave {
           animation: bounceOut 1s;
         }
@@ -121,15 +123,11 @@
             @include make-xs-column(2);
         }
     }
-    &.card--trainer-session{
-        margin:4px auto 4px auto;
-        .card__description{
+    .card__description{
             .card__description__titre{
-                height:21px;
                 margin:0px;
                 padding:0px;
                 .titre__display{
-                    padding:4px 16px;
                     font-size:14px;
                     font-weight:500;
                     margin:0px;
@@ -155,7 +153,6 @@
                     }
                 }
                 .titre__edition{
-                    padding:0px 16px;
                     font-size:14px;
                     height:21px;
                     font-weight:500;
@@ -177,7 +174,7 @@
             }
             .card__description__date{
                 margin:0px;
-                padding:14px 16px 4px 16px;
+                padding-top:14px;
                 font-size:12px;
                 font-weight:300;
                 font-style: italic;
@@ -187,8 +184,8 @@
                 margin:0px;
                 padding:0px;
 
-                .note__display{ 
-                    padding:4px 16px;
+                .note__display{
+
                     font-size:13px;
                     font-weight:300;
                     margin:0px;
@@ -214,8 +211,7 @@
                     }
                 }
 
-                .note__edition{ 
-                    padding:0px 16px;
+                .note__edition{
                     font-size:14px;
                     height:21px;
                     font-weight:500;
@@ -236,6 +232,10 @@
                 }
             }
         }
+
+    &.card--trainer-session{
+        margin:4px auto 4px auto;
+
         .card__actions{
             padding:16px;
         }

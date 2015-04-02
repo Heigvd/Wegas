@@ -1,32 +1,52 @@
 angular.module('private.scenarist.scenarios.directives', [
-])
+    'infinite-scroll'
+    ])
 .directive('scenaristScenariosIndex', function(ScenariosModel){
   return {
     templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-index.tmpl.html',
-    controller : function(){
+    controller : function($scope, $rootScope) {
         var ctrl = this;
-        ctrl.scenarios = [];
-        ctrl.search = "";
-        ScenariosModel.getScenarios().then(function(scenarios) {
-            ctrl.scenarios = scenarios;
-        });
-        ctrl.updateScenario = function() {
+        $scope.scenarios = [];
+
+        ctrl.updateScenarios = function() {
             ScenariosModel.getScenarios().then(function(scenarios) {
-                ctrl.scenarios = scenarios;
+                $scope.scenarios = _.sortBy(scenarios, function(s) {
+                    return s.name.toLowerCase();
+                });
             });
         };
+        $rootScope.$on('scenarios', function(e, newScenarios){
+            if (newScenarios) {
+                ctrl.updateScenarios();
+            }
+        });
+        ctrl.updateScenarios();
+
         ctrl.editName = function(scenario) {
             ScenariosModel.updateScenario(scenario).then(function(data) {
-                ctrl.updateScenario();
+                ctrl.updateScenarios();
             });
         };
         ctrl.editComments = function(scenario) {
             ScenariosModel.updateScenario(scenario).then(function(data) {
-                ctrl.updateScenario();
+                ctrl.updateScenarios();
             });
         };
+        ctrl.archiveScenario = function (scenario) {
+            if (confirm('Etes-vous sur ?')) {
+                ScenariosModel.archiveScenario(scenario).then(function (result) {
+                    if (result === true) {
+                        ctrl.updateScenarios();
+                        // $scope.$emit('scenarios', ctrl.scenarios);
+
+                    } else {
+                        alert('Whoops.');
+                    }
+                });
+            }
+        };
     }
-  };
+};
 })
 
 .directive('scenaristScenarioCreate', function(ScenariosModel) {
@@ -60,26 +80,55 @@ angular.module('private.scenarist.scenarios.directives', [
             });
         };
     }
-  };
+};
 })
 .directive('scenaristScenariosList', function(ScenariosModel) {
   return {
     templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-list.tmpl.html',
     scope: false,
     require: "^scenaristScenariosIndex",
-    link : function(scope, element, attrs, parentCtrl){
-        scope.$watch(function(){
-            return parentCtrl.scenarios
-        }, function(newScenario, oldScenario){
-            scope.scenarios = newScenario;
-        });
-        scope.$watch(function(){
-            return parentCtrl.search
-        }, function(newSearch, oldSearch){
-            scope.search = newSearch;
+    link : function($scope, element, attrs, parentCtrl) {
+        $scope.visibleScenarios = [];
+        $scope.scenarios = [];
+        $scope.scenariosLoaded = false;
+        $scope.busy = false;
+        $scope.search = '';
+
+        $scope.filter = function () {
+            if ($scope.search == '') {
+                $scope.visibleScenarios = [];
+                $scope.loadMore();
+            } else if ($scope.search == '*') {
+                $scope.visibleScenarios = $scope.scenarios;
+            } else {
+                $scope.visibleScenarios = _.filter($scope.scenarios, function(s) {
+                    return s.name.toLowerCase().indexOf($scope.search.toLowerCase()) > -1;
+                });
+
+            }
+        }
+        $scope.loadMore = function() {
+            if ($scope.busy || $scope.search != '' || $scope.scenarios.length == 0) return;
+            $scope.busy = true;
+            var last = $scope.visibleScenarios.length;
+            for(var i = last; i < last + 13; i++) {
+                $scope.visibleScenarios.push($scope.scenarios[i]);
+            }
+            $scope.busy = false;
+        };
+
+        $scope.$watch("scenarios", function(newScenario, oldScenario){
+            if (newScenario !== undefined && newScenario.length > 0) {
+                $scope.scenariosLoaded = true;
+                $scope.visibleScenarios = [];
+                $scope.scenarios = newScenario;
+
+
+                $scope.filter();
+            }
         });
     }
-  };
+};
 })
 .directive('scenarioCard', function() {
     return {
@@ -87,9 +136,9 @@ angular.module('private.scenarist.scenarios.directives', [
         restrict: 'A',
         require: "^scenaristScenariosIndex",
         scope: {
-           scenario: '='
-        },
-        link : function(scope, element, attrs, parentCtrl){
+         scenario: '='
+     },
+     link : function(scope, element, attrs, parentCtrl){
             // Private function
             var resetScenarioToSet = function(){
                 scope.copy = scope.scenario;
@@ -101,6 +150,9 @@ angular.module('private.scenarist.scenarios.directives', [
             scope.editingComments = false;
             resetScenarioToSet();
 
+            scope.archiveScenario = function (scenario) {
+                parentCtrl.archiveScenario(scenario);
+            }
             // Public function
             scope.toogleEditingName = function(){
                 if(scope.editingComments){

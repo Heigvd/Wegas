@@ -13,6 +13,9 @@ angular.module('private.directives', [
         }, function(newVal, oldVal){
             scope.name = newVal;
         });
+        scope.profile = function () {
+          alert('Sorry... Not yet implemented');
+        }
         scope.logout = function(){
             Auth.logout().then(function(){
                 $state.go("wegas.public.login");
@@ -23,7 +26,7 @@ angular.module('private.directives', [
           var $menuToggler = $('#menu-toggler');
           var $labelMenuToggler = $('label[for="menu-toggler"]');
           // if element is opened and click target is outside it, hide it
-          if ($menuToggler.is(':checked') && !$menu.is(e.target) && !$menu.has(e.target).length && !$labelMenuToggler.is(e.target)) {
+          if ($menuToggler.is(':checked') && !$menu.is(e.target)  && !$labelMenuToggler.is(e.target)) {
             $menuToggler.trigger('click');
           }
         });

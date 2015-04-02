@@ -21,7 +21,8 @@ angular.module('wegas.service.auth', [
                         firstname: data.accounts[0].firstname,
                         lastname: data.accounts[0].lastname,
                         isTrainer: false,
-                        isScenarist: false
+                        isScenarist: false,
+                        isAdmin: false
                     };
                     $http.get(ServiceURL + "rest/Extended/User/" + authenticatedUser.id).success(function(data){
                         rights = data.accounts[0].roles;
@@ -32,6 +33,9 @@ angular.module('wegas.service.auth', [
                                     break;
                                 case "Scenarist":
                                     authenticatedUser.isScenarist = true;
+                                    break;
+                                case "Administrator":
+                                    authenticatedUser.isAdmin = true;
                                     break;
                             }
                         });

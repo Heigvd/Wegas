@@ -1,11 +1,13 @@
 angular
 .module('private.scenarist.history.directives', [
     'ngSanitize',
+    'private.scenarist.scenarios.directives'
     ])
 .directive('scenaristHistoryIndex', function(ScenariosModel){
     return {
+
         templateUrl: 'app/private/scenarist/history/tmpl/history-index.html',
-        controller : function($scope, $stateParams, $sce) {
+        controller : function($scope, $stateParams, $sce, $rootScope) {
             var ctrl = this;
 
             $scope.scenario = {};
@@ -20,6 +22,14 @@ angular
                     }
                 });
             }
+            ctrl.createFork = function (name) {
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
+                    if (result !== false) {
+                        alert('Scenario has been duplicated with name: "'+result.name+'"');
+                        $rootScope.$emit('scenarios', true);
+                    }
+                });
+            }
             ScenariosModel.getScenario($scope.scenarioId).then(function (scenario) {
                 $scope.scenario = scenario;
                 ctrl.updateVersions();
@@ -30,13 +40,19 @@ angular
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
-        scope: false,
+        scope: true,
         require: "^scenaristHistoryIndex",
-        link : function(scope, element, attrs, parentCtrl) {
+        link : function($scope, element, attrs, parentCtrl) {
+
+            $scope.$watch(function() {
+                return $scope.$parent.scenario
+            } , function(n,o) {
+                $scope.scenario = n;
+            });
             $parent = parentCtrl;
-            scope.addVersion = function() {
-                if(scope.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory(scope.scenario.id).then(function (result) {
+            $scope.addVersion = function() {
+                if($scope.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory($scope.scenario.id).then(function (result) {
                         if (result === true) {
                             $parent.updateVersions();
                         }
@@ -115,19 +131,21 @@ angular
         link : function($scope, element, attrs, parentCtrl) {
 
             $scope.deleteFork = function(name) {
+                var forkName = name;
                 ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
                     if (result === true) {
-                        parentCtrl.updateVersions();
+                        var index = _.findIndex($scope.versions, function(v) {
+                            return v.name === name;
+                        });
+                        if (index > -1) {
+                            $scope.versions.splice(index, 1);
+                        }
                     }
                 });
             };
 
             $scope.createFork = function(name) {
-                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
-                    if (result !== false) {
-                        alert('Scenario has been duplicated with name: "'+result.name+'"');
-                    }
-                });
+                parentCtrl.createFork(name);
             };
 
         }
