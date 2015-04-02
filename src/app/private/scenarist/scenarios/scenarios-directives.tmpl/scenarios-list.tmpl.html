@@ -16,5 +16,6 @@
 
   </div>
 
-  <div class="col-xs-12" ng-if="visibleScenarios.length == 0">Sorry... no scenario correspond to your criteria</div>
+  <div class="col-xs-12" ng-if="!scenariosLoaded">Loading data... Please wait...</div>
+  <div class="col-xs-12" ng-if="visibleScenarios.length == 0 && scenariosLoaded">Sorry... no scenario correspond to your criteria</div>
 </div>

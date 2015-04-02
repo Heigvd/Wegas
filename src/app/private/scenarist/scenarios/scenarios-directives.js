@@ -70,6 +70,8 @@ angular.module('private.scenarist.scenarios.directives', [
     require: "^scenaristScenariosIndex",
     link : function($scope, element, attrs, parentCtrl) {
         $scope.visibleScenarios = [];
+        $scope.scenarios = [];
+        $scope.scenariosLoaded = false;
         $scope.busy = false;
         $scope.search = '';
 
@@ -99,10 +101,15 @@ angular.module('private.scenarist.scenarios.directives', [
         $scope.$watch(function(){
             return parentCtrl.scenarios
         }, function(newScenario, oldScenario){
-            $scope.scenarios = _.sortBy(newScenario, function(s) {
-                return s.name.toLowerCase();
-            });
-            $scope.loadMore();
+            if (newScenario !== undefined && newScenario.length > 0) {
+                $scope.scenariosLoaded = true;
+
+                $scope.scenarios = _.sortBy(newScenario, function(s) {
+                    return s.name.toLowerCase();
+                });
+
+                $scope.loadMore();
+            }
         });
     }
 };
