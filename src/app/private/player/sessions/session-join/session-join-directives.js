@@ -30,8 +30,6 @@ angular.module('private.player.session.join.directives', [])
         ctrl.newTeam.alreadyUsed = alreadyUsed;
     };
 
-    
-
     /* Method used to create new team and join this new team in the session. */
     ctrl.createAndJoinTeam = function(){
         if(!ctrl.newTeam.alreadyUsed){
@@ -39,7 +37,6 @@ angular.module('private.player.session.join.directives', [])
                 if(team){
                     SessionsModel.joinTeam(ctrl.sessionToJoin.id, team.id).then(function(sessionUpdated){
                         if(sessionUpdated){
-                            $rootScope.$emit('newSession', true);
                             $scope.close();
                         }
                     });

@@ -24,8 +24,9 @@ angular.module('private.player.sessions.directives', [])
             if(session){
                 if(session.properties.freeForAll){
                     SessionsModel.joinIndividualSession(token).then(function(data){
-                        console.log(data);
-                        updateSessions();
+                        if(data){
+                            updateSessions();
+                        }
                     });
                 }else{
                     $state.go('wegas.private.player.sessions.join', {token: session.token});                        
@@ -37,7 +38,6 @@ angular.module('private.player.sessions.directives', [])
     ctrl.leaveSession = function(sessionId){
         SessionsModel.leaveSession(sessionId).then(function(data){
             if(data){
-                console.log(data);
                 updateSessions();
             }
         });
@@ -70,7 +70,7 @@ angular.module('private.player.sessions.directives', [])
         // Use checkToken from index to join a new session. 
         scope.joinSession = function(){
             scope.checkToken(scope.sessionToJoin.token);
-        }
+        };
     }
   };
 })

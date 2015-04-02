@@ -113,7 +113,7 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     },
 
-    /* Uncache a player or a team from a cached session (team in parameter is) */
+    /* Uncache a player or a team from a cached session  */
     uncachePlayer = function(session, player){
         if(session && player){
             if(!session.properties.freeForAll){
@@ -133,11 +133,54 @@ angular.module('wegas.models.sessions', [])
         }  
         return session;
     }, 
+
+    /* Cache a player in a cached session */
+    cachePlayer = function(session, player){
+        if(session && player){
+            if(!session.properties.freeForAll){
+                var team = _.find(session.teams, function(t){return t.id = player.teamId});
+                if(team){
+                    team.players.push(player);
+                }
+            }else{
+                session.players.push(player);
+            } 
+        }  
+        return session;
+    }, 
+
+    /* Cache a team in a cached session */
+    cacheTeam = function(session, team){
+        if(session && team){
+            if(!session.properties.freeForAll){
+                session.teams.push(team)
+            }
+        }  
+        return session;
+    }, 
+
+    cacheSession = function(sessionList, session){
+        if(sessionList && session){
+            if(!_.find(sessionList, session)){
+                sessionList.push(session);
+            }
+        }  
+        return sessionList;
+    },
+
+    uncacheSession = function(sessionList, session){
+        var sessionToUncache = _.find(sessionList, session);
+        if(sessionToUncache){
+            sessionList = _.without(sessionList, session);
+        }
+        return sessionList;
+    },
     
     /* Remove player from persistante datas */
     removePlayer = function(player){
         var deferred = $q.defer();
         if(player.teamId && player.id){
+
             $http.delete(ServiceURL + "rest/GameModel/Game/Team/" + player.teamId + "/Player/" + player.id).success(function(data){
                 deferred.resolve(player);     
             }).error(function(data){
@@ -312,8 +355,8 @@ angular.module('wegas.models.sessions', [])
                     if(player){
                         removePlayer(player).then(function(leavingPlayer){
                             if(leavingPlayer){
-                                managedSession = managedSession ? uncachePlayer(managedSession, team, leavingPlayer) : managedSession;
-                                playedSession = playedSession ? uncachePlayer(playedSession, team, leavingPlayer) : playedSession;
+                                managedSession = managedSession ? uncachePlayer(managedSession, leavingPlayer) : managedSession;
+                                playedSessions = playedSession ? uncacheSession(playedSessions, playedSession) : playedSessions;
                                 deferred.resolve(leavingPlayer);
                             }else{
                                 deferred.resolve(false);
@@ -330,8 +373,8 @@ angular.module('wegas.models.sessions', [])
                 if(player){
                     removePlayer(player).then(function(leavingPlayer){
                         if(leavingPlayer){
-                            managedSession = managedSession ? uncachePlayer(managedSession, team, leavingPlayer) : managedSession;
-                            playedSession = playedSession ? uncachePlayer(playedSession, team, leavingPlayer) : playedSession;
+                            managedSession = managedSession ? uncachePlayer(managedSession, leavingPlayer) : managedSession;
+                            playedSessions = playedSession ? uncacheSession(playedSessions, playedSession) : playedSessions;
                             deferred.resolve(leavingPlayer);
                         }else{
                             deferred.resolve(false);
@@ -419,9 +462,16 @@ angular.module('wegas.models.sessions', [])
                                 var player = _.find(team.players, function (p) { return (p.userId == null && p.teamId == null); });
                                 if(player){
                                     player.teamId = data[0].id;
-                                    player.userId = user.id;                            
-                                    playedSessions.push(formatPlayers(data[1]));
-                                    deferred.resolve(playedSessions);
+                                    player.userId = user.id;     
+                                    var session = formatPlayers(data[1]);
+                                    playedSessions = cacheSession(playedSessions, session);
+                                    if(user.isTrainer){
+                                        var managedSession = _.find(managedSessions, function (s) { return s.id == session.id; });
+                                        if(managedSession){
+                                            managedSession = cachePlayer(managedSession, player);
+                                        }
+                                    }
+                                    deferred.resolve(cachedSession);
                                 }else{
                                     deferred.resolve(false);
                                 }
@@ -456,10 +506,15 @@ angular.module('wegas.models.sessions', [])
                             if(player){
                                 player.teamId = teamId;
                                 player.userId = user.id;                            
-                                session = formatPlayers(session);
-                                playedSessions.push(session);
+                                session = cachePlayer(session, player);
+                                playedSessions = cacheSession(playedSessions, session);
+                                if(user.isTrainer || user.isScenarist || user.isAdmin){
+                                    var managedSession = _.find(managedSessions, function (s) { return s.id == session.id; });
+                                    if(managedSession){
+                                        managedSession = cachePlayer(managedSession, player);
+                                    }
+                                }
                                 deferred.resolve(session);
-
                             }else{
                                 deferred.resolve(false);
                             }
@@ -476,8 +531,6 @@ angular.module('wegas.models.sessions', [])
         });
         return deferred.promise;
     };
-
- // "GameModel/Game/" + sessionId + "/Team"
 
     /* Join a team for current player */ 
     model.createTeam = function (session, teamName) {
@@ -496,9 +549,18 @@ angular.module('wegas.models.sessions', [])
                 }else{
                     newTeam.name = teamName;
                     $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team){
+                        if(team){
+                            cachedSession = cacheTeam(cachedSession, team);
+                            if(u.isTrainer || u.isScenarist || u.isAdmin){
+                                var managedSession = findSession(managedSessions, session.id);
+                                if(managedSession){
+                                    managedSession = cacheTeam(managedSession, team);
+                                }
+                            }
+                        }
                         deferred.resolve(team);
                     }).error(function(data){
-                        deferred.resolve(data);
+                        deferred.resolve(false);
                     });
                 }
             } else {
