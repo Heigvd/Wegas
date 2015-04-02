@@ -188,6 +188,20 @@
 
 		}
 	}
+	&.modal--join-team {
+		.modal__header {
+
+		}
+		.modal__content {
+		}
+
+		.modal__tools {
+			input{
+				width:50%;
+				margin:.6em 1em;
+			}
+		}
+	}
 }
 
 .shadow{

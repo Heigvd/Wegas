@@ -1,20 +1,22 @@
 <h3>My sessions</h3>
-<div class="card card--big card--player-session" ng-repeat="session in sessions">
-  <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
-  <div class="card__description">
-      <h4 class="card__description__titre">{{ session.name }}</h4>
-      <p class="card__description__scenario">Based on <em>{{ session.gameModelName }}</em></p>
-  </div>
-  <div class="card__actions">
-      <a class="button button--medium button--round button--default-reverse button--label-off button--users" title="Manage User">
-        <span class="button__label">Manage User</span>
-      </a> 
-      <a class="button button--medium button--round button--default-reverse button--label-off button--trash" ng-click="leave(session.id)" title="Leave Session">
-        <span class="button__label">Leave session</span>
-      </a>  
-      <a class="button button--medium button--round button--info button--label-off button--play" title="Play session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
-        <span class="button__label">Play session</span>
-      </a>
+<div class="view__list" ng-if="sessions.length > 0">
+  <div class="card card--big card--player-session" ng-repeat="session in sessions">
+    <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+    <div class="card__description">
+        <h4 class="card__description__titre">{{ session.name }}</h4>
+        <p class="card__description__scenario">Based on <em>{{ session.gameModelName }}</em></p>
+    </div>
+    <div class="card__actions">
+        <a class="button button--medium button--round button--default-reverse button--label-off button--users" title="Manage User">
+          <span class="button__label">Manage User</span>
+        </a> 
+        <a class="button button--medium button--round button--default-reverse button--label-off button--trash" ng-click="leave(session.id)" title="Leave Session">
+          <span class="button__label">Leave session</span>
+        </a>  
+        <a class="button button--medium button--round button--info button--label-off button--play" title="Play session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
+          <span class="button__label">Play session</span>
+        </a>
+    </div>
   </div>
 </div>
-<p class="view view__list--no-sessions" ng-if="sessions.length < 1">No sessions</p>
+<p class="view__list view__list--no-content" ng-if="sessions.length < 1">No sessions</p>
