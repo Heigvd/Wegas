@@ -290,10 +290,18 @@
     .view__menu-workspaces{
         display:block;
         position:relative;
-        width:50%;
+        width:100%;
         height:100%;
         float:left;
         overflow:visible;
+
+        .view__sub-menu {
+            float: right;
+            li {
+                float: right;
+                list-style-type: none;
+            }
+        }
     }
     .view__headding-workspace{
         margin:0px;
