@@ -33,7 +33,8 @@ import javax.persistence.OneToMany;
  * <li> dispatched: initial state, reviewer can edit feedback
  * <li> reviewed: reviewer can't edit feedback anymore, author can't read feedback yet
  * <li> notified: author has access to the feedback and can edit feedbackEvaluation
- * <li> closed: feedback evaluation turns read-only and is visible by the reviewer <li>
+ * <li> closed: feedback evaluation turns read-only, not yet visible by peers <li>
+ * <li> closed: feedback evaluation is visible by the reviewer <li>
  * </ol>
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -45,6 +46,7 @@ public class Review extends AbstractEntity {
         DISPATCHED,
         REVIEWED,
         NOTIFIED,
+        COMPLETED,
         CLOSED
     };
 

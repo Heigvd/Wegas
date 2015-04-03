@@ -67,7 +67,8 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     public enum ReviewingState {
         NOT_STARTED, // author can edit toReview
         SUBMITTED,   // authors can't edit toReview anymore
-        DISPATCHED   // toReview are dispatched, state became review dependent
+        DISPATCHED,   // toReview are dispatched, state became review dependent
+        DISCARDED   // completely out of reviewing process (debug team for instance)
     }
 
     /**

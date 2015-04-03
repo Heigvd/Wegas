@@ -31,11 +31,12 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
     /**
      * Constructor with all fields
-     * @param name the evaluation name
+     *
+     * @param name     the evaluation name
      * @param minValue minimum allowed value (included) or NULL
      * @param maxValue maximum allowed value (included) or NULL
      */
-    public GradeDescriptor(String name, Long minValue, Long maxValue){
+    public GradeDescriptor(String name, Long minValue, Long maxValue) {
         super(name);
         this.minValue = minValue;
         this.maxValue = maxValue;
@@ -89,6 +90,16 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
     @Override
     public GradeInstance createInstance() {
-        return new GradeInstance(this);
+        GradeInstance gi = new GradeInstance(this);
+        if (this.getMinValue() != null && this.getMaxValue() != null) {
+            gi.setValue(Math.floor((getMinValue() + getMaxValue()) / 2.0));
+        } else if (this.getMinValue() != null) {
+            gi.setValue(getMinValue().doubleValue());
+        } else if (this.getMaxValue() != null) {
+            gi.setValue(getMaxValue().doubleValue());
+        } else {
+            gi.setValue(0.0);
+        }
+        return gi;
     }
 }
