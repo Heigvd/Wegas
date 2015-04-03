@@ -40,7 +40,7 @@ import javax.persistence.*;
 })
 public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends NamedEntity {
 
-    @OneToMany(mappedBy = "evaluationDescriptor")
+    @OneToMany(mappedBy = "evaluationDescriptor", cascade = CascadeType.REMOVE)
     private List<EvaluationInstance> evaluationInstances;
 
     private static final long serialVersionUID = 1L;

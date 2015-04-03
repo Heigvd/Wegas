@@ -90,19 +90,21 @@ YUI.add("wegas-text-input", function(Y) {
                                 block: "code"
                             }]}, tinymce.EditorManager);
 
-                    this.editor.on('change', Y.bind(this.onChange, this));    // Update on editor update
+                    this.editor.on('change', Y.bind(this._onChange, this));    // Update on editor update
 
                     this.editor.render();
 
                     this.setContent();
-                    this.addButton = new Wegas.Button({
-                        label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
-                        tooltip: "Save",
-                        cssClass: "wegas-text-input-save",
-                        on: {
-                            click: Y.bind(this.onSave, this)
-                        }
-                    }).render(this.get("contentBox").one(".wegas-text-input-toolbar"));
+                    if (this.get("showSaveButton")) {
+                        this.addButton = new Wegas.Button({
+                            label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
+                            tooltip: "Save",
+                            cssClass: "wegas-text-input-save",
+                            on: {
+                                click: Y.bind(this.onSave, this)
+                            }
+                        }).render(this.get("contentBox").one(".wegas-text-input-toolbar"));
+                    }
                 }
             }, this);
         },
@@ -112,11 +114,15 @@ YUI.add("wegas-text-input", function(Y) {
         getInitialContent: function() {
             return this.get("variable.evaluated").getInstance().get("value");
         },
-        setStatus: function(msg){
+        setStatus: function(msg) {
             this.get("contentBox").one(".status").setContent("<p>" + msg + "</p>");
         },
-        onChange: function() {
+        _onChange: function() {
             this.setStatus("Not saved");
+            this.valueChanged(this.editor.getContent());
+        },
+        valueChanged: function(newValue) {
+            // To Be Overwritten
         },
         onSave: function() {
             var msg = (this.save() ? "Saved" : "Something went wrong");
@@ -138,6 +144,9 @@ YUI.add("wegas-text-input", function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
+            if (this.addButton){
+                this.addButton.destroy();
+            }
         }
     }, {
         /** @lends Y.Wegas.TextInput */
@@ -157,6 +166,16 @@ YUI.add("wegas-text-input", function(Y) {
             },
             readonly: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                optional: true,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Editable",
+                    classFilter: ["BooleanDescriptor"]
+                }
+            },
+            showSaveButton: {
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                value: true,
                 optional: true,
                 _inputex: {
                     _type: "variableselect",

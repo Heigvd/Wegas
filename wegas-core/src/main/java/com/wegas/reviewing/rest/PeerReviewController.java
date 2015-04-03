@@ -9,11 +9,14 @@ package com.wegas.reviewing.rest;
 
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
+import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import com.wegas.reviewing.ejb.ReviewingFacade;
+import com.wegas.reviewing.persistence.PeerReviewInstance;
+import com.wegas.reviewing.persistence.Review;
 import com.wegas.reviewing.persistence.evaluation.EvaluationInstance;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -53,11 +56,14 @@ public class PeerReviewController {
     @EJB
     private PlayerFacade playerFacade;
 
+    @EJB
+    private VariableDescriptorFacade descriptorFacade;
+
     /**
      *
      * @param playerId
-     * @param prdId 
-     * @return 
+     * @param prdId
+     * @return
      * @throws com.wegas.core.exception.client.WegasScriptException
      */
     @POST
@@ -76,37 +82,46 @@ public class PeerReviewController {
     @POST
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/Dispatch")
     public Response dispatch(
-            @PathParam("reviewDescriptorId") Long prdId 
-    ){
+            @PathParam("reviewDescriptorId") Long prdId
+    ) {
         //checkPermissions(playerFacade.find(playerId).getGame(), playerId); // TODO Assert Trainer is the trainer !!!
         reviewFacade.dispatch(prdId);
         return Response.ok().build();
     }
 
-
     @POST
-    @Path("/SaveEvaluation")
-    public Response saveEvaluation(EvaluationInstance other){
-        // Todo assert currentPlayer is review author
-        EvaluationInstance evalInstance = reviewFacade.findEvaluationInstance(other.getId());
-        reviewFacade.mergeEval(evalInstance, other);
-        return Response.ok().build();
+    @Path("/SaveReview")
+    public PeerReviewInstance saveReview(Review other) {
+        Review review = reviewFacade.findReview(other.getId());
+        PeerReviewInstance instance = reviewFacade.getPeerReviewInstanceFromReview(review);
+        reviewFacade.saveReview(instance, other);
+        return instance;
     }
 
     @POST
-    @Path("/{reviewId : [1-9][0-9]*}/SubmitReview")
-    public Response submitReview(@PathParam("reviewId") Long reviewId){
-        reviewFacade.submitReview(reviewId);
-        return Response.ok().build();
+    @Path("/SubmitReview")
+    public PeerReviewInstance submitReview(Review review) {
+        Review submitedReview = reviewFacade.submitReview(review);
+        return reviewFacade.getPeerReviewInstanceFromReview(submitedReview);
     }
 
     @POST
     @Path("/{reviewDescriptorId : [1-9][0-9]*}/Notify")
     public Response notify(
-            @PathParam("reviewDescriptorId") Long prdId 
-    ){
+            @PathParam("reviewDescriptorId") Long prdId
+    ) {
         //checkPermissions(playerFacade.find(playerId).getGame(), playerId); // TODO Assert Trainer is the trainer !!!
         reviewFacade.notify(prdId);
+        return Response.ok().build();
+    }
+
+    @POST
+    @Path("/{reviewDescriptorId : [1-9][0-9]*}/Close")
+    public Response close(
+            @PathParam("reviewDescriptorId") Long prdId
+    ) {
+        //checkPermissions(playerFacade.find(playerId).getGame(), playerId); // TODO Assert Trainer is the trainer !!!
+        reviewFacade.close(prdId);
         return Response.ok().build();
     }
 

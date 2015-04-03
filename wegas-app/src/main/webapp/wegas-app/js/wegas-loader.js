@@ -733,7 +733,7 @@ YUI().use(function(Y) {
                 ws_provides: "PeerReviewDescriptor"
             },
             "wegas-review-widgets": {
-                requires: ["wegas-review-css", "wegas-reviewing-entities", "slider", "wegas-text-input"],
+                requires: ["wegas-review-css", "wegas-reviewing-entities", "slider", "wegas-text-input", "wegas-tabview"],
                 ws_provides: ["ReviewVariableEditor", "ReviewOrchestrator", "ReviewTabView", "ReviewWidget", "GradeInput", "TextEvalInput", "CategorizationInput"]
             }
         }
