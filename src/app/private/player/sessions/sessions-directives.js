@@ -4,14 +4,18 @@ angular.module('private.player.sessions.directives', [])
         templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
         controller : 'PlayerSessionsController as playerSessionsCtrl'
     };
-}).controller("PlayerSessionsController", function PlayerSessionsIndexController($rootScope, $state, SessionsModel){
+}).controller("PlayerSessionsController", function PlayerSessionsIndexController($rootScope, $state, SessionsModel, Flash){
     /* Assure access to ctrl. */
     var ctrl = this,
 
     /* Method used to update sessions. */
     updateSessions = function(){
-        SessionsModel.getPlayedSessions().then(function(sessions){
-            ctrl.sessions = sessions;
+        SessionsModel.getPlayedSessions().then(function(response){
+            if(response.data){
+                ctrl.sessions = sessions;
+            }else{
+                ctrl.sessions = [];
+            }
         });
     };
 
@@ -20,24 +24,29 @@ angular.module('private.player.sessions.directives', [])
 
     /* Method used to check token for adding a session. */ 
     ctrl.checkToken = function(token){
-        SessionsModel.findSessionToJoin(token).then(function(session){
-            if(session){
+        SessionsModel.findSessionToJoin(token).then(function(findResponse){
+            if(findResponse.data){
+                var session = findResponse.data;
                 if(session.properties.freeForAll){
-                    SessionsModel.joinIndividualSession(token).then(function(data){
-                        if(data){
+                    SessionsModel.joinIndividualSession(token).then(function(joinResponse){
+                        if(joinResponse.data){
                             updateSessions();
                         }
+                        Flash(joinResponse.level, joinResponse.message);
                     });
                 }else{
                     $state.go('wegas.private.player.sessions.join', {token: session.token});                        
                 }
+            }else{
+                Flash(findResponse.level, findResponse.message);
             }
         });
     };
     /*  */
     ctrl.leaveSession = function(sessionId){
-        SessionsModel.leaveSession(sessionId).then(function(data){
-            if(data){
+        SessionsModel.leaveSession(sessionId).then(function(response){
+            Flash(response.level, response.message);
+            if(response.data){
                 updateSessions();
             }
         });
@@ -51,9 +60,7 @@ angular.module('private.player.sessions.directives', [])
     });
 
     /* Initialize datas */
-    SessionsModel.getPlayedSessions().then(function(sessions){
-        ctrl.sessions = sessions;
-    });
+    updateSessions();
 })
 .directive('playerSessionJoinForm', function() {
   return {
