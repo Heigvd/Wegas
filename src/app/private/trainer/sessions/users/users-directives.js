@@ -9,19 +9,25 @@ angular.module('private.trainer.sessions.users.directives', [
     	templateUrl: 'app/private/trainer/sessions/users/users-directives.tmpl/users-index.tmpl.html',
     	controller : "TrainerSessionsUsersIndexCtrl as usersIndexCtrl"
   	};
-}).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel){
+}).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel, Flash){
 	var ctrl = this;
     ctrl.session = {},
     ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
     
     ctrl.playersViewActived = true;
-    SessionsModel.getManagedSession($stateParams.id).then(function(session){
-        ctrl.session = session;
+    SessionsModel.getManagedSession($stateParams.id).then(function(response){
+        ctrl.session = response.data || {};
+        if(!response.data){
+            Flash(response.level, response.message);
+        }
     });
 
     ctrl.updateSession = function(){
-        SessionsModel.getManagedSession($stateParams.id).then(function(session){
-            ctrl.session = session;
+        SessionsModel.getManagedSession($stateParams.id).then(function(response){
+            ctrl.session = response.data || {};
+            if(!response.data){
+                Flash(response.level, response.message);
+            }
         });
     };
     ctrl.activePlayersView = function(){
@@ -31,19 +37,29 @@ angular.module('private.trainer.sessions.users.directives', [
     ctrl.activeTrainersView = function(){
         ctrl.playersViewActived = false;
     };
+
     ctrl.addTrainer = function(selection){
-        SessionsModel.addTrainerToSession($stateParams.id, selection).then(function(data){
-            ctrl.updateSession();
+        SessionsModel.addTrainerToSession($stateParams.id, selection).then(function(response){
+            Flash(response.level, response.message);
+            if(response.data){
+                ctrl.updateSession();
+            }
         });
     }
     ctrl.removeTrainer = function(trainerId){
-        SessionsModel.removeTrainerToSession($stateParams.id, trainerId).then(function(data){
-            ctrl.updateSession();
+        SessionsModel.removeTrainerToSession($stateParams.id, trainerId).then(function(response){
+            Flash(response.level, response.message);
+            if(response.data){
+                ctrl.updateSession();
+            }
         });
     }
     ctrl.removePlayer = function(playerId, teamId){
-        SessionsModel.removePlayerToSession($stateParams.id, playerId, teamId).then(function(data){
-            ctrl.updateSession();
+        SessionsModel.removePlayerToSession($stateParams.id, playerId, teamId).then(function(response){
+            Flash(response.level, response.message);
+            if(response.data){
+                ctrl.updateSession();
+            }
         });
     }
 

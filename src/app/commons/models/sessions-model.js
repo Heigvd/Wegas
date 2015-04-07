@@ -218,9 +218,9 @@ angular.module('wegas.models.sessions', [])
         var deferred = $q.defer();
         if(managedSessionsLoading){
             waitForManagedSessions().then(function(){
-                addTrainersToSession(id).then(function(data){
-                    if(data){
-                        deferred.resolve(Responses.success("Session find", managedSessions));
+                addTrainersToSession(id).then(function(session){
+                    if(session){ 
+                        deferred.resolve(Responses.success("Session find", session));
                     }else{
                         deferred.resolve(Responses.error("No session find", false));
                     }
@@ -229,18 +229,18 @@ angular.module('wegas.models.sessions', [])
         }else{
             if(managedSessions == null) {
                 model.getManagedSessions().then(function(){
-                    addTrainersToSession(id).then(function(data){
-                        if(data){
-                            deferred.resolve(Responses.success("Session find", managedSessions));
+                    addTrainersToSession(id).then(function(session){
+                        if(session){
+                            deferred.resolve(Responses.success("Session find", session));
                         }else{
                             deferred.resolve(Responses.error("No session find", false));
                         }
                     });
                 });
             }else{
-                addTrainersToSession(id).then(function(data){
-                    if(data){
-                        deferred.resolve(Responses.success("Session find", managedSessions));
+                addTrainersToSession(id).then(function(session){
+                    if(session){
+                        deferred.resolve(Responses.success("Session find", session));
                     }else{
                         deferred.resolve(Responses.error("No session find", false));
                     }
@@ -262,11 +262,10 @@ angular.module('wegas.models.sessions', [])
                     "access": "ENROLMENTKEY",
                     "name": sessionName
                 };
-                $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id, newSession).success(function(data){
+                $http.post(ServiceURL + "rest/GameModel/Game/"+ user.id + "?view=EditorExtended" , newSession).success(function(data){
                     managedSessions.push(data);
                     deferred.resolve(Responses.success("Session created", data));
                 }).error(function(data){
-                    /* TODO - Improve error mgt */
                     deferred.resolve(Responses.error("Error during session creation", data));
                 });
             }else{
