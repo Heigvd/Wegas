@@ -400,7 +400,7 @@ angular.module('wegas.models.sessions', [])
                 }
             }
         }else{
-            deferred.resolve(Response.error("You have no accesss to this session", false));
+            deferred.resolve(Responses.error("You have no accesss to this session", false));
         }
         return deferred.promise;
     };
@@ -419,14 +419,14 @@ angular.module('wegas.models.sessions', [])
                             session = formatPlayers(session);
                         });
                         playedSessions = data;
-                        deferred.resolve(Response.success("All played sessions find", playedSessions));
+                        deferred.resolve(Responses.success("All played sessions find", playedSessions));
                     }).error(function(data){
                         playedSessions = [];
-                        deferred.resolve(Response.error("No played sessions find", playedSessions));
+                        deferred.resolve(Responses.error("No played sessions find", playedSessions));
                     });
                 }
             } else {
-                deferred.resolve(Response.error("You need to be logged", false));
+                deferred.resolve(Responses.error("You need to be logged", false));
             }
         });
         return deferred.promise;
@@ -439,17 +439,17 @@ angular.module('wegas.models.sessions', [])
             model.getPlayedSessions().then(function(data){
                 var session = findSession(playedSessions, id);
                 if(session){
-                    deferred.resolve(Response.success("Session find", session));
+                    deferred.resolve(Responses.success("Session find", session));
                 }else{
-                    deferred.resolve(Response.error("No session find", false));
+                    deferred.resolve(Responses.error("No session find", false));
                 }
             });
         }else{
             var session = findSession(playedSessions, id);
             if(session){
-                deferred.resolve(Response.success("Session find", session));
+                deferred.resolve(Responses.success("Session find", session));
             }else{
-                deferred.resolve(Response.error("No session find", false));
+                deferred.resolve(Responses.error("No session find", false));
             }
         }
         return deferred.promise;
@@ -462,9 +462,9 @@ angular.module('wegas.models.sessions', [])
             if(data){
                 data = formatPlayers(data)
             }
-            deferred.resolve(Response.success("Session find", data));
+            deferred.resolve(Responses.success("Session find", data));
         }).error(function(data){
-            deferred.resolve(Response.error("No session find", false));
+            deferred.resolve(Responses.error("No session find", false));
         });
         return deferred.promise;
     };
@@ -476,7 +476,7 @@ angular.module('wegas.models.sessions', [])
             if(user != null) {
                 var cachedSession = _.find(playedSessions, function (s) { return s.token == token; });
                 if(cachedSession){
-                    deferred.resolve(Response.info("You have already join this session", false));
+                    deferred.resolve(Responses.info("You have already join this session", false));
                 }else{
                     model.getPlayedSessions().then(function(data){
                         $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/"+ token + "?view=Extended").success(function(data){                            
@@ -494,20 +494,20 @@ angular.module('wegas.models.sessions', [])
                                             managedSession = cachePlayer(managedSession, player);
                                         }
                                     }
-                                    deferred.resolve(Response.success("You have join the session", cachedSession));
+                                    deferred.resolve(Responses.success("You have join the session", cachedSession));
                                 }else{
-                                    deferred.resolve(Response.error("Error during creating player", false));
+                                    deferred.resolve(Responses.error("Error during creating player", false));
                                 }
                             }else{
-                                deferred.resolve(Response.error("Error during creating solo-team", false));
+                                deferred.resolve(Responses.error("Error during creating solo-team", false));
                             }
                         }).error(function(data){
-                            deferred.resolve(Response.error("Error during joining session", false));
+                            deferred.resolve(Responses.error("Error during joining session", false));
                         });
                     });
                 }
             } else {
-                deferred.resolve(Response.error("You need to be logged", false));
+                deferred.resolve(Responses.error("You need to be logged", false));
             }
         });
         return deferred.promise;
@@ -520,7 +520,7 @@ angular.module('wegas.models.sessions', [])
             if(user != null) {
                 var cachedSession = findSession(playedSessions, sessionId);
                 if(cachedSession){
-                    deferred.resolve(Response.info("You have already join this session", false));
+                    deferred.resolve(Responses.info("You have already join this session", false));
                 }else{
                     $http.get(ServiceURL + "rest/GameModel/Game/JoinTeam/"+ teamId).success(function(session){
                         var team = _.find(session.teams, function (t) { return t.id == teamId; });
@@ -537,19 +537,19 @@ angular.module('wegas.models.sessions', [])
                                         managedSession = cachePlayer(managedSession, player);
                                     }
                                 }
-                                deferred.resolve(Response.success("You have join the session", cachedSession));
+                                deferred.resolve(Responses.success("You have join the session", cachedSession));
                             }else{
-                                deferred.resolve(Response.error("Error during creating player", false));
+                                deferred.resolve(Responses.error("Error during creating player", false));
                             }
                         }else{
-                            deferred.resolve(Response.error("Error during joining team", false));
+                            deferred.resolve(Responses.error("Error during joining team", false));
                         }
                     }).error(function(data){
-                        deferred.resolve(Response.error("Error during joining session", false));
+                        deferred.resolve(Responses.error("Error during joining session", false));
                     });
                 }
             } else {
-                deferred.resolve(Response.error("You need to be logged", false));
+                deferred.resolve(Responses.error("You need to be logged", false));
             }
         });
         return deferred.promise;
@@ -581,13 +581,13 @@ angular.module('wegas.models.sessions', [])
                                 }
                             }
                         }
-                        deferred.resolve(Response.success("Team created", team));
+                        deferred.resolve(Responses.success("Team created", team));
                     }).error(function(data){
-                        deferred.resolve(Response.error("Error during team creation", false));
+                        deferred.resolve(Responses.error("Error during team creation", false));
                     });
                 }
             } else {
-                deferred.resolve(Response.error("You need to be logged", false));
+                deferred.resolve(Responses.error("You need to be logged", false));
             }
         });
         return deferred.promise;
@@ -610,10 +610,10 @@ angular.module('wegas.models.sessions', [])
                                 if(data){
                                     playedSessions = _.without(playedSessions, cachedSession);
                                 }
-                                deferred.resolve(Response.success("Player has leaved the session", data));
+                                deferred.resolve(Responses.success("Player has leaved the session", data));
                             });
                         }else{
-                            deferred.resolve(Response.error("No player found", false));
+                            deferred.resolve(Responses.error("No player found", false));
                         }
                     }else{
                         var team = _.find(cachedSession.teams, function (t) { 
@@ -625,16 +625,16 @@ angular.module('wegas.models.sessions', [])
                                 if(data){
                                     playedSessions = _.without(playedSessions, cachedSession);
                                 }
-                                deferred.resolve(Response.success("Player has leaved the session", data));
+                                deferred.resolve(Responses.success("Player has leaved the session", data));
                             });
                         }else{
                             player = undefined;
-                            deferred.resolve(Response.error("No player found", false));
+                            deferred.resolve(Responses.error("No player found", false));
                         }
                     }
                 }
             } else {
-                deferred.resolve(Response.error("You need to be logged", false));
+                deferred.resolve(Responses.error("You need to be logged", false));
             }
         });
         return deferred.promise;

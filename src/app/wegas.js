@@ -1,4 +1,4 @@
-var ServiceURL = "/api/";
+var ServiceURL = "/Wegas/";
 angular.module('Wegas', [
     'flash',
     'ui.router',
