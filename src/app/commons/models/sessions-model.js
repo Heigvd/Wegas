@@ -1,6 +1,6 @@
 'use strict';
 angular.module('wegas.models.sessions', [])
-.service('SessionsModel', function ($http, $q, $interval, Auth, Response) {
+.service('SessionsModel', function ($http, $q, $interval, Auth, Responses) {
     /* Namespace for model accessibility. */
     var model = this,
     /* Caches for data */
@@ -323,7 +323,7 @@ angular.module('wegas.models.sessions', [])
                     managedSessions[_.indexOf(managedSessions, session)].trainers.push(trainer);
                     deferred.resolve(Responses.success("Trainer added", trainer));
                 }).error(function(data){
-                    deferred.resolve(Responses.error("Error for adding trainer", false);
+                    deferred.resolve(Responses.error("Error for adding trainer", false));
                 });
             }else{
                 deferred.resolve(Responses.info("This user is already a trainer for this session", false));
@@ -371,7 +371,7 @@ angular.module('wegas.models.sessions', [])
                             if(leavingPlayer){
                                 managedSession = managedSession ? uncachePlayer(managedSession, leavingPlayer) : managedSession;
                                 playedSessions = playedSession ? uncacheSession(playedSessions, playedSession) : playedSessions;
-                                deferred.resolve(Responses.success("Player has leaved the session", leavingPlayer);
+                                deferred.resolve(Responses.success("Player has leaved the session", leavingPlayer));
                             }else{
                                 deferred.resolve(Responses.error("Error during player leaving session", false));
                             }

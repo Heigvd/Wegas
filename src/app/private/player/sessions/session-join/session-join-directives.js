@@ -64,7 +64,7 @@ angular.module('private.player.session.join.directives', [])
     /* Initialize datas */
     SessionsModel.findSessionToJoin($stateParams.token).then(function(response){
         if(response.data){
-            var session = response.data,
+            var session = response.data;
             if(!session.properties.freeForAll){
                 ctrl.sessionToJoin = session;
             }else{
