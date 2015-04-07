@@ -29,7 +29,13 @@ angular.module('Wegas', [
         })
     ;
     $urlRouterProvider.otherwise('/');
-}).controller('WegasMainCtrl', function WegasMainCtrl($state, Auth) {
+})
+.run(function ($rootScope, $state) {
+  $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState) {
+    $state.previous = fromState;
+  });
+})
+.controller('WegasMainCtrl', function WegasMainCtrl($state, Auth) {
     Auth.getAuthenticatedUser().then(function(user){
     	if(user == null){
     		$state.go("wegas.public");
