@@ -1,6 +1,6 @@
 'use strict';
 angular.module('wegas.models.sessions', [])
-.service('SessionsModel', function ($http, $q, $interval, Auth) {
+.service('SessionsModel', function ($http, $q, $interval, Auth, Flash) {
     /* Namespace for model accessibility. */
     var model = this,
     /* Caches for data */
@@ -309,8 +309,10 @@ angular.module('wegas.models.sessions', [])
             if(!alreadyIn){
                 $http.post(ServiceURL + "rest/Extended/User/addAccountPermission/Game:View,Edit:g"+ session.id + "/" + trainer.id).success(function(data){
                     managedSessions[_.indexOf(managedSessions, session)].trainers.push(trainer);
+                    Flash.success("Trainer added");
                     deferred.resolve(trainer);
                 }).error(function(data){
+                    Flash.success("No trainer added");
                     deferred.resolve(data);
                 });
             }
@@ -329,12 +331,15 @@ angular.module('wegas.models.sessions', [])
                 if(trainer){
                     $http.delete(ServiceURL + "rest/Extended/User/DeleteAccountPermissionByInstanceAndAccount/g"+ session.id + "/" + trainer.id).success(function(data){
                         managedSessions[_.indexOf(managedSessions, session)].trainers = _.without(session.trainers, trainer);
+                        Flash.success("Trainer removed");
                         deferred.resolve(trainer);
                     }).error(function(data){
+                        Flash.error("You can not remove this trainer");
                         deferred.resolve(data);
                     });
                 }
             }else{
+                Flash.error("You have no accesss to this session");
                 deferred.resolve(false);
             }
         return deferred.promise;
@@ -358,14 +363,18 @@ angular.module('wegas.models.sessions', [])
                                 managedSession = managedSession ? uncachePlayer(managedSession, leavingPlayer) : managedSession;
                                 playedSessions = playedSession ? uncacheSession(playedSessions, playedSession) : playedSessions;
                                 deferred.resolve(leavingPlayer);
+                                Flash.success("Player has leaved the session");
                             }else{
+                                Flash.error("Player has not leaved the session");
                                 deferred.resolve(false);
                             }
                         });
                     }else{
+                        Flash.error("No player found");
                         deferred.resolve(false);
                     }
                 }else{
+                    Flash.error("No team found");
                     deferred.resolve(false);
                 }
             }else{
@@ -376,15 +385,19 @@ angular.module('wegas.models.sessions', [])
                             managedSession = managedSession ? uncachePlayer(managedSession, leavingPlayer) : managedSession;
                             playedSessions = playedSession ? uncacheSession(playedSessions, playedSession) : playedSessions;
                             deferred.resolve(leavingPlayer);
+                            Flash.success("Player has leaved the session");
                         }else{
+                            Flash.error("Player has not leaved the session");
                             deferred.resolve(false);
                         }
                     });
                 }else{
+                    Flash.error("No player found");
                     deferred.resolve(false);
                 }
             }
         }else{
+            Flash.error("You have no accesss to this session");
             deferred.resolve(false);
         }
         return deferred.promise;
