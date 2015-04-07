@@ -515,6 +515,10 @@ public class Game extends NamedEntity {
          */
         LIVE,
         /**
+         *  Gaem, game is playable
+         */
+        JOINABLE,
+        /**
          * Game in the wast bin
          */
         BIN,

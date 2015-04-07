@@ -487,6 +487,33 @@ public class GameFacade extends BaseFacade<Game> {
     public void bin(Game entity) {
         entity.setStatus(Game.Status.BIN);
     }
+    
+    /**
+     * Set game status, changing to {@link Game.Status#LIVE}
+     *
+     * @param entity Game
+     */
+    public void live(Game entity) {
+        entity.setStatus(Game.Status.LIVE);
+    }
+    
+    /**
+     * Set game status, changing to {@link Game.Status#JOINABLE}
+     *
+     * @param entity Game
+     */
+    public void joinable(Game entity) {
+        entity.setStatus(Game.Status.JOINABLE);
+    }
+    
+    /**
+     * Set game status, changing to {@link Game.Status#DELETE}
+     *
+     * @param entity GameModel
+     */
+    public void delete(Game entity) {
+        entity.setStatus(Game.Status.DELETE);
+    }
 
     /**
      * Reset a game
