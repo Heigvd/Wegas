@@ -15,18 +15,11 @@
     border-radius: 5px;
     font-size: .7em;
     &.ng-enter {
-      // display: none !important;
       animation: fadeIn 1s;
     }
     &.ng-leave {
       animation: fadeOut 1s;
     }
-    // &.ng-hide-remove {
-    //   display: block !important;
-    //   animation:
-    //   slide-down-enter 250ms ease-out,
-    //   slide-down-leave 500ms 3s ease;
-    // }
   }
 
   .success {
@@ -41,24 +34,4 @@
   .danger {
     background-color: #e51c23;
   }
-
-
 }
-
-// .slide-down { display: none !important; }
-// .slide-down.ng-hide-remove {
-//   display: block !important;
-//   animation:
-//   slide-down-enter 250ms ease-out,
-//   slide-down-leave 500ms 3s ease;
-// }
-
-// @keyframes slide-down-enter {
-//   from { opacity: 0; transform: translateY(-75%); }
-//   to { opacity: 1; transform: translateY(0); }
-// }
-
-// @keyframes slide-down-leave {
-//   from { opacity: 1; transform: translateY(0); }
-//   to { opacity: 0; transform: translateY(75%); }
-// }
