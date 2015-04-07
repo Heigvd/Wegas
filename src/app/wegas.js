@@ -6,6 +6,7 @@ angular.module('Wegas', [
     'angular-loading-bar',
     'angularModalService',
     'wegas.service.auth',
+    'wegas.service.responses',
     'wegas.directives.illustrations',
     'wegas.behaviours.modals',
     'wegas.behaviours.tools',
