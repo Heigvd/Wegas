@@ -99,6 +99,19 @@ public class GameController {
         }
         return retGames;
     }
+    
+    @GET
+    @Path("archives")
+    public Collection<Game> findAllArchives() {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
+        for (Game g : games) {
+            if (SecurityHelper.isPermitted(g, "Edit")) {
+                retGames.add(g);
+            }
+        }
+        return retGames;
+    }
 
     /**
      *
