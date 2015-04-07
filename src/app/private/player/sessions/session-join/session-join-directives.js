@@ -13,17 +13,36 @@ angular.module('private.player.session.join.directives', [])
 
     /* Container for datas */
     ctrl.sessionToJoin = {};
+    ctrl.newTeam = {
+        name: "",
+        alreadyUsed: false
+    };
 
-    /* Method used to create new team and join this new team in the session. */
-    ctrl.createAndJoinTeam = function(teamName){
-        SessionsModel.createTeam(ctrl.sessionToJoin.id, teamName).then(function(data){
-            SessionsModel.joinTeam(ctrl.sessionToJoin.id, data.id).then(function(sessionUpdated){
-                if(sessionUpdated){
-                    $rootScope.$emit('newSession', true);
-                    $scope.close();
+    ctrl.checkNameUsability = function(){
+        var alreadyUsed = false;
+        if(ctrl.sessionToJoin.teams){
+            ctrl.sessionToJoin.teams.forEach(function(team){
+                if(team.name == ctrl.newTeam.name){
+                    alreadyUsed = true;
                 }
             });
-        });
+        }
+        ctrl.newTeam.alreadyUsed = alreadyUsed;
+    };
+
+    /* Method used to create new team and join this new team in the session. */
+    ctrl.createAndJoinTeam = function(){
+        if(!ctrl.newTeam.alreadyUsed){
+            SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(team){
+                if(team){
+                    SessionsModel.joinTeam(ctrl.sessionToJoin.id, team.id).then(function(sessionUpdated){
+                        if(sessionUpdated){
+                            $scope.close();
+                        }
+                    });
+                }
+            });
+        }
     };
 
     /* Method used to join existing team in the session. */
@@ -49,14 +68,6 @@ angular.module('private.player.session.join.directives', [])
         }
     });
 })
-.directive('playerSessionJoinTeam', function(){
-    return {
-        templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join-team.tmpl.html',
-        scope: {
-            createAndJoinTeam: "="    
-        }
-    };
-})
 .directive('playerSessionTeamsList', function() {
   return {
     templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-teams-list.tmpl.html',
@@ -65,4 +76,19 @@ angular.module('private.player.session.join.directives', [])
         joinTeam : "="
     }
   };
+})
+.directive('playerSessionAddTeam', function(){
+    return {
+        templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-add-team.tmpl.html',
+        scope: {
+            newTeam: "=",
+            createAndJoinTeam: "&",
+            checkNameUsability: "&"   
+        },
+        link: function(scope, elem, attrs){
+            scope.$watch(function(){return scope.newTeam.name;}, function(newVal){
+                scope.checkNameUsability();
+            });
+        }
+    };
 });

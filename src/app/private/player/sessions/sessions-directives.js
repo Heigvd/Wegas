@@ -24,7 +24,9 @@ angular.module('private.player.sessions.directives', [])
             if(session){
                 if(session.properties.freeForAll){
                     SessionsModel.joinIndividualSession(token).then(function(data){
-                        updateSessions;
+                        if(data){
+                            updateSessions();
+                        }
                     });
                 }else{
                     $state.go('wegas.private.player.sessions.join', {token: session.token});                        
@@ -32,6 +34,14 @@ angular.module('private.player.sessions.directives', [])
             }
         });
     };
+    /*  */
+    ctrl.leaveSession = function(sessionId){
+        SessionsModel.leaveSession(sessionId).then(function(data){
+            if(data){
+                updateSessions();
+            }
+        });
+    }
 
     /* Listen for new session */
     $rootScope.$on('newSession', function(e, hasNewData){
@@ -60,7 +70,7 @@ angular.module('private.player.sessions.directives', [])
         // Use checkToken from index to join a new session. 
         scope.joinSession = function(){
             scope.checkToken(scope.sessionToJoin.token);
-        }
+        };
     }
   };
 })
@@ -68,7 +78,8 @@ angular.module('private.player.sessions.directives', [])
   return {
     templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
     scope: {
-        sessions : "="
+        sessions : "=",
+        leave: "="
     }
   };
 })
