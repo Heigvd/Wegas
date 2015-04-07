@@ -216,6 +216,33 @@ public class GameModelFacade extends BaseFacade<GameModel> {
             System.err.println(ex);
         }
     }
+    
+    /**
+     * Set gameModel status, changing to {@link GameModel.Status#LIVE}
+     *
+     * @param entity GameModel
+     */
+    public void live(GameModel entity) {
+        entity.setStatus(GameModel.Status.LIVE);
+    }
+    
+    /**
+     * Set gameModel status, changing to {@link GameModel.Status#BIN}
+     *
+     * @param entity GameModel
+     */
+    public void bin(GameModel entity) {
+        entity.setStatus(GameModel.Status.BIN);
+    }
+    
+    /**
+     * Set gameModel status, changing to {@link GameModel.Status#DELETE}
+     *
+     * @param entity GameModel
+     */
+    public void delete(GameModel entity) {
+        entity.setStatus(GameModel.Status.DELETE);
+    }
 
     @Override
     public List<GameModel> findAll() {
@@ -224,6 +251,12 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         Root e = query.from(entityClass);
         query.select(e).orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
+    }
+    
+    public List<GameModel> findByStatus(final GameModel.Status status) {
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByStatus", GameModel.class);
+        query.setParameter("status", status);
+        return query.getResultList();
     }
 
     /**
