@@ -16,6 +16,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.GameEnrolmentKey;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -34,6 +35,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -92,19 +94,6 @@ public class GameController {
                 ? gameFacade.findByGameModelId(Long.parseLong(gameModelId), "createdTime ASC")
                 : gameFacade.findAll(Game.Status.LIVE);
 
-        for (Game g : games) {
-            if (SecurityHelper.isPermitted(g, "Edit")) {
-                retGames.add(g);
-            }
-        }
-        return retGames;
-    }
-    
-    @GET
-    @Path("archives")
-    public Collection<Game> findAllArchives() {
-        final Collection<Game> retGames = new ArrayList<>();
-        final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
         for (Game g : games) {
             if (SecurityHelper.isPermitted(g, "Edit")) {
                 retGames.add(g);
@@ -173,7 +162,43 @@ public class GameController {
 
         return gameFacade.update(entityId, entity);
     }
-
+    
+    @PUT
+    @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
+    public Game changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final Game.Status status) {
+        Game game = gameFacade.find(entityId);
+        SecurityHelper.checkPermission(game, "Edit");
+        switch(status){
+            case LIVE:
+                gameFacade.live(game);   
+                break;
+            case JOINABLE:
+                gameFacade.joinable(game);   
+                break;
+            case BIN:
+                gameFacade.bin(game);   
+                break;
+            case DELETE:
+                gameFacade.delete(game);   
+                break;
+        }
+        return game;
+    }
+    
+    @GET
+    @Path("status/{status: [A-Z]*}")
+    public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Collection<Game> games = gameFacade.findAll(status);
+        for (Game g : games) {
+            if (SecurityHelper.isPermitted(g, "Edit")) {
+                retGames.add(g);
+            }
+        }
+        return retGames;
+    }
+    
+    
     /**
      *
      * @param entityId
@@ -182,12 +207,31 @@ public class GameController {
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public Game delete(@PathParam("entityId") Long entityId) {
-
         Game entity = gameFacade.find(entityId);
         SecurityHelper.checkPermission(entity, "Edit");
-        gameFacade.bin(entity); //Do not really delete. Bin it instead
-//        gameFacade.remove(entity);
+        switch(entity.getStatus()){
+            case LIVE:
+                gameFacade.bin(entity);
+                break;
+            case BIN:
+                gameFacade.delete(entity);
+                break;
+        }
+//      gameFacade.remove(entity);
         return entity;
+    }
+    
+    @DELETE
+    public Collection<Game> deleteAll() {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
+        for (Game g : games) {
+            if (SecurityHelper.isPermitted(g, "Edit")) {
+                gameFacade.delete(g);
+                retGames.add(g);
+            }
+        }
+        return retGames;
     }
 
     /**
