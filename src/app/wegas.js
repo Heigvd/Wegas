@@ -1,5 +1,6 @@
 var ServiceURL = "/api/";
 angular.module('Wegas', [
+    'flash',
     'ui.router',
     'ngAnimate',
     'angular-loading-bar',
