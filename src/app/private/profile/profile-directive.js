@@ -31,19 +31,7 @@ angular
             } , function(n,o) {
                 $scope.user = n;
             });
-            $parent = parentCtrl;
-
-        }
-    };
-})
-.directive('profileTools', function(){
-    return {
-        templateUrl: 'app/private/profile/tmpl/profile-tools.html',
-        scope: true,
-        require: "^profileIndex",
-        link : function($scope, element, attrs, parentCtrl) {
-
-            $scope.updateInformations = function () {
+            $scope.updateInformations = function() {
                 parentCtrl.updateInformations();
             }
 
