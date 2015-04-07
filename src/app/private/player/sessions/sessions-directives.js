@@ -12,6 +12,7 @@ angular.module('private.player.sessions.directives', [])
     updateSessions = function(){
         SessionsModel.getPlayedSessions().then(function(response){
             if(response.data){
+                var sessions = response.data;
                 ctrl.sessions = sessions;
             }else{
                 ctrl.sessions = [];

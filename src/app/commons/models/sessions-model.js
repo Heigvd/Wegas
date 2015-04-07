@@ -411,7 +411,7 @@ angular.module('wegas.models.sessions', [])
         Auth.getAuthenticatedUser().then(function(user){
             if(user != null){
                 if(playedSessions != null){
-                    deferred.resolve(playedSessions);
+                    deferred.resolve(Responses.success("All played sessions find", playedSessions));
                 } else {
                     playedSessions = [];
                     $http.get(ServiceURL + "rest/RegisteredGames/"+ user.id).success(function(data){
@@ -537,7 +537,7 @@ angular.module('wegas.models.sessions', [])
                                         managedSession = cachePlayer(managedSession, player);
                                     }
                                 }
-                                deferred.resolve(Responses.success("You have join the session", cachedSession));
+                                deferred.resolve(Responses.success("You have join the session", session));
                             }else{
                                 deferred.resolve(Responses.error("Error during creating player", false));
                             }
@@ -568,7 +568,7 @@ angular.module('wegas.models.sessions', [])
         Auth.getAuthenticatedUser().then(function(u) {
             if(u != null) {
                 if(cachedSession){
-                    deferred.resolve(false);
+                    deferred.resolve(Responses.info("You have already join this session", false));
                 }else{
                     newTeam.name = teamName;
                     $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team){
@@ -601,16 +601,18 @@ angular.module('wegas.models.sessions', [])
         Auth.getAuthenticatedUser().then(function(u) {
             if(u != null) {
                 if(!cachedSession){
-                    deferred.resolve(false);
+                    deferred.resolve(Responses.error("No session found", false));
                 }else{
                     if(cachedSession.properties.freeForAll){
                         player = _.find(cachedSession.players, function (p) {return p.userId == u.id; });
                         if(player){
-                            model.removePlayerToSession(sessionId, player.id, player.teamId).then(function(data){
-                                if(data){
+                            model.removePlayerToSession(sessionId, player.id, player.teamId).then(function(response){
+                                if(response.data){
                                     playedSessions = _.without(playedSessions, cachedSession);
+                                    deferred.resolve(Responses.success("Player has leaved the session", response.data));
+                                }else{
+                                    deferred.resolve(Responses.error("Error during player leaved the session", false));
                                 }
-                                deferred.resolve(Responses.success("Player has leaved the session", data));
                             });
                         }else{
                             deferred.resolve(Responses.error("No player found", false));
@@ -621,11 +623,13 @@ angular.module('wegas.models.sessions', [])
                             return player ? (player.userId == u.id) : false; 
                         });
                         if(team && player){
-                            model.removePlayerToSession(sessionId, player.id, player.teamId).then(function(data){
-                                if(data){
+                            model.removePlayerToSession(sessionId, player.id, player.teamId).then(function(response){
+                                if(response.data){
                                     playedSessions = _.without(playedSessions, cachedSession);
+                                    deferred.resolve(Responses.success("Player has leaved the session", response.data));
+                                }else{
+                                    deferred.resolve(Responses.error("Error during player leaved the session", false));
                                 }
-                                deferred.resolve(Responses.success("Player has leaved the session", data));
                             });
                         }else{
                             player = undefined;
