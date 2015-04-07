@@ -27,6 +27,26 @@ angular.module('wegas.models.users', [])
         });
         return deferred.promise;
     }
+
+    model.updateUser = function(user) {
+
+        var deferred = $q.defer();
+
+        var url = "rest/Extended/User/Account/" + user.id;
+
+        delete user.hash
+        delete user.name
+
+        $http
+        .put(ServiceURL + url, user)
+        .success(function(data){
+            deferred.resolve(data);
+        }).error(function(data) {
+            deferred.resolve(false);
+        });
+        return deferred.promise;
+    };
+
     /* Find user with a pattern in a list of groups (Player, Trainer, Scenarist, Administrator) */
     model.autocomplete = function(pattern, rolesList) {
         var deferred = $q.defer();
