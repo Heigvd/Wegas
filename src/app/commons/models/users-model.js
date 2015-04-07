@@ -34,8 +34,13 @@ angular.module('wegas.models.users', [])
 
         var url = "rest/Extended/User/Account/" + user.id;
 
+        if (user.password != user.password2) {
+            deferred.resolve(false);
+            return;
+        }
         delete user.hash
         delete user.name
+        delete user.password2
 
         $http
         .put(ServiceURL + url, user)
