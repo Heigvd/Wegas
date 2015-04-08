@@ -18,7 +18,7 @@ angular.module('private.trainer', [
     var trainerCtrl = this;
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
-            if(!user.isAdmin && !user.isScenarist && !user.isTrainer){
+            if(!user.isAdmin || !user.isScenarist || !user.isTrainer){
                 $state.go("wegas.private.player");
             }
             ViewInfos.editName("Trainer workspace");
