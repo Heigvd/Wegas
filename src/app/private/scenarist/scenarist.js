@@ -20,9 +20,19 @@ angular.module('private.scenarist', [
 })
 .controller('ScenaristCtrl', function ScenaristCtrl($state, Auth, ViewInfos) {
     var scenaristCtrl = this;
-    Auth.getAuthenticatedUser().then(function(user){
-        if(user != null){
+    Auth.getAuthenticatedUser().then(function(user) {
+        if(user != null) {
             ViewInfos.editName("Scenarist workspace");
+            if(!user.isScenarist) {
+                if(user.isTrainer) {
+                    $state.go("wegas.private.trainer");
+                } else {
+                    $state.go("wegas.private.player");
+                }
+            }
         }
+
+
+
     });
 });
