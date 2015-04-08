@@ -689,6 +689,19 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
     
+    model.archiveSession = function(sessionToArchive){
+        var deferred = $q.defer();
+        if(sessionToArchive["@class"] === "Game"){
+            console.log("OK");
+            console.log(sessionToArchive);
+            deferred.resolve(Responses.success("Session archived", sessionToArchive));
+        }else{
+            deferred.resolve(Responses.success("This is not a session", false));
+        }
+        return deferred.promise;
+    }
+
+
     model.clearCache = function () {
         managedSessions = null;
         playedSessions = null;

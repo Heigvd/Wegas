@@ -36,6 +36,7 @@ angular.module('private.trainer.sessions.directives', [
     };
     ctrl.archiveSession = function(sessionToArchive){
         if(sessionToArchive){
+            console.log("Ho ho ho");
             SessionsModel.archiveSession(sessionToArchive).then(function(response){
                 response.flash();
                 if(!response.isErroneous()){
@@ -85,7 +86,7 @@ angular.module('private.trainer.sessions.directives', [
     scope: {
         sessions : "=",
         search : "=",
-        archiveSession : "="
+        archive : "="
     }
   };
 })
@@ -96,7 +97,7 @@ angular.module('private.trainer.sessions.directives', [
         require: "^trainerSessionsIndex",
         scope: {
            session: '=',
-           archiveSession: "="
+           archive: "="
         },
         link : function(scope, element, attrs, parentCtrl){
             // Private function 
@@ -142,10 +143,6 @@ angular.module('private.trainer.sessions.directives', [
                 parentCtrl.editComments(scope.sessionToSet);
                 scope.toogleEditingComments();
             };
-
-            scope.archive = function(){
-                scope.archiveSession();
-            }
         }
     }
 });

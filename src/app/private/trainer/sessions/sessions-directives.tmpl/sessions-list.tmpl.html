@@ -2,6 +2,6 @@
 	class="card card--big card--trainer-session" 
 	ng-repeat="session in sessions | orderBy: 'createdTime':true | filter:{name:search}" 
 	session="session"
-	archive-session="archiveSession"
+	archive="archive"
 	trainer-session >
 </div>
