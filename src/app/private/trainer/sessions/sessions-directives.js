@@ -139,6 +139,9 @@ angular.module('private.trainer.sessions.directives', [
                 scope.toogleEditingComments();
             };
 
+            scope.archive = function(){
+                console.log("ARCHIVE, BIM!");
+            }
         }
     }
 });
