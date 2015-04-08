@@ -203,7 +203,7 @@ public class IntegrationTest {
         //beginAt("test.htm");
         //assertTitleEquals("My Page");
         try {
-            beginAt("login.html?debug=true");
+            beginAt("edit.html?debug=true");
         } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
             System.out.println("Jweb unit encountered an exception");
             // e.printStackTrace();
