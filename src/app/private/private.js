@@ -5,6 +5,7 @@ angular.module('private', [
     'private.player',
     'private.trainer',
     'private.scenarist',
+    'private.logout',
     'private.directives'
 ])
 .config(function ($stateProvider) {

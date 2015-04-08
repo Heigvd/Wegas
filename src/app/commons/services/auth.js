@@ -1,7 +1,7 @@
 angular.module('wegas.service.auth', [
     'wegas.models.sessions'
     ])
-    .service('Auth', function ($http, $q) {
+    .service('Auth', function ($http, $q, Responses) {
         var service = this,
             authenticatedUser = null,
             rights = null;
@@ -65,7 +65,9 @@ angular.module('wegas.service.auth', [
             var deferred = $q.defer();
             $http.get(ServiceURL + "logout").success(function(data){
                 authenticatedUser = null;
-                deferred.resolve(true);
+                deferred.resolve(Responses.success("Logout successfully", true));
+            }).error(function(data){
+                deferred.resolve(Responses.error("Error when logout", false));
             });
             return deferred.promise;
         };

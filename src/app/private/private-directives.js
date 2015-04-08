@@ -17,9 +17,7 @@ angular.module('private.directives', [
           alert('Sorry... Not yet implemented');
         }
         scope.logout = function(){
-            Auth.logout().then(function(){
-                $state.go("wegas.public.login");
-            });
+          $state.go("wegas.private.logout");
         };
         $(document).on('click', function (e) {
           var $menu = $('.menu');
