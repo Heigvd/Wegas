@@ -7,8 +7,18 @@
 	<div class="view__tools">
 		<div class="tool tool--search tool--open">
 			<a class="tool__link"></a>
-			<input class="tool__input" ng-model="search" type="text"/>
+			<input 
+				class="tool__input" 
+				ng-model="trainerSessionsCtrl.search" 
+				type="text" 
+			/>
 		</div>
 	</div>
-	<div class="view__list" trainer-sessions-list></div>
+	<div 
+		class="view__list" 
+		sessions="trainerSessionsCtrl.sessions" 
+		search="trainerSessionsCtrl.search",
+		archive-session="trainerSessionsCtrl.archiveSession"
+		trainer-sessions-list >
+	</div>
 </div>

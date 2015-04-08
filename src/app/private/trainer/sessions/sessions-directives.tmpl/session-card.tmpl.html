@@ -27,7 +27,7 @@
     <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" ui-sref="wegas.private.trainer.sessions.users({id: session.id})">
       <span class="button__label">Manage User</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive session" ng-confirm-click="Do you realy want to archive '{{session.name}}' ?" confirmed-click="archive()">
+    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive session" ng-click="archive()">
       <span class="button__label">Archive session</span>
     </a>   
     <a class="button button--medium button--round button--info button--label-off button--trainer" title="Monitoring session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
