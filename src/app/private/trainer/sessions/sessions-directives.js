@@ -17,16 +17,16 @@ angular.module('private.trainer.sessions.directives', [
         };
         ctrl.editName = function(sessionToSet){
             SessionsModel.updateNameSession(sessionToSet).then(function(response){
-                Flash(response.level, response.message);
-                if(response.data){
+                response.flash();
+                if(!response.isErroneous()){
                     ctrl.updateSessions();
                 }
             });
         };
         ctrl.editComments = function(sessionToSet){
             SessionsModel.updateCommentsSession(sessionToSet).then(function(response){
-                Flash(response.level, response.message);
-                if(response.data){
+                response.flash();
+                if(!response.isErroneous()){
                     ctrl.updateSessions();
                 }
             });
@@ -50,8 +50,8 @@ angular.module('private.trainer.sessions.directives', [
         scope.addSession = function(){
             if(scope.newSession.scenarioId != 0){
                 SessionsModel.createManagedSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response){
-                    Flash(response.level, response.message);
-                    if(response.data){
+                    response.flash();
+                    if(!response.isErroneous()){
                         scope.newSession = {
                             name : "",
                             scenarioId : 0 

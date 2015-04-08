@@ -11,7 +11,7 @@ angular.module('private.player.sessions.directives', [])
     /* Method used to update sessions. */
     updateSessions = function(){
         SessionsModel.getPlayedSessions().then(function(response){
-            if(response.data){
+            if(!response.isErroneous()){
                 var sessions = response.data;
                 ctrl.sessions = sessions;
             }else{
@@ -26,7 +26,9 @@ angular.module('private.player.sessions.directives', [])
     /* Method used to check token for adding a session. */ 
     ctrl.checkToken = function(token){
         SessionsModel.findSessionToJoin(token).then(function(findResponse){
-            if(findResponse.data){
+            if(findResponse.isErroneous()){
+                findResponse.flash();
+            }else{
                 var session = findResponse.data;
                 if(session.properties.freeForAll){
                     SessionsModel.joinIndividualSession(token).then(function(joinResponse){
@@ -38,16 +40,14 @@ angular.module('private.player.sessions.directives', [])
                 }else{
                     $state.go('wegas.private.player.sessions.join', {token: session.token});                        
                 }
-            }else{
-                Flash(findResponse.level, findResponse.message);
             }
         });
     };
     /*  */
     ctrl.leaveSession = function(sessionId){
         SessionsModel.leaveSession(sessionId).then(function(response){
-            Flash(response.level, response.message);
-            if(response.data){
+            response.flash();
+            if(!response.isErroneous()){
                 updateSessions();
             }
         });
