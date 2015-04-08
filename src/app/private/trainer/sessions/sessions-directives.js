@@ -1,38 +1,51 @@
 angular.module('private.trainer.sessions.directives', [
 ])
-.directive('trainerSessionsIndex', function(SessionsModel, Flash){
+.directive('trainerSessionsIndex', function(){
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
-    controller : function(){
-        var ctrl = this;
+    controller : "TrainerSessionsController as trainerSessionsCtrl"
+  };
+})
+.controller("TrainerSessionsController", function TrainerSessionsController(SessionsModel, Flash){
+    var ctrl = this;
         ctrl.search = "";
         ctrl.sessions = [];
+    SessionsModel.getManagedSessions().then(function(response){
+        ctrl.sessions = response.data || [];
+    });
+    ctrl.updateSessions = function(){
         SessionsModel.getManagedSessions().then(function(response){
             ctrl.sessions = response.data || [];
         });
-        ctrl.updateSessions = function(){
-            SessionsModel.getManagedSessions().then(function(response){
-                ctrl.sessions = response.data || [];
-            });
-        };
-        ctrl.editName = function(sessionToSet){
-            SessionsModel.updateNameSession(sessionToSet).then(function(response){
+    };
+    ctrl.editName = function(sessionToSet){
+        SessionsModel.updateNameSession(sessionToSet).then(function(response){
+            response.flash();
+            if(!response.isErroneous()){
+                ctrl.updateSessions();
+            }
+        });
+    };
+    ctrl.editComments = function(sessionToSet){
+        SessionsModel.updateCommentsSession(sessionToSet).then(function(response){
+            response.flash();
+            if(!response.isErroneous()){
+                ctrl.updateSessions();
+            }
+        });
+    };
+    ctrl.archiveSession = function(sessionToArchive){
+        if(sessionToArchive){
+            SessionsModel.archiveSession(sessionToArchive).then(function(response){
                 response.flash();
                 if(!response.isErroneous()){
                     ctrl.updateSessions();
                 }
             });
-        };
-        ctrl.editComments = function(sessionToSet){
-            SessionsModel.updateCommentsSession(sessionToSet).then(function(response){
-                response.flash();
-                if(!response.isErroneous()){
-                    ctrl.updateSessions();
-                }
-            });
-        };
-    }
-  };
+        }else{
+            Flash.danger("No scenario choosed");
+        }
+    };
 })
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
@@ -69,30 +82,21 @@ angular.module('private.trainer.sessions.directives', [
 .directive('trainerSessionsList', function() {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
-    scope: false,
-    require: "^trainerSessionsIndex",
-    link : function(scope, element, attrs, parentCtrl){
-        scope.$watch(function(){
-            return parentCtrl.sessions
-        }, function(newSessions, oldSessions){
-            scope.sessions = newSessions;
-        });
-        scope.$watch(function(){
-            return parentCtrl.search
-        }, function(newSearch, oldSearch){
-            scope.search = newSearch;
-        });
-
+    scope: {
+        sessions : "=",
+        search : "=",
+        archiveSession : "="
     }
   };
 })
-.directive('trainerSession', function() {
+.directive('trainerSession', function(Flash) {
     return {
         templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card.tmpl.html',
         restrict: 'A',
         require: "^trainerSessionsIndex",
         scope: {
-           session: '='
+           session: '=',
+           archiveSession: "="
         },
         link : function(scope, element, attrs, parentCtrl){
             // Private function 
@@ -140,7 +144,7 @@ angular.module('private.trainer.sessions.directives', [
             };
 
             scope.archive = function(){
-                console.log("ARCHIVE, BIM!");
+                scope.archiveSession();
             }
         }
     }

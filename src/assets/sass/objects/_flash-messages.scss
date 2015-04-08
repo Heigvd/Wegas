@@ -22,16 +22,12 @@
     }
   }
 
-  .success {
-    background-color: #4caf50;
-  }
-  .warning {
-    background-color: #ff9800;
-  }
-  .info {
-    background-color: #41D2FA;
-  }
-  .danger {
-    background-color: #e51c23;
+  @each $flash in $buttons-types{
+    $flash-name: nth($flash, 1);
+    $flash-color: nth($flash, 2);
+    
+    .#{$flash-name} {
+      background-color: $flash-color;
+    }
   }
 }
