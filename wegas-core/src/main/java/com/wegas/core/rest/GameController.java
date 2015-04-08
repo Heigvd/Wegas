@@ -172,8 +172,8 @@ public class GameController {
             case LIVE:
                 gameFacade.live(game);   
                 break;
-            case JOINABLE:
-                gameFacade.joinable(game);   
+            case OPENED:
+                gameFacade.open(game);   
                 break;
             case BIN:
                 gameFacade.bin(game);   

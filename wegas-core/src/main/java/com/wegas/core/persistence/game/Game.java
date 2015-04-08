@@ -511,13 +511,13 @@ public class Game extends NamedEntity {
      */
     public enum Status {
         /**
+         *  Gaem, game is playable
+         */
+        OPENED,
+        /**
          * Initial value, game is playable
          */
         LIVE,
-        /**
-         *  Gaem, game is playable
-         */
-        JOINABLE,
         /**
          * Game in the wast bin
          */
