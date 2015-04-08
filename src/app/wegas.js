@@ -1,4 +1,4 @@
-var ServiceURL = "/api/";
+var ServiceURL = "/Wegas/";
 angular.module('Wegas', [
     'flash',
     'ui.router',
@@ -17,7 +17,7 @@ angular.module('Wegas', [
     // Configurate loading bar
     cfpLoadingBarProvider.latencyThreshold = 800;
     cfpLoadingBarProvider.includeSpinner = false;
-
+    
     $stateProvider
         .state('wegas', {
             url: '/',

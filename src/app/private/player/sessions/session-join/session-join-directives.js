@@ -7,7 +7,7 @@ angular.module('private.player.session.join.directives', [])
         },
         controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
     };
-}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, SessionsModel, Flash){
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, SessionsModel){
     /* Assure access to ctrl. */
     var ctrl = this;
 
@@ -34,13 +34,11 @@ angular.module('private.player.session.join.directives', [])
     ctrl.createAndJoinTeam = function(){
         if(!ctrl.newTeam.alreadyUsed){
             SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
-                Flash(responseCreate.level, responseCreate.message);
-                if(responseCreate.data){
-                    var team = responseCreate.data;
-                    SessionsModel.joinTeam(ctrl.sessionToJoin.id, team.id).then(function(responseJoin){
-                        Flash(responseJoin.level, responseJoin.message);
-                        var sessionUpdated = responseJoin.data;
-                        if(sessionUpdated){
+                responseCreate.flash();
+                if(!responseCreate.isErroneous()){
+                    SessionsModel.joinTeam(ctrl.sessionToJoin.id, responseCreate.data.id).then(function(responseJoin){
+                        responseJoin.flash();
+                        if(!responseJoin.isErroneous()){
                             $scope.close();
                         }
                     });
@@ -52,9 +50,8 @@ angular.module('private.player.session.join.directives', [])
     /* Method used to join existing team in the session. */
     ctrl.joinTeam = function(teamId){
         SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
-            Flash(response.level, response.message);
-            if(response.data){
-                var sessionUpdated = response.data;
+            response.flash();
+            if(!response.isErroneous()){
                 $rootScope.$emit('newSession', true);
                 $scope.close();
             }
@@ -63,15 +60,14 @@ angular.module('private.player.session.join.directives', [])
 
     /* Initialize datas */
     SessionsModel.findSessionToJoin($stateParams.token).then(function(response){
-        if(response.data){
-            var session = response.data;
-            if(!session.properties.freeForAll){
-                ctrl.sessionToJoin = session;
+        if(response.isErroneous()){
+            $scope.close();
+        }else{
+            if(!response.data.properties.freeForAll){
+                ctrl.sessionToJoin = response.data;
             }else{
                 $scope.close();
             }
-        }else{
-            $scope.close();
         }
     });
 })
