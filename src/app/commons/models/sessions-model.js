@@ -688,5 +688,10 @@ angular.module('wegas.models.sessions', [])
         });
         return deferred.promise;
     };
+    
+    model.clearCache = function () {
+        managedSessions = null;
+        playedSessions = null;
+    };
 })
 ;
