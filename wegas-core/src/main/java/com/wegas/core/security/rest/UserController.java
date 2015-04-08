@@ -269,6 +269,12 @@ public class UserController {
         }
     }
 
+    @GET
+    @Path("Logout")
+    public void logout(){
+        SecurityUtils.getSubject().logout();
+    }
+
     /**
      *
      * @param authInfo
@@ -285,6 +291,7 @@ public class UserController {
      */
     @POST
     @Path("TeacherGuestLogin")
+    @Deprecated
     public void teacherGuestLogin(AuthenticationInformation authInfo) {
         User user = userFacade.guestLogin();
         try {
