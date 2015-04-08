@@ -117,6 +117,10 @@ angular.module('wegas.models.scenarios', [])
         "templateId": templateId,
         "name": name,
         "properties": {}
+      }, {
+        "headers": {
+          "managed-mode": "true"
+        }
       }).success(function(data) {
         var scenario = applyIcon([data])[0];
         scenarios.push(scenario);
