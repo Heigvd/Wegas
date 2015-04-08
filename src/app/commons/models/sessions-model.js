@@ -3,12 +3,16 @@ angular.module('wegas.models.sessions', [])
 .service('SessionsModel', function ($http, $q, $interval, Auth, Responses) {
     /* Namespace for model accessibility. */
     var model = this,
+
     /* Caches for data */
     managedSessions = null,
-    playedSessions = null;
+    playedSessions = null,
+
     /* Tools to prevent asynchronous error. */
     managedSessionsLoading = false,
     waitManagedSessions = null,
+    playedSessionsLoading = false,
+    waitPlayedSessions = null,
     
     /* Return a session in a sessions cache. */
     findSession = function(sessions, id){
@@ -52,6 +56,22 @@ angular.module('wegas.models.sessions', [])
         }).error(function(data){
             managedSessions = [];
             deferred.resolve(managedSessions);
+        });
+        return deferred.promise;
+    },
+
+    /* Call the REST service for getting managed sessions. */
+    cachePlayedSessions = function (userId) {
+        var deferred = $q.defer();
+        $http.get(ServiceURL + "rest/RegisteredGames/"+ userId).success(function(data){
+            data.forEach(function(session){
+                session = formatPlayers(session);
+            });
+            playedSessions = data;
+            deferred.resolve(playedSessions);
+        }).error(function(data){
+            playedSessions = [];
+            deferred.resolve(playedSessions);
         });
         return deferred.promise;
     },
@@ -107,6 +127,18 @@ angular.module('wegas.models.sessions', [])
         waitManagedSessions = $interval(function() {
             if(!managedSessionsLoading){
                 stopWaiting(waitManagedSessions);
+                deferred.resolve(true)
+            }   
+        }, 500);
+        return deferred.promise;
+    },
+
+    /* Do wait during data loading. */ 
+    waitForPlayedSessions = function(){
+        var deferred = $q.defer();
+        waitPlayedSessions = $interval(function() {
+            if(!playedSessionsLoading){
+                stopWaiting(waitPlayedSessions);
                 deferred.resolve(true)
             }   
         }, 500);
@@ -404,39 +436,40 @@ angular.module('wegas.models.sessions', [])
         return deferred.promise;
     };
 
-    /* Return all played sessions */
-    model.getPlayedSessions = function () {
+    /* Ask for all played sessions. */
+    model.getPlayedSessions = function(){
         var deferred = $q.defer();
         Auth.getAuthenticatedUser().then(function(user){
             if(user != null){
-                if(playedSessions != null){
-                    deferred.resolve(Responses.success("All played sessions find", playedSessions));
-                } else {
-                    playedSessions = [];
-                    $http.get(ServiceURL + "rest/RegisteredGames/"+ user.id).success(function(data){
-                        data.forEach(function(session){
-                            session = formatPlayers(session);
-                        });
-                        playedSessions = data;
-                        deferred.resolve(Responses.success("All played sessions find", playedSessions));
-                    }).error(function(data){
-                        playedSessions = [];
-                        deferred.resolve(Responses.error("No played sessions find", playedSessions));
+                if(playedSessionsLoading){
+                    waitForPlayedSessions().then(function(){
+                        deferred.resolve(Responses.success("Played sessions find", playedSessions));
                     });
+                }else{
+                    if(playedSessions != null){
+                        deferred.resolve(Responses.success("Played sessions find", playedSessions));
+                    }else{
+                        playedSessionsLoading = true;
+                        cachePlayedSessions(user.id).then(function(){
+                            deferred.resolve(Responses.success("Played sessions find", playedSessions));
+                            playedSessionsLoading = false;
+                        });
+                    }
                 }
-            } else {
+            }else{
                 deferred.resolve(Responses.error("You need to be logged", false));
             }
         });
         return deferred.promise;
     };
 
-    /* Get a played session form id, undefined otherwise. */
+     /* Ask for one managed session. */
     model.getPlayedSession = function(id){
-        var deferred = $q.defer();
-        if(playedSessions == null){
-            model.getPlayedSessions().then(function(data){
-                var session = findSession(playedSessions, id);
+        var deferred = $q.defer(),
+            session = null;
+        if(playedSessionsLoading){
+            waitForPlayedSessions().then(function(){
+                session = findSession(playedSessions, id);
                 if(session){
                     deferred.resolve(Responses.success("Session find", session));
                 }else{
@@ -444,11 +477,22 @@ angular.module('wegas.models.sessions', [])
                 }
             });
         }else{
-            var session = findSession(playedSessions, id);
-            if(session){
-                deferred.resolve(Responses.success("Session find", session));
+            if(playedSessions == null) {
+                model.getPlayedSessions().then(function(){
+                    session = findSession(playedSessions, id);
+                    if(session){
+                        deferred.resolve(Responses.success("Session find", session));
+                    }else{
+                        deferred.resolve(Responses.error("No session find", false));
+                    }
+                });
             }else{
-                deferred.resolve(Responses.error("No session find", false));
+                session = findSession(playedSessions, id);
+                if(session){
+                    deferred.resolve(Responses.success("Session find", session));
+                }else{
+                    deferred.resolve(Responses.error("No session find", false));
+                }
             }
         }
         return deferred.promise;
