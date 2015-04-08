@@ -11,9 +11,11 @@ angular.module('wegas.service.auth', [
             if(authenticatedUser != null){
                 deferred.resolve(authenticatedUser);
             }else{
-                $http.get(ServiceURL + "rest/User/Current").success(function(data){
+                $http.get(ServiceURL
+                 + "rest/User/Current").success(function(data){
                     authenticatedUser = {
                         id: data.id,
+                        jpaId: data.accounts[0].id,
                         email: data.accounts[0].email,
                         username: data.accounts[0].username,
                         firstname: data.accounts[0].firstname,

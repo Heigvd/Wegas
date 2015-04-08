@@ -32,7 +32,7 @@
     <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="Manage User" ui-sref=".history({scenarioId: scenario.id})">
       <span class="button__label">Fork</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive scenario" ui-sref=".history({scenarioId: scenario.id})">
+    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive scenario" ng-click="archiveScenario(scenario)">
       <span class="button__label">Archive scenario</span>
     </a>
     <a class="button button--medium button--round button--info-reverse button--label-off button--scenarist" title="Edit scenario" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">

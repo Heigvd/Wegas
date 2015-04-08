@@ -1,0 +1,37 @@
+#flash-messages {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  z-index: 10000;
+
+  li{
+    padding: 5px 15px;
+    display: block;
+    text-align: center;
+    width: 200px;
+
+    margin-left: -100px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: .7em;
+    &.ng-enter {
+      animation: fadeIn 1s;
+    }
+    &.ng-leave {
+      animation: fadeOut 1s;
+    }
+  }
+
+  .success {
+    background-color: #4caf50;
+  }
+  .warning {
+    background-color: #ff9800;
+  }
+  .info {
+    background-color: #41D2FA;
+  }
+  .danger {
+    background-color: #e51c23;
+  }
+}

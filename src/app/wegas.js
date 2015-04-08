@@ -1,10 +1,12 @@
 var ServiceURL = "/Wegas/";
 angular.module('Wegas', [
+    'flash',
     'ui.router',
     'ngAnimate',
     'angular-loading-bar',
     'angularModalService',
     'wegas.service.auth',
+    'wegas.service.responses',
     'wegas.directives.illustrations',
     'wegas.behaviours.modals',
     'wegas.behaviours.tools',
@@ -15,7 +17,7 @@ angular.module('Wegas', [
     // Configurate loading bar
     cfpLoadingBarProvider.latencyThreshold = 800;
     cfpLoadingBarProvider.includeSpinner = false;
-
+    
     $stateProvider
         .state('wegas', {
             url: '/',

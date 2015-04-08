@@ -15,7 +15,9 @@ $buttons-icon : (
     (trainer, $fa-var-tachometer),
     (scenarist, $fa-var-magic),
     (add, $fa-var-plus-circle),
-    (download, $fa-var-download)
+    (download, $fa-var-download),
+        (eye, $fa-var-eye)
+
 );
 
 %button--with-icon{

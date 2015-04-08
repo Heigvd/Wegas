@@ -247,6 +247,14 @@
             font-weight:500;
             font-size:14px;
         }
+        .card__actions{
+            margin:0px 4px;
+            .button{
+                display:block;
+                float:left;
+                margin:8px 4px;
+            }
+        }
     }
 
 
