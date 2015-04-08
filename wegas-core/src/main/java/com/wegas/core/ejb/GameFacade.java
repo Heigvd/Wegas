@@ -502,8 +502,8 @@ public class GameFacade extends BaseFacade<Game> {
      *
      * @param entity Game
      */
-    public void joinable(Game entity) {
-        entity.setStatus(Game.Status.JOINABLE);
+    public void open(Game entity) {
+        entity.setStatus(Game.Status.OPENED);
     }
     
     /**
