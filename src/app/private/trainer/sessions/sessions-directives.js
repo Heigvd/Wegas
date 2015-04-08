@@ -1,34 +1,40 @@
 angular.module('private.trainer.sessions.directives', [
 ])
-.directive('trainerSessionsIndex', function(SessionsModel){
+.directive('trainerSessionsIndex', function(SessionsModel, Flash){
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
     controller : function(){
         var ctrl = this;
         ctrl.search = "";
         ctrl.sessions = [];
-        SessionsModel.getManagedSessions().then(function(sessions){
-            ctrl.sessions = sessions;
+        SessionsModel.getManagedSessions().then(function(response){
+            ctrl.sessions = response.data || [];
         });
         ctrl.updateSessions = function(){
-            SessionsModel.getManagedSessions().then(function(sessions){
-                ctrl.sessions = sessions;
+            SessionsModel.getManagedSessions().then(function(response){
+                ctrl.sessions = response.data || [];
             });
         };
         ctrl.editName = function(sessionToSet){
-            SessionsModel.updateNameSession(sessionToSet).then(function(data){
-                ctrl.updateSessions();
+            SessionsModel.updateNameSession(sessionToSet).then(function(response){
+                response.flash();
+                if(!response.isErroneous()){
+                    ctrl.updateSessions();
+                }
             });
         };
         ctrl.editComments = function(sessionToSet){
-            SessionsModel.updateCommentsSession(sessionToSet).then(function(data){
-                ctrl.updateSessions();
+            SessionsModel.updateCommentsSession(sessionToSet).then(function(response){
+                response.flash();
+                if(!response.isErroneous()){
+                    ctrl.updateSessions();
+                }
             });
         };
     }
   };
 })
-.directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel) {
+.directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
     templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
     scope: false, 
@@ -43,15 +49,18 @@ angular.module('private.trainer.sessions.directives', [
         };
         scope.addSession = function(){
             if(scope.newSession.scenarioId != 0){
-                SessionsModel.createManagedSession(scope.newSession.name, scope.newSession.scenarioId).then(function(data){
-                    scope.newSession = {
-                        name : "",
-                        scenarioId : 0 
-                    };
-                    parentCtrl.updateSessions();
+                SessionsModel.createManagedSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response){
+                    response.flash();
+                    if(!response.isErroneous()){
+                        scope.newSession = {
+                            name : "",
+                            scenarioId : 0 
+                        };
+                        parentCtrl.updateSessions();
+                    }
                 });   
             }else{
-                console.log("Todo - Send error callback - Choose scenarios");
+                Flash.warning("No scenario choosed");
             }         
         };
     }

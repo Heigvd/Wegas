@@ -1,16 +1,24 @@
 angular
 .module('flash', [])
-.factory('flash', ['$rootScope', '$timeout', function($rootScope, $timeout) {
-
+.factory('Flash', ['$rootScope', '$timeout', function($rootScope, $timeout) {
   var messages = [];
 
-  var emit = function() {
+  var emit = function(){
     $rootScope.$emit('flash:message', messages);
+  }
+
+  var addMessages = function(level, text) {
+    messages = asArrayOfMessages(level, text)
+    emit();
     $timeout(function() {
-      messages = [];
-      emit()
+      removeMessages();
     }, 2500);
   };
+
+  var removeMessages = function(){
+      messages = [];
+      emit();
+  }
 
   $rootScope.$on('$locationChangeSuccess', emit);
 
@@ -30,8 +38,7 @@ angular
     };
 
     var flash = function(level, text) {
-      messages = asArrayOfMessages(level, text)
-      emit();
+      addMessages(level, text);
     };
 
     ['error', 'warning', 'info', 'success'].forEach(function (level) {

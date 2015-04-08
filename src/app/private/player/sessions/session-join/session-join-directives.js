@@ -33,10 +33,12 @@ angular.module('private.player.session.join.directives', [])
     /* Method used to create new team and join this new team in the session. */
     ctrl.createAndJoinTeam = function(){
         if(!ctrl.newTeam.alreadyUsed){
-            SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(team){
-                if(team){
-                    SessionsModel.joinTeam(ctrl.sessionToJoin.id, team.id).then(function(sessionUpdated){
-                        if(sessionUpdated){
+            SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
+                responseCreate.flash();
+                if(!responseCreate.isErroneous()){
+                    SessionsModel.joinTeam(ctrl.sessionToJoin.id, responseCreate.data.id).then(function(responseJoin){
+                        responseJoin.flash();
+                        if(!responseJoin.isErroneous()){
                             $scope.close();
                         }
                     });
@@ -47,8 +49,9 @@ angular.module('private.player.session.join.directives', [])
 
     /* Method used to join existing team in the session. */
     ctrl.joinTeam = function(teamId){
-        SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(sessionUpdated){
-            if(sessionUpdated){
+        SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
+            response.flash();
+            if(!response.isErroneous()){
                 $rootScope.$emit('newSession', true);
                 $scope.close();
             }
@@ -56,15 +59,15 @@ angular.module('private.player.session.join.directives', [])
     };
 
     /* Initialize datas */
-    SessionsModel.findSessionToJoin($stateParams.token).then(function(session){
-        if(session){
-            if(!session.properties.freeForAll){
-                ctrl.sessionToJoin = session;
+    SessionsModel.findSessionToJoin($stateParams.token).then(function(response){
+        if(response.isErroneous()){
+            $scope.close();
+        }else{
+            if(!response.data.properties.freeForAll){
+                ctrl.sessionToJoin = response.data;
             }else{
                 $scope.close();
             }
-        }else{
-            $scope.close();
         }
     });
 })
