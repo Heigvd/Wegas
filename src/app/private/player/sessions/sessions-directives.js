@@ -12,8 +12,7 @@ angular.module('private.player.sessions.directives', [])
     updateSessions = function(){
         SessionsModel.getPlayedSessions().then(function(response){
             if(!response.isErroneous()){
-                var sessions = response.data;
-                ctrl.sessions = sessions;
+                ctrl.sessions = response.data;
             }else{
                 ctrl.sessions = [];
             }
@@ -29,16 +28,15 @@ angular.module('private.player.sessions.directives', [])
             if(findResponse.isErroneous()){
                 findResponse.flash();
             }else{
-                var session = findResponse.data;
-                if(session.properties.freeForAll){
+                if(findResponse.data.properties.freeForAll){
                     SessionsModel.joinIndividualSession(token).then(function(joinResponse){
-                        if(joinResponse.data){
+                        joinResponse.flash();
+                        if(!joinResponse.isErroneous()){
                             updateSessions();
                         }
-                        Flash(joinResponse.level, joinResponse.message);
                     });
                 }else{
-                    $state.go('wegas.private.player.sessions.join', {token: session.token});                        
+                    $state.go('wegas.private.player.sessions.join', {token: findResponse.data.token});                        
                 }
             }
         });
