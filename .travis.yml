@@ -4,7 +4,7 @@ jdk:
 services: postgresql
 branches:
   only:
-  - master
+  - WegasApp2
 before_script:
 - psql -c 'create database wegas_test;' -U postgres
 - psql -c "create user \"user\" with superuser password '1234';" -U postgres
