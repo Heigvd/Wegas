@@ -2,18 +2,46 @@ angular
 .module('private.profile', [
     'ngSanitize',
     'private.profile.directives',
+    'private.scenarist',
+    'private.trainer',
+    'private.player',
     'wegas.behaviours.modals'
-])
+    ])
 .config(function ($stateProvider) {
     $stateProvider
-        .state('wegas.private.profile', {
-            url: 'user-profile',
-            views: {
-                'modal@wegas.private': {
-                    controller: 'ProfileCtrl'
-                }
+    .state('wegas.private.profile', {
+        url: 'user-profile',
+        views: {
+            'modal@wegas.private': {
+                controller: 'ProfileCtrl'
             }
-        });
+        }
+    })
+    .state('wegas.private.profile.trainer', {
+        views: {
+            'workspace@wegas.private': {
+                controller: 'TrainerCtrl as trainerCtrl',
+                templateUrl: 'app/private/trainer/sessions/sessions.tmpl.html'
+            }
+        }
+    })
+    .state('wegas.private.profile.player', {
+        views: {
+            'workspace@wegas.private': {
+                controller: 'PlayerCtrl as playerCtrl',
+                templateUrl: 'app/private/player/sessions/sessions.tmpl.html'
+            }
+        }
+    })
+    .state('wegas.private.profile.scenarist', {
+        views: {
+            'workspace@wegas.private': {
+                controller: 'ScenaristCtrl as scenaristCtrl',
+                templateUrl: 'app/private/scenarist/scenarios/scenarios.tmpl.html'
+            }
+        }
+    });
+
 })
 .controller('ProfileCtrl', function ProfileCtrl($animate, $state, ModalService) {
 
@@ -22,7 +50,7 @@ angular
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),
-            shadow = $(".shadow");
+        shadow = $(".shadow");
 
         $('body').addClass('modal-displayed');
         $animate.addClass(box, "modal--open");
