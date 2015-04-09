@@ -36,7 +36,6 @@ angular.module('private.trainer.sessions.directives', [
     };
     ctrl.archiveSession = function(sessionToArchive){
         if(sessionToArchive){
-            console.log("Ho ho ho");
             SessionsModel.archiveSession(sessionToArchive).then(function(response){
                 response.flash();
                 if(!response.isErroneous()){
