@@ -91,7 +91,7 @@ angular.module('wegas.models.scenarios', [])
       return deferred.promise;
     }
   })
-  .service('ScenariosModel', function($http, $q, $interval, Auth, Responses) {
+  .service('ScenariosModel', function($http, $q, $interval, Auth, PermissionModel, Responses) {
     var model = this;
     model.scenarios = null;
 
@@ -258,7 +258,12 @@ angular.module('wegas.models.scenarios', [])
           }
         }).error(function(data) {
           model.scenarios = [];
-          deferred.resolve([]);
+          if (data.events !== undefined &&  data.events.length == 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
+
 
         });
       }
@@ -270,7 +275,7 @@ angular.module('wegas.models.scenarios', [])
       if (model.scenarios.length > 0) {
         var scenario = findScenario(scenarioId);
         if (scenario !== null) {
-          deferred.resolve(scenario);
+          deferred.resolve(Responses.success("Scenario loaded", scenario));
           return deferred.promise;
         }
       }
