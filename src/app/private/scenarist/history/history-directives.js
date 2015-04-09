@@ -23,9 +23,9 @@ angular
                 });
             }
             ctrl.createFork = function (name) {
-                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
-                    if (result !== false) {
-                        alert('Scenario has been duplicated with name: "'+result.name+'"');
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (response) {
+                    response.flash();
+                    if (!response.isErroneous()) {
                         $rootScope.$emit('scenarios', true);
                     }
                 });
@@ -40,7 +40,9 @@ angular
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
-        scope: true,
+        scope: {
+            scenario: '='
+        },
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
 
@@ -51,9 +53,11 @@ angular
             });
             $parent = parentCtrl;
             $scope.addVersion = function() {
-                if($scope.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory($scope.scenario.id).then(function (result) {
-                        if (result === true) {
+                if($scope.$parent.scenario.id !== undefined) {
+                    ScenariosModel.addVersionHistory($scope.$parent.scenario.id).then(function (response) {
+                        if (response.isErroneous()) {
+                            response.flash();
+                        } else {
                             $parent.updateVersions();
                         }
                     });
@@ -132,8 +136,10 @@ angular
 
             $scope.deleteFork = function(name) {
                 var forkName = name;
-                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
-                    if (result === true) {
+                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
                         var index = _.findIndex($scope.versions, function(v) {
                             return v.name === name;
                         });
