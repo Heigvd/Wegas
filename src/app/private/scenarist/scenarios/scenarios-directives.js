@@ -46,7 +46,7 @@ angular.module('private.scenarist.scenarios.directives', [
         };
         ctrl.archiveScenario = function (scenario) {
             if (confirm('Etes-vous sur ?')) {
-                ScenariosModel.archiveScenario(scenario).then(function (result) {
+                ScenariosModel.archiveScenario(scenario).then(function (response) {
                     if (response.isErroneous()) {
                         response.flash();
                     } else {
