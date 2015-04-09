@@ -4,7 +4,7 @@ angular.module('private.scenarist.scenarios.directives', [
 .directive('scenaristScenariosIndex', function(ScenariosModel){
   return {
     templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-index.tmpl.html',
-    controller : function($scope, $rootScope) {
+    controller : function($scope, $rootScope, Flash) {
         var ctrl = this;
         $scope.scenarios = [];
 
@@ -55,6 +55,24 @@ angular.module('private.scenarist.scenarios.directives', [
                 });
             }
         };
+        ctrl.createScenario = function (name, basedOn) {
+            if (name === "") {
+                Flash('danger', 'Le nom ne peut pas être vide');
+                return;
+            } else if (basedOn === undefined) {
+                Flash('danger', 'Il faut choisir un scenario de base');
+                return
+            }
+
+            ScenariosModel.createScenario(name, basedOn).then(function(response) {
+                if (!response.isErroneous()) {
+                    $scope.scenarios.push(response.data);
+                    ctrl.updateScenarios();
+                } else {
+                    response.flash();
+                }
+            });
+        }
     }
 };
 })
@@ -69,25 +87,13 @@ angular.module('private.scenarist.scenarios.directives', [
             name : "",
             basedOn: parentCtrl.scenarios
         };
-        scope.$watch("scenarios" , function(n,o) {
+        scope.$watch(function() {
+                return scope.scenarios;
+            }  , function(n,o) {
             scope.newScenario.basedOn = n;
         });
         scope.createScenario = function() {
-            if (scope.newScenario.name === "") {
-                alert('Le nom ne peut pas être vide');
-                return;
-            } else if (scope.newScenario.basedOn.id === undefined) {
-                alert('Il faut choisir un scenario de base');
-                return
-            }
-
-            ScenariosModel.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id).then(function(response) {
-                if (!response.isErroneous()) {
-                    parentCtrl.scenarios.push(response.data);
-                } else {
-                    response.flash();
-                }
-            });
+            parentCtrl.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id);
         };
     }
 };
@@ -99,7 +105,6 @@ angular.module('private.scenarist.scenarios.directives', [
     require: "^scenaristScenariosIndex",
     link : function($scope, element, attrs, parentCtrl) {
         $scope.visibleScenarios = [];
-        $scope.scenarios = [];
         $scope.scenariosLoaded = false;
         $scope.busy = false;
         $scope.search = '';
@@ -127,13 +132,12 @@ angular.module('private.scenarist.scenarios.directives', [
             $scope.busy = false;
         };
 
-        $scope.$watch("scenarios", function(newScenario, oldScenario){
+        $scope.$watch(function() {
+                return $scope.scenarios;
+            }, function(newScenario, oldScenario){
             if (newScenario !== undefined && newScenario.length > 0) {
                 $scope.scenariosLoaded = true;
                 $scope.visibleScenarios = [];
-                $scope.scenarios = newScenario;
-
-
                 $scope.filter();
             }
         });
