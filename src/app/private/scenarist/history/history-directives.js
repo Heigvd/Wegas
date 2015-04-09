@@ -14,24 +14,33 @@ angular
             $scope.scenarioId = $stateParams.scenarioId;
 
             ctrl.updateVersions = function () {
-                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(results) {
-                    if (results === false) {
-                        window.alert('Whooops.');
+                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
                     } else {
-                        ctrl.versions = results;
+                        ctrl.versions = response.data;
                     }
                 });
             }
             ctrl.createFork = function (name) {
-                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (result) {
-                    if (result !== false) {
-                        alert('Scenario has been duplicated with name: "'+result.name+'"');
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (response) {
+                    response.flash();
+                    if (!response.isErroneous()) {
                         $rootScope.$emit('scenarios', true);
                     }
                 });
             }
-            ScenariosModel.getScenario($scope.scenarioId).then(function (scenario) {
-                $scope.scenario = scenario;
+            ctrl.addVersion = function () {
+                ScenariosModel.addVersionHistory($scope.scenarioId).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        ctrl.updateVersions();
+                    }
+                });
+            }
+            ScenariosModel.getScenario($scope.scenarioId).then(function (response) {
+                $scope.scenario = response.data;
                 ctrl.updateVersions();
             });
         }
@@ -40,24 +49,13 @@ angular
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
-        scope: true,
+        scope: false,
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
 
-            $scope.$watch(function() {
-                return $scope.$parent.scenario
-            } , function(n,o) {
-                $scope.scenario = n;
-            });
             $parent = parentCtrl;
             $scope.addVersion = function() {
-                if($scope.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory($scope.scenario.id).then(function (result) {
-                        if (result === true) {
-                            $parent.updateVersions();
-                        }
-                    });
-                }
+                parentCtrl.addVersion();
             };
         }
     };
@@ -132,8 +130,10 @@ angular
 
             $scope.deleteFork = function(name) {
                 var forkName = name;
-                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (result) {
-                    if (result === true) {
+                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
                         var index = _.findIndex($scope.versions, function(v) {
                             return v.name === name;
                         });
