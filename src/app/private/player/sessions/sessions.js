@@ -1,6 +1,6 @@
 angular.module('private.player.sessions', [
     'private.player.session.join',
-    'private.player.sessions.users',
+    'private.player.session.team',
     'private.player.sessions.directives'
 ])
 .config(function ($stateProvider) {

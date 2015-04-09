@@ -8,6 +8,7 @@ angular.module('Wegas', [
     'wegas.service.responses',
     'wegas.service.auth',
     'wegas.directives.illustrations',
+    'wegas.behaviours.confirm',
     'wegas.behaviours.modals',
     'wegas.behaviours.tools',
     'public',

@@ -7,10 +7,10 @@
         <p class="card__description__scenario">Based on <em>{{ session.gameModelName }}</em></p>
     </div>
     <div class="card__actions">
-        <a class="button button--medium button--round button--default-reverse button--label-off button--users" title="Manage User">
-          <span class="button__label">Manage User</span>
+        <a ng-if="!session.properties.freeForAll" class="button button--medium button--round button--default-reverse button--label-off button--team" title="View team" ui-sref="wegas.private.player.sessions.team({id: session.id})">
+          <span class="button__label">View team</span>
         </a> 
-        <a class="button button--medium button--round button--default-reverse button--label-off button--trash" ng-click="leave(session.id)" title="Leave Session">
+        <a class="button button--medium button--round button--default-reverse button--label-off button--trash" title="Leave Session" confirmed-click="leave(session.id)" ng-confirm-click="Are you sure you want to leave the session ?">
           <span class="button__label">Leave session</span>
         </a>  
         <a class="button button--medium button--round button--info button--label-off button--play" title="Play session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
