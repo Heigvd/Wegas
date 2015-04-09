@@ -10,11 +10,11 @@ angular.module('private.trainer.sessions.directives', [
     var ctrl = this;
         ctrl.search = "";
         ctrl.sessions = [];
-    SessionsModel.getManagedSessions().then(function(response){
+    SessionsModel.getSessions("managed").then(function(response){
         ctrl.sessions = response.data || [];
     });
     ctrl.updateSessions = function(){
-        SessionsModel.getManagedSessions().then(function(response){
+        SessionsModel.getSessions("managed").then(function(response){
             ctrl.sessions = response.data || [];
         });
     };
@@ -62,7 +62,7 @@ angular.module('private.trainer.sessions.directives', [
         };
         scope.addSession = function(){
             if(scope.newSession.scenarioId != 0){
-                SessionsModel.createManagedSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response){
+                SessionsModel.createSession(scope.newSession.name, scope.newSession.scenarioId).then(function(response){
                     response.flash();
                     if(!response.isErroneous()){
                         scope.newSession = {
