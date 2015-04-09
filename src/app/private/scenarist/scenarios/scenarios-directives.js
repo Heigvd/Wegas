@@ -9,10 +9,14 @@ angular.module('private.scenarist.scenarios.directives', [
         $scope.scenarios = [];
 
         ctrl.updateScenarios = function() {
-            ScenariosModel.getScenarios().then(function(scenarios) {
-                $scope.scenarios = _.sortBy(scenarios, function(s) {
-                    return s.name.toLowerCase();
-                });
+            ScenariosModel.getScenarios().then(function(response) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
+                    $scope.scenarios = _.sortBy(response.data, function(s) {
+                        return s.name.toLowerCase();
+                    });
+                }
             });
         };
         $rootScope.$on('scenarios', function(e, newScenarios){
