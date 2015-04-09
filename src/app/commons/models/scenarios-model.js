@@ -51,7 +51,7 @@ angular.module('wegas.models.scenarios', [])
                 deferred.resolve(Responses.danger("Whoops...", false));
               }
             }).error(function(data) {
-              if (data.events !== undefined &&  data.events.length == 0) {
+              if (data.events !== undefined &&  data.events.length > 0) {
                 deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
               } else {
                 deferred.resolve(Responses.danger("Whoops...", false));
@@ -82,7 +82,7 @@ angular.module('wegas.models.scenarios', [])
             deferred.resolve(Responses.danger("Whoops...", false));
           }
         }).error(function(data) {
-          if (data.events !== undefined &&  data.events.length == 0) {
+          if (data.events !== undefined &&  data.events.length > 0) {
             deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           } else {
             deferred.resolve(Responses.danger("Whoops...", false));
@@ -152,7 +152,7 @@ angular.module('wegas.models.scenarios', [])
         }
 
       }).error(function(data) {
-        if (data.events !== undefined &&  data.events.length == 0) {
+        if (data.events !== undefined &&  data.events.length > 0) {
           deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
         } else {
           deferred.resolve(Responses.danger("Whoops...", false));
@@ -184,7 +184,7 @@ angular.module('wegas.models.scenarios', [])
           deferred.resolve(Responses.danger("Whoops...", false));
         }
       }).error(function(data) {
-        if (data.events !== undefined &&  data.events.length == 0) {
+        if (data.events !== undefined &&  data.events.length > 0) {
           deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
         } else {
           deferred.resolve(Responses.danger("Whoops...", false));
@@ -216,7 +216,7 @@ angular.module('wegas.models.scenarios', [])
           deferred.resolve(Responses.danger("Whoops...", false));
         }
       }).error(function(data) {
-        if (data.events !== undefined &&  data.events.length == 0) {
+        if (data.events !== undefined &&  data.events.length > 0) {
           deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
         } else {
           deferred.resolve(Responses.danger("Whoops...", false));
@@ -258,7 +258,7 @@ angular.module('wegas.models.scenarios', [])
           }
         }).error(function(data) {
           model.scenarios = [];
-          if (data.events !== undefined &&  data.events.length == 0) {
+          if (data.events !== undefined &&  data.events.length > 0) {
             deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           } else {
             deferred.resolve(Responses.danger("Whoops...", false));
@@ -296,7 +296,7 @@ angular.module('wegas.models.scenarios', [])
             deferred.resolve(Responses.danger("Whoops...", false));
           }
         }).error(function(data) {
-          if (data.events !== undefined &&  data.events.length == 0) {
+          if (data.events !== undefined &&  data.events.length > 0) {
             deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           } else {
             deferred.resolve(Responses.danger("Whoops...", false));
@@ -359,7 +359,7 @@ angular.module('wegas.models.scenarios', [])
             deferred.resolve(Responses.danger("Whoops...", false));
           }
         }).error(function(data) {
-          if (data.events !== undefined &&  data.events.length == 0) {
+          if (data.events !== undefined &&  data.events.length > 0) {
             deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           } else {
             deferred.resolve(Responses.danger("Whoops...", false));
@@ -389,7 +389,7 @@ angular.module('wegas.models.scenarios', [])
             deferred.resolve(Responses.danger("Whoops...", false));
           };
         }).error(function(data) {
-          if (data.events !== undefined &&  data.events.length == 0) {
+          if (data.events !== undefined &&  data.events.length > 0) {
             deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           } else {
             deferred.resolve(Responses.danger("Whoops...", false));
@@ -418,7 +418,7 @@ angular.module('wegas.models.scenarios', [])
           // };
         }).error(function(data) {
           // TODO: Managed mode seems not implemented...
-          // if (data.events !== undefined &&  data.events.length == 0) {
+          // if (data.events !== undefined &&  data.events.length > 0) {
           //   deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           // } else {
             deferred.resolve(Responses.danger("Whoops...", false));
@@ -445,7 +445,7 @@ angular.module('wegas.models.scenarios', [])
             deferred.resolve(Responses.danger("Whoops...", false));
           };
         }).error(function(data) {
-          if (data.events !== undefined &&  data.events.length == 0) {
+          if (data.events !== undefined &&  data.events.length > 0) {
             deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
           } else {
             deferred.resolve(Responses.danger("Whoops...", false));
