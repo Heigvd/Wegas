@@ -8,12 +8,12 @@
     padding: 5px 15px;
     display: block;
     text-align: center;
-    width: 200px;
-
-    margin-left: -100px;
+    width: 500px;
+    color: white;
+    margin-left: -250px;
     margin-bottom: 5px;
     border-radius: 5px;
-    font-size: .7em;
+    font-size: 1.7em;
     &.ng-enter {
       animation: fadeIn 1s;
     }

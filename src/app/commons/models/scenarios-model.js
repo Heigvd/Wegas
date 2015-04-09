@@ -1,6 +1,6 @@
 'use strict';
 angular.module('wegas.models.scenarios', [])
-  .service('PermissionModel', function($http, $q) {
+  .service('PermissionModel', function($http, $q, $interval, Auth, Responses) {
     var model = this;
 
     model.getPermissionsFor = function(scenarioId) {
@@ -11,9 +11,11 @@ angular.module('wegas.models.scenarios', [])
 
       var deferred = $q.defer();
       // Removing all permission
-      this.deletePermissions(scenarioId, userId).then(function(result) {
+      this.deletePermissions(scenarioId, userId).then(function(response) {
         // Remove works ?
-        if (result === true) {
+        if (response.isErroneous()) {
+          deferred.resolve(response);
+        } else {
           // Calculating new permission as wegas see them
           var permissions = "";
           if (canEdit) {
@@ -27,7 +29,7 @@ angular.module('wegas.models.scenarios', [])
               permissions = "Duplicate";
             } else {
               // No permissions means ok.
-              deferred.resolve(true);
+              deferred.resolve(Responses.success("Permissions updated.", true));
             }
           }
 
@@ -41,14 +43,20 @@ angular.module('wegas.models.scenarios', [])
               }
             })
             .success(function(data) {
-
-              deferred.resolve(true);
+              if (data.events !== undefined && data.events.length == 0) {
+                deferred.resolve(Responses.success("Permissions updated.", true));
+              } else if (data.events !== undefined) {
+                deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+              } else {
+                deferred.resolve(Responses.danger("Whoops...", false));
+              }
             }).error(function(data) {
-
-              deferred.resolve(data);
+              if (data.events !== undefined &&  data.events.length > 0) {
+                deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+              } else {
+                deferred.resolve(Responses.danger("Whoops...", false));
+              }
             });
-        } else {
-          deferred.resolve(result);
         }
       });
       return deferred.promise;
@@ -66,14 +74,24 @@ angular.module('wegas.models.scenarios', [])
           }
         })
         .success(function(data) {
-          deferred.resolve(true);
+          if (data.events !== undefined && data.events.length == 0) {
+            deferred.resolve(Responses.success("Permissions deleted.", true));
+          } else if (data.events !== undefined) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
-          deferred.resolve(data);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
       return deferred.promise;
     }
   })
-  .service('ScenariosModel', function($http, $q, PermissionModel) {
+  .service('ScenariosModel', function($http, $q, $interval, Auth, PermissionModel, Responses) {
     var model = this;
     model.scenarios = null;
 
@@ -112,17 +130,33 @@ angular.module('wegas.models.scenarios', [])
     model.createScenario = function(name, templateId) {
       var deferred = $q.defer();
 
-      $http.post(ServiceURL + "rest/Public/GameModel/" + templateId, {
+      var url = "rest/Public/GameModel/" + templateId;
+      $http.post(ServiceURL + url, {
         "@class": "GameModel",
-        "templateId": templateId,
         "name": name,
         "properties": {}
+      }, {
+        "headers": {
+          "managed-mode": "true"
+        }
       }).success(function(data) {
-        var scenario = applyIcon([data])[0];
-        model.scenarios.push(scenario);
-        deferred.resolve(scenario);
+
+        if (data.events !== undefined && data.events.length == 0) {
+          var scenario = applyIcon(data.entities)[0];
+          model.scenarios.push(scenario);
+          deferred.resolve(Responses.success("Scenario created", scenario));
+        } else if (data.events !== undefined){
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
+
       }).error(function(data) {
-        deferred.resolve(data);
+        if (data.events !== undefined &&  data.events.length > 0) {
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       });
       return deferred.promise;
     }
@@ -130,15 +164,31 @@ angular.module('wegas.models.scenarios', [])
     model.updateScenario = function(scenario) {
       var deferred = $q.defer();
 
-      $http.post(ServiceURL + "rest/Public/GameModel/" + scenario.id, {
+      var url = "rest/Public/GameModel/" + scenario.id + "?view=EditorExtended";
+      $http.put(ServiceURL + url, {
         "@class": "GameModel",
-        "id": scenario.id,
         "name": scenario.name,
         "comments": scenario.comments
+      }, {
+        "headers": {
+          "managed-mode": "true"
+        }
       }).success(function(data) {
-        deferred.resolve(applyIcon([data])[0]);
+
+        if (data.events !== undefined && data.events.length == 0) {
+          var scenario = applyIcon(data.entities)[0];
+          deferred.resolve(Responses.success("Scenario updated", scenario));
+        } else if (data.events !== undefined){
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       }).error(function(data) {
-        deferred.resolve(data);
+        if (data.events !== undefined &&  data.events.length > 0) {
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       });
 
       return deferred.promise;
@@ -148,20 +198,29 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var url = "rest/GameModel/" + scenario.id;
       $http.delete(ServiceURL + url, {
-          "headers": {
-            "managed-mode": "true"
-          }
-        }).success(function(data) {
-
-        // Remove scenario from scenarios
-        var index = model.scenarios.indexOf(scenario);
-        if (index > -1) {
-          model.scenarios.splice(index, 1);
+        "headers": {
+          "managed-mode": "true"
         }
+      }).success(function(data) {
 
-        deferred.resolve(true);
+        if (data.events !== undefined && data.events.length == 0) {
+          // Remove scenario from scenarios
+          var index = model.scenarios.indexOf(scenario);
+          if (index > -1) {
+            model.scenarios.splice(index, 1);
+          }
+          deferred.resolve(Responses.success("Scenario archived", scenario));
+        } else if (data.events !== undefined){
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       }).error(function(data) {
-        deferred.resolve(false);
+        if (data.events !== undefined &&  data.events.length > 0) {
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       });
 
       return deferred.promise;
@@ -179,17 +238,32 @@ angular.module('wegas.models.scenarios', [])
 
       var deferred = $q.defer();
       if (model.scenarios !== null) {
-
-        deferred.resolve(model.scenarios);
+        deferred.resolve(Responses.success("Scenarios loaded", model.scenarios));
       } else {
         model.scenarios = [];
-        $http.get(ServiceURL + "rest/GameModel").success(function(data) {
-
-          model.scenarios = applyIcon(data);
-          deferred.resolve(model.scenarios);
+        var url = "rest/GameModel"
+        $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
+        .success(function(data) {
+          if (data.events !== undefined && data.events.length == 0) {
+            model.scenarios = applyIcon(data.entities);
+            deferred.resolve(Responses.success("Scenarios loaded", model.scenarios));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
           model.scenarios = [];
-          deferred.resolve([]);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
+
 
         });
       }
@@ -201,18 +275,32 @@ angular.module('wegas.models.scenarios', [])
       if (model.scenarios.length > 0) {
         var scenario = findScenario(scenarioId);
         if (scenario !== null) {
-          deferred.resolve(scenario);
+          deferred.resolve(Responses.success("Scenario loaded", scenario));
           return deferred.promise;
         }
       }
 
       var url = "rest/Public/GameModel/" + scenarioId + "?view=EditorExtended";
-        $http.get(ServiceURL + url).success(function(data) {
-          var scenario = applyIcon([data]);
-          model.scenarios.push(scenario);
-          deferred.resolve(scenario);
+        $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        }).success(function(data) {
+          if (data.events !== undefined && data.events.length == 0) {
+            var scenario = applyIcon(data.entities)[0];
+            model.scenarios.push(scenario);
+            deferred.resolve(Responses.success("Scenario loaded", scenario));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
@@ -254,14 +342,28 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var scenario = findScenario(scenarioId);
       if (scenario === null) {
-        deferred.resolve({});
+        deferred.resolve(Responses.danger("Whoops...", false));
       } else {
         var url = "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId
-        $http.get(ServiceURL + url).success(function(data) {
-          var permissions = mapPermissions(data);
-          deferred.resolve(permissions);
+        $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        }).success(function(data) {
+          if (data.events !== undefined && data.events.length == 0) {
+            var permissions = mapPermissions(data.entities);
+            deferred.resolve(Responses.success("Permissions loaded", permissions));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
-          deferred.resolve([]);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
       }
       return deferred.promise;
@@ -278,9 +380,20 @@ angular.module('wegas.models.scenarios', [])
           }
         })
         .success(function(data) {
-          deferred.resolve(data.entities);
+          if (data.events !== undefined && data.events.length == 0) {
+            var versions = data.entities;
+            deferred.resolve(Responses.success("Versions loaded", versions));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          };
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
@@ -289,11 +402,27 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
 
       var url = "rest/Public/GameModel/" + scenarioId + "/CreateVersion";
-      $http.post(ServiceURL + url)
+      $http.post(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
         .success(function(data) {
-          deferred.resolve(true);
+          // TODO: Managed mode seems not implemented...
+          // if (data.events !== undefined && data.events.length == 0) {
+            deferred.resolve(Responses.success("Version created", true));
+          // } else if (data.events !== undefined){
+          //   deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          // } else {
+          //   deferred.resolve(Responses.danger("Whoops...", false));
+          // };
         }).error(function(data) {
-          deferred.resolve(false);
+          // TODO: Managed mode seems not implemented...
+          // if (data.events !== undefined &&  data.events.length > 0) {
+          //   deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          // } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          // }
         });
 
       return deferred.promise;
@@ -302,11 +431,25 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
 
-      $http.delete(ServiceURL + url)
+      $http.delete(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
         .success(function(data) {
-          deferred.resolve(true);
+          if (data.events !== undefined && data.events.length == 0) {
+            deferred.resolve(Responses.success("Version deleted", true));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          };
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
@@ -317,13 +460,27 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
 
-      $http.get(ServiceURL + url)
+      $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
         .success(function(data) {
-          var newScenario = data;
-          model.scenarios.push(newScenario);
-          deferred.resolve(newScenario);
+          if (data.events !== undefined && data.events.length == 0) {
+            var newScenario = data.entities[0];
+            model.scenarios.push(newScenario);
+            deferred.resolve(Responses.success('Scenario has been duplicated with name: "'+newScenario.name+'"', newScenario));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          };
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
