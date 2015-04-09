@@ -183,17 +183,27 @@ angular.module('wegas.models.scenarios', [])
           "headers": {
             "managed-mode": "true"
           }
-        }).success(function(data) {
-
-        // Remove scenario from scenarios
-        var index = model.scenarios.indexOf(scenario);
-        if (index > -1) {
-          model.scenarios.splice(index, 1);
         }
+      }).success(function(data) {
 
-        deferred.resolve(true);
+        if (data.events !== undefined && data.events.length == 0) {
+          // Remove scenario from scenarios
+          var index = model.scenarios.indexOf(scenario);
+          if (index > -1) {
+            model.scenarios.splice(index, 1);
+          }
+          deferred.resolve(Responses.success("Scenario archived", scenario));
+        } else if (data.events !== undefined){
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       }).error(function(data) {
-        deferred.resolve(false);
+        if (data.events !== undefined &&  data.events.length == 0) {
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       });
 
       return deferred.promise;

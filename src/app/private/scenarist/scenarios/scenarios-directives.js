@@ -43,12 +43,10 @@ angular.module('private.scenarist.scenarios.directives', [
         ctrl.archiveScenario = function (scenario) {
             if (confirm('Etes-vous sur ?')) {
                 ScenariosModel.archiveScenario(scenario).then(function (result) {
-                    if (result === true) {
-                        ctrl.updateScenarios();
-                        // $scope.$emit('scenarios', ctrl.scenarios);
-
+                    if (response.isErroneous()) {
+                        response.flash();
                     } else {
-                        alert('Whoops.');
+                        ctrl.updateScenarios();
                     }
                 });
             }
