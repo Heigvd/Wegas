@@ -30,6 +30,15 @@ angular
                     }
                 });
             }
+            ctrl.addVersion = function () {
+                ScenariosModel.addVersionHistory($scope.scenarioId).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        ctrl.updateVersions();
+                    }
+                });
+            }
             ScenariosModel.getScenario($scope.scenarioId).then(function (response) {
                 $scope.scenario = response.data;
                 ctrl.updateVersions();
@@ -40,23 +49,13 @@ angular
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
-        scope: {
-            scenario: '='
-        },
+        scope: false,
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
 
             $parent = parentCtrl;
             $scope.addVersion = function() {
-                if($scope.$parent.scenario.id !== undefined) {
-                    ScenariosModel.addVersionHistory($scope.$parent.scenario.id).then(function (response) {
-                        if (response.isErroneous()) {
-                            response.flash();
-                        } else {
-                            $parent.updateVersions();
-                        }
-                    });
-                }
+                parentCtrl.addVersion();
             };
         }
     };
