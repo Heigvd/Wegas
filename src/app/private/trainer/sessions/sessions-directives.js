@@ -53,8 +53,12 @@ angular.module('private.trainer.sessions.directives', [
     scope: false, 
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
-        ScenariosModel.getScenarios().then(function(scenarios){
-            scope.scenarios = scenarios;
+        ScenariosModel.getScenarios().then(function(response){
+            if(!response.isErroneous()){
+                scope.scenarios = response.data;
+            }else{
+                Flash.danger("Error loading scenarios")
+            }
         });
         scope.newSession = {
             name : "",
