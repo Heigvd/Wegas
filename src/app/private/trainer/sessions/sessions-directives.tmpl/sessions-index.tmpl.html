@@ -2,8 +2,11 @@
 	<h3>Add session</h3>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
+<a class="view__button-archives button button--small button--default button--archive" ui-sref="wegas.private.trainer.sessions.archives">
+	<span class="button__label">{{trainerSessionsCtrl.archives.length}} archives</span>
+</a>
 <div class="view view--sessions-list view--middle">
-	<h3>Active sessions</h3>
+	<h3>Current sessions</h3>
 	<div class="view__tools">
 		<div class="tool tool--search tool--open">
 			<a class="tool__link"></a>

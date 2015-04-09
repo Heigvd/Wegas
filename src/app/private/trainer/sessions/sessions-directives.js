@@ -10,12 +10,17 @@ angular.module('private.trainer.sessions.directives', [
     var ctrl = this;
         ctrl.search = "";
         ctrl.sessions = [];
-    SessionsModel.getSessions("managed").then(function(response){
-        ctrl.sessions = response.data || [];
-    });
+        ctrl.archives = [];
+   
     ctrl.updateSessions = function(){
+        
         SessionsModel.getSessions("managed").then(function(response){
             ctrl.sessions = response.data || [];
+        });
+        
+        SessionsModel.getSessions("archived").then(function(response){
+            ctrl.archives = response.data || [];
+            console.log(ctrl.archives);
         });
     };
     ctrl.editName = function(sessionToSet){
@@ -46,6 +51,10 @@ angular.module('private.trainer.sessions.directives', [
             Flash.danger("No scenario choosed");
         }
     };
+
+    /* Request data. */
+    ctrl.updateSessions();
+
 })
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
