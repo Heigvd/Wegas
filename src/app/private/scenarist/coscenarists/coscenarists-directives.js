@@ -38,15 +38,11 @@ angular
 .directive('scenaristCoscenaristsAdd', function(ScenariosModel, UsersModel) {
     return {
         templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-add.html',
-        scope: false,
+        scope: {
+            scenario: '='
+        },
         require: "^scenaristCoscenaristsIndex",
         link : function(scope, element, attrs, parentCtrl) {
-
-            scope.$watch(function() {
-                return parentCtrl.scenario
-            } , function(n,o) {
-                scope.scenario = n;
-            });
 
             scope.restrictRoles = ["Administrator", "Scenarist"];
 
@@ -57,7 +53,7 @@ angular
 
             scope.addNewCoscenarist = function() {
                 if (scope.selected_user.id) {
-                    ScenariosModel.updatePermissions(scope.scenario.id,
+                    ScenariosModel.updatePermissions(scope.$parent.scenario.id,
                         scope.selected_user.id, true,false,false).then(function (response) {
                             if (response.isErroneous()) {
                                 response.flash();
@@ -87,8 +83,12 @@ angular
                     if (response.isErroneous()) {
                         response.flash();
                     } else {
-                        var index = scope.permissions.indexOf(this.permission);
-                        scope.permissions.splice(index,1);
+                        var index = _.findIndex(scope.permissions, function (p) {
+                            return p.user.id == userId;
+                        });
+                        if (index > -1) {
+                            scope.permissions.splice(index,1);
+                        }
                     }
                 });
             }
