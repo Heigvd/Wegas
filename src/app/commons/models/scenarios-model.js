@@ -73,7 +73,7 @@ angular.module('wegas.models.scenarios', [])
       return deferred.promise;
     }
   })
-  .service('ScenariosModel', function($http, $q, PermissionModel) {
+  .service('ScenariosModel', function($http, $q, $interval, Auth, Responses) {
     var model = this;
     model.scenarios = null;
 
@@ -122,11 +122,23 @@ angular.module('wegas.models.scenarios', [])
           "managed-mode": "true"
         }
       }).success(function(data) {
-        var scenario = applyIcon([data])[0];
-        model.scenarios.push(scenario);
-        deferred.resolve(scenario);
+
+        if (data.events !== undefined && data.events.length == 0) {
+          var scenario = applyIcon(data.entities)[0];
+          model.scenarios.push(scenario);
+          deferred.resolve(Responses.success("Scenario created", scenario));
+        } else if (data.events !== undefined){
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
+
       }).error(function(data) {
-        deferred.resolve(data);
+        if (data.events !== undefined &&  data.events.length == 0) {
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       });
       return deferred.promise;
     }

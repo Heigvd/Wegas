@@ -71,11 +71,11 @@ angular.module('private.scenarist.scenarios.directives', [
                 return
             }
 
-            ScenariosModel.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id).then(function(result) {
-                if (result.id !== undefined) {
-                    parentCtrl.scenarios.push(result);
+            ScenariosModel.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id).then(function(response) {
+                if (!response.isErroneous()) {
+                    parentCtrl.scenarios.push(response.data);
                 } else {
-                    alert(result);
+                    response.flash();
                 }
             });
         };
