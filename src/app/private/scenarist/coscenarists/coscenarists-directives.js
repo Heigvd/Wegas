@@ -12,13 +12,22 @@ angular
 
         ctrl.updateScenario = function() {
                 // Searching for current scenario
-                ScenariosModel.getScenario($stateParams.scenarioId).then(function(scenario) {
-                    $scope.scenario = scenario;
+                ScenariosModel.getScenario($stateParams.scenarioId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        $scope.scenario = response.data;
 
-                    // Loading permissions
-                    ScenariosModel.getPermissions($stateParams.scenarioId).then(function(permissions) {
-                        $scope.permissions = permissions;
-                    });
+                        // Loading permissions
+                        ScenariosModel.getPermissions($stateParams.scenarioId).then(function(response) {
+                            if (response.isErroneous()) {
+                                response.flash();
+                            } else {
+                                $scope.permissions = response.data;
+                            }
+                        });
+                    }
+
                 });
         };
 
@@ -107,7 +116,7 @@ angular
 
             scope.updatePermissions = function() {
 
-                ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (result) {
+                ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (response) {
                     if (response.isErroneous()) {
                         response.flash();
                     }

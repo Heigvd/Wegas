@@ -342,14 +342,28 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var scenario = findScenario(scenarioId);
       if (scenario === null) {
-        deferred.resolve({});
+        deferred.resolve(Responses.danger("Whoops...", false));
       } else {
         var url = "rest/Extended/User/FindAccountPermissionByInstance/gm" + scenarioId
-        $http.get(ServiceURL + url).success(function(data) {
-          var permissions = mapPermissions(data);
-          deferred.resolve(permissions);
+        $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        }).success(function(data) {
+          if (data.events !== undefined && data.events.length == 0) {
+            var permissions = mapPermissions(data.entities);
+            deferred.resolve(Responses.success("Permissions loaded", permissions));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
-          deferred.resolve([]);
+          if (data.events !== undefined &&  data.events.length == 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
       }
       return deferred.promise;
