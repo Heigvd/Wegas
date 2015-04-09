@@ -105,6 +105,7 @@ angular.module('private.scenarist.scenarios.directives', [
     require: "^scenaristScenariosIndex",
     link : function($scope, element, attrs, parentCtrl) {
         $scope.visibleScenarios = [];
+        $scope.myScenarios = [];
         $scope.scenariosLoaded = false;
         $scope.busy = false;
         $scope.search = '';
@@ -114,20 +115,21 @@ angular.module('private.scenarist.scenarios.directives', [
                 $scope.visibleScenarios = [];
                 $scope.loadMore();
             } else if ($scope.search == '*') {
-                $scope.visibleScenarios = $scope.scenarios;
+                $scope.visibleScenarios = $scope.myScenarios;
             } else {
-                $scope.visibleScenarios = _.filter($scope.scenarios, function(s) {
+                $scope.visibleScenarios = _.filter($scope.myScenarios, function(s) {
                     return s.name.toLowerCase().indexOf($scope.search.toLowerCase()) > -1;
                 });
 
             }
         }
         $scope.loadMore = function() {
-            if ($scope.busy || $scope.search != '' || $scope.scenarios.length == 0) return;
+            if ($scope.busy || $scope.search != '' || $scope.myScenarios.length == 0) return;
             $scope.busy = true;
             var last = $scope.visibleScenarios.length;
-            for(var i = last; i < last + 13; i++) {
-                $scope.visibleScenarios.push($scope.scenarios[i]);
+            var minlength = Math.min($scope.myScenarios.length, 13);
+            for(var i = last; i < last + minlength; i++) {
+                $scope.visibleScenarios.push($scope.myScenarios[i]);
             }
             $scope.busy = false;
         };
@@ -138,6 +140,7 @@ angular.module('private.scenarist.scenarios.directives', [
             if (newScenario !== undefined && newScenario.length > 0) {
                 $scope.scenariosLoaded = true;
                 $scope.visibleScenarios = [];
+                $scope.myScenarios = newScenario;
                 $scope.filter();
             }
         });

@@ -486,5 +486,8 @@ angular.module('wegas.models.scenarios', [])
       return deferred.promise;
     }
 
+    model.clearCache = function(){
+        model.scenarios = null;
+    };
 
   });

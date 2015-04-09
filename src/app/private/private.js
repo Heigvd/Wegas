@@ -3,8 +3,10 @@ angular.module('private', [
     'wegas.models.scenarios',
     'wegas.models.users',
     'private.player',
+    'private.profile',
     'private.trainer',
     'private.scenarist',
+    'private.logout',
     'private.directives'
 ])
 .config(function ($stateProvider) {
