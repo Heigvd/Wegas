@@ -431,11 +431,25 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
 
-      $http.delete(ServiceURL + url)
+      $http.delete(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
         .success(function(data) {
-          deferred.resolve(true);
+          if (data.events !== undefined && data.events.length == 0) {
+            deferred.resolve(Responses.success("Version deleted", true));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          };
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length == 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
