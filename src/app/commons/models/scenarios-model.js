@@ -1,6 +1,6 @@
 'use strict';
 angular.module('wegas.models.scenarios', [])
-  .service('PermissionModel', function($http, $q) {
+  .service('PermissionModel', function($http, $q, $interval, Auth, Responses) {
     var model = this;
 
     model.getPermissionsFor = function(scenarioId) {
@@ -11,9 +11,11 @@ angular.module('wegas.models.scenarios', [])
 
       var deferred = $q.defer();
       // Removing all permission
-      this.deletePermissions(scenarioId, userId).then(function(result) {
+      this.deletePermissions(scenarioId, userId).then(function(response) {
         // Remove works ?
-        if (result === true) {
+        if (response.isErroneous()) {
+          deferred.resolve(response);
+        } else {
           // Calculating new permission as wegas see them
           var permissions = "";
           if (canEdit) {
@@ -27,7 +29,7 @@ angular.module('wegas.models.scenarios', [])
               permissions = "Duplicate";
             } else {
               // No permissions means ok.
-              deferred.resolve(true);
+              deferred.resolve(Responses.success("Permissions updated.", true));
             }
           }
 
@@ -41,14 +43,20 @@ angular.module('wegas.models.scenarios', [])
               }
             })
             .success(function(data) {
-
-              deferred.resolve(true);
+              if (data.events !== undefined && data.events.length == 0) {
+                deferred.resolve(Responses.success("Permissions updated.", true));
+              } else if (data.events !== undefined) {
+                deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+              } else {
+                deferred.resolve(Responses.danger("Whoops...", false));
+              }
             }).error(function(data) {
-
-              deferred.resolve(data);
+              if (data.events !== undefined &&  data.events.length == 0) {
+                deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+              } else {
+                deferred.resolve(Responses.danger("Whoops...", false));
+              }
             });
-        } else {
-          deferred.resolve(result);
         }
       });
       return deferred.promise;
@@ -66,9 +74,19 @@ angular.module('wegas.models.scenarios', [])
           }
         })
         .success(function(data) {
-          deferred.resolve(true);
+          if (data.events !== undefined && data.events.length == 0) {
+            deferred.resolve(Responses.success("Permissions deleted.", true));
+          } else if (data.events !== undefined) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
-          deferred.resolve(data);
+          if (data.events !== undefined &&  data.events.length == 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
       return deferred.promise;
     }

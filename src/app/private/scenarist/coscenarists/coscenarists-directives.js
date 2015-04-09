@@ -49,8 +49,12 @@ angular
             scope.addNewCoscenarist = function() {
                 if (scope.selected_user.id) {
                     ScenariosModel.updatePermissions(scope.scenario.id,
-                        scope.selected_user.id, true,false,false).then(function (result) {
-                            parentCtrl.updateScenario();
+                        scope.selected_user.id, true,false,false).then(function (response) {
+                            if (response.isErroneous()) {
+                                response.flash();
+                            } else {
+                                parentCtrl.updateScenario();
+                            }
                     });
                 }
             };
@@ -70,12 +74,12 @@ angular
             });
 
             scope.removeUser = function (scenarioId, userId) {
-                ScenariosModel.deletePermissions(scenarioId, userId).then(function(result) {
-                    if (result === true) {
+                ScenariosModel.deletePermissions(scenarioId, userId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
                         var index = scope.permissions.indexOf(this.permission);
                         scope.permissions.splice(index,1);
-                    } else {
-                        alert(result.message);
                     }
                 });
             }
@@ -104,8 +108,8 @@ angular
             scope.updatePermissions = function() {
 
                 ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (result) {
-                    if (result === true) {
-                        // Needs to do something ?
+                    if (response.isErroneous()) {
+                        response.flash();
                     }
                 });
             };
