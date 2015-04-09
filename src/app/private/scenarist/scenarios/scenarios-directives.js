@@ -23,13 +23,21 @@ angular.module('private.scenarist.scenarios.directives', [
         ctrl.updateScenarios();
 
         ctrl.editName = function(scenario) {
-            ScenariosModel.updateScenario(scenario).then(function(data) {
-                ctrl.updateScenarios();
+            ScenariosModel.updateScenario(scenario).then(function(response) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
+                    ctrl.updateScenarios();
+                }
             });
         };
         ctrl.editComments = function(scenario) {
-            ScenariosModel.updateScenario(scenario).then(function(data) {
-                ctrl.updateScenarios();
+            ScenariosModel.updateScenario(scenario).then(function(response) {
+                if (response.isErroneous()) {
+                    response.flash();
+                } else {
+                    ctrl.updateScenarios();
+                }
             });
         };
         ctrl.archiveScenario = function (scenario) {

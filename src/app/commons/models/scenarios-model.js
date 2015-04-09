@@ -146,15 +146,31 @@ angular.module('wegas.models.scenarios', [])
     model.updateScenario = function(scenario) {
       var deferred = $q.defer();
 
-      $http.post(ServiceURL + "rest/Public/GameModel/" + scenario.id, {
+      var url = "rest/Public/GameModel/" + scenario.id + "?view=EditorExtended";
+      $http.put(ServiceURL + url, {
         "@class": "GameModel",
-        "id": scenario.id,
         "name": scenario.name,
         "comments": scenario.comments
+      }, {
+        "headers": {
+          "managed-mode": "true"
+        }
       }).success(function(data) {
-        deferred.resolve(applyIcon([data])[0]);
+
+        if (data.events !== undefined && data.events.length == 0) {
+          var scenario = applyIcon(data.entities)[0];
+          deferred.resolve(Responses.success("Scenario updated", scenario));
+        } else if (data.events !== undefined){
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       }).error(function(data) {
-        deferred.resolve(data);
+        if (data.events !== undefined &&  data.events.length == 0) {
+          deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        } else {
+          deferred.resolve(Responses.danger("Whoops...", false));
+        }
       });
 
       return deferred.promise;
