@@ -112,9 +112,9 @@ angular.module('wegas.models.scenarios', [])
     model.createScenario = function(name, templateId) {
       var deferred = $q.defer();
 
-      $http.post(ServiceURL + "rest/Public/GameModel/" + templateId, {
+      var url = "rest/Public/GameModel/" + templateId;
+      $http.post(ServiceURL + url, {
         "@class": "GameModel",
-        "templateId": templateId,
         "name": name,
         "properties": {}
       }, {
