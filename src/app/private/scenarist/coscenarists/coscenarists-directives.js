@@ -104,14 +104,17 @@ angular
         require: "^scenaristCoscenaristsIndex",
         link : function(scope, element, attrs, parentCtrl) {
 
-            scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
-            _.contains(scope.permission.permissions, "Instantiate") &&
-            _.contains(scope.permission.permissions, "View") &&
-            _.contains(scope.permission.permissions, "Edit") &&
-            _.contains(scope.permission.permissions, "Delete");
+            function calculatePermissions() {
+                scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
+                _.contains(scope.permission.permissions, "Instantiate") &&
+                _.contains(scope.permission.permissions, "View") &&
+                _.contains(scope.permission.permissions, "Edit") &&
+                _.contains(scope.permission.permissions, "Delete");
 
-            scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
-            scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
+                scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
+                scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
+            }
+            calculatePermissions();
 
 
             scope.updatePermissions = function() {
@@ -119,6 +122,7 @@ angular
                 ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (response) {
                     if (response.isErroneous()) {
                         response.flash();
+                        calculatePermissions();
                     }
                 });
             };
