@@ -1,73 +1,72 @@
 'use strict';
 angular.module('wegas.models.users', [])
-.service('UsersModel', function ($http, $q) {
-    var model = this,
-    users;
+    .service('UsersModel', function($http, $q) {
+        var model = this,
+            users;
 
-    model.getUsers = function() {
-        return "Here is all users";
-    };
+        model.getUsers = function() {
+            return "Here is all users";
+        };
 
-    model.getUser = function(id) {
-        var deferred = $q.defer();
+        model.getUser = function(id) {
+            var deferred = $q.defer();
 
-        if (isNaN(id)) {
-            deferred.resolve(false);
-            return;
+            if (isNaN(id)) {
+                deferred.resolve(false);
+                return;
+            }
+
+            var url = "rest/Extended/User/Account/" + id;
+
+            $http
+                .get(ServiceURL + url)
+                .success(function(data) {
+                    deferred.resolve(data);
+                }).error(function(data) {
+                    deferred.resolve(false);
+                });
+            return deferred.promise;
         }
 
-        var url = "rest/Extended/User/Account/" + id;
+        model.updateUser = function(user) {
 
-        $http
-        .get(ServiceURL + url)
-        .success(function(data){
-            deferred.resolve(data);
-        }).error(function(data) {
-            deferred.resolve(false);
-        });
-        return deferred.promise;
-    }
+            var deferred = $q.defer();
 
-    model.updateUser = function(user) {
+            var url = "rest/Extended/User/Account/" + user.id;
 
-        var deferred = $q.defer();
+            if (user.password != user.password2) {
+                deferred.resolve(false);
+                return;
+            }
+            delete user.hash
+            delete user.name
+            delete user.password2
 
-        var url = "rest/Extended/User/Account/" + user.id;
+            $http
+                .put(ServiceURL + url, user)
+                .success(function(data) {
+                    deferred.resolve(data);
+                }).error(function(data) {
+                    deferred.resolve(false);
+                });
+            return deferred.promise;
+        };
 
-        if (user.password != user.password2) {
-            deferred.resolve(false);
-            return;
+        /* Find user with a pattern in a list of groups (Player, Trainer, Scenarist, Administrator) */
+        model.autocomplete = function(pattern, rolesList) {
+            var deferred = $q.defer();
+
+            var url = "rest/User/AutoComplete/" + pattern;
+
+            $http
+                .post(ServiceURL + url, {
+                    "rolesList": rolesList
+                })
+                .success(function(data) {
+                    deferred.resolve(data);
+                }).error(function(data) {
+                    deferred.resolve([]);
+                });
+            return deferred.promise;
         }
-        delete user.hash
-        delete user.name
-        delete user.password2
-
-        $http
-        .put(ServiceURL + url, user)
-        .success(function(data){
-            deferred.resolve(data);
-        }).error(function(data) {
-            deferred.resolve(false);
-        });
-        return deferred.promise;
-    };
-
-    /* Find user with a pattern in a list of groups (Player, Trainer, Scenarist, Administrator) */
-    model.autocomplete = function(pattern, rolesList) {
-        var deferred = $q.defer();
-
-        var url = "rest/User/AutoComplete/" + pattern;
-
-        $http
-        .post(ServiceURL + url, {
-            "rolesList": rolesList
-        })
-        .success(function(data){
-            deferred.resolve(data);
-        }).error(function(data) {
-            deferred.resolve([]);
-        });
-        return deferred.promise;
-    }
-})
-;
+    });
