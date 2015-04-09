@@ -6,43 +6,33 @@ angular
         return {
 
             templateUrl: 'app/private/profile/tmpl/profile-index.html',
-            controller: function($scope, $stateParams, $sce, $rootScope, Auth, flash) {
+            controller: function($scope, $stateParams, $sce, $rootScope, Auth, Flash) {
                 var ctrl = this;
                 $scope.user = {};
                 $scope.originalUser = false
                 Auth.getAuthenticatedUser().then(function(user) {
                     if (user !== false) {
-                        UsersModel.getUser(user.id).then(function(fulluser) {
-                            if (fulluser !== false) {
-                                $scope.user = fulluser;
-                                if ($scope.originalUser === false) {
-                                    $scope.originalUsername = fulluser.lastname + ' ' + fulluser.firstname;
-                                }
+                        UsersModel.getUser(user.id).then(function(response) {
+                            if (response.isErroneous()) {
+                                response.flash();
                             } else {
-                                flash('error', 'Unable to load user informations...');
+                                $scope.user = response.data;
+                                if ($scope.originalUser === false) {
+                                    $scope.originalUsername = $scope.user.lastname + ' ' + $scope.user.firstname;
+                                }
                             }
                         });
                     } else {
-                        flash('error', 'Unable to load user informations...');
+                        Flash('danger', 'Unable to load user informations...');
                     }
                 });
 
                 ctrl.updateInformations = function() {
-
-                    if ($scope.user.password == $scope.user.password2) {
-
-                        UsersModel.updateUser($scope.user).then(function(result) {
-                            if (result !== false) {
-                                $scope.user.password = '';
-                                flash('Profile updated');
-                            } else {
-
-                            }
-                        })
-
-                    } else {
-                        flash('error', 'Passwords do not matches');
-                    }
+                    UsersModel.updateUser($scope.user).then(function(response) {
+                        response.flash();
+                        $scope.user.password = '';
+                        $scope.user.password2 = '';
+                    });
                 }
 
             }
