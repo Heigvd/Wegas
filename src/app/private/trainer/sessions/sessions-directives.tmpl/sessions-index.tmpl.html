@@ -2,9 +2,6 @@
 	<h3>Add session</h3>
 	<trainer-sessions-add></trainer-sessions-add>
 </div>
-<a class="view__button-archives button button--small button--default button--archive" ui-sref="wegas.private.trainer.sessions.archives">
-	<span class="button__label">{{trainerSessionsCtrl.archives.length}} archives</span>
-</a>
 <div class="view view--sessions-list view--middle">
 	<h3>Current sessions</h3>
 	<div class="view__tools">
@@ -18,10 +15,16 @@
 		</div>
 	</div>
 	<div 
+		ng-class="{true:'view__list--with-archive', false:''}[trainerSessionsCtrl.archives.length > 0]"
 		class="view__list" 
 		sessions="trainerSessionsCtrl.sessions" 
-		search="trainerSessionsCtrl.search",
+		search="trainerSessionsCtrl.search"
 		archive="trainerSessionsCtrl.archiveSession"
 		trainer-sessions-list >
+	</div>
+	<div ng-if="trainerSessionsCtrl.archives.length" class="view__archives">
+		<a class="button button--small button--default button--archive" ui-sref="wegas.private.trainer.sessions.archives">
+			<span class="button__label">{{trainerSessionsCtrl.archives.length}} archives</span>
+		</a>
 	</div>
 </div>

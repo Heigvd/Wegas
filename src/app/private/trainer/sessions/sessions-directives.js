@@ -6,21 +6,18 @@ angular.module('private.trainer.sessions.directives', [
     controller : "TrainerSessionsController as trainerSessionsCtrl"
   };
 })
-.controller("TrainerSessionsController", function TrainerSessionsController(SessionsModel, Flash){
+.controller("TrainerSessionsController", function TrainerSessionsController($rootScope, SessionsModel, Flash){
     var ctrl = this;
         ctrl.search = "";
         ctrl.sessions = [];
         ctrl.archives = [];
    
     ctrl.updateSessions = function(){
-        
         SessionsModel.getSessions("managed").then(function(response){
             ctrl.sessions = response.data || [];
         });
-        
         SessionsModel.getSessions("archived").then(function(response){
             ctrl.archives = response.data || [];
-            console.log(ctrl.archives);
         });
     };
     ctrl.editName = function(sessionToSet){
@@ -45,6 +42,7 @@ angular.module('private.trainer.sessions.directives', [
                 response.flash();
                 if(!response.isErroneous()){
                     ctrl.updateSessions();
+                    $rootScope.$emit('changeArchives', true);
                 }
             });
         }else{
@@ -52,6 +50,12 @@ angular.module('private.trainer.sessions.directives', [
         }
     };
 
+    $rootScope.$on('changeArchives', function(e, hasNewData){
+        if(hasNewData){
+            ctrl.updateSessions();
+        }
+    });
+    
     /* Request data. */
     ctrl.updateSessions();
 

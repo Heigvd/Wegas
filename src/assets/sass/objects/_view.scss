@@ -142,6 +142,9 @@
                 @include make-xs-column(12);
                 padding:8px 16px 32px 16px;
             }
+            &.view__list--with-archive{
+                height:calc(100% - 162px);
+            }
         }
         .view__no-group{
             @include make-xs-column(12);
@@ -150,6 +153,17 @@
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
+        }
+
+        .view__archives{
+            @include make-xs-column(12);
+            height:80px;
+            padding:16px;
+            clear:both;
+            box-sizing: border-box;
+            .button{
+                float:right;
+            }
         }
 
     }

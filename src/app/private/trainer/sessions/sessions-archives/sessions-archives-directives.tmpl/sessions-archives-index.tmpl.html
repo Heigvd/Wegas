@@ -5,9 +5,15 @@
    		<span class="button__label">Close</span>
 	</a>
 </div>
-<div class="modal__content modal__content--nav-off">
-
-</div>
+<div 
+	class="modal__content modal__content--nav-off" 
+	sessions="trainerSessionsArchivesCtrl.archives"
+	delete="trainerSessionsArchivesCtrl.deleteArchivedSession"
+	unarchive="trainerSessionsArchivesCtrl.unarchiveSession"
+	trainer-sessions-archives-list
+></div>
 <div class="modal__tools">
-
+	<a class="button button--small button--default button--trash" ng-click="trainerSessionsArchivesCtrl.deleteArchivedSessions()">
+   		<span class="button__label">Remove all</span>
+	</a>
 </div>

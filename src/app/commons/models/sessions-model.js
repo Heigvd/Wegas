@@ -20,7 +20,7 @@ angular.module('wegas.models.sessions', [])
                 },
                 archived: function() {
                     var deferred = $q.defer();
-                    deferred.resolve(ServiceURL + "rest/GameModel/Game/status/BIN");
+                    deferred.resolve(ServiceURL + "rest/GameModel/Game/status/BIN?view=extended");
                     return deferred.promise;
                 }
             },
@@ -718,9 +718,10 @@ angular.module('wegas.models.sessions', [])
         model.archiveSession = function(sessionToArchive) {
             var deferred = $q.defer();
             if (sessionToArchive["@class"] === "Game") {
-                setSessionStatus(sessionToArchive.id, "BIN").then(function(data) {
-                    if (data) {
+                setSessionStatus(sessionToArchive.id, "BIN").then(function(sessionArchived) {
+                    if (sessionArchived) {
                         sessions.cache.managed.data = uncacheSession(sessions.cache.managed.data, sessionToArchive);
+                        sessions.cache.archived.data = cacheSession(sessions.cache.archived.data, sessionToArchive);
                         deferred.resolve(Responses.success("Session archived", sessionToArchive));
                     } else {
                         deferred.resolve(Responses.danger("Error during session archivage", false));
@@ -736,14 +737,39 @@ angular.module('wegas.models.sessions', [])
     ARCHIVED SESSIONS SERVICES
     --------------------------------- */
 
+        model.unarchiveSession = function(sessionToUnarchive) {
+            var deferred = $q.defer();
+            if (sessionToUnarchive["@class"] === "Game") {
+                setSessionStatus(sessionToUnarchive.id, "LIVE").then(function(sessionUnarchived) {
+                    if (sessionUnarchived) {
+                        sessions.cache.archived.data = uncacheSession(sessions.cache.archived.data, sessionToUnarchive);
+                        sessions.cache.managed.data = cacheSession(sessions.cache.managed.data, sessionToUnarchive);
+                        deferred.resolve(Responses.success("Session unarchived", sessionToUnarchive));
+                    } else {
+                        deferred.resolve(Responses.danger("Error during session unsarchivage", false));
+                    }
+                });
+            } else {
+                deferred.resolve(Responses.danger("This is not a session", false));
+            }
+            return deferred.promise;
+        }
+
         /* Delete all archived sessions. */
         model.deleteArchivedSessions = function() {
             var deferred = $q.defer();
-            $http.delete(ServiceURL + "rest/GameModel/Game").success(function(data) {
-                deferred.resolve(data);
-            }).error(function(data) {
-                deferred.resolve(false);
-            });
+            if(sessions.cache.archived.data.length > 0){
+                $http.delete(ServiceURL + "rest/GameModel/Game").success(function(data) {
+                    if(data){
+                        sessions.cache.archived.data = [];
+                        deferred.resolve(Responses.success("All archives deleted", true));
+                    }
+                }).error(function(data) {
+                    deferred.resolve(Responses.danger("Error during archives suppression", false));
+                });
+            }else{
+                deferred.resolve(Responses.info("No session archived", true));
+            }
             return deferred.promise;
         }
 
@@ -753,6 +779,7 @@ angular.module('wegas.models.sessions', [])
             if (sessionToDelete["@class"] === "Game") {
                 setSessionStatus(sessionToDelete.id, "DELETE").then(function(data) {
                     if (data) {
+                        sessions.cache.archived.data = uncacheSession(sessions.cache.archived.data, sessionToDelete);
                         deferred.resolve(Responses.success("Session suppressed", sessionToDelete));
                     } else {
                         deferred.resolve(Responses.danger("Error during session suppression", false));
