@@ -14,11 +14,11 @@ angular
             $scope.scenarioId = $stateParams.scenarioId;
 
             ctrl.updateVersions = function () {
-                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(results) {
-                    if (results === false) {
-                        window.alert('Whooops.');
+                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
                     } else {
-                        ctrl.versions = results;
+                        ctrl.versions = response.data;
                     }
                 });
             }
@@ -30,8 +30,8 @@ angular
                     }
                 });
             }
-            ScenariosModel.getScenario($scope.scenarioId).then(function (scenario) {
-                $scope.scenario = scenario;
+            ScenariosModel.getScenario($scope.scenarioId).then(function (response) {
+                $scope.scenario = response.data;
                 ctrl.updateVersions();
             });
         }

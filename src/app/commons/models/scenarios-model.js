@@ -380,9 +380,20 @@ angular.module('wegas.models.scenarios', [])
           }
         })
         .success(function(data) {
-          deferred.resolve(data.entities);
+          if (data.events !== undefined && data.events.length == 0) {
+            var versions = data.entities;
+            deferred.resolve(Responses.success("Versions loaded", versions));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          };
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length == 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
