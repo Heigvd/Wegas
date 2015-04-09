@@ -198,9 +198,8 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var url = "rest/GameModel/" + scenario.id;
       $http.delete(ServiceURL + url, {
-          "headers": {
-            "managed-mode": "true"
-          }
+        "headers": {
+          "managed-mode": "true"
         }
       }).success(function(data) {
 
@@ -239,14 +238,24 @@ angular.module('wegas.models.scenarios', [])
 
       var deferred = $q.defer();
       if (model.scenarios !== null) {
-
         deferred.resolve(model.scenarios);
       } else {
         model.scenarios = [];
-        $http.get(ServiceURL + "rest/GameModel").success(function(data) {
-
-          model.scenarios = applyIcon(data);
-          deferred.resolve(model.scenarios);
+        var url = "rest/GameModel"
+        $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
+        .success(function(data) {
+          if (data.events !== undefined && data.events.length == 0) {
+            model.scenarios = applyIcon(data);
+            deferred.resolve(Responses.success("Scenarios loaded", model.scenarios));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         }).error(function(data) {
           model.scenarios = [];
           deferred.resolve([]);
