@@ -460,13 +460,27 @@ angular.module('wegas.models.scenarios', [])
       var deferred = $q.defer();
       var url = "rest/Public/GameModel/" + scenarioId + "/Restore/History/" + version;
 
-      $http.get(ServiceURL + url)
+      $http.get(ServiceURL + url, {
+          "headers": {
+            "managed-mode": "true"
+          }
+        })
         .success(function(data) {
-          var newScenario = data;
-          model.scenarios.push(newScenario);
-          deferred.resolve(newScenario);
+          if (data.events !== undefined && data.events.length == 0) {
+            var newScenario = data.entities[0];
+            model.scenarios.push(newScenario);
+            deferred.resolve(Responses.success('Scenario has been duplicated with name: "'+newScenario.name+'"', newScenario));
+          } else if (data.events !== undefined){
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          };
         }).error(function(data) {
-          deferred.resolve(false);
+          if (data.events !== undefined &&  data.events.length > 0) {
+            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+          } else {
+            deferred.resolve(Responses.danger("Whoops...", false));
+          }
         });
 
       return deferred.promise;
