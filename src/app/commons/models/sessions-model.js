@@ -311,7 +311,7 @@ angular.module('wegas.models.sessions', [])
 
         /* Clear cache of all list sessions. */
         model.clearCache = function() {
-            session.cache = [];
+            sessions.cache = [];
         };
 
         /* Remove player form persistante datas and change cached datas (Used from trainer and player workspace) */
