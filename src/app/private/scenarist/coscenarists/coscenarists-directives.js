@@ -1,50 +1,50 @@
 angular
-    .module('private.scenarist.coscenarists.directives', [
-        "wegas.directives.search.users"
-    ])
-    .directive('scenaristCoscenaristsIndex', function(ScenariosModel) {
-        return {
-            templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-index.html',
-            controller: function($scope, $stateParams, $sce) {
-                var ctrl = this;
-                $scope.scenarios = [];
-                $scope.scenario = {};
+.module('private.scenarist.coscenarists.directives', [
+    "wegas.directives.search.users"
+])
+.directive('scenaristCoscenaristsIndex', function(ScenariosModel){
+  return {
+    templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-index.html',
+    controller : function($scope, $stateParams, $sce) {
+        var ctrl = this;
+        $scope.scenarios = [];
+        $scope.scenario = {};
 
-                ctrl.updateScenario = function() {
-                    // Searching for current scenario
-                    ScenariosModel.getScenario($stateParams.scenarioId).then(function(scenario) {
-                        $scope.scenario = scenario;
+        ctrl.updateScenario = function() {
+                // Searching for current scenario
+                ScenariosModel.getScenario($stateParams.scenarioId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        $scope.scenario = response.data;
 
                         // Loading permissions
-                        ScenariosModel.getPermissions($stateParams.scenarioId).then(function(permissions) {
-                            $scope.permissions = permissions;
+                        ScenariosModel.getPermissions($stateParams.scenarioId).then(function(response) {
+                            if (response.isErroneous()) {
+                                response.flash();
+                            } else {
+                                $scope.permissions = response.data;
+                            }
                         });
-                    });
-                };
+                    }
 
-                ctrl.updateScenario();
-            }
-        };
-    })
-    .directive('scenaristCoscenaristsAdd', function(ScenariosModel, UsersModel) {
-        return {
-            templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-add.html',
-            scope: false,
-            require: "^scenaristCoscenaristsIndex",
-            link: function(scope, element, attrs, parentCtrl) {
-
-                scope.$watch(function() {
-                    return parentCtrl.scenario
-                }, function(n, o) {
-                    scope.scenario = n;
                 });
+        };
 
-                scope.restrictRoles = ["Administrator", "Scenarist"];
+        ctrl.updateScenario();
+    }
+};
+})
+.directive('scenaristCoscenaristsAdd', function(ScenariosModel, UsersModel) {
+    return {
+        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-add.html',
+        scope: {
+            scenario: '='
+        },
+        require: "^scenaristCoscenaristsIndex",
+        link : function(scope, element, attrs, parentCtrl) {
 
-                scope.callbackSearchUser = function(selection) {
-                    scope.selected_user = selection;
-                    scope.addNewCoscenarist();
-                }
+            scope.restrictRoles = ["Administrator", "Scenarist"];
 
                 scope.addNewCoscenarist = function() {
                     if (scope.selected_user.id) {
@@ -69,16 +69,47 @@ angular
                     scope.permissions = newPermissions;
                 });
 
-                scope.removeUser = function(scenarioId, userId) {
-                    ScenariosModel.deletePermissions(scenarioId, userId).then(function(result) {
-                        if (result === true) {
-                            var index = scope.permissions.indexOf(this.permission);
-                            scope.permissions.splice(index, 1);
-                        } else {
-                            alert(result.message);
-                        }
+            scope.addNewCoscenarist = function() {
+                if (scope.selected_user.id) {
+                    ScenariosModel.updatePermissions(scope.$parent.scenario.id,
+                        scope.selected_user.id, true,false,false).then(function (response) {
+                            if (response.isErroneous()) {
+                                response.flash();
+                            } else {
+                                parentCtrl.updateScenario();
+                            }
                     });
                 }
+            };
+        }
+    };
+})
+.directive('scenaristCoscenaristsList', function(ScenariosModel) {
+    return {
+        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-list.html',
+        scope: false,
+        require: "^scenaristCoscenaristsIndex",
+        link : function(scope, element, attrs, parentCtrl) {
+            scope.$watch(function() {
+                return parentCtrl.permissions
+            }, function(newPermissions, permissions) {
+                scope.permissions = newPermissions;
+            });
+
+            scope.removeUser = function (scenarioId, userId) {
+                ScenariosModel.deletePermissions(scenarioId, userId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        var index = _.findIndex(scope.permissions, function (p) {
+                            return p.user.id == userId;
+                        });
+                        if (index > -1) {
+                            scope.permissions.splice(index,1);
+                        }
+                    }
+                });
+            }
 
             },
         };
@@ -91,21 +122,25 @@ angular
         require: "^scenaristCoscenaristsIndex",
         link: function(scope, element, attrs, parentCtrl) {
 
-            scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
+            function calculatePermissions() {
+                scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
                 _.contains(scope.permission.permissions, "Instantiate") &&
                 _.contains(scope.permission.permissions, "View") &&
                 _.contains(scope.permission.permissions, "Edit") &&
                 _.contains(scope.permission.permissions, "Delete");
 
-            scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
-            scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
+                scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
+                scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
+            }
+            calculatePermissions();
 
 
             scope.updatePermissions = function() {
 
-                ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(result) {
-                    if (result === true) {
-                        // Needs to do something ?
+                ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                        calculatePermissions();
                     }
                 });
             };

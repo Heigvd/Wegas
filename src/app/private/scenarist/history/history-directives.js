@@ -13,22 +13,64 @@ angular
                 $scope.scenario = {};
                 $scope.scenarioId = $stateParams.scenarioId;
 
-                ctrl.updateVersions = function() {
-                    ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(results) {
-                        if (results === false) {
-                            window.alert('Whooops.');
-                        } else {
-                            ctrl.versions = results;
-                        }
-                    });
-                }
-                ctrl.createFork = function(name) {
-                    ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function(result) {
-                        if (result !== false) {
-                            alert('Scenario has been duplicated with name: "' + result.name + '"');
-                            $rootScope.$emit('scenarios', true);
-                        }
-                    });
+            ctrl.updateVersions = function () {
+                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        ctrl.versions = response.data;
+                    }
+                });
+            }
+            ctrl.createFork = function (name) {
+                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (response) {
+                    response.flash();
+                    if (!response.isErroneous()) {
+                        $rootScope.$emit('scenarios', true);
+                    }
+                });
+            }
+            ctrl.addVersion = function () {
+                ScenariosModel.addVersionHistory($scope.scenarioId).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        ctrl.updateVersions();
+                    }
+                });
+            }
+            ScenariosModel.getScenario($scope.scenarioId).then(function (response) {
+                $scope.scenario = response.data;
+                ctrl.updateVersions();
+            });
+        }
+    };
+})
+.directive('scenaristHistoryActions', function(ScenariosModel){
+    return {
+        templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
+        scope: false,
+        require: "^scenaristHistoryIndex",
+        link : function($scope, element, attrs, parentCtrl) {
+
+            $parent = parentCtrl;
+            $scope.addVersion = function() {
+                parentCtrl.addVersion();
+            };
+        }
+    };
+})
+.directive('scenaristHistoryDownloadJson', function(ScenariosModel){
+    return {
+        scope: false,
+        link : function(scope, element, attrs, parentCtrl) {
+            $jsonElement = element;
+            scope.$watch("scenario", function(n,o) {
+                if (_.contains([false,undefined], n)) {
+                    $jsonElement.addClass('disabled').attr('href', '#');
+                } else {
+                    var url = ServiceURL + "rest/Export/GameModel/" + n.id + "/" + n.name + ".json";
+                    $jsonElement.removeClass('disabled').attr('href', url);
                 }
                 ScenariosModel.getScenario($scope.scenarioId).then(function(scenario) {
                     $scope.scenario = scenario;
@@ -129,16 +171,17 @@ angular
             require: "^scenaristHistoryIndex",
             link: function($scope, element, attrs, parentCtrl) {
 
-                $scope.deleteFork = function(name) {
-                    var forkName = name;
-                    ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function(result) {
-                        if (result === true) {
-                            var index = _.findIndex($scope.versions, function(v) {
-                                return v.name === name;
-                            });
-                            if (index > -1) {
-                                $scope.versions.splice(index, 1);
-                            }
+            $scope.deleteFork = function(name) {
+                var forkName = name;
+                ScenariosModel.deleteVersionHistory($scope.scenarioId, name).then(function (response) {
+                    if (response.isErroneous()) {
+                        response.flash();
+                    } else {
+                        var index = _.findIndex($scope.versions, function(v) {
+                            return v.name === name;
+                        });
+                        if (index > -1) {
+                            $scope.versions.splice(index, 1);
                         }
                     });
                 };
