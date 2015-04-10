@@ -1,7 +1,7 @@
 angular.module('private.player.sessions.directives', [])
     .directive('playerSessionsIndex', function() {
         return {
-            templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
+            templateUrl: 'app/private/player/sessions/directives.tmpl/index.html',
             controller: 'PlayerSessionsController as playerSessionsCtrl'
         };
     }).controller("PlayerSessionsController", function PlayerSessionsIndexController($rootScope, $state, SessionsModel, Flash) {
@@ -65,7 +65,7 @@ angular.module('private.player.sessions.directives', [])
     })
     .directive('playerSessionJoinForm', function() {
         return {
-            templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/session-join-form.tmpl.html',
+            templateUrl: 'app/private/player/sessions/directives.tmpl/join-form.html',
             scope: {
                 checkToken: "="
             },
@@ -84,7 +84,7 @@ angular.module('private.player.sessions.directives', [])
     })
     .directive('playerSessionsList', function() {
         return {
-            templateUrl: 'app/private/player/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
+            templateUrl: 'app/private/player/sessions/directives.tmpl/list.html',
             scope: {
                 sessions: "=",
                 leave: "="

@@ -1,20 +1,20 @@
-angular.module('private.player.session.join', [
-    'private.player.session.join.directives'
+angular.module('private.player.session.team', [
+	'private.player.session.team.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
-        .state('wegas.private.player.sessions.join', {
-            url: '/{token}',
+        .state('wegas.private.player.sessions.team', {
+            url: '/{id}/team',
             views: {
                 'modal@wegas.private': {
-                    controller: 'SessionJoinModalCtrl as sessionJoinModalCtrl'
+                    controller: 'SessionTeamModalCtrl as sessionTeamModalCtrl'
                 }
             }
         })
     ;
-}).controller("SessionJoinModalCtrl", function SessionJoinModalCtrl($animate, $state, ModalService){
+}).controller("SessionTeamModalCtrl", function SessionTeamModalCtrl($animate, $state, ModalService){
 	ModalService.showModal({
-        templateUrl: 'app/private/player/sessions/session-join/session-join.tmpl.html',
+        templateUrl: 'app/private/player/sessions/team/team.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),

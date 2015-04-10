@@ -1,7 +1,7 @@
 angular.module('private.player.session.join.directives', [])
 .directive('playerSessionJoinIndex', function(){
     return {
-        templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-index.tmpl.html',
+        templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/index.html',
         scope:{
             close: "&"
         },
@@ -73,7 +73,7 @@ angular.module('private.player.session.join.directives', [])
 })
 .directive('playerSessionTeamsList', function() {
   return {
-    templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-teams-list.tmpl.html',
+    templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/teams-list.html',
     scope: {
         teams : "=",
         joinTeam : "="
@@ -82,7 +82,7 @@ angular.module('private.player.session.join.directives', [])
 })
 .directive('playerSessionAddTeam', function(){
     return {
-        templateUrl: 'app/private/player/sessions/session-join/session-join-directives.tmpl/session-join-add-team.tmpl.html',
+        templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/add-team.html',
         scope: {
             newTeam: "=",
             createAndJoinTeam: "&",
