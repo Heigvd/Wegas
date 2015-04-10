@@ -758,16 +758,16 @@ angular.module('wegas.models.sessions', [])
         /* Delete all archived sessions. */
         model.deleteArchivedSessions = function() {
             var deferred = $q.defer();
-            if(sessions.cache.archived.data.length > 0){
+            if (sessions.cache.archived.data.length > 0) {
                 $http.delete(ServiceURL + "rest/GameModel/Game").success(function(data) {
-                    if(data){
+                    if (data) {
                         sessions.cache.archived.data = [];
                         deferred.resolve(Responses.success("All archives deleted", true));
                     }
                 }).error(function(data) {
                     deferred.resolve(Responses.danger("Error during archives suppression", false));
                 });
-            }else{
+            } else {
                 deferred.resolve(Responses.info("No session archived", true));
             }
             return deferred.promise;

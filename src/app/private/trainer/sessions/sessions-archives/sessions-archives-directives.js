@@ -17,57 +17,57 @@ angular.module('private.trainer.sessions.archives.directives', [])
                 if (response.isErroneous()) {
                     response.flash();
                 }
-                if(ctrl.archives.length == 0){
+                if (ctrl.archives.length == 0) {
                     $scope.close();
                 }
             });
         };
 
-        ctrl.unarchiveSession = function(sessionToUnarchive){
-            if(sessionToUnarchive){
-                SessionsModel.unarchiveSession(sessionToUnarchive).then(function(response){
+        ctrl.unarchiveSession = function(sessionToUnarchive) {
+            if (sessionToUnarchive) {
+                SessionsModel.unarchiveSession(sessionToUnarchive).then(function(response) {
                     response.flash();
-                    if(!response.isErroneous()){
+                    if (!response.isErroneous()) {
                         $rootScope.$emit('changeArchives', true);
                         ctrl.updateSessions();
                     }
                 });
-            }else{
+            } else {
                 Flash.danger("No scenario choosed");
             }
         };
 
-        ctrl.deleteArchivedSession = function(sessionToDelete){
-            if(sessionToDelete){
-                SessionsModel.deleteArchivedSession(sessionToDelete).then(function(response){
+        ctrl.deleteArchivedSession = function(sessionToDelete) {
+            if (sessionToDelete) {
+                SessionsModel.deleteArchivedSession(sessionToDelete).then(function(response) {
                     response.flash();
-                    if(!response.isErroneous()){
+                    if (!response.isErroneous()) {
                         $rootScope.$emit('changeArchives', true);
                         ctrl.updateSessions();
                     }
                 });
-            }else{
+            } else {
                 Flash.danger("No scenario choosed");
             }
         };
 
-        ctrl.deleteArchivedSessions = function(){
-            if(ctrl.archives.length > 0){
-                SessionsModel.deleteArchivedSessions().then(function(response){
+        ctrl.deleteArchivedSessions = function() {
+            if (ctrl.archives.length > 0) {
+                SessionsModel.deleteArchivedSessions().then(function(response) {
                     response.flash();
-                    if(!response.isErroneous()){
+                    if (!response.isErroneous()) {
                         $rootScope.$emit('changeArchives', true);
                         ctrl.updateSessions();
                     }
                 });
-            }else{
+            } else {
                 Flash.danger("No scenario archived");
             }
         };
 
         /* Listen for new session */
-        $rootScope.$on('changeArchives', function(e, hasNewData){
-            if(hasNewData){
+        $rootScope.$on('changeArchives', function(e, hasNewData) {
+            if (hasNewData) {
                 ctrl.updateSessions();
             }
         });
@@ -83,5 +83,4 @@ angular.module('private.trainer.sessions.archives.directives', [])
             },
             templateUrl: 'app/private/trainer/sessions/sessions-archives/sessions-archives-directives.tmpl/sessions-archives-list.tmpl.html'
         };
-    })
-    ;
+    });

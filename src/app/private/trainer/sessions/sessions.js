@@ -3,16 +3,15 @@ angular.module('private.trainer.sessions', [
     'private.trainer.sessions.archives',
     'private.trainer.sessions.directives'
 ])
-.config(function ($stateProvider) {
-    $stateProvider
-        .state('wegas.private.trainer.sessions', {
-            url: '/sessions',
-            views: {
-                'workspace@wegas.private': {
-                    controller: 'TrainerCtrl as trainerCtrl',
-                    templateUrl: 'app/private/trainer/sessions/sessions.tmpl.html'
+    .config(function($stateProvider) {
+        $stateProvider
+            .state('wegas.private.trainer.sessions', {
+                url: '/sessions',
+                views: {
+                    'workspace@wegas.private': {
+                        controller: 'TrainerCtrl as trainerCtrl',
+                        templateUrl: 'app/private/trainer/sessions/sessions.tmpl.html'
+                    }
                 }
-            }
-        })
-    ;
-});
+            });
+    });
