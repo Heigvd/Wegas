@@ -89,7 +89,7 @@
 			}
 		}
 
-		&.modal__nav__3tab{
+		&.modal__nav--3tab{
 			.modal__nav__tab--left{
 				width:33%;
 				float:left;
@@ -211,6 +211,18 @@
 		.modal__tools {
 			padding:8px 16px;
 			.button{
+				float:right;
+			}
+		}
+	}
+
+	&.modal--customize{
+		.modal__tools {
+			padding:8px 16px;
+			.modal__tools__button-cancel{
+				float:left;
+			}
+			.modal__tools__button-save{
 				float:right;
 			}
 		}

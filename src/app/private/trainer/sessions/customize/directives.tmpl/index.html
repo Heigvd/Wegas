@@ -1,0 +1,25 @@
+<div class="modal__header">
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{customizeIndexCtrl.session.properties.iconUri}}"></div>
+	<h5 class="modal__title">{{customizeIndexCtrl.session.name}}</h5>
+	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+   		<span class="button__label">Close</span>
+	</a>
+</div>
+<div class="modal__nav modal__nav--3tab">
+   	<a 	class="modal__nav__tab modal__nav__tab--left" 
+   		ng-class="{'modal__nav__tab--active': customizeIndexCtrl.infosTabActived}">Infos</a> 
+   	<a 	class="modal__nav__tab modal__nav__tab--middle"  
+   		ng-class="{'modal__nav__tab--active': customizeIndexCtrl.iconTabActived}">Icon</a> 
+	<a 
+   		class="modal__nav__tab modal__nav__tab--right"  
+   		ng-class="{'modal__nav__tab--active': customizeIndexCtrl.colorTabActived}">Color</a> 
+</div>
+<div class="modal__content"></div>
+<div class="modal__tools">
+	<a class="modal__tools__button-cancel button button--small button--default button--undo">
+   		<span class="button__label">Cancel</span>
+	</a>
+	<a class="modal__tools__button-save button button--small button--default button--valid">
+   		<span class="button__label">Save change</span>
+	</a>
+</div>
