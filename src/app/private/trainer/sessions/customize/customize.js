@@ -11,7 +11,7 @@ angular.module('private.trainer.sessions.customize', [])
             });
     }).controller("TrainerSessionsCustomizeController", function TrainerSessionsCustomizeController($animate, $state, ModalService) {
         ModalService.showModal({
-            templateUrl: 'app/private/trainer/sessions/session-customize/session-customize.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/customize/customize.tmpl.html',
             controller: "ModalsController as modalsCtrl"
         }).then(function(modal) {
             var box = $(".modal"),

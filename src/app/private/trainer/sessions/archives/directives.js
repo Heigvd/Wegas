@@ -4,7 +4,7 @@ angular.module('private.trainer.sessions.archives.directives', [])
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/trainer/sessions/sessions-archives/sessions-archives-directives.tmpl/sessions-archives-index.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/archives/directives.tmpl/index.html',
             controller: "TrainerSessionsArchivesIndexController as trainerSessionsArchivesIndexCtrl"
         };
     }).controller("TrainerSessionsArchivesIndexController", function TrainerSessionsArchivesIndexController($rootScope, $scope, SessionsModel, Flash) {
@@ -81,6 +81,6 @@ angular.module('private.trainer.sessions.archives.directives', [])
                 delete: "=",
                 unarchive: "="
             },
-            templateUrl: 'app/private/trainer/sessions/sessions-archives/sessions-archives-directives.tmpl/sessions-archives-list.tmpl.html'
+            templateUrl: 'app/private/trainer/sessions/archives/directives.tmpl/list.html'
         };
     });

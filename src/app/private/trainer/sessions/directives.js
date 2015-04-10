@@ -2,7 +2,7 @@ angular.module('private.trainer.sessions.directives', [
 ])
 .directive('trainerSessionsIndex', function(){
   return {
-    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-index.tmpl.html',
+    templateUrl: 'app/private/trainer/sessions/directives.tmpl/index.html',
     controller : "TrainerSessionsController as trainerSessionsCtrl"
   };
 })
@@ -62,7 +62,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
-    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-add-form.tmpl.html',
+    templateUrl: 'app/private/trainer/sessions/directives.tmpl/add-form.html',
     scope: false, 
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
@@ -98,7 +98,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSessionsList', function() {
   return {
-    templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/sessions-list.tmpl.html',
+    templateUrl: 'app/private/trainer/sessions/directives.tmpl/list.html',
     scope: {
         sessions : "=",
         search : "=",
@@ -108,7 +108,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSession', function(Flash) {
     return {
-        templateUrl: 'app/private/trainer/sessions/sessions-directives.tmpl/session-card.tmpl.html',
+        templateUrl: 'app/private/trainer/sessions/directives.tmpl/card.tmpl.html',
         restrict: 'A',
         require: "^trainerSessionsIndex",
         scope: {

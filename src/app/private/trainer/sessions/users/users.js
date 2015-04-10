@@ -14,7 +14,7 @@ angular.module('private.trainer.sessions.users', [
     ;
 }).controller("TrainerSessionsUsersController", function TrainerSessionsUsersController($animate, $state, ModalService){
     ModalService.showModal({
-        templateUrl: 'app/private/trainer/sessions/session-users/session-users.tmpl.html',
+        templateUrl: 'app/private/trainer/sessions/users/users.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),

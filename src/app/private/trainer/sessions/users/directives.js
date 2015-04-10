@@ -6,7 +6,7 @@ angular.module('private.trainer.sessions.users.directives', [
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/trainer/sessions/session-users/session-users-directives.tmpl/session-users-index.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/users/directives.tmpl/index.html',
             controller: "TrainerSessionsUsersIndexCtrl as usersIndexCtrl"
         };
     }).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel, Flash) {
@@ -66,7 +66,7 @@ angular.module('private.trainer.sessions.users.directives', [
     })
     .directive('trainerSessionsUsersTrainersList', function() {
         return {
-            templateUrl: 'app/private/trainer/sessions/session-users/session-users-directives.tmpl/session-users-trainers-list.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/users/directives.tmpl/trainers-list.html',
             restrict: 'A',
             require: "^trainerSessionsUsersIndex",
             scope: {
@@ -81,7 +81,7 @@ angular.module('private.trainer.sessions.users.directives', [
     })
     .directive('trainerSessionsUsersIndividualList', function() {
         return {
-            templateUrl: 'app/private/trainer/sessions/session-users/session-users-directives.tmpl/session-users-individual-list.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/users/directives.tmpl/individual-list.html',
             restrict: 'A',
             require: "^trainerSessionsUsersIndex",
             scope: {
@@ -96,7 +96,7 @@ angular.module('private.trainer.sessions.users.directives', [
     })
     .directive('trainerSessionsUsersTeamList', function() {
         return {
-            templateUrl: 'app/private/trainer/sessions/session-users/session-users-directives.tmpl/session-users-team-list.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/users/directives.tmpl/team-list.html',
             restrict: 'A',
             require: "^trainerSessionsUsersIndex",
             scope: {

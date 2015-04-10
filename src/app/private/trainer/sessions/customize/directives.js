@@ -5,10 +5,10 @@ angular.module('private.trainer.sessions.customize.directives', [
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/trainer/sessions/session-customize/session-customize-directives.tmpl/session-users-index.tmpl.html',
-            controller: "TrainerSessionsUsersIndexCtrl as usersIndexCtrl"
+            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/index.html',
+            controller: "TrainerSessionsCustomizeIndexController as customizeIndexController"
         };
-    }).controller("TrainerSessionsUsersIndexCtrl", function TrainerSessionsUsersIndexCtrl($stateParams, SessionsModel, Flash) {
+    }).controller("TrainerSessionsCustomizeIndexController", function TrainerSessionsCustomizeIndexController($stateParams, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.session = {},
         ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];

@@ -13,7 +13,7 @@ angular.module('private.trainer.sessions.archives', [
             });
     }).controller("TrainerSessionsArchivesController", function TrainerSessionsArchivesController($animate, $state, ModalService) {
         ModalService.showModal({
-            templateUrl: 'app/private/trainer/sessions/sessions-archives/sessions-archives.tmpl.html',
+            templateUrl: 'app/private/trainer/sessions/archives/archives.tmpl.html',
             controller: "ModalsController as modalsCtrl"
         }).then(function(modal) {
             var box = $(".modal"),
