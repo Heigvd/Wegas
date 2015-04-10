@@ -1,9 +1,9 @@
 angular
-.module('private.profile.directives', [
+    .module('private.profile.directives', [
 
-])
-.directive('profileIndex', function(UsersModel){
-    return {
+    ])
+    .directive('profileIndex', function(UsersModel) {
+        return {
             templateUrl: 'app/private/profile/tmpl/profile-index.html',
             controller: function($scope, $stateParams, $sce, $rootScope, Auth, Flash) {
                 var ctrl = this;
@@ -33,27 +33,27 @@ angular
                         $scope.user.password2 = '';
                     });
                 }
+
+
             }
+        };
+    })
+    .directive('profileContent', function() {
+        return {
+            templateUrl: 'app/private/profile/tmpl/profile-content.html',
+            scope: true,
+            require: "^profileIndex",
+            link: function($scope, element, attrs, parentCtrl) {
 
-        }
-    };
-})
-.directive('profileContent', function(){
-    return {
-        templateUrl: 'app/private/profile/tmpl/profile-content.html',
-        scope: true,
-        require: "^profileIndex",
-        link : function($scope, element, attrs, parentCtrl) {
+                $scope.$watch(function() {
+                    return $scope.$parent.user
+                }, function(n, o) {
+                    $scope.user = n;
+                });
+                $scope.updateInformations = function() {
+                    parentCtrl.updateInformations();
+                }
 
-            $scope.$watch(function() {
-                return $scope.$parent.user
-            } , function(n,o) {
-                $scope.user = n;
-            });
-            $scope.updateInformations = function() {
-                parentCtrl.updateInformations();
             }
-
-        }
-    };
-})
+        };
+    })
