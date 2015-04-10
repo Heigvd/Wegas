@@ -22,9 +22,6 @@ angular.module('private.scenarist.scenarios.directives', [
         $rootScope.$on('scenarios', function(e, newScenarios){
             if (newScenarios) {
                 ctrl.updateScenarios();
-            }
-        });
-        ctrl.updateScenarios();
 
         ctrl.editName = function(scenario) {
             ScenariosModel.updateScenario(scenario).then(function(response) {
@@ -52,7 +49,7 @@ angular.module('private.scenarist.scenarios.directives', [
                     } else {
                         ctrl.updateScenarios();
                     }
-                });
+                };
             }
         };
         ctrl.createScenario = function (name, basedOn) {
@@ -121,7 +118,14 @@ angular.module('private.scenarist.scenarios.directives', [
                     return s.name.toLowerCase().indexOf($scope.search.toLowerCase()) > -1;
                 });
 
-            }
+                ScenariosModel.createScenario(scope.newScenario.name, scope.newScenario.basedOn.id).then(function(result) {
+                    if (result.id !== undefined) {
+                        parentCtrl.scenarios.push(result);
+                    } else {
+                        alert(result);
+                    }
+                });
+            };
         }
         $scope.loadMore = function() {
             if ($scope.busy || $scope.search != '' || $scope.myScenarios.length == 0) return;
@@ -162,44 +166,66 @@ angular.module('private.scenarist.scenarios.directives', [
             }
             scope.copy = scope.scenario;
 
-            // Public parameters
-            scope.editingName = false;
-            scope.editingComments = false;
-            resetScenarioToSet();
 
-            scope.archiveScenario = function (scenario) {
-                parentCtrl.archiveScenario(scenario);
+                        $scope.filter();
+                    }
+                });
             }
-            // Public function
-            scope.toogleEditingName = function(){
-                if(scope.editingComments){
-                    scope.toogleEditingComments();
+        };
+    })
+    .directive('scenarioCard', function() {
+        return {
+            templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-card.tmpl.html',
+            restrict: 'A',
+            require: "^scenaristScenariosIndex",
+            scope: {
+                scenario: '='
+            },
+            link: function(scope, element, attrs, parentCtrl) {
+                // Private function
+                var resetScenarioToSet = function() {
+                    scope.copy = scope.scenario;
                 }
-                scope.editingName = (!scope.editingName);
+                scope.copy = scope.scenario;
+
+                // Public parameters
+                scope.editingName = false;
+                scope.editingComments = false;
                 resetScenarioToSet();
-            };
 
-            // Public function
-            scope.editName = function(){
-                parentCtrl.editName(scope.copy);
-                scope.toogleEditingName();
-            };
+                scope.archiveScenario = function(scenario) {
+                    parentCtrl.archiveScenario(scenario);
+                }
+                // Public function
+                scope.toogleEditingName = function() {
+                    if (scope.editingComments) {
+                        scope.toogleEditingComments();
+                    }
+                    scope.editingName = (!scope.editingName);
+                    resetScenarioToSet();
+                };
 
-            // Public function
-            scope.toogleEditingComments = function(){
-                if(scope.editingName){
+                // Public function
+                scope.editName = function() {
+                    parentCtrl.editName(scope.copy);
                     scope.toogleEditingName();
-                }
-                scope.editingComments = (!scope.editingComments);
-                resetScenarioToSet();
-            };
+                };
 
-            // Public function
-            scope.editComments = function(){
-                parentCtrl.editComments(scope.copy);
-                scope.toogleEditingComments();
-            };
+                // Public function
+                scope.toogleEditingComments = function() {
+                    if (scope.editingName) {
+                        scope.toogleEditingName();
+                    }
+                    scope.editingComments = (!scope.editingComments);
+                    resetScenarioToSet();
+                };
 
+                // Public function
+                scope.editComments = function() {
+                    parentCtrl.editComments(scope.copy);
+                    scope.toogleEditingComments();
+                };
+
+            }
         }
-    }
-});
+    });

@@ -46,10 +46,28 @@ angular
 
             scope.restrictRoles = ["Administrator", "Scenarist"];
 
-            scope.callbackSearchUser = function(selection) {
-                scope.selected_user = selection;
-                scope.addNewCoscenarist();
+                scope.addNewCoscenarist = function() {
+                    if (scope.selected_user.id) {
+                        ScenariosModel.updatePermissions(scope.scenario.id,
+                            scope.selected_user.id, true, false, false).then(function(result) {
+                            parentCtrl.updateScenario();
+                        });
+                    }
+                };
             }
+        };
+    })
+    .directive('scenaristCoscenaristsList', function(ScenariosModel) {
+        return {
+            templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-list.html',
+            scope: false,
+            require: "^scenaristCoscenaristsIndex",
+            link: function(scope, element, attrs, parentCtrl) {
+                scope.$watch(function() {
+                    return parentCtrl.permissions
+                }, function(newPermissions, permissions) {
+                    scope.permissions = newPermissions;
+                });
 
             scope.addNewCoscenarist = function() {
                 if (scope.selected_user.id) {
@@ -93,16 +111,16 @@ angular
                 });
             }
 
-        },
-    };
-})
+            },
+        };
+    })
 
 .directive('scenaristCoscenaristsUserPermissions', function(ScenariosModel) {
     return {
         templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists-user-permissions.html',
         scope: false,
         require: "^scenaristCoscenaristsIndex",
-        link : function(scope, element, attrs, parentCtrl) {
+        link: function(scope, element, attrs, parentCtrl) {
 
             function calculatePermissions() {
                 scope.canEdit = _.contains(scope.permission.permissions, "Duplicate") &&
