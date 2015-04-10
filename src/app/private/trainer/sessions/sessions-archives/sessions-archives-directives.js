@@ -5,9 +5,9 @@ angular.module('private.trainer.sessions.archives.directives', [])
                 close: "&"
             },
             templateUrl: 'app/private/trainer/sessions/sessions-archives/sessions-archives-directives.tmpl/sessions-archives-index.tmpl.html',
-            controller: "TrainerSessionsArchivesController as trainerSessionsArchivesCtrl"
+            controller: "TrainerSessionsArchivesIndexController as trainerSessionsArchivesIndexCtrl"
         };
-    }).controller("TrainerSessionsArchivesController", function TrainerSessionsArchivesController($rootScope, $scope, SessionsModel, Flash) {
+    }).controller("TrainerSessionsArchivesIndexController", function TrainerSessionsArchivesIndexController($rootScope, $scope, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
 

@@ -7,12 +7,12 @@ angular.module('private.trainer.sessions.users', [
             url: '/:id/users',
             views: {
                 'modal@wegas.private':{
-                    controller: 'TrainerSessionsUsers'
+                    controller: 'TrainerSessionsUsersController'
                 }
             }
         })
     ;
-}).controller("TrainerSessionsUsers", function TrainerSessionsUsers($animate, $state, ModalService){
+}).controller("TrainerSessionsUsersController", function TrainerSessionsUsersController($animate, $state, ModalService){
     ModalService.showModal({
         templateUrl: 'app/private/trainer/sessions/session-users/session-users.tmpl.html',
         controller: "ModalsController as modalsCtrl"
