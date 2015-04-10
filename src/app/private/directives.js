@@ -3,7 +3,7 @@ angular.module('private.directives', [
   ])
 .directive('privateSidebar', function($state, ViewInfos, Auth) {
   return {
-    templateUrl: 'app/private/private-sidebar.tmpl.html',
+    templateUrl: 'app/private/directives.tmpl/sidebar.html',
     link: function (scope, element, attrs) {
       
       Auth.getAuthenticatedUser().then(function(user){
