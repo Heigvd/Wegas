@@ -207,6 +207,14 @@
 			}
 		}
 	}
+	&.modal--archives{
+		.modal__tools {
+			padding:8px 16px;
+			.button{
+				float:right;
+			}
+		}
+	}
 }
 
 .shadow{

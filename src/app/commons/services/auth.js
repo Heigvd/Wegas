@@ -1,17 +1,18 @@
 angular.module('wegas.service.auth', [
     'wegas.models.sessions'
-])
-    .service('Auth', function($http, $q, Responses) {
+    ])
+    .service('Auth', function ($http, $q, Responses) {
         var service = this,
             authenticatedUser = null,
             rights = null;
 
-        service.getAuthenticatedUser = function() {
+        service.getAuthenticatedUser = function(){
             var deferred = $q.defer();
-            if (authenticatedUser != null) {
+            if(authenticatedUser != null){
                 deferred.resolve(authenticatedUser);
-            } else {
-                $http.get(ServiceURL + "rest/User/Current").success(function(data) {
+            }else{
+                $http.get(ServiceURL
+                 + "rest/User/Current").success(function(data){
                     authenticatedUser = {
                         id: data.id,
                         jpaId: data.accounts[0].id,
@@ -23,10 +24,10 @@ angular.module('wegas.service.auth', [
                         isScenarist: false,
                         isAdmin: false
                     };
-                    $http.get(ServiceURL + "rest/Extended/User/" + authenticatedUser.id).success(function(data) {
+                    $http.get(ServiceURL + "rest/Extended/User/" + authenticatedUser.id).success(function(data){
                         rights = data.accounts[0].roles;
-                        rights.forEach(function(elem) {
-                            switch (elem.name) {
+                        rights.forEach(function(elem){
+                            switch(elem.name){
                                 case "Trainer":
                                     authenticatedUser.isTrainer = true;
                                     break;
@@ -40,7 +41,7 @@ angular.module('wegas.service.auth', [
                         });
                         deferred.resolve(authenticatedUser);
                     });
-                }).error(function(data) {
+                }).error(function(data){
                     authenticatedUser = null;
                     deferred.resolve(authenticatedUser);
                 });
@@ -48,65 +49,61 @@ angular.module('wegas.service.auth', [
             return deferred.promise;
         };
 
-        service.login = function(login, password) {
+        service.login = function(login, password){
             var deferred = $q.defer();
-            var AuthenticationInformation = {
-                "@class": "AuthenticationInformation",
-                "login": login,
-                "password": password,
-                "remember": true
-            }
-            $http.post(ServiceURL + "rest/User/Authenticate", AuthenticationInformation).success(function(data) {
+            var AuthenticationInformation = {"@class":"AuthenticationInformation","login":login,"password":password,"remember":true}
+            $http.post(ServiceURL + "rest/User/Authenticate", AuthenticationInformation).success(function(data){
                 deferred.resolve(true);
                 service.getAuthenticatedUser();
-            }).error(function(data) {
+            }).error(function(data){
                 deferred.resolve(false);
             });
             return deferred.promise;
         };
-
-        service.logout = function() {
+        
+        service.logout = function(){
             var deferred = $q.defer();
-            $http.get(ServiceURL + "logout").success(function(data) {
+            $http.get(ServiceURL + "logout").success(function(data){
                 authenticatedUser = null;
                 deferred.resolve(Responses.success("Logout successfully", true));
-            }).error(function(data) {
+            }).error(function(data){
                 deferred.resolve(Responses.error("Error when logout", false));
             });
             return deferred.promise;
         };
 
-        service.signup = function(email, password) {
+        service.signup = function (email, password) {
             var obj = {
-                "@class": "JpaAccount",
-                "email": email,
-                "password": password
+                "@class"    : "JpaAccount",
+                "email"     : email,
+                "password"  : password
             }
             var deferred = $q.defer();
-            $http.post(ServiceURL + "rest/User/Signup", obj)
-                .success(function(data) {
-                    deferred.resolve(true);
-                })
-                .error(function(data) {
-                    deferred.resolve(data);
-                });
+            $http.post(ServiceURL + "rest/User/Signup",obj)
+            .success(function (data){
+                deferred.resolve(true);
+            })
+            .error(function (data) {
+                deferred.resolve(data);
+            });
             return deferred.promise;
         };
 
-        service.remindPassword = function(email) {
+        service.remindPassword = function (email) {
             var obj = {
-                "email": email
+                "email" : email
             };
             var deferred = $q.defer();
 
-            $http.post(ServiceURL + "rest/User/SendNewPassword", obj)
-                .success(function(data) {
-                    deferred.resolve(true);
-                })
-                .error(function(data) {
-                    deferred.resolve(data);
-                });
+            $http.post(ServiceURL + "rest/User/SendNewPassword",obj)
+            .success(function (data){
+                deferred.resolve(true);
+            })
+            .error(function (data) {
+                deferred.resolve(data);
+            });
 
             return deferred.promise;
         };
-    });
+    })
+;

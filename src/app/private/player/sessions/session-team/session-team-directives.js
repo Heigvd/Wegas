@@ -16,8 +16,8 @@ angular.module('private.player.session.team.directives', [])
         /* Initialize datas */
         Auth.getAuthenticatedUser().then(function(user) {
             if (user !== null) {
-                SessionsModel.getPlayedSession($stateParams.id).then(function(response) {
-                    if (response.isErroneous) {
+                SessionsModel.getSession("played", $stateParams.id).then(function(response) {
+                    if (response.isErroneous()) {
                         $scope.close();
                     } else {
                         if (!response.data.properties.freeForAll) {

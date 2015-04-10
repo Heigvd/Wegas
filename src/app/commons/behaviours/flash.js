@@ -6,10 +6,10 @@ angular
 
             var emit = function() {
                 $rootScope.$emit('flash:message', messages);
-            };
+            }
 
             var addMessages = function(level, text) {
-                messages = asArrayOfMessages(level, text);
+                messages = asArrayOfMessages(level, text)
                 emit();
                 $timeout(function() {
                     removeMessages();
@@ -19,7 +19,7 @@ angular
             var removeMessages = function() {
                 messages = [];
                 emit();
-            };
+            }
 
             $rootScope.$on('$locationChangeSuccess', emit);
 
@@ -48,7 +48,7 @@ angular
                 addMessages(level, text);
             };
 
-            ['error', 'warning', 'info', 'success'].forEach(function(level) {
+            ['danger', 'warning', 'info', 'success'].forEach(function(level) {
                 flash[level] = function(text) {
                     flash(level, text);
                 };
