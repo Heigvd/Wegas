@@ -108,7 +108,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSession', function(Flash) {
     return {
-        templateUrl: 'app/private/trainer/sessions/directives.tmpl/card.tmpl.html',
+        templateUrl: 'app/private/trainer/sessions/directives.tmpl/card.html',
         restrict: 'A',
         require: "^trainerSessionsIndex",
         scope: {
