@@ -16,7 +16,7 @@ angular
 .controller("ScenaristHistory", function ScenaristHistory($animate, $state, ModalService){
 
     ModalService.showModal({
-        templateUrl: 'app/private/scenarist/history/tmpl/history.html',
+        templateUrl: 'app/private/scenarist/history/history.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),

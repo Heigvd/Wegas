@@ -1,0 +1,19 @@
+<div class="modal__header">
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_archive"></div>
+	<h5 class="modal__title">Archives</h5>
+	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+   		<span class="button__label">Close</span>
+	</a>
+</div>
+<div 
+	class="modal__content modal__content--nav-off" 
+	sessions="trainerSessionsArchivesIndexCtrl.archives"
+	delete="trainerSessionsArchivesIndexCtrl.deleteArchivedSession"
+	unarchive="trainerSessionsArchivesIndexCtrl.unarchiveSession"
+	trainer-sessions-archives-list
+></div>
+<div class="modal__tools">
+	<a class="button button--small button--default button--trash" ng-click="trainerSessionsArchivesIndexCtrl.deleteArchivedSessions()">
+   		<span class="button__label">Remove all</span>
+	</a>
+</div>

@@ -1,6 +1,7 @@
 angular.module('private.trainer.sessions', [
-    'private.trainer.sessions.users',
     'private.trainer.sessions.archives',
+    'private.trainer.sessions.users',
+    'private.trainer.sessions.customize',
     'private.trainer.sessions.directives'
 ])
     .config(function($stateProvider) {

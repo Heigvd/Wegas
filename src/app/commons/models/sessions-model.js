@@ -635,11 +635,13 @@ angular.module('wegas.models.sessions', [])
                         } else {
                             newTeam.name = teamName;
                             $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team) {
-                                cachedSession = cacheTeam(cachedSession, team);
+                                session = cacheTeam(session, team);
                                 if (u.isTrainer || u.isScenarist || u.isAdmin) {
                                     sessions.findSession("managed", session.id).then(function(managedSession) {
                                         if (managedSession) {
                                             managedSession = cacheTeam(managedSession, team);
+                                            deferred.resolve(Responses.success("Team created", team));
+                                        }else{                                            
                                             deferred.resolve(Responses.success("Team created", team));
                                         }
                                     });
@@ -651,7 +653,6 @@ angular.module('wegas.models.sessions', [])
                             });
                         }
                     });
-
                 } else {
                     deferred.resolve(Responses.danger("You need to be logged", false));
                 }
