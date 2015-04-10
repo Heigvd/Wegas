@@ -3,7 +3,7 @@ angular.module('private.scenarist.scenarios.directives', [
     ])
 .directive('scenaristScenariosIndex', function(ScenariosModel){
   return {
-    templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-index.tmpl.html',
+    templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/index.html',
     controller : function($scope, $rootScope, Flash) {
         var ctrl = this;
         $scope.scenarios = [];
@@ -79,7 +79,7 @@ angular.module('private.scenarist.scenarios.directives', [
 
 .directive('scenaristScenarioCreate', function(ScenariosModel) {
   return {
-    templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenario-create.tmpl.html',
+    templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/create.html',
     scope: false,
     require: "^scenaristScenariosIndex",
     link : function(scope, element, attrs, parentCtrl) {
@@ -100,7 +100,7 @@ angular.module('private.scenarist.scenarios.directives', [
 })
 .directive('scenaristScenariosList', function(ScenariosModel) {
   return {
-    templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-list.tmpl.html',
+    templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/list.html',
     scope: false,
     require: "^scenaristScenariosIndex",
     link : function($scope, element, attrs, parentCtrl) {
@@ -149,7 +149,7 @@ angular.module('private.scenarist.scenarios.directives', [
 })
 .directive('scenarioCard', function() {
     return {
-        templateUrl: 'app/private/scenarist/scenarios/scenarios-directives.tmpl/scenarios-card.tmpl.html',
+        templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/card.html',
         restrict: 'A',
         require: "^scenaristScenariosIndex",
         scope: {

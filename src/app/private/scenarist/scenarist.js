@@ -30,8 +30,5 @@ angular.module('private.scenarist', [
                 }
             }
         }
-
-
-
     });
 });

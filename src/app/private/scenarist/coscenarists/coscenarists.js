@@ -15,7 +15,7 @@ angular
 })
 .controller('CoscenaristsCtrl', function CoscenaristsCtrl($animate, $state, ModalService) {
     ModalService.showModal({
-        templateUrl: 'app/private/scenarist/coscenarists/tmpl/coscenarists.html',
+        templateUrl: 'app/private/scenarist/coscenarists/coscenarists.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),

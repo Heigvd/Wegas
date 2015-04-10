@@ -6,7 +6,7 @@ angular
 .directive('scenaristHistoryIndex', function(ScenariosModel){
     return {
 
-        templateUrl: 'app/private/scenarist/history/tmpl/history-index.html',
+        templateUrl: 'app/private/scenarist/history/directives.tmpl/index.html',
         controller : function($scope, $stateParams, $sce, $rootScope) {
             var ctrl = this;
 
@@ -48,7 +48,7 @@ angular
 })
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
-        templateUrl: 'app/private/scenarist/history/tmpl/history-actions.html',
+        templateUrl: 'app/private/scenarist/history/directives.tmpl/actions.html',
         scope: false,
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
@@ -102,7 +102,7 @@ angular
 })
 .directive('scenaristHistoryList', function(ScenariosModel){
     return {
-        templateUrl: 'app/private/scenarist/history/tmpl/history-list.html',
+        templateUrl: 'app/private/scenarist/history/directives.tmpl/list.html',
         scope: false,
         require: "^scenaristHistoryIndex",
         link : function(scope, element, attrs, parentCtrl) {
@@ -123,7 +123,7 @@ angular
 })
 .directive('scenaristHistoryCard', function(ScenariosModel){
     return {
-        templateUrl: 'app/private/scenarist/history/tmpl/history-card.html',
+        templateUrl: 'app/private/scenarist/history/directives.tmpl/card.html',
         scope: false,
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
