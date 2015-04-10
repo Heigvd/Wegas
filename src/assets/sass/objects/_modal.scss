@@ -217,6 +217,29 @@
 	}
 
 	&.modal--customize{
+		.modal__content{
+			.color{
+				float:left;
+				margin:16px;
+				border:solid 0px white;
+				transition:.3s;
+
+				&:hover{
+					@include material-shadow();
+					border:solid 0px white;
+					transition:.3s;
+					cursor:pointer;
+				}
+
+				&.color--selected{
+					border:solid 6px white;
+					@include material-shadow();
+					transition:.3s;
+					cursor:default;
+				}
+
+			}
+		}
 		.modal__tools {
 			padding:8px 16px;
 			.modal__tools__button-cancel{
