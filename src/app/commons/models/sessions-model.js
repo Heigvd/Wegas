@@ -439,11 +439,13 @@ angular.module('wegas.models.sessions', [])
 
         /* Update the comment of a session. */
         model.updateIconSession = function(sessionToSet) {
+            console.log(sessionToSet);
             var deferred = $q.defer();
             sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
-                if (sessionBeforeChange) {
-                    sessionBeforeChange.properties.iconUri = sessionToSet.properties.iconUri;
-                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange).success(function(data) {
+                if (sessionBeforeChange != undefined) {
+                    scenarioBeforeChange = sessionBeforeChange.gameModel;
+                    scenarioBeforeChange.properties.iconUri = sessionToSet.properties.iconUri;
+                    $http.put(ServiceURL + "rest/Public/GameModel/" + scenarioBeforeChange.id, scenarioBeforeChange).success(function(data) {
                         deferred.resolve(Responses.success("Session icon updated", data));
                     }).error(function(data) {
                         deferred.resolve(Responses.danger("Error during session icon update", false));
