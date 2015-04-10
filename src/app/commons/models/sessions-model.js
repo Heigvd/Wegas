@@ -20,7 +20,7 @@ angular.module('wegas.models.sessions', [])
                 },
                 archived: function() {
                     var deferred = $q.defer();
-                    deferred.resolve(ServiceURL + "rest/GameModel/Game/status/BIN?view=extended");
+                    deferred.resolve(ServiceURL + "rest/GameModel/Game/status/BIN?view=EditorExtended");
                     return deferred.promise;
                 }
             },
@@ -234,8 +234,55 @@ angular.module('wegas.models.sessions', [])
                     deferred.resolve(false);
                 }
                 return deferred.promise;
-            };
+            },
 
+            updateGameSession = function(sessionInfos, sessionBeforeChange) {
+                var deferred = $q.defer(),
+                    gameSetted = false;
+                if (sessionBeforeChange.name !== sessionInfos.name) {
+                    sessionBeforeChange.name = sessionInfos.name;
+                    gameSetted = true;
+                }
+                if (sessionBeforeChange.token !== sessionInfos.token) {
+                    sessionBeforeChange.token = sessionInfos.token;
+                    gameSetted = true;
+                }
+                if (gameSetted) {
+                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionBeforeChange.id, sessionBeforeChange).success(function(data) {
+                        deferred.resolve(Responses.success("Game updated", sessionBeforeChange));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger("Error during game update", false));
+                    });
+                } else {
+                    deferred.resolve(Responses.info("Nothing to set in game", sessionBeforeChange));
+                }
+                return deferred.promise;
+            },
+
+            updateGameModelSession = function(sessionInfos, sessionBeforeChange) {
+                var deferred = $q.defer(),
+                    gameModelSetted = false,
+                    scenarioBeforeChange = sessionBeforeChange.gameModel;
+
+                if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon)) {
+                    scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
+                    gameModelSetted = true;
+                }
+                if (scenarioBeforeChange.comments !== sessionInfos.comments) {
+                    scenarioBeforeChange.comments = sessionInfos.comments;
+                    gameModelSetted = true;
+                }
+                if (gameModelSetted) {
+                    $http.put(ServiceURL + "rest/Public/GameModel/" + scenarioBeforeChange.id, scenarioBeforeChange).success(function(data) {
+                        deferred.resolve(Responses.success("GameModel updated", data));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger("Error during gameModel update", false));
+                    });
+                } else {
+                    deferred.resolve(Responses.info("Nothing to set in gameModel", scenarioBeforeChange));
+                }
+                return deferred.promise;
+            };
 
         /*  ---------------------------------
     COMMON SERVICES
@@ -404,6 +451,39 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
+        model.updateSession = function(id, infosToSet) {
+            var deferred = $q.defer(),
+                checkToken = /^[A-Za-z0-9\-]+$/;
+            if (id && infosToSet) {
+                sessions.findSession("managed", id).then(function(sessionBeforeChange) {
+                    if (sessionBeforeChange) {
+                        if (infosToSet.token.match(checkToken)) {
+                            updateGameSession(infosToSet, sessionBeforeChange).then(function(responseGame) {
+                                if (!responseGame.isErroneous()) {
+                                    updateGameModelSession(infosToSet, responseGame.data).then(function(responseGameModel) {
+                                        if (!responseGameModel.isErroneous()) {
+                                            deferred.resolve(Responses.success("Session up-to-date", responseGameModel.data));
+                                        } else {
+                                            deferred.resolve(responseGameModel);
+                                        }
+                                    });
+                                } else {
+                                    deferred.resolve(responseGame);
+                                }
+                            });
+                        } else {
+                            deferred.resolve(Responses.danger("Invalid character in token, only alphanumeric character allowed.", false));
+                        }
+                    } else {
+                        deferred.resolve(Responses.danger("No session to update", false));
+                    }
+                });
+            } else {
+                deferred.resolve(Responses.danger("No session to update", false));
+            }
+            return deferred.promise;
+        };
+
         /* Update a name of a session. */
         model.updateNameSession = function(sessionToSet) {
             var deferred = $q.defer();
@@ -506,12 +586,9 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
-
-
-
         /*  ---------------------------------
-    SESSIONS SERVICES - PLAYER SIDE
-    --------------------------------- */
+            SESSIONS SERVICES - PLAYER SIDE
+            --------------------------------- */
 
         /* Get a session form token, undefined otherwise. */
         model.findSessionToJoin = function(token) {
@@ -659,7 +736,7 @@ angular.module('wegas.models.sessions', [])
                                         if (managedSession) {
                                             managedSession = cacheTeam(managedSession, team);
                                             deferred.resolve(Responses.success("Team created", team));
-                                        }else{                                            
+                                        } else {
                                             deferred.resolve(Responses.success("Team created", team));
                                         }
                                     });

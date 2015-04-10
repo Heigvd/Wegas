@@ -17,24 +17,31 @@ angular.module('private.trainer.sessions.customize.directives', [
                     icons: false,
                     colors: false
                 }
-            }
+            };
         ctrl.session = {};
-        ctrl.color = "orange";
-        ctrl.icon = "gamepad";
+        ctrl.infos = {
+            name : "",
+            token : "", 
+            comments :"",
+            color: "orange",
+            icon:"gamepad"
+        }
         ctrl.tabs = initTabs();
             
-
         ctrl.updateSession = function() {
             SessionsModel.getSession("managed", $stateParams.id, true).then(function(response) {
-                ctrl.session = response.data || {};
-                var infos = ctrl.session.properties.iconUri.split("_");
+                ctrl.session = response.data || {};                
                 if (response.isErroneous()) {
                     response.flash();
                 }else{
-                    if (infos.length == 3 && infos[0] == "ICON") {
-                        ctrl.color = infos[1];
-                        ctrl.icon = infos[2];
+                    var icon = ctrl.session.properties.iconUri.split("_");
+                    if (icon.length == 3 && icon[0] == "ICON") {
+                        ctrl.infos.color = icon[1];
+                        ctrl.infos.icon = icon[2];
                     }
+                    ctrl.infos.name = ctrl.session.name;
+                    ctrl.infos.token = ctrl.session.token;
+                    ctrl.infos.comments = ctrl.session.gameModel.comments;
                 }
             });
         };
@@ -45,23 +52,19 @@ angular.module('private.trainer.sessions.customize.directives', [
         }
 
         ctrl.changeColor = function(newColor) {
-            ctrl.color = newColor;
+            ctrl.infos.color = newColor;
         }
         ctrl.changeIcon = function(newIcon) {
-            console.log("Hello");
-            ctrl.icon = newIcon;
+            ctrl.infos.icon = newIcon;
         }
 
         ctrl.save = function() {
-            if(ctrl.session.properties.iconUri !== ("ICON_" + ctrl.color + "_" + ctrl.icon)){
-                ctrl.session.properties.iconUri = "ICON_" + ctrl.color + "_" + ctrl.icon;
-                SessionsModel.updateIconSession(ctrl.session).then(function(response){
-                    response.flash();
+            SessionsModel.updateSession(ctrl.session.id, ctrl.infos).then(function(response){
+                response.flash();
+                if(!response.isErroneous()){
                     $scope.close();
-                });
-            }else{
-                Flash.info("The session hasn't changed");
-            }
+                }
+            });
         };
 
         ctrl.cancel = function() {
@@ -73,7 +76,11 @@ angular.module('private.trainer.sessions.customize.directives', [
     })
     .directive('trainerSessionsCustomizeInfos', function() {
         return {
-            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/infos-form.html',
+            scope:{
+                activeInfos: "="
+            },
+            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/infos-form.html'
+
         }
     })
     .directive('trainerSessionsCustomizeIcons', function(Customize) {

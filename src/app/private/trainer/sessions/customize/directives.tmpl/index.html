@@ -1,5 +1,5 @@
 <div class="modal__header">
-	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{customizeIndexCtrl.color}}_{{customizeIndexCtrl.icon}}"></div>
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{customizeIndexCtrl.infos.color}}_{{customizeIndexCtrl.infos.icon}}"></div>
 	<h5 class="modal__title">{{customizeIndexCtrl.session.name}}</h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">Close</span>
@@ -18,18 +18,19 @@
    		ng-click="customizeIndexCtrl.activeTab('colors')">Colors</a> 
 </div>
 <div 	ng-if="customizeIndexCtrl.tabs.infos" 
-		class="modal__content" 
+		class="modal__content"
+		active-infos="customizeIndexCtrl.infos"
 		trainer-sessions-customize-infos>
 </div>
 <div 	ng-if="customizeIndexCtrl.tabs.icons" 
 		class="modal__content" 
+		active-icon="customizeIndexCtrl.infos.icon" 
 		change="customizeIndexCtrl.changeIcon" 
-		active-icon="customizeIndexCtrl.icon" 
 		trainer-sessions-customize-icons>
 </div>
 <div 	ng-if="customizeIndexCtrl.tabs.colors" 
 		class="modal__content" 
-		active-color="customizeIndexCtrl.color" 
+		active-color="customizeIndexCtrl.infos.color" 
 		change="customizeIndexCtrl.changeColor" 
 		trainer-sessions-customize-colors>
 </div>
