@@ -9,7 +9,7 @@ angular.module('private.trainer.sessions.customize.directives', [
             templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/index.html',
             controller: "TrainerSessionsCustomizeIndexController as customizeIndexCtrl"
         };
-    }).controller("TrainerSessionsCustomizeIndexController", function TrainerSessionsCustomizeIndexController($scope, $stateParams, SessionsModel) {
+    }).controller("TrainerSessionsCustomizeIndexController", function TrainerSessionsCustomizeIndexController($scope, $stateParams, SessionsModel, Flash) {
         var ctrl = this,
             initTabs = function() {
                 return {
@@ -47,10 +47,21 @@ angular.module('private.trainer.sessions.customize.directives', [
         ctrl.changeColor = function(newColor) {
             ctrl.color = newColor;
         }
+        ctrl.changeIcon = function(newIcon) {
+            console.log("Hello");
+            ctrl.icon = newIcon;
+        }
 
         ctrl.save = function() {
-            // Save changes
-            $scope.close();
+            if(ctrl.session.properties.iconUri !== ("ICON_" + ctrl.color + "_" + ctrl.icon)){
+                ctrl.session.properties.iconUri = "ICON_" + ctrl.color + "_" + ctrl.icon;
+                SessionsModel.updateIconSession(ctrl.session).then(function(response){
+                    response.flash();
+                    $scope.close();
+                });
+            }else{
+                Flash.info("The session hasn't changed");
+            }
         };
 
         ctrl.cancel = function() {
@@ -69,7 +80,8 @@ angular.module('private.trainer.sessions.customize.directives', [
         return {
             templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/icons-picker.html',
             scope: {
-                activeIcon: "="
+                activeIcon: "=",
+                change: "="
             },
             link: function(scope, element, attrs) {
                 scope.icons = Customize.iconsPalette();

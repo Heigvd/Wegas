@@ -218,6 +218,33 @@
 
 	&.modal--customize{
 		.modal__content{
+			.icon{
+				float:left;
+				margin:16px;
+				border:solid 0px white;
+				transition:.3s;
+				padding:6px 0px;
+				i{
+					line-height:54px;
+					transition:.3s;
+				}
+				&:hover{
+					@include material-shadow();
+					border:solid 0px white;
+					transition:.3s;
+					cursor:pointer;
+
+				}
+
+				&.icon--selected{
+					border:solid 6px white;
+					padding:0px;
+					@include material-shadow();
+					transition:.3s;
+					cursor:default;
+
+				}
+			}
 			.color{
 				float:left;
 				margin:16px;
@@ -237,7 +264,6 @@
 					transition:.3s;
 					cursor:default;
 				}
-
 			}
 		}
 		.modal__tools {

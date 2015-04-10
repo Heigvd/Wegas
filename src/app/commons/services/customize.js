@@ -5,8 +5,9 @@ angular.module('wegas.service.customize', [])
 		'purple','pink', 'green', 'grey'
 		],
 		icons = [
-			{name: "Automobile", icon:"car"},
-			{name: "Beer", icon:"beer"}
+			{name: "Game", key: "gamepad"},
+			{name: "Automobile", key:"car"},
+			{name: "Beer", key:"beer"}
 		];
 	return {
 		colorsPalette: function(){
