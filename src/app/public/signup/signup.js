@@ -7,7 +7,7 @@ angular.module('public.signup', [
             views: {
                 "form": {
                  	controller: 'PublicSignupCtrl as publicSignupCtrl',
-            		templateUrl: 'app/public/public-signup/public-signup.tmpl.html'
+            		templateUrl: 'app/public/signup/signup.tmpl.html'
                 }
             }
            

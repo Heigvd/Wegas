@@ -7,7 +7,7 @@ angular.module('public.password', [
             views: {
         		"form" :{
             		controller: 'PublicPasswordCtrl as publicPasswordCtrl',
-            		templateUrl: 'app/public/public-password/public-password.tmpl.html'
+            		templateUrl: 'app/public/password/password.tmpl.html'
             	}
             }
             

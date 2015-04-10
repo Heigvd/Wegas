@@ -14,7 +14,7 @@ angular.module('public', [
                 },
                 "form@wegas.public": {
                     controller: 'PublicLoginCtrl as publicLoginCtrl',
-                    templateUrl: 'app/public/public-login/public-login.tmpl.html'
+                    templateUrl: 'app/public/login/login.tmpl.html'
                 }
             }
         })
