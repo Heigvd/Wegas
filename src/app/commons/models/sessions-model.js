@@ -388,7 +388,7 @@ angular.module('wegas.models.sessions', [])
                     var newSession = {
                         "@class": "Game",
                         "gameModelId": scenarioId,
-                        "access": "ENROLMENTKEY",
+                        "access": "CLOSE",
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/Game/" + user.id + "?view=EditorExtended", newSession).success(function(data) {
@@ -444,7 +444,7 @@ angular.module('wegas.models.sessions', [])
             sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
                 if (sessionBeforeChange != undefined) {
                     if(sessionBeforeChange.access == "CLOSE"){
-                        sessionBeforeChange.access = "ENROLMENTKEY";
+                        sessionBeforeChange.access = "OPEN";
                         message = "Session opened";
                     }else{
                         sessionBeforeChange.access = "CLOSE";
@@ -526,7 +526,7 @@ angular.module('wegas.models.sessions', [])
                     data = formatPlayers(data)
                     deferred.resolve(Responses.success("Session find", data));
                 } else {
-                    deferred.resolve(Responses.danger("No Session find", data));
+                    deferred.resolve(Responses.danger("No Session find", false));
                 }
             }).error(function(data) {
                 deferred.resolve(Responses.danger("No session find", false));
@@ -649,7 +649,7 @@ angular.module('wegas.models.sessions', [])
                 };
             Auth.getAuthenticatedUser().then(function(u) {
                 if (u != null) {
-                    if(session.access !== "CLOSE"){
+                    if(session.access == "OPEN"){
                         sessions.findSession("played", session.id).then(function(cachedSession) {
                             if (cachedSession) {
                                 deferred.resolve(Responses.info("You have already join this session", false));
