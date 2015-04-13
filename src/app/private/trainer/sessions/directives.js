@@ -8,15 +8,34 @@ angular.module('private.trainer.sessions.directives', [
 })
 .controller("TrainerSessionsController", function TrainerSessionsController($rootScope, SessionsModel, Flash){
     var ctrl = this;
+        ctrl.loading = {
+            sessions :true,
+            archives : true,
+            all: true
+        };
         ctrl.search = "";
         ctrl.sessions = [];
         ctrl.archives = [];
    
     ctrl.updateSessions = function(){
+        ctrl.sessions = [];
+        ctrl.loading = {
+            sessions :true,
+            archives : true,
+            all: true
+        };
         SessionsModel.getSessions("managed").then(function(response){
+            ctrl.loading.sessions = false;
+            if(ctrl.loading.archives){
+                ctrl.loading.all = false;
+            }
             ctrl.sessions = response.data || [];
         });
         SessionsModel.getSessions("archived").then(function(response){
+            ctrl.loading.archives = false;
+            if(ctrl.loading.sessions){
+                ctrl.loading.all = false;
+            }
             ctrl.archives = response.data || [];
         });
     };
@@ -36,6 +55,16 @@ angular.module('private.trainer.sessions.directives', [
             }
         });
     };
+
+    ctrl.editAccess = function(sessionToSet){
+        SessionsModel.updateAccessSession(sessionToSet).then(function(response){
+            response.flash();
+            if(!response.isErroneous()){
+                ctrl.updateSessions();
+            }
+        });
+    };
+
     ctrl.archiveSession = function(sessionToArchive){
         if(sessionToArchive){
             SessionsModel.archiveSession(sessionToArchive).then(function(response){
@@ -102,7 +131,8 @@ angular.module('private.trainer.sessions.directives', [
     scope: {
         sessions : "=",
         search : "=",
-        archive : "="
+        archive : "=",
+        editAccess: "="
     }
   };
 })
@@ -113,7 +143,8 @@ angular.module('private.trainer.sessions.directives', [
         require: "^trainerSessionsIndex",
         scope: {
            session: '=',
-           archive: "="
+           archive: "=",
+           editAccess: "="
         },
         link : function(scope, element, attrs, parentCtrl){
             // Private function 

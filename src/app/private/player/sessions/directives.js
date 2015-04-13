@@ -28,17 +28,21 @@ angular.module('private.player.sessions.directives', [])
                 if (findResponse.isErroneous()) {
                     findResponse.flash();
                 } else {
-                    if (findResponse.data.properties.freeForAll) {
-                        SessionsModel.joinIndividualSession(token).then(function(joinResponse) {
-                            joinResponse.flash();
-                            if (!joinResponse.isErroneous()) {
-                                updateSessions();
-                            }
-                        });
-                    } else {
-                        $state.go('wegas.private.player.sessions.join', {
-                            token: findResponse.data.token
-                        });
+                    if(findResponse.data.access != "CLOSE"){
+                        if (findResponse.data.properties.freeForAll) {
+                            SessionsModel.joinIndividualSession(token).then(function(joinResponse) {
+                                joinResponse.flash();
+                                if (!joinResponse.isErroneous()) {
+                                    updateSessions();
+                                }
+                            });
+                        } else {
+                            $state.go('wegas.private.player.sessions.join', {
+                                token: findResponse.data.token
+                            });
+                        }
+                    }else{
+                        Flash.danger("No session found");
                     }
                 }
             });

@@ -437,6 +437,29 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
+        /* Update the comment of a session. */
+        model.updateAccessSession = function(sessionToSet) {
+            var deferred = $q.defer(), 
+                message = "Error during session name update";
+            sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
+                if (sessionBeforeChange != undefined) {
+                    if(sessionBeforeChange.access == "CLOSE"){
+                        sessionBeforeChange.access = "ENROLMENTKEY";
+                        message = "Session opened";
+                    }else{
+                        sessionBeforeChange.access = "CLOSE";
+                        message = "Session closed";
+                    }
+                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange).success(function(data) {
+                        deferred.resolve(Responses.success(message, data));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger(message, false));
+                    });
+                }
+            });
+            return deferred.promise;
+        };
+
         /* Add a new trainer to the session */
         model.addTrainerToSession = function(sessionId, trainer) {
             var deferred = $q.defer();
@@ -522,41 +545,38 @@ angular.module('wegas.models.sessions', [])
                     if (cachedSession) {
                         deferred.resolve(Responses.info("You have already join this session", false));
                     } else {
-                        model.getSessions("played").then(function(data) {
-                            $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended").success(function(data) {
-                                var team = _.find(data[1].teams, function(t) {
-                                    return t.id == data[0].id;
+                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended").success(function(data) {
+                            var team = _.find(data[1].teams, function(t) {
+                                return t.id == data[0].id;
+                            });
+                            if (team) {
+                                var player = _.find(team.players, function(p) {
+                                    return (p.userId == null && p.teamId == null);
                                 });
-                                if (team) {
-                                    var player = _.find(team.players, function(p) {
-                                        return (p.userId == null && p.teamId == null);
-                                    });
-                                    if (player) {
-                                        player.teamId = data[0].id;
-                                        player.userId = user.id;
-                                        var session = formatPlayers(data[1]);
-                                        sessions.cache.played.data = cacheSession(sessions.cache.played.data, session);
-                                        if (user.isTrainer) {
-                                            sessions.findSession("managed", session.id).then(function(managedSession) {
-                                                if (managedSession) {
-                                                    managedSession = cachePlayer(managedSession, player);
-                                                    deferred.resolve(Responses.success("You have join the session", cachedSession));
-                                                } else {
-                                                    deferred.resolve(Responses.success("You have join the session", cachedSession));
-                                                }
-                                            });
-                                        } else {
-                                            deferred.resolve(Responses.success("You have join the session", cachedSession));
-                                        }
+                                if (player) {
+                                    player.teamId = data[0].id;
+                                    player.userId = user.id;
+                                    sessions.cache.played.data = cacheSession(sessions.cache.played.data, data[1]);
+                                    if (user.isTrainer) {
+                                        sessions.findSession("managed", data[1].id).then(function(managedSession) {
+                                            if (managedSession) {
+                                                managedSession = cachePlayer(managedSession, player);
+                                                deferred.resolve(Responses.success("You have join the session", cachedSession));
+                                            } else {
+                                                deferred.resolve(Responses.success("You have join the session", cachedSession));
+                                            }
+                                        });
                                     } else {
-                                        deferred.resolve(Responses.danger("Error during creating player", false));
+                                        deferred.resolve(Responses.success("You have join the session", cachedSession));
                                     }
                                 } else {
-                                    deferred.resolve(Responses.danger("Error during creating solo-team", false));
+                                    deferred.resolve(Responses.danger("Error during creating player", false));
                                 }
-                            }).error(function(data) {
-                                deferred.resolve(Responses.danger("Error during joining session", false));
-                            });
+                            } else {
+                                deferred.resolve(Responses.danger("Error during creating solo-team", false));
+                            }
+                        }).error(function(data) {
+                            deferred.resolve(Responses.danger("Error during joining session", false));
                         });
                     }
                 } else {
@@ -629,30 +649,34 @@ angular.module('wegas.models.sessions', [])
                 };
             Auth.getAuthenticatedUser().then(function(u) {
                 if (u != null) {
-                    sessions.findSession("played", session.id).then(function(cachedSession) {
-                        if (cachedSession) {
-                            deferred.resolve(Responses.info("You have already join this session", false));
-                        } else {
-                            newTeam.name = teamName;
-                            $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team) {
-                                session = cacheTeam(session, team);
-                                if (u.isTrainer || u.isScenarist || u.isAdmin) {
-                                    sessions.findSession("managed", session.id).then(function(managedSession) {
-                                        if (managedSession) {
-                                            managedSession = cacheTeam(managedSession, team);
-                                            deferred.resolve(Responses.success("Team created", team));
-                                        }else{                                            
-                                            deferred.resolve(Responses.success("Team created", team));
-                                        }
-                                    });
-                                } else {
-                                    deferred.resolve(Responses.success("Team created", team));
-                                }
-                            }).error(function(data) {
-                                deferred.resolve(Responses.danger("Error during team creation", false));
-                            });
-                        }
-                    });
+                    if(session.access !== "CLOSE"){
+                        sessions.findSession("played", session.id).then(function(cachedSession) {
+                            if (cachedSession) {
+                                deferred.resolve(Responses.info("You have already join this session", false));
+                            } else {
+                                newTeam.name = teamName;
+                                $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team) {
+                                    session = cacheTeam(session, team);
+                                    if (u.isTrainer || u.isScenarist || u.isAdmin) {
+                                        sessions.findSession("managed", session.id).then(function(managedSession) {
+                                            if (managedSession) {
+                                                managedSession = cacheTeam(managedSession, team);
+                                                deferred.resolve(Responses.success("Team created", team));
+                                            }else{                                            
+                                                deferred.resolve(Responses.success("Team created", team));
+                                            }
+                                        });
+                                    } else {
+                                        deferred.resolve(Responses.success("Team created", team));
+                                    }
+                                }).error(function(data) {
+                                    deferred.resolve(Responses.danger("Error during team creation", false));
+                                });
+                            }
+                        });
+                    } else{
+                        deferred.resolve(Responses.danger("Session is closed", false));
+                    }    
                 } else {
                     deferred.resolve(Responses.danger("You need to be logged", false));
                 }

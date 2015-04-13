@@ -24,6 +24,13 @@
     </div>
 </div>
 <div class="card__actions">
+    <a 
+        class="button button--medium button--round button--default-reverse button--label-off button--lock" 
+        title="Change access" 
+        ng-click="editAccess(session)" 
+        ng-class="{true: 'button--lock', false: 'button--warning-reverse button--unlock '}[session.access == 'CLOSE']">
+      <span class="button__label">Change Access</span>
+    </a>
     <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref="wegas.private.trainer.sessions.customize({id: session.id})">
       <span class="button__label">Customize Session</span>
     </a>
