@@ -190,6 +190,8 @@ angular.module('private.trainer.sessions.directives', [
                 parentCtrl.editComments(scope.sessionToSet);
                 scope.toogleEditingComments();
             };
+
+            scope.ServiceURL = ServiceURL;
         }
     }
 });

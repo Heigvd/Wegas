@@ -42,7 +42,7 @@ angular.module('private.player.sessions.directives', [])
                             });
                         }
                     }else{
-                        Flash.danger("No session found");
+                        Flash.danger("Session closed");
                     }
                 }
             });
@@ -92,6 +92,9 @@ angular.module('private.player.sessions.directives', [])
             scope: {
                 sessions: "=",
                 leave: "="
+            },
+            link: function(scope, element, attrs){
+                scope.ServiceURL = ServiceURL;
             }
         };
     });
