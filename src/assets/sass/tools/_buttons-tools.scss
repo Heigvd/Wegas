@@ -21,7 +21,8 @@ $buttons-icon : (
     (download, $fa-var-download),
     (eye, $fa-var-eye),
     (lock, $fa-var-lock),
-    (unlock, $fa-var-unlock)
+    (unlock, $fa-var-unlock),
+    (valid, $fa-var-check)
 );
 
 %button--with-icon{

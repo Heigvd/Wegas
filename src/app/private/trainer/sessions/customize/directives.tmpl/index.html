@@ -1,0 +1,44 @@
+<div class="modal__header">
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{customizeIndexCtrl.infos.color}}_{{customizeIndexCtrl.infos.icon}}"></div>
+	<h5 class="modal__title">{{customizeIndexCtrl.session.name}}</h5>
+	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+   		<span class="button__label">Close</span>
+	</a>
+</div>
+<div class="modal__nav modal__nav--3tab">
+   	<a 	class="modal__nav__tab modal__nav__tab--left" 
+   		ng-class="{'modal__nav__tab--active': customizeIndexCtrl.tabs.infos}"
+   		ng-click="customizeIndexCtrl.activeTab('infos')">Infos</a> 
+   	<a 	class="modal__nav__tab modal__nav__tab--middle"  
+   		ng-class="{'modal__nav__tab--active': customizeIndexCtrl.tabs.icons}"
+   		ng-click="customizeIndexCtrl.activeTab('icons')">Icons</a> 
+	<a 
+   		class="modal__nav__tab modal__nav__tab--right"  
+   		ng-class="{'modal__nav__tab--active': customizeIndexCtrl.tabs.colors}"
+   		ng-click="customizeIndexCtrl.activeTab('colors')">Colors</a> 
+</div>
+<div 	ng-if="customizeIndexCtrl.tabs.infos" 
+		class="modal__content"
+		active-infos="customizeIndexCtrl.infos"
+		trainer-sessions-customize-infos>
+</div>
+<div 	ng-if="customizeIndexCtrl.tabs.icons" 
+		class="modal__content" 
+		active-icon="customizeIndexCtrl.infos.icon" 
+		change="customizeIndexCtrl.changeIcon" 
+		trainer-sessions-customize-icons>
+</div>
+<div 	ng-if="customizeIndexCtrl.tabs.colors" 
+		class="modal__content" 
+		active-color="customizeIndexCtrl.infos.color" 
+		change="customizeIndexCtrl.changeColor" 
+		trainer-sessions-customize-colors>
+</div>
+<div class="modal__tools">
+	<a class="modal__tools__button-cancel button button--small button--default button--undo" ng-click="customizeIndexCtrl.cancel()">
+   		<span class="button__label">Cancel</span>
+	</a>
+	<a class="modal__tools__button-save button button--small button--default button--valid" ng-click="customizeIndexCtrl.save()">
+   		<span class="button__label">Save change</span>
+	</a>
+</div>

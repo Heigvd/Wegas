@@ -16,7 +16,7 @@ angular.module('private.trainer.sessions.directives', [
         ctrl.search = "";
         ctrl.sessions = [];
         ctrl.archives = [];
-   
+
     ctrl.updateSessions = function(){
         ctrl.sessions = [];
         ctrl.loading = {
@@ -81,10 +81,19 @@ angular.module('private.trainer.sessions.directives', [
 
     $rootScope.$on('changeArchives', function(e, hasNewData){
         if(hasNewData){
-            ctrl.updateSessions();
+            SessionsModel.getSessions("archived").then(function(response){
+                ctrl.archives = response.data || [];
+            });
         }
     });
-    
+    $rootScope.$on('changeSessions', function(e, hasNewData){
+        if(hasNewData){
+            SessionsModel.getSessions("managed").then(function(response){
+                ctrl.sessions = response.data || [];
+            });
+        }
+    });
+
     /* Request data. */
     ctrl.updateSessions();
 
@@ -92,7 +101,7 @@ angular.module('private.trainer.sessions.directives', [
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
     templateUrl: 'app/private/trainer/sessions/directives.tmpl/add-form.html',
-    scope: false, 
+    scope: false,
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
         ScenariosModel.getScenarios().then(function(response){
@@ -104,7 +113,7 @@ angular.module('private.trainer.sessions.directives', [
         });
         scope.newSession = {
             name : "",
-            scenarioId : 0 
+            scenarioId : 0
         };
         scope.addSession = function(){
             if(scope.newSession.scenarioId != 0){
@@ -113,14 +122,14 @@ angular.module('private.trainer.sessions.directives', [
                     if(!response.isErroneous()){
                         scope.newSession = {
                             name : "",
-                            scenarioId : 0 
+                            scenarioId : 0
                         };
                         parentCtrl.updateSessions();
                     }
-                });   
+                });
             }else{
                 Flash.warning("No scenario choosed");
-            }         
+            }
         };
     }
   };
@@ -147,7 +156,7 @@ angular.module('private.trainer.sessions.directives', [
            editAccess: "="
         },
         link : function(scope, element, attrs, parentCtrl){
-            // Private function 
+            // Private function
             var resetSessionToSet = function(){
                 scope.sessionToSet = {
                     id: scope.session.id,
@@ -161,7 +170,7 @@ angular.module('private.trainer.sessions.directives', [
             scope.editingComments = false;
             resetSessionToSet();
 
-            // Public function 
+            // Public function
             scope.toogleEditingName = function(){
                 if(scope.editingComments){
                     scope.toogleEditingComments();
@@ -169,14 +178,14 @@ angular.module('private.trainer.sessions.directives', [
                 scope.editingName = (!scope.editingName);
                 resetSessionToSet();
             };
-            
-            // Public function 
+
+            // Public function
             scope.editName = function(){
                 parentCtrl.editName(scope.sessionToSet);
                 scope.toogleEditingName();
             };
-            
-            // Public function 
+
+            // Public function
             scope.toogleEditingComments = function(){
                 if(scope.editingName){
                     scope.toogleEditingName();
@@ -184,8 +193,8 @@ angular.module('private.trainer.sessions.directives', [
                 scope.editingComments = (!scope.editingComments);
                 resetSessionToSet();
             };
-            
-            // Public function 
+
+            // Public function
             scope.editComments = function(){
                 parentCtrl.editComments(scope.sessionToSet);
                 scope.toogleEditingComments();
