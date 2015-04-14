@@ -15,16 +15,23 @@
 		</div>
 	</div>
 	<div 
+		ng-if="!trainerSessionsCtrl.loading.all"
 		ng-class="{true:'view__list--with-archive', false:''}[trainerSessionsCtrl.archives.length > 0]"
 		class="view__list" 
 		sessions="trainerSessionsCtrl.sessions" 
 		search="trainerSessionsCtrl.search"
 		archive="trainerSessionsCtrl.archiveSession"
+		edit-access="trainerSessionsCtrl.editAccess"
 		trainer-sessions-list >
 	</div>
-	<div ng-if="trainerSessionsCtrl.archives.length" class="view__archives">
+	<div ng-if="(!trainerSessionsCtrl.loading.all) && (trainerSessionsCtrl.archives.length)" class="view__archives">
 		<a class="button button--small button--default button--archive" ui-sref="wegas.private.trainer.sessions.archives">
 			<span class="button__label">{{trainerSessionsCtrl.archives.length}} archives</span>
 		</a>
+	</div>
+	<div 
+		ng-if="trainerSessionsCtrl.loading.all"
+		class="view__list">
+		Loading
 	</div>
 </div>

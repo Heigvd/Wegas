@@ -7,7 +7,7 @@ angular.module('private.player.session.join.directives', [])
         },
         controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
     };
-}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, SessionsModel){
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, SessionsModel, Flash){
     /* Assure access to ctrl. */
     var ctrl = this;
 
@@ -33,30 +33,40 @@ angular.module('private.player.session.join.directives', [])
     /* Method used to create new team and join this new team in the session. */
     ctrl.createAndJoinTeam = function(){
         if(!ctrl.newTeam.alreadyUsed){
-            SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
-                responseCreate.flash();
-                if(!responseCreate.isErroneous()){
-                    SessionsModel.joinTeam(ctrl.sessionToJoin.id, responseCreate.data.id).then(function(responseJoin){
-                        responseJoin.flash();
-                        if(!responseJoin.isErroneous()){
-                            $rootScope.$emit('newSession', true);
-                            $scope.close();
-                        }
-                    });
-                }
-            });
+            if(ctrl.sessionToJoin.access != "CLOSE"){
+                SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
+                    responseCreate.flash();
+                    if(!responseCreate.isErroneous()){
+                        SessionsModel.joinTeam(ctrl.sessionToJoin.id, responseCreate.data.id).then(function(responseJoin){
+                            responseJoin.flash();
+                            if(!responseJoin.isErroneous()){
+                                $rootScope.$emit('newSession', true);
+                                $scope.close();
+                            }
+                        });
+                    }
+                });
+            }else{
+                Flash.danger("Session closed");
+            }
+        }else{
+            Flash.danger("Team name already used");
         }
     };
 
     /* Method used to join existing team in the session. */
     ctrl.joinTeam = function(teamId){
-        SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
-            response.flash();
-            if(!response.isErroneous()){
-                $rootScope.$emit('newSession', true);
-                $scope.close();
-            }
-        });
+        if(ctrl.sessionToJoin.access != "CLOSE"){
+            SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
+                response.flash();
+                if(!response.isErroneous()){
+                    $rootScope.$emit('newSession', true);
+                    $scope.close();
+                }
+            });
+        }else{
+            Flash.danger("Session closed");
+        }
     };
 
     /* Initialize datas */

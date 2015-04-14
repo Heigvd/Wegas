@@ -24,6 +24,13 @@
     </div>
 </div>
 <div class="card__actions">
+    <a 
+        class="button button--medium button--round button--default-reverse button--label-off button--lock" 
+        title="Change access" 
+        ng-click="editAccess(session)" 
+        ng-class="{true: 'button--lock', false: 'button--warning-reverse button--unlock '}[session.access == 'CLOSE']">
+      <span class="button__label">Change Access</span>
+    </a>
     <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref="wegas.private.trainer.sessions.customize({id: session.id})">
       <span class="button__label">Customize Session</span>
     </a>
@@ -33,7 +40,7 @@
     <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive session" ng-click="archive(session)">
       <span class="button__label">Archive session</span>
     </a>   
-    <a class="button button--medium button--round button--info button--label-off button--trainer" title="Monitoring session" href="http://wegas.albasim.ch/host.html?gameId={{session.id}}" target="_blank">
+    <a class="button button--medium button--round button--info button--label-off button--trainer" title="Monitoring session" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
       <span class="button__label">Monitoring session</span>
     </a>
 </div>

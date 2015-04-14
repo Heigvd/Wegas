@@ -200,6 +200,7 @@ angular.module('private.scenarist.scenarios.directives', [
                 scope.toogleEditingComments();
             };
 
+            scope.ServiceURL = ServiceURL;
         }
     }
 });
