@@ -60,10 +60,11 @@ angular.module('private.trainer.sessions.customize.directives', [
 
         ctrl.save = function() {
             SessionsModel.updateSession(ctrl.session.id, ctrl.infos).then(function(response){
-                response.flash();
                 if(!response.isErroneous()){
                     $rootScope.$emit("changeSessions", true);
                     $scope.close();
+                }else{
+                    response.flash();
                 }
             });
         };
