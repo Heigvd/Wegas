@@ -1,3 +1,10 @@
-<input ng-model="activeInfos.name" class="input input--small" type="text" placeholder="name" />
-<input ng-model="activeInfos.token" class="input input--small" type="text" placeholder="token" />
-<textarea ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="comment"></textarea>
+<div class="infos--main">
+	<label>Name</label>
+	<input ng-model="activeInfos.name" class="input input--small" type="text" placeholder="name" />
+	<label>Comment</label>
+	<textarea ng-model="activeInfos.comments" class="input input--small input--multi-lines" placeholder="comment"></textarea>
+</div>
+<div class="infos--secondary">
+	<label>Token</label>
+	<input ng-model="activeInfos.token" class="input input--small" type="text" placeholder="token" />
+</div>

@@ -218,6 +218,9 @@
 
 	&.modal--customize{
 		.modal__content{
+        	@include make-row(0px);
+        	padding:0px;
+        	margin:0px;
 			.icon{
 				float:left;
 				margin:16px;
@@ -265,14 +268,18 @@
 					cursor:default;
 				}
 			}
+			.infos--main{
+		        @include make-xs-column(8);
+			}
+			.infos--secondary{
+		        @include make-xs-column(4);
+			}
 		}
 		.modal__tools {
 			padding:8px 16px;
-			.modal__tools__button-cancel{
-				float:left;
-			}
-			.modal__tools__button-save{
+			.modal__tools__button{
 				float:right;
+				margin-left:8px;
 			}
 		}
 	}
