@@ -121,8 +121,8 @@ angular.module('wegas.models.sessions', [])
             /* Cache a session, passing a session list and the session to add in parameter */
             cacheSession = function(sessionList, session, alreadyFormatted) {
                 if (sessionList && session) {
-                    if(!alreadyFormatted){
-                       session = formatPlayers(session);
+                    if (!alreadyFormatted) {
+                        session = formatPlayers(session);
                     }
                     if (!_.find(sessionList, session)) {
                         sessionList.push(session);
@@ -526,10 +526,10 @@ angular.module('wegas.models.sessions', [])
                 message = "Error during session name update";
             sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
                 if (sessionBeforeChange != undefined) {
-                    if(sessionBeforeChange.access == "CLOSE"){
+                    if (sessionBeforeChange.access == "CLOSE") {
                         sessionBeforeChange.access = "OPEN";
                         message = "Session opened";
-                    }else{
+                    } else {
                         sessionBeforeChange.access = "CLOSE";
                         message = "Session closed";
                     }
@@ -725,7 +725,7 @@ angular.module('wegas.models.sessions', [])
                 };
             Auth.getAuthenticatedUser().then(function(u) {
                 if (u != null) {
-                    if(session.access == "OPEN"){
+                    if (session.access == "OPEN") {
                         sessions.findSession("played", session.id).then(function(cachedSession) {
                             if (cachedSession) {
                                 deferred.resolve(Responses.info("You have already join this session", false));
@@ -748,7 +748,7 @@ angular.module('wegas.models.sessions', [])
                                 });
                             }
                         });
-                    } else{
+                    } else {
                         deferred.resolve(Responses.danger("Session is closed", false));
                     }
                 } else {
