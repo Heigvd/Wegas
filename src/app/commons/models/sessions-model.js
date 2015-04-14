@@ -20,7 +20,7 @@ angular.module('wegas.models.sessions', [])
                 },
                 archived: function() {
                     var deferred = $q.defer();
-                    deferred.resolve(ServiceURL + "rest/GameModel/Game/status/BIN?view=extended");
+                    deferred.resolve(ServiceURL + "rest/GameModel/Game/status/BIN?view=EditorExtended");
                     return deferred.promise;
                 }
             },
@@ -119,9 +119,11 @@ angular.module('wegas.models.sessions', [])
             },
 
             /* Cache a session, passing a session list and the session to add in parameter */
-            cacheSession = function(sessionList, session) {
+            cacheSession = function(sessionList, session, alreadyFormatted) {
                 if (sessionList && session) {
-                    session = formatPlayers(session);
+                    if (!alreadyFormatted) {
+                        session = formatPlayers(session);
+                    }
                     if (!_.find(sessionList, session)) {
                         sessionList.push(session);
                     }
@@ -234,8 +236,56 @@ angular.module('wegas.models.sessions', [])
                     deferred.resolve(false);
                 }
                 return deferred.promise;
-            };
+            },
 
+            updateGameSession = function(sessionInfos, sessionBeforeChange) {
+                var deferred = $q.defer(),
+                    gameSetted = false;
+                if (sessionBeforeChange.name !== sessionInfos.name) {
+                    sessionBeforeChange.name = sessionInfos.name;
+                    gameSetted = true;
+                }
+                if (sessionBeforeChange.token !== sessionInfos.token) {
+                    sessionBeforeChange.token = sessionInfos.token;
+                    gameSetted = true;
+                }
+                if (gameSetted) {
+                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionBeforeChange.id, sessionBeforeChange).success(function(data) {
+                        deferred.resolve(Responses.success("Game updated", sessionBeforeChange));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger("Error during game update", false));
+                    });
+                } else {
+                    deferred.resolve(Responses.info("Nothing to set in game", sessionBeforeChange));
+                }
+                return deferred.promise;
+            },
+
+            updateGameModelSession = function(sessionInfos, sessionBeforeChange) {
+                var deferred = $q.defer(),
+                    gameModelSetted = false,
+                    scenarioBeforeChange = sessionBeforeChange.gameModel;
+
+                if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon)) {
+                    sessionBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
+                    scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
+                    gameModelSetted = true;
+                }
+                if (scenarioBeforeChange.comments !== sessionInfos.comments) {
+                    scenarioBeforeChange.comments = sessionInfos.comments;
+                    gameModelSetted = true;
+                }
+                if (gameModelSetted) {
+                    $http.put(ServiceURL + "rest/Public/GameModel/" + scenarioBeforeChange.id, scenarioBeforeChange).success(function(data) {
+                        deferred.resolve(Responses.success("GameModel updated", data));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger("Error during gameModel update", false));
+                    });
+                } else {
+                    deferred.resolve(Responses.info("Nothing to set in gameModel", scenarioBeforeChange));
+                }
+                return deferred.promise;
+            };
 
         /*  ---------------------------------
     COMMON SERVICES
@@ -388,7 +438,7 @@ angular.module('wegas.models.sessions', [])
                     var newSession = {
                         "@class": "Game",
                         "gameModelId": scenarioId,
-                        "access": "ENROLMENTKEY",
+                        "access": "CLOSE",
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/Game/" + user.id + "?view=EditorExtended", newSession).success(function(data) {
@@ -401,6 +451,39 @@ angular.module('wegas.models.sessions', [])
                     deferred.resolve(Responses.danger("No user authenticate", false));
                 }
             });
+            return deferred.promise;
+        };
+
+        model.updateSession = function(id, infosToSet) {
+            var deferred = $q.defer(),
+                checkToken = /^[A-Za-z0-9\-]+$/;
+            if (id && infosToSet) {
+                sessions.findSession("managed", id).then(function(sessionBeforeChange) {
+                    if (sessionBeforeChange) {
+                        if (infosToSet.token.match(checkToken)) {
+                            updateGameSession(infosToSet, sessionBeforeChange).then(function(responseGame) {
+                                if (!responseGame.isErroneous()) {
+                                    updateGameModelSession(infosToSet, responseGame.data).then(function(responseGameModel) {
+                                        if (!responseGameModel.isErroneous()) {
+                                            deferred.resolve(Responses.success("Session up-to-date", responseGameModel.data));
+                                        } else {
+                                            deferred.resolve(responseGameModel);
+                                        }
+                                    });
+                                } else {
+                                    deferred.resolve(responseGame);
+                                }
+                            });
+                        } else {
+                            deferred.resolve(Responses.danger("Invalid character in token, only alphanumeric character allowed.", false));
+                        }
+                    } else {
+                        deferred.resolve(Responses.danger("No session to update", false));
+                    }
+                });
+            } else {
+                deferred.resolve(Responses.danger("No session to update", false));
+            }
             return deferred.promise;
         };
 
@@ -431,6 +514,29 @@ angular.module('wegas.models.sessions', [])
                         deferred.resolve(Responses.success("Session comments updated", data));
                     }).error(function(data) {
                         deferred.resolve(Responses.danger("Error during session comments update", false));
+                    });
+                }
+            });
+            return deferred.promise;
+        };
+
+        /* Update the comment of a session. */
+        model.updateAccessSession = function(sessionToSet) {
+            var deferred = $q.defer(),
+                message = "Error during session name update";
+            sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
+                if (sessionBeforeChange != undefined) {
+                    if (sessionBeforeChange.access == "CLOSE") {
+                        sessionBeforeChange.access = "OPEN";
+                        message = "Session opened";
+                    } else {
+                        sessionBeforeChange.access = "CLOSE";
+                        message = "Session closed";
+                    }
+                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange).success(function(data) {
+                        deferred.resolve(Responses.success(message, data));
+                    }).error(function(data) {
+                        deferred.resolve(Responses.danger(message, false));
                     });
                 }
             });
@@ -488,12 +594,9 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
-
-
-
         /*  ---------------------------------
-    SESSIONS SERVICES - PLAYER SIDE
-    --------------------------------- */
+            SESSIONS SERVICES - PLAYER SIDE
+            --------------------------------- */
 
         /* Get a session form token, undefined otherwise. */
         model.findSessionToJoin = function(token) {
@@ -503,7 +606,7 @@ angular.module('wegas.models.sessions', [])
                     data = formatPlayers(data)
                     deferred.resolve(Responses.success("Session find", data));
                 } else {
-                    deferred.resolve(Responses.danger("No Session find", data));
+                    deferred.resolve(Responses.danger("No Session find", false));
                 }
             }).error(function(data) {
                 deferred.resolve(Responses.danger("No session find", false));
@@ -522,41 +625,36 @@ angular.module('wegas.models.sessions', [])
                     if (cachedSession) {
                         deferred.resolve(Responses.info("You have already join this session", false));
                     } else {
-                        model.getSessions("played").then(function(data) {
-                            $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended").success(function(data) {
-                                var team = _.find(data[1].teams, function(t) {
-                                    return t.id == data[0].id;
+                        $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended").success(function(data) {
+                            var team = _.find(data[1].teams, function(t) {
+                                return t.id == data[0].id;
+                            });
+                            if (team) {
+                                var player = _.find(team.players, function(p) {
+                                    return (p.userId == null && p.teamId == null);
                                 });
-                                if (team) {
-                                    var player = _.find(team.players, function(p) {
-                                        return (p.userId == null && p.teamId == null);
-                                    });
-                                    if (player) {
-                                        player.teamId = data[0].id;
-                                        player.userId = user.id;
-                                        var session = formatPlayers(data[1]);
-                                        sessions.cache.played.data = cacheSession(sessions.cache.played.data, session);
-                                        if (user.isTrainer) {
-                                            sessions.findSession("managed", session.id).then(function(managedSession) {
-                                                if (managedSession) {
-                                                    managedSession = cachePlayer(managedSession, player);
-                                                    deferred.resolve(Responses.success("You have join the session", cachedSession));
-                                                } else {
-                                                    deferred.resolve(Responses.success("You have join the session", cachedSession));
-                                                }
-                                            });
-                                        } else {
+                                if (player) {
+                                    player.teamId = data[0].id;
+                                    player.userId = user.id;
+                                    sessions.cache.played.data = cacheSession(sessions.cache.played.data, data[1]);
+                                    if (user.isTrainer) {
+                                        sessions.findSession("managed", data[1].id).then(function(managedSession) {
+                                            if (managedSession) {
+                                                managedSession = cachePlayer(managedSession, player);
+                                            }
                                             deferred.resolve(Responses.success("You have join the session", cachedSession));
-                                        }
+                                        });
                                     } else {
-                                        deferred.resolve(Responses.danger("Error during creating player", false));
+                                        deferred.resolve(Responses.success("You have join the session", cachedSession));
                                     }
                                 } else {
-                                    deferred.resolve(Responses.danger("Error during creating solo-team", false));
+                                    deferred.resolve(Responses.danger("Error during creating player", false));
                                 }
-                            }).error(function(data) {
-                                deferred.resolve(Responses.danger("Error during joining session", false));
-                            });
+                            } else {
+                                deferred.resolve(Responses.danger("Error during creating solo-team", false));
+                            }
+                        }).error(function(data) {
+                            deferred.resolve(Responses.danger("Error during joining session", false));
                         });
                     }
                 } else {
@@ -592,10 +690,8 @@ angular.module('wegas.models.sessions', [])
                                             sessions.findSession("managed", session.id).then(function(managedSession) {
                                                 if (managedSession) {
                                                     managedSession = cachePlayer(managedSession, player);
-                                                    deferred.resolve(Responses.success("You have join the session", session));
-                                                } else {
-                                                    deferred.resolve(Responses.success("You have join the session", session));
                                                 }
+                                                deferred.resolve(Responses.success("You have join the session", session));
                                             });
                                         } else {
                                             deferred.resolve(Responses.success("You have join the session", session));
@@ -629,30 +725,32 @@ angular.module('wegas.models.sessions', [])
                 };
             Auth.getAuthenticatedUser().then(function(u) {
                 if (u != null) {
-                    sessions.findSession("played", session.id).then(function(cachedSession) {
-                        if (cachedSession) {
-                            deferred.resolve(Responses.info("You have already join this session", false));
-                        } else {
-                            newTeam.name = teamName;
-                            $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team) {
-                                session = cacheTeam(session, team);
-                                if (u.isTrainer || u.isScenarist || u.isAdmin) {
-                                    sessions.findSession("managed", session.id).then(function(managedSession) {
-                                        if (managedSession) {
-                                            managedSession = cacheTeam(managedSession, team);
+                    if (session.access == "OPEN") {
+                        sessions.findSession("played", session.id).then(function(cachedSession) {
+                            if (cachedSession) {
+                                deferred.resolve(Responses.info("You have already join this session", false));
+                            } else {
+                                newTeam.name = teamName;
+                                $http.post(ServiceURL + "rest/GameModel/Game/" + session.id + "/Team", newTeam).success(function(team) {
+                                    session = cacheTeam(session, team);
+                                    if (u.isTrainer || u.isScenarist || u.isAdmin) {
+                                        sessions.findSession("managed", session.id).then(function(managedSession) {
+                                            if (managedSession) {
+                                                managedSession = cacheTeam(managedSession, team);
+                                            }
                                             deferred.resolve(Responses.success("Team created", team));
-                                        }else{                                            
-                                            deferred.resolve(Responses.success("Team created", team));
-                                        }
-                                    });
-                                } else {
-                                    deferred.resolve(Responses.success("Team created", team));
-                                }
-                            }).error(function(data) {
-                                deferred.resolve(Responses.danger("Error during team creation", false));
-                            });
-                        }
-                    });
+                                        });
+                                    } else {
+                                        deferred.resolve(Responses.success("Team created", team));
+                                    }
+                                }).error(function(data) {
+                                    deferred.resolve(Responses.danger("Error during team creation", false));
+                                });
+                            }
+                        });
+                    } else {
+                        deferred.resolve(Responses.danger("Session is closed", false));
+                    }
                 } else {
                     deferred.resolve(Responses.danger("You need to be logged", false));
                 }
@@ -722,7 +820,7 @@ angular.module('wegas.models.sessions', [])
                 setSessionStatus(sessionToArchive.id, "BIN").then(function(sessionArchived) {
                     if (sessionArchived) {
                         sessions.cache.managed.data = uncacheSession(sessions.cache.managed.data, sessionToArchive);
-                        sessions.cache.archived.data = cacheSession(sessions.cache.archived.data, sessionToArchive);
+                        sessions.cache.archived.data = cacheSession(sessions.cache.archived.data, sessionToArchive, 1);
                         deferred.resolve(Responses.success("Session archived", sessionToArchive));
                     } else {
                         deferred.resolve(Responses.danger("Error during session archivage", false));
@@ -744,7 +842,7 @@ angular.module('wegas.models.sessions', [])
                 setSessionStatus(sessionToUnarchive.id, "LIVE").then(function(sessionUnarchived) {
                     if (sessionUnarchived) {
                         sessions.cache.archived.data = uncacheSession(sessions.cache.archived.data, sessionToUnarchive);
-                        sessions.cache.managed.data = cacheSession(sessions.cache.managed.data, sessionToUnarchive);
+                        sessions.cache.managed.data = cacheSession(sessions.cache.managed.data, sessionToUnarchive, 1);
                         deferred.resolve(Responses.success("Session unarchived", sessionToUnarchive));
                     } else {
                         deferred.resolve(Responses.danger("Error during session unsarchivage", false));

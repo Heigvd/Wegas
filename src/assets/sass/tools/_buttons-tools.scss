@@ -20,8 +20,10 @@ $buttons-icon : (
     (scenarist, $fa-var-magic),
     (add, $fa-var-plus-circle),
     (download, $fa-var-download),
-    (eye, $fa-var-eye)
-
+    (eye, $fa-var-eye),
+    (lock, $fa-var-lock),
+    (unlock, $fa-var-unlock),
+    (valid, $fa-var-check)
 );
 
 %button--with-icon{

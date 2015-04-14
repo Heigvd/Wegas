@@ -1,4 +1,6 @@
-angular.module('private.trainer.sessions.customize', [])
+angular.module('private.trainer.sessions.customize', [
+    'private.trainer.sessions.customize.directives'
+])
     .config(function($stateProvider) {
         $stateProvider
             .state('wegas.private.trainer.sessions.customize', {
@@ -18,7 +20,7 @@ angular.module('private.trainer.sessions.customize', [])
                 shadow = $(".shadow");
             $animate.addClass(box, "modal--open");
             $animate.addClass(shadow, "shadow--show");
-            
+
             modal.close.then(function(result) {
                 $state.go("^");
             });
