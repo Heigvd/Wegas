@@ -56,9 +56,9 @@ $buttons-types : (
 	(danger, $danger-color)
 );
 $sizes : (
-	(small, 48px), 
-	(medium, 64px), 
-	(big, 96px)
+	(small, 48px, 0px), 
+	(medium, 64px, 6px), 
+	(big, 96px, 14px)
 );
 $backgrounds-levels : (
 	(bottom, $background-default, lighten($primary-color-light, 10%)), 

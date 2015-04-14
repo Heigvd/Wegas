@@ -31,9 +31,10 @@ angular.module('private.player.sessions.directives', [])
                     if(findResponse.data.access != "CLOSE"){
                         if (findResponse.data.properties.freeForAll) {
                             SessionsModel.joinIndividualSession(token).then(function(joinResponse) {
-                                joinResponse.flash();
                                 if (!joinResponse.isErroneous()) {
                                     updateSessions();
+                                }else{
+                                    joinResponse.flash();
                                 }
                             });
                         } else {

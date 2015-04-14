@@ -1,11 +1,11 @@
 <div class="card card--medium card--users" ng-repeat="player in players">
 	<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_user"></div>
 	<div class="card__description card__description--one-line">
-	    <h4 class="card__description__titre">{{player.name}}</h4>
+	    <div class="line line--primary">{{player.name}}</div>
 	</div>
 	<div class="card__actions">
-	    <a class="button button--medium button--round button--danger-reverse button--label-off button--trash" title="Remove player" href="#" ng-click="remove(player.id, player.teamId)">
-	      <span class="button__label">Remove player</span>
-	    </a>   
+	    <a class="button button--small button--round button--danger-reverse button--label-off button--user-remove" title="Remove player"ng-click="remove(player.id, player.teamId)">
+	    	<span class="button__label">Remove player</span>
+	    </a>
 	</div>
 </div>

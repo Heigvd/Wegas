@@ -51,7 +51,6 @@ $card-margin-size: 8px;
 
     .card__actions{
         float:right;
-        padding:14px 16px;
     }
 
     &.card--player-session{
@@ -116,23 +115,6 @@ $card-margin-size: 8px;
         }
     }
 
-    &.card--users{
-        .card__description__titre{
-            padding:16px;
-            font-weight:500;
-            font-size:14px;
-        }
-        .card__actions{
-            margin:0px 4px;
-            .button{
-                display:block;
-                float:left;
-                margin:8px 4px;
-            }
-        }
-    }
-
-
     &.card--player-session{
         .card__actions{
             padding:16px;
@@ -142,6 +124,7 @@ $card-margin-size: 8px;
     @each $size in $sizes{
         $size-name: nth($size, 1);
         $size-value: nth($size, 2);
+        $size-action-margin:nth($size, 3);
         &.card--#{$size-name}{
             width:100%;
             height:auto;
@@ -170,7 +153,7 @@ $card-margin-size: 8px;
             
             .card__description{
                 &.card__description--one-line{
-                    padding:($size-value - $card-text-size - $card-margin-size)/2 16px; 
+                    padding:($size-value - $card-text-size - ($card-margin-size/2))/2 16px; 
                 }
                 &.card__description--two-lines{
                     padding:($size-value - (2*$card-text-size) - (2*$card-margin-size))/2 16px; 
@@ -183,6 +166,7 @@ $card-margin-size: 8px;
 
 
             .card__actions{
+                padding:$size-action-margin 16px;
             }
         }
     }
