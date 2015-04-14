@@ -138,6 +138,32 @@
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
+
+            &.ng-enter, 
+            &.ng-leave
+            { 
+                transition: .3s;
+            } 
+             
+            &.ng-enter.ng-enter-active, 
+            &.ng-leave {
+                visibility:visible;
+                opacity: 1;
+
+            }
+             
+            &.ng-leave.ng-leave-active,
+            &.ng-enter {
+                visibility:hidden;
+                opacity: 0;
+            }
+            
+            &.ng-enter{
+                transition-delay:.3s;
+            }
+
+
+
             &.view__list--no-content{
                 @include make-xs-column(12);
                 padding:8px 16px 32px 16px;
