@@ -1,6 +1,6 @@
 <div class="modal__header">
 	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{customizeIndexCtrl.infos.color}}_{{customizeIndexCtrl.infos.icon}}"></div>
-	<h5 class="modal__title">{{customizeIndexCtrl.session.name}}</h5>
+	<h5 class="modal__title">{{customizeIndexCtrl.session.name | limitTo: 36}}<span ng-if="customizeIndexCtrl.session.name.length > 36">...</span></h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">Close</span>
 	</a>
@@ -35,10 +35,11 @@
 		trainer-sessions-customize-colors>
 </div>
 <div class="modal__tools">
-	<a class="modal__tools__button-cancel button button--small button--default button--undo" ng-click="customizeIndexCtrl.cancel()">
-   		<span class="button__label">Cancel</span>
-	</a>
-	<a class="modal__tools__button-save button button--small button--default button--valid" ng-click="customizeIndexCtrl.save()">
+	
+	<a class="modal__tools__button button button--small button--success" ng-click="customizeIndexCtrl.save()">
    		<span class="button__label">Save change</span>
+	</a>
+	<a class="modal__tools__button button button--small button--default" ng-click="customizeIndexCtrl.cancel()">
+   		<span class="button__label">Cancel</span>
 	</a>
 </div>

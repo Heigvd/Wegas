@@ -1,15 +1,18 @@
 <div class="card card--big card--archive" ng-repeat="session in sessions">
     <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
-    <div class="card__description">
-        <p class="card__description__date">{{session.createdTime | date:"dd.MM.yyyy"}}</p>
-        <h4 class="card__description__titre"><span class="titre__displayy">{{session.name}}</span></h4>
+    <div 
+        class="card__description" 
+        ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
+        <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
+        <div class="line line--primary">{{session.name | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
+        <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
     </div>
     <div class="card__actions">
-        <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="Unarchive" ng-click="unarchive(session)">
-          <span class="button__label">Unarchive</span>
+        <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="Move to current sessions" ng-click="unarchive(session)">
+            <span class="button__label">Move to current sessions</span>
         </a>
         <a class="button button--medium button--round button--danger-reverse button--label-off button--trash" title="Delete session" ng-click="delete(session)">
-          <span class="button__label">Delete session</span>
-        </a>   
+            <span class="button__label">Delete session</span>
+        </a> 
     </div>
 </div>
