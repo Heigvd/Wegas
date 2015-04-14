@@ -27,7 +27,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
@@ -91,7 +91,7 @@ public class IntegrationTest {
 
     @Before
     public void setUp() throws IOException, JSONException {
-        client = new DefaultHttpClient();
+        client = HttpClientBuilder.create().build();
         baseURL = "http://localhost:5454/Wegas";
         setBaseUrl(baseURL);
 
@@ -203,7 +203,7 @@ public class IntegrationTest {
         //beginAt("test.htm");
         //assertTitleEquals("My Page");
         try {
-            beginAt("edit.html?debug=true");
+            beginAt("login.html?debug=true");
         } catch (NullPointerException e) {  //@fixme error using xmlhttprequest from jwebunit
             System.out.println("Jweb unit encountered an exception");
             // e.printStackTrace();
