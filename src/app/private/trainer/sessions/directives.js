@@ -60,7 +60,6 @@ angular.module('private.trainer.sessions.directives', [
     $rootScope.$on('changeSessions', function(e, hasNewData){
         if(hasNewData){
             SessionsModel.getSessions("managed").then(function(response){
-               console.log(response.data);
                 ctrl.sessions = response.data || [];
             });
         }
