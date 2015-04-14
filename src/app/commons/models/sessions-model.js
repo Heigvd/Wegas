@@ -265,6 +265,7 @@ angular.module('wegas.models.sessions', [])
                     scenarioBeforeChange = sessionBeforeChange.gameModel;
 
                 if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon)) {
+                    sessionBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
                     scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
                     gameModelSetted = true;
                 }
@@ -517,9 +518,8 @@ angular.module('wegas.models.sessions', [])
             return deferred.promise;
         };
 
-        /* Update the comment of a session. */
+        /* Update the icon of a session. */
         model.updateIconSession = function(sessionToSet) {
-            console.log(sessionToSet);
             var deferred = $q.defer();
             sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
                 if (sessionBeforeChange != undefined) {

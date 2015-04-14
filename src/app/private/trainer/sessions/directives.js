@@ -52,7 +52,17 @@ angular.module('private.trainer.sessions.directives', [
 
     $rootScope.$on('changeArchives', function(e, hasNewData){
         if(hasNewData){
-            ctrl.updateSessions();
+            SessionsModel.getSessions("archived").then(function(response){
+                ctrl.archives = response.data || [];
+            });
+        }
+    });
+    $rootScope.$on('changeSessions', function(e, hasNewData){
+        if(hasNewData){
+            SessionsModel.getSessions("managed").then(function(response){
+               console.log(response.data);
+                ctrl.sessions = response.data || [];
+            });
         }
     });
     

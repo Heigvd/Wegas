@@ -9,7 +9,7 @@ angular.module('private.trainer.sessions.customize.directives', [
             templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/index.html',
             controller: "TrainerSessionsCustomizeIndexController as customizeIndexCtrl"
         };
-    }).controller("TrainerSessionsCustomizeIndexController", function TrainerSessionsCustomizeIndexController($scope, $stateParams, SessionsModel, Flash) {
+    }).controller("TrainerSessionsCustomizeIndexController", function TrainerSessionsCustomizeIndexController($rootScope, $scope, $stateParams, SessionsModel, Flash) {
         var ctrl = this,
             initTabs = function() {
                 return {
@@ -62,12 +62,13 @@ angular.module('private.trainer.sessions.customize.directives', [
             SessionsModel.updateSession(ctrl.session.id, ctrl.infos).then(function(response){
                 response.flash();
                 if(!response.isErroneous()){
+                    $rootScope.$emit("changeSessions", true);
                     $scope.close();
                 }
             });
         };
 
-        ctrl.cancel = function() {
+        ctrl.cancel = function(){
             $scope.close();
         };
 
@@ -106,4 +107,5 @@ angular.module('private.trainer.sessions.customize.directives', [
                 scope.colors = Customize.colorsPalette();
             }
         }
-    });
+    })
+    ;
