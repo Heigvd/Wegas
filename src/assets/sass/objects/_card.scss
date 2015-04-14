@@ -1,10 +1,12 @@
-
+$card-text-size : 14px;
+$card-margin-size: 8px;
 .card{
     position:relative;
     display:block;
     width:100%;
     height:nth(nth($sizes,1), 2);
     padding:0px;
+    margin:4px auto;
     border:none;
     box-sizing: border-box;
     background:$white;
@@ -13,9 +15,33 @@
     clear:both;
     @include material-shadow(1);
 
-
     &:hover{
         @include material-shadow(2);
+    }
+
+
+    .card__description{
+        float:left;
+
+        .line{
+            line-height:$card-text-size; 
+            font-size:$card-text-size; 
+            margin:0px;
+            padding:$card-margin-size/2 0px; 
+            color:#555555;
+            &.line--primary{
+                font-weight:500;
+            }
+            &.line--optionnal{
+                font-style: italic;
+            }
+            &:first-child{
+                padding-top:0px;
+            }
+            &:last-child{
+                padding-bottom:0px;
+            }
+        }
     }
 
     .card__illustration{
@@ -23,12 +49,9 @@
         float:left;
     }
 
-
-    .card__description{
-        float:left;
-    }
     .card__actions{
         float:right;
+        padding:14px 16px;
     }
 
     &.card--player-session{
@@ -56,12 +79,6 @@
         &.card--big {
             height: inherit;
             overflow: auto;
-        }
-        &.ng-enter {
-            animation: fadeIn .6s;
-        }
-        &.ng-leave {
-          animation: fadeOut .6s;
         }
         .card__illustration {
             width: 96px;
@@ -98,123 +115,6 @@
             @include make-xs-column(2);
         }
     }
-    .card__description{
-            .card__description__titre{
-                margin:0px;
-                padding:0px;
-                .titre__display{
-                    font-size:14px;
-                    font-weight:500;
-                    margin:0px;
-                    &:after{
-                        display:inline;
-                        position:relative;
-                        opacity:0;
-                        visibility:hidden;
-                        content:$fa-var-pencil;
-                        font-family: "FontAwesome";
-                        font-size:13px;
-                        margin:0px;
-                        padding:0px 4px;
-                        transition:.3s;
-                    }
-                    &:hover{
-                        cursor:pointer;
-                        &:after{
-                            opacity:1;
-                            visibility:visible;
-                            transition:.3s;
-                        }
-                    }
-                }
-                .titre__edition{
-                    font-size:14px;
-                    height:21px;
-                    font-weight:500;
-                    margin:0px;
-                    .titre__edition__input{
-                        margin:0px 0px;
-                        padding:0px 0px;
-                        height:21px;
-                        outline:none;
-                        border:none;
-                        color:$default-color-light;
-                        background:none;
-                        border-bottom:solid 1px $secondary-color;
-                    }
-                    .titre__edition__link{
-                        margin:0px;
-                    }
-                }
-            }
-            .card__description__date{
-                margin:0px;
-                padding-top:14px;
-                font-size:12px;
-                font-weight:300;
-                font-style: italic;
-                margin:0px;
-            }
-            .card__description__note{
-                margin:0px;
-                padding:0px;
-
-                .note__display{
-
-                    font-size:13px;
-                    font-weight:300;
-                    margin:0px;
-                    &:after{
-                        display:inline;
-                        position:relative;
-                        opacity:0;
-                        visibility:hidden;
-                        content:$fa-var-pencil;
-                        font-family: "FontAwesome";
-                        font-size:13px;
-                        margin:0px;
-                        padding:0px 4px;
-                        transition:.3s;
-                    }
-                    &:hover{
-                        cursor:pointer;
-                        &:after{
-                            opacity:1;
-                            visibility:visible;
-                            transition:.3s;
-                        }
-                    }
-                }
-
-                .note__edition{
-                    font-size:14px;
-                    height:21px;
-                    font-weight:500;
-                    margin:0px;
-                    .note__edition__input{
-                        margin:0px 0px;
-                        padding:0px 0px;
-                        height:21px;
-                        outline:none;
-                        border:none;
-                        color:$default-color-light;
-                        background:none;
-                        border-bottom:solid 1px $secondary-color;
-                    }
-                    .note__edition__link{
-                        margin:0px;
-                    }
-                }
-            }
-        }
-
-    &.card--trainer-session{
-        margin:4px auto 4px auto;
-
-        .card__actions{
-            padding:16px;
-        }
-    }
 
     &.card--users{
         .card__description__titre{
@@ -240,12 +140,13 @@
     }
     
     @each $size in $sizes{
-        &.card--#{nth($size, 1)}{
+        $size-name: nth($size, 1);
+        $size-value: nth($size, 2);
+        &.card--#{$size-name}{
             width:100%;
             height:auto;
             overflow:auto;
             margin-bottom:8px;
-
 
             &.ng-enter, 
             &.ng-leave
@@ -257,7 +158,7 @@
             &.ng-leave {
                 visibility:visible;
                 opacity: 1;
-                height: nth($size, 2);
+                height: $size-value;
             }
              
             &.ng-leave.ng-leave-active,
@@ -266,15 +167,22 @@
                 opacity: 0;
                 height: 1px;       
             }
-
-            .card__illustration{
-                line-height:nth($size, 2);
-            }
+            
             .card__description{
-                float:left;
+                &.card__description--one-line{
+                    padding:($size-value - $card-text-size - $card-margin-size)/2 16px; 
+                }
+                &.card__description--two-lines{
+                    padding:($size-value - (2*$card-text-size) - (2*$card-margin-size))/2 16px; 
+                        
+                }
+                &.card__description--three-lines{
+                    padding:($size-value - (3*$card-text-size) - (3*$card-margin-size))/2 16px; 
+                }
             }
+
+
             .card__actions{
-                height:nth($size, 2);
             }
         }
     }

@@ -39,28 +39,13 @@ angular.module('private.trainer.sessions.directives', [
             ctrl.archives = response.data || [];
         });
     };
-    ctrl.editName = function(sessionToSet){
-        SessionsModel.updateNameSession(sessionToSet).then(function(response){
-            response.flash();
-            if(!response.isErroneous()){
-                ctrl.updateSessions();
-            }
-        });
-    };
-    ctrl.editComments = function(sessionToSet){
-        SessionsModel.updateCommentsSession(sessionToSet).then(function(response){
-            response.flash();
-            if(!response.isErroneous()){
-                ctrl.updateSessions();
-            }
-        });
-    };
 
     ctrl.editAccess = function(sessionToSet){
         SessionsModel.updateAccessSession(sessionToSet).then(function(response){
-            response.flash();
             if(!response.isErroneous()){
                 ctrl.updateSessions();
+            }else{
+                response.flash();
             }
         });
     };
@@ -68,10 +53,11 @@ angular.module('private.trainer.sessions.directives', [
     ctrl.archiveSession = function(sessionToArchive){
         if(sessionToArchive){
             SessionsModel.archiveSession(sessionToArchive).then(function(response){
-                response.flash();
                 if(!response.isErroneous()){
                     ctrl.updateSessions();
                     $rootScope.$emit('changeArchives', true);
+                }else{
+                    response.flash();
                 }
             });
         }else{
