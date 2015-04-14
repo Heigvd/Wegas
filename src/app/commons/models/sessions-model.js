@@ -119,9 +119,11 @@ angular.module('wegas.models.sessions', [])
             },
 
             /* Cache a session, passing a session list and the session to add in parameter */
-            cacheSession = function(sessionList, session) {
+            cacheSession = function(sessionList, session, alreadyFormatted) {
                 if (sessionList && session) {
-                    session = formatPlayers(session);
+                    if(!alreadyFormatted){
+                       session = formatPlayers(session);
+                    }
                     if (!_.find(sessionList, session)) {
                         sessionList.push(session);
                     }
@@ -817,7 +819,7 @@ angular.module('wegas.models.sessions', [])
                 setSessionStatus(sessionToArchive.id, "BIN").then(function(sessionArchived) {
                     if (sessionArchived) {
                         sessions.cache.managed.data = uncacheSession(sessions.cache.managed.data, sessionToArchive);
-                        sessions.cache.archived.data = cacheSession(sessions.cache.archived.data, sessionToArchive);
+                        sessions.cache.archived.data = cacheSession(sessions.cache.archived.data, sessionToArchive, 1);
                         deferred.resolve(Responses.success("Session archived", sessionToArchive));
                     } else {
                         deferred.resolve(Responses.danger("Error during session archivage", false));
@@ -839,7 +841,7 @@ angular.module('wegas.models.sessions', [])
                 setSessionStatus(sessionToUnarchive.id, "LIVE").then(function(sessionUnarchived) {
                     if (sessionUnarchived) {
                         sessions.cache.archived.data = uncacheSession(sessions.cache.archived.data, sessionToUnarchive);
-                        sessions.cache.managed.data = cacheSession(sessions.cache.managed.data, sessionToUnarchive);
+                        sessions.cache.managed.data = cacheSession(sessions.cache.managed.data, sessionToUnarchive, 1);
                         deferred.resolve(Responses.success("Session unarchived", sessionToUnarchive));
                     } else {
                         deferred.resolve(Responses.danger("Error during session unsarchivage", false));
