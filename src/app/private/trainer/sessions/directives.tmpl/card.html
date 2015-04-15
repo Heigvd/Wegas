@@ -1,7 +1,7 @@
 <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
 <div 
     class="card__description" 
-    ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
+    ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
     <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
     <div class="line line--primary">{{session.name | limitTo: 36}}<span ng-if="session.name.length > 36">...</span></div>
     <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
@@ -17,8 +17,8 @@
     <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref="wegas.private.trainer.sessions.customize({id: session.id})">
       <span class="button__label">Customize Session</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" ui-sref="wegas.private.trainer.sessions.users({id: session.id})">
-      <span class="button__label">Manage User</span>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage Users" ui-sref="wegas.private.trainer.sessions.users({id: session.id})">
+      <span class="button__label">Manage Users</span>
     </a>
     <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Move to archives" ng-click="archive(session)">
       <span class="button__label">Move to archives</span>
