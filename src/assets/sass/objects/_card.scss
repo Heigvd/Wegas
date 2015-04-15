@@ -6,7 +6,7 @@ $card-margin-size: 8px;
     width:100%;
     height:nth(nth($sizes,1), 2);
     padding:0px;
-    margin:4px auto;
+    margin:12px auto;
     border:none;
     box-sizing: border-box;
     background:$white;
@@ -51,29 +51,12 @@ $card-margin-size: 8px;
 
     .card__actions{
         float:right;
-    }
-
-    &.card--player-session{
-        margin:4px auto 4px auto;
-        .card__description{
-            margin: 8px 0px;
-            .card__description__titre{
-                padding:18px 16px 4px 16px;
-                font-size:14px;
-                font-weight:500;
-                margin:0px;
-            }
-
-        }
-        .card__description__scenario{
-            margin:0px;
-            padding:4px 16px 4px 16px;
-            font-size:12px;
-            font-weight:300;
-            font-style: italic;
-            margin:0px;
+        .button{
+            display: block;
+            float: left;
         }
     }
+
     &.card--scenario {
         &.card--big {
             height: inherit;
@@ -114,12 +97,6 @@ $card-margin-size: 8px;
             @include make-xs-column(2);
         }
     }
-
-    &.card--player-session{
-        .card__actions{
-            padding:16px;
-        }
-    }
     
     @each $size in $sizes{
         $size-name: nth($size, 1);
@@ -129,7 +106,6 @@ $card-margin-size: 8px;
             width:100%;
             height:auto;
             overflow:auto;
-            margin-bottom:8px;
 
             &.ng-enter, 
             &.ng-leave

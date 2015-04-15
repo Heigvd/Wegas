@@ -57,8 +57,8 @@ $buttons-types : (
 );
 $sizes : (
 	(small, 48px, 0px), 
-	(medium, 64px, 6px), 
-	(big, 96px, 14px)
+	(medium, 64px, 8px), 
+	(big, 96px, 16px)
 );
 $backgrounds-levels : (
 	(bottom, $background-default, lighten($primary-color-light, 10%)), 
