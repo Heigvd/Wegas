@@ -136,19 +136,45 @@
 		border-top:solid 1px $border;
 		box-sizing: border-box;
 
+		.modal__tools__message{
+			float:left;
+			margin:0px;
+			padding:0px;
+			height:48px;
+			line-height:48px;
+			color:$warning-color;
+			i{
+				color:$warning-color;
+			}
+			&.ng-enter, 
+            &.ng-leave
+            { 
+                transition: .3s;
+            } 
+             
+            &.ng-enter.ng-enter-active, 
+            &.ng-leave {
+                visibility:visible;
+                opacity: 1;
+
+            }
+             
+            &.ng-leave.ng-leave-active,
+            &.ng-enter {
+                visibility:hidden;
+                opacity: 0;
+            }
+		}
 		.modal__tools__autocomplete{
 			display:block;
 			position:relative;
 			width:100%;
 			height:100%;
 		}
-		.modal__tools__add-trainer{
-			width:100%;
-			height:100%;
+		.input--add-trainer{
+			width:50%;
 			box-sizing: border-box;
-			border:none;
-			outline:none;
-			padding:0px 1em;
+			margin:8px 16px;
 		}
 	}
 	&.modal--coscenarists {
@@ -269,10 +295,19 @@
 				}
 			}
 			.infos--main{
-		        @include make-xs-column(8);
+		        @include make-xs-column(7);
+
 			}
 			.infos--secondary{
-		        @include make-xs-column(4);
+		        @include make-xs-column(5);
+			}
+			.infos--main, .infos--secondary{
+				.infos__label{
+					display:block;
+					padding:0px 24px;
+					margin:12px 0px 8px 0px;
+					color:#777777;
+				}
 			}
 		}
 		.modal__tools {

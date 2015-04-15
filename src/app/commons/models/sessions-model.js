@@ -271,6 +271,11 @@ angular.module('wegas.models.sessions', [])
                     scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
                     gameModelSetted = true;
                 }
+                if(scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual){
+                    sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
+                    scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;
+                    gameModelSetted = true;
+                }
                 if (scenarioBeforeChange.comments !== sessionInfos.comments) {
                     scenarioBeforeChange.comments = sessionInfos.comments;
                     gameModelSetted = true;
