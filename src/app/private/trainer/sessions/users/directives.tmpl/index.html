@@ -14,7 +14,7 @@
 </div>
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content" trainer-sessions-users-trainers-list trainers="usersIndexCtrl.session.trainers"></div>
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools" mass-autocomplete>
-	<div class="modal__tools__autocomplete" search-users input-style="modal__tools__add-trainer" restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer" placeholder="Add trainer"></div>
+	<div class="modal__tools__autocomplete" search-users input-style="input input--small input--add-trainer" restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer" placeholder="Add trainer"></div>
 </div>
 <div ng-if="usersIndexCtrl.playersViewActived"class="modal__content modal__content--tools-off">
 	<div 
