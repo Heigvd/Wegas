@@ -21,7 +21,7 @@ import javax.ws.rs.ext.Provider;
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Provider
-public class DynamicCacheFilters implements DynamicFeature {
+public class DynamicFilters implements DynamicFeature {
 
     private static final CacheResponseFilter noCacheResponseFilter = new CacheResponseFilter(CacheResponseFilter.NO_CACHE);
     private static final String private_cache = "private, ";
@@ -47,6 +47,17 @@ public class DynamicCacheFilters implements DynamicFeature {
                 context.register(noCacheResponseFilter);
             }
         }
+
+        /*
+         * Detect Deprecated Calls
+         */
+        Deprecated deprecatedController = resourceInfo.getResourceClass().getAnnotation(Deprecated.class);
+        Deprecated deprecatedMethod = resourceInfo.getResourceMethod().getAnnotation(Deprecated.class);
+
+        if (deprecatedController != null || deprecatedMethod != null) {
+            context.register(new DeprecationFilter());
+        }
+
 
     }
 

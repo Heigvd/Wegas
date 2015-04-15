@@ -83,7 +83,6 @@ public class TeamController {
             r = Response.status(Response.Status.CREATED).entity(entity).build();
         }
         return r;
-    }
 
     /**
      *

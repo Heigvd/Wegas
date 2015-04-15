@@ -86,6 +86,7 @@ public class PlayerController {
      * @return
      */
     @POST
+    @Deprecated
     public Player create(@PathParam("teamId") Long teamId, Player entity) {
         SecurityHelper.checkPermission(teamFacade.find(teamId).getGame(), "Edit");
         playerFacade.create(teamId, entity);
