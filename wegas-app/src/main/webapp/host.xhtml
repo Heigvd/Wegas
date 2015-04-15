@@ -82,18 +82,6 @@
                 }
                 Y.Wegas.Facade.Game.cache.set('currentPlayerId', player.get("id"));
             });
-            //Select first available player
-            (function() {
-                var tw = playersTree.treeView, i, entity;
-                for (i = 0; i < tw.size(); i++) {
-                    entity = tw.item(i).get("data.entity");
-                    if (FFA || entity.get("players")[0]) {
-                        tw.item(i).fire("click");
-                        tw.item(i).set("selected", 2);
-                        break;
-                    }
-                }
-            })();
         });
     });
 

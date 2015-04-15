@@ -17,10 +17,12 @@ import com.wegas.core.security.ejb.UserFacade;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.*;
-import java.util.List;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
+import javax.persistence.NoResultException;
+import javax.persistence.Query;
+import javax.persistence.TypedQuery;
+import java.util.List;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -109,7 +111,8 @@ public class PlayerFacade extends BaseFacade<Player> {
      * @throws com.wegas.core.exception.internal.WegasNoResultException
      */
     public Player findByGameId(Long gameId) throws WegasNoResultException {
-        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId");
+        Query getByGameId = getEntityManager().createQuery("SELECT player FROM Player player WHERE player.team.game.id = :gameId " +
+                "ORDER BY type(player.team) desc"); // Debug player comes last
         getByGameId.setParameter("gameId", gameId);
         try {
             return (Player) getByGameId.setMaxResults(1).getSingleResult();
@@ -177,6 +180,7 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      * Reset a player
+     *
      * @param player the player to reset
      */
     public void reset(final Player player) {
@@ -191,7 +195,8 @@ public class PlayerFacade extends BaseFacade<Player> {
 
     /**
      * Reset a player
-     * @param playerId  id of the player to reset
+     *
+     * @param playerId id of the player to reset
      */
     public void reset(Long playerId) {
         this.reset(this.find(playerId));
