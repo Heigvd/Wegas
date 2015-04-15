@@ -51,9 +51,10 @@ angular.module('private.player.sessions.directives', [])
         /*  */
         ctrl.leaveSession = function(sessionId) {
             SessionsModel.leaveSession(sessionId).then(function(response) {
-                response.flash();
                 if (!response.isErroneous()) {
                     updateSessions();
+                }else{
+                    response.flash();
                 }
             });
         }

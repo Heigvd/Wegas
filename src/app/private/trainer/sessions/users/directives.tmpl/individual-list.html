@@ -4,7 +4,11 @@
 	    <div class="line line--primary">{{player.name}}</div>
 	</div>
 	<div class="card__actions">
-	    <a class="button button--small button--round button--danger-reverse button--label-off button--user-remove" title="Remove player"ng-click="remove(player.id, player.teamId)">
+	    <a 
+	    	class="button button--small button--round button--danger-reverse button--label-off button--user-remove" 
+	    	title="Remove player"
+			confirmed-click="remove(player.id, player.teamId)" 
+			ng-confirm-click="Are you sure you want to remove this player from the session ? This action is irreversible.">
 	    	<span class="button__label">Remove player</span>
 	    </a>
 	</div>

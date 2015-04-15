@@ -40,25 +40,28 @@ angular.module('private.trainer.sessions.users.directives', [
 
         ctrl.addTrainer = function(selection) {
             SessionsModel.addTrainerToSession($stateParams.id, selection).then(function(response) {
-                response.flash();
                 if (!response.isErroneous()) {
                     ctrl.updateSession();
+                }else{
+                    response.flash();
                 }
             });
         }
         ctrl.removeTrainer = function(trainerId) {
             SessionsModel.removeTrainerToSession($stateParams.id, trainerId).then(function(response) {
-                response.flash();
                 if (!response.isErroneous()) {
                     ctrl.updateSession();
+                }else{
+                    response.flash();
                 }
             });
         }
         ctrl.removePlayer = function(playerId, teamId) {
             SessionsModel.removePlayerToSession($stateParams.id, playerId, teamId).then(function(response) {
-                response.flash();
                 if (!response.isErroneous()) {
                     ctrl.updateSession();
+                }else{
+                    response.flash();
                 }
             });
         }

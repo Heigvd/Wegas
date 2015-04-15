@@ -13,7 +13,10 @@
 	trainer-sessions-archives-list
 ></div>
 <div class="modal__tools">
-	<a class="button button--small button--default button--trash" ng-click="trainerSessionsArchivesIndexCtrl.deleteArchivedSessions()">
+	<a 	
+		class="button button--small button--danger button--trash" 
+		confirmed-click="trainerSessionsArchivesIndexCtrl.deleteArchivedSessions()" 
+		ng-confirm-click="Are you sure you want to delete all archived session ? This action is irreversible.">
    		<span class="button__label">Delete all</span>
 	</a>
 </div>

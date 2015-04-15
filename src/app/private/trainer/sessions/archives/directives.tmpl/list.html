@@ -11,7 +11,11 @@
         <a class="button button--medium button--round button--default-reverse button--label-off button--undo" title="Move to current sessions" ng-click="unarchive(session)">
             <span class="button__label">Move to current sessions</span>
         </a>
-        <a class="button button--medium button--round button--danger-reverse button--label-off button--trash" title="Delete session" ng-click="delete(session)">
+        <a 
+            class="button button--medium button--round button--danger-reverse button--label-off button--trash" 
+            title="Delete session" 
+            confirmed-click="delete(session)" 
+            ng-confirm-click="Are you sure you want to delete this archived session ? This action is irreversible.">
             <span class="button__label">Delete session</span>
         </a> 
     </div>
