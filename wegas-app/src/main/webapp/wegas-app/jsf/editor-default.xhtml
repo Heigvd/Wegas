@@ -28,13 +28,14 @@
         <ui:define name="body">
 
             <!-- Client script (game model specific) -->
-            <ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
+            <!--<ui:repeat rendered="#{editorGameController.currentGameModel.properties.clientScriptUri != ''}"
                        var="o" value="#{editorGameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
                 <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
-            </ui:repeat>
+            </ui:repeat>-->
 
             <script type="text/javascript">
                 YUI().use("wegas-app", "wegas-scripteval", "wegas-websocketlistener", function(Y) {
+
                     var app = new Y.Wegas.App({
                         dataSources: {
                             Variable: {
@@ -141,7 +142,7 @@
                      * END THIS IS NOT A COMMENT !!!
                      */
 
-                    app.on("render", function() {                               // When the page is rendered
+                    app.once("render", function() {                               // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel();
                         Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
 
@@ -151,7 +152,13 @@
                             Y.log("Error running client scripts.", "error");
                         }
                     });
-
+                    try{
+                        #{editorGameController.staticClientScripts};
+                    } catch (e) {
+                        Y.log("Error running client scripts.", "error");
+                    }
+                    // Update instance config with global one. GameModel specific loaders.
+                    Y.applyConfig(YUI_config);
                     app.render();                                               // Render app
                 });
             </script>
