@@ -71,7 +71,7 @@ YUI.add('wegas-datasource', function(Y) {
         },
         hasInitialRequest: function() {
             return !Y.Lang.isUndefined(this.get("initialRequest")) ||
-                   !Y.Lang.isUndefined(this.get("initialFullRequest"));
+                !Y.Lang.isUndefined(this.get("initialFullRequest"));
         },
         /**
          * Server requests methods
@@ -202,42 +202,57 @@ YUI.add('wegas-datasource', function(Y) {
 
             this.on("ExceptionEvent", function(e) {
                 var type = e.type.split(":").pop(),
-                    val, node, min, max;
+                    val, node, min, max, msg, level;
 
                 if (e.serverEvent) {
                     val = e.serverEvent.get("val.exceptions")[0].get("val");
 
                     if (this.get("host").fire(val["@class"], val)) {
 
-                        node = Y.Widget.getByNode(".wegas-login-page") ||
-                               (Y.Widget.getByNode("#centerTabView") &&
-                                Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                               Y.Widget.getByNode(".wegas-playerview");
 
                         switch (val["@class"]) {
                             case "WegasErrorMessage":
-                                node.showMessage(val.level, val.message);
+                                level = val.level;
+                                msg = val.message;
                                 break;
                             case "WegasNotFoundException":
-                                node.showMessage("error", val.message);
+                                level = "error";
+                                msg = val.message;
                                 break;
                             case "WegasOutOfBoundException":
                                 min = (val.min !== null ? val.min : "-∞");
                                 max = (val.max !== null ? val.max : "∞");
-                                node.showMessage("error",
-                                    "Variable \"" + val.variableDescriptor.get("label") +
-                                    "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])");
+                                level = "error";
+                                msg = "Variable \"" + val.variableDescriptor.get("label") +
+                                    "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])";
                                 break;
                             case "WegasScriptException":
-                                node.showMessage("error",
-                                    val.message + " at line " + val.lineNumber + " in script " + val.script);
+                                level = "error";
+                                msg = val.message + " at line " + val.lineNumber + " in script " + val.script;
                                 break;
                             case "WegasWrappedException":
-                                node.showMessage(type, "Unexpected error: " + val.message);
+                                level = type;
+                                msg = "Unexpected error: " + val.message;
                                 break;
                             default:
-                                node.showMessage(type, "Severe error: " + val.message);
+                                level = type;
+                                msg = type, "Severe error: " + val.message;
                                 break;
+                        }
+
+
+                        if (Y.Widget) {
+                            node = Y.Widget.getByNode(".wegas-login-page") ||
+                                (Y.Widget.getByNode("#centerTabView") &&
+                                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                                Y.Widget.getByNode(".wegas-playerview");
+
+                        }
+                        
+                        if (node) {
+                            node.showMessage(level, msg);
+                        } else {
+                            alert(msg);
                         }
                     }
                     this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
@@ -268,7 +283,7 @@ YUI.add('wegas-datasource', function(Y) {
                             payload.response.entities = payload.serverResponse.get("entities");
                             if (payload.response.entities.length > 0) {
                                 payload.response.entity = payload.response.entities[0]; // Shortcut, useful if there is
-                                                                                        // only one instance
+                                // only one instance
                             }
                         }
                         this.onResponseRevived(payload);
@@ -301,7 +316,7 @@ YUI.add('wegas-datasource', function(Y) {
                     if (!e.error) { // If there was an server error, do not update the cache
                         for (i = 0; i < response.length; i += 1) {
                             this.updated = this.updateCache(e.cfg.method, response[i], !e.cfg.initialRequest) ||
-                                           this.updated;
+                                this.updated;
                         }
                         return;
                     }
@@ -314,7 +329,7 @@ YUI.add('wegas-datasource', function(Y) {
                             if (Lang.isObject(entity)) {
                                 method = e.cfg && e.cfg.method ? e.cfg.method : "POST";
                                 this.updated = this.updateCache(method, entity, !e.cfg || !e.cfg.initialRequest) ||
-                                               this.updated;
+                                    this.updated;
                             }
                         }
                     }
@@ -352,42 +367,42 @@ YUI.add('wegas-datasource', function(Y) {
             switch (method) {
                 case "DELETE":
                     if (this.find(ID, entity, Y.bind(function(entity, needle, index, stack) {
-                            stack.splice(index, 1);
-                            this.get(HOST).fire("delete", {"entity": entity});
-                            return true;
-                        }, this))) {
+                        stack.splice(index, 1);
+                        this.get(HOST).fire("delete", {"entity": entity});
+                        return true;
+                    }, this))) {
                         return true;
                     }
                     break;
                 default:
                     if (this.find(ID, entity, Y.bind(function(entity, needle) {
-                            entity.setAttrs(needle.getAttrs());
+                        entity.setAttrs(needle.getAttrs());
 
-                            if (this.oldIds) {
-                                // NEW ENTITY IN PARENT
+                        if (this.oldIds) {
+                            // NEW ENTITY IN PARENT
 
-                                // oldIds is filled by VarDescCache.post when addind a variable as
-                                // a child. oldIds contains new variable sieblings ids
+                            // oldIds is filled by VarDescCache.post when addind a variable as
+                            // a child. oldIds contains new variable sieblings ids
 
-                                // Since return entity is not the new one but its parent,
-                                // this statement search an entity with an unknown id (ie not in oldIds) within
-                                // the parent items (ie children).
-                                var newEntity = Y.Array.find(entity.get("items"), function(i) {
-                                    return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
-                                }, this);
-                                this.get(HOST).fire("added", {// New entity as children
-                                    entity: newEntity,
-                                    parent: entity
-                                });
-                                this.oldIds = null;
-                            } else {
-                                // Update Entity (anywhere)
-                                this.get(HOST).fire("updatedDescriptor", {
-                                    entity: entity
-                                });
-                            }
-                            return true;
-                        }, this))) {
+                            // Since return entity is not the new one but its parent,
+                            // this statement search an entity with an unknown id (ie not in oldIds) within
+                            // the parent items (ie children).
+                            var newEntity = Y.Array.find(entity.get("items"), function(i) {
+                                return Y.Array.indexOf(this.oldIds, i.get("id")) < 0;
+                            }, this);
+                            this.get(HOST).fire("added", {// New entity as children
+                                entity: newEntity,
+                                parent: entity
+                            });
+                            this.oldIds = null;
+                        } else {
+                            // Update Entity (anywhere)
+                            this.get(HOST).fire("updatedDescriptor", {
+                                entity: entity
+                            });
+                        }
+                        return true;
+                    }, this))) {
                         return true;
                     }
                     break;
@@ -603,7 +618,6 @@ YUI.add('wegas-datasource', function(Y) {
                 }
             }, cfg));
         },
-
         sortList: function(entity, cfg) {
             this.sendRequest(Y.mix({
                 request: this.generateRequest(entity.toObject()) + "/Sort",
@@ -644,10 +658,10 @@ YUI.add('wegas-datasource', function(Y) {
                 value: function(entity, key, needle) {
                     var value = (entity.get) ? entity.get(key) : entity[key], // Normalize item and needle values
                         needleValue = (needle && needle.get) ? needle.get(key) :
-                            (Y.Lang.isObject(needle)) ? needle[key] : needle;
+                        (Y.Lang.isObject(needle)) ? needle[key] : needle;
 
                     return value === needleValue &&
-                           (!needle._classes || entity instanceof needle._classes[0]);
+                        (!needle._classes || entity instanceof needle._classes[0]);
                 }
             }
         }

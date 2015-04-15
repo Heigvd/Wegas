@@ -232,9 +232,11 @@ public class GameController {
     }
 
     /**
-     * This method process a string token. It checks if the given token
-     * corresponds to a game and then to a team, and return the corresponding
-     * result.
+     * Check if a user is logged,
+     * Find a game by it's token and check if this game has an open access,
+     * Check if current user is already a player for this game,
+     * Check if the game is played individually,
+     * Create a new team with a new player linked on the current user for the game found. 
      *
      * @param token
      * @return
@@ -274,6 +276,8 @@ public class GameController {
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeam(@PathParam("teamId") Long teamId) {
+
+        // IN USE 
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
                 Arrays.asList("View", "Token"));                                // Make sure the user can join
         return gameFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
@@ -287,6 +291,7 @@ public class GameController {
      */
     @POST
     @Path("/JoinTeam/{teamId : .*}/")
+    @Deprecated
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, List<AbstractAccount> accounts) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
                 Arrays.asList("View", "Token"));                                // Make sure the user can join
@@ -315,6 +320,7 @@ public class GameController {
 
     @POST
     @Path("/JoinTeam/{teamId : .*}/{token : .+}")
+    @Deprecated
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, @PathParam("token") String token,
             List<AbstractAccount> accounts) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
@@ -337,6 +343,7 @@ public class GameController {
      */
     @POST
     @Path("{gameId : .*}/CreateTeam/{name : .*}/")
+    @Deprecated
     public Team createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
 
         SecurityHelper.checkAnyPermission(gameFacade.find(gameId), Arrays.asList("View", "Token"));
@@ -355,6 +362,7 @@ public class GameController {
      */
     @POST
     @Path("{gameId : .*}/CreateTeam")
+    @Deprecated
     public Team createTeam(@PathParam("gameId") Long gameId) {
 
         SecurityHelper.checkAnyPermission(gameFacade.find(gameId), Arrays.asList("View", "Token"));
@@ -374,6 +382,7 @@ public class GameController {
      */
     @POST
     @Path("{gameId : [1-9][0-9]*}/CreateGameAccount/{accountNumber : [1-9][0-9]*}")
+    @Deprecated
     public Game createGameAccount(@PathParam("gameId") Long gameId, @PathParam("accountNumber") Long accountNumber) {
         Game g = gameFacade.find(gameId);
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:g" + gameId);

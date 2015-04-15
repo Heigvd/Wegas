@@ -22,6 +22,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Table(name = "gameaccountkey",
         uniqueConstraints
         = @UniqueConstraint(columnNames = {"accountkey"}))
+@Deprecated
 public class GameAccountKey extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
