@@ -75,10 +75,14 @@ public class TeamController {
      * @return
      */
     @POST
-    public Team create(@PathParam("gameId") Long gameId, Team entity) {
-        SecurityHelper.checkPermission(gameFacade.find(gameId), "Edit");
-        this.teamFacade.create(gameId, entity);
-        return entity;
+    public Response create(@PathParam("gameId") Long gameId, Team entity) {
+        Response r = Response.status(Response.Status.CONFLICT).build();
+        Game g = gameFacade.find(gameId);
+        if(g.getAccess() == Game.GameAccess.OPEN){
+            this.teamFacade.create(gameId, entity);
+            r = Response.status(Response.Status.CREATED).entity(entity).build();
+        }
+        return r;
     }
 
     /**

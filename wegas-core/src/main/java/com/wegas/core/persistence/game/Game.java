@@ -483,7 +483,6 @@ public class Game extends NamedEntity {
      *
      */
     public enum GameAccess {
-
         /**
          *
          */
@@ -510,10 +509,6 @@ public class Game extends NamedEntity {
      *
      */
     public enum Status {
-        /**
-         *  Gaem, game is playable
-         */
-        OPENED,
         /**
          * Initial value, game is playable
          */

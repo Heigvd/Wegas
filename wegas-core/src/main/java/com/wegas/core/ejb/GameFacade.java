@@ -498,15 +498,6 @@ public class GameFacade extends BaseFacade<Game> {
     }
     
     /**
-     * Set game status, changing to {@link Game.Status#JOINABLE}
-     *
-     * @param entity Game
-     */
-    public void open(Game entity) {
-        entity.setStatus(Game.Status.OPENED);
-    }
-    
-    /**
      * Set game status, changing to {@link Game.Status#DELETE}
      *
      * @param entity GameModel
