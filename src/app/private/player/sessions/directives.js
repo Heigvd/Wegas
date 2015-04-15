@@ -28,12 +28,12 @@ angular.module('private.player.sessions.directives', [])
                 if (findResponse.isErroneous()) {
                     findResponse.flash();
                 } else {
-                    if(findResponse.data.access != "CLOSE"){
+                    if (findResponse.data.access != "CLOSE") {
                         if (findResponse.data.properties.freeForAll) {
                             SessionsModel.joinIndividualSession(token).then(function(joinResponse) {
                                 if (!joinResponse.isErroneous()) {
                                     updateSessions();
-                                }else{
+                                } else {
                                     joinResponse.flash();
                                 }
                             });
@@ -42,7 +42,7 @@ angular.module('private.player.sessions.directives', [])
                                 token: findResponse.data.token
                             });
                         }
-                    }else{
+                    } else {
                         Flash.danger("Session closed");
                     }
                 }
@@ -53,7 +53,7 @@ angular.module('private.player.sessions.directives', [])
             SessionsModel.leaveSession(sessionId).then(function(response) {
                 if (!response.isErroneous()) {
                     updateSessions();
-                }else{
+                } else {
                     response.flash();
                 }
             });
@@ -94,9 +94,30 @@ angular.module('private.player.sessions.directives', [])
             scope: {
                 sessions: "=",
                 leave: "="
+            }
+        };
+    })
+    .directive('playerSessionsCard', function(Auth) {
+        return {
+            templateUrl: 'app/private/player/sessions/directives.tmpl/card.html',
+            scope: {
+                session: "=",
+                leave: "="
             },
-            link: function(scope, element, attrs){
+            link: function(scope, element, attrs) {
                 scope.ServiceURL = ServiceURL;
+                if(!scope.session.properties.freeForAll){
+                    Auth.getAuthenticatedUser().then(function(user){
+                        scope.team = {};
+                        scope.session.teams.forEach(function(team){
+                            team.players.forEach(function(player){
+                                if(player.userId == user.id){
+                                    scope.team = team;
+                                }
+                            });
+                        });
+                    });
+                }
             }
         };
     });
