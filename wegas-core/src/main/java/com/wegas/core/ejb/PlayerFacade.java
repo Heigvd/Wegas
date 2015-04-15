@@ -69,6 +69,24 @@ public class PlayerFacade extends BaseFacade<Player> {
             throw new WegasNoResultException(ex);
         }
     }
+    
+    
+     /**
+     * @param gameId
+     * @param userId
+     * @return
+     */
+    public Player checkExistingPlayer(final Long gameId, final Long userId) {
+        try{
+            final TypedQuery<Player> findByGameIdAndUserId = getEntityManager().createNamedQuery("findPlayerByGameIdAndUserId", Player.class);
+            findByGameIdAndUserId.setParameter("gameId", gameId);
+            findByGameIdAndUserId.setParameter("userId", userId);
+            findByGameIdAndUserId.setParameter("status", Game.Status.LIVE);
+            return findByGameIdAndUserId.getSingleResult();
+        } catch(NoResultException e) {
+            return null;
+        }
+    }
 
     /**
      * @param player

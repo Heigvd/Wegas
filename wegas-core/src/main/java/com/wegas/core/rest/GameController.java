@@ -170,10 +170,7 @@ public class GameController {
         SecurityHelper.checkPermission(game, "Edit");
         switch(status){
             case LIVE:
-                gameFacade.live(game);   
-                break;
-            case OPENED:
-                gameFacade.open(game);   
+                gameFacade.live(game);    
                 break;
             case BIN:
                 gameFacade.bin(game);   
@@ -244,69 +241,29 @@ public class GameController {
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
-    public Object tokenJoinGame(@PathParam("token") String token) {
-        Game game = gameFacade.findByToken(token);                              // 1st case: game token
+    public Response tokenJoinGame(@PathParam("token") String token) throws WegasNoResultException {
+        Response r = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
-
-        if (game != null) {
-            AbstractAccount account = currentUser.getMainAccount();
-            if (account instanceof GameAccount) {                               //Logged in with a GameAccount
-                GameAccountKey accountKey;
-                try {
-                    accountKey = gameFacade.findGameAccountKey(((GameAccount) account).getEmail());
-                    if (accountKey.getGame() == game && !accountKey.getUsed()) {     //Account matches currentGame and key is not used
-                        accountKey.setUsed(Boolean.TRUE);
+        if(currentUser != null){
+            r = Response.status(Response.Status.BAD_REQUEST).build();
+            Game game = gameFacade.findByToken(token);
+            if (game != null) {
+                r = Response.status(Response.Status.CONFLICT).build();
+                if(game.getAccess() == Game.GameAccess.OPEN){
+                    Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
+                    if(player == null){
+                        SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
+                        if (game.getGameModel().getProperties().getFreeForAll()) { 
+                            Team team = new Team("Team-" + Helper.genToken(20));
+                            teamFacade.create(game.getId(), team);
+                            gameFacade.joinTeam(team.getId(), currentUser.getId());
+                            r = Response.status(Response.Status.CREATED).entity(Arrays.asList(team, game)).build();
+                        }
                     }
-                } catch (WegasNoResultException ex) {
                 }
-            } else if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {      // Check game token are authorized on this game
-                return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
-            }
-        } else {                                                                // 2nd case: single usage enrolement key
-            GameEnrolmentKey gameEnrolmentKey;
-            try {
-                gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);      // Look the key up
-            } catch (WegasNoResultException e) {
-                throw WegasErrorMessage.error("No game found for this key");
-            }
-            game = gameEnrolmentKey.getGame();
-            if (gameEnrolmentKey.getUsed()) {                                   // Check the token has not already been used
-                throw WegasErrorMessage.error("This key has already been used");
-            }
-            if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {  // Check single usage enrolement key are authorized on this game
-                throw WegasErrorMessage.error("Not allowed to connect using sinle usage enrolment keys");
-            }
-            if (game.getGameModel().getProperties().getFreeForAll()) {
-                gameEnrolmentKey.setUsed(true);                                 // Mark the current key as used
             }
         }
-
-        try {                                                                   // Check if logged user is already registered in the target game
-            playerFacade.findByGameIdAndUserId(game.getId(), currentUser.getId());
-            throw WegasErrorMessage.error("You are already registered to this game.");// Current user is already registered to target game
-
-        } catch (WegasNoResultException e) {                                         // If there is no WegasNoResultException, everything is ok, we can pursue
-
-            SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
-            if (game.getGameModel().getProperties().getFreeForAll()) {          // If game is "freeForAll" (single team)
-                //if (game.getTeams().isEmpty()) {
-
-                // Version 1: Create a team for each user 
-                Team team = new Team("Team-" + Helper.genToken(20));
-                teamFacade.create(game.getId(), team);
-
-                // Version 2: Use same team for everybody
-                //if (game.getTeams().size() <= 1) {                            // Create a team if none present (first team is debug team)
-                //    teamFacade.create(game.getId(), new Team("Default"));
-                //}
-                //Team team = game.getTeams().get(1);                           // Join the first team available
-                gameFacade.joinTeam(team.getId(), currentUser.getId());         // Finally join the team
-
-                return Arrays.asList(team, game);
-            } else {
-                return game;
-            }
-        }
+        return r;
     }
 
     /**
