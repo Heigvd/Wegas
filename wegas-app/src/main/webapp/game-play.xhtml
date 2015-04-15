@@ -126,7 +126,13 @@
                             Y.log("Error running client scripts.", "error");
                         }
                     });
-
+                    try{
+                        #{gameController.staticClientScripts}
+                    } catch (e) {
+                        Y.log("Error running client scripts.", "error");
+                    }
+                    // Update instance config with global one. GameModel specific loaders.
+                    Y.applyConfig(YUI_config);
                     app.render();                                               // Render app
                 });
             </script>

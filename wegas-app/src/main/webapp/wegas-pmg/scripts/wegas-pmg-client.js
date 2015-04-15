@@ -8,8 +8,9 @@
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
-/*global Y, persistence */
-(function() {
+/*global Y, app, persistence */
+app.once("render",
+function() {
     "use strict";
     var STRING = "string", HIDDEN = "hidden", ARRAY = "array", SELF = "self",
         NUMBER = "number", SELECT = "select", VALUE = "value", GROUP = "group",
@@ -656,7 +657,7 @@
     centerTab = Y.Widget.getByNode("#centerTabView");
 
     if (centerTab) {
-        Y.use('wegas-fullwidthtab', function() {
+        Y.use(['wegas-fullwidthtab','wegas-pmg-advancementlimit'], function() {
             var hostMode = Y.one(".wegas-hostmode");
 
             if (hostMode) {
@@ -710,4 +711,4 @@
         }
     });
 
-}());
+});
