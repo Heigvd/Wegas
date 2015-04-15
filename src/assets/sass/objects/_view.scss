@@ -104,8 +104,8 @@
     &.view--create-scenario,
     &.view--history-download
     {
-        @include make-xs-column(12);
-        @include make-md-column(4);
+        @include make-xs-column(12, 96px);
+        @include make-md-column(4, 96px);
         .form{
             margin:0px;
             padding:0px;
@@ -114,27 +114,27 @@
     &.view--sessions-list,
     &.view--scenarios-list,
     &.view--history-list {
-        @include make-xs-column(12);
-        @include make-md-column(8);
+        @include make-xs-column(12, 96px);
+        @include make-md-column(8, 96px);
         height:100%;
 
         h3{
             @include make-xs-column(12);
             @include make-md-column(6);
             box-sizing:border-box;
-            padding:0px 16px;
+            padding:0px;
         }
 
         .view__tools{
             @include make-xs-column(12);
             @include make-md-column(6);
             margin-top:28px;
-            padding:0px 16px;
+            padding:0px;
         }
         .view__list{
             @include make-xs-column(12);
             height:calc(100% - 82px);
-            padding:8px 16px 32px 16px;
+            padding:8px 0px 32px 0px;
             box-sizing: border-box;
             overflow-x:hidden;
             overflow-y:auto;
@@ -165,8 +165,7 @@
 
 
             &.view__list--no-content{
-                @include make-xs-column(12);
-                padding:8px 16px 32px 16px;
+                padding:8px 0px 32px 0px;
             }
             &.view__list--with-archive{
                 height:calc(100% - 162px);
