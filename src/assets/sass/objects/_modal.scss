@@ -268,7 +268,7 @@
 				&.icon--selected{
 					border:solid 6px white;
 					padding:0px;
-					@include material-shadow();
+					@include material-shadow(3);
 					transition:.3s;
 					cursor:default;
 
@@ -289,7 +289,7 @@
 
 				&.color--selected{
 					border:solid 6px white;
-					@include material-shadow();
+					@include material-shadow(3);
 					transition:.3s;
 					cursor:default;
 				}
