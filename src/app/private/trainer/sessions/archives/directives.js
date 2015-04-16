@@ -26,10 +26,11 @@ angular.module('private.trainer.sessions.archives.directives', [])
         ctrl.unarchiveSession = function(sessionToUnarchive) {
             if (sessionToUnarchive) {
                 SessionsModel.unarchiveSession(sessionToUnarchive).then(function(response) {
-                    response.flash();
                     if (!response.isErroneous()) {
                         $rootScope.$emit('changeArchives', true);
                         ctrl.updateSessions();
+                    }else{
+                        response.flash();
                     }
                 });
             } else {
@@ -40,10 +41,11 @@ angular.module('private.trainer.sessions.archives.directives', [])
         ctrl.deleteArchivedSession = function(sessionToDelete) {
             if (sessionToDelete) {
                 SessionsModel.deleteArchivedSession(sessionToDelete).then(function(response) {
-                    response.flash();
                     if (!response.isErroneous()) {
                         $rootScope.$emit('changeArchives', true);
                         ctrl.updateSessions();
+                    }else{
+                        response.flash();
                     }
                 });
             } else {
@@ -54,10 +56,11 @@ angular.module('private.trainer.sessions.archives.directives', [])
         ctrl.deleteArchivedSessions = function() {
             if (ctrl.archives.length > 0) {
                 SessionsModel.deleteArchivedSessions().then(function(response) {
-                    response.flash();
                     if (!response.isErroneous()) {
                         $rootScope.$emit('changeArchives', true);
                         ctrl.updateSessions();
+                    }else{
+                        response.flash();
                     }
                 });
             } else {

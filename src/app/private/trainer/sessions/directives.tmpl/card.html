@@ -1,27 +1,10 @@
 <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
-<div class="card__description card__description--one-line">
-    <p class="card__description__date">{{session.createdTime | date:"dd.MM.yyyy"}}</p>
-    <h4 class="card__description__titre">
-        <span ng-if="!editingName" class="titre__display" ng-click="toogleEditingName()">{{session.name}}</span>
-        <div ng-if="editingName" class="titre__edition">
-            <input class="titre__edition__input" type="text" ng-model="sessionToSet.name" />
-            <a class="titre__edition__link link link--danger" ng-click="toogleEditingName()"><i class="fa fa-times"></i></a>
-            <a class="titre__edition__link link link--success" ng-click="editName()"><i class="fa fa-check"></i></a>
-        </div>
-    </h4>
-    <div class="card__description__note">
-        <span ng-if="session.gameModel.comments && !editingComments" class="note__display" ng-click="toogleEditingComments()">
-            {{session.gameModel.comments | limitTo: 36}}
-        </span>
-        <span ng-if="!session.gameModel.comments && !editingComments" class="note__display" ng-click="toogleEditingComments()"> 
-            Comment this session
-        </span>
-        <div ng-if="editingComments" class="note__edition">
-            <input class="note__edition__input" type="text" ng-model="sessionToSet.comments" placehoder="new comment"/>
-            <a class="note__edition__link link link--danger" ng-click="toogleEditingComments()"><i class="fa fa-times"></i></a>
-            <a class="note__edition__link link link--success" ng-click="editComments()"><i class="fa fa-check"></i></a>
-        </div>
-    </div>
+<div 
+    class="card__description" 
+    ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
+    <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
+    <div class="line line--primary">{{session.name | limitTo: 36}}<span ng-if="session.name.length > 36">...</span></div>
+    <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
 </div>
 <div class="card__actions">
     <a 
@@ -34,11 +17,11 @@
     <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref="wegas.private.trainer.sessions.customize({id: session.id})">
       <span class="button__label">Customize Session</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage User" ui-sref="wegas.private.trainer.sessions.users({id: session.id})">
-      <span class="button__label">Manage User</span>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage Users" ui-sref="wegas.private.trainer.sessions.users({id: session.id})">
+      <span class="button__label">Manage Users</span>
     </a>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Archive session" ng-click="archive(session)">
-      <span class="button__label">Archive session</span>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Move to archives" ng-click="archive(session)">
+      <span class="button__label">Move to archives</span>
     </a>   
     <a class="button button--medium button--round button--info button--label-off button--trainer" title="Monitoring session" href="{{ServiceURL}}host.html?gameId={{session.id}}" target="_blank">
       <span class="button__label">Monitoring session</span>

@@ -271,6 +271,11 @@ angular.module('wegas.models.sessions', [])
                     scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
                     gameModelSetted = true;
                 }
+                if(scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual){
+                    sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
+                    scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;
+                    gameModelSetted = true;
+                }
                 if (scenarioBeforeChange.comments !== sessionInfos.comments) {
                     scenarioBeforeChange.comments = sessionInfos.comments;
                     gameModelSetted = true;
@@ -625,6 +630,7 @@ angular.module('wegas.models.sessions', [])
                     if (cachedSession) {
                         deferred.resolve(Responses.info("You have already join this session", false));
                     } else {
+                        console.log(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended");
                         $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended").success(function(data) {
                             var team = _.find(data[1].teams, function(t) {
                                 return t.id == data[0].id;

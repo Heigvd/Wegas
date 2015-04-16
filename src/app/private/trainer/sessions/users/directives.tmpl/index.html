@@ -1,6 +1,9 @@
 <div class="modal__header">
 	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{usersIndexCtrl.session.properties.iconUri}}"></div>
-	<h5 class="modal__title">Users of {{usersIndexCtrl.session.name}}</h5>
+	<h5 class="modal__title">
+		{{usersIndexCtrl.session.name | limitTo : 36}}
+		<span ng-if="usersIndexCtrl.session.name.length > 36">...</span>
+	</h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">Close</span>
 	</a>
@@ -11,7 +14,7 @@
 </div>
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content" trainer-sessions-users-trainers-list trainers="usersIndexCtrl.session.trainers"></div>
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools" mass-autocomplete>
-	<div class="modal__tools__autocomplete" search-users input-style="modal__tools__add-trainer" restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer" placeholder="Add trainer"></div>
+	<div class="modal__tools__autocomplete" search-users input-style="input input--small input--add-trainer" restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer" placeholder="Add trainer"></div>
 </div>
 <div ng-if="usersIndexCtrl.playersViewActived"class="modal__content modal__content--tools-off">
 	<div 
