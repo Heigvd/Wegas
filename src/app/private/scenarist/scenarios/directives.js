@@ -1,12 +1,21 @@
 angular.module('private.scenarist.scenarios.directives', [
-    'infinite-scroll'
+    'wegas.behaviours.repeat.autoload'
 ])
     .controller('ScenaristScenariosIndexController', function ScenaristScenariosIndexController($scope, $rootScope, ScenariosModel, Flash) {
-        var ctrl = this;
+        var ctrl = this,
+            initScenariosMax = function(){
+                if(ctrl.scenarios.length > 12){
+                    ctrl.scenariosMax = 10;
+                }else{
+                    ctrl.scenariosMax = ctrl.scenarios.length;
+                }
+            };
         ctrl.scenarios = [];
         ctrl.archives = [];
+        ctrl.search = "";
+        ctrl.scenariosMax = null;
 
-        ctrl.updateScenarios = function() {
+        ctrl.updateScenarios = function(upDisplay) {
             ScenariosModel.getScenarios("BIN").then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
@@ -19,10 +28,24 @@ angular.module('private.scenarist.scenarios.directives', [
                     response.flash();
                 } else {
                     ctrl.scenarios = response.data || [];
+                    if(upDisplay){
+                        updateDisplayScenarios();
+                    }
                 }
             });
         };
 
+        var updateDisplayScenarios = function(){
+            if(ctrl.scenariosMax == null){
+                initScenariosMax();
+            }else{
+                if(ctrl.scenariosMax >= ctrl.scenarios.length){
+                    ctrl.scenariosMax = ctrl.scenarios.length;
+                }else{
+                    ctrl.scenariosMax = ctrl.scenariosMax + 5;
+                }
+            }
+        };
         ctrl.archiveScenario = function(scenario) {
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
@@ -41,15 +64,19 @@ angular.module('private.scenarist.scenarios.directives', [
                 }
             });
         }
+         $rootScope.$on('changeLimit', function(e, hasNewData) {
+            if (hasNewData) {
+                ctrl.updateScenarios(true);
+            }
+        });
 
-        /* Listen for session update */
+        /* Listen for scenario update */
         $rootScope.$on('changeScenarios', function(e, hasNewData) {
             if (hasNewData) {
                 ctrl.updateScenarios();
             }
         });
-        
-        $rootScope.$emit('changeScenarios', true);
+        ctrl.updateScenarios(true);
     })
     .directive('scenaristScenariosIndex', function() {
         return {
@@ -87,50 +114,15 @@ angular.module('private.scenarist.scenarios.directives', [
             }
         };
     })
-    .directive('scenaristScenariosList', function(ScenariosModel) {
+    .directive('scenaristScenariosList', function($rootScope, ScenariosModel) {
         return {
             templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/list.html',
             scope: {
                 scenarios:"=",
                 archives:"=",
-                archive:"="
-            },
-            link: function(scope, element, attrs) {
-                scope.visibleScenarios = [];
-                scope.busy = false;
-                scope.search = '';
-
-                scope.filter = function() {
-                    if (scope.search == '') {
-                        scope.visibleScenarios = [];
-                        scope.loadMore();
-                    } else if (scope.search == '*') {
-                        scope.visibleScenarios = scope.scenarios;
-                    } else {
-                        scope.visibleScenarios = _.filter(scope.scenarios, function(s) {
-                            return s.name.toLowerCase().indexOf(scope.search.toLowerCase()) > -1;
-                        });
-                    }
-                }
-                scope.loadMore = function() {
-                    if ((!scope.busy) && (scope.search == '') && (scope.scenarios.length > 0)){
-                        scope.busy = true;
-                        var last = scope.visibleScenarios.length;
-                        var minlength = Math.min(scope.scenarios.length, 13);
-                        for (var i = last; i < last + minlength; i++) {
-                            scope.visibleScenarios.push(scope.scenarios[i]);
-                        }
-                        scope.busy = false;
-                    }
-                };
-
-                scope.$watch(function() {
-                    return scope.scenarios;
-                }, function(newScenarios) {
-                    if (newScenarios !== undefined && newScenarios.length > 0) {
-                        scope.filter();
-                    }
-                });
+                archive:"=",
+                maximum:"=",
+                search:"="
             }
         };
     })
