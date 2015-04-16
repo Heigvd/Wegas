@@ -39,7 +39,7 @@ angular
                     }
                 });
             }
-            ScenariosModel.getScenario($scope.scenarioId).then(function (response) {
+            ScenariosModel.getScenario("LIVE", $scope.scenarioId).then(function (response) {
                 $scope.scenario = response.data;
                 ctrl.updateVersions();
             });
