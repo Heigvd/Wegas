@@ -58,6 +58,16 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     classFilter: ["TextDescriptor", "NumberDescriptor"]
                 }
             },
+            description: {
+                type: STRING,
+                format: HTML,
+                optional: true,
+                _inputex: {
+                    opts: {
+                        height: '50px'
+                    }
+                }
+            },
             feedback: {
                 type: "EvaluationDescriptorContainer",
                 value: {
@@ -235,6 +245,16 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             },
             name: {
                 type: STRING
+            },
+            description: {
+                type: STRING,
+                format: HTML,
+                optional: true,
+                _inputex: {
+                    opts: {
+                        height: '50px'
+                    }
+                }
             }/*,
              container: {
              type: "EvaluationDescriptorContainer",

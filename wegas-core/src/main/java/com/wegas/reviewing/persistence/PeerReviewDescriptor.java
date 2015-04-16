@@ -8,16 +8,17 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
+import javax.persistence.FetchType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
@@ -91,6 +92,11 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     private Integer maxNumberOfReviewer;
 
+    @Basic(fetch = FetchType.LAZY)
+    @Lob
+    @JsonView(Views.ExtendedI.class)
+    private String description;
+
     /**
      * List of evaluations that compose one feedback. Here, en empty list does
      * not make any sense
@@ -144,6 +150,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             super.merge(a);
 
             this.setMaxNumberOfReview(other.getMaxNumberOfReview());
+            this.setDescription(other.getDescription());
             this.setToReview(other.getToReview());
             this.setToReviewName(other.getToReviewName());
             this.feedback.merge(other.getFeedback());
@@ -219,6 +226,22 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.maxNumberOfReviewer = 1; // TODO throw error ? 
         }
     }
+
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
 
     /**
      * get the feedback description

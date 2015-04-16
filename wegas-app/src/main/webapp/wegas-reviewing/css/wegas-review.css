@@ -11,6 +11,12 @@
  */
 
 
+
+.wegas-review-variableeditor .wegas-review-header {
+    margin-bottom: 20px;
+}
+
+
 .wegas-review-widget-title {
     font-size: 1.2em;
 }
@@ -24,7 +30,8 @@
 .wegas-review-widget-feedbackEv-content > div,
 .wegas-review-widget-content .wegas-review-widget-feedback > div,
 .wegas-review-widget-content .wegas-review-widget-feedbackEv > div {
-    border: 1px solid grey;
+    /*border: 1px solid grey;*/
+    padding: 5px;
 }
 
 
@@ -40,7 +47,6 @@
 }
 
 
-wegas-review-texteval-label,
-wegas-review-grade-instance-label{
-    font-weight: 400;
+.wegas-review-evaluation-label {
+    font-weight: 600;
 }
