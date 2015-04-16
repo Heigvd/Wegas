@@ -22,7 +22,22 @@
         @include animate-prefixer(animation-duration, $base-duration * 2);
     }
 }
-
-.me{
-	font-style: italic;
+.fade{
+	&.ng-enter, 
+    &.ng-leave
+    { 
+        transition: .4s;
+    } 
+     
+    &.ng-enter.ng-enter-active, 
+    &.ng-leave {
+        visibility:visible;
+        opacity: 1;
+    }
+     
+    &.ng-leave.ng-leave-active,
+    &.ng-enter {
+        visibility:hidden;
+        opacity: 0;
+    }
 }

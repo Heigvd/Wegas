@@ -212,16 +212,16 @@ angular.module('wegas.models.sessions', [])
                 return session;
             },
 
-            /* Update status of session (OPENED, LIVE, BIN, DELETE, SUPPRESSED) */
-            setSessionStatus = function(sessionId, status) {
-                var deferred = $q.defer();
-                $http.put(ServiceURL + "rest/GameModel/Game/" + sessionId + "/status/" + status).success(function(data) {
-                    deferred.resolve(data);
-                }).error(function(data) {
-                    deferred.resolve(false);
-                });
-                return deferred.promise;
-            },
+    /* Update status of session (OPENED, LIVE, BIN, DELETE, SUPPRESSED) */
+    setSessionStatus = function(sessionId, status) {
+        var deferred = $q.defer();
+        $http.put(ServiceURL + "rest/GameModel/Game/" + sessionId + "/status/" + status).success(function(data) {
+            deferred.resolve(data);
+        }).error(function(data) {
+            deferred.resolve(false);
+        });
+        return deferred.promise;
+    },
 
             /* Remove player from persistante datas */
             removePlayer = function(player) {
