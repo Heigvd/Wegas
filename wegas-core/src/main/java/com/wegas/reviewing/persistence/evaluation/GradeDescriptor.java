@@ -82,7 +82,7 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
     public void merge(AbstractEntity a) {
         if (a instanceof GradeDescriptor) {
             GradeDescriptor o = (GradeDescriptor) a;
-            super.merge(a);
+            super.merge(o);
             this.setMinValue(o.getMinValue());
             this.setMaxValue(o.getMaxValue());
         }

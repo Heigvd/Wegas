@@ -61,9 +61,8 @@ public class VariableInstanceController {
          * 2) entity to update effectively belongs to the current player
          */
         VariableInstance target = variableInstanceFacade.find(entityId);
-        VariableInstance effective = target.getDescriptor().getInstance();
 
-        if (SecurityHelper.isPermitted(variableInstanceFacade.findGame(entityId), "Edit") || target == effective) {
+        if (SecurityHelper.isPermitted(variableInstanceFacade.findGame(entityId), "Edit") || target == target.getDescriptor().getInstance()) {
             return variableInstanceFacade.update(entityId, entity);
         } else {
             throw new UnauthorizedException();

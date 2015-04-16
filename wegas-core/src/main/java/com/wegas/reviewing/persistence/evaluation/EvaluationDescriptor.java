@@ -57,6 +57,10 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
      */
     private String name;
 
+
+    @Lob
+    private String description;
+
     /**
      *
      */
@@ -88,6 +92,7 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         super.merge(a);
         if (a instanceof EvaluationDescriptor) {
             EvaluationDescriptor o = (EvaluationDescriptor) a;
+            this.setDescription(o.getDescription());
         }
     }
 
@@ -132,6 +137,21 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     @Override
     public void setName(String name) {
         this.name = name;
+    }
+
+
+    /**
+     * @return the description
+     */
+    public String getDescription() {
+        return description;
+    }
+
+    /**
+     * @param description the description to set
+     */
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     /**
