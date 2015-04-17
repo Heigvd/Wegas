@@ -82,6 +82,16 @@ public class PlayerFacade extends BaseFacade<Player> {
     }
 
     /**
+     * Get all instances a player as access to
+     * @param playerId the player to get instances for
+     * @return List of instances
+     */
+    public List<VariableInstance> getInstances(final Long playerId) {
+        final TypedQuery<VariableInstance> findPlayerInstance = getEntityManager().createNamedQuery("findInstances", VariableInstance.class);
+        return findPlayerInstance.setParameter("playerid", playerId).getResultList();
+    }
+
+    /**
      * @param player
      */
     @Override

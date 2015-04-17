@@ -43,7 +43,10 @@ import org.slf4j.LoggerFactory;
 //@EntityListeners({VariableInstancePersistenceListener.class})
 @NamedQueries({
     @NamedQuery(name = "findTeamInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.teamScopeKey = :teamid"),
-    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid")
+    @NamedQuery(name = "findPlayerInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE variableinstance.playerScopeKey = :playerid"),
+    @NamedQuery(name = "findInstances", query = "SELECT DISTINCT variableinstance FROM VariableInstance variableinstance WHERE EXISTS " +
+            "(SELECT player From Player player WHERE player.id = :playerid AND " +
+            "(variableinstance.playerScopeKey = player.id OR variableinstance.teamScopeKey = player.teamId OR variableinstance.gameScopeKey = player.team.gameId))")
 })
 
 /*@Indexes(value = { // JPA 2.0 eclipse link extension TO BE REMOVED

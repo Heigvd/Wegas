@@ -8,11 +8,14 @@
 package com.wegas.core.rest;
 
 import com.wegas.core.ejb.GameModelFacade;
+import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.variable.DescriptorListI;
 import com.wegas.core.persistence.variable.ListDescriptor;
 import com.wegas.core.persistence.variable.VariableDescriptor;
+import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.util.SecurityHelper;
 import org.apache.shiro.SecurityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +53,8 @@ public class VariableDescriptorController {
      */
     @EJB
     private GameModelFacade gameModelFacade;
-
+@EJB
+private PlayerFacade playerFacade;
     /**
      * @param gameModelId
      * @return
@@ -77,7 +81,12 @@ public class VariableDescriptorController {
 
         return vd;
     }
-
+    @GET
+    @Path("/PlayerInstances/{playerId:[1-9][0-9]*}")
+    public Collection<VariableInstance> get(@PathParam("gameModelId") Long gameModelId, @PathParam("playerId") Long playerId) {
+        SecurityHelper.checkPermission(playerFacade.find(playerId).getGame(), "View");
+        return playerFacade.getInstances(playerId);
+    }
     /**
      * @param gameModelId
      * @param entity
