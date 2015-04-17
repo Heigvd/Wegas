@@ -13,30 +13,26 @@ import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.game.Game;
-import com.wegas.core.persistence.game.GameAccountKey;
-import com.wegas.core.persistence.game.GameEnrolmentKey;
-import com.wegas.core.persistence.game.Player;
-import com.wegas.core.persistence.game.Team;
+import com.wegas.core.persistence.game.*;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.jparealm.GameAccount;
 import com.wegas.core.security.persistence.AbstractAccount;
 import com.wegas.core.security.persistence.User;
 import com.wegas.core.security.util.SecurityHelper;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import org.apache.shiro.SecurityUtils;
+
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import org.apache.shiro.SecurityUtils;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Stateless
@@ -50,16 +46,19 @@ public class GameController {
      */
     @EJB
     private GameFacade gameFacade;
+
     /**
      *
      */
     @EJB
     private UserFacade userFacade;
+
     /**
      *
      */
     @EJB
     private TeamFacade teamFacade;
+
     /**
      *
      */
@@ -67,7 +66,6 @@ public class GameController {
     private PlayerFacade playerFacade;
 
     /**
-     *
      * @param entityId
      * @return
      */
@@ -81,7 +79,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param gameModelId
      * @return
      */
@@ -101,7 +98,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param entity
      * @return
@@ -117,7 +113,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param gameModelId
      * @param entity
      * @return
@@ -147,7 +142,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param entityId
      * @param entity
      * @return
@@ -162,7 +156,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param entityId
      * @return
      */
@@ -253,7 +246,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param teamId
      * @return
      */
@@ -266,7 +258,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param teamId
      * @param accounts
      * @return
@@ -302,7 +293,7 @@ public class GameController {
     @POST
     @Path("/JoinTeam/{teamId : .*}/{token : .+}")
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, @PathParam("token") String token,
-            List<AbstractAccount> accounts) {
+                                List<AbstractAccount> accounts) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
                 Arrays.asList("View", "Token"));                                // Make sure the user can join
 
@@ -316,7 +307,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param gameId
      * @param name
      * @return
@@ -335,7 +325,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param gameId
      * @return
      */
@@ -353,7 +342,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param gameId
      * @param accountNumber
      * @return
@@ -367,7 +355,6 @@ public class GameController {
     }
 
     /**
-     *
      * @param token
      * @return
      */

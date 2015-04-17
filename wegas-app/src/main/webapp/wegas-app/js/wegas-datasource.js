@@ -38,7 +38,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         initializer: function() {
-            this.after("sourceChange", this.sendInitialRequest); // When the source changes, resend inital request
+//            this.after("sourceChange", this.sendInitialRequest); // When the source changes, resend inital request
             this.queue = new Y.Queue();
             this.after("response", function(e) { // Add request queue consumption logic
                 if (e.tId === this.queuetid) {
@@ -52,7 +52,7 @@ YUI.add('wegas-datasource', function(Y) {
          * @private
          */
         sendInitialRequest: function(cfg) {
-            this.cache && this.cache.clear();
+//            this.cache && this.cache.clear();
             if (!Y.Lang.isUndefined(this.get("initialRequest"))) { // Use this condition to allow empty strings (e.g. ")
                 return this.sendRequest(Y.mix(cfg || {}, {
                     request: this.get("initialRequest"),
@@ -259,10 +259,6 @@ YUI.add('wegas-datasource', function(Y) {
 
                 Wegas.Editable.use(payload.response.results, // Lookup dependencies
                     Y.bind(function(payload) {
-                        if (payload.cfg && payload.cfg.initialRequest) {
-                            this.clear(false);
-                        }
-
                         payload.serverResponse = Wegas.Editable.revive(payload.response.results); // Revive
                         if (payload.serverResponse.get && payload.serverResponse.get("entities")) {
                             payload.response.entities = payload.serverResponse.get("entities");
@@ -714,15 +710,29 @@ YUI.add('wegas-datasource', function(Y) {
         updateCache: function(method, entity) {
             if (entity instanceof Wegas.persistence.VariableInstance) {
                 return this.find(ID, +entity.get("descriptorId"), Y.bind(function(found, needle) {
-                    var i, instances = found.get("scope").get("variableInstances");
+                    var i, instances = found.get("scope").get("variableInstances"), update = false;
 
                     for (i in instances) {
                         if (instances[i].get(ID) === entity.get(ID)) {
                             instances[i].setAttrs(entity.getAttrs());
+                            update = true;
                             this.get(HOST).fire("updatedInstance", {// Variable instance updated
                                 entity: entity
                             });
                             break;
+                        }
+                    }
+                    if(!update){ // New variable instance
+                        switch(found.get("scope").get("@class")){
+                            case "TeamScope":
+                                instances[String(Wegas.Facade.Game.get("currentTeamId"))] = entity;
+                                break;
+                            case "PlayerScope":
+                                instances[String(Wegas.Facade.Game.get("currentPlayerId"))] = entity;
+                                break;
+                            case "GameScope":
+                                instances[String(Wegas.Facade.Game.get("currentGameId"))] = entity;
+                                break;
                         }
                     }
                     return true;
