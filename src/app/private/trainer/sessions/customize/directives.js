@@ -14,18 +14,28 @@ angular.module('private.trainer.sessions.customize.directives', [
             initTabs = function() {
                 return {
                     infos: false,
-                    icons: false,
-                    colors: false
+                    display: false
                 }
             };
         ctrl.session = {};
+        ctrl.hasChanges = {
+            all: false,
+            color: false,
+            icon: false, 
+            name: false,
+            comment: false, 
+            token: false,
+            individual: false
+        };
         ctrl.infos = {
             name : "",
             token : "", 
             comments :"",
             color: "orange",
-            icon:"gamepad"
-        }
+            icon:"gamepad",
+            scenario: "",
+            individual: false
+        };
         ctrl.tabs = initTabs();
             
         ctrl.updateSession = function() {
@@ -42,8 +52,43 @@ angular.module('private.trainer.sessions.customize.directives', [
                     ctrl.infos.name = ctrl.session.name;
                     ctrl.infos.token = ctrl.session.token;
                     ctrl.infos.comments = ctrl.session.gameModel.comments;
-                }
+                    ctrl.infos.scenario = ctrl.session.gameModel.name;
+                    ctrl.infos.individual = ctrl.session.properties.freeForAll; 
+               }
             });
+        };
+
+        ctrl.checkChanges = function(type, changes){
+            if(ctrl.session['@class'] == "Game"){
+                var oldColor = "orange",
+                    oldIcon = "gamepad",
+                    icon = ctrl.session.properties.iconUri.split("_");
+                if (icon.length == 3 && icon[0] == "ICON") {
+                    oldColor = icon[1];
+                    oldIcon = icon[2];
+                }
+                switch(type){
+                    case "color":
+                        ctrl.hasChanges.color = (oldColor !== changes);
+                        break;
+                    case "icon":
+                        ctrl.hasChanges.icon = (oldIcon !== changes);
+                        break;
+                    case "name":
+                        ctrl.hasChanges.name = (ctrl.session.name !== changes);
+                        break;
+                    case "token":
+                        ctrl.hasChanges.token = (ctrl.session.token !==  changes);
+                        break;
+                    case "comments":
+                        ctrl.hasChanges.comments = (ctrl.session.gameModel.comments !==  changes);
+                        break;
+                    case "individual": 
+                        ctrl.hasChanges.individual = (ctrl.session.properties.freeForAll !==  changes);
+
+                }
+                ctrl.hasChanges.all =   ctrl.hasChanges.color || ctrl.hasChanges.icon || ctrl.hasChanges.name || ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual;
+            }
         };
 
         ctrl.activeTab = function(tab) {
@@ -53,17 +98,20 @@ angular.module('private.trainer.sessions.customize.directives', [
 
         ctrl.changeColor = function(newColor) {
             ctrl.infos.color = newColor;
+            ctrl.checkChanges("color", newColor);
         }
         ctrl.changeIcon = function(newIcon) {
             ctrl.infos.icon = newIcon;
+            ctrl.checkChanges("icon", newIcon);
         }
 
         ctrl.save = function() {
             SessionsModel.updateSession(ctrl.session.id, ctrl.infos).then(function(response){
-                response.flash();
                 if(!response.isErroneous()){
                     $rootScope.$emit("changeSessions", true);
                     $scope.close();
+                }else{
+                    response.flash();
                 }
             });
         };
@@ -71,6 +119,28 @@ angular.module('private.trainer.sessions.customize.directives', [
         ctrl.cancel = function(){
             $scope.close();
         };
+        $scope.$watch(function(){
+            return ctrl.infos.name;
+        }, function(newName){
+            ctrl.checkChanges("name", newName);
+        });
+
+        $scope.$watch(function(){
+            return ctrl.infos.token;
+        }, function(newToken){
+            ctrl.checkChanges("token", newToken);
+        });
+
+        $scope.$watch(function(){
+            return ctrl.infos.comments;
+        }, function(newComments){
+            ctrl.checkChanges("comments", newComments);
+        });
+        $scope.$watch(function(){
+            return ctrl.infos.individual;
+        }, function(newIndividual){
+            ctrl.checkChanges("individual", newIndividual);
+        });
 
         ctrl.updateSession();
         ctrl.activeTab("infos");
@@ -81,7 +151,6 @@ angular.module('private.trainer.sessions.customize.directives', [
                 activeInfos: "="
             },
             templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/infos-form.html'
-
         }
     })
     .directive('trainerSessionsCustomizeIcons', function(Customize) {

@@ -33,21 +33,27 @@ angular.module('private.player.session.join.directives', [])
     /* Method used to create new team and join this new team in the session. */
     ctrl.createAndJoinTeam = function(){
         if(!ctrl.newTeam.alreadyUsed){
-            if(ctrl.sessionToJoin.access != "CLOSE"){
-                SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
-                    responseCreate.flash();
-                    if(!responseCreate.isErroneous()){
-                        SessionsModel.joinTeam(ctrl.sessionToJoin.id, responseCreate.data.id).then(function(responseJoin){
-                            responseJoin.flash();
-                            if(!responseJoin.isErroneous()){
-                                $rootScope.$emit('newSession', true);
-                                $scope.close();
-                            }
-                        });
-                    }
-                });
+            if(ctrl.newTeam.name != ""){
+                if(ctrl.sessionToJoin.access != "CLOSE"){
+                    SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
+                        if(!responseCreate.isErroneous()){
+                            SessionsModel.joinTeam(ctrl.sessionToJoin.id, responseCreate.data.id).then(function(responseJoin){
+                                if(!responseJoin.isErroneous()){
+                                    $rootScope.$emit('newSession', true);
+                                    $scope.close();
+                                }else{
+                                    responseJoin.flash();
+                                }
+                            });
+                        }else{
+                            responseCreate.flash();
+                        }
+                    });
+                }else{
+                    Flash.danger("Session closed");
+                }
             }else{
-                Flash.danger("Session closed");
+                Flash.danger("You have to enter a name before create");
             }
         }else{
             Flash.danger("Team name already used");
@@ -58,10 +64,11 @@ angular.module('private.player.session.join.directives', [])
     ctrl.joinTeam = function(teamId){
         if(ctrl.sessionToJoin.access != "CLOSE"){
             SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
-                response.flash();
                 if(!response.isErroneous()){
                     $rootScope.$emit('newSession', true);
                     $scope.close();
+                }else{
+                    response.flash();
                 }
             });
         }else{

@@ -13,7 +13,7 @@ angular
                 emit();
                 $timeout(function() {
                     removeMessages();
-                }, 2500);
+                }, 2000);
             };
 
             var removeMessages = function() {
