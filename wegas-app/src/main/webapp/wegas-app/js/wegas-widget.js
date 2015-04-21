@@ -552,12 +552,24 @@ YUI.add("wegas-widget", function(Y) {
          *  or expr parameter.
          */
         VARIABLEDESCRIPTORGETTER: function(val, fullName) {
-            var ds = Wegas.Facade.Variable;
+            var ds = Wegas.Facade.Variable, toEval;
             if (val && fullName.split(".")[1] === "evaluated") {                // If evaluated value is required
 
                 if (val.content) {                                              // Eval based on the field (new pattern)
                     try {
-                        val.evaluated = ds.script.localEval(val.content);
+
+                        if (val["@class"] === "ParentArgument") {
+                            val.evaluated = this.get("parent").get(val.content);
+                            if (val.evaluated["@class"] === "Script"){
+                                toEval = val.evaluated;
+                            }
+                        } else {
+                            toEval = val.content;
+                        }
+
+                        if (toEval){
+                            val.evaluated = ds.script.localEval(toEval);
+                        }
                     } catch (e) {
                         Y.log("Unable to read expression: " + val.content, "error", "Wegas.Widget");
                         val.evaluated = null;
