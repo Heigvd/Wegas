@@ -167,19 +167,14 @@ angular.module('wegas.models.scenarios', [])
 
             /* Uncache a scenario, passing a scenario list and the scenario to remove in parameter */
             uncacheScenario = function(status, scenario) {
-                console.log(status);
-                console.log(scenario);
                 var list = null,
                     scenarioToUncache = null;
                 if (scenarios.cache[status]) {
 
                     list = scenarios.cache[status].data;
-                    console.log(list);
                     scenarioToUncache = _.find(list, scenario);
-                    console.log(scenarioToUncache);
                     if (scenarioToUncache) {
                         list = _.without(list, scenario);
-                        console.log(list);
                     }
                 }
                 return list;
