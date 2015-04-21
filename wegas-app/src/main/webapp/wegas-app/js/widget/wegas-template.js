@@ -45,18 +45,25 @@ YUI.add("wegas-template", function(Y) {
         },
         computeData: function() {
             var data = {}, desc = this.get("variable.evaluated");
+
             if (desc) {
+                if (desc instanceof Y.Wegas.persistence.VariableInstance) {
+                    data.value = this.undefinedToEmpty(desc.get("value"));
+                    desc = Y.Wegas.Facade.Variable.cache.findById(desc.get("descriptorId"));
+                }
+
                 if (desc instanceof Wegas.persistence.ListDescriptor && desc.get("currentItem")) {       // If the widget is a list,
                     desc = desc.get("currentItem"); // display it with the current list and the current element
                 }
 
                 //  data.label = this.undefinedToEmpty(desc.getLabel());
-                data.value = this.undefinedToEmpty(desc.getInstance().get("value"));
+                data.value = data.value || this.undefinedToEmpty(desc.getInstance().get("value"));
                 data.maxValue = this.undefinedToEmpty(desc.get("maxValue"));
                 data.minValue = this.undefinedToEmpty(desc.get("minValue"));
                 data.defaultValue = this.undefinedToEmpty(desc.get("defaultValue"));
                 data.variable = desc;
             }
+
             return Y.mix(Y.merge(this.get("data")), data, false, null, 0, true);
         },
         getEditorLabel: function() {
@@ -89,7 +96,7 @@ YUI.add("wegas-template", function(Y) {
                 _inputex: {
                     _type: "variableselect",
                     label: "variable"
-                    //classFilter: ["NumberDescriptor"]
+                        //classFilter: ["NumberDescriptor"]
                 }
             },
             data: {
