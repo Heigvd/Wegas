@@ -11,9 +11,7 @@
  */
 YUI.add("wegas-text-input", function(Y) {
     "use strict";
-
     var CONTENTBOX = "contentBox", TextInput, Wegas = Y.Wegas;
-
     /**
      * @name Y.Wegas.TextInput
      * @extends Y.Widget
@@ -36,80 +34,88 @@ YUI.add("wegas-text-input", function(Y) {
          * @function
          * @private
          */
-        syncUI: function() {
-            Y.once("domready", function() {
-                if (this.get("readonly")) {
-                    this.get("contentBox").one(".wegas-text-input-editor").setContent(this.getInitialContent());
-                } else {
-                    this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(), {
-                        plugins: [
-                            "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
-                                //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
-                        ],
-                        external_plugins: {
-                            "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
-                        },
-                        //toolbar1: "bold italic bullist | link image media code addToolbarButton",
-                        toolbar1: "bold italic bullist | link code addToolbarButton",
-                        toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
-                        toolbar3: "fontselect fontsizeselect styleselect",
-                        // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
-                        // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
-                        menubar: false,
-                        statusbar: false,
-                        relative_urls: false,
-                        toolbar_items_size: 'small',
-                        hidden_tootlbar: [2, 3],
-                        setup: Y.bind(function(editor) {
-                            this.editor = editor;
-                        }, this),
-                        image_advtab: true,
-                        autoresize_min_height: 35,
-                        autoresize_max_height: 500,
-                        content_css: [
-                            Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
-                        ],
-                        style_formats: [{// Style formats
-                                title: 'Title 1',
-                                block: 'h1'
-                            }, {
-                                title: 'Title 2',
-                                block: 'h2'
-                                    // styles : {
-                                    //    color : '#ff0000'
-                                    // }
-                            }, {
-                                title: 'Title 3',
-                                block: 'h3'
-                            }, {
-                                title: 'Normal',
-                                inline: 'span'
-                            }, {
-                                title: "Code",
-                                //icon: "code",
-                                block: "code"
-                            }]}, tinymce.EditorManager);
-
-                    this.editor.on('change', Y.bind(this._onChange, this));    // Update on editor update
-
-                    this.editor.render();
-
-                    this.setContent();
-                    if (this.get("showSaveButton")) {
-                        this.addButton = new Wegas.Button({
-                            label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
-                            tooltip: "Save",
-                            cssClass: "wegas-text-input-save",
-                            on: {
-                                click: Y.bind(this.onSave, this)
-                            }
-                        }).render(this.get("contentBox").one(".wegas-text-input-toolbar"));
-                    }
+        renderUI: function() {
+//            Y.once("domready", function() {
+            if (this.get("readonly")) {
+                this.get("contentBox").one(".wegas-text-input-editor").setContent(this.getInitialContent());
+            } else {
+                this.editor = new tinymce.Editor(this.get("contentBox").one(".wegas-text-input-editor").getDOMNode(), {
+                    plugins: [
+                        "autolink autoresize link image lists code media table contextmenu paste advlist textcolor"
+                            //textcolor wordcount autosave advlist charmap print preview hr anchor pagebreak spellchecker directionality
+                    ],
+                    external_plugins: {
+                        "dynamic_toolbar": Y.Wegas.app.get("base") + "wegas-editor/js/plugin/wegas-tinymce-dynamictoolbar.js"
+                    },
+                    //toolbar1: "bold italic bullist | link image media code addToolbarButton",
+                    toolbar1: "bold italic bullist | link code addToolbarButton",
+                    toolbar2: "forecolor backcolor underline alignleft aligncenter alignright alignjustify table",
+                    toolbar3: "fontselect fontsizeselect styleselect",
+                    // formatselect removeformat underline unlink forecolor backcolor anchor previewfontselect fontsizeselect styleselect spellchecker template
+                    // contextmenu: "link image inserttable | cell row column deletetable | formatselect forecolor",
+                    menubar: false,
+                    statusbar: false,
+                    relative_urls: false,
+                    toolbar_items_size: 'small',
+                    hidden_tootlbar: [2, 3],
+                    setup: Y.bind(function(editor) {
+                        editor.on('change', Y.bind(this._onChange, this)); // Update on editor update
+                        editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
+                        this.editor = editor;
+                    }, this),
+                    image_advtab: true,
+                    autoresize_min_height: 35,
+                    autoresize_max_height: 500,
+                    content_css: [
+                        Wegas.app.get("base") + "wegas-editor/css/wegas-inputex-rte.css"
+                    ],
+                    style_formats: [{// Style formats
+                            title: 'Title 1',
+                            block: 'h1'
+                        }, {
+                            title: 'Title 2',
+                            block: 'h2'
+                                // styles : {
+                                //    color : '#ff0000'
+                                // }
+                        }, {
+                            title: 'Title 3',
+                            block: 'h3'
+                        }, {
+                            title: 'Normal',
+                            inline: 'span'
+                        }, {
+                            title: "Code",
+                            //icon: "code",
+                            block: "code"
+                        }]}, tinymce.EditorManager);
+                this.editor.render();
+                //this.setContent();
+                if (this.get("showSaveButton")) {
+                    this.addButton = new Wegas.Button({
+                        label: "<span class=\"wegas-icon wegas-icon-save\"></span>",
+                        tooltip: "Save",
+                        cssClass: "wegas-text-input-save",
+                        on: {
+                            click: Y.bind(this.onSave, this)
+                        }
+                    }).render(this.get("contentBox").one(".wegas-text-input-toolbar"));
                 }
-            }, this);
+            }
+            // }, this);
+        },
+        syncUI: function() {
+            this.setContent();
         },
         setContent: function() {
-            this.editor.setContent(this.getInitialContent());
+            Y.later(0, this, function() {
+                this.editor.setContent(this.getInitialContent());
+                /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
+                 if (tmceI) {
+                 tmceI.setContent(this.getInitialContent());
+                 }*/
+
+            });
         },
         getInitialContent: function() {
             return this.get("variable.evaluated").getInstance().get("value");
@@ -144,7 +150,7 @@ YUI.add("wegas-text-input", function(Y) {
             Y.Array.each(this.handlers, function(h) {
                 h.detach();
             });
-            if (this.addButton){
+            if (this.addButton) {
                 this.addButton.destroy();
             }
         }
