@@ -174,7 +174,7 @@ public class GameModelController {
         Subject s = SecurityUtils.getSubject();
         //String r =  (requestManager.getView() == Views.Index.class) ? "View": "Edit";
 
-        for (GameModel gm : gameModelFacade.findTemplateGameModels()) {
+        for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(GameModel.Status.LIVE)) {
             //if (s.isPermitted("GameModel:" + r +":gm" + aGm.getId())) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
                     || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
@@ -219,7 +219,7 @@ public class GameModelController {
     public Collection<GameModel> findByStatus(@PathParam("status") final GameModel.Status status) {
         Collection<GameModel> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
-        for (GameModel gm : gameModelFacade.findByStatus(status)) {
+        for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(status)) {
             if (s.isPermitted("GameModel:View:gm" + gm.getId())
                     || s.isPermitted("GameModel:Instantiate:gm" + gm.getId())
                     || s.isPermitted("GameModel:Duplicate:gm" + gm.getId())) {
@@ -256,7 +256,7 @@ public class GameModelController {
     public Collection<GameModel> deleteAll() {
         Collection<GameModel> games = new ArrayList<>();
         Subject s = SecurityUtils.getSubject();
-        for (GameModel gm : gameModelFacade.findByStatus(GameModel.Status.BIN)) {
+        for (GameModel gm : gameModelFacade.findTemplateGameModelsByStatus(GameModel.Status.BIN)) {
             if (s.isPermitted("GameModel:Delete:gm" + gm.getId())) {
                 gameModelFacade.delete(gm);
                 games.add(gm);
