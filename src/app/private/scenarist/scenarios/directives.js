@@ -14,6 +14,17 @@ angular.module('private.scenarist.scenarios.directives', [
         ctrl.archives = [];
         ctrl.search = "";
         ctrl.maxScenariosDisplayed = null;
+        var updateDisplayScenarios = function(){
+                if(ctrl.maxScenariosDisplayed == null){
+                    initMaxScenariosDisplayed();
+                }else{
+                    if(ctrl.maxScenariosDisplayed >= ctrl.scenarios.length){
+                        ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
+                    }else{
+                        ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
+                    }
+                }
+            };
 
         ctrl.updateScenarios = function(updateDisplay) {
             ScenariosModel.getScenarios("BIN").then(function(response) {
@@ -34,18 +45,6 @@ angular.module('private.scenarist.scenarios.directives', [
                 }
             });
         };
-
-        var updateDisplayScenarios = function(){
-            if(ctrl.maxScenariosDisplayed == null){
-                initMaxScenariosDisplayed();
-            }else{
-                if(ctrl.maxScenariosDisplayed >= ctrl.scenarios.length){
-                    ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
-                }else{
-                    ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
-                }
-            }
-        };
         ctrl.archiveScenario = function(scenario) {
             ScenariosModel.archiveScenario(scenario).then(function(response) {
                 if (response.isErroneous()) {
@@ -64,7 +63,7 @@ angular.module('private.scenarist.scenarios.directives', [
                 }
             });
         }
-         $rootScope.$on('changeLimit', function(e, hasNewData) {
+        $rootScope.$on('changeLimit', function(e, hasNewData) {
             if (hasNewData) {
                 ctrl.updateScenarios(true);
             }

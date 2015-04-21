@@ -1,4 +1,5 @@
 angular.module('private.trainer.sessions.directives', [
+    'wegas.behaviours.repeat.autoload'
 ])
 .directive('trainerSessionsIndex', function(){
   return {
@@ -7,7 +8,25 @@ angular.module('private.trainer.sessions.directives', [
   };
 })
 .controller("TrainerSessionsController", function TrainerSessionsController($rootScope, SessionsModel, Flash){
-    var ctrl = this;
+    var ctrl = this,
+        initMaxSessionsDisplayed = function(){
+            if(ctrl.sessions.length > 12){
+                ctrl.maxSessionsDisplayed = 10;
+            }else{
+                ctrl.maxSessionsDisplayed = ctrl.sessions.length;
+            }
+        },
+        updateDisplaySessions = function(){
+            if(ctrl.maxSessionsDisplayed == null){
+                initMaxSessionsDisplayed();
+            }else{
+                if(ctrl.maxSessionsDisplayed >= ctrl.sessions.length){
+                    ctrl.maxSessionsDisplayed = ctrl.sessions.length;
+                }else{
+                    ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 5;
+                }
+            }
+        };
         ctrl.loading = {
             sessions :true,
             archives : true,
@@ -16,8 +35,9 @@ angular.module('private.trainer.sessions.directives', [
         ctrl.search = "";
         ctrl.sessions = [];
         ctrl.archives = [];
+        ctrl.maxSessionsDisplayed = null;
 
-    ctrl.updateSessions = function(){
+    ctrl.updateSessions = function(updateDisplay){
         ctrl.sessions = [];
         ctrl.loading = {
             sessions :true,
@@ -30,6 +50,9 @@ angular.module('private.trainer.sessions.directives', [
                 ctrl.loading.all = false;
             }
             ctrl.sessions = response.data || [];
+            if(updateDisplay){
+                updateDisplaySessions();
+            }
         });
         SessionsModel.getSessions("archived").then(function(response){
             ctrl.loading.archives = false;
@@ -79,9 +102,14 @@ angular.module('private.trainer.sessions.directives', [
             });
         }
     });
+    $rootScope.$on('changeLimit', function(e, hasNewData) {
+        if (hasNewData) {
+            ctrl.updateSessions(true);
+        }
+    });
 
     /* Request data. */
-    ctrl.updateSessions();
+    ctrl.updateSessions(true);
 
 })
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
@@ -127,7 +155,8 @@ angular.module('private.trainer.sessions.directives', [
         sessions : "=",
         search : "=",
         archive : "=",
-        editAccess: "="
+        editAccess: "=",
+        maximum:"="
     }
   };
 })
