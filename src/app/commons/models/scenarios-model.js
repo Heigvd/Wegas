@@ -1,4 +1,3 @@
-'use strict';
 angular.module('wegas.models.scenarios', [])
     .service('PermissionModel', function($http, $q, $interval, Auth, Responses) {
         var model = this;
