@@ -94,7 +94,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
 
     @Basic(fetch = FetchType.LAZY)
     @Lob
-    @JsonView(Views.ExtendedI.class)
     private String description;
 
     /**

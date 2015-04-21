@@ -119,7 +119,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             Wegas.Panel.confirmPlayerAction(Y.bind(function() {
                 this.showOverlay();
                 Y.Wegas.Facade.Variable.sendRequest({
-                    request: "/PeerReviewController/" + prd.get("id") + "/" + action + "/",
+                    request: "/PeerReviewController/" + prd.get("id") + "/" + action + "/" + Y.Wegas.Facade.Game.cache.getCurrentGame().get("id"),
                     cfg: {
                         updateCache: true,
                         method: "post"
@@ -181,17 +181,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         renderUI: function() {
             var prd = this.get("variable.evaluated");
 
-            if (!prd.get("description")) {
-                Wegas.Facade.Variable.cache.getWithView(prd, "Extended", {// Retrieve the description from the server
-                    on: {
-                        success: Y.bind(function(e) {
-                            this.get("contentBox").one(".wegas-review-header").setContent(e.response.entity.get("description"));
-                        }, this)
-                    }
-                });
-            } else {
-                this.get("contentBox").one(".wegas-review-header").setContent(prd.get("description"));
-            }
+            this.get("contentBox").one(".wegas-review-header").setContent(prd.get("description"));
 
             this.submitButton = new Y.Button({
                 label: "Submit",
@@ -465,35 +455,9 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.tabView.get("boundingBox").addClass("horizontal-tabview");
             cb.append("<div style='clear:both'></div>");
         },
-        /**
-         * @function
-         * @private
-         * @description bind function to events.
-         * When submit button is clicked, send the selected choice
-         * When datasource is updated, do syncUI;
-         */
         bindUI: function() {
 
             this.tabView.after("selectionChange", this.onTabSelected, this);
-
-            /*this.get(CONTENTBOX).delegate("click", function(e) {
-             
-             Wegas.Panel.confirmPlayerAction(Y.bind(function() {
-             this.showOverlay();
-             this.dataSource.sendRequest({
-             request: "/QuestionDescriptor/SelectAndValidateChoice/" + e.target.get('id')
-             + "/Player/" + Wegas.Facade.Game.get('currentPlayerId'),
-             cfg: {
-             method: "POST"
-             },
-             on: {
-             success: Y.bind(this.hideOverlay, this),
-             failure: Y.bind(this.hideOverlay, this)
-             }
-             });
-             }, this));
-             }, "button.yui3-button", this);*/
-
             this.handlers.push(this.dataSource.after("update", this.syncUI, this));
         },
         /**
@@ -533,14 +497,17 @@ YUI.add("wegas-review-widgets", function(Y) {
                 reviews = pri.get(type);
                 for (j = 0; j < reviews.length; j++) {
                     review = reviews[j];
-                    tab = new Y.Tab({
-                        label: type + " #" + (j + 1)
-                            //content: "<div></div>"
-                    });
-                    tab.loaded = false;
-                    tab.review = review;
-                    tab.reviewer = (type === types[0]);
-                    this.tabView.add(tab);
+                    if (i === 0 || review.get("status") === "NOTIFIED" ||
+                        review.get("status") === "COMPLETED" ||
+                        review.get("status") === "CLOSED") {
+                        tab = new Y.Tab({
+                            label: (i === 0 ? "To Review" : "Evaluation of your work") + " #" + (j + 1)
+                        });
+                        tab.loaded = false;
+                        tab.review = review;
+                        tab.reviewer = (type === types[0]);
+                        this.tabView.add(tab);
+                    }
                 }
             }
         },
@@ -555,22 +522,15 @@ YUI.add("wegas-review-widgets", function(Y) {
                 && !this.isRemovingTabs && !e.newVal.loaded) {
                 e.newVal.loaded = true;
                 this.renderTab(e.newVal);
-                /*Wegas.Facade.Variable.cache.getWithView(e.newVal.review, "Extended", {
-                 on: {
-                 success: Y.bind(function(tab, e) {
-                 var question = e.response.entity;
-                 
-                 this.renderTab(tab, question);
-                 }, this, e.newVal)
-                 }
-                 });*/
             }
         },
         renderTab: function(tab) {
             var RewviewW = new Wegas.ReviewWidget({
-                "review": tab.review,
-                descriptor: this.get("variable"),
-                reviewer: tab.reviewer
+                title: tab.get("label"),
+                review: tab.review,
+                descriptor: this.get("variable.evaluated"),
+                reviewer: tab.reviewer,
+                showPage: this.get("showPage")
             }).render(tab.get("panelNode"));
         },
         getEditorLabel: function() {
@@ -617,6 +577,14 @@ YUI.add("wegas-review-widgets", function(Y) {
                     label: "Peer Review",
                     classFilter: ["PeerReviewDescriptor"]
                 }
+            },
+            showPage: {
+                type: "string",
+                _inputex: {
+                    label: "Show page",
+                    _type: "pageselect",
+                    required: true
+                }
             }
         }
     });
@@ -626,17 +594,21 @@ YUI.add("wegas-review-widgets", function(Y) {
 
     ReviewWidget = Y.Base.create("wegas-review-widget", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>"
-            + "<span class=\"wegas-review-widget-title\">Review</span>"
-            + "<div class=\"wegas-review-widget-toReview\"></div>"
-            + "<div class=\"wegas-review-widget-feedback\">"
-            + "<span class=\"wegas-review-widget-feedback-title\">Feedback</span>"
-            + "<span class=\"wegas-review-widget-feedback-content\"></span>"
-            + "</div>"
-            + "<div class=\"wegas-review-widget-feedbackEv\">"
-            + "<span class=\"wegas-review-widget-feedbackEv-title\">Feedback Evaluation</span>"
-            + "<span class=\"wegas-review-widget-feedbackEv-content\"></span>"
-            + "</div>"
-            + "<div class=\"wegas-review-widget-submit\"></div>"
+            + "  <div class=\"title\"></div>"
+            + "  <div class=\"toReview\">"
+            + "    <div class=\"subtitle\"></div>"
+            + "    <div class=\"description\"></div>"
+            + "    <div class=\"content\"></div>"
+            + "  </div>"
+            + "  <div class=\"feedback\">"
+            + "    <div class=\"subtitle\"></div>"
+            + "    <div class=\"content\"></div>"
+            + "  </div>"
+            + "  <div class=\"feedbackEv\">"
+            + "    <div class=\"subtitle\"></div>"
+            + "    <div class=\"content\"></div>"
+            + "  </div>"
+            + "  <div class=\"submit\"></div>"
             + "</div>",
         initialize: function() {
         },
@@ -672,30 +644,92 @@ YUI.add("wegas-review-widgets", function(Y) {
                 i, evls,
                 reviewer = this.get("reviewer"),
                 desc = this.get("descriptor"),
-                fbContainer = this.get("contentBox").one(".wegas-review-widget-feedback-content"),
-                fbEContainer = this.get("contentBox").one(".wegas-review-widget-feedbackEv-content"),
+                fbContainer = this.get("contentBox").one(".feedback").one(".content"),
+                fbEContainer = this.get("contentBox").one(".feedbackEv").one(".content"),
                 modeFb = "hidden",
                 modeFbEval = "hidden";
 
-            this.get("contentBox").one(".wegas-review-widget-title").setContent("Review (" + review.get("status") + ")");
+            this.get("contentBox").one(".title").setContent(this.get("title"));
+            this.get("contentBox").one(".description").setContent(desc.get("description"));
+
+            Wegas.Facade.Page.cache.getPage(this.get("showPage"), Y.bind(function(widgetCfg) {// Retrieve page
+                var content = this.get(CONTENTBOX).one(".toReview").one(".content");
+                this.showOverlay();
+                Y.log("Destroy previous widget", "log", "Wegas.ReviewWidget");
+                this.set(WIDGET, null);
+                if (!widgetCfg) {
+                    content.setContent("<center class=" + pageloaderErrorMessageClass + "><i>Page [" + this._pageId + "] was not found</i></center>");
+                    this.hideOverlay();
+                    this.fire("contentUpdated");
+                    return;
+                }
+
+                // @HACK substitute variable in widgetConfig
+                Y.Wegas.Facade.Variable.sendRequest({
+                    request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id"),
+                    cfg: {
+                        updateCache: false,
+                        method: "get"
+                            //data: this.get("review")
+                    },
+                    on: {
+                        success: Y.bind(function(e) {
+                            widgetCfg.parameters.variable = e.response.entity;
+                            
+                            Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
+                                try {
+                                    Y.log("Rendering new widget", "log", "Wegas.ReviewWidget");
+                                    this.get(CONTENTBOX).all("." + pageloaderErrorMessageClass).remove(true);
+                                    widgetCfg.editable = true;
+                                    var widget = Wegas.Widget.create(widgetCfg); // Render the subwidget
+                                    widget.render(content);
+                                    widget["@pageId"] = widgetCfg["@pageId"]; // @HACK set up a reference to the page
+                                    this.set(WIDGET, widget);
+                                } catch (e) {
+                                    content.setContent("<center class=" + pageloaderErrorMessageClass + "><i>Could not load sub page.</i></center>");
+                                    Y.log("renderUI(): Error rendering widget: " + (e.stack || e), "error", "Wegas.PageLoader");
+                                } finally {
+                                    this.hideOverlay();
+                                    this.fire("contentUpdated");
+                                }
+                            }, this));
+                        }, this),
+                        failure: Y.bind(function() {
+                        }, this)
+                    }
+                });
+
+
+
+            }, this));
+
+
+            this.get("contentBox").one(".toReview").one(".subtitle").setContent("Given: ");
 
             if (reviewer) {
                 if (review.get("status") === "DISPATCHED") {
                     modeFb = "write";
+                    this.get("contentBox").one(".feedback").one(".subtitle").setContent("What is your opinion?");
 
                 } else {
                     modeFb = "read";
+                    this.get("contentBox").one(".feedback").one(".subtitle").setContent("Your opinion:");
                 }
                 if (review.get("status") === "CLOSED") {
                     modeFbEval = "read";
+                    this.get("contentBox").one(".feedbackEv").one(".subtitle").setContent("What author think about your opinion:");
                 }
             } else { // Author
                 if (review.get("status") === "NOTIFIED") {
                     modeFb = "read";
                     modeFbEval = "write";
-                } else if (review.get("status") === "CLOSED") {
+                    this.get("contentBox").one(".feedback").one(".subtitle").setContent("Your reviewer opinion:");
+                    this.get("contentBox").one(".feedbackEv").one(".subtitle").setContent("What do you think about your reviewer opinion?");
+                } else if (review.get("status") === "COMPLETED" || review.get("status") === "CLOSED") {
                     modeFb = "read";
                     modeFbEval = "read";
+                    this.get("contentBox").one(".feedback").one(".subtitle").setContent("Your reviewer opinion:");
+                    this.get("contentBox").one(".feedbackEv").one(".subtitle").setContent("What you think about your reviewer opinion:");
                 }
             }
 
@@ -703,11 +737,11 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.submitButton = new Y.Button({
                     label: "Submit",
                     visible: true
-                }).render(this.get(CONTENTBOX).one('.wegas-review-widget-submit'));
+                }).render(this.get(CONTENTBOX).one('.submit'));
                 this.saveButton = new Y.Button({
                     label: "Save",
                     visible: true
-                }).render(this.get(CONTENTBOX).one('.wegas-review-widget-submit'));
+                }).render(this.get(CONTENTBOX).one('.submit'));
             }
 
             evls = review.get("feedback");
@@ -758,6 +792,21 @@ YUI.add("wegas-review-widgets", function(Y) {
                 }
             });
         },
+        /**
+         * A widget to render in current page (transient)
+         */
+        widget: {
+            "transient": true,
+            setter: function(v) {
+                if (this.get(WIDGET)) {
+                    this.get(WIDGET).destroy();
+                }
+                if (v) {
+                    v.on(["*:message", "*:showOverlay", "*:hideOverlay"], this.fire, this); // Event on the loaded widget will be forwarded
+                }
+                return v;
+            }
+        },
         save: function() {
             this._sendRequest("SaveReview");
         },
@@ -770,6 +819,10 @@ YUI.add("wegas-review-widgets", function(Y) {
         }
     }, {
         ATTRS: {
+            title: {
+                type: "string",
+                value: "Review"
+            },
             descriptor: {
                 type: "PeerReviewDescriptor"
             },
@@ -779,6 +832,14 @@ YUI.add("wegas-review-widgets", function(Y) {
             reviewer: {
                 type: "boolean",
                 value: false
+            },
+            showPage: {
+                type: "string",
+                _inputex: {
+                    label: "Show page",
+                    _type: "pageselect",
+                    required: true
+                }
             }
         }
     });
@@ -805,7 +866,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
             if (!this.get("readonly")) {
                 this.get(CONTENTBOX).one(".wegas-review-grade-instance-input").set("value", ev.get("value"));
-                if (desc.get("minValue") && desc.get("maxValue")) {
+                if (desc.get("minValue") !== undefined && desc.get("maxValue") !== undefined) {
                     this.xSlider = new Y.Slider({
                         min: desc.get("minValue"),
                         max: desc.get("maxValue"),
@@ -821,10 +882,11 @@ YUI.add("wegas-review-widgets", function(Y) {
         syncUI: function() {
         },
         bindUI: function() {
-            var input;
+            var input = this.get(CONTENTBOX).one(".wegas-review-grade-instance-input");
             if (this.xSlider) {
-                input = this.get(CONTENTBOX).one(".wegas-review-grade-instance-input");
                 this.handlers.push(this.xSlider.after("valueChange", this.updateInput, this));
+            }
+            if (input) {
                 this.handlers.push(input.on("keyup", this.updateSlider, this));
             }
         },
@@ -866,7 +928,9 @@ YUI.add("wegas-review-widgets", function(Y) {
             data.wait = Y.later(200, this, function() {
                 data.wait = null;
                 if (this.updateValue(value)) {
-                    this.xSlider.set("value", value);
+                    if (this.xSlider) {
+                        this.xSlider.set("value", value);
+                    }
                 }
             });
         }
@@ -888,10 +952,10 @@ YUI.add("wegas-review-widgets", function(Y) {
 
     TextEvalInput = Y.Base.create("wegas-review-textevalinput", Y.Wegas.TextInput, [], {
         CONTENT_TEMPLATE: "<div>" +
-            "<span class=\"wegas-review-evaluation-label\"></span>" +
+            "<div class=\"wegas-review-evaluation-label\"></div>" +
             "<div class=\"wegas-review-evaluation-desc\"></div>" +
             "<div class=\"wegas-text-input-editor\"></div>" +
-            "<div class=\"wegas-text-input-toolbar\"><span class=\"status\"></span></div>" +
+            "<div class=\"wegas-text-input-toolbar\"><div class=\"status\"></div></div>" +
             "</div>",
         getInitialContent: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"), button,
@@ -929,7 +993,7 @@ YUI.add("wegas-review-widgets", function(Y) {
 
     CategorizationInput = Y.Base.create("wegas-review-categinput", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>" +
-            "<span class=\"wegas-review-evaluation-label\"></span>" +
+            "<div class=\"wegas-review-evaluation-label\"></div>" +
             "<div class=\"wegas-review-evaluation-desc\"></div>" +
             "<div class=\"wegas-review-categinput-content\"></div>" +
             "</div>",
