@@ -1,4 +1,13 @@
-<div scenarist-scenario-create class="view view--new-session view--bottom">
+<div 
+	class="view view--new-session view--bottom"
+	scenarios="scenariosIndexCtrl.scenarios"
+	create="scenariosIndexCtrl.createScenario"
+	scenarist-scenario-create>
 </div>
-<div scenarist-scenarios-list class="view view--sessions-list view--middle">
+<div 
+	class="view view--sessions-list view--middle"
+	scenarios="scenariosIndexCtrl.scenarios"
+	archives="scenariosIndexCtrl.archives"
+	archive="scenariosIndexCtrl.archiveScenario"
+	scenarist-scenarios-list >
 </div>

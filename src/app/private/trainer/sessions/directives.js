@@ -90,7 +90,7 @@ angular.module('private.trainer.sessions.directives', [
     scope: false,
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
-        ScenariosModel.getScenarios().then(function(response){
+        ScenariosModel.getScenarios("LIVE").then(function(response){
             if(!response.isErroneous()){
                 scope.scenarios = response.data;
             }else{
