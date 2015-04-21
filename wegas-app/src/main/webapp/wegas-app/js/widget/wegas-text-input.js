@@ -60,7 +60,7 @@ YUI.add("wegas-text-input", function(Y) {
                     hidden_tootlbar: [2, 3],
                     setup: Y.bind(function(editor) {
                         editor.on('change', Y.bind(this._onChange, this)); // Update on editor update
-                        editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
+                        //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                         this.editor = editor;
                     }, this),
                     image_advtab: true,
@@ -108,7 +108,7 @@ YUI.add("wegas-text-input", function(Y) {
             this.setContent();
         },
         setContent: function() {
-            Y.later(0, this, function() {
+            Y.later(100, this, function() {
                 this.editor.setContent(this.getInitialContent());
                 /*var tmceI = tinyMCE.get(this.get("contentBox").one(".wegas-text-input-editor"));
                  if (tmceI) {
