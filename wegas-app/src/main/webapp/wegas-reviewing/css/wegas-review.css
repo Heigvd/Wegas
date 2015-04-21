@@ -17,35 +17,34 @@
 }
 
 
-.wegas-review-widget-title {
-    font-size: 1.2em;
+.wegas-review-widget-content {
+    margin: 5px;
 }
-.wegas-review-widget-content .wegas-review-widget-feedback-title,
-.wegas-review-widget-content .wegas-review-widget-feedbackEv-title {
+
+.wegas-review-widget .title {
+    font-size: 1.3em;
+}
+.wegas-review-widget .description {
+    margin: 5px;
+}
+
+.wegas-review-widget .subtitle {
     font-size: 1.1em;
+    margin-top: 10px;
 }
 
 
-.wegas-review-widget-feedback-content > div,
-.wegas-review-widget-feedbackEv-content > div,
-.wegas-review-widget-content .wegas-review-widget-feedback > div,
-.wegas-review-widget-content .wegas-review-widget-feedbackEv > div {
+.wegas-review-widget .toReview,
+.wegas-review-widget .feedback,
+.wegas-review-widget .feedbackEv {
     /*border: 1px solid grey;*/
     padding: 5px;
 }
 
-
-.wegas-review-widget-content .wegas-review-widget-feedback,
-.wegas-review-widget-content .wegas-review-widget-feedbackEv {
+.wegas-review-widget .feedback .content > div,
+.wegas-review-widget .feedbackEv .content > div {
     margin: 10px;
 }
-
-.wegas-review-widget-content .wegas-review-widget-toReview,
-.wegas-review-widget-content .wegas-review-widget-feedback,
-.wegas-review-widget-content .wegas-review-widget-feedbackEv {
-    margin: 5px;
-}
-
 
 .wegas-review-evaluation-label {
     font-weight: 600;
