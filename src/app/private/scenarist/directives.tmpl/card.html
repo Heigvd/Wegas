@@ -6,7 +6,7 @@
   <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments | limitTo: 36}}<span ng-if="scenario.comments.length > 36">...</span></div>  
 </div>
 <div class="card__actions">
-  <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session">
+  <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref=".customize({scenarioId: scenario.id})">
     <span class="button__label">Customize session</span>
   </a>
   <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage users" ui-sref=".coscenarists({scenarioId: scenario.id})">
