@@ -235,44 +235,6 @@ angular.module('wegas.models.scenarios', [])
             return deferred.promise;
         };
 
-        /*
-        model.getScenarios = function() {
-            var deferred = $q.defer();
-            if (model.scenarios !== null) {
-                deferred.resolve(Responses.success("Scenarios loaded", model.scenarios));
-            } else {
-                model.scenarios = [];
-                var url = "rest/GameModel?view=EditorExtended"
-                $http.get(ServiceURL + url, {
-                    "headers": {
-                        "managed-mode": "true"
-                    }
-                })
-                    .success(function(data) {
-                        if (data.events !== undefined && data.events.length == 0) {
-                            model.scenarios = data.entities;
-                            deferred.resolve(Responses.success("Scenarios loaded", model.scenarios));
-                        } else if (data.events !== undefined) {
-                            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                        } else {
-                            deferred.resolve(Responses.danger("Whoops...", false));
-                        }
-                    }).error(function(data) {
-                        model.scenarios = [];
-                        if (data.events !== undefined && data.events.length > 0) {
-                            deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                        } else {
-                            deferred.resolve(Responses.danger("Whoops...", false));
-                        }
-
-
-                    });
-            }
-            return deferred.promise;
-        }
-*/
-
-
         /* Ask for one scenario. */
         model.getScenario = function(status, id) {
             var deferred = $q.defer(),
@@ -307,43 +269,7 @@ angular.module('wegas.models.scenarios', [])
             }
             return deferred.promise;
         };
-        /*
-        model.getScenario = function(scenarioId) {
-            var deferred = $q.defer();
-            if (model.scenarios.length > 0) {
-                var scenario = findScenario(model.scenarios, scenarioId);
-                if (scenario !== null) {
-                    deferred.resolve(Responses.success("Scenario loaded", scenario));
-                    return deferred.promise;
-                }
-            }
-
-            var url = "rest/Public/GameModel/" + scenarioId + "?view=EditorExtended";
-            $http.get(ServiceURL + url, {
-                "headers": {
-                    "managed-mode": "true"
-                }
-            }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
-                    var scenario = data.entities[0];
-                    model.scenarios.push(scenario);
-                    deferred.resolve(Responses.success("Scenario loaded", scenario));
-                } else if (data.events !== undefined) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
-                }
-            }).error(function(data) {
-                if (data.events !== undefined && data.events.length > 0) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
-                }
-            });
-
-            return deferred.promise;
-        };
-*/
+        
         model.createScenario = function(name, templateId) {
             var deferred = $q.defer(),
                 url = "rest/Public/GameModel/" + templateId;
