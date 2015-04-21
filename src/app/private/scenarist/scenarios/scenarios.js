@@ -1,6 +1,7 @@
 angular
 .module('private.scenarist.scenarios', [
-    'private.scenarist.scenarios.directives'
+    'private.scenarist.scenarios.directives',
+    'private.scenarist.scenarios.archives'
 ])
 .config(function ($stateProvider) {
     $stateProvider

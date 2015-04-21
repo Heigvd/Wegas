@@ -5,17 +5,22 @@
     <input class="tool__input" ng-model="search" ng-model-options="{debounce: 500}" ng-change="filter()" type="text" />
   </div>
 </div>
-
-<div class="view__list">
+<div 
+  class="view__list"
+  ng-class="{true:'view__list--with-archive', false:''}[archives.length > 0]" >
   <div infinite-scroll='loadMore()' infinite-scroll-disabled='busy' infinite-scroll-container='".view__list"' infinite-scroll-distance='1'>
     <div class="card card--big"
     ng-repeat="scenario in visibleScenarios track by scenario.id"
     scenario="scenario"
+    archive="archive"
     scenario-card
     post-repeat-directive></div>
-
   </div>
-
-  <div class="col-xs-12" ng-if="!scenariosLoaded">Loading data... Please wait...</div>
-  <div class="col-xs-12" ng-if="visibleScenarios.length == 0 && scenariosLoaded">Sorry... no scenario correspond to your criteria</div>
+  <div class="col-xs-12" ng-if="scenarios.length == 0">Loading data... Please wait...</div>
+  <div class="col-xs-12" ng-if="scenarios.length > 0 && visibleScenarios.length == 0">Sorry... no scenario correspond to your criteria</div>
+</div>
+<div ng-if="archives.length > 0" class="view__archives">
+  <a class="button button--small button--default button--archive" ui-sref="wegas.private.scenarist.scenarios.archives">
+    <span class="button__label">{{archives.length}} archives</span>
+  </a>
 </div>

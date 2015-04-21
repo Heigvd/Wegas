@@ -183,7 +183,7 @@
         .view__archives{
             @include make-xs-column(12);
             height:80px;
-            padding:16px;
+            padding:16px 0px;
             clear:both;
             box-sizing: border-box;
             .button{
