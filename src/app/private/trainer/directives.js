@@ -1,13 +1,13 @@
-angular.module('private.trainer.sessions.directives', [
+angular.module('private.trainer.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
 .directive('trainerSessionsIndex', function(){
   return {
-    templateUrl: 'app/private/trainer/sessions/directives.tmpl/index.html',
-    controller : "TrainerSessionsController as trainerSessionsCtrl"
+    templateUrl: 'app/private/trainer/directives.tmpl/index.html',
+    controller : "TrainerIndexController as trainerIndexCtrl"
   };
 })
-.controller("TrainerSessionsController", function TrainerSessionsController($rootScope, SessionsModel, Flash){
+.controller("TrainerIndexController", function TrainerIndexController($rootScope, SessionsModel, Flash){
     var ctrl = this,
         initMaxSessionsDisplayed = function(){
             if(ctrl.sessions.length > 12){
@@ -114,7 +114,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
-    templateUrl: 'app/private/trainer/sessions/directives.tmpl/add-form.html',
+    templateUrl: 'app/private/trainer/directives.tmpl/add-form.html',
     scope: false,
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
@@ -150,7 +150,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSessionsList', function() {
   return {
-    templateUrl: 'app/private/trainer/sessions/directives.tmpl/list.html',
+    templateUrl: 'app/private/trainer/directives.tmpl/list.html',
     scope: {
         sessions : "=",
         search : "=",
@@ -162,7 +162,7 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSession', function(Flash) {
     return {
-        templateUrl: 'app/private/trainer/sessions/directives.tmpl/card.html',
+        templateUrl: 'app/private/trainer/directives.tmpl/card.html',
         restrict: 'A',
         require: "^trainerSessionsIndex",
         scope: {
