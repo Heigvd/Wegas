@@ -42,8 +42,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.criteria.Predicate;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -275,6 +277,22 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         query.select(e)
                 .where(criteriaBuilder.isTrue(e.get("template")))
                 .orderBy(criteriaBuilder.asc(e.get("name")));
+        return getEntityManager().createQuery(query).getResultList();
+    }
+    
+    /**
+     * @return
+     */
+    public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        final CriteriaQuery query = criteriaBuilder.createQuery();
+        List<Predicate> predicates = new ArrayList<>();
+        Root e = query.from(entityClass);
+        predicates.add(criteriaBuilder.equal(e.get("status"), status));
+        predicates.add(criteriaBuilder.isTrue(e.get("template")));
+        query.select(e)
+            .where(predicates.toArray(new Predicate[]{}))
+            .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
 
