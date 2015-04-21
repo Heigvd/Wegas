@@ -3,19 +3,19 @@ angular.module('private.scenarist.scenarios.directives', [
 ])
     .controller('ScenaristScenariosIndexController', function ScenaristScenariosIndexController($scope, $rootScope, ScenariosModel, Flash) {
         var ctrl = this,
-            initScenariosMax = function(){
+            initMaxScenariosDisplayed = function(){
                 if(ctrl.scenarios.length > 12){
-                    ctrl.scenariosMax = 10;
+                    ctrl.maxScenariosDisplayed = 10;
                 }else{
-                    ctrl.scenariosMax = ctrl.scenarios.length;
+                    ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }
             };
         ctrl.scenarios = [];
         ctrl.archives = [];
         ctrl.search = "";
-        ctrl.scenariosMax = null;
+        ctrl.maxScenariosDisplayed = null;
 
-        ctrl.updateScenarios = function(upDisplay) {
+        ctrl.updateScenarios = function(updateDisplay) {
             ScenariosModel.getScenarios("BIN").then(function(response) {
                 if (response.isErroneous()) {
                     response.flash();
@@ -28,7 +28,7 @@ angular.module('private.scenarist.scenarios.directives', [
                     response.flash();
                 } else {
                     ctrl.scenarios = response.data || [];
-                    if(upDisplay){
+                    if(updateDisplay){
                         updateDisplayScenarios();
                     }
                 }
@@ -36,13 +36,13 @@ angular.module('private.scenarist.scenarios.directives', [
         };
 
         var updateDisplayScenarios = function(){
-            if(ctrl.scenariosMax == null){
-                initScenariosMax();
+            if(ctrl.maxScenariosDisplayed == null){
+                initMaxScenariosDisplayed();
             }else{
-                if(ctrl.scenariosMax >= ctrl.scenarios.length){
-                    ctrl.scenariosMax = ctrl.scenarios.length;
+                if(ctrl.maxScenariosDisplayed >= ctrl.scenarios.length){
+                    ctrl.maxScenariosDisplayed = ctrl.scenarios.length;
                 }else{
-                    ctrl.scenariosMax = ctrl.scenariosMax + 5;
+                    ctrl.maxScenariosDisplayed = ctrl.maxScenariosDisplayed + 5;
                 }
             }
         };
