@@ -37,7 +37,7 @@ angular
         views: {
             'workspace@wegas.private': {
                 controller: 'ScenaristCtrl as scenaristCtrl',
-                templateUrl: 'app/private/scenarist/scenarios/scenarios.tmpl.html'
+                templateUrl: 'app/private/scenarist/scenarist.tmpl.html'
             }
         }
     });

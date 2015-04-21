@@ -1,21 +1,21 @@
 angular
-.module('private.scenarist.scenarios.archives', [
-    'private.scenarist.scenarios.archives.directives'
+.module('private.scenarist.archives', [
+    'private.scenarist.archives.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
-        .state('wegas.private.scenarist.scenarios.archives', {
+        .state('wegas.private.scenarist.archives', {
             url: '/archives',
             views: {
                 'modal@wegas.private': {
-                    controller: 'ScenaristScenariosArchivesController as archivesCtrl'
+                    controller: 'ScenaristArchivesController as archivesCtrl'
                 }
             }
         });
 })
-.controller('ScenaristScenariosArchivesController', function ScenaristScenariosArchivesController($animate, $state, ModalService) {
+.controller('ScenaristArchivesController', function ScenaristArchivesController($animate, $state, ModalService) {
     ModalService.showModal({
-        templateUrl: 'app/private/scenarist/scenarios/archives/archives.tmpl.html',
+        templateUrl: 'app/private/scenarist/archives/archives.tmpl.html',
         controller: "ModalsController as modalsCtrl"
     }).then(function(modal) {
         var box = $(".modal"),

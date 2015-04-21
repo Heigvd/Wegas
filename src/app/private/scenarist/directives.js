@@ -1,7 +1,7 @@
-angular.module('private.scenarist.scenarios.directives', [
+angular.module('private.scenarist.directives', [
     'wegas.behaviours.repeat.autoload'
 ])
-    .controller('ScenaristScenariosIndexController', function ScenaristScenariosIndexController($scope, $rootScope, ScenariosModel, Flash) {
+    .controller('ScenaristIndexController', function ScenaristIndexController($scope, $rootScope, ScenariosModel, Flash) {
         var ctrl = this,
             initMaxScenariosDisplayed = function(){
                 if(ctrl.scenarios.length > 12){
@@ -80,13 +80,13 @@ angular.module('private.scenarist.scenarios.directives', [
     })
     .directive('scenaristScenariosIndex', function() {
         return {
-            templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/index.html',
-            controller: "ScenaristScenariosIndexController as scenariosIndexCtrl"
+            templateUrl: 'app/private/scenarist/directives.tmpl/index.html',
+            controller: "ScenaristIndexController as scenaristIndexCtrl"
         };
     })
     .directive('scenaristScenarioCreate', function(Flash) {
         return {
-            templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/create.html',
+            templateUrl: 'app/private/scenarist/directives.tmpl/create.html',
             scope: {
                 scenarios: "=",
                 create: "="
@@ -116,7 +116,7 @@ angular.module('private.scenarist.scenarios.directives', [
     })
     .directive('scenaristScenariosList', function($rootScope, ScenariosModel) {
         return {
-            templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/list.html',
+            templateUrl: 'app/private/scenarist/directives.tmpl/list.html',
             scope: {
                 scenarios:"=",
                 archives:"=",
@@ -128,7 +128,7 @@ angular.module('private.scenarist.scenarios.directives', [
     })
     .directive('scenarioCard', function() {
         return {
-            templateUrl: 'app/private/scenarist/scenarios/directives.tmpl/card.html',
+            templateUrl: 'app/private/scenarist/directives.tmpl/card.html',
             scope: {
                 scenario: '=',
                 archive: "="
