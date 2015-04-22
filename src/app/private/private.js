@@ -6,6 +6,7 @@ angular.module('private', [
     'private.profile',
     'private.trainer',
     'private.scenarist',
+    'private.admin',
     'private.logout',
     'private.directives'
 ])
