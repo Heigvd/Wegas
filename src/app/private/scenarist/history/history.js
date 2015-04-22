@@ -8,13 +8,12 @@ angular
         url: '/:scenarioId/history',
         views: {
             'modal@wegas.private': {
-                controller: 'ScenaristHistory',
+                controller: 'ScenaristHistoryController',
             }
         }
     });
 })
-.controller("ScenaristHistory", function ScenaristHistory($animate, $state, ModalService){
-
+.controller("ScenaristHistoryController", function ScenaristHistoryController($animate, $state, ModalService){
     ModalService.showModal({
         templateUrl: 'app/private/scenarist/history/history.tmpl.html',
         controller: "ModalsController as modalsCtrl"
@@ -31,14 +30,4 @@ angular
             $state.go("^");
         });
     });
-
-})
-
-// .controller('HistoryCtrl', function HistoryCtrl($state, Auth, ViewInfos, $scope) {
-    // var historyCtrl = this;
-    // Auth.getAuthenticatedUser().then(function(user){
-    //     if(user != null){
-    //         ViewInfos.editName("Scenarist workspace");
-    //     }
-    // });
-// });
+});

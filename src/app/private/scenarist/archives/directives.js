@@ -1,13 +1,13 @@
-angular.module('private.scenarist.scenarios.archives.directives', [])
+angular.module('private.scenarist.archives.directives', [])
     .directive('scenaristScenariosArchivesIndex', function() {
         return {
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/scenarist/scenarios/archives/directives.tmpl/index.html',
-            controller: "ScenaristScenariosArchivesIndexController as scenariosArchivesIndexCtrl"
+            templateUrl: 'app/private/scenarist/archives/directives.tmpl/index.html',
+            controller: "ScenaristArchivesIndexController as scenaristArchivesIndexCtrl"
         };
-    }).controller("ScenaristScenariosArchivesIndexController", function ScenaristScenariosArchivesIndexController($rootScope, $scope, ScenariosModel, Flash) {
+    }).controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, ScenariosModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
 
@@ -78,6 +78,6 @@ angular.module('private.scenarist.scenarios.archives.directives', [])
                 unarchive: "=",
                 delete:"="
             },
-            templateUrl: 'app/private/scenarist/scenarios/archives/directives.tmpl/list.html'
+            templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html'
         };
     });

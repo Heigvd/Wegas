@@ -198,6 +198,52 @@ angular.module('wegas.models.scenarios', [])
                 });
                 return deferred.promise;
             };
+        setScenarioInfos = function(infos, scenarioBeforeChange) {
+            var deferred = $q.defer(),
+                scenarioSetted = false;
+            if (scenarioBeforeChange.name !== infos.name) {
+                scenarioBeforeChange.name = infos.name;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + infos.color + "_" + infos.icon)) {
+                scenarioBeforeChange.properties.iconUri = "ICON_" + infos.color + "_" + infos.icon;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.properties.freeForAll !== infos.individual) {
+                scenarioBeforeChange.properties.freeForAll = infos.individual;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.comments !== infos.comments) {
+                scenarioBeforeChange.comments = infos.comments;
+                scenarioSetted = true;
+            }
+            if (scenarioSetted) {
+                var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=EditorExtended";
+                $http.put(ServiceURL + url, scenarioBeforeChange, {
+                    "headers": {
+                        "managed-mode": "true"
+                    }
+                }).success(function(data) {
+                    if (data.events !== undefined && data.events.length == 0) {
+                        var scenario = data.entities[0];
+                        deferred.resolve(Responses.success("Scenario updated", scenario));
+                    } else if (data.events !== undefined) {
+                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                    } else {
+                        deferred.resolve(Responses.danger("Error during gameModel update", false));
+                    }
+                }).error(function(data) {
+                    if (data.events !== undefined && data.events.length > 0) {
+                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                    } else {
+                        deferred.resolve(Responses.danger("Error during gameModel update", false));
+                    }
+                });
+            } else {
+                deferred.resolve(Responses.success("Nothing to update in scenario", scenarioBeforeChange));
+            }
+            return deferred.promise;
+        };
 
         /* Ask for all scenarios in a list */
         model.getScenarios = function(status) {
@@ -263,7 +309,7 @@ angular.module('wegas.models.scenarios', [])
             }
             return deferred.promise;
         };
-        
+
         model.createScenario = function(name, templateId) {
             var deferred = $q.defer(),
                 url = "rest/Public/GameModel/" + templateId;
@@ -305,37 +351,22 @@ angular.module('wegas.models.scenarios', [])
                 deferred.resolve(Responses.danger("No name or template found", false));
             }
             return deferred.promise;
-        }
+        };
 
-        model.updateScenario = function(scenario) {
-            var deferred = $q.defer();
-
-            var url = "rest/Public/GameModel/" + scenario.id + "?view=EditorExtended";
-            $http.put(ServiceURL + url, {
-                "@class": "GameModel",
-                "name": scenario.name,
-                "comments": scenario.comments
-            }, {
-                "headers": {
-                    "managed-mode": "true"
-                }
-            }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
-                    var scenario = data.entities[0];
-                    deferred.resolve(Responses.success("Scenario updated", scenario));
-                } else if (data.events !== undefined) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+        model.updateScenario = function(id, infosToSet) {
+            var deferred = $q.defer(),
+                scenarioBeforeChange = scenarios.findScenario("LIVE", id);
+            if (id && infosToSet) {
+                if (scenarioBeforeChange) {
+                    setScenarioInfos(infosToSet, scenarioBeforeChange).then(function(response) {
+                        deferred.resolve(response);
+                    });
                 } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
+                    deferred.resolve(Responses.danger("No scenario to update", false));
                 }
-            }).error(function(data) {
-                if (data.events !== undefined && data.events.length > 0) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
-                }
-            });
-
+            } else {
+                deferred.resolve(Responses.danger("No scenario to update", false));
+            }
             return deferred.promise;
         };
 
@@ -360,7 +391,7 @@ angular.module('wegas.models.scenarios', [])
         }
         model.updatePermissions = function(scenarioId, userId, canCreate, canDuplicate, canEdit) {
             return PermissionModel.updatePermissions(scenarioId, userId, canCreate, canDuplicate, canEdit);
-        }
+        };
 
         model.getPermissions = function(scenarioId) {
 
@@ -392,7 +423,7 @@ angular.module('wegas.models.scenarios', [])
 
                 });
                 return permissions;
-            }
+            };
 
             var deferred = $q.defer();
             var scenario = scenarios.findScenario("LIVE", scenarioId);
@@ -452,7 +483,8 @@ angular.module('wegas.models.scenarios', [])
                 });
 
             return deferred.promise;
-        }
+        };
+
         model.addVersionHistory = function(scenarioId) {
             var deferred = $q.defer();
 
@@ -481,7 +513,7 @@ angular.module('wegas.models.scenarios', [])
                 });
 
             return deferred.promise;
-        }
+        };
         model.deleteVersionHistory = function(scenarioId, version) {
             var deferred = $q.defer();
             var url = "rest/Public/GameModel/" + scenarioId + "/File/delete/History/" + version;
@@ -508,8 +540,8 @@ angular.module('wegas.models.scenarios', [])
                 });
 
             return deferred.promise;
+        };
 
-        }
         model.restoreVersionHistory = function(scenarioId, version) {
 
             var deferred = $q.defer();
@@ -539,11 +571,11 @@ angular.module('wegas.models.scenarios', [])
                 });
 
             return deferred.promise;
-        }
+        };
 
         /*  ---------------------------------
-    ARCHIVED SCENARIOS SERVICES
-    --------------------------------- */
+ARCHIVED SCENARIOS SERVICES
+--------------------------------- */
 
         /* Unarchive scenario */
         model.unarchiveScenario = function(scenarioToUnarchive) {
@@ -601,10 +633,8 @@ angular.module('wegas.models.scenarios', [])
             return deferred.promise;
         }
 
-
-
+        /* Clear all scenarios in cache */
         model.clearCache = function() {
             scenarios.cache = [];
         };
-
     });

@@ -1,8 +1,9 @@
 angular.module('private.scenarist', [
-    'private.scenarist.scenarios',
+    'private.scenarist.directives',
+    'private.scenarist.archives',
+    'private.scenarist.customize',
     'private.scenarist.coscenarists',
     'private.scenarist.history'
-
     ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -11,7 +12,7 @@ angular.module('private.scenarist', [
         views: {
             'workspace': {
                 controller: 'ScenaristCtrl as scenaristCtrl',
-                templateUrl: 'app/private/scenarist/scenarios/scenarios.tmpl.html'
+                templateUrl: 'app/private/scenarist/scenarist.tmpl.html'
             }
         }
     })

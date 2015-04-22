@@ -1,8 +1,7 @@
 angular
 .module('private.scenarist.history.directives', [
-    'ngSanitize',
-    'private.scenarist.scenarios.directives'
-    ])
+    'ngSanitize'
+])
 .directive('scenaristHistoryIndex', function(ScenariosModel){
     return {
 
@@ -150,4 +149,4 @@ angular
 
         }
     };
-})
+});
