@@ -1,13 +1,32 @@
-angular.module('private.trainer.sessions.directives', [
+angular.module('private.trainer.directives', [
+    'wegas.behaviours.repeat.autoload'
 ])
 .directive('trainerSessionsIndex', function(){
   return {
-    templateUrl: 'app/private/trainer/sessions/directives.tmpl/index.html',
-    controller : "TrainerSessionsController as trainerSessionsCtrl"
+    templateUrl: 'app/private/trainer/directives.tmpl/index.html',
+    controller : "TrainerIndexController as trainerIndexCtrl"
   };
 })
-.controller("TrainerSessionsController", function TrainerSessionsController($rootScope, SessionsModel, Flash){
-    var ctrl = this;
+.controller("TrainerIndexController", function TrainerIndexController($rootScope, SessionsModel, Flash){
+    var ctrl = this,
+        initMaxSessionsDisplayed = function(){
+            if(ctrl.sessions.length > 12){
+                ctrl.maxSessionsDisplayed = 10;
+            }else{
+                ctrl.maxSessionsDisplayed = ctrl.sessions.length;
+            }
+        },
+        updateDisplaySessions = function(){
+            if(ctrl.maxSessionsDisplayed == null){
+                initMaxSessionsDisplayed();
+            }else{
+                if(ctrl.maxSessionsDisplayed >= ctrl.sessions.length){
+                    ctrl.maxSessionsDisplayed = ctrl.sessions.length;
+                }else{
+                    ctrl.maxSessionsDisplayed = ctrl.maxSessionsDisplayed + 5;
+                }
+            }
+        };
         ctrl.loading = {
             sessions :true,
             archives : true,
@@ -16,8 +35,9 @@ angular.module('private.trainer.sessions.directives', [
         ctrl.search = "";
         ctrl.sessions = [];
         ctrl.archives = [];
+        ctrl.maxSessionsDisplayed = null;
 
-    ctrl.updateSessions = function(){
+    ctrl.updateSessions = function(updateDisplay){
         ctrl.sessions = [];
         ctrl.loading = {
             sessions :true,
@@ -30,6 +50,9 @@ angular.module('private.trainer.sessions.directives', [
                 ctrl.loading.all = false;
             }
             ctrl.sessions = response.data || [];
+            if(updateDisplay){
+                updateDisplaySessions();
+            }
         });
         SessionsModel.getSessions("archived").then(function(response){
             ctrl.loading.archives = false;
@@ -79,14 +102,19 @@ angular.module('private.trainer.sessions.directives', [
             });
         }
     });
+    $rootScope.$on('changeLimit', function(e, hasNewData) {
+        if (hasNewData) {
+            ctrl.updateSessions(true);
+        }
+    });
 
     /* Request data. */
-    ctrl.updateSessions();
+    ctrl.updateSessions(true);
 
 })
 .directive('trainerSessionsAdd', function(ScenariosModel, SessionsModel, Flash) {
   return {
-    templateUrl: 'app/private/trainer/sessions/directives.tmpl/add-form.html',
+    templateUrl: 'app/private/trainer/directives.tmpl/add-form.html',
     scope: false,
     require: "^trainerSessionsIndex",
     link : function(scope, element, attrs, parentCtrl){
@@ -122,18 +150,19 @@ angular.module('private.trainer.sessions.directives', [
 })
 .directive('trainerSessionsList', function() {
   return {
-    templateUrl: 'app/private/trainer/sessions/directives.tmpl/list.html',
+    templateUrl: 'app/private/trainer/directives.tmpl/list.html',
     scope: {
         sessions : "=",
         search : "=",
         archive : "=",
-        editAccess: "="
+        editAccess: "=",
+        maximum:"="
     }
   };
 })
 .directive('trainerSession', function(Flash) {
     return {
-        templateUrl: 'app/private/trainer/sessions/directives.tmpl/card.html',
+        templateUrl: 'app/private/trainer/directives.tmpl/card.html',
         restrict: 'A',
         require: "^trainerSessionsIndex",
         scope: {

@@ -1,5 +1,8 @@
 angular.module('private.trainer', [
-    'private.trainer.sessions'
+    'private.trainer.directives',
+    'private.trainer.archives',
+    'private.trainer.users',
+    'private.trainer.customize'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -8,7 +11,7 @@ angular.module('private.trainer', [
             views: {
                 'workspace': {
                     controller: 'TrainerCtrl as trainerCtrl',
-                    templateUrl: 'app/private/trainer/sessions/sessions.tmpl.html'
+                    templateUrl: 'app/private/trainer/trainer.tmpl.html'
                 }
             }
         })
