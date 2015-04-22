@@ -1,13 +1,13 @@
-angular.module('private.trainer.sessions.archives.directives', [])
+angular.module('private.trainer.archives.directives', [])
     .directive('trainerSessionsArchivesIndex', function() {
         return {
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/trainer/sessions/archives/directives.tmpl/index.html',
-            controller: "TrainerSessionsArchivesIndexController as trainerSessionsArchivesIndexCtrl"
+            templateUrl: 'app/private/trainer/archives/directives.tmpl/index.html',
+            controller: "TrainerArchivesIndexController as trainerArchivesIndexController"
         };
-    }).controller("TrainerSessionsArchivesIndexController", function TrainerSessionsArchivesIndexController($rootScope, $scope, SessionsModel, Flash) {
+    }).controller("TrainerArchivesIndexController", function TrainerArchivesIndexController($rootScope, $scope, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
 
@@ -84,6 +84,6 @@ angular.module('private.trainer.sessions.archives.directives', [])
                 delete: "=",
                 unarchive: "="
             },
-            templateUrl: 'app/private/trainer/sessions/archives/directives.tmpl/list.html'
+            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html'
         };
     });

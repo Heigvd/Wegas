@@ -1,6 +1,6 @@
 <div class="card card--big"
-      ng-repeat="scenario in scenarios | filter: {name: search} | limitTo: maximum"
+      ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter: {name: search} | limitTo: maximum"
       scenario="scenario"
       archive="archive"
-      scenario-card ></div>
+      scenario-card >
 </div>

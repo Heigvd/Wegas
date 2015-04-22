@@ -1,4 +1,4 @@
-angular.module('private.trainer.sessions.customize.directives', [
+angular.module('private.trainer.customize.directives', [
     'wegas.service.customize'
 ])
     .directive('trainerSessionsCustomizeIndex', function() {
@@ -6,10 +6,10 @@ angular.module('private.trainer.sessions.customize.directives', [
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/index.html',
-            controller: "TrainerSessionsCustomizeIndexController as customizeIndexCtrl"
+            templateUrl: 'app/private/trainer/customize/directives.tmpl/index.html',
+            controller: "TrainerCustomizeIndexController as customizeIndexCtrl"
         };
-    }).controller("TrainerSessionsCustomizeIndexController", function TrainerSessionsCustomizeIndexController($rootScope, $scope, $stateParams, SessionsModel, Flash) {
+    }).controller("TrainerCustomizeIndexController", function TrainerCustomizeIndexController($rootScope, $scope, $stateParams, SessionsModel, Flash) {
         var ctrl = this,
             initTabs = function() {
                 return {
@@ -150,12 +150,12 @@ angular.module('private.trainer.sessions.customize.directives', [
             scope:{
                 activeInfos: "="
             },
-            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/infos-form.html'
+            templateUrl: 'app/private/trainer/customize/directives.tmpl/infos-form.html'
         }
     })
     .directive('trainerSessionsCustomizeIcons', function(Customize) {
         return {
-            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/icons-picker.html',
+            templateUrl: 'app/private/trainer/customize/directives.tmpl/icons-picker.html',
             scope: {
                 activeIcon: "=",
                 change: "="
@@ -167,7 +167,7 @@ angular.module('private.trainer.sessions.customize.directives', [
     })
     .directive('trainerSessionsCustomizeColors', function(Customize) {
         return {
-            templateUrl: 'app/private/trainer/sessions/customize/directives.tmpl/colors-picker.html',
+            templateUrl: 'app/private/trainer/customize/directives.tmpl/colors-picker.html',
             scope: {
                 activeColor: "=",
                 change: "="

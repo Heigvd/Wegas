@@ -1,19 +1,19 @@
-angular.module('private.trainer.sessions.archives', [
-    'private.trainer.sessions.archives.directives'
+angular.module('private.trainer.customize', [
+    'private.trainer.customize.directives'
 ])
     .config(function($stateProvider) {
         $stateProvider
-            .state('wegas.private.trainer.sessions.archives', {
-                url: '/archives',
+            .state('wegas.private.trainer.customize', {
+                url: '/:id/customize',
                 views: {
                     'modal@wegas.private': {
-                        controller: 'TrainerSessionsArchivesController'
+                        controller: 'TrainerCustomizeController'
                     }
                 }
             });
-    }).controller("TrainerSessionsArchivesController", function TrainerSessionsArchivesController($animate, $state, ModalService) {
+    }).controller("TrainerCustomizeController", function TrainerCustomizeController($animate, $state, ModalService) {
         ModalService.showModal({
-            templateUrl: 'app/private/trainer/sessions/archives/archives.tmpl.html',
+            templateUrl: 'app/private/trainer/customize/customize.tmpl.html',
             controller: "ModalsController as modalsCtrl"
         }).then(function(modal) {
             var box = $(".modal"),
