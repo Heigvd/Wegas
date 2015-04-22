@@ -207,11 +207,9 @@ angular.module('wegas.models.scenarios', [])
             }
             if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + infos.color + "_" + infos.icon)) {
                 scenarioBeforeChange.properties.iconUri = "ICON_" + infos.color + "_" + infos.icon;
-                scenarioBeforeChange.properties.iconUri = "ICON_" + infos.color + "_" + infos.icon;
                 scenarioSetted = true;
             }
             if (scenarioBeforeChange.properties.freeForAll !== infos.individual) {
-                scenarioBeforeChange.properties.freeForAll = infos.individual;
                 scenarioBeforeChange.properties.freeForAll = infos.individual;
                 scenarioSetted = true;
             }

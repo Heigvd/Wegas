@@ -15,7 +15,7 @@ angular.module('private.scenarist.customize.directives', [
                 return {
                     infos: false,
                     display: false
-                }
+                };
             };
         ctrl.scenario = {};
         ctrl.hasChanges = {
