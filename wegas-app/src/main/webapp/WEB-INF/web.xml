@@ -11,7 +11,7 @@
         <session-timeout>30</session-timeout>
     </session-config>
     <welcome-file-list>
-        <welcome-file>index.html</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
     <!-- Apache Shiro Listener -->
@@ -41,6 +41,7 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.html</url-pattern>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
