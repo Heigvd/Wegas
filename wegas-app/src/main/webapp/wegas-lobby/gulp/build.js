@@ -9,7 +9,6 @@ var $ = require('gulp-load-plugins')({
   pattern: ['gulp-*', 'main-bower-files', 'uglify-save-license', 'del']
 });
 
-
 gulp.task('partials', function () {
   return gulp.src([
     paths.src + '/{app,components}/**/*.html',
@@ -39,37 +38,29 @@ gulp.task('html', ['inject', 'partials'], function () {
   var cssFilter = $.filter('**/*.css');
   var assets;
 
-  var gulped = gulp.src(paths.tmp + '/serve/*.html')
+  var gulped = gulp.src(paths.tmp + '/serve/*.jsp')
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe(assets = $.useref.assets())
-    .pipe($.rev())
+    // .pipe($.rev())
     .pipe(jsFilter)
     .pipe($.ngAnnotate());
-
-    if (argv.mini) {
-      gulped = gulped.pipe($.uglify({preserveComments: $.uglifySaveLicense}))
-    }
-
+    gulped = gulped.pipe($.uglify({preserveComments: $.uglifySaveLicense}))
     gulped = gulped.pipe(jsFilter.restore())
     .pipe(cssFilter);
 
-    if (argv.mini) {
-      gulped = gulped.pipe($.csso())
-    }
-
+    gulped = gulped.pipe($.csso())
+    
     gulped = gulped.pipe(cssFilter.restore())
     .pipe(assets.restore())
     .pipe($.useref())
     .pipe($.revReplace())
     .pipe(htmlFilter);
-
-    if (argv.mini) {
-      gulped = gulped.pipe($.minifyHtml({
-        empty: true,
-        spare: true,
-        quotes: true
-      }));
-    }
+    
+    gulped = gulped.pipe($.minifyHtml({
+      empty: true,
+      spare: true,
+      quotes: true
+    }));
 
     return gulped.pipe(htmlFilter.restore())
     .pipe(gulp.dest(paths.dist + '/'))
