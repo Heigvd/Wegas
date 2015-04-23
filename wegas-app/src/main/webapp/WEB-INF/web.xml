@@ -41,7 +41,6 @@
     </servlet>
     <servlet-mapping>
         <servlet-name>Faces Servlet</servlet-name>
-        <url-pattern>*.html</url-pattern>
         <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
 
