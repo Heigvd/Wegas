@@ -34,6 +34,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -271,8 +272,9 @@ public class UserController {
 
     @GET
     @Path("Logout")
-    public void logout(){
+    public Response logout(){
         SecurityUtils.getSubject().logout();
+        return Response.status(Response.Status.OK).build();
     }
 
     /**
