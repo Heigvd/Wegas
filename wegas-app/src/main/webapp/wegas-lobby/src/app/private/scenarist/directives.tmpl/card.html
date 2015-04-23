@@ -1,0 +1,24 @@
+<div class="card__illustration illustration illustration--big illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
+<div class="card__description"
+      ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[scenario.comments == null || scenario.comments == '']" >
+  <div class="line">{{scenario.createdTime | date:"dd.MM.yyyy"}}</div>
+  <div class="line line--primary">{{scenario.name | limitTo: 36}}<span ng-if="scenario.name.length > 36">...</span></div>
+  <div ng-if="!((scenario.comments == null) || (scenario.comments == ''))" class="line line--optional">{{scenario.comments | limitTo: 36}}<span ng-if="scenario.comments.length > 36">...</span></div>  
+</div>
+<div class="card__actions">
+  <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref=".customize({scenarioId: scenario.id})">
+    <span class="button__label">Customize session</span>
+  </a>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage users" ui-sref=".coscenarists({scenarioId: scenario.id})">
+    <span class="button__label">Manage User</span>
+  </a>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="Fork" ui-sref=".history({scenarioId: scenario.id})">
+    <span class="button__label">Fork</span>
+  </a>
+  <a class="button button--medium button--round button--default-reverse button--label-off button--archive" title="Move to archive" ng-click="archive(scenario)">
+    <span class="button__label">Archive scenario</span>
+  </a>
+  <a class="button button--medium button--round button--info button--label-off button--scenarist" title="Edit scenario" href="{{ServiceURL}}edit.html?gameModelId={{scenario.id}}" target="_blank">
+    <span class="button__label">Edit scenario</span>
+  </a>
+</div>
