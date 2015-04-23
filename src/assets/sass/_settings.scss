@@ -1,0 +1,79 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:100,300,400,700,900);
+
+
+
+// Fonts 
+$font-family: "Lato", "Helvetica", "Arial", sans-serif;
+$font-weight-default: 300;
+
+// ---- Colors -----
+$white: #fefefe;
+$primary-color:#FA6942;
+$primary-color-light:#FF7752;
+$primary-color-dark:darken($primary-color, 10%); 
+$secondary-color:#41D2FA;
+$secondary-color-light:#AFEAFA;
+$secondary-color-dark:#38B6D9; 
+
+
+// ---- Background -----
+$background-default:#f0f0f0; // ebebeb; A remplacer par lvl bottom
+$background-default-secondary:#F9F9F9;
+$background-white:$white;
+
+
+
+$background-reverse:$primary-color; // Remplacer par top
+$background-reverse-light:$primary-color-light; // remplacer par bottom 
+
+// ---- Text -----
+$default-color:#272727;
+$default-color-button:#666666;
+$default-color-light:#BCBCBC;
+
+// ---- Borders ----
+$border:#d7d7d7;
+$border-reverse:$primary-color-dark;
+
+// ---- Infos -----
+$danger-color:#e51c23;
+$success-color:#4caf50;
+$warning-color:#ff9800;
+
+// --- Inputs -----
+$input-height:38px;
+$input-big-height:48px;
+$box-size:18px;
+
+// --- Lists -----
+$positions: bottom top left right;
+$buttons-types : (
+	(default, $default-color-button),
+	(primary, $primary-color),
+	(info, $secondary-color),
+	(success, $success-color),
+	(warning, $warning-color),
+	(danger, $danger-color)
+);
+$sizes : (
+	(small, 48px, 0px), 
+	(medium, 64px, 8px), 
+	(big, 96px, 16px)
+);
+$backgrounds-levels : (
+	(bottom, $background-default, lighten($primary-color-light, 10%)), 
+	(middle, $background-default-secondary, $primary-color-light), 
+	(top, $background-white, $primary-color)
+);
+$illustration-colors : (
+	('orange', #FF9369), 
+	('blue', #A2E0F2), 
+	('red', #FF5E5E), 
+	('yellow', #EDE466), 
+	('purple', #DFB2FF),
+	('pink', #FF96D2), 
+	('green', #BEED79), 
+	('grey', #AEAAB2)
+); 
+
+
