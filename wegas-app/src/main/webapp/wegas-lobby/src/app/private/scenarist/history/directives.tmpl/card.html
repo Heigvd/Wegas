@@ -1,0 +1,18 @@
+
+<div class="card__illustration illustration illustration--big illustration--icon" illustration="ICON_blue_code-fork"></div>
+
+<div class="card__description card__description--one-line">
+  <h4 class="card__description__titre">
+    {{version.name}}
+  </h4>
+</div>
+
+
+<div class="card__actions">
+    <a class="button button--medium button--round button--default-reverse button--label-off button--fork" title="Create a fork"  ng-click="createFork(version.name)">
+      <span class="button__label">Create a fork</span>
+    </a>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--trash" title="Manage User" ng-click="deleteFork(version.name)">
+      <span class="button__label">Delete</span>
+    </a>
+  </div>

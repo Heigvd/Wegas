@@ -1,0 +1,149 @@
+$card-text-size : 14px;
+$card-margin-size: 8px;
+.card{
+    position:relative;
+    display:block;
+    width:100%;
+    height:nth(nth($sizes,1), 2);
+    padding:0px;
+    margin:12px auto;
+    border:none;
+    box-sizing: border-box;
+    background:$white;
+    border-radius:2px;
+    transition:.3s;
+    clear:both;
+    @include material-shadow(1);
+
+    &:hover{
+        @include material-shadow(2);
+    }
+
+
+    .card__description{
+        float:left;
+
+        .line{
+            line-height:$card-text-size; 
+            font-size:$card-text-size; 
+            margin:0px;
+            padding:$card-margin-size/2 0px; 
+            color:#555555;
+            &.line--primary{
+                font-weight:500;
+            }
+            &.line--optionnal{
+                font-style: italic;
+            }
+            &:first-child{
+                padding-top:0px;
+            }
+            &:last-child{
+                padding-bottom:0px;
+            }
+        }
+    }
+
+    .card__illustration{
+        display:block;
+        float:left;
+    }
+
+    .card__actions{
+        float:right;
+        .button{
+            display: block;
+            float: left;
+        }
+    }
+
+    &.card--scenario {
+        &.card--big {
+            height: inherit;
+            overflow: auto;
+        }
+        .card__illustration {
+            width: 96px;
+        }
+        .card__content {
+            @include make-xs-column(12);
+            width: calc(100% - 96px);
+
+            .card__description {
+                @include make-xs-column(7.5);
+                width: calc(100% - 275px)
+            }
+            .card__actions {
+                @include make-xs-column(5.5);
+                width: 275px;
+                padding: 15px 0 0 0;
+            }
+        }
+    }
+    &.card--coscenarist-permission {
+        &.ng-leave {
+          animation: bounceOut 1s;
+        }
+        .card__illustration {
+            @include make-xs-column(2);
+        }
+        .card__description {
+            @include make-xs-column(4);
+        }
+        .card__detailled-actions {
+            @include make-xs-column(4);
+        }
+        .card__actions {
+            @include make-xs-column(2);
+        }
+    }
+    
+    @each $size in $sizes{
+        $size-name: nth($size, 1);
+        $size-value: nth($size, 2);
+        $size-action-margin:nth($size, 3);
+        &.card--#{$size-name}{
+            width:100%;
+            height:auto;
+            overflow:auto;
+
+            &.ng-enter, 
+            &.ng-leave
+            { 
+                transition: .6s;
+            } 
+             
+            &.ng-enter.ng-enter-active, 
+            &.ng-leave {
+                visibility:visible;
+                opacity: 1;
+                height: $size-value;
+            }
+             
+            &.ng-leave.ng-leave-active,
+            &.ng-enter {
+                visibility:hidden;
+                opacity: 0;
+                height: 1px;       
+            }
+            
+            .card__description{
+                &.card__description--one-line{
+                    padding:($size-value - $card-text-size - ($card-margin-size/2))/2 16px; 
+                }
+                &.card__description--two-lines{
+                    padding:($size-value - (2*$card-text-size) - (2*$card-margin-size))/2 16px; 
+                        
+                }
+                &.card__description--three-lines{
+                    padding:($size-value - (3*$card-text-size) - (3*$card-margin-size))/2 16px; 
+                }
+            }
+
+
+            .card__actions{
+                padding:$size-action-margin 16px;
+            }
+        }
+    }
+}
