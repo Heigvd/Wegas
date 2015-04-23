@@ -38,7 +38,7 @@ gulp.task('html', ['inject', 'partials'], function () {
   var cssFilter = $.filter('**/*.css');
   var assets;
 
-  var gulped = gulp.src(paths.tmp + '/serve/*.html')
+  var gulped = gulp.src(paths.tmp + '/serve/*.jsp')
     .pipe($.inject(partialsInjectFile, partialsInjectOptions))
     .pipe(assets = $.useref.assets())
     // .pipe($.rev())

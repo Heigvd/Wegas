@@ -31,7 +31,7 @@ gulp.task('inject', ['styles'], function () {
     exclude: [/bootstrap\.css/, /foundation\.css/]
   };
 
-  return gulp.src(paths.src + '/*.html')
+  return gulp.src(paths.src + '/*.jsp')
     .pipe($.inject(injectStyles, injectOptions))
     .pipe($.inject(injectScripts, injectOptions))
     .pipe(wiredep(wiredepOptions))
