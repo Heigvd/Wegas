@@ -1,0 +1,62 @@
+$buttons-icon : (
+    (trash, $fa-var-trash),
+    (archive, $fa-var-archive),
+    (fork, $fa-var-code-fork),
+    (undo, $fa-var-reply),
+    (customize, $fa-var-pencil),
+    (sign-out, $fa-var-sign-out),
+    (adn, $fa-var-adn),
+    (ambulance, $fa-var-ambulance),
+    (search, $fa-var-search),
+    (user, $fa-var-user),
+    (team, $fa-var-users),
+    (close, $fa-var-times),
+    (user-plus, $fa-var-user-plus),
+    (user-remove, $fa-var-user-times),
+    (play, $fa-var-play),
+    (workspaces, $fa-var-th),
+    (player, $fa-var-gamepad),
+    (trainer, $fa-var-tachometer),
+    (scenarist, $fa-var-magic),
+    (add, $fa-var-plus-circle),
+    (download, $fa-var-download),
+    (eye, $fa-var-eye),
+    (lock, $fa-var-lock),
+    (unlock, $fa-var-unlock),
+    (valid, $fa-var-check)
+);
+
+%button--with-icon{
+    $btn-default-size: nth(nth($sizes, 1),2);
+    padding:$btn-default-size/3 $btn-default-size/2 $btn-default-size/3 ($btn-default-size + $btn-default-size/8);
+    &:before{
+        content:"A";
+        display:block;
+        position:absolute;
+        top:0px;
+        left:0px;
+        text-align:center;
+        padding:$btn-default-size/4.5 0px;
+        margin:0px;
+        font-size:$btn-default-size/2.5;
+        width:$btn-default-size;
+        height:$btn-default-size;
+        background:none;
+        font-family:"FontAwesome";
+        color:$white;
+    }
+
+    @each $size in $sizes{
+        $size-name:nth($size, 1);
+        $size-pixel:nth($size, 2);
+        &.button--#{$size-name}{
+            padding:$size-pixel/3 $size-pixel/2 $size-pixel/3 ($size-pixel + $size-pixel/8);
+            &:before{
+                padding:$size-pixel/4.5 0px;
+                font-size:$size-pixel/2.5;
+                width:$size-pixel;
+                height:$size-pixel;
+            }
+        }
+    }
+}

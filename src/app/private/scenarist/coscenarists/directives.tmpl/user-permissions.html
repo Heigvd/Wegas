@@ -1,0 +1,12 @@
+<ul>
+  <li>
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canEdit" />Edit
+  </li>
+  <li>
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canDuplicate" ng-disabled="canEdit" />Duplicate
+  </li>
+  <li>
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canCreate" ng-disabled="canEdit" />Create
+  </li>
+</ul>
+<em>{{ msg }}</em>
