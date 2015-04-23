@@ -67,7 +67,7 @@ angular.module('wegas.service.auth', [
                 authenticatedUser = null;
                 deferred.resolve(Responses.success("Logout successfully", true));
             }).error(function(data){
-                deferred.resolve(Responses.error("Error when logout", false));
+                deferred.resolve(Responses.danger("Error when logout", false));
             });
             return deferred.promise;
         };
