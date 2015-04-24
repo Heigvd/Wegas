@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -331,19 +333,7 @@ public class UserController {
         SimplePrincipalCollection subject = new SimplePrincipalCollection(accountId, "jpaRealm");
         oSubject.runAs(subject);
     }
-
-    /**
-     * Create a user based with a JpAAccount
-     *
-     * @param account
-     */
-    @POST
-    @Path("Signup")
-    public void signup(JpaAccount account) {
-        User user = new User(account);                                          // Add the user to db
-        userFacade.create(user);
-    }
-
+    
     /**
      *
      * @param username
@@ -354,6 +344,7 @@ public class UserController {
      */
     @POST
     @Path("Signup")
+    @Deprecated
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     public void signup(@FormParam("username") String username,
             @FormParam("password") String password,
@@ -367,6 +358,30 @@ public class UserController {
         account.setLastname(lastname);
         account.setEmail(email);
         this.signup(account);                                                   // and forward
+    }
+    
+    /**
+     * Create a user based with a JpAAccount
+     *
+     * @param account
+     * @return Response : Status Not acceptable if email is wrong or username already exist. Created otherwise.
+     */
+    @POST
+    @Path("Signup")
+    public Response signup(JpaAccount account) {
+        Response r;
+        if(this.checkEmailString(account.getEmail())){
+            if(account.getUsername().equals("") || !this.checkExistingUsername(account.getUsername())){
+                User user = new User(account);
+                userFacade.create(user);
+                r = Response.status(Response.Status.CREATED).build();
+            }else{
+                r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The username is already taken.")).build();
+            }
+        }else{
+            r = Response.status(Response.Status.BAD_REQUEST).entity(WegasErrorMessage.error("The email isn't correct.")).build();
+        }
+        return r;
     }
 
     /**
@@ -588,4 +603,22 @@ public class UserController {
         return false;
     }
 
+    private boolean checkEmailString(String email){
+        boolean validEmail = true;
+        try {
+            InternetAddress emailAddr = new InternetAddress(email);
+            emailAddr.validate();
+        } catch (AddressException ex) {
+            validEmail = false;
+        }
+        return validEmail;
+    }
+    private boolean checkExistingUsername(String username){
+        boolean existingUsername = false;
+        User user = userFacade.getUserByUsername(username);
+        if(user != null){
+            existingUsername = true;
+        }
+        return existingUsername;
+    }
 }
