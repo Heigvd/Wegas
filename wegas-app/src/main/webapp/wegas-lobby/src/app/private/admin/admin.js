@@ -1,8 +1,7 @@
 angular.module('private.admin', [
     'private.admin.directives',
     'private.admin.users',
-    'private.admin.groups',
-    'private.admin.games'
+    'private.admin.groups'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -27,5 +26,6 @@ angular.module('private.admin', [
             ViewInfos.editName("Admin workspace");
         }
     });
+
 })
 ;

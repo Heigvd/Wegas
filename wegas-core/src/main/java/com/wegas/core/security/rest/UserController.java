@@ -247,7 +247,7 @@ public class UserController {
     public void login(AuthenticationInformation authInfo, 
             @Context HttpServletRequest request, 
             @Context HttpServletResponse response) throws ServletException, IOException {
-
+        
         Subject subject = SecurityUtils.getSubject();
 
         //if (!currentUser.isAuthenticated()) {

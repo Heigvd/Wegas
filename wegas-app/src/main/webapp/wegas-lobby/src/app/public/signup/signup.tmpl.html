@@ -1,12 +1,15 @@
-<form class="view__login-form form" ng-submit="publicSignupCtrl.signup()">
+<form class="view__login-form form" ng-submit="signup()" ng-controller="PublicSignupCtrl">
   <div class="form__row">
-      <input class="form__row__entry input input--small input--primary" ng-model="publicSignupCtrl.formInfo.email" type="text" id="login" placeholder="email" autocomplete="off">
+      <input class="form__row__entry input input--small input--primary" ng-model="email" type="email" id="login" placeholder="Email" autocomplete="off">
   </div>
   <div class="form__row">
-      <input class="form__row__entry input input--small input--primary" ng-model="publicSignupCtrl.formInfo.p1"type="password" id="password1" placeholder="password" autocomplete="off">
+      <input class="form__row__entry input input--small input--primary" ng-model="username" type="text" id="username" placeholder="Username" autocomplete="off">
+  </div>
+  <div class="form__row">
+      <input class="form__row__entry input input--small input--primary" ng-model="p1"type="password" id="password1" placeholder="Password" autocomplete="off">
   </div>
     <div class="form__row">
-      <input class="form__row__entry input input--small input--primary" ng-model="publicSignupCtrl.formInfo.p2" type="password" id="password2" placeholder="Please retype your password" autocomplete="off">
+      <input class="form__row__entry input input--small input--primary" ng-model="p2" type="password" id="password2" placeholder="Please retype your password" autocomplete="off">
   </div>
   <div class="form__row form__row--right">
       <input class="form__row__btn button button--default" type="submit" value="Sign up" />

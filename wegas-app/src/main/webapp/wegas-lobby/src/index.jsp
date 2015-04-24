@@ -1,7 +1,5 @@
 <!doctype html> 
-<html lang="en"
-    xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:h="http://java.sun.com/jsf/html" class="no-js" ng-app="Wegas">
+<html class="no-js" ng-app="Wegas">
     <head>
         <meta charset="utf-8">
         <title>Wegas - Web game authoring system</title>

@@ -1,1 +1,33 @@
-<h1>Here comes the users list</h1>
+<h3>Existing users</h3>
+<div class="view__tools">
+    <div class="tool tool--search tool--open">
+        <a class="tool__link"></a>
+        <input
+        class="tool__input"
+        ng-model="search"
+        type="text"
+        />
+    </div>
+</div>
+<div class="view__list" repeat-auto-load>
+    <div class="card card--big card--player-session" ng-repeat="user in users | filter: {account: { email: search }} | limitTo: maxUsersDisplayed" user="user" >
+
+        <div class="card__illustration illustration illustration--big illustration--icon" illustration="ICON_grey_user"></div>
+        <div class="card__description">
+            <div class="line line--primary">
+                {{ user.account.email }}
+            </div>
+            <div class="line line--secondary">
+                {{ user.account.firstname + ' ' + user.account.lastname }}
+            </div>
+        </div>
+        <div class="card__actions">
+            <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Edit user" ui-sref="wegas.private.admin.users.edit({id: user.id})">
+                <span class="button__label">Edit user</span>
+            </a>
+            <a class="button button--medium button--round button--danger-reverse button--label-off button--trash" title="Delete User" confirmed-click="deleteUser(user.id)" ng-confirm-click="Are you sure you want to delete this user ? This action is irreversible.">
+                <span class="button__label">Delete user</span>
+            </a>
+        </div>
+    </div>
+</div>

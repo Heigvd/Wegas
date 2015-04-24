@@ -126,6 +126,22 @@
 		&.modal__content--nav-tools-off{
 			height:415px;
 		}
+
+		.modal__content__colors{
+			display:block;
+			position:relative;
+			width:100%;
+			height:100px;
+		}
+
+		.modal__content__icons{
+			display:block;
+			position:relative;
+			width:100%;
+			height:200px;
+			overflow-x:hidden;
+			overflow-y:auto;
+		}
 	}
 
 	.modal__tools{

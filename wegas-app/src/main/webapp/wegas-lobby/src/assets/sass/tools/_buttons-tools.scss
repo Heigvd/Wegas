@@ -19,11 +19,13 @@ $buttons-icon : (
     (trainer, $fa-var-tachometer),
     (scenarist, $fa-var-magic),
     (add, $fa-var-plus-circle),
+    (remove, $fa-var-minus-circle),
     (download, $fa-var-download),
     (eye, $fa-var-eye),
     (lock, $fa-var-lock),
     (unlock, $fa-var-unlock),
-    (valid, $fa-var-check)
+    (valid, $fa-var-check),
+    (admin, $fa-var-gavel)
 );
 
 %button--with-icon{

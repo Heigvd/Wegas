@@ -10,33 +10,24 @@ angular.module('public.signup', [
             		templateUrl: 'app/public/signup/signup.tmpl.html'
                 }
             }
-           
+
         })
     ;
 })
-.controller('PublicSignupCtrl', function PublicSignupCtrl($state, Auth) {
-    var publicSignupCtrl = this;
-        publicSignupCtrl.formInfo = {};
+.controller('PublicSignupCtrl', function PublicSignupCtrl($scope, $state, Auth, Flash) {
+    var ctrl = this;
 
-    var signup = function () {
-
-        console.log("-> Registering user");
-
-        /* TODO: Implement correct form validation */
-        if (publicSignupCtrl.formInfo.p1 == publicSignupCtrl.formInfo.p2) {
-            Auth.signup(publicSignupCtrl.formInfo.email, publicSignupCtrl.formInfo.p1).then(function(result) {
-                if(result === true) {
-                    /* TODO: Implement sweet and nice information/modal message */
-                    window.alert('Thanks. You can now connect!')
-                } else {
-                    /* TODO: Implement sweet and nice information/modal message */
-                    window.alert('Oups... ' + result.message);
-                }
-            });
+    $scope.signup = function () {
+        if (this.p1 && this.p1.length > 3) {
+            if (this.p1 === this.p2) {
+                Auth.signup(this.email, this.username, this.p1).then(function(response) {
+                    response.flash();
+                });
+            } else {
+                Flash('danger', 'Passwords are different');
+            }
         } else {
-            /* TODO: Implement sweet and nice information/modal message */
-            window.alert('Password are different');
+            Flash('danger', 'Your password should contains at least 3 characters');
         }
     }
-    publicSignupCtrl.signup = signup;
 });

@@ -91,7 +91,7 @@ label.choice{
         height:24px;
         float:left;
         overflow:hidden;
-        input[type="radio"]{
+        input[type="radio"], input[type="checkbox"]{
             display:block;
             position:absolute;
             top:-600px;
@@ -104,7 +104,7 @@ label.choice{
             height:18px;
             margin:3px;
             padding:0px;
-            background-color:none;
+            background:none;
             border:solid 1px $border;
             border-radius:2px;
             box-sizing: border-box;
@@ -113,12 +113,20 @@ label.choice{
         }
 
         input[type="radio"]:checked + .choice__box__display{ 
-            border:solid 9px $border;
+            border:solid 9px lighten($primary-color, 10%);
             transition:.3s;
         } 
+
+
+        input[type="checkbox"]:checked + .choice__box__display{ 
+            border:solid 6px lighten($primary-color, 10%);
+            transition:.3s;
+        } 
+
     }
     .choice__label{
         height:24px;
+        margin-left:2px;
         font-size:14px;
         line-height: 24px;
         width:auto;

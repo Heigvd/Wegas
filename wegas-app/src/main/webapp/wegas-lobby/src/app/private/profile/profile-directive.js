@@ -11,13 +11,13 @@ angular
                 $scope.originalUser = false
                 Auth.getAuthenticatedUser().then(function(user) {
                     if (user !== false) {
-                        UsersModel.getUser(user.id).then(function(response) {
+                        UsersModel.getFullUser(user.id).then(function(response) {
                             if (response.isErroneous()) {
                                 response.flash();
                             } else {
                                 $scope.user = response.data;
                                 if ($scope.originalUser === false) {
-                                    $scope.originalUsername = $scope.user.lastname + ' ' + $scope.user.firstname;
+                                    $scope.originalUsername = $scope.user.account.lastname + ' ' + $scope.user.account.firstname;
                                 }
                             }
                         });
@@ -27,7 +27,7 @@ angular
                 });
 
                 ctrl.updateInformations = function() {
-                    UsersModel.updateUser($scope.user).then(function(response) {
+                    UsersModel.updateUser($scope.user.account).then(function(response) {
                         response.flash();
                         $scope.user.password = '';
                         $scope.user.password2 = '';

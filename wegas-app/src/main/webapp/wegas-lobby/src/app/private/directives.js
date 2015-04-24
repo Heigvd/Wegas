@@ -34,6 +34,10 @@ angular.module('private.directives', [
                         profileState = "wegas.private.profile.trainer";
                     } else if ($state.current.name == "wegas.private.player") {
                         profileState = "wegas.private.profile.player";
+                    } else if ($state.current.name == "wegas.private.admin") {
+                        profileState = "wegas.private.profile.admin";
+                    } else if ($state.current.name == "wegas.private.admin.users") {
+                        profileState = "wegas.private.profile.admin.users";
                     } else {
                         profileState = "wegas.private.profile";
                     }
@@ -49,9 +53,14 @@ angular.module('private.directives', [
                     var $menuToggler = $('#menu-toggler');
                     var $labelMenuToggler = $('label[for="menu-toggler"]');
                     // if element is opened and click target is outside it, hide it
-                    if ($menuToggler.is(':checked') && !$menu.is(e.target) && !$labelMenuToggler.is(e.target)) {
-                        $menuToggler.trigger('click');
+                    if ($menuToggler.is(':checked')) {
+                        if ($menu.is(e.target) || $menuToggler.is(e.target) || $labelMenuToggler.is(e.target)) {
+                            return;
+                        } else {
+                            $menuToggler.trigger('click');
+                        }
                     }
+                    return;
                 });
             }
         };
