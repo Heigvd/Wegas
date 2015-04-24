@@ -2,17 +2,11 @@
 	<div class="form__row">
 		<input class="input input--small" type="text" id="scenario-name" ng-model="newSession.name" placeholder="Session name" autocomplete="off">
     </div>
-    <div class="form__row">
+    <div class="form__row fade" ng-if="newSession.name != ''">
         <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
             <option value="0">Based on scenario</option>
             <option ng-repeat="scenario in scenarios" value="{{scenario.id}}">{{scenario.name}}</option>
         </select>
-    </div>
-    <div class="session-information">
-   	 	<div class="form__row">
-    		<input class="form__row__entry input input--small" type="text" id="key" placeholder="Set a key" autocomplete="off">
-    	</div>
-    	<!-- Todo : add extends inputs-->
     </div>
     <div class="form__row form__row--right">
     	<input class="form__row__btn button button--default" type="submit" value="Create session" />

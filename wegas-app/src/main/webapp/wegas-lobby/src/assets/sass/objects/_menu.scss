@@ -86,7 +86,6 @@ $color-btn-menu: #000;
   .menu--toggler.menu--toggler_active ~ & {
     visibility: visible;
     min-width: 305px;
-    min-height: 100px;
     height: auto;
     opacity: 1;
   }

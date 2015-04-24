@@ -446,7 +446,7 @@ angular.module('wegas.models.sessions', [])
                         "access": "CLOSE",
                         "name": sessionName
                     };
-                    $http.post(ServiceURL + "rest/GameModel/Game/" + user.id + "?view=EditorExtended", newSession).success(function(data) {
+                    $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=EditorExtended", newSession).success(function(data) {
                         cacheSession(sessions.cache.managed.data, data)
                         deferred.resolve(Responses.success("Session created", data));
                     }).error(function(data) {

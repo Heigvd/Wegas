@@ -101,24 +101,10 @@ angular.module('wegas.service.auth', [
                 "email": email,
                 "username": username,
                 "password": password
-            }, {
-                "headers": {
-                    "managed-mode": "true"
-                }
             }).success(function(data) {
-                if (data.events !== undefined && data.events.length == 0) {
-                    deferred.resolve(Responses.success("You are registered", true));
-                } else if (data.events !== undefined) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
-                }
+                deferred.resolve(Responses.success("You are registered", true));
             }).error(function(data) {
-                if (data.events !== undefined && data.events.length > 0) {
-                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
-                } else {
-                    deferred.resolve(Responses.danger("Whoops...", false));
-                }
+                deferred.resolve(Responses.danger(data.message, false));
             });
             return deferred.promise;
         };
