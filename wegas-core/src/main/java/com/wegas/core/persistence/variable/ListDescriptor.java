@@ -140,6 +140,18 @@ public class ListDescriptor extends VariableDescriptor<VariableInstance> impleme
         return this.items.size();
     }
 
+    public List<VariableDescriptor> flatten(){
+        final List<VariableDescriptor> acc= new ArrayList<>();
+        for(VariableDescriptor v : this.getItems()){
+            if(v instanceof ListDescriptor){
+                acc.addAll(((ListDescriptor) v).flatten());
+            }else{
+                acc.add(v);
+            }
+        }
+        return acc;
+    }
+
     /**
      *
      * @param item

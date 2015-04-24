@@ -88,7 +88,7 @@ YUI.add('wegas-scripteval', function(Y) {
             }
 
             this.get("host").sendRequest(Y.mix(cfg || {}, {
-                request: "/Script/Run/" + playerId || Wegas.Facade.Game.get('currentPlayerId'),
+                request: "/Script/Run/" + (playerId || Wegas.Facade.Game.get('currentPlayerId')),
                 cfg: {
                     method: "POST",
                     data: script
