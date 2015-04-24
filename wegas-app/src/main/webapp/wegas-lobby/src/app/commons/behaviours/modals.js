@@ -1,10 +1,10 @@
 'use strict';
 angular.module('wegas.behaviours.modals', [])
 .controller('ModalsController', function ModalsController($animate, close) {
-    modalsCtrl = this;    
+    var modalsCtrl = this;
     modalsCtrl.close = function() {
         var box = $(".modal"),
-            shadow = $(".shadow");      
+            shadow = $(".shadow");
         $animate.removeClass(shadow, "shadow--show");
         $animate.removeClass(box, "modal--open").then(function(){
             close();

@@ -13,17 +13,24 @@ angular.module('public.login', [
         })
     ;
 })
-.controller('PublicLoginCtrl', function PublicLoginCtrl($state, Auth) {
+.controller('PublicLoginCtrl', function PublicLoginCtrl($scope, Flash, Auth, $state) {
+
     var publicLoginCtrl = this;
-        publicLoginCtrl.message = "Login zone";
-        publicLoginCtrl.userToLogin = {};
-    var login = function(){
-        Auth.login(publicLoginCtrl.userToLogin.username, publicLoginCtrl.userToLogin.password).then(function(isConnected){
-            if(isConnected){
-                publicLoginCtrl.userToLogin = {};
-                $state.go('wegas');
-            }
-        });
+
+    $scope.login = function(){
+        console.info('as');
+        if (this.username && this.password) {
+            Auth.login(this.username, this.password).then(function(response){
+                if(response.isErroneous()) {
+                    response.flash();
+                } else {
+                    $scope.username = $scope.password = "";
+                    $state.go('wegas');
+                }
+            });
+        } else {
+            Flash('danger', 'username/password cannot be empty');
+        }
     }
-    publicLoginCtrl.login = login;  
+    publicLoginCtrl.login = login;
 });

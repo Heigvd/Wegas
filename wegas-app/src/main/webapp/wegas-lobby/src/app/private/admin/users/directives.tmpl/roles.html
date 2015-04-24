@@ -1,0 +1,7 @@
+
+
+<div class="form__row">
+    <strong>Gestion des groupes</strong>
+    <button ng-click="addARole()" class="button button--add button--label-off button-round"><span class="button__label">Add</span></button>
+</div>
+<admin-user-role ng-repeat="role in user.account.roles" current-role="role" user="user" />
