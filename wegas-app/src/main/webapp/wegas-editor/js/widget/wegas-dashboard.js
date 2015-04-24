@@ -57,7 +57,8 @@ YUI.add('wegas-dashboard', function(Y) {
          */
         bindUI: function() {
             this.updateHandler =
-                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the target datasource
+                Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the target
+                                                                                // datasource
         },
         /**
          * @function
@@ -65,7 +66,7 @@ YUI.add('wegas-dashboard', function(Y) {
          */
         syncUI: function() {
             Y.log("sync()", "info", "Wegas.LobbyDataTable");
-            this.table.set("data", this.genData());
+            this.genData(this.table.get("data"));
         },
         destructor: function() {
             this.table.destroy();
@@ -76,10 +77,10 @@ YUI.add('wegas-dashboard', function(Y) {
          * @function
          * @private
          */
-        genData: function() {
+        genData: function(data) {
             var gameModel = Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                 game = Wegas.Facade.Game.cache.getCurrentGame(),
-                columnsCfg = this.get("tableCfg.columns"), ret = [];
+                columnsCfg = this.get("tableCfg.columns"), ret = [], table = this.table;
 
             if (gameModel.get("properties.freeForAll")) {                       // Retrieve the list of rows (depending on freeforall mode)
                 Y.Array.each(game.get("teams"), function(t) {
@@ -87,7 +88,8 @@ YUI.add('wegas-dashboard', function(Y) {
                         ret.push({
                             name: "<span class='wegas-icon wegas-icon-player'></span>" + p.get("name"),
                             team: t,
-                            player: p
+                            player: p,
+                            id: t.get("id")
                         });
                     });
                 });
@@ -97,20 +99,39 @@ YUI.add('wegas-dashboard', function(Y) {
                         //icon: "<span class='wegas-icon wegas-icon-team'></span>",
                         name: "<span class='wegas-icon wegas-icon-team'></span>" + t.get("name"),
                         team: t,
-                        player: t.get("players").length > 0 ? t.get("players")[0] : null
+                        player: t.get("players").length > 0 ? t.get("players")[0] : null,
+                        id: t.get("id")
                     };
                 });
             }
             ret = Y.Array.filter(ret, function(i) {                             // Filter debug team (for game edition)
                 return !(i.team instanceof Wegas.persistence.DebugTeam);
             });
-
-            Y.Array.each(ret, function(r) {                                     // Populate players data with local eval
-                Y.Array.each(columnsCfg, function(c) {
-                    if (c.script && r.player) {
-                        r[c.key] = Wegas.Facade.Variable.script.localEval(c.script, r.player);
+            table.set("data", ret);
+            Y.Wegas.Facade.Variable.sendRequest({
+                request: "/Script/Run/" + Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id"),
+                cfg: {
+                    method: "POST",
+                    headers: {"Managed-Mode": false},
+                    data: {
+                        "@class": "Script",
+                        content: this.get("remoteScript")
                     }
-                });
+                },
+                on: {
+                    success: Y.bind(function(e) {
+                        var result;
+                        while (e.response.results.length) {
+                            result = e.response.results.shift();
+                            if (table.getRecord(result.id)) {
+                                table.getRecord(result.id).setAttrs(result);
+                            }
+                        }
+                    }, this),
+                    failure: Y.bind(function(e) {
+
+                    }, this)
+                }
             });
             return ret;
         }
@@ -119,10 +140,17 @@ YUI.add('wegas-dashboard', function(Y) {
             tableCfg: {
                 value: {
                     columns: [{
-                            key: NAME,
-                            label: "Name"
-                        }]
+                        key: NAME,
+                        label: "Name"
+                    }]
                 }
+            },
+            /**
+             * server script to get table data.
+             * format: [{id:TEAMID[, TABLE_KEY:VALUE]*}*]
+             */
+            remoteScript: {
+                value: ""
             }
         }
     });
@@ -132,7 +160,8 @@ YUI.add('wegas-dashboard', function(Y) {
         col.className = 'wegas-dashboard-colored';
         return function(o) {
             var color = o.value < 75 ? "#FFF1B3" : (o.value > 125 ? "#C1FFB3" : "#E7FFB3");
-            //var color = o.value < 95 ? "rgba(255, 0, 0, 0.5)" : (o.value > 105 ? "rgba(255, 204, 0, 0.5)" : "rgba(97, 186, 9, 0.5)");
+            //var color = o.value < 95 ? "rgba(255, 0, 0, 0.5)" : (o.value > 105 ? "rgba(255, 204, 0, 0.5)" : "rgba(97,
+            // 186, 9, 0.5)");
             return "<span style='background-color: " + color + "'>" + (o.value || "-") + "</span>";
         };
     };
