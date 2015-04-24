@@ -1,4 +1,4 @@
 <h2 ng-if="versions.length > 0">Available versions</h2>
-<article class="card card--big card--scenario-history" ng-repeat="version in versions | orderBy:'createdTime':true" ng:class="{true:'card--block', false:'card--inline'}[versions.length <= 2]" version="version" scenarist-history-card></article>
+<article class="card card--small card--scenario-history" ng-repeat="version in versions | orderBy:'createdTime':true" ng:class="{true:'card--block', false:'card--inline'}[versions.length <= 2]" version="version" scenarist-history-card></article>
 
 <h2 ng-if="versions.length == 0">There is no version actually...</h2>

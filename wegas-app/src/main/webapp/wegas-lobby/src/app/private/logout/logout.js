@@ -16,7 +16,6 @@ angular.module('private.logout', [
     Auth.logout().then(function(response){
     	SessionsModel.clearCache();
     	ScenariosModel.clearCache();
-    	response.flash();
         $state.go("wegas.public.login");
     });
 });

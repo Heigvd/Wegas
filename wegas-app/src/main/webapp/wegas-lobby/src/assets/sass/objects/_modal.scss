@@ -14,6 +14,24 @@
 	overflow-x:hidden;
 	overflow-y:auto;
 	transition:.5s;
+
+	&.modal--history {
+		height: 580px;
+		margin-top: -290px;
+		.modal__content{
+
+			&.modal__content--nav-off{
+				height:450px;
+			}
+			&.modal__content--tools-off{
+				height:466px;
+			}
+			&.modal__content--nav-tools-off{
+				height:515px;
+			}
+		}
+
+	}
 	@include material-shadow(2);
 
 	&.modal--open{
@@ -162,19 +180,19 @@
 			i{
 				color:$warning-color;
 			}
-			&.ng-enter, 
+			&.ng-enter,
             &.ng-leave
-            { 
+            {
                 transition: .3s;
-            } 
-             
-            &.ng-enter.ng-enter-active, 
+            }
+
+            &.ng-enter.ng-enter-active,
             &.ng-leave {
                 visibility:visible;
                 opacity: 1;
 
             }
-             
+
             &.ng-leave.ng-leave-active,
             &.ng-enter {
                 visibility:hidden;

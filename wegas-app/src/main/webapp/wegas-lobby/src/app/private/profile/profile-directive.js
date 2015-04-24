@@ -17,7 +17,7 @@ angular
                             } else {
                                 $scope.user = response.data;
                                 if ($scope.originalUser === false) {
-                                    $scope.originalUsername = $scope.user.account.lastname + ' ' + $scope.user.account.firstname;
+                                    $scope.originalUsername = $scope.user.account.firstname + ' ' + $scope.user.account.lastname;
                                 }
                             }
                         });

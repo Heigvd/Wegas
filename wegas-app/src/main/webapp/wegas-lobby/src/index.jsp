@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width">
         <!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
 
-        <!-- build:css({.tmp/serve,src}) styles/app.css -->
+        <!-- build:css({.tmp/serve,src}) assets/css/app.css -->
         <!-- inject:css -->
         <!-- css files will be automaticaly insert here -->
         <!-- endinject -->
@@ -23,13 +23,13 @@
         <flash:messages></flash:messages>
         <div ui-view="main" class="view view--main view--background-default"></div>
 
-        <!-- build:js(src) scripts/vendor.js -->
+        <!-- build:js(src) assets/js/vendor.js -->
         <!-- bower:js -->
         <!-- run `gulp wiredep` to automaticaly populate bower script dependencies -->
         <!-- endbower -->
         <!-- endbuild -->
 
-        <!-- build:js({.tmp/serve,.tmp/partials,src}) scripts/app.js -->
+        <!-- build:js({.tmp/serve,.tmp/partials,src}) assets/js/app.js -->
         <!-- inject:js -->
         <!-- js files will be automaticaly insert here -->
         <!-- endinject -->

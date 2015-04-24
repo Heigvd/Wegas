@@ -23,7 +23,7 @@ angular.module('private.scenarist', [
     Auth.getAuthenticatedUser().then(function(user) {
         if(user != null) {
             ViewInfos.editName("Scenarist workspace");
-            if(!user.isScenarist) {
+            if(!user.isScenarist && !user.isAdmin) {
                 if(user.isTrainer) {
                     $state.go("wegas.private.trainer");
                 } else {
