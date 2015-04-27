@@ -596,6 +596,7 @@ YUI().use(function(Y) {
             },
             'wegas-fullwidthtab': {
                 path: "js/plugin/wegas-fullwidthtab-min.js",
+                requires:"event-resize",
                 ws_provides: "FullWidthTab"
             },
             "wegas-console": {
