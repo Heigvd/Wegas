@@ -286,12 +286,12 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
         final CriteriaQuery query = criteriaBuilder.createQuery();
-        List<Predicate> predicates = new ArrayList<>();
+
         Root e = query.from(entityClass);
-        predicates.add(criteriaBuilder.equal(e.get("status"), status));
-        predicates.add(criteriaBuilder.isTrue(e.get("template")));
         query.select(e)
-            .where(predicates.toArray(new Predicate[]{}))
+            .where(criteriaBuilder.and(
+                    criteriaBuilder.equal(e.get("status"), status), 
+                    criteriaBuilder.isTrue(e.get("template"))))
             .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
