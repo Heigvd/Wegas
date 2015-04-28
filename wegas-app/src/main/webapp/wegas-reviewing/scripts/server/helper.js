@@ -46,7 +46,7 @@ var ReviewHelper = (function() {
                 key = i;
                 pri = pris[i];
                 print("I: " + i);
-                if (instanceFacade.findAPlayer(pri).getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
+                if (pris.length > 1 && instanceFacade.findAPlayer(pri).getTeam() instanceof  com.wegas.core.persistence.game.DebugTeam) {
                     // Skip Debug Team
                     continue;
                 }
