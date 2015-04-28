@@ -29,17 +29,16 @@ hr{
     clear:both;
 } 
 
-.v1{
-    a{
-        color:$secondary-color-dark;
-        transition: all 0.5s ease;
-    }
-
-    a:hover, a:active{
-        color:$secondary-color;
-        transition: all 0.5s ease;
-    }
+a {
+    color:$default-color-button;
+    transition: all 0.5s ease;
 }
+
+a:hover, a:active{
+    color:$secondary-color;
+    transition: all 0.5s ease;
+}
+
 
 @import "base/headings";
 @import "base/forms";

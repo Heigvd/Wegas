@@ -1,11 +1,14 @@
 <form class="view__login-form form" ng-submit="login()" ng-controller="PublicLoginCtrl">
 	<div class="form__row">
-    	<input class="form__row__entry input input--small input--primary" type="text" class="form-control" id="login" placeholder="email or username" autocomplete="off" ng-model="username">
+    	<input class="form__row__entry input input--primary" type="text" class="form-control" id="login" placeholder="email or username" autocomplete="off" ng-model="username">
 	</div>
 	<div class="form__row">
-    	<input class="form__row__entry input input--small input--primary" type="password" class="form-control" id="password" placeholder="password" autocomplete="off" ng-model="password">
+    	<input class="form__row__entry input input--primary" type="password" class="form-control" id="password" placeholder="password" autocomplete="off" ng-model="password">
 	</div>
 	<div class="form__row form__row--right">
-    	<input class="form__row__btn button button--default" type="submit" class="form-control" value="Login" />
+        <input class="form__row__btn button button--default" type="submit" class="form-control" value="Login" />
 	</div>
+    <div class="form__row form__row--right">
+        <a ui-sref-active="link--active" ui-sref="wegas.public.password">Password forgotten</a>
+        </div>
 </form>

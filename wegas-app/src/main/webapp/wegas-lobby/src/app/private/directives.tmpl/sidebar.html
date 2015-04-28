@@ -1,23 +1,25 @@
 <div class="view view__menu-workspaces">
-    <input type="checkbox" class="menu--toggler" id="menu-toggler" />
-    <label class="btn--menu" for="menu-toggler"><span></span></label>
-    <div class="menu">
-        <ul>
-            <li>
-                <a ui-sref-active="button--active" ui-sref="wegas.private.player" class="button button--default-reverse button--player">
-                    <span class="button__label">Player</span>
-                </a>
-            </li>
-            <li ng-if="user.isTrainer || user.isScenarist || user.isAdmin">
-                <a ui-sref-active="button--active" ui-sref="wegas.private.trainer" class="button button--default-reverse button--trainer"><span class="button__label">Trainer</span></a>
-            </li>
-            <li ng-if="user.isScenarist || user.isAdmin">
-                <a ui-sref-active="button--active" ui-sref="wegas.private.scenarist" class="button button--default-reverse button--scenarist"><span class="button__label">Scenarist</span></a>
-            </li>
-            <li ng-if="user.isAdmin">
-                <a ui-sref-active="button--active" ui-sref="wegas.private.admin" class="button button--default-reverse button--admin"><span class="button__label">Admin</span></a>
-            </li>
-        </ul>
+    <div ng-if="user.isTrainer || user.isScenarist || user.isAdmin">
+        <input type="checkbox" class="menu--toggler" id="menu-toggler" />
+        <label class="btn--menu" for="menu-toggler"><span></span></label>
+        <div class="menu">
+            <ul>
+                <li>
+                    <a ui-sref-active="button--active" ui-sref="wegas.private.player" class="button button--default-reverse button--player">
+                        <span class="button__label">Player</span>
+                    </a>
+                </li>
+                <li ng-if="user.isTrainer || user.isScenarist || user.isAdmin">
+                    <a ui-sref-active="button--active" ui-sref="wegas.private.trainer" class="button button--default-reverse button--trainer"><span class="button__label">Trainer</span></a>
+                </li>
+                <li ng-if="user.isScenarist || user.isAdmin">
+                    <a ui-sref-active="button--active" ui-sref="wegas.private.scenarist" class="button button--default-reverse button--scenarist"><span class="button__label">Scenarist</span></a>
+                </li>
+                <li ng-if="user.isAdmin">
+                    <a ui-sref-active="button--active" ui-sref="wegas.private.admin" class="button button--default-reverse button--admin"><span class="button__label">Admin</span></a>
+                </li>
+            </ul>
+        </div>
     </div>
     <h2 class="view__headding-workspace">{{name}}</h2>
     <ul class="view__sub-menu">
