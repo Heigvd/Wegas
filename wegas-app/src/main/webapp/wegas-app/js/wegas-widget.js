@@ -19,7 +19,13 @@ YUI.add("wegas-widget", function(Y) {
      * @class Extension common to all wegas widgets
      */
     function Widget() {
+        /*this.before("destroy", function() {
+            while (this.overlayCounter){
+                this.hideOverlay();
+            }
+        });*/
         this.after("render", function() {
+            this.overlayCounter = 0;
             this.get(BOUNDING_BOX)
                 .addClass("wegas-widget")
                 .toggleClass(this.get("cssClass"), this.get("cssClass"))        // Add cssClass atrribute if the widget has one
@@ -57,6 +63,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         showOverlay: function() {
             this.fire("wegas:showOverlay");
+            this.overlayCounter += 1;
             return this;
         },
         /**
@@ -66,6 +73,7 @@ YUI.add("wegas-widget", function(Y) {
          */
         hideOverlay: function() {
             this.fire("wegas:hideOverlay");
+            this.overlayCounter -= 1;
             return this;
         },
         /**

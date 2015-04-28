@@ -78,7 +78,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     index: 1
                 }
             },
-            feedbackEvaluation: {
+            fbComments: {
                 type: "EvaluationDescriptorContainer",
                 value: {
                     "@class": "EvaluationDescriptorContainer"
@@ -160,7 +160,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             "@class": {
                 value: "Review"
             },
-            "status": {
+            "reviewState": {
                 type: STRING
             },
             "feedback": {
@@ -170,7 +170,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
                     _type: HIDDEN
                 }
             },
-            "feedbackEvaluation": {
+            "comments": {
                 type: ARRAY,
                 value: [],
                 _inputex: {
@@ -184,6 +184,7 @@ YUI.add('wegas-reviewing-entities', function(Y) {
      */
     persistence.EvaluationDescriptorContainer = Y.Base.create("EvaluationDescriptorContainer", persistence.Entity, [], {
     }, {
+        EDITORNAME: "Evaluations",
         ATTRS: {
             evaluations: {
                 type: ARRAY,
@@ -422,8 +423,5 @@ YUI.add('wegas-reviewing-entities', function(Y) {
             }
         }
     });
-
-
-
 });
 

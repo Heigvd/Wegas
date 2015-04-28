@@ -23,8 +23,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -40,9 +38,9 @@ import org.slf4j.LoggerFactory;
  * is a 'reviewer' for the same number of others authors</li>
  * </ul>
  *
- * Moreover, feedbacks can be evaluated by the author. Such an evaluation is
- * define within an EvaluationDescriptorContainer('feedbacksEvaluation', nested
- * list can be empty)
+ * Moreover, feedbacks can be commented by the author. Such an evaluation is
+ * define within an EvaluationDescriptorContainer('fbComments', nested list can
+ * be empty)
  *
  * The reviewing process consists of X stage:
  * <ol>
@@ -60,16 +58,16 @@ import org.slf4j.LoggerFactory;
 public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance> {
 
     private static final long serialVersionUID = 1L;
-    private static final Logger logger = LoggerFactory.getLogger(PeerReviewDescriptor.class);
 
     /**
      * Define review states
      */
     public enum ReviewingState {
+
         NOT_STARTED, // author can edit toReview
-        SUBMITTED,   // authors can't edit toReview anymore
-        DISPATCHED,   // toReview are dispatched, state became review dependent
-        DISCARDED   // completely out of reviewing process (debug team for instance)
+        SUBMITTED, // authors can't edit toReview anymore
+        DISPATCHED, // toReview are dispatched, state became review dependent
+        DISCARDED    // completely out of reviewing process (debug team for instance)
     }
 
     /**
@@ -106,37 +104,13 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     private EvaluationDescriptorContainer feedback;
 
     /**
-     * List of evaluations that compose the feedbacks evaluations. Empty list is
+     * List of evaluations that compose the feedbacks comments. Empty list is
      * allowed
      */
     @OneToOne(cascade = CascadeType.ALL)
     @JsonView(Views.EditorI.class)
     @NotNull
-    private EvaluationDescriptorContainer feedbackEvaluation;
-
-    /**
-     *
-     */
-    public PeerReviewDescriptor() {
-        super();
-    }
-
-    /**
-     *
-     * @param name variable unique name
-     */
-    public PeerReviewDescriptor(String name) {
-        super(name);
-    }
-
-    /**
-     *
-     * @param name            variable unique name
-     * @param defaultInstance
-     */
-    public PeerReviewDescriptor(String name, PeerReviewInstance defaultInstance) {
-        super(name, defaultInstance);
-    }
+    private EvaluationDescriptorContainer fbComments;
 
     /**
      *
@@ -153,7 +127,7 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
             this.setToReview(other.getToReview());
             this.setToReviewName(other.getToReviewName());
             this.feedback.merge(other.getFeedback());
-            this.feedbackEvaluation.merge(other.getFeedbackEvaluation());
+            this.fbComments.merge(other.getFbComments());
         }
     }
 
@@ -226,7 +200,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         }
     }
 
-
     /**
      * @return the description
      */
@@ -240,7 +213,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     /**
      * get the feedback description
@@ -258,9 +230,6 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      */
     public void setFeedback(EvaluationDescriptorContainer feedback) {
         this.feedback = feedback;
-        if (feedback != null) {
-            //feedback.setParent(this);
-        }
     }
 
     /**
@@ -268,21 +237,18 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
      *
      * @return list of EvaluationDescriptor
      */
-    public EvaluationDescriptorContainer getFeedbackEvaluation() {
-        return feedbackEvaluation;
+    public EvaluationDescriptorContainer getFbComments() {
+        return fbComments;
     }
 
     /**
      *
-     * set the feedback evaluation description
+     * set the feedback comments description
      *
-     * @param feedbackEvaluation list of evaluation descriptor
+     * @param fbComments list of evaluation descriptor
      */
-    public void setFeedbacksEvaluation(EvaluationDescriptorContainer feedbackEvaluation) {
-        this.feedbackEvaluation = feedbackEvaluation;
-        if (feedbackEvaluation != null) {
-            //feedbackEvaluation.setParent(this);
-        }
+    public void setFbComments(EvaluationDescriptorContainer fbComments) {
+        this.fbComments = fbComments;
     }
 
 }

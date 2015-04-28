@@ -10,15 +10,14 @@ package com.wegas.reviewing.ejb;
 import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestManager;
-import com.wegas.core.ejb.ScriptEventFacade;
 import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.event.internal.DescriptorRevivedEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
 import com.wegas.core.exception.internal.WegasNoResultException;
-import com.wegas.core.persistence.game.DebugGame;
 import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Game;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.persistence.variable.VariableDescriptor;
@@ -43,6 +42,10 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
+ * PeerReview EJB Facade
+ *
+ * Contains PeerReviewing logic
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Stateless
@@ -51,49 +54,65 @@ public class ReviewingFacade {
 
     static final private Logger logger = LoggerFactory.getLogger(ReviewingFacade.class);
     /**
-     *
+     * The so called wegasPU persistenceContext
      */
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
     /**
-     *
+     * Default Constructor
      */
     public ReviewingFacade() {
     }
     /**
-     *
+     * Player Facade
      */
     @EJB
     private PlayerFacade playerFacade;
     /**
-     *
+     * Variable Instance Facade
      */
     @EJB
     private VariableInstanceFacade variableInstanceFacade;
     /**
-     *
+     * Variable Descriptor Facade
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
 
+    /**
+     * request-scoped Request Manager
+     */
     @Inject
     private RequestManager requestManager;
 
     /**
+     * Get a Review by id
      *
+     * @param entityId the reviewID
+     * @return the corresponding review or null
      */
-    @Inject
-    private ScriptEventFacade scriptEvent;
-
     public Review findReview(final Long entityId) {
         return em.find(Review.class, entityId);
     }
 
+    /**
+     * Get an evaluationInstance by Id
+     *
+     * @param evId evaluation instance id
+     * @return the evaluation instance or null
+     */
     public EvaluationInstance findEvaluationInstance(Long evId) {
         return em.find(EvaluationInstance.class, evId);
     }
 
+    /**
+     * Let a player submit his variable. It means the variable become ready to
+     * be reviewed
+     *
+     * @param prd the PeerReview Descriptor
+     * @param p   the player submitting
+     */
     public void submit(PeerReviewDescriptor prd, Player p) {
         PeerReviewInstance instance = prd.getInstance(p);
         if (instance.getReviewState() == PeerReviewDescriptor.ReviewingState.NOT_STARTED || instance.getReviewState() == PeerReviewDescriptor.ReviewingState.SUBMITTED) {
@@ -103,6 +122,13 @@ public class ReviewingFacade {
         }
     }
 
+    /**
+     * Let a player submit his variable. It means the variable become ready to
+     * be reviewed
+     *
+     * @param peerReviewDescriptorId the PeerReview Descriptor id
+     * @param playerId               the player submitting
+     */
     public void submit(Long peerReviewDescriptorId, Long playerId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);
         if (vd instanceof PeerReviewDescriptor) {
@@ -112,9 +138,17 @@ public class ReviewingFacade {
         }
     }
 
+    /**
+     * Private method that initialise review instance when dispatching
+     *
+     * @param prd      the peer review descriptor
+     * @param author   peer review instance corresponding to the author
+     * @param reviewer peer review instance corresponding to the reviewer
+     * @return a brand new review, ready to be edited by the reviewer
+     */
     private Review createReview(PeerReviewDescriptor prd, PeerReviewInstance author, PeerReviewInstance reviewer) {
         Review r = new Review();
-        r.setStatus(Review.ReviewState.DISPATCHED);
+        r.setReviewState(Review.ReviewState.DISPATCHED);
         r.setAuthor(author);
         r.setReviewer(reviewer);
         for (EvaluationDescriptor ed : prd.getFeedback().getEvaluations()) {
@@ -122,14 +156,20 @@ public class ReviewingFacade {
             ei.setFeedbackReview(r);
             r.getFeedback().add(ei);
         }
-        for (EvaluationDescriptor ed : prd.getFeedbackEvaluation().getEvaluations()) {
+        for (EvaluationDescriptor ed : prd.getFbComments().getEvaluations()) {
             EvaluationInstance ei = ed.createInstance();
-            ei.setFeedbackEvaluationReview(r);
-            r.getFeedbackEvaluation().add(ei);
+            ei.setCommentsReview(r);
+            r.getComments().add(ei);
         }
         return r;
     }
 
+    /**
+     * Called by the teacher, it will take each PeerReviewInstance matching the
+     * given peer review descriptor and dispatch them (who review who?)
+     *
+     * @param prd peer review descriptor to dispatch
+     */
     public void dispatch(PeerReviewDescriptor prd) {
         Collection<VariableInstance> values = prd.getScope().getVariableInstances().values();
         List<PeerReviewInstance> pris = new ArrayList(values);
@@ -189,6 +229,12 @@ public class ReviewingFacade {
         }
     }
 
+    /**
+     * Called by the teacher, it will take each PeerReviewInstance matching the
+     * given peer review descriptor and dispatch them (who review who?)
+     *
+     * @param peerReviewDescriptorId peer review descriptor id to dispatch
+     */
     public void dispatch(Long peerReviewDescriptorId) {
         VariableDescriptor vd = variableDescriptorFacade.find(peerReviewDescriptorId);
         if (vd instanceof PeerReviewDescriptor) {
@@ -198,10 +244,19 @@ public class ReviewingFacade {
         }
     }
 
+    /**
+     * @deprecated @param evalInstance
+     * @param other
+     */
     public void mergeEval(EvaluationInstance evalInstance, EvaluationInstance other) {
         evalInstance.merge(other);
     }
 
+    /**
+     * Save (update) evaluations in given list
+     *
+     * @param evs evaluations to update
+     */
     public void mergeEvaluations(List<EvaluationInstance> evs) {
         for (EvaluationInstance other : evs) {
             EvaluationInstance ev = this.findEvaluationInstance(other.getId());
@@ -209,10 +264,18 @@ public class ReviewingFacade {
         }
     }
 
+    /**
+     * Retrieve the PeerReviewInstance containing given Review that belongs to
+     * the currentPlayer
+     *
+     * @param review
+     * @return peer review instance that belong to the current player
+     */
     public PeerReviewInstance getPeerReviewInstanceFromReview(Review review) {
         PeerReviewInstance author = review.getAuthor();
         Player currentPlayer = requestManager.getPlayer();
         if (currentPlayer == null) {
+            // No current player => debug team -> test player
             currentPlayer = author.getDescriptor().getGameModel().getGames().get(0).getPlayers().get(0);
         }
 
@@ -221,52 +284,83 @@ public class ReviewingFacade {
         return instance;
     }
 
+    /**
+     * Save a review posted by a player
+     *
+     * @param pri   peer review instance containing the review
+     * @param other the review to merge within pri
+     * @return
+     */
     public Review saveReview(PeerReviewInstance pri, Review other) {
         Review review = this.findReview(other.getId());
         PeerReviewInstance author = review.getAuthor();
         PeerReviewInstance reviewer = review.getReviewer();
 
-        if (pri == author && review.getStatus() == Review.ReviewState.NOTIFIED) {
-            mergeEvaluations(other.getFeedbackEvaluation());
-            requestManager.addUpdatedInstance(reviewer);
+        /*
+         * if author is posting and only if review state is notified:
+         * update comments only
+         */
+        if (pri == author && review.getReviewState() == Review.ReviewState.NOTIFIED) {
+            mergeEvaluations(other.getComments());
         }
 
-        if (pri == reviewer && review.getStatus() == Review.ReviewState.DISPATCHED) {
+        /*
+         * if reviewer is posting and only if review state is dispatched:
+         * update evaluation
+         */
+        if (pri == reviewer && review.getReviewState() == Review.ReviewState.DISPATCHED) {
             mergeEvaluations(other.getFeedback());
         }
+
         em.merge(review);
         return review;
     }
 
-    public Review saveReview(Review other) {
-        Review review = this.findReview(other.getId());
-        PeerReviewInstance pri = this.getPeerReviewInstanceFromReview(review);
-        return this.saveReview(pri, other);
-
-    }
-
-    public Review submitReview(Review other) {
-        Review review = saveReview(other);
-        if (review.getStatus() == Review.ReviewState.DISPATCHED) {
-            review.setStatus(Review.ReviewState.REVIEWED);
-            em.merge(review);
-        } else if (review.getStatus() == Review.ReviewState.NOTIFIED){
-            review.setStatus(Review.ReviewState.COMPLETED);
-            em.merge(review);
+    /**
+     * Submitting a review occurs twice in the whole process First time when the
+     * reviewer post his review. In this case, the review switch from DISPATCHED
+     * to REVIEWED. The second time is when the author post his comments, switch
+     * from NOTIFIED to COMPLETED
+     *
+     * @param review the review to submit
+     * @return review
+     */
+    public Review submitReview(Review review) {
+        Review r = this.findReview(review.getId());
+        PeerReviewInstance pri = this.getPeerReviewInstanceFromReview(r);
+        r = this.saveReview(pri, review);
+        if (r.getReviewState() == Review.ReviewState.DISPATCHED) {
+            r.setReviewState(Review.ReviewState.REVIEWED);
+            em.merge(r);
+        } else if (r.getReviewState() == Review.ReviewState.NOTIFIED) {
+            r.setReviewState(Review.ReviewState.COMPLETED);
+            em.merge(r);
         }
-        return review;
+        return r;
     }
 
+    /**
+     * {@link #submitReview(com.wegas.reviewing.persistence.Review) } a review
+     * by id
+     *
+     * @param reviewId
+     * @return the submitted review
+     */
     public Review submitReview(Long reviewId) {
         return this.submitReview(em.find(Review.class, reviewId));
     }
 
+    /**
+     * Reviewing phase is over -> authors will be able to see feedbacks
+     *
+     * @param prd the PeerReviewDescriptor
+     */
     public void notify(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
         for (PeerReviewInstance pri : pris) {
             for (Review review : pri.getReviewed()) {
-                if (review.getStatus() == Review.ReviewState.DISPATCHED || review.getStatus() == Review.ReviewState.REVIEWED) {
-                    review.setStatus(Review.ReviewState.NOTIFIED);
+                if (review.getReviewState() == Review.ReviewState.DISPATCHED || review.getReviewState() == Review.ReviewState.REVIEWED) {
+                    review.setReviewState(Review.ReviewState.NOTIFIED);
                 }
             }
             variableInstanceFacade.merge(pri);
@@ -275,7 +369,7 @@ public class ReviewingFacade {
     }
 
     /**
-     * Reviewing phase is over -> author will be able to see feedbacks
+     * Reviewing phase is over -> authors will be able to see feedbacks
      *
      * @param peerReviewDescriptorId
      */
@@ -288,13 +382,18 @@ public class ReviewingFacade {
         }
     }
 
+    /**
+     * The Reviewing will be completely finished after closing
+     *
+     * @param prd
+     */
     public void close(PeerReviewDescriptor prd) {
         List<PeerReviewInstance> pris = new ArrayList(prd.getScope().getVariableInstances().values());
         for (PeerReviewInstance pri : pris) {
             for (Review review : pri.getReviewed()) {
-                if (review.getStatus() == Review.ReviewState.NOTIFIED || 
-                    review.getStatus() == Review.ReviewState.COMPLETED) {
-                    review.setStatus(Review.ReviewState.CLOSED);
+                if (review.getReviewState() == Review.ReviewState.NOTIFIED
+                        || review.getReviewState() == Review.ReviewState.COMPLETED) {
+                    review.setReviewState(Review.ReviewState.CLOSED);
                 }
             }
             variableInstanceFacade.merge(pri);
@@ -334,10 +433,14 @@ public class ReviewingFacade {
             logger.debug("Received DescriptorRevivedEvent event");
             PeerReviewDescriptor reviewD = (PeerReviewDescriptor) event.getEntity();
             try {
-                reviewD.setToReview(variableDescriptorFacade.find(reviewD.getGameModel(), reviewD.getImportedToReviewName()));
+                String toReviewName = reviewD.getImportedToReviewName();
+                GameModel gameModel = reviewD.getGameModel();
+                VariableDescriptor toReview = variableDescriptorFacade.find(gameModel, toReviewName);
+
+                reviewD.setToReview(toReview);
             } catch (WegasNoResultException ex) {
+                logger.error("Failed te revive ReviewDescriptor", ex);
                 reviewD.setToReview(null);
-                logger.error("Failed te revive ReviewDescriptor");
             }
         }
     }

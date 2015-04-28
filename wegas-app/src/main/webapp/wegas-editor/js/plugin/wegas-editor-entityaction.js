@@ -348,7 +348,7 @@ YUI.add("wegas-editor-entityaction", function(Y) {
                 descriptor = Y.Array.find(Y.Wegas.Facade.Variable.cache.findAll("@class", "PeerReviewDescriptor"),
                     function(item) {
                         return item.get("feedback").get("id") === entity.get("id") ||
-                            item.get("feedbackEvaluation").get("id") === entity.get("id");
+                            item.get("fbComments").get("id") === entity.get("id");
                     });
 
                 this.doExecute(entity, descriptor);

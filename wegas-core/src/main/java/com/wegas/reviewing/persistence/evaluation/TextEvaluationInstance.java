@@ -9,6 +9,7 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.AbstractEntity;
 import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Lob;
@@ -22,20 +23,15 @@ import javax.persistence.Lob;
 @Entity
 public class TextEvaluationInstance extends EvaluationInstance {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * the evaluation itself
      */
     @Lob
     @Basic(fetch = FetchType.LAZY)
+    @Column(name = "evaluationvalue")
     private String value;
-
-    public TextEvaluationInstance() {
-        super();
-    }
-
-    public TextEvaluationInstance(TextEvaluationDescriptor ed) {
-        super(ed);
-    }
 
     /**
      * get the evaluation

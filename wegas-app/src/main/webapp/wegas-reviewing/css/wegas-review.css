@@ -1,21 +1,22 @@
- /*
- * Wegas
- * http://wegas.albasim.ch
- *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
- * Licensed under the MIT License
+/*
+* Wegas
+* http://wegas.albasim.ch
+*
+* Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+* Licensed under the MIT License
 */
 
 /*   Created on : 26-Mar-2015, 11:32:03
  *    Author     : Maxence Laurent (maxence.laurent at gmail.com)
  */
 
-
-
 .wegas-review-variableeditor .wegas-review-header {
     margin-bottom: 20px;
 }
 
+.wegas-review-variableeditor .wegas-review-button {
+    margin-bottom: 20px;
+}
 
 .wegas-review-widget-content {
     margin: 5px;
@@ -48,4 +49,34 @@
 
 .wegas-review-evaluation-label {
     font-weight: 600;
+}
+
+.wegas-review-widget .toReview .description,
+.wegas-review-evaluation {
+    background-color: #666;
+}
+
+.wegas-review-widget .toReview .content,
+.wegas-review-evaluation-content {
+    background-color: #999;
+    height: auto;
+    width: auto;
+}
+
+/*
+ * Orchestrator 
+ */
+.wegas-review-orchestrator .summary table tr > * {
+    border: 1px groove;
+}
+
+.wegas-review-orchestrator .summary table th {
+    font-weight: 600;
+    font-style : italic;
+    text-align:center;
+    padding: 5px;
+}
+
+.wegas-review-orchestrator .summary table td {
+    text-align:center;
 }

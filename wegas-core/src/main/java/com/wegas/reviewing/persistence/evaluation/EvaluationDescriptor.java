@@ -58,11 +58,14 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
     private String name;
 
 
+    /**
+     * Textual descriptor to be displayed to players
+     */
     @Lob
     private String description;
 
     /**
-     *
+     * the parent
      */
     @ManyToOne
     @JsonBackReference
@@ -83,10 +86,6 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.name = name;
     }
 
-    /**
-     *
-     * @param a
-     */
     @Override
     public void merge(AbstractEntity a) {
         super.merge(a);
@@ -181,6 +180,10 @@ public abstract class EvaluationDescriptor<T extends EvaluationInstance> extends
         this.container = container;
     }
 
+    /**
+     * Create an EvaluationInstance
+     * @return new evaluationInstance
+     */
     public abstract T createInstance();
 
 }

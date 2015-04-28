@@ -23,8 +23,8 @@ import javax.persistence.*;
  * EvaluationDescriptor
  *
  * An evaluation instance belongs to a review, either as member of the feedback
- * (through feedbackReview 'field' or as member of the feedbackEvaluation
- * (through the 'feedbackEvaluationReview')
+ * (through feedbackReview 'field' or as member of the feedback comments
+ * (through the 'commentsReview')
  *
  * @author Maxence Laurent (maxence.laurent gmail.com)
  */
@@ -44,21 +44,40 @@ public abstract class EvaluationInstance extends AbstractEntity {
     @JsonView(Views.IndexI.class)
     private Long id;
 
+    /**
+     * the parent review if this evaluation instance belongs to a feedback null
+     * otherwise
+     */
     @ManyToOne
     @JsonIgnore
     private Review feedbackReview;
 
+    /**
+     * the parent review if this evaluation instance belongs to a comments null
+     * otherwise
+     */
     @ManyToOne
     @JsonIgnore
-    private Review feedbackEvaluationReview;
+    private Review commentsReview;
 
+    /**
+     * Corresponding evaluation descriptor
+     */
     @ManyToOne
     private EvaluationDescriptor evaluationDescriptor;
 
+    /**
+     * Simple constructor
+     */
     public EvaluationInstance() {
     }
 
-    public EvaluationInstance(EvaluationDescriptor ed){
+    /**
+     * Instantiate from EvaluationDescriptor
+     *
+     * @param ed
+     */
+    public EvaluationInstance(EvaluationDescriptor ed) {
         this.evaluationDescriptor = ed;
     }
 
@@ -82,9 +101,10 @@ public abstract class EvaluationInstance extends AbstractEntity {
 
     @Override
     public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationInstance) {
-            EvaluationInstance o = (EvaluationInstance) a;
-        }
+        //if (a instanceof EvaluationInstance) {
+            //EvaluationInstance o = (EvaluationInstance) a;
+            // Nothing to merge
+        //}
     }
 
     @Override
@@ -114,36 +134,39 @@ public abstract class EvaluationInstance extends AbstractEntity {
         return this.id;
     }
 
-
+    /**
+     * Return the effective parent
+     *
+     * @return commentsReview if not null, feedbackReview otherwise
+     */
     @JsonIgnore
-    public Review getEffectiveReview(){
-        if (this.getFeedbackEvaluationReview() != null){
-            return this.getFeedbackEvaluationReview();
+    public Review getEffectiveReview() {
+        if (this.getCommentsReview() != null) {
+            return this.getCommentsReview();
         } else {
             return this.getFeedbackReview();
         }
     }
 
     /**
-     * Get the Review that contains this evaluation instance as a
-     * feedbackEvaluation one
+     * Get the Review that contains this evaluation instance as a feedback
+     * component
      *
-     * @return return the parent or NULL if it's not a feedbackEvaluation
-     *         evaluation
+     * @return return the parent or NULL if it's not a review comment evaluation
      */
     @JsonIgnore
-    public Review getFeedbackEvaluationReview() {
-        return this.feedbackEvaluationReview;
+    public Review getCommentsReview() {
+        return this.commentsReview;
     }
 
     /**
-     * Set the Review that contains this evaluation instance as a
-     * feedbackEvaluation one
+     * Set the Review that contains this evaluation instance as a feedback
+     * comments
      *
      * @param rd the parent
      */
-    public void setFeedbackEvaluationReview(Review rd) {
-        this.feedbackEvaluationReview = rd;
+    public void setCommentsReview(Review rd) {
+        this.commentsReview = rd;
     }
 
     /**

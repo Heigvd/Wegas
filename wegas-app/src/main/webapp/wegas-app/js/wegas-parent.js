@@ -314,6 +314,7 @@ YUI.add("wegas-parent", function(Y) {
                                                     {
                                                         type: BUTTON,
                                                         label: "Review",
+                                                        cssClass: "wegas-advanced-feature",
                                                         plugins: [{
                                                                 fn: "WidgetMenu",
                                                                 cfg: {
@@ -332,20 +333,20 @@ YUI.add("wegas-parent", function(Y) {
                                                                                 }]
                                                                         }, {
                                                                             type: BUTTON,
+                                                                            label: "Reviewing Panel",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "ReviewTabView"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
                                                                             label: "Orchestrator",
                                                                             plugins: [{
                                                                                     fn: "AddChildWidgetAction",
                                                                                     cfg: {
                                                                                         childType: "ReviewOrchestrator"
-                                                                                    }
-                                                                                }]
-                                                                        }, {
-                                                                            type: BUTTON,
-                                                                            label: "TabView",
-                                                                            plugins: [{
-                                                                                    fn: "AddChildWidgetAction",
-                                                                                    cfg: {
-                                                                                        childType: "ReviewTabView"
                                                                                     }
                                                                                 }]
                                                                         }
