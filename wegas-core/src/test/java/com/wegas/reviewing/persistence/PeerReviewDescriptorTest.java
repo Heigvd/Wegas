@@ -9,7 +9,6 @@ package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
@@ -17,7 +16,6 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
-import com.wegas.core.rest.util.JsonViewModifier;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
@@ -76,7 +74,6 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
     @Before
     public void setUpInstances() throws NamingException {
 
-        ObjectWriterInjector.set(new JsonViewModifier(Views.Export.class));
         mapper = JacksonMapperProvider.getMapper();
         exportMapper = mapper.writerWithView(Views.Export.class);
 
