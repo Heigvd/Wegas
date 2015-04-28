@@ -85,7 +85,7 @@ YUI.add('wegas-teacherpage', function(Y) {
             },
             pageNumber: {
                 type: "number",
-                value: 1
+                value: -1
             },
             label: {
                 type: "string",
