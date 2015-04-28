@@ -28,8 +28,8 @@ YUI.add("wegas-review-widgets", function(Y) {
     ReviewOrchestrator = Y.Base.create("wegas-review-orchestrator", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewOrchestrator# */
         CONTENT_TEMPLATE: "<div>" +
-            "<div class=\"wegas-review-orcherstration-state\"></div>" +
-            "<div class=\"wegas-review-orcherstration-buttons\"></div>" +
+            "<div class=\"buttons\"></div>" +
+            "<div class=\"summary\"></div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];
@@ -49,17 +49,17 @@ YUI.add("wegas-review-widgets", function(Y) {
                 label: "dispatch",
                 visible: true
                     //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".wegas-review-orcherstration-buttons"));
+            }).render(this.get(CONTENTBOX).one(".buttons"));
             this.notifyButton = new Y.Button({
                 label: "notify",
                 visible: true
                     //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".wegas-review-orcherstration-buttons"));
+            }).render(this.get(CONTENTBOX).one(".buttons"));
             this.closeButton = new Y.Button({
                 label: "close",
                 visible: true
                     //}).render(this.get(CONTENTBOX));
-            }).render(this.get(CONTENTBOX).one(".wegas-review-orcherstration-buttons"));
+            }).render(this.get(CONTENTBOX).one(".buttons"));
         },
         /**
          * @function
@@ -77,16 +77,46 @@ YUI.add("wegas-review-widgets", function(Y) {
          * @private
          */
         syncUI: function() {
-            var prd = this.get("variable.evaluated"), instances, counts, summary, key;
-            instances = prd.get("scope").get("variableInstances");
-            counts = this.countByStatus(instances);
-            summary = ["<h1>Summary</h1>", "<ul>"];
-            for (key in counts) {
-                summary.push("<li>" + key + ": " + counts[key] + "</li>");
-            }
-            summary.push("</ul>");
+            var prd = this.get("variable.evaluated");
 
-            this.get(CONTENTBOX).one(".wegas-review-orcherstration-state").setContent(summary.join(""));
+            Wegas.Facade.Variable.script.remoteEval("ReviewHelper.summarize('" + prd.get("name") + "');", {
+                on: {
+                    success: Y.bind(function(e) {
+                        this.syncSummary(e.response.entity.get("val").summary);
+                    }, this),
+                    failure: Y.bind(function() {
+                    }, this)
+                }});
+        },
+        addCell: function(table, content, td) {
+            td = td || "td";
+            table.push("<" + td + ">");
+            table.push(content);
+            table.push("</" + td + ">");
+        },
+        syncSummary: function(summary) {
+            // TODO make something modern....
+            var output, key, line;
+            output = ["<h1>Summary</h1>", "<table>"];
+
+            this.addCell(output, "#", "th");
+            this.addCell(output, "Status", "th");
+            this.addCell(output, "Review done", "th");
+            this.addCell(output, "Review commented", "th");
+
+            for (key in summary) {
+                line = summary[key];
+                output.push("<tr>");
+                this.addCell(output, key);
+                this.addCell(output, line.status);
+                this.addCell(output, line.done);
+                this.addCell(output, line.commented);
+                output.push("</tr>");
+            }
+            output.push("</table>");
+            Y.log(summary);
+
+            this.get(CONTENTBOX).one(".summary").setContent(output.join(""));
         },
         /**
          * @function
@@ -158,15 +188,15 @@ YUI.add("wegas-review-widgets", function(Y) {
     Wegas.ReviewOrchestrator = ReviewOrchestrator;
 
 
-
-
     /**
      * @name Y.Wegas.ReviewVariableEditor
      * @extends Y.Widget
      * @borrows Y.WidgetChild, Y.WidgetParent, Y.Wegas.Widget, Y.Wegas.Editable
      * @class  class loader of wegas's pages
      * @constructor
-     * @description 
+     * @description Used to edit the variable to review. This widget takes two subpage as 
+     * parameter: one for editing the variable, one for display it in readonly
+     * once the variable has been submitted, the variable is readonly
      */
     ReviewVariableEditor = Y.Base.create("wegas-review-variableeditor", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewVariableEditor# */
@@ -181,7 +211,7 @@ YUI.add("wegas-review-widgets", function(Y) {
         renderUI: function() {
             var prd = this.get("variable.evaluated");
 
-            this.get("contentBox").one(".wegas-review-header").setContent(prd.get("description"));
+            //this.get("contentBox").one(".wegas-review-header").setContent(prd.get("description"));
 
             this.submitButton = new Y.Button({
                 label: "Submit",
@@ -215,7 +245,7 @@ YUI.add("wegas-review-widgets", function(Y) {
             this.get("page.evaluated");
             if (prd.getInstance().get("reviewState") === "NOT_STARTED") {
                 // Time to edit the variable
-                this.submitButton.set("visible", true);
+                this.submitButton.set("visible", true && this.get("showSubmitButton"));
                 page = this.get("editPage");
             } else {
                 // No longer editable
@@ -309,6 +339,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 type: "string",
                 _inputex: {
                     label: "Edit page",
+                    description: "A page to edit the variable",
                     _type: "pageselect",
                     required: true
                 }
@@ -317,6 +348,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 type: "string",
                 _inputex: {
                     label: "Show page",
+                    description: "A parametrized page to show (readonly) the variable",
                     _type: "pageselect",
                     required: true
                 }
@@ -382,7 +414,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 }
             },
             /**
-             * A widget to render in current page (transient)
+             * A widget to render in current subpage (transient)
              */
             widget: {
                 "transient": true,
@@ -409,6 +441,13 @@ YUI.add("wegas-review-widgets", function(Y) {
                     }
                     return val;
                 }
+            },
+            showSubmitButton: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Display submit button"
+                }
             }
         }
     });
@@ -421,7 +460,10 @@ YUI.add("wegas-review-widgets", function(Y) {
      * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
      * @class 
      * @constructor
-     * @description  
+     * @description Show available review to the player. There is two review categories:
+     * the first one contains reviews the player (self) has to write to reflect
+     * his thoughts about work done by others players. The second contains the reviews 
+     * written by others about the work of the current player.
      */
     ReviewTabView = Y.Base.create("wegas-review-tabview", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         /** @lends Y.Wegas.ReviewTabView# */
@@ -497,9 +539,9 @@ YUI.add("wegas-review-widgets", function(Y) {
                 reviews = pri.get(type);
                 for (j = 0; j < reviews.length; j++) {
                     review = reviews[j];
-                    if (i === 0 || review.get("status") === "NOTIFIED" ||
-                        review.get("status") === "COMPLETED" ||
-                        review.get("status") === "CLOSED") {
+                    if (i === 0 || review.get("reviewState") === "NOTIFIED" ||
+                        review.get("reviewState") === "COMPLETED" ||
+                        review.get("reviewState") === "CLOSED") {
                         tab = new Y.Tab({
                             label: (i === 0 ? "To Review" : "Evaluation of your work") + " #" + (j + 1)
                         });
@@ -530,7 +572,8 @@ YUI.add("wegas-review-widgets", function(Y) {
                 review: tab.review,
                 descriptor: this.get("variable.evaluated"),
                 reviewer: tab.reviewer,
-                showPage: this.get("showPage")
+                showPage: this.get("showPage"),
+                showSubmitButton: this.get("showSubmitButton")
             }).render(tab.get("panelNode"));
         },
         getEditorLabel: function() {
@@ -585,13 +628,31 @@ YUI.add("wegas-review-widgets", function(Y) {
                     _type: "pageselect",
                     required: true
                 }
+            },
+            showSubmitButton: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Display submit button"
+                }
             }
         }
     });
     Wegas.ReviewTabView = ReviewTabView;
 
 
-
+    /**
+     * @name Y.Wegas.ReviewWidget
+     * @extends Y.Widget
+     * @borrows Y.WidgetChild, Y.Wegas.Widget, Y.Wegas.Editable
+     * @class 
+     * @constructor
+     * @description Is used to display a specific review. The 'showPage' attribute 
+     * deserve a specific attention (@hack). Such a show page MUST be a ParametrizedLayout
+     * that contains ONLY ONE carameter called "variable". Nested widget must then fetch 
+     * this variable with {"@class": "ParentArgument", "content" : "parameters.variable"}.
+     * This strange process is required since we want to display a variable that not belong to the current player
+     */
     ReviewWidget = Y.Base.create("wegas-review-widget", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
         CONTENT_TEMPLATE: "<div>"
             + "  <div class=\"title\"></div>"
@@ -664,7 +725,10 @@ YUI.add("wegas-review-widgets", function(Y) {
                     return;
                 }
 
-                // @HACK substitute variable in widgetConfig
+
+                /*
+                 * @HACK substitute variable in widgetConfig @HACK
+                 ******************************************************/
                 Y.Wegas.Facade.Variable.sendRequest({
                     request: "/PeerReviewController/" + desc.get("id") + "/ToReview/" + review.get("id"),
                     cfg: {
@@ -674,8 +738,11 @@ YUI.add("wegas-review-widgets", function(Y) {
                     },
                     on: {
                         success: Y.bind(function(e) {
+                            // Once the variable that belong to the author has been retrived, 
+                            // let inject it in the ParametrizedLayout
+
                             widgetCfg.parameters.variable = e.response.entity;
-                            
+
                             Wegas.Widget.use(widgetCfg, Y.bind(function() {         // Load the subwidget dependencies
                                 try {
                                     Y.log("Rendering new widget", "log", "Wegas.ReviewWidget");
@@ -698,16 +765,13 @@ YUI.add("wegas-review-widgets", function(Y) {
                         }, this)
                     }
                 });
-
-
-
             }, this));
 
 
             this.get("contentBox").one(".toReview").one(".subtitle").setContent("Given: ");
 
             if (reviewer) {
-                if (review.get("status") === "DISPATCHED") {
+                if (review.get("reviewState") === "DISPATCHED") {
                     modeFb = "write";
                     this.get("contentBox").one(".feedback").one(".subtitle").setContent("What is your opinion?");
 
@@ -715,17 +779,17 @@ YUI.add("wegas-review-widgets", function(Y) {
                     modeFb = "read";
                     this.get("contentBox").one(".feedback").one(".subtitle").setContent("Your opinion:");
                 }
-                if (review.get("status") === "CLOSED") {
+                if (review.get("reviewState") === "CLOSED") {
                     modeFbEval = "read";
                     this.get("contentBox").one(".feedbackEv").one(".subtitle").setContent("What author think about your opinion:");
                 }
             } else { // Author
-                if (review.get("status") === "NOTIFIED") {
+                if (review.get("reviewState") === "NOTIFIED") {
                     modeFb = "read";
                     modeFbEval = "write";
                     this.get("contentBox").one(".feedback").one(".subtitle").setContent("Your reviewer opinion:");
                     this.get("contentBox").one(".feedbackEv").one(".subtitle").setContent("What do you think about your reviewer opinion?");
-                } else if (review.get("status") === "COMPLETED" || review.get("status") === "CLOSED") {
+                } else if (review.get("reviewState") === "COMPLETED" || review.get("reviewState") === "CLOSED") {
                     modeFb = "read";
                     modeFbEval = "read";
                     this.get("contentBox").one(".feedback").one(".subtitle").setContent("Your reviewer opinion:");
@@ -734,10 +798,12 @@ YUI.add("wegas-review-widgets", function(Y) {
             }
 
             if (modeFb === "write" || modeFbEval === "write") {
-                this.submitButton = new Y.Button({
-                    label: "Submit",
-                    visible: true
-                }).render(this.get(CONTENTBOX).one('.submit'));
+                if (this.get("showSubmitButton")) {
+                    this.submitButton = new Y.Button({
+                        label: "Submit",
+                        visible: true
+                    }).render(this.get(CONTENTBOX).one('.submit'));
+                }
                 this.saveButton = new Y.Button({
                     label: "Save",
                     visible: true
@@ -749,7 +815,7 @@ YUI.add("wegas-review-widgets", function(Y) {
                 this.addEvaluation(evls[i], fbContainer, modeFb);
             }
 
-            evls = review.get("feedbackEvaluation");
+            evls = review.get("comments");
             for (i in evls) {
                 this.addEvaluation(evls[i], fbEContainer, modeFbEval);
             }
@@ -840,18 +906,28 @@ YUI.add("wegas-review-widgets", function(Y) {
                     _type: "pageselect",
                     required: true
                 }
+            },
+            showSubmitButton: {
+                type: "boolean",
+                value: true,
+                _inputex: {
+                    label: "Display submit button"
+                }
             }
+
         }
     });
     Wegas.ReviewWidget = ReviewWidget;
 
     GradeInput = Y.Base.create("wegas-review-gradeinput", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        CONTENT_TEMPLATE: "<div>" +
+        CONTENT_TEMPLATE: "<div class=\"wegas-review-evaluation\">" +
             "<div class=\"wegas-review-evaluation-label\"></div>" +
             "<div class=\"wegas-review-evaluation-desc\"></div>" +
+            "<div class=\"wegas-review-evaluation-content\">" +
             "<div class=\"wegas-review-grade-instance-slider\"></div>" +
             "<div class=\"wegas-review-grade-instance-input-container\">" +
             "<input class=\"wegas-review-grade-instance-input\" />" +
+            "</div>" +
             "</div>" +
             "</div>",
         initializer: function() {
@@ -951,11 +1027,13 @@ YUI.add("wegas-review-widgets", function(Y) {
 
 
     TextEvalInput = Y.Base.create("wegas-review-textevalinput", Y.Wegas.TextInput, [], {
-        CONTENT_TEMPLATE: "<div>" +
+        CONTENT_TEMPLATE: "<div class=\"wegas-review-evaluation\">" +
             "<div class=\"wegas-review-evaluation-label\"></div>" +
             "<div class=\"wegas-review-evaluation-desc\"></div>" +
+            "<div class=\"wegas-review-evaluation-content\">" +
             "<div class=\"wegas-text-input-editor\"></div>" +
             "<div class=\"wegas-text-input-toolbar\"><div class=\"status\"></div></div>" +
+            "</div>" +
             "</div>",
         getInitialContent: function() {
             var ev = this.get("evaluation"), desc = ev.get("descriptor"), button,
@@ -992,10 +1070,12 @@ YUI.add("wegas-review-widgets", function(Y) {
 
 
     CategorizationInput = Y.Base.create("wegas-review-categinput", Y.Widget, [Y.WidgetChild, Wegas.Widget, Wegas.Editable], {
-        CONTENT_TEMPLATE: "<div>" +
+        CONTENT_TEMPLATE: "<div class=\"wegas-review-evaluation\">" +
             "<div class=\"wegas-review-evaluation-label\"></div>" +
             "<div class=\"wegas-review-evaluation-desc\"></div>" +
+            "<div class=\"wegas-review-evaluation-content\">" +
             "<div class=\"wegas-review-categinput-content\"></div>" +
+            "</div>" +
             "</div>",
         initializer: function() {
             this.handlers = [];

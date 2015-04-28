@@ -18,29 +18,11 @@ import javax.persistence.Entity;
 @Entity
 public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
+    private static final long serialVersionUID = 1L;
+
     private Long minValue;
 
     private Long maxValue;
-
-    /**
-     * Basic constructor
-     */
-    public GradeDescriptor() {
-        super();
-    }
-
-    /**
-     * Constructor with all fields
-     *
-     * @param name     the evaluation name
-     * @param minValue minimum allowed value (included) or NULL
-     * @param maxValue maximum allowed value (included) or NULL
-     */
-    public GradeDescriptor(String name, Long minValue, Long maxValue) {
-        super(name);
-        this.minValue = minValue;
-        this.maxValue = maxValue;
-    }
 
     /**
      * get the minimum allowed value. NULL means no boundary
@@ -90,7 +72,8 @@ public class GradeDescriptor extends EvaluationDescriptor<GradeInstance> {
 
     @Override
     public GradeInstance createInstance() {
-        GradeInstance gi = new GradeInstance(this);
+        GradeInstance gi = new GradeInstance();
+        gi.setDescriptor(this);
         if (this.getMinValue() != null && this.getMaxValue() != null) {
             gi.setValue(Math.floor((getMinValue() + getMaxValue()) / 2.0));
         } else if (this.getMinValue() != null) {

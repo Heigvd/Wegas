@@ -8,6 +8,7 @@
 package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.persistence.AbstractEntity;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
@@ -18,18 +19,13 @@ import javax.persistence.Entity;
 @Entity
 public class CategorizedEvaluationInstance extends EvaluationInstance {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * the chosen category (null means un-chosen)
      */
+    @Column(name = "evaluationvalue")
     private String value;
-
-    public CategorizedEvaluationInstance() {
-        super();
-    }
-
-    public CategorizedEvaluationInstance(CategorizedEvaluationDescriptor ed) {
-        super(ed);
-    }
 
     /**
      * get the chosen category
@@ -40,11 +36,17 @@ public class CategorizedEvaluationInstance extends EvaluationInstance {
         return value;
     }
 
-    public void setValue(String value) {
+    /**
+     * Set the category
+     *
+     * @param category the category to set. If category does not match any
+     *                 category from the descriptor, category is set as NULL.
+     */
+    public void setValue(String category) {
         if (this.getDescriptor() instanceof CategorizedEvaluationDescriptor) {
             CategorizedEvaluationDescriptor descriptor = (CategorizedEvaluationDescriptor) this.getDescriptor();
-            if (descriptor.getCategories().contains(value)) {
-                this.value = value;
+            if (descriptor.getCategories().contains(category)) {
+                this.value = category;
             } else {
                 this.value = null;
             }

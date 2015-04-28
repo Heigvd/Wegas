@@ -9,33 +9,30 @@ package com.wegas.reviewing.persistence.evaluation;
 
 import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 
 /**
  *
  * Grade evaluation instance
- * 
+ *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
  */
 @Entity
 public class GradeInstance extends EvaluationInstance {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * given grade
      */
+    @Column(name = "evaluationvalue")
     private Double value;
-
-    public GradeInstance() {
-        super();
-    }
-
-    public GradeInstance(GradeDescriptor ed) {
-        super(ed);
-    }
 
     /**
      * get the given grade or null if not yet given
-     * @return 
+     *
+     * @return
      */
     public Double getValue() {
         return value;
@@ -43,6 +40,7 @@ public class GradeInstance extends EvaluationInstance {
 
     /**
      * Set the grade
+     *
      * @param value the grade to give
      * @throws WegasOutOfBoundException when grade is out of bound
      */

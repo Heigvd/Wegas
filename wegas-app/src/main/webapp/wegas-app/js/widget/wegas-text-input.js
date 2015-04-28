@@ -171,23 +171,20 @@ YUI.add("wegas-text-input", function(Y) {
                 }
             },
             readonly: {
-                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
-                optional: true,
-                _inputex: {
+                //getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "boolean",
+                value: false,
+                optional: true
+                /*_inputex: {
                     _type: "variableselect",
                     label: "Editable",
                     classFilter: ["BooleanDescriptor"]
-                }
+                }*/
             },
             showSaveButton: {
-                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                type: "boolean",
                 value: true,
-                optional: true,
-                _inputex: {
-                    _type: "variableselect",
-                    label: "Editable",
-                    classFilter: ["BooleanDescriptor"]
-                }
+                optional: true
             }
         }
     });

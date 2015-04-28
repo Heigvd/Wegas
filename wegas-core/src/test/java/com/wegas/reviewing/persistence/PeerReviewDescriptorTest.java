@@ -8,6 +8,8 @@
 package com.wegas.reviewing.persistence;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.jaxrs.cfg.ObjectWriterInjector;
 import com.wegas.core.ejb.AbstractEJBTest;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.RequestFacade;
@@ -15,6 +17,8 @@ import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.variable.primitive.NumberDescriptor;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.core.rest.util.JacksonMapperProvider;
+import com.wegas.core.rest.util.JsonViewModifier;
+import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.CategorizedEvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
@@ -51,6 +55,7 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
     }
 
     ObjectMapper mapper;
+    ObjectWriter exportMapper;
 
     NumberDescriptor toBeReviewed;
 
@@ -70,20 +75,22 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
      */
     @Before
     public void setUpInstances() throws NamingException {
+
+        ObjectWriterInjector.set(new JsonViewModifier(Views.Export.class));
         mapper = JacksonMapperProvider.getMapper();
+        exportMapper = mapper.writerWithView(Views.Export.class);
 
         toBeReviewed = new NumberDescriptor(VAR_NAME);
         toBeReviewed.setDefaultInstance(new NumberInstance(0));
 
         descriptorFacade.create(gameModel.getId(), toBeReviewed);
 
-        initial = new PeerReviewDescriptor("myReview");
+        initial = new PeerReviewDescriptor();
+        initial.setName("myReview");
 
         defaultInstance = new PeerReviewInstance();
         defaultInstance.setReviewState(PeerReviewDescriptor.ReviewingState.NOT_STARTED);
         initial.setDefaultInstance(defaultInstance);
-
-        System.out.println("Create REVIEW");
 
         //initial.setScope(new TeamScope());
         initial.setComments("comments");
@@ -93,34 +100,46 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         initial.setFeedback(new EvaluationDescriptorContainer());
         EvaluationDescriptorContainer feedback = initial.getFeedback();
         List<EvaluationDescriptor> fEvaluations = feedback.getEvaluations();
-        fEvaluations.add(new TextEvaluationDescriptor("aText"));
-        fEvaluations.add(new GradeDescriptor("Note", 1L, 10L));
 
-        CategorizedEvaluationDescriptor cEvalD = new CategorizedEvaluationDescriptor("categ");
+        TextEvaluationDescriptor text = new TextEvaluationDescriptor();
+        text.setName("aText");
+
+        GradeDescriptor grade1 = new GradeDescriptor();
+        grade1.setName("Node");
+        grade1.setMinValue(1L);
+        grade1.setMaxValue(10L);
+
+        fEvaluations.add(text);
+        fEvaluations.add(grade1);
+
+        CategorizedEvaluationDescriptor cEvalD = new CategorizedEvaluationDescriptor();
+        cEvalD.setName("cEvalD");
         cEvalD.addCategory("weak");
         cEvalD.addCategory("strong");
         fEvaluations.add(cEvalD);
 
-        initial.setFeedbacksEvaluation(new EvaluationDescriptorContainer());
-        EvaluationDescriptorContainer feedbackEvaluation = initial.getFeedbackEvaluation();
-        List<EvaluationDescriptor> f2evaluations = feedbackEvaluation.getEvaluations();
-        f2evaluations.add(new GradeDescriptor("fevalG", 0L, null));
+        initial.setFbComments(new EvaluationDescriptorContainer());
+        EvaluationDescriptorContainer feedbackComments = initial.getFbComments();
+        List<EvaluationDescriptor> f2evaluations = feedbackComments.getEvaluations();
+
+        GradeDescriptor grade2 = new GradeDescriptor();
+        grade2.setName("fevalG");
+        grade2.setMinValue(0L);
+
+        f2evaluations.add(grade2);
 
         descriptorFacade.create(gameModel.getId(), initial);
-        System.out.println("SETTED UP");
     }
 
     @After
     public void tearDownLocal() {
-        System.out.println("Tear Down");
+        //logger.warn("Tear Down");
     }
 
     @Test
     public void testSetters() {
-        System.out.println("Setters");
         assertEquals("Number initial value", initial.getMaxNumberOfReview(), MAX_NUM);
         assertEquals("Var name initial", initial.getToReviewName(), VAR_NAME);
-        System.out.println("DONE");
     }
 
     /**
@@ -131,10 +150,8 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
     @Test
     public void testSerialise() throws IOException {
         RequestFacade.lookup().setPlayer(player.getId());
-        System.out.println("SERIALISE: " + initial);
 
-        String json = mapper.writeValueAsString(initial);
-        System.out.println("JSON: " + json);
+        String json = exportMapper.writeValueAsString(initial);
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
 
@@ -144,39 +161,41 @@ public class PeerReviewDescriptorTest extends AbstractEJBTest {
         assertEquals("ImportedName", VAR_NAME, read.getImportedToReviewName());
 
         assertEquals("# Feedback Items", 3, read.getFeedback().getEvaluations().size());
-        assertEquals("# Feedback Eval Items", 1, read.getFeedbackEvaluation().getEvaluations().size());
+        assertEquals("# Feedback Eval Items", 1, read.getFbComments().getEvaluations().size());
     }
 
     @Test
     public void deserialize() throws IOException {
-        String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"feedbackEvaluation\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
+        String json = "{ \"@class\": \"PeerReviewDescriptor\", \"id\": \"\", \"label\": \"rr\", \"toReviewName\": \"x\", \"name\": \"\", \"maxNumberOfReview\": 3, \"feedback\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"fbComments\": { \"@class\": \"EvaluationDescriptorContainer\" }, \"defaultInstance\": { \"@class\": \"PeerReviewInstance\", \"id\": \"\" }, \"comments\": \"\", \"scope\": { \"@class\": \"TeamScope\", \"broadcastScope\": \"TeamScope\" } }";
 
         PeerReviewDescriptor read = mapper.readValue(json, PeerReviewDescriptor.class);
         descriptorFacade.create(gameModel.getId(), read);
-        
-        String json2 = mapper.writeValueAsString(read);
+
+        String json2 = exportMapper.writeValueAsString(read);
     }
 
     @Test
     public void testMerge() throws IOException {
-        System.out.println("MERGE");
-
-        PeerReviewDescriptor merged = new PeerReviewDescriptor("another");
-        merged.setToReviewName(VAR_NAME);
+        PeerReviewDescriptor merged = new PeerReviewDescriptor();
+        merged.setName("Another");
+        merged.setToReviewName(toBeReviewed.getName());
         merged.setDefaultInstance(new PeerReviewInstance());
+        merged.setFeedback(new EvaluationDescriptorContainer());
+        merged.setFbComments(new EvaluationDescriptorContainer());
+
         descriptorFacade.create(gameModel.getId(), merged);
 
+        //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
         merged.merge(initial);
 
-        System.out.println("Initial: " + mapper.writeValueAsString(initial));
-        System.out.println("Merged: " + mapper.writeValueAsString(merged));
-
+        //logger.warn("Initial: " + exportMapper.writeValueAsString(initial));
+        //logger.warn("Merged: " + exportMapper.writeValueAsString(merged));
         assertEquals("Name", initial.getName(), merged.getName());
         assertEquals("Comments", initial.getComments(), merged.getComments());
         assertEquals("NumberOfReview", initial.getMaxNumberOfReview(), merged.getMaxNumberOfReview());
         assertEquals("ImportedName", VAR_NAME, merged.getImportedToReviewName());
 
         assertEquals("# Feedback Items", 3, merged.getFeedback().getEvaluations().size());
-        assertEquals("# Feedback Eval Items", 1, merged.getFeedbackEvaluation().getEvaluations().size());
+        assertEquals("# Feedback Eval Items", 1, merged.getFbComments().getEvaluations().size());
     }
 }

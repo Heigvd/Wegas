@@ -186,7 +186,7 @@ YUI().use(function(Y) {
                 "wegas-text-input": {
                     path: "js/widget/wegas-text-input-min.js",
                     ws_provides: "TextInput",
-                    requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect"]
+                    requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
                 },
                 "wegas-text": {
                     path: "js/widget/wegas-text-min.js",
@@ -318,6 +318,11 @@ YUI().use(function(Y) {
                     path: "js/plugin/wegas-cssstyles-extra-min.js",
                     requires: "wegas-cssstyles",
                     ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
+                },
+                "wegas-teacherpage": {
+                    path: "js/plugin/wegas-teacherpage-min.js",
+                    requires: "wegas-plugin, wegas-tabview",
+                    ws_provides: "TeacherPage"
                 },
                 "wegas-conditionaldisable": {
                     path: "js/plugin/wegas-conditionaldisable-min.js",

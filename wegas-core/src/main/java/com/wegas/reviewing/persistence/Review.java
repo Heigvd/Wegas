@@ -21,20 +21,22 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 /**
- * A review is linked to two PeerReviewInstnace : the one who review and the
+ * A review is linked to two PeerReviewInstnace : the one who reviews and the
  * original reviewed 'author'
  *
  * A review is composed of the feedback (written by reviewers) and the feedback
- * evaluation (written by author). Both are a list of evaluation instances
- * 
- * 
- * 
+ * comments (written by author). Both are a list of evaluation instances
+ *
+ *
  * <ol>
  * <li> dispatched: initial state, reviewer can edit feedback
- * <li> reviewed: reviewer can't edit feedback anymore, author can't read feedback yet
- * <li> notified: author has access to the feedback and can edit feedbackEvaluation
- * <li> closed: feedback evaluation turns read-only, not yet visible by peers <li>
- * <li> closed: feedback evaluation is visible by the reviewer <li>
+ * <li> reviewed: reviewer can't edit feedback anymore, author can't read
+ * feedback yet
+ * <li> notified: author has access to the feedback and can edit feedback
+ * comments
+ * <li> closed: feedback comments turns read-only, not yet visible by peers
+ * <li>
+ * <li> closed: feedback comments is visible by the reviewer <li>
  * </ol>
  *
  * @author Maxence Laurent (maxence.laurent at gmail.com)
@@ -42,7 +44,10 @@ import javax.persistence.OneToMany;
 @Entity
 public class Review extends AbstractEntity {
 
+    private static final long serialVersionUID = 1L;
+    
     public enum ReviewState {
+
         DISPATCHED,
         REVIEWED,
         NOTIFIED,
@@ -54,7 +59,7 @@ public class Review extends AbstractEntity {
     @GeneratedValue
     private Long id;
 
-    private ReviewState status;
+    private ReviewState reviewState;
 
     /**
      * the PeerReviewInstance that belongs to the reviewer
@@ -71,21 +76,18 @@ public class Review extends AbstractEntity {
     private PeerReviewInstance author;
 
     /**
-     * List of evaluation instances that compose the feedback (writable by 'reviewer' only)
+     * List of evaluation instances that compose the feedback (writable by
+     * 'reviewer' only)
      */
     @OneToMany(mappedBy = "feedbackReview", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EvaluationInstance> feedback = new ArrayList<>();
 
     /**
-     * List of evaluation instances that compose the feedback evaluation (writable by 'author' only)
+     * List of evaluation instances that compose the feedback evaluation
+     * (writable by 'author' only)
      */
-    @OneToMany(mappedBy = "feedbackEvaluationReview", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EvaluationInstance> feedbackEvaluation = new ArrayList<>();
-
-
-    public Review(){
-        super();
-    }
+    @OneToMany(mappedBy = "commentsReview", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EvaluationInstance> comments = new ArrayList<>();
 
     @Override
     public Long getId() {
@@ -94,22 +96,25 @@ public class Review extends AbstractEntity {
 
     /**
      * get Review status
-     * @return 
+     *
+     * @return
      */
-    public ReviewState getStatus() {
-        return status;
+    public ReviewState getReviewState() {
+        return reviewState;
     }
 
     /**
-     * Set review status
-     * @param status 
+     * Set review state
+     *
+     * @param state
      */
-    public final void setStatus(ReviewState status) {
-        this.status = status;
+    public void setReviewState(ReviewState state) {
+        this.reviewState = state;
     }
 
     /**
      * get the PeerReviewInstance that belongs to the reviewer
+     *
      * @return the PeerReviewInstnace that belongs to the reviewer
      */
     public PeerReviewInstance getReviewer() {
@@ -118,15 +123,16 @@ public class Review extends AbstractEntity {
 
     /**
      * set the PeerReviewInstance that belongs to the reviewer
+     *
      * @param reviewer the PeerReviewInstnace that belongs to the reviewer
      */
-    public final void setReviewer(PeerReviewInstance reviewer) {
+    public void setReviewer(PeerReviewInstance reviewer) {
         this.reviewer = reviewer;
     }
-    
-    
+
     /**
      * get the PeerReviewInstance that belongs to the author
+     *
      * @return the PeerReviewInstnace that belongs to the author
      */
     public PeerReviewInstance getAuthor() {
@@ -135,22 +141,25 @@ public class Review extends AbstractEntity {
 
     /**
      * set the PeerReviewInstance that belongs to the author
+     *
      * @param author the PeerReviewInstnace that belongs to the author
      */
-    public final void setAuthor(PeerReviewInstance author) {
+    public void setAuthor(PeerReviewInstance author) {
         this.author = author;
     }
 
     /**
      * get the list of evaluation instance composing the feedback
+     *
      * @return the list of evaluation instance composing the feedback
      */
-    public final List<EvaluationInstance> getFeedback() {
+    public List<EvaluationInstance> getFeedback() {
         return feedback;
     }
 
     /**
      * set the list of evaluation instance composing the feedback
+     *
      * @param feedback the list of evaluation instance composing the feedback
      */
     public void setFeedback(List<EvaluationInstance> feedback) {
@@ -158,19 +167,22 @@ public class Review extends AbstractEntity {
     }
 
     /**
-     * set the list of evaluation instance composing the feedback evaluation
-     * @return the list of evaluation instance composing the feedback evaluation
+     * get the list of evaluation instances composing the feedback comments
+     *
+     * @return the list of evaluation instances composing the feedback comments
      */
-    public final List<EvaluationInstance> getFeedbackEvaluation() {
-        return feedbackEvaluation;
+    public List<EvaluationInstance> getComments() {
+        return comments;
     }
 
     /**
-     * set the list of evaluation instance composing the feedback evaluation
-     * @param feedbackEvaluation  the list of evaluation instance composing the feedback evaluation
+     * set the list of evaluation instance composing the feedback comments
+     *
+     * @param comments the list of evaluation instance composing the feedback
+     *                 comments
      */
-    public void setFeedbackEvaluation(List<EvaluationInstance> feedbackEvaluation) {
-        this.feedbackEvaluation = feedbackEvaluation;
+    public void setComments(List<EvaluationInstance> comments) {
+        this.comments = comments;
     }
 
     @Override
@@ -180,7 +192,7 @@ public class Review extends AbstractEntity {
             //this.setAuthor(o.getAuthor());
             //this.setReviewer(o.getReviewer());
             this.setFeedback(ListUtils.mergeLists(this.getFeedback(), o.getFeedback()));
-            this.setFeedbackEvaluation(ListUtils.mergeLists(this.getFeedbackEvaluation(), o.getFeedbackEvaluation()));
+            this.setComments(ListUtils.mergeLists(this.getComments(), o.getComments()));
         }
     }
 

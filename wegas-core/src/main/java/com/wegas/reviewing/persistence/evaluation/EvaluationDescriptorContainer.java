@@ -51,67 +51,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
     @JsonView(Views.EditorI.class)
     private List<EvaluationDescriptor> evaluations = new ArrayList<>();
 
-    @JsonIgnore
-    @OneToOne
-    private PeerReviewDescriptor parent;
-
     /**
-     *
+     * Empty constructor
      */
     public EvaluationDescriptorContainer() {
         super();
-    }
-
-    /**
-     *
-     * @param a another PeerReviewDescriptor
-     */
-    @Override
-    public void merge(AbstractEntity a) {
-        if (a instanceof EvaluationDescriptorContainer) {
-            EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
-            this.evaluations = ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations());
-        }
-    }
-
-    /**
-     * Get the parent
-     *
-     * @return the parent
-     */
-    public PeerReviewDescriptor getParent() {
-        return parent;
-    }
-
-    /**
-     * set the parent
-     *
-     * @param parent
-     */
-    public void setParent(PeerReviewDescriptor parent) {
-        this.parent = parent;
-    }
-
-    /**
-     * Get the parent
-     *
-     * @return the parent
-     */
-    @JsonView(Views.IndexI.class)
-    public Long getParentId() {
-        if (parent != null) {
-            return parent.getId();
-        } else {
-            return -1L;
-        }
-    }
-
-    /**
-     * set the parent
-     *
-     * @param id
-     */
-    public void setParentId(Long id) {
     }
 
     /**
@@ -138,4 +82,11 @@ public class EvaluationDescriptorContainer extends AbstractEntity {
         return id;
     }
 
+    @Override
+    public void merge(AbstractEntity a) {
+        if (a instanceof EvaluationDescriptorContainer) {
+            EvaluationDescriptorContainer other = (EvaluationDescriptorContainer) a;
+            this.evaluations = ListUtils.mergeLists(this.getEvaluations(), other.getEvaluations());
+        }
+    }
 }

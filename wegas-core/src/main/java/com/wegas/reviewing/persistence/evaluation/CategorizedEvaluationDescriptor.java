@@ -24,27 +24,13 @@ import javax.persistence.Entity;
 @Entity
 public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<CategorizedEvaluationInstance> {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * List of allowed categories
      */
     @ElementCollection
     private List<String> categories = new ArrayList<>();
-
-    /**
-     * Basic constructor
-     */
-    public CategorizedEvaluationDescriptor() {
-        super();
-    }
-
-    /**
-     * Constructor with name
-     *
-     * @param name evaluation name
-     */
-    public CategorizedEvaluationDescriptor(String name) {
-        super(name);
-    }
 
     /**
      * Get the list of allowed categories
@@ -96,6 +82,8 @@ public class CategorizedEvaluationDescriptor extends EvaluationDescriptor<Catego
 
     @Override
     public CategorizedEvaluationInstance createInstance() {
-        return new CategorizedEvaluationInstance(this);
+        CategorizedEvaluationInstance cei = new CategorizedEvaluationInstance();
+        cei.setDescriptor(this);
+        return cei;
     }
 }

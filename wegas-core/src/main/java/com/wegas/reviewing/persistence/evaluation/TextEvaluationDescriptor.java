@@ -18,21 +18,7 @@ import javax.persistence.Entity;
 @Entity
 public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluationInstance> {
 
-    /**
-     * Basic constructor
-     */
-    public TextEvaluationDescriptor() {
-        super();
-    }
-
-    /**
-     * Constructor with name
-     *
-     * @param name evaluation name
-     */
-    public TextEvaluationDescriptor(String name) {
-        super(name);
-    }
+    private static final long serialVersionUID = 1L;
 
     @Override
     public void merge(AbstractEntity a) {
@@ -44,6 +30,8 @@ public class TextEvaluationDescriptor extends EvaluationDescriptor<TextEvaluatio
 
     @Override
     public TextEvaluationInstance createInstance() {
-        return new TextEvaluationInstance(this);
+        TextEvaluationInstance i = new TextEvaluationInstance();
+        i.setDescriptor(this);
+        return i;
     }
 }
