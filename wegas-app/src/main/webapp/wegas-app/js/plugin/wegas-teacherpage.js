@@ -28,7 +28,7 @@ YUI.add('wegas-teacherpage', function(Y) {
          */
         initializer: function() {
             if (this.get("host") instanceof Y.Wegas.AbsoluteLayout) {
-                //this.setup();
+                this.setup();
             } else {
                 Y.log("Host's type mistmach", "warn", "Y.Plugin.TeacherPage");
                 return;
@@ -39,7 +39,7 @@ YUI.add('wegas-teacherpage', function(Y) {
                 editor = this.get("scenarist"),
                 centerTab, tab, hostMode, label, pageID;
 
-            label = "label";
+            label = this.get("label");
 
             centerTab = Y.Widget.getByNode("#centerTabView");
             //this.get("host").get("@pageId");
@@ -60,7 +60,7 @@ YUI.add('wegas-teacherpage', function(Y) {
                         children: [{
                                 type: "PageLoader",
                                 pageLoaderId: label,
-                                defaultPageId: 5
+                                defaultPageId: this.get("pageNumber")
                             }]
                     }).item(0);
 
@@ -82,6 +82,14 @@ YUI.add('wegas-teacherpage', function(Y) {
             scenarist: {
                 type: "boolean",
                 value: true
+            },
+            pageNumber: {
+                type: "number",
+                value: 1
+            },
+            label: {
+                type: "string",
+                value : "label"
             }
         },
         NS: "TeacherPage",
