@@ -6,8 +6,8 @@
 	top:50%;
 	left:50%;
 	width:800px;
-	height:480px;
-	margin: -240px 0px 0px -400px;
+	height:580px;
+	margin: -290px 0px 0px -400px;
 	background-color:$white;
 	border-radius:8px;
 	z-index:100;
@@ -15,23 +15,6 @@
 	overflow-y:auto;
 	transition:.5s;
 
-	&.modal--history {
-		height: 580px;
-		margin-top: -290px;
-		.modal__content{
-
-			&.modal__content--nav-off{
-				height:450px;
-			}
-			&.modal__content--tools-off{
-				height:466px;
-			}
-			&.modal__content--nav-tools-off{
-				height:515px;
-			}
-		}
-
-	}
 	@include material-shadow(2);
 
 	&.modal--open{
@@ -124,7 +107,7 @@
 	}
 	.modal__content{
 		width:100%;
-		height:301px;
+		height:401px;
 		box-sizing: border-box;
 		background: $background-default-secondary;
 		padding: 1em;
@@ -136,13 +119,13 @@
 			font-size: 18px;
 		}
 		&.modal__content--nav-off{
-			height:350px;
+			height:450px;
 		}
 		&.modal__content--tools-off{
-			height:366px;
+			height:466px;
 		}
 		&.modal__content--nav-tools-off{
-			height:415px;
+			height:515px;
 		}
 
 		.modal__content__colors{
@@ -156,7 +139,7 @@
 			display:block;
 			position:relative;
 			width:100%;
-			height:200px;
+			height:300px;
 			overflow-x:hidden;
 			overflow-y:auto;
 		}
@@ -225,6 +208,7 @@
 				}
 				input {
 					@include make-xs-column(9);
+					height: 36px;
 				}
 			}
 			.form__row:nth-child(2) {
@@ -283,7 +267,7 @@
         	margin:0px;
 			.icon{
 				float:left;
-				margin:16px;
+				margin: 0 7px;
 				border:solid 0px white;
 				transition:.3s;
 				padding:6px 0px;

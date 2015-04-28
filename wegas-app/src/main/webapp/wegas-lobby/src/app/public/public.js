@@ -20,7 +20,20 @@ angular.module('public', [
         })
     ;
 })
-.controller('PublicIndexCtrl', function PublicIndexCtrl($state, Auth) {
+.controller('PublicIndexCtrl', function PublicIndexCtrl($scope, $rootScope, $state, Auth) {
+
+    updateAlternativeActionsButton = function (state) {
+        $scope.destination = $state.href('wegas.public.signup');
+        $scope.destinationTitle = "Registration";
+        if (state.name == "wegas.public.signup") {
+            $scope.destination = $state.href('wegas.public.login');
+            $scope.destinationTitle = "Authentication";
+        }
+    }
+    updateAlternativeActionsButton($state.current);
+    $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
+        updateAlternativeActionsButton(toState);
+    });
     Auth.getAuthenticatedUser().then(function(user){
         if(user != null){
             if(user.isScenarist){

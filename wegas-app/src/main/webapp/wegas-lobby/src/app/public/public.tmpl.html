@@ -1,9 +1,7 @@
 <div class="view view--public-index view--reverse-top">
-	<h1 class="view__first-header">Bienvenue dans wegas</h1>
+	<h1 class="view__first-header">Welcome in wegas</h1>
 	<div class="view__public-nav">
-		<a class="link link--reverse" ui-sref-active="link--active" ui-sref="wegas.public.login">Login</a> 
-		<a class="link link--reverse" ui-sref-active="link--active" ui-sref="wegas.public.signup">Sign up</a> 
-		<a class="link link--reverse" ui-sref-active="link--active" ui-sref="wegas.public.password">Password forgotten</a>
+        <a class="link link--reverse" ui-sref-active="link--active" ng-href="{{ destination }} ">{{ destinationTitle }}</a>
 	</div>
 </div>
 <div ui-view="form" class="view view--reverse-top view--public-forms"></div>

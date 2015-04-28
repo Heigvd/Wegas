@@ -53,21 +53,6 @@ angular.module('private.trainer.archives.directives', [])
             }
         };
 
-        ctrl.deleteArchivedSessions = function() {
-            if (ctrl.archives.length > 0) {
-                SessionsModel.deleteArchivedSessions().then(function(response) {
-                    if (!response.isErroneous()) {
-                        $rootScope.$emit('changeArchives', true);
-                        ctrl.updateSessions();
-                    }else{
-                        response.flash();
-                    }
-                });
-            } else {
-                Flash.danger("No scenario archived");
-            }
-        };
-
         /* Listen for new session */
         $rootScope.$on('changeArchives', function(e, hasNewData) {
             if (hasNewData) {

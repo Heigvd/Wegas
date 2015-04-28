@@ -48,20 +48,6 @@ angular.module('private.scenarist.archives.directives', [])
             }
         };
 
-        ctrl.deleteArchivedScenarios = function() {
-            if (ctrl.archives.length > 0) {
-                ScenariosModel.deleteArchivedScenarios().then(function(response) {
-                    if (!response.isErroneous()) {
-                        $rootScope.$emit('changeScenarios', true);
-                    }else{
-                        response.flash();
-                    }
-                });
-            } else {
-                Flash.danger("No scenarios archived");
-            }
-        };
-
         /* Listen for new scenarios */
         $rootScope.$on('changeScenarios', function(e, hasNewData) {
             if (hasNewData) {

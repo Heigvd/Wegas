@@ -5,18 +5,10 @@
    		<span class="button__label">Close</span>
 	</a>
 </div>
-<div 
-	class="modal__content modal__content--nav-off" 
+<div
+	class="modal__content--nav-tools-off"
 	sessions="trainerArchivesIndexController.archives"
 	delete="trainerArchivesIndexController.deleteArchivedSession"
 	unarchive="trainerArchivesIndexController.unarchiveSession"
 	trainer-sessions-archives-list
 ></div>
-<div class="modal__tools">
-	<a 	
-		class="button button--small button--danger button--trash" 
-		confirmed-click="trainerArchivesIndexController.deleteArchivedSessions()" 
-		ng-confirm-click="Are you sure you want to delete all archived session ? This action is irreversible.">
-   		<span class="button__label">Delete all</span>
-	</a>
-</div>
