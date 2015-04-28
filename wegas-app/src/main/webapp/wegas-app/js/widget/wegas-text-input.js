@@ -124,8 +124,13 @@ YUI.add("wegas-text-input", function(Y) {
             this.get("contentBox").one(".status").setContent("<p>" + msg + "</p>");
         },
         _onChange: function() {
-            this.setStatus("Not saved");
             this.valueChanged(this.editor.getContent());
+
+            if (this.get("showSaveButton")) {
+                this.setStatus("Not saved");
+            } else {
+                this.save();
+            }
         },
         valueChanged: function(newValue) {
             // To Be Overwritten
@@ -175,11 +180,11 @@ YUI.add("wegas-text-input", function(Y) {
                 type: "boolean",
                 value: false,
                 optional: true
-                /*_inputex: {
-                    _type: "variableselect",
-                    label: "Editable",
-                    classFilter: ["BooleanDescriptor"]
-                }*/
+                    /*_inputex: {
+                     _type: "variableselect",
+                     label: "Editable",
+                     classFilter: ["BooleanDescriptor"]
+                     }*/
             },
             showSaveButton: {
                 type: "boolean",
