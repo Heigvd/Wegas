@@ -18,21 +18,21 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
     private final Long min;
     private final Long max;
     private final Double value;
-    private final VariableDescriptor vDesc;
+    private final String variableName;
 
     /**
      *
      * @param min
      * @param max
      * @param value
-     * @param vDesc
+     * @param variableName
      */
-    public WegasOutOfBoundException(Long min, Long max, Double value, VariableDescriptor vDesc) {
+    public WegasOutOfBoundException(Long min, Long max, Double value, String variableName) {
         super();
         this.min = min;
         this.max = max;
         this.value = value;
-        this.vDesc = vDesc;
+        this.variableName = variableName;
     }
 
     public Long getMin() {
@@ -47,7 +47,7 @@ public class WegasOutOfBoundException extends WegasRuntimeException {
         return value;
     }
 
-    public VariableDescriptor getVariableDescriptor(){
-        return vDesc;
+    public String getVariableName(){
+        return variableName;
     }
 }
