@@ -73,7 +73,7 @@ angular.module('wegas.models.sessions', [])
                 if (!session.properties.freeForAll) {
                     var teams = session.teams;
                     teams.forEach(function(team) {
-                        if (team["@class"] == "DebugTeam" || team.players.length < 1) {
+                        if (team["@class"] == "DebugTeam") {
                             session.teams = _.without(session.teams, _.findWhere(session.teams, {
                                 id: team.id
                             }));
@@ -145,16 +145,30 @@ angular.module('wegas.models.sessions', [])
                 var deferred = $q.defer();
                 sessions.findSession(sessionsListName, id).then(function(session) {
                     if (session) {
-                        if (session.trainers) {
-                            deferred.resolve(session);
-                        } else {
-                            $http.get(ServiceURL + "rest/Extended/User/FindAccountPermissionByInstance/g" + session.id).success(function(data) {
-                                session.trainers = data;
-                                deferred.resolve(session);
-                            }).error(function(data) {
-                                deferred.resolve(false);
+                        $http.get(ServiceURL + "rest/Extended/User/FindAccountPermissionByInstance/g" + session.id).success(function(data) {
+                            session.trainers = [];
+
+                            _(data).each(function(account, i) {
+                                var permissions = [],
+                                    pattern = new RegExp("^Game:(.*):g"+id+"$");
+
+                                // For each permission of each account...
+                                _(account.permissions).each(function(permission, j) {
+                                    // Is permission linked with current game ?
+                                    if (pattern.test(permission.value)) {
+                                        var localPermission = permission.value.match(pattern)[1].split(",");
+                                        permissions = permissions.merge(localPermission)
+                                    }
+                                });
+                                if (permissions.indexOf("View") >= 0 && permissions.indexOf("Edit") >= 0) {
+                                    session.trainers.push(account);
+                                }
                             });
-                        }
+                            // session.trainers = data;
+                            deferred.resolve(session);
+                        }).error(function(data) {
+                            deferred.resolve(false);
+                        });
                     } else {
                         deferred.resolve(false);
                     }
@@ -211,6 +225,7 @@ angular.module('wegas.models.sessions', [])
                 }
                 return session;
             },
+
 
     /* Update status of session (OPENED, LIVE, BIN, DELETE, SUPPRESSED) */
     setSessionStatus = function(sessionId, status) {
@@ -367,6 +382,31 @@ angular.module('wegas.models.sessions', [])
         /* Clear cache of all list sessions. */
         model.clearCache = function() {
             sessions.cache = [];
+        };
+
+        model.refreshSession = function (listname, session) {
+            var deferred = $q.defer();
+
+            var url = "rest/GameModel/Game/" + session.id + "?view=EditorExtended";
+            $http
+            .get(ServiceURL + url)
+            .success(function (data) {
+                // Removing old session
+                sessions.cache[listname].data = uncacheSession(sessions.cache[listname].data, session);
+                // Creating new one
+                sessions.cache[listname].data = cacheSession(sessions.cache[listname].data, data, false);
+
+                sessions.findSession(listname, data.id, true).then(function(response) {
+                    deferred.resolve(Responses.success("Session refreshed", response));
+                });
+
+            }).error(function(data) {
+                deferred.resolve(Responses.danger("Whoops", false));
+            });
+
+
+
+            return deferred.promise;
         };
 
         /* Remove player form persistante datas and change cached datas (Used from trainer and player workspace) */

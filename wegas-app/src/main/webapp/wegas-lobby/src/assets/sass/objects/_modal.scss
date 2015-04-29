@@ -15,6 +15,33 @@
 	overflow-y:auto;
 	transition:.5s;
 
+	&.modal--public-password{
+		width:360px;
+		height:210px;
+		margin: -140px 0px 0px -180px;
+
+	}
+	&.modal--public-signup{
+		width:400px;
+		height:540px;
+		margin: -270px 0px 0px -200px;
+		.form{
+			margin-top:8px;
+		}
+		.form__row{
+			margin:8px 4px;
+		}
+
+	}
+
+	&.modal--users {
+		.modal__tools {
+			a.button {
+				float: right;
+				margin-top: 8px;
+			}
+		}
+	}
 	@include material-shadow(2);
 
 	&.modal--open{
@@ -153,6 +180,18 @@
 		border-top:solid 1px $border;
 		box-sizing: border-box;
 
+		.modal__tools__info{
+			margin:0px;
+			padding:0px;
+			height:48px;
+			line-height:48px;
+			color:$secondary-color;
+			i{
+				color:$secondary-color;
+				margin:0px 8px;
+			}
+		}
+
 		.modal__tools__message{
 			float:left;
 			margin:0px;
@@ -252,6 +291,9 @@
 		}
 	}
 	&.modal--archives{
+		.modal__content {
+			padding: 1em;
+		}
 		.modal__tools {
 			padding:8px 16px;
 			.button{
@@ -336,6 +378,7 @@
 			}
 		}
 	}
+
 }
 
 .shadow{

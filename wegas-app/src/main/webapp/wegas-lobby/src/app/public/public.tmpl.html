@@ -1,7 +1,13 @@
-<div class="view view--public-index view--reverse-top">
-	<h1 class="view__first-header">Welcome in wegas</h1>
-	<div class="view__public-nav">
-        <a class="link link--reverse" ui-sref-active="link--active" ng-href="{{ destination }} ">{{ destinationTitle }}</a>
+<div class="view view--public-index view--reverse-middle">
+	<div class="container">
+		<div class="row">
+			<h1 class="view__first-header">Wegas</h1>
+		</div>
+		<div class="row">
+			<h2 class="view__first-subtitle">The "learning by doing" solution from <a class="link link--simple"href="http://www.albasim.ch">AlbaSIM<span class="view__logo-albasim"></span></a></h2>
+		</div>
+		<div ui-view="form"></div>
+		<p class="view__first-subtitle subtitle--medium">Haven't yet a Wegas account ? <a class="link link--simple" ui-sref="wegas.public.signup">Create account</a></p>
 	</div>
 </div>
-<div ui-view="form" class="view view--reverse-top view--public-forms"></div>
+<div class="view view--modal" ui-view="modal"></div>

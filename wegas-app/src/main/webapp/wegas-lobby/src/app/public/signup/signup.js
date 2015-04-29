@@ -1,33 +1,31 @@
 angular.module('public.signup', [
+    'public.signup.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
         .state('wegas.public.signup', {
             url: '/signup',
             views: {
-                "form": {
-                 	controller: 'PublicSignupCtrl as publicSignupCtrl',
-            		templateUrl: 'app/public/signup/signup.tmpl.html'
+                "modal@wegas.public" :{
+                    controller: 'PublicSignupModalCtrl'
                 }
             }
 
         })
     ;
 })
-.controller('PublicSignupCtrl', function PublicSignupCtrl($scope, $state, Auth, Flash) {
-    var ctrl = this;
+.controller('PublicSignupModalCtrl', function PublicSignupModalCtrl($animate, $state, ModalService) {
+     ModalService.showModal({
+        templateUrl: 'app/public/signup/signup.tmpl.html',
+        controller: "ModalsController as modalsCtrl"
+    }).then(function(modal) {
+        var box = $(".modal"),
+            shadow = $(".shadow");
+        $animate.addClass(box, "modal--open");
+        $animate.addClass(shadow, "shadow--show");
 
-    $scope.signup = function () {
-        if (this.p1 && this.p1.length > 3) {
-            if (this.p1 === this.p2) {
-                Auth.signup(this.email, this.username, this.p1).then(function(response) {
-                    response.flash();
-                });
-            } else {
-                Flash('danger', 'Passwords are different');
-            }
-        } else {
-            Flash('danger', 'Your password should contains at least 3 characters');
-        }
-    }
+        modal.close.then(function(result) {
+            $state.go("^");
+        });
+    });
 });

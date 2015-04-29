@@ -4,13 +4,13 @@
 	width:auto;
 	height:24px;
 	line-height:12px;
-	color:$secondary-color;
+	color:darken($secondary-color, 20%);
 	padding:6px 12px 6px 12px;
 	margin:4px 8px;
 	font-size:12px;
 	text-transform: uppercase;
 	border-radius:12px;
-	background-color:lighten($background-default, 4%);
+		background-color:$white;
 	text-decoration: none;
 	transition: .5s;
 
@@ -19,7 +19,34 @@
 		cursor:pointer;
 		text-decoration: none;
 		background-color:$white;
+		@include material-shadow(2);
 		transition: .5s;
+	}
+	
+	&.link--simple{
+		color:$white;
+		background:none;
+		cursor:pointer;
+		text-decoration:underline;
+		box-shadow: none;
+		padding:0px;
+		margin:0px;
+		
+		&:hover, &.focus, &.link.active{
+			color:darken($white, 6%);
+			background:none;
+			text-decoration:underline;
+			box-shadow: none;
+		}
+
+		&.link--active{
+			background:none;
+			color:$white;
+		}
+	}
+
+	&.link--medium{
+		margin:20px 0px;
 	}
 
 	&.link--active{

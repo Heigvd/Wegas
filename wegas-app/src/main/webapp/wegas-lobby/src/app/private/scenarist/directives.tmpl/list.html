@@ -1,5 +1,5 @@
 <div class="card card--big"
-      ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter: {name: search} | limitTo: maximum"
+      ng-repeat="scenario in scenarios | orderBy: 'createdTime':true | filter: {name: search, canView: true, canEdit: true} | limitTo: maximum"
       scenario="scenario"
       archive="archive"
       scenario-card >

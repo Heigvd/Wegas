@@ -8,19 +8,38 @@
    		<span class="button__label">Close</span>
 	</a>
 </div>
+<!-- Tabs -->
 <div class="modal__nav modal__nav--2tab">
-   	<a class="modal__nav__tab modal__nav__tab--left" ng-class="{'modal__nav__tab--active': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">Players</a> 
-   	<a class="modal__nav__tab modal__nav__tab--right"  ng-class="{'modal__nav__tab--active': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">Trainers</a> 
+   	<a class="modal__nav__tab modal__nav__tab--left" ng-class="{'modal__nav__tab--active': usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activePlayersView()">Players</a>
+   	<a class="modal__nav__tab modal__nav__tab--right"  ng-class="{'modal__nav__tab--active': !usersIndexCtrl.playersViewActived}" ng-click="usersIndexCtrl.activeTrainersView()">Trainers</a>
 </div>
+
+<!-- Trainers Content -->
 <div ng-if="!usersIndexCtrl.playersViewActived"class="modal__content" trainer-sessions-users-trainers-list trainers="usersIndexCtrl.session.trainers"></div>
-<div ng-if="!usersIndexCtrl.playersViewActived"class="modal__tools" mass-autocomplete>
-	<div class="modal__tools__autocomplete" search-users input-style="input input--small input--add-trainer" restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer" placeholder="Add trainer"></div>
+<div ng-if="!usersIndexCtrl.playersViewActived" class="modal__tools">
+	<div mass-autocomplete class="col-xs-9">
+		<div class="modal__tools__autocomplete" search-users input-style="input input--small input--add-trainer" restrict-roles="usersIndexCtrl.restrictRoles" callback="usersIndexCtrl.addTrainer" placeholder="Add trainer"></div>
+	</div>
+	<div class="col-xs-3">
+		<a class="button button--label-off button--refresh" title="Reload" ng-click="usersIndexCtrl.refreshSession()">
+	    	<span class="button__label">Reload</span>
+	    </a>
+	</div>
 </div>
-<div ng-if="usersIndexCtrl.playersViewActived"class="modal__content modal__content--tools-off">
-	<div 
-		ng-if="(!usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.teams.length < 1) 
-		|| (usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.players.length < 1)" 
+
+<!-- Players Content -->
+<div ng-if="usersIndexCtrl.playersViewActived"class="modal__content">
+	<div
+		ng-if="(!usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.teams.length < 1)
+		|| (usersIndexCtrl.session.properties.freeForAll && usersIndexCtrl.session.players.length < 1)"
 		class="modal__content__empty">No players</div>
 	<div ng-if="!usersIndexCtrl.session.properties.freeForAll" class="view__users-teams"  trainer-sessions-users-team-list teams="usersIndexCtrl.session.teams"></div>
 	<div ng-if="usersIndexCtrl.session.properties.freeForAll" class="view__users-individual" trainer-sessions-users-individual-list players="usersIndexCtrl.session.players"></div>
+</div>
+<div ng-if="usersIndexCtrl.playersViewActived" class="modal__tools">
+	<div class="col-xs-3 col-xs-push-9">
+		<a class="button button--label-off button--refresh" title="Reload" ng-click="usersIndexCtrl.refreshSession()">
+	    	<span class="button__label">Reload</span>
+	    </a>
+	</div>
 </div>

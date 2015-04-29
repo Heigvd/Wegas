@@ -20,6 +20,14 @@
         @include make-row();
         margin:12px 0px;
 
+        &.form__row--left{
+            float:left;
+            width:50%;
+        }
+        &.form__row--right{
+            float:right;
+            width:50%
+        }
 
         .form__row__label{
             display:none;

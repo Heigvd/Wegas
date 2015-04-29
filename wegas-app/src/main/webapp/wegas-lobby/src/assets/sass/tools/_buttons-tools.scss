@@ -22,10 +22,12 @@ $buttons-icon : (
     (remove, $fa-var-minus-circle),
     (download, $fa-var-download),
     (eye, $fa-var-eye),
+    (eye-slash, $fa-var-eye-slash),
     (lock, $fa-var-lock),
     (unlock, $fa-var-unlock),
     (valid, $fa-var-check),
-    (admin, $fa-var-gavel)
+    (admin, $fa-var-gavel),
+    (refresh, $fa-var-refresh)
 );
 
 %button--with-icon{
