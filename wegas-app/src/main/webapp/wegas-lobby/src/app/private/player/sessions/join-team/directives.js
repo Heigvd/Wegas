@@ -7,12 +7,32 @@ angular.module('private.player.session.join.directives', [])
         },
         controller: 'PlayerSessionJoinController as playerSessionJoinCtrl'
     };
-}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, SessionsModel, Flash){
+}).controller('PlayerSessionJoinController', function PlayerSessionJoinController($rootScope, $scope, $stateParams, $interval, SessionsModel, Flash){
     /* Assure access to ctrl. */
-    var ctrl = this;
+    var ctrl = this,
+        refresher = null,
+        findSessionToJoin = function(){
+            SessionsModel.findSessionToJoin($stateParams.token).then(function(response){
+                if(response.isErroneous()){
+                    $interval.cancel(refresher);
+                    $scope.close();
+                }else{
+                    if(response.data.access != "CLOSE"){
+                        if(!response.data.properties.freeForAll){
+                            ctrl.sessionToJoin = response.data;
+                        }else{
+                            $interval.cancel(refresher);
+                            $scope.close();
+                        }
+                    }else{
+                        Flash.danger("Session closed");
+                    }
+                }
+            });
+        };
 
     /* Container for datas */
-    ctrl.sessionToJoin = {};
+    ctrl.sessionToJoin = null;
     ctrl.newTeam = {
         name: "",
         alreadyUsed: false
@@ -20,14 +40,16 @@ angular.module('private.player.session.join.directives', [])
 
     ctrl.checkNameUsability = function(){
         var alreadyUsed = false;
-        if(ctrl.sessionToJoin.teams){
-            ctrl.sessionToJoin.teams.forEach(function(team){
-                if(team.name == ctrl.newTeam.name){
-                    alreadyUsed = true;
-                }
-            });
+        if(ctrl.sessionToJoin !== null){
+            if(ctrl.sessionToJoin.teams){
+                ctrl.sessionToJoin.teams.forEach(function(team){
+                    if(team.name == ctrl.newTeam.name){
+                        alreadyUsed = true;
+                    }
+                });
+            }
+            ctrl.newTeam.alreadyUsed = alreadyUsed;
         }
-        ctrl.newTeam.alreadyUsed = alreadyUsed;
     };
 
     /* Method used to create new team and join this new team in the session. */
@@ -38,6 +60,7 @@ angular.module('private.player.session.join.directives', [])
                     SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
                         if(!responseCreate.isErroneous()){
                             $rootScope.$emit('newSession', true);
+                            ctrl.newTeam = false;
                         }else{
                             responseCreate.flash();
                         }
@@ -55,6 +78,7 @@ angular.module('private.player.session.join.directives', [])
             SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
                 if(!response.isErroneous()){
                     $rootScope.$emit('newSession', true);
+                    $interval.cancel(refresher);
                     $scope.close();
                 }else{
                     response.flash();
@@ -66,21 +90,11 @@ angular.module('private.player.session.join.directives', [])
     };
 
     /* Initialize datas */
-    SessionsModel.findSessionToJoin($stateParams.token).then(function(response){
-        if(response.isErroneous()){
-            $scope.close();
-        }else{
-            if(ctrl.sessionToJoin.access != "CLOSE"){
-                if(!response.data.properties.freeForAll){
-                    ctrl.sessionToJoin = response.data;
-                }else{
-                    $scope.close();
-                }
-            }else{
-                Flash.danger("Session closed");
-            }
-        }
-    });
+    findSessionToJoin();
+    refresher = $interval(function() {
+        findSessionToJoin();
+    }, 1000);
+    
 })
 .directive('playerSessionTeamsList', function() {
   return {
@@ -102,7 +116,6 @@ angular.module('private.player.session.join.directives', [])
         link: function(scope, elem, attrs){
             scope.$watch(function(){return scope.newTeam.name;}, function(newVal){
                 scope.checkNameUsability();
-                console.log(scope.newTeam.alreadyUsed);
             });
         }
     };

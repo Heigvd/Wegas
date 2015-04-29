@@ -2,7 +2,7 @@
 <div class="view__list" ng-if="sessions.length > 0">
   <div 
     class="card card--big card--player-session" 
-    ng-repeat="session in sessions" 
+    ng-repeat="session in sessions | orderBy: 'createdTime':true" 
     session="session" 
     leave="leave" 
     player-sessions-card >

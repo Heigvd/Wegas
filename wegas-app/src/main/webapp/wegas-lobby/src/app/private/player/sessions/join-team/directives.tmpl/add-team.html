@@ -1,3 +1,3 @@
-	<input class="input input--small" type="text" ng-model="newTeam.name" placeholder="new team name" />
+	<input class="input input--small" type="text" ng-model="newTeam.name" placeholder="team name" />
 	<a class="button button--default" ng-click="createTeam()" ng-class="{true:'button--disable'}[newTeam.alreadyUsed || newTeam.name.length == 0]">Create</a>
 	<span ng-if="newTeam.alreadyUsed" class="modal__tools__info fade"><i class="fa fa-info-circle"></i>Existing team</i>
