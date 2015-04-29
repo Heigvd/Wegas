@@ -29,18 +29,29 @@ angular.module('private.player.sessions.directives', [])
                     Flash.danger("This is not a valid access key");
                 } else {
                     if (findResponse.data.access != "CLOSE") {
-                        if (findResponse.data.properties.freeForAll) {
-                            SessionsModel.joinIndividualSession(token).then(function(joinResponse) {
-                                if (!joinResponse.isErroneous()) {
-                                    updateSessions();
-                                } else {
-                                    joinResponse.flash();
-                                }
-                            });
-                        } else {
-                            $state.go('wegas.private.player.sessions.join', {
-                                token: findResponse.data.token
-                            });
+                        var alreadyJoin = false;
+                        ctrl.sessions.forEach(function(session){
+                            if(session.id == findResponse.data.id){
+                                alreadyJoin = true;
+                            }
+                        });
+                        if(alreadyJoin){
+                            Flash.info("You have already join this session");
+                        }else{
+                            if (findResponse.data.properties.freeForAll) {
+                                SessionsModel.joinIndividualSession(token).then(function(joinResponse) {
+                                    if (!joinResponse.isErroneous()) {
+                                        updateSessions();
+                                    } else {
+                                        joinResponse.flash();
+                                    }
+                                });
+                            } else {
+
+                                $state.go('wegas.private.player.sessions.join', {
+                                    token: findResponse.data.token
+                                });
+                            }
                         }
                     } else {
                         Flash.danger("Session closed");
@@ -84,6 +95,9 @@ angular.module('private.player.sessions.directives', [])
                 // Use checkToken from index to join a new session.
                 scope.joinSession = function() {
                     scope.checkToken(scope.sessionToJoin.token);
+                    scope.sessionToJoin = {
+                        token: ""
+                    };
                 };
             }
         };
