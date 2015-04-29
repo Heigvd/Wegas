@@ -5,7 +5,7 @@
     <div class="form__row fade" ng-if="newSession.name != ''">
         <select class="input input--small" id="scenario-template" ng-model="newSession.scenarioId">
             <option value="0">Based on scenario</option>
-            <option ng-repeat="scenario in scenarios" value="{{scenario.id}}">{{scenario.name}}</option>
+            <option ng-repeat="scenario in scenarios | filter: { canDuplicate: true }" value="{{scenario.id}}">{{scenario.name}}</option>
         </select>
     </div>
     <div class="form__row form__row--right">

@@ -15,13 +15,16 @@ angular.module('private.trainer.users.directives', [
         ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
 
         ctrl.playersViewActived = true;
-        SessionsModel.getSession("managed", $stateParams.id, true).then(function(response) {
-            ctrl.session = response.data || {};
-            if (response.isErroneous()) {
-                response.flash();
-            }
-        });
 
+        ctrl.refreshSession = function () {
+            SessionsModel.refreshSession("managed", ctrl.session).then(function(response) {
+                if (!response.isErroneous()) {
+                    ctrl.session = response.data;
+                } else {
+                    response.flash();
+                }
+            });
+        };
         ctrl.updateSession = function() {
             SessionsModel.getSession("managed", $stateParams.id, true).then(function(response) {
                 ctrl.session = response.data || {};
@@ -30,6 +33,7 @@ angular.module('private.trainer.users.directives', [
                 }
             });
         };
+        ctrl.updateSession();
         ctrl.activePlayersView = function() {
             ctrl.playersViewActived = true;
         };

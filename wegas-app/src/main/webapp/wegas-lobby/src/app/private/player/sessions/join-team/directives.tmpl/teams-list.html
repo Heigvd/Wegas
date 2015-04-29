@@ -1,20 +1,8 @@
-<div class="card card--medium card--users" ng-repeat="team in teams">
-	<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
-	<div class="card__description card__description--one-line">
-	    <div class="line line--primary">
-	    	<span>{{team.name | limitTo : 36}}</span>
-      		<span ng-if="team.name.length > 36">...</span>
-	    	<span> - </span>
-	    	<span>({{team.players.length}} players)</span>
-	    </div>
-	</div>
-	<div class="card__actions">
-	    <a class="button button--small button--default-reverse button--label-hover-left button--eye" >
-	      <span class="button__label">Show players</span>
-	    </a> 
-	    <a class="button button--small button--info button--user-plus" ng-click="joinTeam(team.id)">
-	      <span class="button__label">Join Team</span>
-	    </a>   
-	</div>
+<div 
+	class="card card--medium card--users" 
+	ng-repeat="team in teams" 
+	join-team="joinTeam"
+	team="team"
+	player-session-team>
 </div>
-<p ng-if="teams.length < 1">No team found</p>
+<p ng-if="teams.length < 1">No team created yet. Please, create a team.</p>

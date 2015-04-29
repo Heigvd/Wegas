@@ -120,6 +120,13 @@
                     color:$default-color;
                 }
             }
+            &.button--disable{
+                cursor:default;
+                opacity:.5;
+                &:hover{
+                    background-color:$type-color;
+                }
+            }
         }
 
         &.button--#{$type-name}-reverse{
@@ -146,6 +153,13 @@
             &.button--label-hover-left, &.button--label-hover-right{
                 .button__label{
                     color:$default-color;
+                }
+            }
+            &.button--disable{
+                cursor:default;
+                opacity:.5;
+                &:hover{
+                    color:$type-color;
                 }
             }
         }

@@ -57,6 +57,51 @@ $card-margin-size: 8px;
         }
     }
 
+    .card__list{
+        clear:both;
+        margin-left:80px;
+        margin-bottom:8px;
+        h4{
+            font-weight:500;
+            font-size:14px;
+            padding-top:8px;
+            margin-bottom:4px; 
+        }
+        p{
+            font-size:14px;
+        }
+
+        &.ng-enter, 
+        &.ng-leave{ 
+            transition: .2s;
+        } 
+             
+        &.ng-enter.ng-enter-active, 
+        &.ng-leave {
+            max-height:400px;
+            transition: .4s;
+        }
+             
+        &.ng-leave.ng-leave-active,
+        &.ng-enter {
+            max-height: 1px;       
+            transition: .4s;
+        }
+        .card__list__player{
+            &:after{
+                display:inline;
+                position:relative;
+                content:",";
+                margin-right:12px;
+            }  
+        }
+        .card__list__player:last-child{
+            &:after{
+                display:none;
+            }
+        }
+    }
+
     &.card--scenario {
         &.card--big {
             height: inherit;

@@ -62,7 +62,7 @@ $sizes : (
 );
 $backgrounds-levels : (
 	(bottom, $background-default, lighten($primary-color-light, 10%)), 
-	(middle, $background-default-secondary, $primary-color-light), 
+	(middle, $background-default-secondary, lighten($primary-color, 6%)), 
 	(top, $background-white, $primary-color)
 );
 $illustration-colors : (

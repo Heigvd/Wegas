@@ -29,11 +29,8 @@
 
     &.view--public-index{
         height:100%;
-        @include make-sm-column(8);
+        @include make-sm-column(12);
         @include make-xs-column(12);
-        @media screen and (max-width: $screen-sm) {
-            height: auto;
-        }
     }
 
     &.view--public-forms {
@@ -162,8 +159,6 @@
                 transition-delay:.3s;
             }
 
-
-
             &.view__list--no-content{
                 padding:8px 0px 32px 0px;
             }
@@ -280,13 +275,38 @@
     // Elements
     .view__first-header{
         display:block;
-        position:relative;
-        top:40%;
-        @media screen and (min-width: $screen-sm) {
-            margin-top:-22px;
+        position:relative;        
+        text-align:left;
+        margin-top:64px;
+        color:$white;
+        @include make-sm-column(8);
+        @include make-sm-column-offset(2);
+        @include make-md-column(6);
+        @include make-md-column-offset(3);
+        @include make-lg-column(4);
+        @include make-lg-column-offset(4);
+    }
+
+    .view__first-subtitle{
+        display:block;
+        position:relative;        
+        @include make-sm-column(8);
+        @include make-sm-column-offset(2);
+        @include make-md-column(6);
+        @include make-md-column-offset(3);
+        @include make-lg-column(4);
+        @include make-lg-column-offset(4);
+        padding:8px 20px;
+        font-size:16px;
+        color:$white;
+
+        &.subtitle--center{ 
+            text-align:center;
         }
-        padding:0px 32px;
-        text-align:right;
+
+        &.subtitle--medium{
+            padding:32px 20px;
+        }
     }
 
     .view__public-nav{
@@ -299,12 +319,12 @@
     }
 
     .view__login-form{
-        width:100%;
-        top:40%;
-        @media screen and (min-width: $screen-sm) {
-            padding:0px 64px;
-            margin-top:-22px;
-        }
+        @include make-sm-column(8);
+        @include make-sm-column-offset(2);
+        @include make-md-column(6);
+        @include make-md-column-offset(3);
+        @include make-lg-column(4);
+        @include make-lg-column-offset(4);
     }
 
     .view__password-form{
@@ -371,6 +391,18 @@
             bottom:auto;
             left:auto;
         }
+    }
+    .view__logo-albasim{
+        display:block;
+        position:absolute;
+        top:-110px;
+        left:0px;
+        width:120px;
+        height:120px;
+        background-size:100%;
+        -webkit-filter: drop-shadow(0 1px 3px rgba(0,0,0,0.12));
+        filter:         drop-shadow(0 1px 3px rgba(0,0,0,0.12)); 
+        background-image:url("../images/albasim_logo.png");
     }
 
 }

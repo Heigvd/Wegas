@@ -1,43 +1,32 @@
 angular.module('public.password', [
+    'public.password.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
         .state('wegas.public.password', {
             url: '/password',
             views: {
-        		"form" :{
-            		controller: 'PublicPasswordCtrl as publicPasswordCtrl',
-            		templateUrl: 'app/public/password/password.tmpl.html'
+        		"modal@wegas.public" :{
+            		controller: 'PublicPasswordModalController'
             	}
             }
             
         })
     ;
 })
-.controller('PublicPasswordCtrl', function ($state, $stateParams, Auth) {
-var publicPasswordCtrl = this;
-    publicPasswordCtrl.formInfo = {};
-    var remindPassword = function () {
+.controller("PublicPasswordModalController", function PublicPasswordModalController($animate, $state, ModalService) {
+        ModalService.showModal({
+            templateUrl: 'app/public/password/password.tmpl.html',
+            controller: "ModalsController as modalsCtrl"
+        }).then(function(modal) {
+            var box = $(".modal"),
+                shadow = $(".shadow");
+            $animate.addClass(box, "modal--open");
+            $animate.addClass(shadow, "shadow--show");
 
-        console.log("-> Reminding user password");
-
-        /* TODO: Implement correct form validation */
-        if (publicPasswordCtrl.formInfo.email != "") {
-            Auth.remindPassword(publicPasswordCtrl.formInfo.email).then(function(result) {
-                if(result === true) {
-                    /* TODO: Implement sweet and nice information/modal message */
-                    window.alert('Thanks. If the account exists, you will receive an email to reset your password!');
-                } else {
-                    /* TODO: Implement sweet and nice information/modal message */
-                    /* It seems the services return always true */
-                    window.alert('Oups... An error has occurred...');
-                }
+            modal.close.then(function(result) {
+                $state.go("^");
             });
-        } else {
-            /* TODO: Implement sweet and nice information/modal message */
-            window.alert('Username is empty..');
-        }
-    }
-    publicPasswordCtrl.remindPassword = remindPassword;
-})
+        });
+    })
 ;

@@ -26,7 +26,7 @@ angular.module('private.player.sessions.directives', [])
         ctrl.checkToken = function(token) {
             SessionsModel.findSessionToJoin(token).then(function(findResponse) {
                 if (findResponse.isErroneous()) {
-                    findResponse.flash();
+                    Flash.danger("This is not a valid access key");
                 } else {
                     if (findResponse.data.access != "CLOSE") {
                         if (findResponse.data.properties.freeForAll) {
