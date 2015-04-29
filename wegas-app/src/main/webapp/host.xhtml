@@ -15,7 +15,10 @@
     <ui:define name="pageUri">wegas-app/db/wegas-host-layout.json</ui:define>
 
     <script>//<ui:define name="editorFooter"><![CDATA[
-
+    Y.namespace("Wegas.Config").Dashboard = {
+        remoteScript:"",
+        columns:[]
+    }
     Y.Wegas.app.once("render", function() {
         Y.one("body").addClass("wegas-hostmode");
 

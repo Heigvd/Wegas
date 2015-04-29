@@ -59,7 +59,26 @@ YUI.add("wegas-preview-fullscreen", function(Y) {
         destructor: function() {
             this.handler.detach();
         }
+    }, {
+        NS: "BlockAction"
+    });
 
+    Y.Plugin.BlockAnyAction = Y.Base.create("wegas-blockanyaction", Y.Plugin.Base, [], {
+        initializer: function() {
+
+            Y.publish("playerAction", {
+                emitFacade: true
+            });
+            this.handler = Y.on("playerAction", function(e) {
+                e.halt(true);
+            }, this);
+        },
+        doBlock: function() {
+            return true;
+        },
+        destructor: function() {
+            this.handler.detach();
+        }
     }, {
         NS: "BlockAction"
     });

@@ -145,7 +145,7 @@
                     app.once("render", function() {                               // When the page is rendered
                         var gm = Y.Wegas.Facade.GameModel.cache.getCurrentGameModel(),
                                 loadedPlayers = [Y.Wegas.Facade.Game.cache.getCurrentPlayer().get("id")];
-                        Y.one(".wegas-title").setContent(gm.get("name"));       // Update the title
+                        Y.all(".wegas-title").setContent(gm.get("name"));       // Update the title
                         // Handle player change event
                         Y.Wegas.Facade.Game.cache.after('currentPlayerIdChange', function(e) {// Whenever the current player id changes
                             var player = Y.Wegas.Facade.Game.cache.getCurrentPlayer(),
