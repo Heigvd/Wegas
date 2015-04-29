@@ -591,7 +591,7 @@ YUI().use(function(Y) {
             },
             "wegas-preview-fullscreen": {
                 path: "js/plugin/wegas-preview-fullscreen-min.js",
-                ws_provides: ["PreviewFullScreen", "ToggleBlockAction", "BlockAction"],
+                ws_provides: ["PreviewFullScreen", "ToggleBlockAction", "BlockAction", "BlockAnyAction"],
                 requires: "wegas-pageeditorcss"
             },
             'wegas-fullwidthtab': {
@@ -606,7 +606,7 @@ YUI().use(function(Y) {
             },
             "wegas-console-wysiwyg": {
                 path: "js/widget/wegas-console-wysiwyg-min.js",
-                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden"],
+                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden", "wegas-widgettoolbar"],
                 ws_provides: "WysiwygConsole"
             },
             "wegas-editor-treeview": {
@@ -654,9 +654,12 @@ YUI().use(function(Y) {
             "gallery-colorpickercss": {
                 type: CSS
             },
+            "wegas-dashboardcss":{
+                type:CSS
+            },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: "datatable",
+                requires: ["datatable", "template", "wegas-dashboardcss"],
                 ws_provides: "Dashboard"
             },
             "wegas-resetter": {

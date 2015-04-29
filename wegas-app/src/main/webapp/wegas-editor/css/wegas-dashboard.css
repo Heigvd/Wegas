@@ -1,0 +1,38 @@
+/*
+ * Wegas
+ * http://wegas.albasim.ch
+ *
+ * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
+ * Licensed under the MIT License
+ */
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-collapsed ul {
+    display: none;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul {
+    padding-left: 30px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul:empty:before{
+    content: "empty";
+    font-style: italic;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-treeview {
+    cursor: pointer;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-collapsed .dashboard-toggle {
+    background-position: 0px -74px;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-toggle {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    background: url(../../wegas-app/images/wegas-icon-toggle.png) no-repeat -0px -112px;
+    cursor: pointer;
+    margin-left: -3px;
+}
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name button {
+   float:right;
+}

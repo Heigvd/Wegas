@@ -643,7 +643,9 @@ YUI.add('wegas-tabview', function(Y) {
                 }
             }, this);
             this.onHostEvent("addChild", function() {
-                Wegas.app.widget.showPosition("right");
+                if(Wegas.app.widget) {
+                    Wegas.app.widget.showPosition("right");
+                }
             });
         },
         onClick: function(e) {

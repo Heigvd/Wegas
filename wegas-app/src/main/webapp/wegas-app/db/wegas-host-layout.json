@@ -24,59 +24,6 @@
             }
         ]
     },
-    "left": {
-        "width": 300,
-        "children": [
-            {
-                "type": "TabView",
-                "id": "leftTabView",
-                "cssClass": "wegas-tabview-fullheight",
-                "children": [
-                    {
-                        "label": "Players",
-                        "cssClass": "wegas-tabview-fullheight",
-                        "children": [
-                            {
-                                "type": "TeamTreeView",
-                                "dataSource": "Game",
-                                "plugins": [
-                                    {
-                                        "fn": "WidgetToolbar"
-                                    }
-                                ]
-                            }
-                        ]
-                    }, {
-                        "type": "Tab",
-                        "label": "Variables",
-                        "cssClass": "editor-variables",
-                        "children": [
-                            {
-                                "type": "VariableTreeView",
-                                "dataSource": "Variable",
-                                "plugins": [
-                                    {
-                                        "fn": "EditorTVNodeLoader"
-                                    }, {
-                                        "fn": "WidgetToolbar"
-                                    }
-                                ]
-                            }
-                        ]
-                    }, {
-                        "type": "Tab",
-                        "label": "Pages",
-                        "cssClass": "editor-pages",
-                        "children": [
-                            {
-                                "type": "PageTreeview"
-                            }
-                        ]
-                    }
-                ]
-            }
-        ]
-    },
     "center": {
         "children": [
             {
@@ -85,54 +32,30 @@
                 "cssClass": "wegas-tabview-fullheight",
                 "children": [
                     {
-                        "type": "Tab",
-                        "label": "Preview",
+                        "label": "Overview",
                         "children": [
                             {
-                                "type": "PageLoader",
-                                "pageLoaderId": "previewPageLoader",
-                                "defaultPageId": 1,
-                                "cssClass": "editor-preview wegas-playerview",
+                                "type": "Dashboard",
+                                "tableCfg": {
+                                    "columns": []
+                                },
+                                "remoteScript": "",
                                 "plugins": [
                                     {
-                                        "fn": "PreviewFullScreen"
-                                    }, {
                                         "fn": "WidgetToolbar"
-                                    }, {
-                                        "fn": "Injector"
-                                    }, {
-                                        "fn": "BlockAction"
-                                    }, {
-                                        "fn": "PopupListener"
-                                    }, {
-                                        "fn": "ServerPopupListener"
                                     }
                                 ]
                             }
                         ]
                     }, {
                         "label": "Impact",
+                        "cssClass": "wegas-advanced-feature",
                         "children": [
                             {
                                 "type": "WysiwygConsole",
                                 "cssClass": "wegas-console"
                             }
                         ]
-                    }
-                ]
-            }
-        ]
-    },
-    "right": {
-        "width": "455px",
-        "children": [
-            {
-                "type": "TabView",
-                "id": "rightTabView",
-                "cssClass": "wegas-tabview-fullheight",
-                "plugins": [
-                    {
-                        "fn": "RemoveRightTab"
                     }
                 ]
             }

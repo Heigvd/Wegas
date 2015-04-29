@@ -1,0 +1,17 @@
+{
+    "type": "PageLoader",
+    "defaultPageId": 1,
+    "pageLoaderId": "previewPageLoader",
+    "cssClass": "wegas-playerview",
+    "plugins": [
+        {
+            "fn": "Injector"
+        }, {
+            "fn": "PopupListener"
+        }, {
+            "fn": "ServerPopupListener"
+        }, {
+            "fn": "BlockAnyAction"
+        }
+    ]
+}

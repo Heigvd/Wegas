@@ -23,10 +23,10 @@
         <ui:define name="body">
 
             <!-- Client script (game model specific) -->
-            <ui:repeat rendered="#{gameController.currentGameModel.properties.clientScriptUri != ''}"
-                       var="o" value="#{gameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">
-                <script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>
-            </ui:repeat>
+            <!--<ui:repeat rendered="#{gameController.currentGameModel.properties.clientScriptUri != ''}"-->
+                       <!--var="o" value="#{gameController.currentGameModel.properties.clientScriptUri.split(';')}" varStatus="status">-->
+                <!--<script type="text/javascript" src="#{o.trim()}?#{wegasConfig.timestamp}"></script>-->
+            <!--</ui:repeat>-->
 
             <script type="text/javascript">
                 YUI().use('wegas-app', 'wegas-scripteval', "wegas-websocketlistener", function(Y) {
@@ -62,7 +62,7 @@
                                     /* THIS IS NOT A COMMENT
                                      * </ui:fragment>
                                      */
-                                    initialFullRequest: 'wegas-app/db/wegas-app-layout.json',
+                                    initialFullRequest: '<ui:insert name="pageUri">wegas-app/db/wegas-app-layout.json</ui:insert>',
                                 plugins: [{
                                         fn: "JSONSchema"
                                     }, {
