@@ -30,6 +30,7 @@ public class ApplicationConfig extends ResourceConfig {
                  "com.wegas.messaging.rest", 
                  "com.wegas.proggame.rest", 
                  "com.wegas.resourceManagement.rest",
+                 "com.wegas.reviewing.rest", 
                  "com.wegas.admin");
     }
 }

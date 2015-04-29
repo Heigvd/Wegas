@@ -11,6 +11,7 @@ import com.wegas.core.ejb.VariableDescriptorFacade;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.persistence.variable.VariableInstance;
+import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
 import javax.ejb.EJB;
@@ -18,6 +19,7 @@ import javax.ejb.Stateless;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.UnauthorizedException;
 
 /**
  *
@@ -39,6 +41,11 @@ public class VariableInstanceController {
      */
     @EJB
     private VariableDescriptorFacade variableDescriptorFacade;
+    /**
+     * 
+     */
+    @EJB
+    private UserFacade userFacade;
 
     /**
      *
@@ -49,9 +56,17 @@ public class VariableInstanceController {
     @PUT
     @Path("{entityId: [1-9][0-9]*}")
     public VariableInstance update(@PathParam("entityId") Long entityId, VariableInstance entity) {
-        SecurityHelper.checkPermission(variableInstanceFacade.findGame(entityId), "Edit");
+        /* Check permission, either:
+         * 1) current user can edit the game
+         * 2) entity to update effectively belongs to the current player
+         */
+        VariableInstance target = variableInstanceFacade.find(entityId);
 
-        return variableInstanceFacade.update(entityId, entity);
+        if (SecurityHelper.isPermitted(variableInstanceFacade.findGame(entityId), "Edit") || target == target.getDescriptor().getInstance()) {
+            return variableInstanceFacade.update(entityId, entity);
+        } else {
+            throw new UnauthorizedException();
+        }
     }
 
     /**
