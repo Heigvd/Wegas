@@ -52,7 +52,7 @@ YUI.add('wegas-app', function(Y) {
             this._pendingRequests = 0;
             window.onbeforeunload = function() {
                 if (Y.Wegas.app._pendingRequests > 0) {
-                    return "Some requests are still pending ! Please stay on the page to avoid loosing part of your work";
+                    return "Some requests are still pending ! Please stay on the page to avoid losing part of your work";
                 } else {
                     return null;
                 }
