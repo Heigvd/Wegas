@@ -72,10 +72,10 @@
             }, {
                 "type": "PmgBreadcrumb",
                 "locations": [
-                    "Initiation",
-                    "Planning",
-                    "Execution",
-                    "Closing"
+                    "phase1Name",
+                    "phase2Name",
+                    "phase3Name",
+                    "phase4Name"
                 ],
                 "variable": "currentPhase",
                 "plugins": [

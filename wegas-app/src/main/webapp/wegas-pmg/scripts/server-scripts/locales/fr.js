@@ -128,12 +128,6 @@ i18nTable.fr = {
             wholeWeek: "toute la semaine"
         }
     },
-    phase: {
-        phase1: "Initiation",
-        phase2: "Planification",
-        phase3: "Réalisation",
-        phase4: "Terminaison"
-    },
     question: {
         question: "Question",
         action: "Action"
