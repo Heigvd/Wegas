@@ -67,7 +67,7 @@ YUI.add('wegas-dashboard', function(Y) {
                 key: "menu",
                 label: " ",
                 cellTemplate: "<td class='{className}'>" +
-                              "<button class='yui3-button dashboard-comment-team'><span class='wegas-icon wegas-icon-edit'></span></button>" +
+                              "<textarea class='dashboard-notes-team disabled' placeholder='Notes' readonly='true'>{content}</textarea>" +
                               "<button class='yui3-button dashboard-open-team' title='View'><span class='wegas-icon wegas-icon-open'></span></button>" +
                               "<button class='yui3-button dashboard-impact-team' title='Impact'><span class='wegas-icon wegas-icon-play'></span></button></td>"
             });
@@ -81,11 +81,21 @@ YUI.add('wegas-dashboard', function(Y) {
                 Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the target
                                                                                 // datasource
             this.get("boundingBox").delegate("click", function(e) {
-                new Y.Wegas.Panel({
-                    modal: true,
-                    content: "[TODO] team trainer note view / edit"
-                }).render();
-            }, ".yui3-datatable-col-menu .dashboard-comment-team");
+                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id"));
+                if (team && team.get("players").length) {
+                    new Y.Wegas.Panel({
+                        modal: true,
+                        children: [{
+                            type: "WysiwygConsole"
+                        }],
+                        width: 600,
+                        height: 600
+                    }).render();
+                } else {
+                    this.showMessage("info", "Could not find a player");
+                }
+
+            }, ".yui3-datatable-col-menu .dashboard-impact-team", this);
             this.get("boundingBox").delegate("click", function(e) {
                 var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id"));
                 if (team && team.get("players").length) {
@@ -97,7 +107,20 @@ YUI.add('wegas-dashboard', function(Y) {
             this.get("boundingBox").delegate("click", function(e) {
                 e.currentTarget.toggleClass("dashboard-collapsed");
             }, ".yui3-datatable-col-name .dashboard-treeview");
-
+            this.bindTextarea();
+        },
+        bindTextarea: function() {
+            this.get("boundingBox").delegate("focus", function(e) {
+                e.currentTarget.removeClass("disabled").addClass("enabled").removeAttribute("readonly");
+            }, ".yui3-datatable-col-menu textarea.disabled");
+            this.get("boundingBox").delegate("blur", function(e) {
+                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), value = e.currentTarget.get("value");
+                e.currentTarget.removeClass("enabled").addClass("disabled").setAttribute("readonly", true);
+                if (team.get("notes") !== value) {
+                    team.set("notes", value);
+                    Y.Wegas.Facade.Game.cache.put(team.toObject("players"), {});
+                }
+            }, ".yui3-datatable-col-menu textarea.enabled", this);
         },
         /**
          * @function
@@ -128,7 +151,8 @@ YUI.add('wegas-dashboard', function(Y) {
                             name: "<span class='wegas-icon wegas-icon-player'></span>" + p.get("name"),
                             team: t,
                             player: p,
-                            id: t.get("id")
+                            id: t.get("id"),
+                            menu: t.get("notes")
                         });
                     });
                 });
@@ -139,7 +163,8 @@ YUI.add('wegas-dashboard', function(Y) {
                         name: teamTemplate(t),
                         team: t,
                         player: t.get("players").length > 0 ? t.get("players")[0] : null,
-                        id: t.get("id")
+                        id: t.get("id"),
+                        menu: t.get("notes")
                     };
                 });
             }

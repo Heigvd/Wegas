@@ -7,21 +7,19 @@
  */
 package com.wegas.core.persistence.game;
 
+import com.fasterxml.jackson.annotation.*;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.rest.util.Views;
+
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 ////import javax.xml.bind.annotation.XmlTransient;
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.JsonSubTypes;
+
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -29,35 +27,47 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
         = @UniqueConstraint(columnNames = {"name", "parentgame_id"}))
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonSubTypes(value = {
-    @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
+        @JsonSubTypes.Type(name = "DebugTeam", value = DebugTeam.class)
 })
 @NamedQueries({@NamedQuery(name = "Team.findByGameIdAndName", query = "SELECT a FROM Team a WHERE a.name = :name AND a.gameId = :gameId")})
 public class Team extends AbstractEntity {
 
     private static final long serialVersionUID = 1L;
+
     /**
      *
      */
     @Id
     @GeneratedValue
     private Long id;
+
     /**
      *
      */
     @NotNull
     @Basic(optional = false)
     private String name;
+
     /**
      *
      */
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdTime = new Date();
+
+    /**
+     *
+     */
+    @Lob
+    @JsonView(value = Views.EditorI.class)
+    private String notes;
+
     /**
      *
      */
     @OneToMany(mappedBy = "team", cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JsonManagedReference(value = "player-team")
     private List<Player> players = new ArrayList<>();
+
     /**
      * The game model this belongs to
      */
@@ -68,6 +78,7 @@ public class Team extends AbstractEntity {
     //@XmlInverseReference(mappedBy = "teams")
     @JsonBackReference(value = "game-team")
     private Game game;
+
     /**
      *
      */
@@ -81,7 +92,6 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @param name
      */
     public Team(String name) {
@@ -89,13 +99,13 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @param a
      */
     @Override
     public void merge(AbstractEntity a) {
         Team t = (Team) a;
         this.setName(t.getName());
+        this.setNotes(t.getNotes());
     }
 
     /**
@@ -123,7 +133,6 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @param p
      */
     //@XmlTransient
@@ -142,7 +151,6 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -151,7 +159,6 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     @Override
@@ -160,7 +167,6 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @return
      */
     public String getName() {
@@ -168,11 +174,26 @@ public class Team extends AbstractEntity {
     }
 
     /**
-     *
      * @param name
      */
     public void setName(String name) {
         this.name = name;
+    }
+
+    /**
+     *
+     * @return
+     */
+    public String getNotes() {
+        return notes;
+    }
+
+    /**
+     *
+     * @param notes
+     */
+    public void setNotes(String notes) {
+        this.notes = notes;
     }
 
     /**

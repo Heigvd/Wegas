@@ -669,7 +669,7 @@ YUI().use(function(Y) {
             },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: ["datatable", "template", "wegas-dashboardcss"],
+                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus"],
                 ws_provides: "Dashboard"
             },
             "wegas-resetter": {
