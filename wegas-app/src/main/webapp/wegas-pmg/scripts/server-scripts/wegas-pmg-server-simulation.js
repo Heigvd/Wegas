@@ -1217,17 +1217,22 @@ var PMGSimulation = (function() {
         return result;
     }
 
+    function getTaskLabelWithNumber(td) {
+        return td.index + ". " + td.label;
+    }
+
     // Project tracking message : end of task
     function sendEndOfTaskMail(task, currentStep) {
-        var key = "endOfTask";
+        var key = "endOfTask",
+            taskName = getTaskLabelWithNumber(task);
         PMGHelper.sendMessage(
             I18n.t("messages." + key + ".from"),
             I18n.t("messages." + key + ".subject", {
-                task: task.label
+                task: taskName
             }),
             I18n.t("messages." + key + ".content", {
                 step: getStepName(currentStep),
-                task: task.label
+                task: taskName
             }));
     }
 
@@ -1258,8 +1263,8 @@ var PMGSimulation = (function() {
     function sendGoToNextTaskMail(resourceInstance, currentStep, oldTask, newTask) {
         var resourceName = resourceInstance.descriptor.label,
             resourceSkill = getSkillLabel(resourceInstance.mainSkill),
-            oldTaskName = oldTask.label,
-            newTaskName = newTask.label,
+            oldTaskName = getTaskLabelWithNumber(oldTask),
+            newTaskName = getTaskLabelWithNumber(newTask),
             key = "endOfTaskSwitchToNew";
         PMGHelper.sendMessage(
             I18n.t("messages." + key + ".from", {
@@ -1280,8 +1285,8 @@ var PMGSimulation = (function() {
     function sendGroupedGoToNextTaskMail(resourceInstances, currentStep, oldTask, newTask) {
         var resourceName = resourceInstances[0].descriptor.label,
             resourceSkill = getSkillLabel(resourceInstances[0].mainSkill),
-            oldTaskName = oldTask.label,
-            newTaskName = newTask.label,
+            oldTaskName = getTaskLabelWithNumber(oldTask),
+            newTaskName = getTaskLabelWithNumber(newTask),
             others = concatenateOthers(resourceInstances),
             key = "endOfTaskSwitchToNew_grouped";
 
@@ -1304,7 +1309,7 @@ var PMGSimulation = (function() {
     function sendGroupedEmailFromTemplate(resourceInstances, currentStep, taskDesc, key) {
         var resourceName = resourceInstances[0].descriptor.label,
             resourceSkill = getSkillLabel(resourceInstances[0].mainSkill),
-            taskName = taskDesc.label,
+            taskName = getTaskLabelWithNumber(taskDesc),
             others = concatenateOthers(resourceInstances, key !== "skillCompleted");
 
         key += "_grouped";
@@ -1313,7 +1318,8 @@ var PMGSimulation = (function() {
             I18n.t("messages." + key + ".from", {
                 employeeName: resourceName}),
             I18n.t("messages." + key + ".subject", {
-                task: taskName}),
+                task: taskName
+            }),
             I18n.t("messages." + key + ".content", {
                 step: getStepName(currentStep),
                 others: others,
@@ -1326,7 +1332,7 @@ var PMGSimulation = (function() {
     function sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, key) {
         var resourceName = resourceInstance.descriptor.label,
             resourceSkill = getSkillLabel(resourceInstance.mainSkill),
-            taskName = taskDesc.label;
+            taskName = getTaskLabelWithNumber(taskDesc);
         PMGHelper.sendMessage(
             I18n.t("messages." + key + ".from", {
                 employeeName: resourceName}),
