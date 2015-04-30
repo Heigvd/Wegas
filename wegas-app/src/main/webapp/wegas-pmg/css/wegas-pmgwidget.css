@@ -8,78 +8,76 @@
 
 /* Occupation & activity plugin css */
 
-.yui3-datatable-table .editable {
+.yui3-datatable-table .booked,
+.yui3-datatable-table .baseline,
+.yui3-datatable-table .worked,
+.yui3-datatable-table .activity,
+.yui3-datatable-table .unavailable,
+.yui3-datatable-table .progress,
+.yui3-datatable-table .engagementDelay,
+.yui3-datatable-table .delay .booked {
     display: block;
-    background-color: #3399FF;
     height: 14px;
 }
-.yui3-datatable-table .past .notEditable {
-    background-color: #ffbdbd;
+
+.yui3-datatable-table .baseline,
+.pmg-legend .baseline {
+    background-color: #878787;
+    opacity: 0.3;
 }
-.yui3-datatable-table .past .editable {
-    background-color: #bddeff;
+
+.pmg-legend .booked,
+.yui3-datatable-table .booked {
+    background-color: #2C96FF;
+}
+.yui3-datatable-table .past .unavailable {
+    background-color: #FF6060;
+}
+.pmg-legend .worked,
+.yui3-datatable-table .past .booked, 
+.yui3-datatable-table .past .activity {
+    background-color: #63B1FF;
+}
+.yui3-datatable-table .past .booked {
     color: rgb(80, 80, 80);
     font-size: 6pt;
     text-align: center;
 }
-.yui3-datatable-table .notEditable {
-    display: block;
+.pmg-legend .unavailable,
+.yui3-datatable-table .unavailable {
     background-color: #FF0000;
-    height: 14px;
 }
+
+.pmg-legend .engagementDelay,
 .yui3-datatable-table .engagementDelay,
-.yui3-datatable-table .delay .editable {
-    display: block;
+.yui3-datatable-table .delay .booked {
     background-image: url(../../wegas-pmg/images/hatching.png);
     background-repeat: repeat;
-    height: 14px;
+}
+
+.pmg-legend .fill100,
+.yui3-datatable-table .progress {
+    background-color: #3399FF;
+    opacity: 0.3;
 }
 .yui3-datatable-table .fill100 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
 }
 .yui3-datatable-table .fill0to25 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
     margin-right: 75%;
 }
 .yui3-datatable-table .fill0to50 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
     margin-right: 50%;
 }
 .yui3-datatable-table .fill0to75 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
     margin-right: 25%;
 }
 .yui3-datatable-table .fill25to100 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
     margin-left: 25%;
 }
 .yui3-datatable-table .fill50to100 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
     margin-left: 50%;
 }
 .yui3-datatable-table .fill75to100 {
-    display: block;
-    background-color: #3399FF;
-    height: 14px;
-    opacity: 0.3;
     margin-left: 75%;
 }
 /*tbody .past span {
@@ -251,22 +249,6 @@ tbody .past .activity {
     *display: inline;
     *zoom: 1;
     margin-right: 3px;
-}
-.pmg-legend .engagementDelay {
-    background-image: url(../../wegas-pmg/images/hatching.png);
-    background-repeat: repeat;
-}
-.pmg-legend .editable {
-    background-color: #3399FF;
-}
-.pmg-legend .fill100 {
-    background-color: rgba(51, 153, 255, 0.3);
-}
-.pmg-legend .notEditable {
-    background-color: #FF0000;
-}
-.pmg-legend .planification {
-    background-color: rgba(135, 135, 135, 0.3);
 }
 .onclickpopup {
     text-decoration: underline;
