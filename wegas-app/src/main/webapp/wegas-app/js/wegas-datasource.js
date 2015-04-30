@@ -42,6 +42,7 @@ YUI.add('wegas-datasource', function(Y) {
             this.queue = new Y.Queue();
             this.after("response", function(e) { // Add request queue consumption logic
                 if (e.tId === this.queuetid) {
+                    Y.Wegas.app.postSendRequest();
                     this.queuetid = null;
                     this.processQueue();
                 }
@@ -93,6 +94,7 @@ YUI.add('wegas-datasource', function(Y) {
             return Wegas.DataSource.superclass.sendRequest.call(this, request);
         },
         sendQueuedRequest: function(request) {
+            Y.Wegas.app.preSendRequest();
             this.queue.add(Y.bind(this.sendRequest, this, request)); // Push the request in the queue
             if (!this.queuetid) { // If a request from the queue is not already running
                 this.processQueue(); // process the request
