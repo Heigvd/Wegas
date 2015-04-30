@@ -18,6 +18,8 @@
 var PMGHelper = (function() {
     "use strict";
 
+    var defaultPhaseNames = ["Initiation", "Planning", "Execution", "Closing"];
+
     /**
      * Return the automatic planning setting 
      * Such a setting is given by the "autoReservation" bln variable
@@ -201,7 +203,12 @@ var PMGHelper = (function() {
     }
 
     function getCurrentPhaseName() {
-        return Variable.findByName(gameModel, "phase" + getCurrentPhaseNumber() + "Name").getValue(self);
+        var pNum = getCurrentPhaseNumber();
+        try {
+            return Variable.findByName(gameModel, "phase" + pNum + "Name").getValue(self);
+        } catch (e) {
+            return defaultPhaseNames[pNum - 1];
+        }
     }
 
     function getCurrentPeriodFullName() {
