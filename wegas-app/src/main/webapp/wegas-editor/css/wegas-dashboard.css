@@ -13,10 +13,12 @@
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul {
     padding-left: 30px;
 }
-.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul:empty:before{
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name ul:empty:before {
     content: "empty";
     font-style: italic;
 }
+
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name .dashboard-treeview {
     cursor: pointer;
 }
@@ -33,6 +35,24 @@
     cursor: pointer;
     margin-left: -3px;
 }
+
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-col-name button {
-   float:right;
+    float: right;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea {
+    width: 30em;
+    resize: none;
+    height: 2.5em;
+    transition: height 50ms 0.2s;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.disabled {
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.enabled {
+    height: 100px;
+    transition: none;
 }
