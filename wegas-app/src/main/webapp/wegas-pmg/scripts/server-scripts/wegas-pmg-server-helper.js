@@ -132,7 +132,7 @@ var PMGHelper = (function() {
              * it means that an "editable" occupation must exists for the current time
              */
             return (Y.Array.find(employeeInst.occupations, function(o) {
-                debug (" o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
+                debug(" o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && o.editable;
             }) === null ? false : true);
@@ -141,8 +141,8 @@ var PMGHelper = (function() {
              * The resource is always reserved unless
              * it has an "uneditable" occupation for the current period
              */
-            return ! Y.Array.find(employeeInst.occupations, function(o) {
-                debug (" !o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
+            return !Y.Array.find(employeeInst.occupations, function(o) {
+                debug(" !o.editable ? time: " + o.time + " period: " + period + " editable:  " + o.editable);
                 return o.time === period
                     && !o.editable; // Illness, etc. occupations are not editable
             });
@@ -201,19 +201,7 @@ var PMGHelper = (function() {
     }
 
     function getCurrentPhaseName() {
-// WTF I18nalize ??? NO: Must be the same as the ones in the time bar !
-        switch (getCurrentPhaseNumber()) {
-            case 1:
-                return "Initiation";
-            case 2:
-                return "Planning";
-            case 3:
-                return "Execution";
-            case 4:
-                return "Closing";
-            default:
-                return "";
-        }
+        return Variable.findByName(gameModel, "phase" + getCurrentPhaseNumber() + "Name");
     }
 
     function getCurrentPeriodFullName() {

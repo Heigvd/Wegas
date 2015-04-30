@@ -46,7 +46,7 @@
 .wegas-pmg-advancementlimit .wegas-template-valuebox-unit{
     background-color: white;
 }
-.wegas-pmg-advancementlimit .box-execution .wegas-template-valuebox-unit:last-child {
+.wegas-pmg-advancementlimit .box-phase3 .wegas-template-valuebox-unit:last-child {
     margin-left: 4px;
     border-left: 1px solid gray;
 }
