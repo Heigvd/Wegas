@@ -702,7 +702,7 @@
      *  Custom Error definition
      */
     Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
-        if (e.variableName === "timeCards") {
+        if (e.variableName === "Time cards") {
             var node = (Y.Widget.getByNode("#centerTabView") && Y.Widget.getByNode("#centerTabView").get("selection")) ||
                 Y.Widget.getByNode(".wegas-playerview");
             node.showMessage("warn", "You don't have enough time");
