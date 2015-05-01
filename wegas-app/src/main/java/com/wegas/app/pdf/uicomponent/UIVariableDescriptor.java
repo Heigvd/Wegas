@@ -324,7 +324,7 @@ public class UIVariableDescriptor extends UIComponentBase {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_ACTIVE, instance.getActive());
             }
 
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_DURATION, ((Double) (instance.getDuration())).toString());
+            UIHelper.printProperty(context, writer, UIHelper.TEXT_DURATION, instance.getProperty("duration"));
 
             // Should hide some properties to players...
             UIHelper.printKeyValueMap(context, writer, instance.getProperties());

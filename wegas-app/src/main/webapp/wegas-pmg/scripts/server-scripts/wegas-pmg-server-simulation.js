@@ -682,7 +682,7 @@ var PMGSimulation = (function() {
         var i, employeeInst, activityRate, averageSkillsetQuality, correctedRessources,
             taskInst = requirement.getTaskInstance(),
             taskDesc = taskInst.getDescriptor(),
-            stepAdvance = 1 / (STEPS * taskInst.duration),
+            stepAdvance = 1 / (STEPS * taskInst.getPropertyD("duration")),
             stepQuality = 0,
             sumActivityRate = 0,
             sumEmployeesMotivationXActivityRate = 0,
@@ -867,12 +867,12 @@ var PMGSimulation = (function() {
             delta = (0.25 * x + 0.75) * randomDurationSup;
         }
 
-        randomFactor = task.duration + delta;
+        randomFactor = task.getPropertyD("duration") + delta;
         if (randomFactor < MIN_TASK_DURATION) {
             randomFactor = MIN_TASK_DURATION;
         }
 
-        return task.duration / randomFactor;
+        return task.getPropertyD("duration") / randomFactor;
     }
 
     /**
@@ -1093,6 +1093,7 @@ var PMGSimulation = (function() {
         // #777 save EVM related histories only during execution
         var i, task, employeesRequired,
             sumCompletenessXdurationXnbr = 0, // nbr => numberOfRequiredResources
+            taskDuration = 0,
             sumDurationXnbr = 0, // nbr => idem
             sumRealised = 0,
             sumQualityXrealised = 0,
@@ -1124,8 +1125,9 @@ var PMGSimulation = (function() {
             }
 
             /* For project quality & completeness */
-            sumCompletenessXdurationXnbr += completeness * task.duration * employeesRequired;
-            sumDurationXnbr += task.duration * employeesRequired;
+            taskDuration = task.getPropertyD("duration");
+            sumCompletenessXdurationXnbr += completeness * taskDuration * employeesRequired;
+            sumDurationXnbr += taskDuration * employeesRequired;
             sumRealised += completeness;
             // Effective task quality := computedQuality + impact's quality delta (stored as 'quality')
             sumQualityXrealised += completeness * task.getPropertyD('computedQuality') + task.getPropertyD('quality');

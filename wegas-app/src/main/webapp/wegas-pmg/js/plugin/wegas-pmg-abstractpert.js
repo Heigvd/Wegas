@@ -38,7 +38,7 @@ YUI.add("wegas-pmg-abstractpert", function(Y) {
             if (plannedPeriods.length > 0) {
                 timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * plannedPeriods.length;
             } else {
-                timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * taskInst.get("duration");
+                timeSolde = (1 - parseInt(properties.completeness, 10) / 100) * taskInst.get("properties").duration;
             }
             return timeSolde;
         },

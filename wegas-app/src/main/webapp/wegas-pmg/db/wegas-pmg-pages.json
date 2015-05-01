@@ -836,7 +836,7 @@
                         "label": "Estimated</br>duration",
                         "width": "54px",
                         "name": "Estimatedduration",
-                        "key": "instance.duration",
+                        "key": "instance.properties.duration",
                         "className": "right"
                     }, {
                         "label": "Fixed costs",
@@ -1189,7 +1189,7 @@
                         "label": "Estimated</br>duration",
                         "width": "54px",
                         "name": "Estimatedduration",
-                        "key": "instance.duration",
+                        "key": "instance.properties.duration",
                         "className": "right"
                     }, {
                         "label": "Realised",

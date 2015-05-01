@@ -94,6 +94,12 @@
             type: GROUP,
             index: 10,
             fields: [{
+                    name: "duration",
+                    label: "Duration",
+                    type: NUMBER,
+                    value: 1,
+                    description: "[period]"
+                }, {
                     name: "fixedCosts",
                     label: "Fixed costs",
                     type: NUMBER,
@@ -161,6 +167,8 @@
                         scriptType: STRING,
                         type: SELECT,
                         choices: [{
+                                value: "duration"
+                            }, {
                                 value: "fixedCosts"
                             }, {/*
                              value: "quality"
@@ -178,6 +186,8 @@
                         type: SELECT,
                         scriptType: STRING,
                         choices: [{
+                                value: "duration"
+                            }, {
                                 value: "fixedCosts"
                             }, {
                                 value: "quality"
@@ -205,6 +215,8 @@
                         scriptType: STRING,
                         type: SELECT,
                         choices: [{
+                                value: "duration"
+                            }, {
                                 value: "fixedCosts"
                             }, {
                                 value: "quality"

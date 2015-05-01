@@ -361,7 +361,7 @@ var PMGTest = (function() {
         debug("CoordinationRatioInfDiffWorks4");
         reset();
 
-        task6.instance.duration = 3;
+        task6.instance.setProperty("duration", "3");
         task6.setProperty('coordinationRatioInf', '1.5');
         task6.setProperty('coordinationRatioSup', '1.2');
 
@@ -416,7 +416,7 @@ var PMGTest = (function() {
         reset();
 
         task1.setProperty('coordinationRatioSup', '2');
-        task1.instance.setDuration(10);
+        task1.instance.setProperty("duration", "10");
         task1.instance.requirements.get(0).quantity = 1;
 
         assign(informaticien1, task1);
