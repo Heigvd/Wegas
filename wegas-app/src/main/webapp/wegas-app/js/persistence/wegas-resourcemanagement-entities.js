@@ -692,9 +692,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             }
                         }
                     },
-                    duration: {
-                        type: NUMBER
-                    },
                     active: {
                         type: BOOLEAN,
                         _inputex: {
@@ -806,34 +803,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         typeInvite: VALUE,
                         scriptType: STRING
                     }]
-            },
-            getDuration: {
-                label: "Get Duration",
-                returns: NUMBER,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }]
-            },
-            addAtDuration: {
-                label: "Add to duration",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
-            },
-            setDuration: {
-                label: "Set duration",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        type: STRING,
-                        value: 1
-                    }]
             }
         }
     });
@@ -847,9 +816,6 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
             },
             active: {
                 type: BOOLEAN
-            },
-            duration: {
-                type: NUMBER
             },
             requirements: {
                 type: ARRAY,

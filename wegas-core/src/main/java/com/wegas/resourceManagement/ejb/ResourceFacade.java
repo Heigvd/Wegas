@@ -49,7 +49,7 @@ public class ResourceFacade {
     @PersistenceContext(unitName = "wegasPU")
     private EntityManager em;
 
-    private EntityManager getEntityManager(){
+    private EntityManager getEntityManager() {
         return em;
     }
 
@@ -370,6 +370,10 @@ public class ResourceFacade {
 
         if (event.getEntity() instanceof TaskDescriptor) {
             TaskDescriptor task = (TaskDescriptor) event.getEntity();
+            Double duration = task.getDefaultInstance().getDuration();
+            if (duration != null) {
+                task.getDefaultInstance().setProperty("duration", duration.toString());
+            }
             for (String predecessorName : task.getImportedPredecessorNames()) {
                 task.addPredecessor((TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName));
             }

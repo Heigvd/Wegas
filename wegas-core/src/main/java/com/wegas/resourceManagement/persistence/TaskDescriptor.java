@@ -276,30 +276,34 @@ public class TaskDescriptor extends VariableDescriptor<TaskInstance> {
 
     /**
      *
+     * @deprecated moved as property
      * @param p
      * @return
      */
     public double getDuration(Player p) {
-        return this.getInstance(p).getDuration();
+        return this.getInstance(p).getPropertyD("duration");
     }
 
     /**
      *
+     * @deprecated moved as property
      * @param p
      * @param value
      */
     public void setDuration(Player p, double value) {
-        this.getInstance(p).setDuration(value);
+        this.getInstance(p).setProperty("duration", Double.toString(value));
     }
 
     /**
      *
+     * @deprecated moved as property
      * @param p
      * @param value
      */
     public void addAtDuration(Player p, double value) {
         TaskInstance instance = this.getInstance(p);
-        instance.setDuration(instance.getDuration() + value);
+        double v = instance.getPropertyD("duration") + value;
+        instance.setProperty("duration", Double.toString(v));
     }
 
     public WRequirement getRequirementByName(Player p, String name) {
