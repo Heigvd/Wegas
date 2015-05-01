@@ -51,6 +51,27 @@ $card-margin-size: 8px;
 
     .card__actions{
         float:right;
+        .card__actions__access{
+            float:left;
+            width:210px;
+            .line{
+                font-size:14px;
+                padding:2px 2px 4px 2px;
+            }
+            .choice{
+                float:left;
+            }
+            .key-label{
+                margin:0px 4px;
+                float:left;
+            }
+            .key{
+                font-weight:500;
+                text-align:right;
+                margin-right:12px;
+            }
+
+        }
         .button{
             display: block;
             float: left;
@@ -184,7 +205,6 @@ $card-margin-size: 8px;
                     padding:($size-value - (3*$card-text-size) - (3*$card-margin-size))/2 16px; 
                 }
             }
-
 
             .card__actions{
                 padding:$size-action-margin 16px;

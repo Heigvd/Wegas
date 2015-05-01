@@ -1,4 +1,4 @@
-<div class="card card--big card--archive" ng-repeat="scenario in scenarios">
+<div class="card card--big card--archive" ng-repeat="scenario in scenarios | filter : { name: search }"">
     <div class="card__illustration illustration illustration--big illustration--icon" illustration="{{scenario.properties.iconUri}}"></div>
     <div 
         class="card__description" 
@@ -19,4 +19,7 @@
             <span class="button__label">Delete scenario</span>
         </a> 
     </div>
+</div>
+<div ng-if="(scenarios | filter:{name: search}).length == 0">
+    No archived scenario with the name "{{search}}"
 </div>

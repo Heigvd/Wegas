@@ -9,6 +9,7 @@ angular
                 var ctrl = this;
                 $scope.scenarios = [];
                 $scope.scenario = {};
+                $scope.permissions =[];
 
                 ctrl.updateScenario = function() {
                     // Searching for current scenario
@@ -24,6 +25,7 @@ angular
                                     response.flash();
                                 } else {
                                     $scope.permissions = response.data;
+                                    console.log($scope.permissions);
                                 }
                             });
                         }
@@ -68,15 +70,10 @@ angular
     .directive('scenaristCoscenaristsList', function(ScenariosModel) {
         return {
             templateUrl: 'app/private/scenarist/coscenarists/directives.tmpl/list.html',
-            scope: false,
-            require: "^scenaristCoscenaristsIndex",
-            link: function(scope, element, attrs, parentCtrl) {
-                scope.$watch(function() {
-                    return parentCtrl.permissions
-                }, function(newPermissions, permissions) {
-                    scope.permissions = newPermissions;
-                });
-
+            scope: {
+                permissions:"="
+            },
+            link: function(scope, element, attrs) {
                 scope.removeUser = function(scenarioId, userId) {
                     ScenariosModel.deletePermissions(scenarioId, userId).then(function(response) {
                         if (response.isErroneous()) {
@@ -112,11 +109,16 @@ angular
 
                 scope.canDuplicate = _.contains(scope.permission.permissions, "Duplicate");
                 scope.canCreate = _.contains(scope.permission.permissions, "Instantiate");
+
+                
             }
             calculatePermissions();
 
-
             scope.updatePermissions = function() {
+                if(scope.canEdit){
+                    scope.canDuplicate = true;
+                    scope.canCreate = true;
+                }
 
                 ScenariosModel.updatePermissions(this.scenario.id, this.permission.user.id, this.canCreate, this.canDuplicate, this.canEdit).then(function(response) {
                     if (response.isErroneous()) {

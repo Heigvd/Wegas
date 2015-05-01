@@ -6,9 +6,13 @@
 	</a>
 </div>
 <div
-	class="modal__content--nav-tools-off"
+	class="modal__content modal__content--nav-off"
 	scenarios="scenaristArchivesIndexCtrl.archives"
 	unarchive="scenaristArchivesIndexCtrl.unarchiveScenario"
 	delete="scenaristArchivesIndexCtrl.deleteArchivedScenario"
+	search="scenaristArchivesIndexCtrl.sfilter.search"
 	scenarist-scenarios-archives-list>
+</div>
+<div class="modal__tools">
+	<input ng-model="scenaristArchivesIndexCtrl.sfilter.search" type="text" class="input input--small" placeholder="Search scenario" />
 </div>

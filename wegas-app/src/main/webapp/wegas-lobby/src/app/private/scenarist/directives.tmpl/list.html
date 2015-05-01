@@ -4,3 +4,6 @@
       archive="archive"
       scenario-card >
 </div>
+<div ng-if="(scenarios | filter:{name: search}).length == 0">
+    No current scenario with the name "{{search}}"
+</div>

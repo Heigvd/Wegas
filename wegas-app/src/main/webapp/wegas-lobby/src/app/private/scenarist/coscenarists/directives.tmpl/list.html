@@ -1,5 +1,5 @@
 <h2>Coscenarists</h2>
-<article class="card card--flat card--big card--coscenarist-permission" ng-repeat="permission in permissions" permission="permission">
+<article class="card card--flat card--big card--coscenarist-permission" ng-repeat="permission in permissions track by permission.user.id" permission="permission">
   <div class="card__illustration illustration illustration--big illustration--icon" illustration="ICON_grey_user"></div>
 <div class="card__description">
   <h4 class="card__description__titre">{{ permission.user.name }}</h4>
