@@ -81,7 +81,7 @@ public class TaskInstance extends VariableInstance {
      */
     public void setDuration(double duration) {
         if (duration < 0.0) {
-            throw new WegasOutOfBoundException(0L, null, duration, null);
+            throw new WegasOutOfBoundException(0L, null, duration, "duration");
         } else {
             this.duration = duration;
         }
