@@ -6,3 +6,6 @@
 	edit-access="editAccess"
 	trainer-session >
 </div>
+<div ng-if="(sessions | filter:{name: search}).length == 0">
+    No current session with the name "{{search}}"
+</div>

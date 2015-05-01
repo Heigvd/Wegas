@@ -20,7 +20,7 @@
         &.input--#{$size-nom}{
             height: $size-value;
             padding:$size-value/4 $size-value/2;
-            font-size: $size-value / 4;
+            font-size: $size-value/3;
             line-height: $size-value/2;
             border-radius: $size-value/8;
 
@@ -92,10 +92,7 @@ label.choice{
         float:left;
         overflow:hidden;
         input[type="radio"], input[type="checkbox"]{
-            display:block;
-            position:absolute;
-            top:-600px;
-            left:-600px;
+            display:none;
         }
         .choice__box__display{
             display:block;
@@ -107,7 +104,6 @@ label.choice{
             background:none;
             border:solid 1px $border;
             border-radius:2px;
-            box-sizing: border-box;
             box-sizing: border-box;
             transition:.3s;
         }
@@ -124,11 +120,50 @@ label.choice{
         } 
 
     }
+
     .choice__label{
         height:24px;
         margin-left:2px;
         font-size:14px;
         line-height: 24px;
         width:auto;
+    }
+
+    &.choice--toogle{
+        $box-size: 24px;
+        width: $box-size*2;
+        .choice__label{
+            // display:none;
+        }
+        .choice__box{
+            width:$box-size*2;
+            height:$box-size;
+            border:solid 1px $border;
+            border-radius:$box-size/2;
+            overflow:hidden;
+
+            .choice__box__display{
+                display:block;
+                position:absolute;
+                width:$box-size - 2;
+                height:$box-size - 2;
+                padding:0px;
+                margin:0px;
+                top:0px;
+                left:$box-size;
+                border:none;
+                background:$default-color-button;
+                border-radius:($box-size - 2)/2;
+                box-sizing: border-box;
+                transition:.3s;
+            }
+
+            input[type="checkbox"]:checked + .choice__box__display{ 
+                border:none;
+                left:0;
+                background:$success-color;
+                transition:.3s;
+            } 
+        }
     }
 }

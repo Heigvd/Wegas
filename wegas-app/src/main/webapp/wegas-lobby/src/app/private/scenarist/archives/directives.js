@@ -10,6 +10,20 @@ angular.module('private.scenarist.archives.directives', [])
     }).controller("ScenaristArchivesIndexController", function ScenaristArchivesIndexController($rootScope, $scope, ScenariosModel, Flash) {
         var ctrl = this;
         ctrl.archives = [];
+        ctrl.sfilter = {
+            init: false,
+            search : ""
+        };
+        $scope.$watch(function(){
+            return ctrl.sfilter.search;
+        }, function(newSearch){
+            if(ctrl.sfilter.init){
+                $rootScope.$emit("changeSearch", newSearch);
+            }else{
+                ctrl.sfilter.search = $rootScope.search;
+                ctrl.sfilter.init = true;
+            }
+        });
 
         ctrl.updateScenarios = function() {
         	ScenariosModel.getScenarios("BIN").then(function(response) {
@@ -62,7 +76,8 @@ angular.module('private.scenarist.archives.directives', [])
             scope: {
                 scenarios: "=",
                 unarchive: "=",
-                delete:"="
+                delete:"=",
+                search:"="
             },
             templateUrl: 'app/private/scenarist/archives/directives.tmpl/list.html'
         };

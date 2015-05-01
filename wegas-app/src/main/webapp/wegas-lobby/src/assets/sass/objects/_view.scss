@@ -326,12 +326,11 @@
         @include make-lg-column(4);
         @include make-lg-column-offset(4);
     }
-
-    .view__password-form{
-        width:100%;
-        top:40%;
-        padding:0px 64px;
-        margin-top:-72px;
+    .view__password-form.form{
+        padding:16px;
+        .form__row{
+            margin:0px;
+        }
     }
 
     .view__signup-form{

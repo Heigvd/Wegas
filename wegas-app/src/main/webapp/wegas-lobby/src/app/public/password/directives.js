@@ -8,28 +8,21 @@ angular.module('public.password.directives', [])
             controller: "PublicPasswordController as publicPasswordCtrl"
         };
     })
-    .controller('PublicPasswordController', function PublicPasswordController($state, $stateParams, Auth) {
+    .controller('PublicPasswordController', function PublicPasswordController($scope, $state, $stateParams, Auth, Flash) {
         var publicPasswordCtrl = this;
-        publicPasswordCtrl.formInfo = {};
+        publicPasswordCtrl.formInfo = {
+            email: ""
+        };
         var remindPassword = function() {
-
-            console.log("-> Reminding user password");
-
-            /* TODO: Implement correct form validation */
-            if (publicPasswordCtrl.formInfo.email != "") {
-                Auth.remindPassword(publicPasswordCtrl.formInfo.email).then(function(result) {
-                    if (result === true) {
-                        /* TODO: Implement sweet and nice information/modal message */
-                        window.alert('Thanks. If the account exists, you will receive an email to reset your password!');
-                    } else {
-                        /* TODO: Implement sweet and nice information/modal message */
-                        /* It seems the services return always true */
-                        window.alert('Oups... An error has occurred...');
+           if (publicPasswordCtrl.formInfo.email != "") {
+                Auth.remindPassword(publicPasswordCtrl.formInfo.email).then(function(response) {
+                    response.flash();
+                    if (!response.isErroneous()) {
+                        $scope.close();
                     }
                 });
             } else {
-                /* TODO: Implement sweet and nice information/modal message */
-                window.alert('Username is empty..');
+                Flash.danger('Please, enter an email');
             }
         }
         publicPasswordCtrl.remindPassword = remindPassword;

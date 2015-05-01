@@ -143,10 +143,10 @@ angular.module('wegas.service.auth', [
             var deferred = $q.defer();
             $http.post(ServiceURL + "rest/User/SendNewPassword", obj)
                 .success(function(data) {
-                    deferred.resolve(true);
+                    deferred.resolve(Responses.success("A new password has been send", true));
                 })
                 .error(function(data) {
-                    deferred.resolve(data);
+                    deferred.resolve(Responses.danger("Error during password generation", false));
                 });
             return deferred.promise;
         };

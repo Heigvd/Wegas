@@ -1,12 +1,12 @@
 <ul>
   <li>
-    <input ng-change="updatePermissions()" type="checkbox" ng-model="canEdit" />Edit
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canEdit" />Edit scenario
   </li>
   <li>
-    <input ng-change="updatePermissions()" type="checkbox" ng-model="canDuplicate" ng-disabled="canEdit" />Duplicate
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canDuplicate" ng-disabled="canEdit" />Duplicate scenario
   </li>
   <li>
-    <input ng-change="updatePermissions()" type="checkbox" ng-model="canCreate" ng-disabled="canEdit" />Create
+    <input ng-change="updatePermissions()" type="checkbox" ng-model="canCreate" ng-disabled="canEdit" />Create session from scenario
   </li>
 </ul>
 <em>{{ msg }}</em>
