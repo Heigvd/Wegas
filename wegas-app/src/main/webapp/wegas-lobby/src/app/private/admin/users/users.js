@@ -37,10 +37,10 @@ angular.module('private.admin.users', [
             }
         });
     })
-    .controller("AdminUserEditController", function AdminUserEditController($animate, $state, ModalService) {
+    .controller("AdminUserEditController", function AdminUserEditController($animate, $state, ModalService, Auth) {
             Auth.getAuthenticatedUser().then(function(user) {
                     if (user != null) {
-                        if (!user.isAdmin) {
+                        if (user.isAdmin) {
                             ModalService.showModal({
                                 templateUrl: 'app/private/admin/users/directives.tmpl/modal.html',
                                 controller: "ModalsController as modalsCtrl"
