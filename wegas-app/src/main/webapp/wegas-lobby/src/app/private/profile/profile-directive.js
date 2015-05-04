@@ -4,6 +4,9 @@ angular
     ])
     .directive('profileIndex', function(UsersModel) {
         return {
+            scope: {
+                close: "&"
+            },
             templateUrl: 'app/private/profile/tmpl/profile-index.html',
             controller: function($scope, $stateParams, $sce, $rootScope, Auth, Flash) {
                 var ctrl = this;
@@ -31,6 +34,10 @@ angular
                         response.flash();
                         $scope.user.password = '';
                         $scope.user.password2 = '';
+
+                        if (!response.isErroneous()) {
+                            $scope.close();
+                        }
                     });
                 }
 

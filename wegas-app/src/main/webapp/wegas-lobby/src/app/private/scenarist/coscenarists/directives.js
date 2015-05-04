@@ -25,7 +25,6 @@ angular
                                     response.flash();
                                 } else {
                                     $scope.permissions = response.data;
-                                    console.log($scope.permissions);
                                 }
                             });
                         }
