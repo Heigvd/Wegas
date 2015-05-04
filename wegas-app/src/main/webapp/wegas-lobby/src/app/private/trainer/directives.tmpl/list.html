@@ -1,6 +1,6 @@
 <div
 	class="card card--big card--trainer-session"
-	ng-repeat="session in sessions | orderBy: 'createdTime':true | filter: {name: search, gameModel:{canView: true, canEdit: true}}  | limitTo: maximum"
+	ng-repeat="session in sessions | orderBy: 'createdTime':true | filter: {name: search, gameModel:{canView: true}}  | limitTo: maximum"
 	session="session"
 	archive="archive"
 	edit-access="editAccess"
