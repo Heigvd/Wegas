@@ -37,7 +37,7 @@ angular.module('private.admin.users', [
             }
         });
     })
-    .controller("AdminUserEditController", function AdminUserEditController($animate, $state, ModalService, Auth) {
+    .controller("AdminUserEditController", function AdminUserEditController(Auth, $animate, $state, ModalService) {
             Auth.getAuthenticatedUser().then(function(user) {
                     if (user != null) {
                         if (user.isAdmin) {
