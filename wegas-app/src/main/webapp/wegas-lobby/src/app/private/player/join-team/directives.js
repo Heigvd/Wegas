@@ -1,7 +1,7 @@
-angular.module('private.player.session.join.directives', [])
+angular.module('private.player.join.directives', [])
 .directive('playerSessionJoinIndex', function(){
     return {
-        templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/index.html',
+        templateUrl: 'app/private/player/join-team/directives.tmpl/index.html',
         scope:{
             close: "&"
         },
@@ -100,16 +100,17 @@ angular.module('private.player.session.join.directives', [])
 })
 .directive('playerSessionTeamsList', function() {
   return {
-    templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/teams-list.html',
+    templateUrl: 'app/private/player/join-team/directives.tmpl/teams-list.html',
     scope: {
         teams : "=",
-        joinTeam : "="
+        joinTeam : "=",
+        newTeam : "="
     }
   };
 })
 .directive('playerSessionAddTeam', function(){
     return {
-        templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/add-team.html',
+        templateUrl: 'app/private/player/join-team/directives.tmpl/add-team.html',
         scope: {
             newTeam: "=",
             createTeam: "&",
@@ -124,7 +125,7 @@ angular.module('private.player.session.join.directives', [])
 })
 .directive('playerSessionTeam', function(){
     return {
-        templateUrl: 'app/private/player/sessions/join-team/directives.tmpl/team-card.html',
+        templateUrl: 'app/private/player/join-team/directives.tmpl/team-card.html',
         scope: {
             team: "=",
             joinTeam: "="

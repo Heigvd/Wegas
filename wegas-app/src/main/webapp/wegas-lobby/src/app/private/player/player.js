@@ -1,5 +1,7 @@
 angular.module('private.player', [
-    'private.player.sessions'
+    'private.player.join',
+    'private.player.team',
+    'private.player.directives'
 ])
 .config(function ($stateProvider) {
     $stateProvider
@@ -8,7 +10,7 @@ angular.module('private.player', [
             views: {
                 'workspace': {
                     controller: 'PlayerCtrl as playerCtrl',
-                    templateUrl: 'app/private/player/sessions/sessions.tmpl.html'
+                    templateUrl: 'app/private/player/player.tmpl.html'
                 }
             }
         })
