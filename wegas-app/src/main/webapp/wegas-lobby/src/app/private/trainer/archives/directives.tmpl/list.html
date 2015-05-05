@@ -4,7 +4,7 @@
         class="card__description" 
         ng-class="  {true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
         <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
-        <div class="line line--primary">{{session.name | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
+        <div class="line line--primary">{{session.name | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.gameModel.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
         <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
     </div>
     <div class="card__actions">

@@ -646,7 +646,9 @@ angular.module('wegas.models.sessions', [])
         /* Get a session form token, undefined otherwise. */
         model.findSessionToJoin = function(token) {
             var deferred = $q.defer();
-            $http.get(ServiceURL + "rest/GameModel/Game/FindByToken/" + token).success(function(data) {
+            $http.get(ServiceURL + "rest/GameModel/Game/FindByToken/" + token, {
+                    ignoreLoadingBar: true
+                }).success(function(data) {
                 if (data) {
                     data = formatPlayers(data)
                     deferred.resolve(Responses.success("Session find", data));

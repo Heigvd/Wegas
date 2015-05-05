@@ -3,10 +3,10 @@
 	class="card__description"
 	ng-class="{true:'card__description--one-line', false:'card__description--two-lines'}[session.properties.freeForAll]" >
     <div class="line line--primary">
-      {{ session.name | limitTo : 36}}<span ng-if="session.name.length > 36">...</span>
+      {{ session.name | limitTo : MAX_DISPLAYED_CHARS}}<span ng-if="session.name.length > MAX_DISPLAYED_CHARS">...</span>
     </div>
     <div ng-if="!session.properties.freeForAll" class="line line--secondary">
-    	Team "{{team.name | limitTo : 26}}<span ng-if="team.name.length > 26">...</span>"
+    	Team "{{team.name | limitTo : (MAX_DISPLAYED_CHARS - 10)}}<span ng-if="team.name.length > (MAX_DISPLAYED_CHARS - 10)">...</span>"
     </div>
 </div>
 <div class="card__actions">

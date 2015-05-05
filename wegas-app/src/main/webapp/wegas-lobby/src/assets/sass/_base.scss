@@ -4,7 +4,7 @@
     font-weight:$font-weight-default;
 }
 
-body{ 
+body{
     display:block;
     position:absolute;
     top:0px;
@@ -12,12 +12,8 @@ body{
     height:100%;
     width:100%;
     background-color:$background-default;
-    -webkit-perspective: 1200px;
-    -moz-perspective: 1200px;
-    perspective: 1200px;
     overflow-x:hidden;
     overflow-y:auto;
-    -webkit-backface-visibility: hidden;
 
     &.guideline{
         overflow:auto;
@@ -27,7 +23,7 @@ body{
 hr{
     border-color:$border;
     clear:both;
-} 
+}
 
 a {
     color:$default-color-button;

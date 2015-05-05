@@ -120,6 +120,7 @@ angular.module('private.player.sessions.directives', [])
             },
             link: function(scope, element, attrs) {
                 scope.ServiceURL = ServiceURL;
+                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
                 if(!scope.session.properties.freeForAll){
                     Auth.getAuthenticatedUser().then(function(user){
                         scope.team = {};

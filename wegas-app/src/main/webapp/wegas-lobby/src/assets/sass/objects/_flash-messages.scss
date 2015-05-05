@@ -22,12 +22,12 @@
     }
   }
 
-  @each $flash in $buttons-types{
+  @each $flash in $buttons-types {
     $flash-name: nth($flash, 1);
     $flash-color: nth($flash, 2);
-    
+
     .#{$flash-name} {
-      background-color: $flash-color;
+      background-color: lighten($flash-color, 10%);
     }
   }
 }

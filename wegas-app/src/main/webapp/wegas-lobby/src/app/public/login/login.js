@@ -31,6 +31,5 @@ angular.module('public.login', [
         } else {
             Flash('danger', 'username/password cannot be empty');
         }
-    }
-    publicLoginCtrl.login = login;
+    };
 });

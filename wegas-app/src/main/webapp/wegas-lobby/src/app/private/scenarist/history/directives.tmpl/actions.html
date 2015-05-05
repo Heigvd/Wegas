@@ -1,7 +1,12 @@
-
-<a class="button button--small button--download" scenarist-history-download-pdf>PDF File</a>
-<a class="button button--small button--download" scenarist-history-download-json> JSON File</a>
-
-<a class="button button--small button--add">
-  <span class="button__label" ng-click="addVersion()">Create new version</span>
-</a>
+<div class="col-xs-8">
+    <a class="button button--small button--fork" title="This actions will store a new version of the scenario. The version can be restored as a new scenario.">
+        <span class="button__label" ng-click="addVersion()">New version</span>
+    </a>
+    <a class="button button--small button--duplicate" title="This will generate a new scenario based on this one.">
+        <span class="button__label" ng-click="copyScenario()">Duplicate</span>
+    </a>
+</div>
+<div class="col-xs-4">
+    <a class="button button--small button--download" scenarist-history-download-pdf>PDF</a>
+    <a class="button button--small button--download" scenarist-history-download-json>JSON</a>
+</div>

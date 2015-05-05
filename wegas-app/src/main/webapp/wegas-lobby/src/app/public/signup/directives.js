@@ -37,5 +37,5 @@ angular.module('public.signup.directives', [])
 	        } else {
 	            Flash('danger', 'Your password should contains at least 3 characters');
 	        }
-	    }
+	    };
     });

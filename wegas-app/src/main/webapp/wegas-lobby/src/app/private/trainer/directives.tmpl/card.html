@@ -3,8 +3,8 @@
     class="card__description" 
     ng-class="{true:'card__description--two-lines', false:'card__description--three-lines'}[session.gameModel.comments == null || session.gameModel.comments == '']" >
     <div class="line">{{session.createdTime | date:"dd.MM.yyyy"}}</div>
-    <div class="line line--primary">{{session.name | limitTo: 32}}<span ng-if="session.name.length > 32">...</span></div>
-    <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: 36}}<span ng-if="session.gameModel.comments.length > 36">...</span></div>
+    <div class="line line--primary">{{session.name | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.name.length > MAX_DISPLAYED_CHARS">...</span></div>
+    <div ng-if="!((session.gameModel.comments == null) || (session.gameModel.comments == ''))" class="line line--optionnal">{{session.gameModel.comments | limitTo: MAX_DISPLAYED_CHARS}}<span ng-if="session.gameModel.comments.length > MAX_DISPLAYED_CHARS">...</span></div>
 </div>
 <div class="card__access">
 </div>
@@ -23,8 +23,8 @@
       <div ng-if="!open" class="key-label">No other player can join</div>
       <div ng-if="open" class="key-label">Players can join with key:</div><div ng-if="open" class="key">{{session.token}}</div>
     </div>
-    <a class="button button--medium button--round button--default-reverse button--label-off button--customize" title="Customize session" ui-sref=".customize({id: session.id})">
-      <span class="button__label">Customize Session</span>
+    <a class="button button--medium button--round button--default-reverse button--label-off button--settings" title="Settings" ui-sref=".settings({id: session.id})">
+      <span class="button__label">Settings</span>
     </a>
     <a class="button button--medium button--round button--default-reverse button--label-off button--user" title="Manage Users" ui-sref=".users({id: session.id})">
       <span class="button__label">Manage Users</span>

@@ -85,6 +85,9 @@ angular.module('private.trainer.archives.directives', [])
                 unarchive: "=",
                 search: "="
             },
-            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html'
+            templateUrl: 'app/private/trainer/archives/directives.tmpl/list.html',
+            link: function(scope, elem, attrs){
+                scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
+            }
         };
     });

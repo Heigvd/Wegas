@@ -269,11 +269,6 @@
 
 		.modal__tools {
 			padding: .5em 1em;
-			a.button:nth-child(1),
-			a.button:nth-child(2) {
-				float: right;
-			}
-
 		}
 	}
 	&.modal--join-team {
@@ -302,7 +297,7 @@
 		}
 	}
 
-	&.modal--customize{
+	&.modal--settings{
 		.modal__content{
         	@include make-row(0px);
         	padding:0px;
@@ -335,10 +330,10 @@
 				}
 			}
 			.color{
-				float:left;
-				margin:16px;
-				border:solid 0px white;
-				transition:.3s;
+				float: left;
+				margin: 16px;
+				border: 0px;
+				transition: .3s;
 
 				&:hover{
 					@include material-shadow();
@@ -354,15 +349,23 @@
 					cursor:default;
 				}
 			}
-			.infos--main{
+			.advanced {
+				@include make-xs-column(12);
+				h3 {
+					color: $danger-color;
+					font-weight: bold;
+					font-size: 1.5em;
+				}
+			}
+			.infos--main {
 		        @include make-xs-column(7);
 
 			}
-			.infos--secondary{
+			.infos--secondary {
 		        @include make-xs-column(5);
 			}
-			.infos--main, .infos--secondary{
-				.infos__label{
+			.infos--main, .infos--secondary {
+				.infos__label {
 					display:block;
 					padding:0px 24px;
 					margin:12px 0px 8px 0px;

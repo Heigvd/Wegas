@@ -1,8 +1,8 @@
 <div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
 <div class="card__description card__description--one-line">
     <div class="line line--primary">
-    	<span>{{team.name | limitTo : 36}}</span>
-  		<span ng-if="team.name.length > 36">...</span>
+    	<span>{{team.name | limitTo : MAX_DISPLAYED_CHARS}}</span>
+  		<span ng-if="team.name.length > MAX_DISPLAYED_CHARS">...</span>
     	<span> - </span>
     	<span>({{team.players.length}} players)</span>
     </div>
@@ -16,6 +16,6 @@
     </a>   
 </div>
 <div ng-if="showPlayers" class="card__list">
-	<h4>Players from team "{{team.name | limitTo : 36}}<span ng-if="team.name.length > 36">...</span>" : </h4>
+	<h4>Players from session "{{team.name | limitTo : MAX_DISPLAYED_CHARS}}<span ng-if="team.name.length > MAX_DISPLAYED_CHARS">...</span>" : </h4>
 	<p><span class="card__list__player" ng-repeat="player in team.players">{{player.name}}</span></p>
 </div>

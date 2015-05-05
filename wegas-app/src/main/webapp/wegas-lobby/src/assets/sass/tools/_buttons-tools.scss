@@ -25,9 +25,12 @@ $buttons-icon : (
     (eye-slash, $fa-var-eye-slash),
     (lock, $fa-var-lock),
     (unlock, $fa-var-unlock),
+    (settings, $fa-var-cog),
     (valid, $fa-var-check),
     (admin, $fa-var-gavel),
-    (refresh, $fa-var-refresh)
+    (refresh, $fa-var-refresh),
+    (repeat, $fa-var-repeat),
+    (duplicate, $fa-var-files-o)
 );
 
 %button--with-icon{

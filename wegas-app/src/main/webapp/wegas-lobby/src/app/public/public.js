@@ -29,7 +29,7 @@ angular.module('public', [
             $scope.destination = $state.href('wegas.public.login');
             $scope.destinationTitle = "Authentication";
         }
-    }
+    };
     updateAlternativeActionsButton($state.current);
     $rootScope.$on('$stateChangeStart', function(event, toState, toParams, fromState, fromParams) {
         updateAlternativeActionsButton(toState);

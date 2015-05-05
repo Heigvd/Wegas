@@ -12,6 +12,7 @@ angular.module('private.trainer.users.directives', [
     }).controller("TrainerUsersIndexCtrl", function TrainerUsersIndexCtrl($stateParams, SessionsModel, Flash) {
         var ctrl = this;
         ctrl.session = {},
+        ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
         ctrl.restrictRoles = ["Trainer", "Administrator", "Scenarist"];
 
         ctrl.playersViewActived = true;

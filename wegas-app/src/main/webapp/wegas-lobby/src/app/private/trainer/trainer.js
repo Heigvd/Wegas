@@ -2,7 +2,7 @@ angular.module('private.trainer', [
     'private.trainer.directives',
     'private.trainer.archives',
     'private.trainer.users',
-    'private.trainer.customize'
+    'private.trainer.settings'
 ])
 .config(function ($stateProvider) {
     $stateProvider

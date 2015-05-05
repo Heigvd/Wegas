@@ -1,22 +1,22 @@
-angular.module('private.scenarist.customize', [
-    'private.scenarist.customize.directives'
+angular.module('private.scenarist.settings', [
+    'private.scenarist.settings.directives'
 ])
     .config(function($stateProvider) {
         $stateProvider
-            .state('wegas.private.scenarist.customize', {
-                url: '/:scenarioId/customize',
+            .state('wegas.private.scenarist.settings', {
+                url: '/:scenarioId/settings',
                 views: {
                     'modal@wegas.private': {
-                        controller: 'ScenaristCustomizeController'
+                        controller: 'ScenaristSettingsController'
                     }
                 }
             });
-    }).controller("ScenaristCustomizeController", function ScenaristCustomizeController($animate, $state, ModalService, Auth) {
+    }).controller("ScenaristSettingsController", function ScenaristSettingsController($animate, $state, ModalService, Auth) {
         Auth.getAuthenticatedUser().then(function(user) {
             if (user != null) {
                 if (user.isAdmin || user.isScenarist) {
                     ModalService.showModal({
-                        templateUrl: 'app/private/scenarist/customize/customize.tmpl.html',
+                        templateUrl: 'app/private/scenarist/settings/settings.tmpl.html',
                         controller: "ModalsController as modalsCtrl"
                     }).then(function(modal) {
                         var box = $(".modal"),

@@ -48,12 +48,18 @@ angular.module('private.directives', [
                     $state.go("wegas.private.logout");
                 };
 
+                $(document).on('click', 'h2.view__headding-workspace', function(e) {
+                    $('#menu-toggler').trigger('click');
+                    e.preventDefault();
+                    return false;
+                });
                 $(document).on('click', function(e) {
                     var $menu = $('.menu');
                     var $menuToggler = $('#menu-toggler');
                     var $labelMenuToggler = $('label[for="menu-toggler"]');
                     // if element is opened and click target is outside it, hide it
                     if ($menuToggler.is(':checked')) {
+
                         if ($menu.is(e.target) || $menuToggler.is(e.target) || $labelMenuToggler.is(e.target)) {
                             return;
                         } else {
