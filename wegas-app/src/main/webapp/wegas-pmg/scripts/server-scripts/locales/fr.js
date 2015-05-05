@@ -24,12 +24,12 @@ i18nTable.fr = {
     messages: {
         startOnTask: {
             from: "%employeeName%",
-            subject: "Tâche \"%task%\"",
+            subject: "Début de la tâche \"%task%\"",
             content: "Bonjour, <br /><br />J'ai commencé mon travail sur la tâche \"%task%\" %step%.<br /><br />Salutations<br />%employeeName%<br/> %job%"
         },
         startOnTask_grouped: {
             from: "%employeeName%",
-            subject: "Tâche \"%task%\"",
+            subject: "Début de la tâche \"%task%\"",
             content: "Bonjour, <br /><br />%others% et moi avons commencé notre travail sur la tâche \"%task%\" %step%.<br /><br />Salutations<br />%employeeName%<br/> %job%"
         },
         endOfTaskOtherActivities: {
