@@ -1,7 +1,7 @@
-angular.module('private.player.session.team.directives', [])
+angular.module('private.player.team.directives', [])
     .directive('playerSessionTeamIndex', function() {
         return {
-            templateUrl: 'app/private/player/sessions/team/directives.tmpl/index.html',
+            templateUrl: 'app/private/player/team/directives.tmpl/index.html',
             scope: {
                 close: "&"
             },
@@ -40,7 +40,7 @@ angular.module('private.player.session.team.directives', [])
         });
     }).directive('playerSessionTeamPlayersList', function() {
         return {
-            templateUrl: 'app/private/player/sessions/team/directives.tmpl/players-list.html',
+            templateUrl: 'app/private/player/team/directives.tmpl/players-list.html',
             scope: {
                 players: "="
             }

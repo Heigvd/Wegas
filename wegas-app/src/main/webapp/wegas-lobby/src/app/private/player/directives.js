@@ -1,7 +1,7 @@
-angular.module('private.player.sessions.directives', [])
+angular.module('private.player.directives', [])
     .directive('playerSessionsIndex', function() {
         return {
-            templateUrl: 'app/private/player/sessions/directives.tmpl/index.html',
+            templateUrl: 'app/private/player/directives.tmpl/index.html',
             controller: 'PlayerSessionsController as playerSessionsCtrl'
         };
     }).controller("PlayerSessionsController", function PlayerSessionsIndexController($rootScope, $state, SessionsModel, Flash) {
@@ -48,7 +48,7 @@ angular.module('private.player.sessions.directives', [])
                                 });
                             } else {
 
-                                $state.go('wegas.private.player.sessions.join', {
+                                $state.go('wegas.private.player.join', {
                                     token: findResponse.data.token
                                 });
                             }
@@ -82,7 +82,7 @@ angular.module('private.player.sessions.directives', [])
     })
     .directive('playerSessionJoinForm', function() {
         return {
-            templateUrl: 'app/private/player/sessions/directives.tmpl/join-form.html',
+            templateUrl: 'app/private/player/directives.tmpl/join-form.html',
             scope: {
                 checkToken: "="
             },
@@ -104,7 +104,7 @@ angular.module('private.player.sessions.directives', [])
     })
     .directive('playerSessionsList', function() {
         return {
-            templateUrl: 'app/private/player/sessions/directives.tmpl/list.html',
+            templateUrl: 'app/private/player/directives.tmpl/list.html',
             scope: {
                 sessions: "=",
                 leave: "="
@@ -113,7 +113,7 @@ angular.module('private.player.sessions.directives', [])
     })
     .directive('playerSessionsCard', function(Auth) {
         return {
-            templateUrl: 'app/private/player/sessions/directives.tmpl/card.html',
+            templateUrl: 'app/private/player/directives.tmpl/card.html',
             scope: {
                 session: "=",
                 leave: "="
