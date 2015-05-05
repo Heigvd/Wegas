@@ -7,7 +7,7 @@ angular
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/profile/tmpl/profile-index.html',
+            templateUrl: 'app/private/profile/directives.tmpl/index.html',
             controller: function($scope, $stateParams, $sce, $rootScope, Auth, Flash) {
                 var ctrl = this;
                 $scope.user = {};
@@ -25,7 +25,7 @@ angular
                             }
                         });
                     } else {
-                        Flash('danger', 'Unable to load user informations...');
+                        Flash.danger('Unable to load user informations...');
                     }
                 });
 
@@ -47,7 +47,7 @@ angular
     })
     .directive('profileContent', function() {
         return {
-            templateUrl: 'app/private/profile/tmpl/profile-content.html',
+            templateUrl: 'app/private/profile/directives.tmpl/content.html',
             scope: true,
             require: "^profileIndex",
             link: function($scope, element, attrs, parentCtrl) {

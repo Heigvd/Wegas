@@ -6,7 +6,7 @@
   <p class="card__description__date">{{ permission.user.email }}</p>
 
 </div>
-<scenarist-coscenarists-user-permissions class="card__detailled-actions" permission="{{ permission.permission }}"></scenarist-coscenarists-user-permissions>
+<scenarist-coscenarists-user-permissions class="card__detailled-actions" user-permissions="permission" scenario="scenario"></scenarist-coscenarists-user-permissions>
 <div class="card__actions">
   <a class="button button--medium button--round button--default-reverse button--label-off button--trash" title="Archive session" ng-click="removeUser(scenario.id, permission.user.id)">
     <span class="button__label">Remove user</span>
