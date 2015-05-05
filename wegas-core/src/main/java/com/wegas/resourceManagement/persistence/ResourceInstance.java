@@ -16,7 +16,9 @@ import java.util.List;
 import java.util.Map;
 import javax.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -25,6 +27,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Access(AccessType.FIELD)
+@JsonIgnoreProperties("moralHistory")
 public class ResourceInstance extends VariableInstance {
 
     private static final long serialVersionUID = 1L;
@@ -68,14 +71,8 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    private int moral;
-    /**
-     *
-     */
-    @ElementCollection
-    @Basic(fetch = FetchType.LAZY)
-    @JsonView(Views.ExtendedI.class)
-    private List<Integer> moralHistory = new ArrayList<>();
+    @Transient
+    private Integer moral;
     /**
      *
      */
@@ -113,9 +110,9 @@ public class ResourceInstance extends VariableInstance {
         }
         this.properties.clear();
         this.properties.putAll(other.getProperties());
-        this.setMoral(other.getMoral());
+        //this.setMoral(other.getMoral());
         this.setConfidence(other.getConfidence());
-        this.setMoralHistory(other.getMoralHistory());
+        //this.setMoralHistory(other.getMoralHistory());
         this.setConfidenceHistory(other.getConfidenceHistory());
     }
 
@@ -131,7 +128,6 @@ public class ResourceInstance extends VariableInstance {
      *
      */
     public void stepHistory() {
-        capAdd(moral, moralHistory);
         capAdd(confidence, confidenceHistory);
     }
 
@@ -353,50 +349,20 @@ public class ResourceInstance extends VariableInstance {
 
     /**
      * @return the moral
+     * @deprecated 
      */
-    public int getMoral() {
+    @JsonIgnore
+    public Integer getMoral() {
         return this.moral;
     }
 
     /**
-     * Set the confidence's value and add old confidence value in
-     * confidenceHistorique.
-     *
      * @param moral the moral to set
+     * @deprecated 
      */
+    @JsonProperty
     public void setMoral(int moral) {
         this.moral = moral;
-        this.moralHistory.add(moral);
-    }
-
-    /**
-     * @return the moralHistory
-     */
-    public List<Integer> getMoralHistory() {
-        return this.moralHistory;
-    }
-
-    /**
-     * @param moralHistory the moralHistory to set
-     */
-    public void setMoralHistory(List<Integer> moralHistory) {
-        this.moralHistory = moralHistory;
-    }
-
-    /**
-     * @param ref a index value corresponding to a value
-     * @return the value corresponding at the 'ref' param in the moralHistory
-     */
-    public Integer getMoralHistory(Integer ref) {
-        return this.moralHistory.get(ref);
-    }
-
-    /**
-     * @param ref a index value corresponding to a value
-     * @param value the new value
-     */
-    public void setMoralHistory(Integer ref, Integer value) {
-        this.moralHistory.set(ref, value);
     }
 
     /**

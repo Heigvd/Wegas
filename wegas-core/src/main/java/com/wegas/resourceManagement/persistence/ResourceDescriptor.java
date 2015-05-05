@@ -141,18 +141,31 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
+     * @return
+     * @deprecated
      */
-    public void getMoral(Player p) {
-        this.getInstance(p).getMoral();
+    public Integer getMoral(Player p) {
+        return Integer.parseInt(this.getInstance(p).getProperty("motivation"), 10);
     }
 
     /**
      *
      * @param p
      * @param value
+     * @deprecated
      */
     public void setMoral(Player p, Integer value) {
-        this.getInstance(p).setMoral(value);
+        this.getInstance(p).setProperty("motivation", value.toString());
+    }
+
+    /**
+     *
+     * @param p
+     * @param value
+     * @deprecated
+     */
+    public void addAtMoral(Player p, Integer value) {
+        this.addNumberAtInstanceProperty(p, "motivation", value.toString());
     }
 
     /**
@@ -235,16 +248,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
                 it.remove();
             }
         }
-    }
-
-    /**
-     *
-     * @param p
-     * @param value
-     */
-    public void addAtMoral(Player p, Integer value) {
-        ResourceInstance instance = this.getInstance(p);
-        instance.setMoral(instance.getMoral() + value);
     }
 
     //Methods below are temporary ; only for CEP-Game

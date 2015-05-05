@@ -383,6 +383,10 @@ public class ResourceFacade {
         } else if (event.getEntity() instanceof ResourceDescriptor) {
             // BACKWARD COMPAT
             ResourceInstance ri = (ResourceInstance) event.getEntity().getDefaultInstance();
+            Integer moral = ri.getMoral();
+            if (moral != null){
+                ri.setProperty("motivation", moral.toString());
+            }
             Map<String, Long> skills = ri.getDeserializedSkillsets() ;
             if (skills != null && skills.size() > 0) {
                 Long level = (Long) skills.values().toArray()[0];
