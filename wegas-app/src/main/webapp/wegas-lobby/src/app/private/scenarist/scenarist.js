@@ -1,7 +1,7 @@
 angular.module('private.scenarist', [
     'private.scenarist.directives',
     'private.scenarist.archives',
-    'private.scenarist.customize',
+    'private.scenarist.settings',
     'private.scenarist.coscenarists',
     'private.scenarist.history'
     ])

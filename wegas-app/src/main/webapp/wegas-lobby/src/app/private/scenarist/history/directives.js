@@ -29,6 +29,14 @@ angular
                     }
                 });
             }
+            ctrl.copyScenario = function () {
+                ScenariosModel.copyScenario($scope.scenarioId).then(function (response) {
+                    if (!response.isErroneous()) {
+                        response.flash();
+                        $rootScope.$emit('scenarios', true);
+                    }
+                });
+            };
             ctrl.addVersion = function () {
                 ScenariosModel.addVersionHistory($scope.scenarioId).then(function (response) {
                     if (response.isErroneous()) {
@@ -55,6 +63,10 @@ angular
             $parent = parentCtrl;
             $scope.addVersion = function() {
                 parentCtrl.addVersion();
+            };
+
+            $scope.copyScenario = function() {
+                parentCtrl.copyScenario();
             };
         }
     };

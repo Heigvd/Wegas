@@ -1,8 +1,8 @@
 <div class="modal__header">
 	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="{{usersIndexCtrl.session.properties.iconUri}}"></div>
 	<h5 class="modal__title">
-		{{usersIndexCtrl.session.name | limitTo : 36}}
-		<span ng-if="usersIndexCtrl.session.name.length > 36">...</span>
+		{{usersIndexCtrl.session.name | limitTo : usersIndexCtrl.MAX_DISPLAYED_CHARS}}
+		<span ng-if="usersIndexCtrl.session.name.length > usersIndexCtrl.MAX_DISPLAYED_CHARS">...</span>
 	</h5>
 	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
    		<span class="button__label">Close</span>

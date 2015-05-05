@@ -24,6 +24,6 @@ angular.module('public.password.directives', [])
             } else {
                 Flash.danger('Please, enter an email');
             }
-        }
+        };
         publicPasswordCtrl.remindPassword = remindPassword;
     });

@@ -217,6 +217,24 @@ angular.module('wegas.models.scenarios', [])
                 scenarioBeforeChange.comments = infos.comments;
                 scenarioSetted = true;
             }
+            if (scenarioBeforeChange.properties.scriptUri !== infos.scriptUri) {
+                scenarioBeforeChange.properties.scriptUri = infos.scriptUri;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.properties.clientScriptUri !== infos.clientScriptUri) {
+                scenarioBeforeChange.properties.clientScriptUri = infos.clientScriptUri;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.properties.cssUri !== infos.cssUri) {
+                scenarioBeforeChange.properties.cssUri = infos.cssUri;
+                scenarioSetted = true;
+            }
+            if (scenarioBeforeChange.properties.pagesUri !== infos.pagesUri) {
+                scenarioBeforeChange.properties.pagesUri = infos.pagesUri;
+                scenarioSetted = true;
+            }
+
+
             if (scenarioSetted) {
                 var url = "rest/Public/GameModel/" + scenarioBeforeChange.id + "?view=EditorExtended";
                 $http.put(ServiceURL + url, scenarioBeforeChange, {
@@ -350,6 +368,38 @@ angular.module('wegas.models.scenarios', [])
             } else {
                 deferred.resolve(Responses.danger("No name or template found", false));
             }
+            return deferred.promise;
+        };
+
+        model.copyScenario = function(scenarioId) {
+            var deferred = $q.defer(),
+                url = "rest/Public/GameModel/" + scenarioId + "/Duplicate";
+            if (scenarioId) {
+                $http.post(ServiceURL + url, null, {
+                    "headers": {
+                        "managed-mode": "true"
+                    }
+                }).success(function(data) {
+                    if (data.events !== undefined && data.events.length == 0) {
+                        cacheScenario("LIVE", data.entities[0]);
+                        deferred.resolve(Responses.success("Scenario copied", data.entities[0]));
+                    } else if (data.events !== undefined) {
+                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                    } else {
+                        deferred.resolve(Responses.danger("Whoops...", false));
+                    }
+
+                }).error(function(data) {
+                    if (data.events !== undefined && data.events.length > 0) {
+                        deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                    } else {
+                        deferred.resolve(Responses.danger("Whoops...", false));
+                    }
+                });
+            } else {
+                deferred.resolve(Responses.danger("You need to set which scenario will be copied", false));
+            }
+
             return deferred.promise;
         };
 
@@ -555,7 +605,7 @@ angular.module('wegas.models.scenarios', [])
                 .success(function(data) {
                     if (data.events !== undefined && data.events.length == 0) {
                         var newScenario = data.entities[0];
-                        scenarios.cache.LIVE.push(newScenario);
+                        cacheScenario("LIVE", newScenario);
                         deferred.resolve(Responses.success('Scenario has been duplicated with name: "' + newScenario.name + '"', newScenario));
                     } else if (data.events !== undefined) {
                         deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));

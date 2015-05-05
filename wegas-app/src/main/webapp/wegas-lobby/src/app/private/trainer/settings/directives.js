@@ -1,63 +1,69 @@
-angular.module('private.scenarist.customize.directives', [
+angular.module('private.trainer.settings.directives', [
     'wegas.service.customize'
 ])
-    .directive('scenaristCustomizeIndex', function() {
+    .directive('trainerSessionsSettingsIndex', function() {
         return {
             scope: {
                 close: "&"
             },
-            templateUrl: 'app/private/scenarist/customize/directives.tmpl/index.html',
-            controller: "ScenaristCustomizeIndexController as customizeIndexCtrl"
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/index.html',
+            controller: "TrainerSettingsIndexController as settingsIndexCtrl"
         };
-    }).controller("ScenaristCustomizeIndexController", function ScenaristCustomizeIndexController($rootScope, $scope, $stateParams, ScenariosModel, Flash) {
+    }).controller("TrainerSettingsIndexController", function TrainerSettingsIndexController($rootScope, $scope, $stateParams, SessionsModel, Flash) {
         var ctrl = this,
             initTabs = function() {
                 return {
                     infos: false,
                     display: false
-                };
+                }
             };
-        ctrl.scenario = {};
+        ctrl.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
+        ctrl.session = {};
         ctrl.hasChanges = {
             all: false,
             color: false,
             icon: false, 
             name: false,
             comment: false, 
+            token: false,
             individual: false
         };
         ctrl.infos = {
             name : "",
+            token : "", 
             comments :"",
             color: "orange",
             icon:"gamepad",
+            scenario: "",
             individual: false
         };
         ctrl.tabs = initTabs();
             
-        ctrl.updateScenario = function() {
-            ScenariosModel.getScenario("LIVE", $stateParams.scenarioId, true).then(function(response) {
-                ctrl.scenario = response.data || {};                
+        ctrl.updateSession = function() {
+            SessionsModel.getSession("managed", $stateParams.id, true).then(function(response) {
+                ctrl.session = response.data || {};                
                 if (response.isErroneous()) {
                     response.flash();
                 }else{
-                    var icon = ctrl.scenario.properties.iconUri.split("_");
+                    var icon = ctrl.session.properties.iconUri.split("_");
                     if (icon.length == 3 && icon[0] == "ICON") {
                         ctrl.infos.color = icon[1];
                         ctrl.infos.icon = icon[2];
                     }
-                    ctrl.infos.name = ctrl.scenario.name;
-                    ctrl.infos.comments = ctrl.scenario.comments;
-                    ctrl.infos.individual = ctrl.scenario.properties.freeForAll; 
+                    ctrl.infos.name = ctrl.session.name;
+                    ctrl.infos.token = ctrl.session.token;
+                    ctrl.infos.comments = ctrl.session.gameModel.comments;
+                    ctrl.infos.scenario = ctrl.session.gameModel.name;
+                    ctrl.infos.individual = ctrl.session.properties.freeForAll; 
                }
             });
         };
 
         ctrl.checkChanges = function(type, changes){
-            if(ctrl.scenario['@class'] == "Game"){
+            if(ctrl.session['@class'] == "Game"){
                 var oldColor = "orange",
                     oldIcon = "gamepad",
-                    icon = ctrl.scenario.properties.iconUri.split("_");
+                    icon = ctrl.session.properties.iconUri.split("_");
                 if (icon.length == 3 && icon[0] == "ICON") {
                     oldColor = icon[1];
                     oldIcon = icon[2];
@@ -70,15 +76,19 @@ angular.module('private.scenarist.customize.directives', [
                         ctrl.hasChanges.icon = (oldIcon !== changes);
                         break;
                     case "name":
-                        ctrl.hasChanges.name = (ctrl.scenario.name !== changes);
+                        ctrl.hasChanges.name = (ctrl.session.name !== changes);
+                        break;
+                    case "token":
+                        ctrl.hasChanges.token = (ctrl.session.token !==  changes);
                         break;
                     case "comments":
-                        ctrl.hasChanges.comments = (ctrl.scenario.comments !==  changes);
+                        ctrl.hasChanges.comments = (ctrl.session.gameModel.comments !==  changes);
                         break;
                     case "individual": 
-                        ctrl.hasChanges.individual = (ctrl.scenario.properties.freeForAll !==  changes);
+                        ctrl.hasChanges.individual = (ctrl.session.properties.freeForAll !==  changes);
+
                 }
-                ctrl.hasChanges.all =   ctrl.hasChanges.color || ctrl.hasChanges.icon || ctrl.hasChanges.name || ctrl.hasChanges.comments || ctrl.hasChanges.individual;
+                ctrl.hasChanges.all =   ctrl.hasChanges.color || ctrl.hasChanges.icon || ctrl.hasChanges.name || ctrl.hasChanges.token || ctrl.hasChanges.comments || ctrl.hasChanges.individual;
             }
         };
 
@@ -97,9 +107,9 @@ angular.module('private.scenarist.customize.directives', [
         }
 
         ctrl.save = function() {
-            ScenariosModel.updateScenario(ctrl.scenario.id, ctrl.infos).then(function(response){
+            SessionsModel.updateSession(ctrl.session.id, ctrl.infos).then(function(response){
                 if(!response.isErroneous()){
-                    $rootScope.$emit("changeScenarios", true);
+                    $rootScope.$emit("changeSessions", true);
                     $scope.close();
                 }else{
                     response.flash();
@@ -110,7 +120,6 @@ angular.module('private.scenarist.customize.directives', [
         ctrl.cancel = function(){
             $scope.close();
         };
-
         $scope.$watch(function(){
             return ctrl.infos.name;
         }, function(newName){
@@ -118,31 +127,36 @@ angular.module('private.scenarist.customize.directives', [
         });
 
         $scope.$watch(function(){
+            return ctrl.infos.token;
+        }, function(newToken){
+            ctrl.checkChanges("token", newToken);
+        });
+
+        $scope.$watch(function(){
             return ctrl.infos.comments;
         }, function(newComments){
             ctrl.checkChanges("comments", newComments);
         });
-
         $scope.$watch(function(){
             return ctrl.infos.individual;
         }, function(newIndividual){
             ctrl.checkChanges("individual", newIndividual);
         });
 
-        ctrl.updateScenario();
+        ctrl.updateSession();
         ctrl.activeTab("infos");
     })
-    .directive('scenaristCustomizeInfos', function() {
+    .directive('trainerSessionsCustomizeInfos', function() {
         return {
             scope:{
                 activeInfos: "="
             },
-            templateUrl: 'app/private/scenarist/customize/directives.tmpl/infos-form.html'
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/infos-form.html'
         }
     })
-    .directive('scenaristCustomizeIcons', function(Customize) {
+    .directive('trainerSessionsCustomizeIcons', function(Customize) {
         return {
-            templateUrl: 'app/private/scenarist/customize/directives.tmpl/icons-picker.html',
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/icons-picker.html',
             scope: {
                 activeIcon: "=",
                 change: "="
@@ -152,9 +166,9 @@ angular.module('private.scenarist.customize.directives', [
             }
         }
     })
-    .directive('scenaristCustomizeColors', function(Customize) {
+    .directive('trainerSessionsCustomizeColors', function(Customize) {
         return {
-            templateUrl: 'app/private/scenarist/customize/directives.tmpl/colors-picker.html',
+            templateUrl: 'app/private/trainer/settings/directives.tmpl/colors-picker.html',
             scope: {
                 activeColor: "=",
                 change: "="
