@@ -180,9 +180,9 @@ angular.module('private.trainer.directives', [
             },
             link: function(scope, element, attrs) {
                 // Public parameters
-                scope.open = false;
-                if (scope.session.access !== "CLOSE") {
-                    scope.open = true;
+                scope.open = true;
+                if (scope.session.access !== "OPEN") {
+                    scope.open = false;
                 }
                 scope.ServiceURL = ServiceURL;
                 scope.MAX_DISPLAYED_CHARS = MAX_DISPLAYED_CHARS;
