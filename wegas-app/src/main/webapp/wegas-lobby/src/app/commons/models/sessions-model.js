@@ -567,12 +567,12 @@ angular.module('wegas.models.sessions', [])
                 message = "Error during session name update";
             sessions.findSession("managed", sessionToSet.id).then(function(sessionBeforeChange) {
                 if (sessionBeforeChange != undefined) {
-                    if (sessionBeforeChange.access == "CLOSE") {
-                        sessionBeforeChange.access = "OPEN";
-                        message = "Session opened";
-                    } else {
+                    if (sessionBeforeChange.access == "OPEN") {
                         sessionBeforeChange.access = "CLOSE";
-                        message = "Session closed";
+                        message = "Session close";
+                    } else {
+                        sessionBeforeChange.access = "OPEN";
+                        message = "Session open";
                     }
                     $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange).success(function(data) {
                         deferred.resolve(Responses.success(message, data));
