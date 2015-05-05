@@ -342,7 +342,8 @@ public class GameFacade extends BaseFacade<Game> {
         final Query getByGameId = getEntityManager().createQuery("SELECT game, p FROM Game game "
                 + "LEFT JOIN game.teams t LEFT JOIN  t.players p "
                 + "WHERE t.gameId = game.id AND p.teamId = t.id "
-                + "AND p.user.id = :userId AND game.status = com.wegas.core.persistence.game.Game.Status.LIVE "
+                + "AND p.user.id = :userId AND "
+                + "(game.status = com.wegas.core.persistence.game.Game.Status.LIVE OR game.status = com.wegas.core.persistence.game.Game.Status.BIN) "
                 + "ORDER BY p.joinTime ASC", Game.class)
                 .setParameter("userId", userId);
 
