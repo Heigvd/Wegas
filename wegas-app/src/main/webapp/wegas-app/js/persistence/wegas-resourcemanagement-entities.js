@@ -35,7 +35,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         _inputex: {
             _type: HIDDEN
         }
-    };
+    },
+    lvl;
 
     Y.namespace("Wegas.persistence.Resources");                                 // Create namespace
 
@@ -56,6 +57,19 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
         {value: 11, label: "Expert**"},
         {value: 12, label: "Expert***"}
     ];
+
+    /**
+     * Since level became a Resource Property, the select field ask for a string 
+     * value,
+     */
+    persistence.Resources.STR_LEVELS = [];
+    for (lvl in  persistence.Resources.LEVELS) {
+        persistence.Resources.STR_LEVELS.push({
+            value: "" + persistence.Resources.LEVELS[lvl].value,
+            label: "" + persistence.Resources.LEVELS[lvl].label
+        });
+    }
+
     persistence.Resources.SKILLS = ["Commercial", "Informaticien", "Web designer", "Monteur"];
 
     /**
@@ -111,27 +125,27 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                             label: "Active by default",
                             value: true
                         }
-                    },
-                    skillsets: {
-                        _inputex: {
-                            label: "Skills",
-                            _type: HASHLIST,
-                            wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-skillset',
-                            elementType: {
-                                type: COMBINE,
-                                required: true,
-                                fields: [{
-                                        name: "work",
-                                        type: "select",
-                                        choices: persistence.Resources.SKILLS
-                                    }, {
-                                        name: "level",
-                                        type: "select",
-                                        choices: persistence.Resources.LEVELS
-                                    }]
-                            }
-                        }
-                    },
+                    }, /*
+                     skillsets: {
+                     _inputex: {
+                     label: "Skills",
+                     _type: HASHLIST,
+                     wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-skillset',
+                     elementType: {
+                     type: COMBINE,
+                     required: true,
+                     fields: [{
+                     name: "work",
+                     type: "select",
+                     choices: persistence.Resources.SKILLS
+                     }, {
+                     name: "level",
+                     type: "select",
+                     choices: persistence.Resources.LEVELS
+                     }]
+                     }
+                     }
+                     },*/
                     moral: {
                         type: NUMBER,
                         optional: false,
@@ -162,7 +176,8 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         type: ARRAY,
                         _inputex: {
                             wrapperClassName: 'inputEx-fieldWrapper wegas-advanced-feature editor-resources-occupations',
-                            label: "Vacancies",
+                            label: "Unavailabilities",
+                            description: "[periods]",
                             _type: LIST,
                             elementType: {
                                 type: GROUP,
@@ -312,7 +327,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             getNumberInstanceProperty: {
-                label: "Get number instance property",
+                label: "Get number property",
                 returns: NUMBER,
                 arguments: [{
                         type: HIDDEN,
@@ -324,7 +339,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             getStringInstanceProperty: {
-                label: "Get text instance property",
+                label: "Get text property",
                 returns: STRING,
                 arguments: [{
                         type: HIDDEN,
@@ -336,7 +351,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             addNumberAtInstanceProperty: {
-                label: "Add to instance property",
+                label: "Add to property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -351,7 +366,7 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     }]
             },
             setInstanceProperty: {
-                label: "Set instance property",
+                label: "Set property",
                 arguments: [{
                         type: HIDDEN,
                         value: SELF
@@ -365,48 +380,48 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                         scriptType: STRING
                     }]
             },
-            getSkillset: {
-                label: "Skill level",
-                returns: NUMBER,
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: persistence.Resources.SKILLS
-                    }]
-            },
-            addAtSkillset: {
-                label: "Add to skill level",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: persistence.Resources.SKILLS
-                    }, {
-                        type: STRING,
-                        typeInvite: "level",
-                        scriptType: STRING
-                    }]
-            },
-            setSkillset: {
-                label: "Set skill level",
-                arguments: [{
-                        type: HIDDEN,
-                        value: SELF
-                    }, {
-                        scriptType: STRING,
-                        type: SELECT,
-                        choices: persistence.Resources.SKILLS
-                    }, {
-                        type: SELECT,
-                        choices: persistence.Resources.LEVELS,
-                        scriptType: STRING
-                    }]
-            },
+            /*getSkillset: {
+             label: "Skill level",
+             returns: NUMBER,
+             arguments: [{
+             type: HIDDEN,
+             value: SELF
+             }, {
+             scriptType: STRING,
+             type: SELECT,
+             choices: persistence.Resources.SKILLS
+             }]
+             },
+             addAtSkillset: {
+             label: "Add to skill level",
+             arguments: [{
+             type: HIDDEN,
+             value: SELF
+             }, {
+             scriptType: STRING,
+             type: SELECT,
+             choices: persistence.Resources.SKILLS
+             }, {
+             type: STRING,
+             typeInvite: "level",
+             scriptType: STRING
+             }]
+             },
+             setSkillset: {
+             label: "Set skill level",
+             arguments: [{
+             type: HIDDEN,
+             value: SELF
+             }, {
+             scriptType: STRING,
+             type: SELECT,
+             choices: persistence.Resources.SKILLS
+             }, {
+             type: SELECT,
+             choices: persistence.Resources.LEVELS,
+             scriptType: STRING
+             }]
+             },*/
             //methods below are temporary ; only for CEP-Game
             getSalary: {
                 label: "Get salary",
@@ -520,14 +535,14 @@ YUI.add('wegas-resourcemanagement-entities', function(Y) {
                     elementType: PROPERTIESELEMENTTYPE
                 }
             },
-            skillsets: {
-                name: "skillsets",
-                _inputex: {
-                    label: "Skills",
-                    _type: HASHLIST,
-                    elementType: PROPERTIESELEMENTTYPE
-                }
-            },
+            /*skillsets: {
+             name: "skillsets",
+             _inputex: {
+             label: "Skills",
+             _type: HASHLIST,
+             elementType: PROPERTIESELEMENTTYPE
+             }
+             },*/
             assignments: {
                 type: ARRAY,
                 value: []

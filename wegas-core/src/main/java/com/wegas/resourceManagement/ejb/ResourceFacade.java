@@ -19,11 +19,13 @@ import com.wegas.resourceManagement.persistence.AbstractAssignement;
 import com.wegas.resourceManagement.persistence.Activity;
 import com.wegas.resourceManagement.persistence.Assignment;
 import com.wegas.resourceManagement.persistence.Occupation;
+import com.wegas.resourceManagement.persistence.ResourceDescriptor;
 import com.wegas.resourceManagement.persistence.ResourceInstance;
 import com.wegas.resourceManagement.persistence.TaskDescriptor;
 import com.wegas.resourceManagement.persistence.TaskInstance;
 import com.wegas.resourceManagement.persistence.WRequirement;
 import java.util.List;
+import java.util.Map;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -372,10 +374,19 @@ public class ResourceFacade {
             TaskDescriptor task = (TaskDescriptor) event.getEntity();
             Double duration = task.getDefaultInstance().getDuration();
             if (duration != null) {
+                // BACKWARD
                 task.getDefaultInstance().setProperty("duration", duration.toString());
             }
             for (String predecessorName : task.getImportedPredecessorNames()) {
                 task.addPredecessor((TaskDescriptor) variableDescriptorFacade.find(task.getGameModel(), predecessorName));
+            }
+        } else if (event.getEntity() instanceof ResourceDescriptor) {
+            // BACKWARD COMPAT
+            ResourceInstance ri = (ResourceInstance) event.getEntity().getDefaultInstance();
+            Map<String, Long> skills = ri.getDeserializedSkillsets() ;
+            if (skills != null && skills.size() > 0) {
+                Long level = (Long) skills.values().toArray()[0];
+                ri.setProperty("level", level.toString());
             }
         }
     }

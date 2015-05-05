@@ -388,9 +388,9 @@ public class UIVariableDescriptor extends UIComponentBase {
 
             UIHelper.printPropertyTextArea(context, writer, UIHelper.TEXT_DESCRIPTION, resource.getDescription(), false, editorMode);
 
-            if (!instance.getSkillsets().isEmpty()) {
+            /*if (!instance.getSkillsets().isEmpty()) {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
-            }
+            }*/
 
             UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getMoral());
             UIHelper.printProperty(context, writer, UIHelper.TEXT_CONFIDENCE, instance.getConfidence());

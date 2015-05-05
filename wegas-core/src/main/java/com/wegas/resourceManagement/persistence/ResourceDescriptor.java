@@ -209,36 +209,6 @@ public class ResourceDescriptor extends VariableDescriptor<ResourceInstance> {
     /**
      *
      * @param p
-     * @param key
-     * @return
-     */
-    public long getSkillset(Player p, String key) {
-        return this.getInstance(p).getSkillset(key);
-    }
-
-    /**
-     *
-     * @param p
-     * @param key
-     * @param value
-     */
-    public void addAtSkillset(Player p, String key, long value) {
-        this.getInstance(p).setSkillset(key, this.getSkillset(p, key) + value);
-    }
-
-    /**
-     *
-     * @param p
-     * @param key
-     * @param value
-     */
-    public void setSkillset(Player p, String key, long value) {
-        this.getInstance(p).setSkillset(key, value);
-    }
-
-    /**
-     *
-     * @param p
      * @param time
      * @param editable
      * @param description
