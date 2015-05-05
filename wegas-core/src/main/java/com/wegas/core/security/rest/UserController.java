@@ -391,9 +391,9 @@ public class UserController {
      */
     @POST
     @Path("SendNewPassword")
-    public void sendNewPassword(@QueryParam("email") String email,
+    public void sendNewPassword(AuthenticationInformation authInfo,
             @Context HttpServletRequest request) {
-        userFacade.sendNewPassword(email);
+        userFacade.sendNewPassword(authInfo.getLogin());
     }
 
     /**
