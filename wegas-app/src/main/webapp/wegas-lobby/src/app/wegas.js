@@ -18,7 +18,7 @@ angular.module('Wegas', [
 ])
 .config(function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider) {
     // Configurate loading bar
-    cfpLoadingBarProvider.latencyThreshold = 800;
+    cfpLoadingBarProvider.latencyThreshold = 1200;
     cfpLoadingBarProvider.includeSpinner = true;
     
     $stateProvider

@@ -17,7 +17,7 @@ div#loading-bar .bar {
 	left:0!important;
 	width:100%;
 	height:100%;
-	background-color:rgba(#333333, 0.6);
+	background-color:rgba(#999999, 0.4);
 	.spinner-icon {
 		display:block;
 		position:absolute;
@@ -32,7 +32,7 @@ div#loading-bar .bar {
 		border-top-color:  lighten($secondary-color, 10%);
 		border-left-color: lighten($secondary-color, 10%);
 
-		$spinner-timer: 800ms;
+		$spinner-timer: 2000ms;
 		-webkit-animation: loading-bar-spinner $spinner-timer linear infinite !important;
 	 	-moz-animation:    loading-bar-spinner $spinner-timer linear infinite !important;
 	  	-ms-animation:     loading-bar-spinner $spinner-timer linear infinite !important;
@@ -40,7 +40,7 @@ div#loading-bar .bar {
 		animation:         loading-bar-spinner $spinner-timer linear infinite !important;
 	}
 	&:after{
-		content:"This action requires time. Please wait.";
+		content:"Please wait";
 		display:block;
 		position:absolute;
 		top:50%;

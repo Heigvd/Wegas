@@ -76,8 +76,8 @@ angular.module('wegas.service.auth', [
         };
 
         service.login = function(login, password) {
-            var deferred = $q.defer();
-            var url = "rest/User/Authenticate";
+            var deferred = $q.defer(),
+                url = "rest/User/Authenticate";
             $http.post(ServiceURL + url, {
                 "@class": "AuthenticationInformation",
                 "login": login,
@@ -107,8 +107,8 @@ angular.module('wegas.service.auth', [
         };
 
         service.logout = function() {
-            var deferred = $q.defer();
-            var url = "rest/User/Logout";
+            var deferred = $q.defer(),
+                url = "rest/User/Logout";
             $http.get(ServiceURL + url).success(function(data) {
                 authenticatedUser = null;
                 deferred.resolve(Responses.success("Logout successfully", true));
@@ -119,8 +119,8 @@ angular.module('wegas.service.auth', [
         };
 
         service.signup = function(email, username, password, firstname, lastname) {
-            var deferred = $q.defer();
-            var url = "rest/User/Signup";
+            var deferred = $q.defer(),
+                url = "rest/User/Signup";
             $http.post(ServiceURL + url, {
                 "@class": "JpaAccount",
                 "email": email,
@@ -137,11 +137,16 @@ angular.module('wegas.service.auth', [
         };
 
         service.remindPassword = function(email) {
-            var obj = {
-                "email": email
-            };
-            var deferred = $q.defer();
-            $http.post(ServiceURL + "rest/User/SendNewPassword", obj)
+            var deferred = $q.defer(),
+                url = "rest/User/SendNewPassword";
+            $http.post(ServiceURL + url, {
+                "@class": "AuthenticationInformation",
+                "login": email
+            }, {
+                "headers": {
+                    "managed-mode": "true"
+                }
+            })
                 .success(function(data) {
                     deferred.resolve(Responses.success("A new password has been send", true));
                 })

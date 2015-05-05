@@ -29,7 +29,7 @@ angular.module('public.login', [
                 }
             });
         } else {
-            Flash('danger', 'username/password cannot be empty');
+            Flash.danger('username/password cannot be empty');
         }
     };
 });

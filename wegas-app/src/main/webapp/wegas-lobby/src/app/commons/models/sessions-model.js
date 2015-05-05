@@ -1,4 +1,3 @@
-'use strict';
 angular.module('wegas.models.sessions', [])
     .service('SessionsModel', function($http, $q, $interval, Auth, Responses) {
         /* Namespace for model accessibility. */
@@ -150,7 +149,7 @@ angular.module('wegas.models.sessions', [])
 
                             _(data).each(function(account, i) {
                                 var permissions = [],
-                                    pattern = new RegExp("^Game:(.*):g"+id+"$");
+                                    pattern = new RegExp("^Game:(.*):g" + id + "$");
 
                                 // For each permission of each account...
                                 _(account.permissions).each(function(permission, j) {
@@ -227,16 +226,16 @@ angular.module('wegas.models.sessions', [])
             },
 
 
-    /* Update status of session (OPENED, LIVE, BIN, DELETE, SUPPRESSED) */
-    setSessionStatus = function(sessionId, status) {
-        var deferred = $q.defer();
-        $http.put(ServiceURL + "rest/GameModel/Game/" + sessionId + "/status/" + status).success(function(data) {
-            deferred.resolve(data);
-        }).error(function(data) {
-            deferred.resolve(false);
-        });
-        return deferred.promise;
-    },
+            /* Update status of session (OPENED, LIVE, BIN, DELETE, SUPPRESSED) */
+            setSessionStatus = function(sessionId, status) {
+                var deferred = $q.defer();
+                $http.put(ServiceURL + "rest/GameModel/Game/" + sessionId + "/status/" + status).success(function(data) {
+                    deferred.resolve(data);
+                }).error(function(data) {
+                    deferred.resolve(false);
+                });
+                return deferred.promise;
+            },
 
             /* Remove player from persistante datas */
             removePlayer = function(player) {
@@ -286,7 +285,7 @@ angular.module('wegas.models.sessions', [])
                     scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
                     gameModelSetted = true;
                 }
-                if(scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual){
+                if (scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual) {
                     sessionBeforeChange.properties.freeForAll = sessionInfos.individual;
                     scenarioBeforeChange.properties.freeForAll = sessionInfos.individual;
                     gameModelSetted = true;
@@ -384,28 +383,25 @@ angular.module('wegas.models.sessions', [])
             sessions.cache = [];
         };
 
-        model.refreshSession = function (listname, session) {
+        model.refreshSession = function(listname, session) {
             var deferred = $q.defer();
 
             var url = "rest/GameModel/Game/" + session.id + "?view=EditorExtended";
             $http
-            .get(ServiceURL + url)
-            .success(function (data) {
-                // Removing old session
-                sessions.cache[listname].data = uncacheSession(sessions.cache[listname].data, session);
-                // Creating new one
-                sessions.cache[listname].data = cacheSession(sessions.cache[listname].data, data, false);
+                .get(ServiceURL + url)
+                .success(function(data) {
+                    // Removing old session
+                    sessions.cache[listname].data = uncacheSession(sessions.cache[listname].data, session);
+                    // Creating new one
+                    sessions.cache[listname].data = cacheSession(sessions.cache[listname].data, data, false);
 
-                sessions.findSession(listname, data.id, true).then(function(response) {
-                    deferred.resolve(Responses.success("Session refreshed", response));
+                    sessions.findSession(listname, data.id, true).then(function(response) {
+                        deferred.resolve(Responses.success("Session refreshed", response));
+                    });
+
+                }).error(function(data) {
+                    deferred.resolve(Responses.danger("Whoops", false));
                 });
-
-            }).error(function(data) {
-                deferred.resolve(Responses.danger("Whoops", false));
-            });
-
-
-
             return deferred.promise;
         };
 
@@ -487,7 +483,7 @@ angular.module('wegas.models.sessions', [])
                         "name": sessionName
                     };
                     $http.post(ServiceURL + "rest/GameModel/" + newSession.gameModelId + "/Game?view=EditorExtended", newSession).success(function(data) {
-                        cacheSession(sessions.cache.managed.data, data)
+                        sessions.cache.managed.data = cacheSession(sessions.cache.managed.data, data)
                         deferred.resolve(Responses.success("Session created", data));
                     }).error(function(data) {
                         deferred.resolve(Responses.danger("Error during session creation", data));
@@ -647,8 +643,8 @@ angular.module('wegas.models.sessions', [])
         model.findSessionToJoin = function(token) {
             var deferred = $q.defer();
             $http.get(ServiceURL + "rest/GameModel/Game/FindByToken/" + token, {
-                    ignoreLoadingBar: true
-                }).success(function(data) {
+                ignoreLoadingBar: true
+            }).success(function(data) {
                 if (data) {
                     data = formatPlayers(data)
                     deferred.resolve(Responses.success("Session find", data));

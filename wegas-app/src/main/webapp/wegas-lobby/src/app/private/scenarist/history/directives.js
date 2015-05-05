@@ -4,16 +4,18 @@ angular
 ])
 .directive('scenaristHistoryIndex', function(ScenariosModel){
     return {
-
+        scope: {
+            close: "&"
+        },
         templateUrl: 'app/private/scenarist/history/directives.tmpl/index.html',
         controller : function($scope, $stateParams, $sce, $rootScope) {
             var ctrl = this;
 
-            $scope.scenario = {};
-            $scope.scenarioId = $stateParams.scenarioId;
+            ctrl.scenario = undefined;
+            ctrl.scenarioId = $stateParams.scenarioId;
 
             ctrl.updateVersions = function () {
-                ScenariosModel.getVersionsHistory($scope.scenarioId).then(function(response) {
+                ScenariosModel.getVersionsHistory(ctrl.scenario.id).then(function(response) {
                     if (response.isErroneous()) {
                         response.flash();
                     } else {
@@ -22,7 +24,7 @@ angular
                 });
             }
             ctrl.createFork = function (name) {
-                ScenariosModel.restoreVersionHistory($scope.scenarioId, name).then(function (response) {
+                ScenariosModel.restoreVersionHistory(ctrl.scenarioId, name).then(function (response) {
                     response.flash();
                     if (!response.isErroneous()) {
                         $rootScope.$emit('scenarios', true);
@@ -30,7 +32,7 @@ angular
                 });
             }
             ctrl.copyScenario = function () {
-                ScenariosModel.copyScenario($scope.scenarioId).then(function (response) {
+                ScenariosModel.copyScenario(ctrl.scenarioId).then(function (response) {
                     if (!response.isErroneous()) {
                         response.flash();
                         $rootScope.$emit('scenarios', true);
@@ -38,7 +40,7 @@ angular
                 });
             };
             ctrl.addVersion = function () {
-                ScenariosModel.addVersionHistory($scope.scenarioId).then(function (response) {
+                ScenariosModel.addVersionHistory(ctrl.scenarioId).then(function (response) {
                     if (response.isErroneous()) {
                         response.flash();
                     } else {
@@ -46,17 +48,21 @@ angular
                     }
                 });
             }
-            ScenariosModel.getScenario("LIVE", $scope.scenarioId).then(function (response) {
-                $scope.scenario = response.data;
+            ScenariosModel.getScenario("LIVE", ctrl.scenarioId).then(function (response) {
+                ctrl.scenario = response.data;
                 ctrl.updateVersions();
             });
+
+            $scope.scenaristHistoryIndexCtrl = this;
         }
     };
 })
 .directive('scenaristHistoryActions', function(ScenariosModel){
     return {
         templateUrl: 'app/private/scenarist/history/directives.tmpl/actions.html',
-        scope: false,
+        scope: {
+            scenario: "="
+        },
         require: "^scenaristHistoryIndex",
         link : function($scope, element, attrs, parentCtrl) {
 
@@ -73,9 +79,12 @@ angular
 })
 .directive('scenaristHistoryDownloadJson', function(ScenariosModel){
     return {
-        scope: false,
+        scope: {
+            scenario: "="
+        },
         link : function(scope, element, attrs, parentCtrl) {
             $jsonElement = element;
+
             scope.$watch("scenario", function(n,o) {
                 if (_.contains([false,undefined], n)) {
                     $jsonElement.addClass('disabled').attr('href', '#');
@@ -92,7 +101,9 @@ angular
 })
 .directive('scenaristHistoryDownloadPdf', function(ScenariosModel){
     return {
-        scope: false,
+        scope: {
+            scenario: "="
+        },
         link : function(scope, element, attrs, parentCtrl) {
             $pdfElement = element;
 

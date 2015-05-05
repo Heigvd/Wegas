@@ -34,7 +34,7 @@
 
 	}
 
-	&.modal--users {
+	&.modal--users, &.modal--player-team {
 		.modal__tools {
 			a.button {
 				float: right;
