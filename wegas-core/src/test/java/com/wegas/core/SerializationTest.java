@@ -372,7 +372,7 @@ public class SerializationTest {
 
         nd.getDefaultInstance().setValue(-10);
 
-        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd));
+        String json = mapper.writeValueAsString(new WegasOutOfBoundException(nd.getMinValue(), nd.getMaxValue(), ns.getValue(), nd.getLabel()));
         System.out.println("WOOB: " + json);
         assertPropertyEquals(json, "@class", "WegasOutOfBoundException");
 
@@ -390,13 +390,12 @@ public class SerializationTest {
         NumberInstance niPayload = new NumberInstance(5);
         niPayload.setDefaultDescriptor(ndPayload);
         ndPayload.setDefaultInstance(niPayload);
-        
 
         CustomEvent custom = new CustomEvent("Dummy CustomEvent", payload);
         WarningEvent warn = new WarningEvent("Warning Dummy Event", payload);
 
         List<WegasRuntimeException> exceptions = new ArrayList<>();
-        exceptions.add(new WegasOutOfBoundException(0L, 10L, 15.0, ndPayload));
+        exceptions.add(new WegasOutOfBoundException(0L, 10L, 15.0, ndPayload.getLabel()));
         exceptions.add(WegasErrorMessage.error("Error Message"));
         exceptions.add(new WegasScriptException("var a = truc;", 123, "OUPS"));
 
@@ -406,7 +405,7 @@ public class SerializationTest {
         EntityUpdatedEvent update = new EntityUpdatedEvent(instances);
 
         ExceptionEvent ex = new ExceptionEvent(exceptions);
-        
+
         ManagedResponse managedResponse = new ManagedResponse();
         managedResponse.getEvents().add(custom);
         managedResponse.getEvents().add(warn);
@@ -414,7 +413,7 @@ public class SerializationTest {
         managedResponse.getEvents().add(update);
 
         String json = mapper.writeValueAsString(managedResponse);
-                
+
         System.out.println("JSON: " + json);
 
     }

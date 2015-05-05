@@ -11,9 +11,7 @@
  */
 YUI.add("wegas-parent", function(Y) {
     "use strict";
-
     var BUTTON = "Button";
-
     /**
      * @extends Y.Wegas.Widget
      * @constructor
@@ -169,6 +167,27 @@ YUI.add("wegas-parent", function(Y) {
                                             }
                                         }]}, {
                                     type: BUTTON,
+                                    label: "Input",
+                                    cssClass: "wegas-advanced-feature",
+                                    plugins: [{
+                                            fn: "WidgetMenu",
+                                            cfg: {
+                                                menuCfg: {
+                                                    points: ["tl", "tr"]
+                                                },
+                                                event: "mouseenter",
+                                                children: [{
+                                                        type: BUTTON,
+                                                        label: "Text",
+                                                        plugins: [{
+                                                                fn: "AddChildWidgetAction",
+                                                                cfg: {
+                                                                    childType: "TextInput"
+                                                                }
+                                                            }]
+                                                    }]
+                                            }}]}, {
+                                    type: BUTTON,
                                     label: "Variable",
                                     plugins: [{
                                             fn: "WidgetMenu",
@@ -291,7 +310,51 @@ YUI.add("wegas-parent", function(Y) {
                                                                     childType: "Chart"
                                                                 }
                                                             }]
-                                                    }]
+                                                    },
+                                                    {
+                                                        type: BUTTON,
+                                                        label: "Review",
+                                                        cssClass: "wegas-advanced-feature",
+                                                        plugins: [{
+                                                                fn: "WidgetMenu",
+                                                                cfg: {
+                                                                    menuCfg: {
+                                                                        points: ["tl", "tr"]
+                                                                    },
+                                                                    event: "mouseenter",
+                                                                    children: [{
+                                                                            type: BUTTON,
+                                                                            label: "Variable Editor",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "ReviewVariableEditor"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
+                                                                            label: "Reviewing Panel",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "ReviewTabView"
+                                                                                    }
+                                                                                }]
+                                                                        }, {
+                                                                            type: BUTTON,
+                                                                            label: "Orchestrator",
+                                                                            plugins: [{
+                                                                                    fn: "AddChildWidgetAction",
+                                                                                    cfg: {
+                                                                                        childType: "ReviewOrchestrator"
+                                                                                    }
+                                                                                }]
+                                                                        }
+                                                                    ]
+                                                                }
+                                                            }]
+                                                    }
+                                                ]
                                             }
                                         }]
                                 }, {
