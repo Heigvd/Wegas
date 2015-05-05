@@ -298,9 +298,6 @@
         /**
          * Resource descriptor edition customisation
          */
-
-        persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.moral._inputex.value = 7;
-
         persistence.ResourceDescriptor.ATTRS.properties._inputex = {
             type: GROUP,
             fields: [{
@@ -341,22 +338,18 @@
                     type: "select",
                     choices: persistence.Resources.STR_LEVELS
                 }, {
+                    name: "motivation",
+                    label: "Motivation",
+                    type: NUMBER,
+                    value: 7,
+                    description: "[0..7..12]"
+                }, {
                     name: "wage",
                     label: "Monthly wages (100%)",
                     type: NUMBER,
                     value: 1000,
                     description: "[$]"
                 }]
-        };
-
-        persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.moral = {
-            type: NUMBER,
-            optional: false,
-            _inputex: {
-                label: "Motivation",
-                value: 7,
-                description: "[0..7..12]"
-            }
         };
 
         persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {
@@ -369,12 +362,6 @@
         persistence.ResourceInstance.ATTRS.confidence = {
             type: NUMBER,
             optional: true,
-            _inputex: {
-                _type: HIDDEN
-            }
-        };
-        persistence.ResourceInstance.ATTRS.moralHistory = {
-            type: ARRAY,
             _inputex: {
                 _type: HIDDEN
             }
@@ -406,6 +393,8 @@
                             }, {
                                 value: "level"
                             }, {
+                                value: "motivation"
+                            }, {
                                 value: "wage"
                             }]
                     }]
@@ -422,6 +411,8 @@
                                 value: "activityRate"
                             }, {
                                 value: "level"
+                            }, {
+                                value: "motivation"
                             }, {
                                 value: "wage"
                             }]
@@ -443,6 +434,8 @@
                                 value: "activityRate"
                             }, {
                                 value: "level"
+                            }, {
+                                value: "motivation"
                             }, {
                                 value: "wage"
                             }]
@@ -623,19 +616,30 @@
                         classFilter: ["ResourceDescriptor"],
                         required: true
                     }, {
-                        type: "select",
-                        typeInvite: "",
+                        type: "uneditable",
+                        typeInvite: "method",
                         scriptType: "string",
-                        choices: [{
-                                value: "addAtMoral",
-                                label: "Add to moral"
-                            }],
+                        visu: {
+                            visuType: 'func',
+                            func: function(value) {
+                                return "add to";
+                            }
+                        },
+                        //    choices: Y.Object.keys(Y.Wegas.persistence.ResourceDescriptor.METHODS),
+                        value: "addNumberAtInstanceProperty",
                         required: true
                     }, {
                         type: "combine",
                         typeInvite: "",
                         scriptType: "array",
                         fields: [{
+                                type: "select",
+                                choices: [{
+                                        value: "motivation",
+                                        label: "motivation"
+                                    }]
+                            },
+                            {
                                 type: "number",
                                 typeInvite: "value",
                                 required: true
@@ -646,7 +650,9 @@
                         typeInvite: "in period",
                         scriptType: "number",
                         required: true
-                    }]
+                    }
+
+                ]
             }
         });
 

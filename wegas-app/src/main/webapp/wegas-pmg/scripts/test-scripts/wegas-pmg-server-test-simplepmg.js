@@ -193,8 +193,8 @@ var PMGTest = (function() {
         standardPlannification();
         informaticien1.setProperty('coef_moral', '1.3');
         informaticien2.setProperty('coef_moral', '1.3');
-        informaticien1.instance.setMoral(10);
-        informaticien2.instance.setMoral(10);
+        informaticien1.instance.setProperty("motivation", "10");
+        informaticien2.instance.setProperty("motivation", "10");
 
         assign(informaticien1, task1);
         assign(informaticien2, task1);

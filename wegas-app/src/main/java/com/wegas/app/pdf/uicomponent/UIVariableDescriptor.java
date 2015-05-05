@@ -392,7 +392,7 @@ public class UIVariableDescriptor extends UIComponentBase {
                 UIHelper.printProperty(context, writer, UIHelper.TEXT_MAIN_SKILL, instance.getMainSkill() + " (lvl: " + resource.getDefaultInstance().getMainSkillLevel() + ")");
             }*/
 
-            UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getMoral());
+            //UIHelper.printProperty(context, writer, UIHelper.TEXT_MORAL, instance.getPropertyD("motivation"));
             UIHelper.printProperty(context, writer, UIHelper.TEXT_CONFIDENCE, instance.getConfidence());
 
             if (editorMode) {

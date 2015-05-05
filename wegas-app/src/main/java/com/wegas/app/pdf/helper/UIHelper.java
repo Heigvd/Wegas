@@ -81,7 +81,7 @@ public class UIHelper {
     public static final String TEXT_PREDECESSORS = "Predecessors";
     public static final String TEXT_REQUIERMENT_REQUIERMENTS = "Requierments";
     public static final String TEXT_TEXT = "Text";
-    public static final String TEXT_MORAL = "Moral";
+    public static final String TEXT_MORAL = "Motivation";
     public static final String TEXT_CONFIDENCE = "Confidence";
     public static final String TEXT_FROM = "From";
     public static final String TEXT_DESTINATION = "To";

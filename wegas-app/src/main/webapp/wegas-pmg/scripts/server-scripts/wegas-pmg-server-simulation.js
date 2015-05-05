@@ -721,7 +721,7 @@ var PMGSimulation = (function() {
             grade = getResourceGrade(employeeInst);
             sumActivityRate += activityRate;
             //Calculate ressource motivation factor
-            employeesMotivationFactor = 1 + 0.05 * employeeInst.descriptor.getPropertyD("coef_moral") * (employeeInst.moral - 7);
+            employeesMotivationFactor = 1 + 0.05 * employeeInst.descriptor.getPropertyD("coef_moral") * (employeeInst.getPropertyD("motivation") - 7);
             //Calcul variables for needMotivationFactor (numérateur de la moyenne pondérée de facteur motivation besoin)
             sumEmployeesMotivationXActivityRate += employeesMotivationFactor * activityRate;
             //debug("employeesMotivationFactor : " + employeesMotivationFactor);
@@ -740,7 +740,7 @@ var PMGSimulation = (function() {
                 newOnTask++;
             }
 //Calculate variable for quality
-            sumMotivationXActivityRate += employeeInst.moral * activityRate;
+            sumMotivationXActivityRate += employeeInst.getPropertyD("motivation") * activityRate;
             sumSkillsetXActivityRate += grade * activityRate; //level * activityRate
         }
 
