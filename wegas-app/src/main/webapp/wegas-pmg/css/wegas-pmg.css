@@ -555,22 +555,22 @@ td.yui3-datatable-col-Realised:after {
     cursor: default;
 }
 /*---------------------------- Cursor pointer ---------------------*/
-.gantt-plannification-page .present, .gantt-plannification-page .futur, 
+.gantt-planning-page .present, .gantt-planning-page .futur, 
 .assignment span, table tbody .popup{
     cursor: pointer;
 }
 
 /*----------------------------Task-Plannification-Page------------------*/
-.task-plannification-page input {
+.task-planning-page input {
     width: 85px;
 }
 
 /*---------------------------- Gantt-Execution-Page---------------------*/
-.gantt-execution-page .plannification {
+.gantt-execution-page .planning {
     background-color: #878787;
     opacity: 0.3;
 }
-.gantt-execution-page .plannification:only-child{
+.gantt-execution-page .baseline:only-child{
     margin-top: -14px;
 }
 .gantt-execution-page .activity:only-child,

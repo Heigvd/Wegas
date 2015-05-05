@@ -209,6 +209,10 @@ YUI.add('wegas-datasource', function(Y) {
 
                     if (this.get("host").fire(val["@class"], val)) {
 
+                        node = Y.Widget.getByNode(".wegas-login-page") ||
+                            (Y.Widget.getByNode("#centerTabView") &&
+                                Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                            Y.Widget.getByNode(".wegas-playerview");
 
                         switch (val["@class"]) {
                             case "WegasErrorMessage":
@@ -222,9 +226,14 @@ YUI.add('wegas-datasource', function(Y) {
                             case "WegasOutOfBoundException":
                                 min = (val.min !== null ? val.min : "-∞");
                                 max = (val.max !== null ? val.max : "∞");
-                                level = "error";
-                                msg = "Variable \"" + val.variableDescriptor.get("label") +
-                                    "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])";
+                                if (val.variableDescriptor) {
+                                    node.showMessage("error",
+                                        "Variable \"" + val.variableDescriptor.get("label") +
+                                        "\" is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])");
+                                } else {
+                                    node.showMessage("error",
+                                        "Something is out of bound. <br />(" + val.value + " not in [" + min + ";" + max + "])");
+                                }
                                 break;
                             case "WegasScriptException":
                                 level = "error";

@@ -56,7 +56,7 @@ YUI.add("wegas-pmg-activitycolor", function(Y) {
                 occupations = i.get("descriptor").getInstance().get("occupations");
                 for (time in activities){
                     if (time < currentPeriod){
-                        host.schedule.getCell(index, +time).setContent("<span class='editable'>"
+                        host.schedule.getCell(index, +time).setContent("<span class='booked'>"
                             + activities[time]
                             + "</span>");
                     }
@@ -65,7 +65,7 @@ YUI.add("wegas-pmg-activitycolor", function(Y) {
                 Y.Array.each(occupations, function (o){
                     time = o.get("time");
                     if (o.get("editable") && time < currentPeriod && !activities[time]){
-                        host.schedule.getCell(index, +time).setContent("<span class='editable'></span>");
+                        host.schedule.getCell(index, +time).setContent("<span class='booked'></span>");
                     }
                 }
                 , this);

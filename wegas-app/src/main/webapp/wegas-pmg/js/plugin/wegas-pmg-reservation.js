@@ -80,7 +80,7 @@ YUI.add('wegas-pmg-reservation', function(Y) {
                             }},
                         on: {
                             success: function() {
-                                cell.append('<span class="editable"></span>');
+                                cell.append('<span class="booked"></span>');
                             }
                         }
                     });

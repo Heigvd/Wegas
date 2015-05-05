@@ -7,6 +7,7 @@
  */
 package com.wegas.resourceManagement.persistence;
 
+import com.wegas.core.exception.client.WegasOutOfBoundException;
 import com.wegas.core.persistence.AbstractEntity;
 import com.wegas.core.persistence.ListUtils;
 import com.wegas.core.persistence.variable.VariableInstance;
@@ -79,7 +80,11 @@ public class TaskInstance extends VariableInstance {
      * @param duration the duration to set
      */
     public void setDuration(double duration) {
-        this.duration = duration;
+        if (duration < 0.0) {
+            throw new WegasOutOfBoundException(0L, null, duration, null);
+        } else {
+            this.duration = duration;
+        }
     }
 
     /**
@@ -172,7 +177,7 @@ public class TaskInstance extends VariableInstance {
     }
 
     /**
-     * @param requirements the requierement to set
+     * @param requirements the requirement to set
      */
     public void setRequirements(List<WRequirement> requirements) {
         this.requirements = requirements;

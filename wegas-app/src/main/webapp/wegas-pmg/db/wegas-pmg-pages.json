@@ -72,10 +72,10 @@
             }, {
                 "type": "PmgBreadcrumb",
                 "locations": [
-                    "Initiation",
-                    "Planning",
-                    "Execution",
-                    "Closing"
+                    "phase1Name",
+                    "phase2Name",
+                    "phase3Name",
+                    "phase4Name"
                 ],
                 "variable": "currentPhase",
                 "plugins": [
@@ -815,7 +815,7 @@
     },
     "3": {
         "@name": "Tasks (Planning phase)",
-        "cssClass": "task-plannification-page",
+        "cssClass": "task-planning-page",
         "type": "List",
         "direction": "vertical",
         "children": [
@@ -883,7 +883,7 @@
     "4": {
         "@name": "Gantt (Planning phase)",
         "type": "List",
-        "cssClass": "gantt-plannification-page",
+        "cssClass": "gantt-planning-page",
         "direction": "vertical",
         "children": [
             {
@@ -987,8 +987,15 @@
         "direction": "vertical",
         "children": [
             {
-                "type": "Text",
-                "content": "<div class='title'><h2>Questions to answer this week</h2></div><div class='title'><h2>Details</h2></div>"
+                "type": "Template",
+                "variable": {
+                    "@class": "Script",
+                    "content": "Variable.find(gameModel, \"timeUnit\");\n"
+                },
+                "data": {
+                    "label": "week"
+                },
+                "custom": "<div class='title'><h2>Questions to answer this <%= this.variable.getValue() %></h2></div><div class='title'><h2>Details</h2></div>"
             }, {
                 "type": "MCQTabView",
                 "variable": {
@@ -1155,7 +1162,7 @@
                 "defaultSort": null
             }, {
                 "type": "Text",
-                "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"planification\">&nbsp;</div>\nPlanified</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nDue</div>\n</div>"
+                "content": "<div class=\"pmg-legend\">\n<div>\n<div class=\"baseline\">&nbsp;</div>\nBaseline</div>\n<div>\n<div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div>\n<div class=\"fill100\">&nbsp;</div>\nProjection</div>\n</div>"
             }
         ]
     },

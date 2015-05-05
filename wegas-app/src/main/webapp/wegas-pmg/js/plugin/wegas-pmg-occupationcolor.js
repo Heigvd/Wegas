@@ -60,11 +60,11 @@ YUI.add('wegas-pmg-occupationcolor', function(Y) {
         addColor: function(cell, editable) {
             if (editable) {
                 if (!this.get("autoReservation")) {
-                    cell.setContent("<span class='editable'></span>");
+                    cell.setContent("<span class='booked'></span>");
                 }
             } else {
                 cell.addClass("noteditable-period");
-                cell.setContent("<span class='notEditable'></span>");
+                cell.setContent("<span class='unavailable'></span>");
             }
         }
     }, {

@@ -44,7 +44,7 @@ YUI.add('wegas-pmg-plannificationcolor', function(Y) {
             for (i = 0; i < dt.data.size(); i += 1) {
                 plannification = Y.Array.unique(dt.data.item(i).get("descriptor").getInstance().get("plannification"));
                 for (ii = 0; ii < plannification.length; ii += 1) {
-                    host.schedule.getCell(i, plannification[ii]).append("<span class='editable plannification'></span>");
+                    host.schedule.getCell(i, plannification[ii]).append("<span class='editable baseline'></span>");
                 }
             }
         }
