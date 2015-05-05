@@ -58,8 +58,8 @@ public class ResourceInstance extends VariableInstance {
     /**
      *
      */
-    @ElementCollection
-    private Map<String, Long> skillsets = new HashMap<>();
+    @Transient
+    private Map<String, Long> skillsets;
     /**
      *
      */
@@ -111,8 +111,6 @@ public class ResourceInstance extends VariableInstance {
                 this.occupations.add(o);
             }
         }
-        this.skillsets.clear();
-        this.skillsets.putAll(other.getSkillsets());
         this.properties.clear();
         this.properties.putAll(other.getProperties());
         this.setMoral(other.getMoral());
@@ -296,53 +294,20 @@ public class ResourceInstance extends VariableInstance {
     }
 
     /**
+     * @deprecated 
      * @return the skillset
      */
-    public Map<String, Long> getSkillsets() {
+    @JsonIgnore
+    public Map<String, Long> getDeserializedSkillsets() {
         return this.skillsets;
     }
 
     /**
+     * @deprecated 
      * @param skillsets
      */
     public void setSkillsets(Map<String, Long> skillsets) {
         this.skillsets = skillsets;
-    }
-
-    /**
-     *
-     * @return
-     */
-    @JsonIgnore
-    public String getMainSkill() {
-        return (String) this.skillsets.keySet().toArray()[0];
-    }
-
-    /**
-     *
-     * @return
-     */
-    @JsonIgnore
-    public long getMainSkillLevel() {
-        return this.skillsets.get(this.getMainSkill());
-    }
-
-    /**
-     *
-     * @param key
-     * @param val
-     */
-    public void setSkillset(String key, long val) {
-        this.skillsets.put(key, val);
-    }
-
-    /**
-     *
-     * @param key
-     * @return
-     */
-    public long getSkillset(String key) {
-        return this.skillsets.get(key);
     }
 
     /**

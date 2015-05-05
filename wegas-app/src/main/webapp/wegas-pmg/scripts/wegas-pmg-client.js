@@ -41,9 +41,9 @@
             });
         });
 
-        persistence.Resources.GET_SKILL_LABEL = function(skillName){
-            var skill = Y.Array.find(Y.Wegas.persistence.Resources.SKILLS, function(item){
-                if (item.value === skillName){
+        persistence.Resources.GET_SKILL_LABEL = function(skillName) {
+            var skill = Y.Array.find(Y.Wegas.persistence.Resources.SKILLS, function(item) {
+                if (item.value === skillName) {
                     return item;
                 }
             });
@@ -332,9 +332,14 @@
                     name: "activityRate",
                     label: "Activity rate",
                     type: NUMBER,
-                    value: 100 ,
+                    value: 100,
                     description: "[0..100]"
-                    
+
+                }, {
+                    name: "level",
+                    label: "Level",
+                    type: "select",
+                    choices: persistence.Resources.STR_LEVELS
                 }, {
                     name: "wage",
                     label: "Monthly wages (100%)",
@@ -343,7 +348,7 @@
                     description: "[$]"
                 }]
         };
-        
+
         persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.moral = {
             type: NUMBER,
             optional: false,
@@ -353,7 +358,7 @@
                 description: "[0..7..12]"
             }
         };
-        
+
         persistence.ResourceDescriptor.ATTRS.defaultInstance.properties.confidence = {
             optional: true,
             type: NUMBER,
@@ -399,6 +404,8 @@
                         choices: [{
                                 value: "activityRate"
                             }, {
+                                value: "level"
+                            }, {
                                 value: "wage"
                             }]
                     }]
@@ -413,6 +420,8 @@
                         type: SELECT,
                         choices: [{
                                 value: "activityRate"
+                            }, {
+                                value: "level"
                             }, {
                                 value: "wage"
                             }]
@@ -433,6 +442,8 @@
                         choices: [{
                                 value: "activityRate"
                             }, {
+                                value: "level"
+                            }, {
                                 value: "wage"
                             }]
                     }, {
@@ -444,15 +455,15 @@
         }, true);
 
         Y.mix(persistence.TaskInstance.prototype, {
-            isRequirementCompleted: function(req){
-                
+            isRequirementCompleted: function(req) {
+
             },
             /*
              *  return {skills: {skill2 : x, skill2: y}, total: (x+y)}
              */
-            countRequiredResources: function(){
+            countRequiredResources: function() {
                 var total = {}, i, req;
-                for (i = 0 ; i < this.requirements.size(); i++){
+                for (i = 0; i < this.requirements.size(); i++) {
                 }
             }
         });
@@ -703,7 +714,7 @@
                         defaultPageId: 16
                     }]
             }).item(0);
-            
+
             if (!hostMode) {
                 properties.plug(Y.Plugin.TabDocker);
             }

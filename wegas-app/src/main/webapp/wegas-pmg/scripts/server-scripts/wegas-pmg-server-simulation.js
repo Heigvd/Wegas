@@ -447,6 +447,18 @@ var PMGSimulation = (function() {
         });
     }
 
+    function getResourceSkillName(resourceInstance) {
+        try {
+            return Variable.findParentListDescriptor(resourceInstance.getDescriptor()).getName();
+        } catch (e) {
+            return null;
+        }
+    }
+
+    function getResourceGrade(resourceInstance) {
+        return resourceInstance.getPropertyD("level");
+    }
+
     /**
      * return the most adapted (i.e closest accodring to levels) requirement
      * 
@@ -455,11 +467,13 @@ var PMGSimulation = (function() {
      * @returns {WRequirement} the selected (most adapted) requierement
      */
     function selectRequirement(taskInst, resourceInst) {
-        debug("selectRequirement(" + taskInst + "," + resourceInst + ", mainSkill: " + resourceInst.mainSkill + ")");
-        var skill = resourceInst.mainSkill,
+        var skill = getResourceSkillName(resourceInst),
+            grade = getResourceGrade(resourceInst),
             overview = getSkillsOverview(taskInst),
             nbRequiredResourceInTask, ski, d, req, i,
             selectedReq, completedReq, deltaLevel;
+
+        debug("selectRequirement(" + taskInst + "," + resourceInst + ", mainSkill: " + skill + ")");
 
         // Be sure current tast requiere resource skill
         if (overview[skill]) {
@@ -472,7 +486,7 @@ var PMGSimulation = (function() {
             }
             for (i = 0; i < taskInst.requirements.size(); i += 1) {
                 req = taskInst.requirements.get(i);
-                d = Math.abs(parseInt(resourceInst.mainSkillLevel, 10) - req.level);
+                d = Math.abs(grade - req.level);
                 if (req.work == skill) {
                     if (deltaLevel > d && req.quantity > 0) {
                         // Still work to do
@@ -696,13 +710,15 @@ var PMGSimulation = (function() {
             work = getSkillsOverview(taskInst)[requirement.work],
             sameNeedActivities = getActivitiesFromRequirement(allActivities, requirement),
             effectiveTotalOfEmployees = sameNeedActivities.length,
-            totalOfEmployees = sumRequierementsQuantities(taskInst.requirements);
+            totalOfEmployees = sumRequierementsQuantities(taskInst.requirements),
+            grade;
 
         debug("baseAdvance : " + stepAdvance + ", #sameNeedActivities: " + effectiveTotalOfEmployees);
         // Iterate through resources to sum various factor components
         for (i = 0; i < effectiveTotalOfEmployees; i += 1) {
             employeeInst = sameNeedActivities[i].resourceInstance;
             activityRate = employeeInst.getPropertyD("activityRate");
+            grade = getResourceGrade(employeeInst);
             sumActivityRate += activityRate;
             //Calculate ressource motivation factor
             employeesMotivationFactor = 1 + 0.05 * employeeInst.descriptor.getPropertyD("coef_moral") * (employeeInst.moral - 7);
@@ -711,7 +727,7 @@ var PMGSimulation = (function() {
             //debug("employeesMotivationFactor : " + employeesMotivationFactor);
 
             //Calcul variables for skill factor
-            var deltaLevel = parseInt(employeeInst.mainSkillLevel) - requirement.level,
+            var deltaLevel = parseInt(grade) - requirement.level,
                 skillsetFactor = (deltaLevel > 0) ? taskDesc.getPropertyD("competenceRatioSup") : taskDesc.getPropertyD("competenceRatioInf");
             employeeSkillsetFactor = Math.max(0, 1 + 0.05 * skillsetFactor * deltaLevel);
             //debug("calc skillset: activityRate:" + activityRate + ", skillsetFactor: " + skillsetFactor + "deltaLevel: " + deltaLevel);
@@ -725,7 +741,7 @@ var PMGSimulation = (function() {
             }
 //Calculate variable for quality
             sumMotivationXActivityRate += employeeInst.moral * activityRate;
-            sumSkillsetXActivityRate += employeeInst.mainSkillLevel * activityRate; //level * activityRate
+            sumSkillsetXActivityRate += grade * activityRate; //level * activityRate
         }
 
         if (sumActivityRate !== 0) {
@@ -1210,7 +1226,7 @@ var PMGSimulation = (function() {
         for (i = resourceInstances.length - 1; i > 0; i -= 1) {
             result += resourceInstances[i].descriptor.label;
             if (includeSkills) {
-                result += " (" + getSkillLabel(resourceInstances[i].mainSkill) + ")";
+                result += " (" + getSkillLabel(getResourceSkillName(resourceInstances[i])) + ")";
             }
             if (i > 1) {
                 result += ", ";
@@ -1240,7 +1256,7 @@ var PMGSimulation = (function() {
 
     function sendPlanningProblemEmail(resourceInstance) {
         var resourceName = resourceInstance.descriptor.label,
-            resourceSkill = getSkillLabel(resourceInstance.mainSkill),
+            resourceSkill = getSkillLabel(getResourceSkillName(resourceInstance)),
             timeUnit = Variable.findByName(gameModel, "timeUnit").getValue(self),
             wholePeriod, key = "planningProblem";
         if (timeUnit == "week") {
@@ -1264,7 +1280,7 @@ var PMGSimulation = (function() {
     // individial got to next task e-mail
     function sendGoToNextTaskMail(resourceInstance, currentStep, oldTask, newTask) {
         var resourceName = resourceInstance.descriptor.label,
-            resourceSkill = getSkillLabel(resourceInstance.mainSkill),
+            resourceSkill = getSkillLabel(getResourceSkillName(resourceInstance)),
             oldTaskName = getTaskLabelWithNumber(oldTask),
             newTaskName = getTaskLabelWithNumber(newTask),
             key = "endOfTaskSwitchToNew";
@@ -1286,7 +1302,7 @@ var PMGSimulation = (function() {
     // individial got to next task e-mail
     function sendGroupedGoToNextTaskMail(resourceInstances, currentStep, oldTask, newTask) {
         var resourceName = resourceInstances[0].descriptor.label,
-            resourceSkill = getSkillLabel(resourceInstances[0].mainSkill),
+            resourceSkill = getSkillLabel(getResourceSkillName(resourceInstances[0])),
             oldTaskName = getTaskLabelWithNumber(oldTask),
             newTaskName = getTaskLabelWithNumber(newTask),
             others = concatenateOthers(resourceInstances),
@@ -1310,7 +1326,7 @@ var PMGSimulation = (function() {
 
     function sendGroupedEmailFromTemplate(resourceInstances, currentStep, taskDesc, key) {
         var resourceName = resourceInstances[0].descriptor.label,
-            resourceSkill = getSkillLabel(resourceInstances[0].mainSkill),
+            resourceSkill = getSkillLabel(getResourceSkillName(resourceInstances[0])),
             taskName = getTaskLabelWithNumber(taskDesc),
             others = concatenateOthers(resourceInstances, key !== "skillCompleted");
 
@@ -1333,7 +1349,7 @@ var PMGSimulation = (function() {
 
     function sendEmailFromTemplate(resourceInstance, currentStep, taskDesc, key) {
         var resourceName = resourceInstance.descriptor.label,
-            resourceSkill = getSkillLabel(resourceInstance.mainSkill),
+            resourceSkill = getSkillLabel(getResourceSkillName(resourceInstance)),
             taskName = getTaskLabelWithNumber(taskDesc);
         PMGHelper.sendMessage(
             I18n.t("messages." + key + ".from", {
