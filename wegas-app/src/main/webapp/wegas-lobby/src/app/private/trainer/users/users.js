@@ -15,7 +15,7 @@ angular.module('private.trainer.users', [
 }).controller("TrainerUsersController", function TrainerUsersController($animate, $state, ModalService, Auth){
     Auth.getAuthenticatedUser().then(function(user) {
         if (user != null) {
-            if (user.isAdmin || user.isTrainer) {
+            if (user.isAdmin || user.isScenarist || user.isTrainer) {
                 ModalService.showModal({
                     templateUrl: 'app/private/trainer/users/users.tmpl.html',
                     controller: "ModalsController as modalsCtrl"
