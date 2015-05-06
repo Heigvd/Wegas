@@ -47,15 +47,6 @@
                                 ]
                             }
                         ]
-                    }, {
-                        "label": "Impact",
-                        "cssClass": "wegas-advanced-feature",
-                        "children": [
-                            {
-                                "type": "WysiwygConsole",
-                                "cssClass": "wegas-console"
-                            }
-                        ]
                     }
                 ]
             }

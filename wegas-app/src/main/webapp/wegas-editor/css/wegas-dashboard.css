@@ -52,7 +52,25 @@
     overflow: hidden;
 }
 
+/**/
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.enabled {
     height: 100px;
     transition: none;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .wegas-panel-content .yui3-widget-bd {
+    text-align: left;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .inputEx-ListField > fieldset > div {
+    padding-left: 20px;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-removebutton {
+    left: 0px;
+}
+
+.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-moveupbutton,
+.yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-movedownbutton {
+    display: none;
 }
