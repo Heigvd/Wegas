@@ -1,1 +1,30 @@
-<admin-groups-index></admin-groups-index>
+<h3>Groups</h3>
+<div class="clear"></div>
+<div class="row">
+	<div class="col-sm-4">
+	    <input class="input" type="text" ng-model="adminGroupsCtrl.newGroup.name" placeholder="New group name" autocomplete="off">
+	</div>
+	<div class="col-sm-2">
+		<a class="button button--small button--default" ng-click="adminGroupsCtrl.addGroup()">
+	      	<span class="button__label">New group</span>
+	    </a>
+    </div>
+</div>
+<div class="clear"></div>
+<div class="card card--medium" ng-repeat="group in adminGroupsCtrl.groups">
+	<div class="card__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_users"></div>
+	<div 
+	    class="card__description card__description--one-line">
+	    	<div class="line line--primary">{{group.name | limitTo: 36}}<span ng-if="group.name.length > 36">...</span></div>
+	</div>
+	<div class="card__actions">
+	    <a class="button button--small button--round button--default-reverse button--label-off button--customize" title="Manage rights" ui-sref="wegas.private.admin.groups.edit({id: group.id})">
+	      <span class="button__label">Manage rights</span>
+	    </a>
+	    <a 	class="button button--small button--round button--danger-reverse button--label-off button--trash" title="Remove group"
+	   		confirmed-click="adminGroupsCtrl.removeGroup(group)" 
+			ng-confirm-click="Are you sure you want to remove this group ? This action is irreversible.">
+	      	<span class="button__label">Remove group</span>
+	    </a>
+	</div>
+</div>

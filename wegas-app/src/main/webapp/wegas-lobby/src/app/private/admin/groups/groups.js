@@ -1,6 +1,6 @@
 angular.module('private.admin.groups', [
-    'private.admin.groups.directives'
-])
+    'private.admin.groups.edit'
+    ])
 .config(function ($stateProvider) {
     $stateProvider
         .state('wegas.private.admin.groups', {
@@ -14,15 +14,43 @@ angular.module('private.admin.groups', [
         })
     ;
 })
-.controller('AdminGroupsCtrl', function AdminGroupsCtrl($state, Auth, ViewInfos) {
-
-    Auth.getAuthenticatedUser().then(function(user){
-        if(user != null){
-            if(!user.isAdmin){
-                $state.go("wegas.private.scenarist");
+.controller('AdminGroupsCtrl', function AdminGroupsCtrl(GroupsModel) {
+    var ctrl = this;
+    ctrl.groups = [];
+    ctrl.newGroup = {
+        name: ""
+    };
+    ctrl.updateGroups = function(){
+        GroupsModel.getGroups().then(function(response){
+            if(!response.isErroneous()){
+                ctrl.groups = response.data;
+            }else{
+                response.flash();
             }
-            ViewInfos.editName("Admin workspace");
-        }
-    });
+        });
+    };
+
+    ctrl.addGroup = function(){
+        GroupsModel.addGroup(ctrl.newGroup.name).then(function(response){
+            if(!response.isErroneous()){
+                ctrl.newGroup = {
+                    name: ""
+                };
+                ctrl.updateGroups();
+            }else{
+                response.flash();
+            }
+        });
+    };
+    ctrl.removeGroup = function(group){
+        GroupsModel.deleteGroup(group).then(function(response){
+            if(!response.isErroneous()){
+                ctrl.updateGroups();
+            }else{
+                response.flash();
+            }
+        });
+    };
+    ctrl.updateGroups();    
 })
 ;

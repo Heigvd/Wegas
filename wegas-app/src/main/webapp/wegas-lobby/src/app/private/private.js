@@ -2,7 +2,7 @@ angular.module('private', [
     'wegas.models.sessions',
     'wegas.models.scenarios',
     'wegas.models.users',
-    'wegas.models.roles',
+    'wegas.models.groups',
     'private.player',
     'private.profile',
     'private.trainer',

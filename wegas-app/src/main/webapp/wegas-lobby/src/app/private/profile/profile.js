@@ -29,7 +29,7 @@ angular
                 views: {
                     'workspace@wegas.private': {
                         controller: 'PlayerCtrl as playerCtrl',
-                        templateUrl: 'app/private/player/sessions/sessions.tmpl.html'
+                        templateUrl: 'app/private/player/player.tmpl.html'
                     }
                 }
             })
