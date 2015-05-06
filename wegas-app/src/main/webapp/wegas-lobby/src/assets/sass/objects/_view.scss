@@ -130,7 +130,7 @@
         }
         .view__list{
             @include make-xs-column(12);
-            height:calc(100% - 82px);
+            height:calc(100% - 100px);
             padding:8px 0px 32px 0px;
             box-sizing: border-box;
             overflow-x:hidden;
