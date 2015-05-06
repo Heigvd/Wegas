@@ -27,7 +27,6 @@ public class NumberListener {
      * @see RequestManager#numberChanged
      */
     @PostUpdate
-    @PostPersist
     public void change(Object number) {
         if (number instanceof NumberInstance) {
             NumberInstance n = (NumberInstance) number;
