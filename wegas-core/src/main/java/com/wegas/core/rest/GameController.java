@@ -243,7 +243,7 @@ public class GameController {
                 //    teamFacade.create(game.getId(), new Team("Default"));
                 //}
                 //Team team = game.getTeams().get(1);                           // Join the first team available
-                gameFacade.joinTeam(team, currentUser);         // Finally join the team
+                gameFacade.joinTeam(team.getId(), currentUser.getId());         // Finally join the team
 
                 return Arrays.asList(team, game);
             } else {

@@ -80,7 +80,7 @@ public class NumberInstance extends VariableInstance {
 
                 if ((desc.getMaxValue() != null && value > desc.getMaxValueD())
                         || (desc.getMinValue() != null && value < desc.getMinValueD())) {
-                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc);
+                    throw new WegasOutOfBoundException(desc.getMinValue(), desc.getMaxValue(), value, desc.getLabel());
                 }
             }
         } catch (NullPointerException e) {

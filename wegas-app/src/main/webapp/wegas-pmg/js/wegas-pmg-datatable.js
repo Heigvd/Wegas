@@ -27,6 +27,7 @@ YUI.add("wegas-pmg-datatable", function(Y) {
         initializer: function() {
             var i, ct = this.get("columnsCfg"),
                 recordTypes = {};
+            this._bypassSyncCounter = 0;
             for (i = 0; i < ct.length; i += 1) {                                //construct Datatable's columns
                 Y.mix(ct[i], {
                     sortable: true,
@@ -66,10 +67,22 @@ YUI.add("wegas-pmg-datatable", function(Y) {
             this.updateHandler =
                 Wegas.Facade.Variable.after("update", this.syncUI, this);
         },
+        bypassSync: function() {
+            this._bypassSyncCounter += 1;
+        },
+        unbypassSync: function() {
+            if (this._bypassSyncCounter <= 1) {
+                this._bypassSyncCounter = 0;
+            } else {
+                this._bypassSyncCounter -= 1;
+            }
+        },
         syncUI: function() {
-            Y.log("syncUI()", "log", "Wegas.Datatable");
-            this.datatable.set("data", this.getData());
-            // this.datatable.addRows(this.getData());
+            if (!this._bypassSyncCounter) {
+                Y.log("syncUI()", "log", "Wegas.Datatable");
+                this.datatable.set("data", this.getData());
+                // this.datatable.addRows(this.getData());
+            }
         },
         destructor: function() {
             Y.log("destructor()", "log", "Wegas.Datatable");

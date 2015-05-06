@@ -184,7 +184,7 @@
         "custom": "<%== this.value || 'Unable to find welcome text' %>",
         "data": {},
         "variable": {
-            "content": "Variable.find(''welcomeText)"
+            "content": "Variable.find('welcomeText')"
         }
     },
     "3": {

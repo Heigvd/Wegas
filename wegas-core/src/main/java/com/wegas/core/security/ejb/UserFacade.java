@@ -397,7 +397,7 @@ public class UserFacade extends BaseFacade<User> {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (NoResultException e) {
             //Gotcha
         }
     }

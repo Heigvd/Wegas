@@ -11,6 +11,7 @@ import com.wegas.core.ejb.*;
 import com.wegas.core.event.internal.PlayerAction;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.exception.client.WegasErrorMessage;
+import com.wegas.core.exception.client.WegasRuntimeException;
 import com.wegas.core.exception.client.WegasScriptException;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.Player;
@@ -257,7 +258,7 @@ public class StateMachineFacade {
      * @param param  the parameter to pass to the script
      * @see #EVENT_PARAMETER_NAME
      */
-    private void evalEventImpact(Player player, final Script script, final Object param) throws WegasScriptException {
+    private void evalEventImpact(Player player, final Script script, final Object param) throws WegasRuntimeException {
         //try {
         final Object impactFunc;
         if (script.getLanguage().toLowerCase().equals("javascript")) {
@@ -277,6 +278,8 @@ public class StateMachineFacade {
             throw new WegasScriptException(ex.getFileName(), ex.getLineNumber(), ex.getMessage());
         } catch (NoSuchMethodException ex) {
             logger.debug("Event transition script failed", ex);
+        } catch (WegasRuntimeException ex) { // throw our exception as-is
+            throw ex;
         } catch (RuntimeException ex) {
             throw new WegasScriptException(ex.getMessage());
         }
