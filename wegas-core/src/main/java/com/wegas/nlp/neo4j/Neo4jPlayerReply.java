@@ -16,6 +16,7 @@ import com.wegas.core.ejb.RequestManager;
 import com.wegas.core.ejb.VariableInstanceFacade;
 import com.wegas.core.exception.internal.NoPlayerException;
 import com.wegas.core.persistence.game.DebugGame;
+import com.wegas.core.persistence.game.DebugTeam;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.primitive.NumberInstance;
 import com.wegas.mcq.ejb.QuestionDescriptorFacade;
@@ -25,10 +26,7 @@ import com.wegas.mcq.persistence.Reply;
 import org.apache.commons.lang3.StringEscapeUtils;
 
 import javax.annotation.Resource;
-import javax.ejb.Asynchronous;
-import javax.ejb.EJB;
-import javax.ejb.SessionContext;
-import javax.ejb.Stateless;
+import javax.ejb.*;
 import javax.enterprise.event.Observes;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,11 +39,12 @@ import java.util.Date;
  *
  * @author Gérald Eberle
  */
-
-@Stateless
+@ConcurrencyManagement(ConcurrencyManagementType.BEAN)
+@Singleton
 public class Neo4jPlayerReply {
 
     private static final ObjectMapper objectMapper;
+
     static {
         objectMapper = new ObjectMapper();
         objectMapper.configure(JsonGenerator.Feature.QUOTE_FIELD_NAMES, false);
@@ -72,11 +71,12 @@ public class Neo4jPlayerReply {
     }
 
     @Asynchronous
-    public void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
+    public synchronized void addNumberUpdate(Player player, NumberInstance numberInstance) throws NoPlayerException, JsonProcessingException {
         if (player == null) {
             player = variableInstanceFacade.findAPlayer(numberInstance);
         }
-        if (player.getGame() instanceof DebugGame || !com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) {
+        if (player.getGame() instanceof DebugGame || player.getTeam() instanceof DebugTeam ||
+                !com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
         final String key = nodeKey(player, TYPE.NUMBER);
@@ -117,7 +117,7 @@ public class Neo4jPlayerReply {
      * @param reply  the player's answer data
      */
     @Asynchronous
-    public void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
+    public synchronized void addPlayerReply(Player player, Reply reply, ChoiceDescriptor choiceDescriptor, QuestionDescriptor questionDescriptor) {
         if (player.getGame() instanceof DebugGame || !com.wegas.nlp.neo4j.Neo4jUtils.checkDataBaseIsRunning()) {
             return;
         }
