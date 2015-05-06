@@ -28,6 +28,7 @@ import com.wegas.mcq.persistence.QuestionDescriptor;
 import com.wegas.mcq.persistence.SingleResultChoiceDescriptor;
 import com.wegas.messaging.persistence.InboxDescriptor;
 import com.wegas.core.persistence.variable.primitive.ObjectDescriptor;
+import com.wegas.reviewing.persistence.PeerReviewDescriptor;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.*;
@@ -48,6 +49,7 @@ import org.slf4j.LoggerFactory;
 /**
  *
  * @param <T>
+ *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 @Entity
@@ -72,7 +74,9 @@ import org.slf4j.LoggerFactory;
     @JsonSubTypes.Type(name = "QuestionDescriptor", value = QuestionDescriptor.class),
     @JsonSubTypes.Type(name = "ChoiceDescriptor", value = ChoiceDescriptor.class),
     @JsonSubTypes.Type(name = "SingleResultChoiceDescriptor", value = SingleResultChoiceDescriptor.class),
-    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class)})
+    @JsonSubTypes.Type(name = "ObjectDescriptor", value = ObjectDescriptor.class),
+    @JsonSubTypes.Type(name = "PeerReviewDescriptor", value = PeerReviewDescriptor.class)
+})
 abstract public class VariableDescriptor<T extends VariableInstance> extends NamedEntity implements Searchable, LabelledEntity {
 
     private static final long serialVersionUID = 1L;
@@ -247,6 +251,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      * @param player
+     *
      * @return
      */
     public T getInstance(Player player) {
@@ -266,6 +271,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
      *
      * @param defaultInstance
      * @param player
+     *
      * @return
      */
     @JsonIgnore
@@ -320,13 +326,16 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
 
     /**
      * @param scope the scope to set
+     *
      * @fixme here we cannot use managed references since this.class is
      * abstract.
      */
     //@JsonManagedReference
     public void setScope(AbstractScope scope) {
         this.scope = scope;
-        scope.setVariableDescscriptor(this);
+        if (scope != null) {
+            scope.setVariableDescscriptor(this);
+        }
     }
 
     /**
@@ -360,6 +369,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
             this.setComments(other.getComments());
             this.defaultInstance.merge(other.getDefaultInstance());
             if (other.getScope() != null) {
+                System.out.println("This.Scope: " + this.scope);
                 this.scope.setBroadcastScope(other.getScope().getBroadcastScope());
             }
         } catch (PersistenceException pe) {
@@ -408,6 +418,7 @@ abstract public class VariableDescriptor<T extends VariableInstance> extends Nam
     /**
      *
      * @param criterias
+     *
      * @return
      */
     @Override

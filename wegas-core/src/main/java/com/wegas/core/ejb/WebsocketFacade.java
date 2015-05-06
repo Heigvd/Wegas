@@ -28,8 +28,10 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import java.io.IOException;
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.MissingResourceException;
 
 /**
@@ -106,7 +108,8 @@ public class WebsocketFacade {
      * fire and forget pusher events
      *
      * @param events   Event to send
-     * @param socketId Client's socket id. Prevent that specific client to receive this particular message
+     * @param socketId Client's socket id. Prevent that specific client to
+     *                 receive this particular message
      */
     @Asynchronous
     public void onRequestCommit(final EntityUpdatedEvent events, final String socketId) throws NoPlayerException {
@@ -114,13 +117,10 @@ public class WebsocketFacade {
             return;
         }
         VariableInstance v;
-        final EntityUpdatedEvent player = new EntityUpdatedEvent();
-        final EntityUpdatedEvent team = new EntityUpdatedEvent();
-        final EntityUpdatedEvent game = new EntityUpdatedEvent();
-        Long playerId = null;
-        Long teamId = null;
-        Long gameId = null;
-        final GameModel gameModel = events.getUpdatedEntities().get(0).getScope().getVariableDescriptor().getGameModel();
+
+        final Map<Long, EntityUpdatedEvent> games = new HashMap<>();
+        final Map<Long, EntityUpdatedEvent> teams = new HashMap<>();
+        final Map<Long, EntityUpdatedEvent> players = new HashMap<>();
 
 //        if (!gameModel.getProperties().getWebsocket().equals("")) {
 //            return;
@@ -134,38 +134,40 @@ public class WebsocketFacade {
                 //Not supported yet
             } else if (v.getScope() instanceof GameScope
                     || v.getScope().getBroadcastScope().equals(GameScope.class.getSimpleName())) {
-                game.addEntity(v);
-                gameId = variableInstanceFacade.findGame(v).getId();
+                putInstance(games, variableInstanceFacade.findGame(v).getId(), v);
             } else if (v.getScope() instanceof TeamScope
                     || v.getScope().getBroadcastScope().equals(TeamScope.class.getSimpleName())) {
-                team.addEntity(v);
-                teamId = variableInstanceFacade.findTeam(v).getId();
+                putInstance(teams, variableInstanceFacade.findTeam(v).getId(), v);
             } else if (v.getScope() instanceof PlayerScope
                     || v.getScope().getBroadcastScope().equals(PlayerScope.class.getSimpleName())) {
-                player.addEntity(v);
-                playerId = variableInstanceFacade.findAPlayer(v).getId();
+                putInstance(players, variableInstanceFacade.findAPlayer(v).getId(), v);
             }
         }
-        if (game.getUpdatedEntities().size() > 0) {
+
+        propagate(games, "Game-", socketId);
+        propagate(teams, "Team-", socketId);
+        propagate(players, "Player-", socketId);
+    }
+
+    private void propagate(Map<Long, EntityUpdatedEvent> map, String prefix, final String socketId) {
+        for (Entry<Long, EntityUpdatedEvent> entry : map.entrySet()) {
             try {
-                pusher.trigger("Game-" + gameId, "EntityUpdatedEvent", game.toJson(), socketId);
+                pusher.trigger(prefix + entry.getKey(), "EntityUpdatedEvent", entry.getValue().toJson(), socketId);
             } catch (IOException ex) {
                 //
             }
         }
-        if (team.getUpdatedEntities().size() > 0) {
-            try {
-                pusher.trigger("Team-" + teamId, "EntityUpdatedEvent", team.toJson(), socketId);
-            } catch (IOException ex) {
-                //
-            }
+    }
+
+    private void putInstance(Map<Long, EntityUpdatedEvent> map, Long id, VariableInstance v) {
+        EntityUpdatedEvent tmp;
+        if (map.containsKey(id)) {
+            tmp = map.get(id);
+        } else {
+            tmp = new EntityUpdatedEvent();
+            map.put(id, tmp);
         }
-        if (player.getUpdatedEntities().size() > 0) {
-            try {
-                pusher.trigger("Player-" + playerId, "EntityUpdatedEvent", player.toJson(), socketId);
-            } catch (IOException ex) {
-            }
-        }
+        tmp.addEntity(v);
     }
 
     public String pusherAuth(final String socketId, final String channel) {
