@@ -59,10 +59,14 @@ angular.module('private.player.join.directives', [])
         if(!ctrl.newTeam.alreadyUsed){
             if(ctrl.newTeam.name != ""){
                 if(ctrl.sessionToJoin.access != "CLOSE"){
+                    $interval.cancel(refresher);
                     SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
                         if(!responseCreate.isErroneous()){
                             $rootScope.$emit('newSession', true);
                             ctrl.newTeam = false;
+                            refresher = $interval(function() {
+                                findSessionToJoin();
+                            }, 1000);
                         }else{
                             responseCreate.flash();
                         }
