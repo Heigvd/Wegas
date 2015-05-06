@@ -403,6 +403,39 @@ angular.module('wegas.models.scenarios', [])
             return deferred.promise;
         };
 
+        model.createFromJSON = function(file) {
+            var deferred = $q.defer(),
+                url = "rest/GameModel",
+                fd = new FormData();
+
+
+            fd.append('file', file);
+            $http.post(ServiceURL + url, fd, {
+                transformRequest: angular.identity,
+                headers: {
+                    "managed-mode": true,
+                    "Content-Type": undefined
+                }
+            }).success(function(data) {
+                if (data.events !== undefined && data.events.length == 0) {
+                    cacheScenario("LIVE", data.entities[0]);
+                    deferred.resolve(Responses.success("Scenario created", data.entities[0]));
+                } else if (data.events !== undefined) {
+                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                } else {
+                    deferred.resolve(Responses.danger("Whoops...", false));
+                }
+
+            }).error(function(data) {
+                if (data.events !== undefined && data.events.length > 0) {
+                    deferred.resolve(Responses.danger(data.events[0].exceptions[0].message, false));
+                } else {
+                    deferred.resolve(Responses.danger("Whoops...", false));
+                }
+            });
+            return deferred.promise;
+        };
+
         model.updateScenario = function(id, infosToSet) {
             var deferred = $q.defer(),
                 scenarioBeforeChange = scenarios.findScenario("LIVE", id);

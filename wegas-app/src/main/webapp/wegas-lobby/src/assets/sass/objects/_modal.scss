@@ -297,6 +297,12 @@
 		}
 	}
 
+	&.modal--admin-groups{
+		.form{
+			padding:0px;
+		}
+	}
+
 	&.modal--settings{
 		.modal__content{
         	@include make-row(0px);
@@ -401,6 +407,4 @@
 		opacity:1;
 		transition:.5s;
 	}
-
-
 }

@@ -180,7 +180,7 @@ angular.module('wegas.models.sessions', [])
                 if (session && player) {
                     if (!session.properties.freeForAll) {
                         var team = _.find(session.teams, function(t) {
-                            return t.id = player.teamId
+                            return t.id == player.teamId
                         });
                         if (team) {
                             team.players.push(player);
@@ -197,7 +197,7 @@ angular.module('wegas.models.sessions', [])
                 if (session && player) {
                     if (!session.properties.freeForAll) {
                         var team = _.find(session.teams, function(t) {
-                            return t.id = player.teamId
+                            return t.id == player.teamId
                         });
                         if (team) {
                             if (team.players.length < 2) {
