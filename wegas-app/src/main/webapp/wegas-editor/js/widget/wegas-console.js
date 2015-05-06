@@ -31,22 +31,23 @@ YUI.add('wegas-console', function(Y) {
         destructor: function() {
             this.srcField.destroy();
         },
-        executeScript: function(scriptEntity) {
+        executeScript: function(scriptEntity, player) {
             this.showOverlay();
             Y.Wegas.Facade.Variable.script.run(scriptEntity, {
                 on: {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
-                            + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
+                                                                     Y.JSON.stringify(e.response.results.entities[0]) +
+                                                                     "</div>");
                     }, this),
                     failure: Y.bind(function(e) {
                         this.hideOverlay();
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
-                            + e.response.results.message + "</div>");
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: ' +
+                                                                     e.response.results.message + "</div>");
                     }, this)
                 }
-            });
+            }, player);
         },
         multiExecuteScript: function(multiPlayerScript) {
             this.showOverlay();
@@ -60,8 +61,9 @@ YUI.add('wegas-console', function(Y) {
                     success: Y.bind(function(e) {
                         this.hideOverlay();
                         this.showMessage("success", "The impact has been successfully completed", 4000);
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: '
-                            + Y.JSON.stringify(e.response.results.entities[0]) + "</div>");
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result">Script exectuted. Returned value: ' +
+                                                                     Y.JSON.stringify(e.response.results.entities[0]) +
+                                                                     "</div>");
                         if (!this.get("boundingBox").hasClass("wegas-editor-console")) {
                             this.srcField.setValue();
                             this.srcField.addButton.getNode().simulate("click");
@@ -75,12 +77,13 @@ YUI.add('wegas-console', function(Y) {
                         } else {
                             this.showMessage("error", "An error has occurred, please retry again", 4000);
                         }
-                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: '
-                            + res.message + "</div>");
+                        this.get(CONTENTBOX).one(".results").prepend('<div class="result error">Error executing script: ' +
+                                                                     res.message + "</div>");
                     }, this)
                 }
             });
-        }, /**
+        },
+        /**
          * @function
          * @private
          * @description Create and render the button for run the script.

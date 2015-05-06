@@ -16,9 +16,10 @@
 
     <script>//<ui:define name="editorFooter"><![CDATA[
     Y.namespace("Wegas.Config").Dashboard = {
-        remoteScript:"",
-        columns:[]
-    }
+        remoteScript: "",
+        columns: []
+    };
+    Y.namespace("Wegas.Config").CustomImpacts = [];
     Y.Wegas.app.once("render", function() {
         Y.one("body").addClass("wegas-hostmode");
 

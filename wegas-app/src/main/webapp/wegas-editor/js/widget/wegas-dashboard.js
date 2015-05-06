@@ -2,12 +2,13 @@
  * Wegas
  * http://wegas.albasim.ch
  *
- * Copyright (c) 2013, 2014, 2015 School of Business and Engineering Vaud, Comem
+ * Copyright (c) 2015 School of Business and Engineering Vaud, Comem
  * Licensed under the MIT License
  */
 /**
  * @fileoverview
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
+ * @author Cyril Junod <cyril.junod at gmail.com>
  */
 YUI.add('wegas-dashboard', function(Y) {
     "use strict";
@@ -37,7 +38,6 @@ YUI.add('wegas-dashboard', function(Y) {
          * For creating the field inputEx libary is used
          */
         renderUI: function() {
-            Y.Widget.getByNode("#centerTabView").set("selection", Y.Widget.getByNode("#centerTabView").item(1));
             var cfg = this.get("tableCfg");
 
             this.get(CONTENTBOX).addClass("yui3-skin-wegas");
@@ -67,9 +67,9 @@ YUI.add('wegas-dashboard', function(Y) {
                 key: "menu",
                 label: " ",
                 cellTemplate: "<td class='{className}'>" +
-                              "<textarea class='dashboard-notes-team disabled' placeholder='Notes' readonly='true'>{content}</textarea>" +
                               "<button class='yui3-button dashboard-open-team' title='View'><span class='wegas-icon wegas-icon-open'></span></button>" +
-                              "<button class='yui3-button dashboard-impact-team' title='Impact'><span class='wegas-icon wegas-icon-play'></span></button></td>"
+                              "<button class='yui3-button dashboard-impact-team' title='Impact'><span class='wegas-icon wegas-icon-play'></span></button>" +
+                              "<textarea class='dashboard-notes-team disabled' placeholder='Notes' readonly='true'>{content}</textarea></td>"
             });
         },
         /**
@@ -81,16 +81,48 @@ YUI.add('wegas-dashboard', function(Y) {
                 Wegas.Facade.Variable.after("update", this.syncUI, this);       // Listen updates on the target
                                                                                 // datasource
             this.get("boundingBox").delegate("click", function(e) {
-                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id"));
+                var team = Wegas.Facade.Game.cache.getTeamById(this.table.getRecord(e.currentTarget).get("id")), header;
                 if (team && team.get("players").length) {
+                    header = "<span>" + team.get("name") + " - " + team.get("players")[0].get("name") +
+                             "</span><br>";
                     new Y.Wegas.Panel({
                         modal: true,
                         children: [{
-                            type: "WysiwygConsole"
+                            type: "CustomConsole",
+                            player: team.get("players")[0]
                         }],
+                        headerContent: header,
                         width: 600,
-                        height: 600
-                    }).render();
+                        height: 600,
+                        zIndex: 5000,
+                        buttons: {
+                            header: [{
+                                name: "add",
+                                label: "Add impact",
+                                action: function() {
+                                    this.item(0).add();
+                                }
+                            }, {
+                                name: "src",
+                                label: "View src",
+                                classNames: "wegas-advanced-feature",
+                                action: function() {
+                                    this.item(0).viewSrc();
+                                }
+                            }],
+                            footer: [{
+                                name: "run",
+                                label: "Impact !",
+                                action: function() {
+                                    this.item(0).run();
+                                }
+                            }, {
+                                name: 'proceed',
+                                label: 'Close',
+                                action: "exit"
+                            }]
+                        },
+                    }).render().get("boundingBox").addClass("dashboard-impact-panel");
                 } else {
                     this.showMessage("info", "Could not find a player");
                 }
