@@ -43,38 +43,14 @@ YUI.add("wegas-loginbutton", function(Y) {
             if (!this.menu) { // Don't add the plugin if it already exist.
                 this.plug(Y.Plugin.WidgetMenu);
             }
-            this.menu.add([{
-                    type: "Button",
-                    label: "Preferences",
-                    plugins: [{
-                            fn: "OpenPageAction",
-                            cfg: {
-                                subpageId: "UserPreferences",
-                                targetPageLoaderId: this.get("targetPageLoader")
-                            }
-                        }]
-                }]);
-
-            if (!Wegas.Facade.GameModel.cache.getCurrentGameModel().get("properties.freeForAll")) {
-                this.menu.add({
-                    type: "Button",
-                    label: "Edit Team",
-                    plugins: [{
-                            fn: "OpenPageAction",
-                            cfg: {
-                                subpageId: "Team",
-                                targetPageLoaderId: this.get("targetPageLoader")
-                            }
-                        }]
-                });
-            }
+            
             this.menu.add([{
                     type: "Button",
                     label: "Logout",
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
-                                url: "logout",
+                                url: "#/logout",
                                 target: "self"
                             }
                         }]
@@ -160,7 +136,7 @@ YUI.add("wegas-loginbutton", function(Y) {
         bindUI: function() {
             this.on("click", function() {
                 var autologin = this.get("autologin");
-                Y.io(Y.Wegas.app.get("base") + "/logout", {//logout
+                Y.io(Y.Wegas.app.get("base") + "/rest/User/logout", {//logout
                     on: {
                         success: function() {
                             if (autologin) {
@@ -224,20 +200,6 @@ YUI.add("wegas-loginbutton", function(Y) {
             this.plug(Y.Plugin.WidgetMenu);
 
             this.menu.add([{
-                    "type": "Button",
-                    "label": "Preferences",
-                    "plugins": [{
-                            "fn": "OpenTabAction",
-                            "cfg": {
-                                "wchildren": [{
-                                        "type": "Form",
-                                        "plugins": [{
-                                                "fn": "UserPreferences"
-                                            }]
-                                    }]
-                            }
-                        }]
-                }, {
                     type: "Button",
                     label: "Themes",
                     "cssClass": "wegas-advanced-feature",
@@ -305,7 +267,7 @@ YUI.add("wegas-loginbutton", function(Y) {
                     plugins: [{
                             fn: "OpenUrlAction",
                             cfg: {
-                                url: "logout",
+                                url: "#/logout",
                                 target: "self"
                             }
                         }]

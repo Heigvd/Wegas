@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wegas.core.event.internal.ResetEvent;
 import com.wegas.core.event.internal.lifecycle.EntityCreated;
 import com.wegas.core.event.internal.lifecycle.PreEntityRemoved;
+import com.wegas.core.exception.client.WegasNotFoundException;
 import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.jcr.content.AbstractContentDescriptor;
 import com.wegas.core.jcr.content.ContentConnector;
@@ -41,8 +42,10 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.persistence.criteria.Predicate;
 
 /**
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
@@ -135,9 +138,10 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     }
 
     @Asynchronous
-    public void asyncRemove(final Long id){
+    public void asyncRemove(final Long id) {
         this.remove(id);
     }
+
     @Override
     public void remove(final Long id) {
         userFacade.deleteAccountPermissionByInstance("gm" + id);
@@ -176,20 +180,24 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     @Override
     public GameModel duplicate(final Long entityId) throws IOException {
         final GameModel srcGameModel = this.find(entityId);                     // Retrieve the entity to duplicate
-        final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
+        if (srcGameModel != null) {
+            final GameModel newGameModel = (GameModel) srcGameModel.duplicate();    // Duplicate it
 
-        newGameModel.setName(this.findUniqueName(srcGameModel.getName()));      // Find a unique name for this new game (e.g. Oldname(1))
-        this.create(newGameModel);                                              // Create the new game model
+            newGameModel.setName(this.findUniqueName(srcGameModel.getName()));      // Find a unique name for this new game (e.g. Oldname(1))
+            this.create(newGameModel);                                              // Create the new game model
 
-        try {                                                                   // Clone files and pages
-            ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
-            connector.cloneWorkspace(srcGameModel.getId());
-            newGameModel.setPages(srcGameModel.getPages());
-        } catch (RepositoryException ex) {
-            System.err.println(ex);
+            try {                                                                   // Clone files and pages
+                ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(newGameModel.getId());
+                connector.cloneWorkspace(srcGameModel.getId());
+                newGameModel.setPages(srcGameModel.getPages());
+            } catch (RepositoryException ex) {
+                System.err.println(ex);
+            }
+
+            return newGameModel;
+        }else {
+            throw new WegasNotFoundException("GameModel not found");
         }
-
-        return newGameModel;
     }
 
     /**
@@ -217,6 +225,33 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         }
     }
 
+    /**
+     * Set gameModel status, changing to {@link GameModel.Status#LIVE}
+     *
+     * @param entity GameModel
+     */
+    public void live(GameModel entity) {
+        entity.setStatus(GameModel.Status.LIVE);
+    }
+
+    /**
+     * Set gameModel status, changing to {@link GameModel.Status#BIN}
+     *
+     * @param entity GameModel
+     */
+    public void bin(GameModel entity) {
+        entity.setStatus(GameModel.Status.BIN);
+    }
+
+    /**
+     * Set gameModel status, changing to {@link GameModel.Status#DELETE}
+     *
+     * @param entity GameModel
+     */
+    public void delete(GameModel entity) {
+        entity.setStatus(GameModel.Status.DELETE);
+    }
+
     @Override
     public List<GameModel> findAll() {
         final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
@@ -224,6 +259,12 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         Root e = query.from(entityClass);
         query.select(e).orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
+    }
+
+    public List<GameModel> findByStatus(final GameModel.Status status) {
+        final TypedQuery<GameModel> query = getEntityManager().createNamedQuery("GameModel.findByStatus", GameModel.class);
+        query.setParameter("status", status);
+        return query.getResultList();
     }
 
     /**
@@ -236,6 +277,22 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         query.select(e)
                 .where(criteriaBuilder.isTrue(e.get("template")))
                 .orderBy(criteriaBuilder.asc(e.get("name")));
+        return getEntityManager().createQuery(query).getResultList();
+    }
+    
+    /**
+     * @return
+     */
+    public List<GameModel> findTemplateGameModelsByStatus(final GameModel.Status status) {
+        final CriteriaBuilder criteriaBuilder = getEntityManager().getCriteriaBuilder();
+        final CriteriaQuery query = criteriaBuilder.createQuery();
+
+        Root e = query.from(entityClass);
+        query.select(e)
+            .where(criteriaBuilder.and(
+                    criteriaBuilder.equal(e.get("status"), status), 
+                    criteriaBuilder.isTrue(e.get("template"))))
+            .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
 

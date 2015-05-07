@@ -16,6 +16,7 @@ import com.wegas.core.exception.internal.WegasNoResultException;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameAccountKey;
 import com.wegas.core.persistence.game.GameEnrolmentKey;
+import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
@@ -34,6 +35,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 
 /**
  *
@@ -160,7 +162,40 @@ public class GameController {
 
         return gameFacade.update(entityId, entity);
     }
-
+    
+    @PUT
+    @Path("{entityId: [1-9][0-9]*}/status/{status: [A-Z]*}")
+    public Game changeStatus(@PathParam("entityId") Long entityId, @PathParam("status") final Game.Status status) {
+        Game game = gameFacade.find(entityId);
+        SecurityHelper.checkPermission(game, "Edit");
+        switch(status){
+            case LIVE:
+                gameFacade.live(game);    
+                break;
+            case BIN:
+                gameFacade.bin(game);   
+                break;
+            case DELETE:
+                gameFacade.delete(game);   
+                break;
+        }
+        return game;
+    }
+    
+    @GET
+    @Path("status/{status: [A-Z]*}")
+    public Collection<Game> findByStatus(@PathParam("status") final Game.Status status) {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Collection<Game> games = gameFacade.findAll(status);
+        for (Game g : games) {
+            if (SecurityHelper.isPermitted(g, "Edit")) {
+                retGames.add(g);
+            }
+        }
+        return retGames;
+    }
+    
+    
     /**
      *
      * @param entityId
@@ -169,87 +204,68 @@ public class GameController {
     @DELETE
     @Path("{entityId: [1-9][0-9]*}")
     public Game delete(@PathParam("entityId") Long entityId) {
-
         Game entity = gameFacade.find(entityId);
         SecurityHelper.checkPermission(entity, "Edit");
-        gameFacade.bin(entity); //Do not really delete. Bin it instead
-//        gameFacade.remove(entity);
+        switch(entity.getStatus()){
+            case LIVE:
+                gameFacade.bin(entity);
+                break;
+            case BIN:
+                gameFacade.delete(entity);
+                break;
+        }
+//      gameFacade.remove(entity);
         return entity;
+    }
+    
+    @DELETE
+    public Collection<Game> deleteAll() {
+        final Collection<Game> retGames = new ArrayList<>();
+        final Collection<Game> games = gameFacade.findAll(Game.Status.BIN);
+        for (Game g : games) {
+            if (SecurityHelper.isPermitted(g, "Edit")) {
+                gameFacade.delete(g);
+                retGames.add(g);
+            }
+        }
+        return retGames;
     }
 
     /**
-     * This method process a string token. It checks if the given token
-     * corresponds to a game and then to a team, and return the corresponding
-     * result.
+     * Check if a user is logged,
+     * Find a game by it's token and check if this game has an open access,
+     * Check if current user is already a player for this game,
+     * Check if the game is played individually,
+     * Create a new team with a new player linked on the current user for the game found. 
      *
      * @param token
      * @return
      */
     @GET
     @Path("/JoinGame/{token : .*}/")
-    public Object tokenJoinGame(@PathParam("token") String token) {
-        Game game = gameFacade.findByToken(token);                              // 1st case: game token
+    public Response tokenJoinGame(@PathParam("token") String token) throws WegasNoResultException {
+        Response r = Response.status(Response.Status.UNAUTHORIZED).build();
         User currentUser = userFacade.getCurrentUser();
-
-        if (game != null) {
-            AbstractAccount account = currentUser.getMainAccount();
-            if (account instanceof GameAccount) {                               //Logged in with a GameAccount
-                GameAccountKey accountKey;
-                try {
-                    accountKey = gameFacade.findGameAccountKey(((GameAccount) account).getEmail());
-                    if (accountKey.getGame() == game && !accountKey.getUsed()) {     //Account matches currentGame and key is not used
-                        accountKey.setUsed(Boolean.TRUE);
+        if(currentUser != null){
+            r = Response.status(Response.Status.BAD_REQUEST).build();
+            Game game = gameFacade.findByToken(token);
+            if (game != null) {
+                r = Response.status(Response.Status.CONFLICT).build();
+                if(game.getAccess() == Game.GameAccess.OPEN){
+                    Player player = playerFacade.checkExistingPlayer(game.getId(), currentUser.getId());
+                    if(player == null){
+                        SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
+                        if (game.getGameModel().getProperties().getFreeForAll()) { 
+                            Team team = new Team("Team-" + Helper.genToken(20));
+                            teamFacade.create(game.getId(), team);
+                            gameFacade.joinTeam(team.getId(), currentUser.getId());
+                            r = Response.status(Response.Status.CREATED).entity(Arrays.asList(team, game)).build();
+                        }
                     }
-                } catch (WegasNoResultException ex) {
                 }
-            } else if (game.getAccess() != Game.GameAccess.ENROLMENTKEY) {      // Check game token are authorized on this game
-                return "Team token required";                                   // Return a string indicating the client it should provide an enrolment key (not an error)
-            }
-        } else {                                                                // 2nd case: single usage enrolement key
-            GameEnrolmentKey gameEnrolmentKey;
-            try {
-                gameEnrolmentKey = gameFacade.findGameEnrolmentKey(token);      // Look the key up
-            } catch (WegasNoResultException e) {
-                throw WegasErrorMessage.error("No game found for this key");
-            }
-            game = gameEnrolmentKey.getGame();
-            if (gameEnrolmentKey.getUsed()) {                                   // Check the token has not already been used
-                throw WegasErrorMessage.error("This key has already been used");
-            }
-            if (game.getAccess() != Game.GameAccess.SINGLEUSAGEENROLMENTKEY) {  // Check single usage enrolement key are authorized on this game
-                throw WegasErrorMessage.error("Not allowed to connect using sinle usage enrolment keys");
-            }
-            if (game.getGameModel().getProperties().getFreeForAll()) {
-                gameEnrolmentKey.setUsed(true);                                 // Mark the current key as used
             }
         }
-
-        try {                                                                   // Check if logged user is already registered in the target game
-            playerFacade.findByGameIdAndUserId(game.getId(), currentUser.getId());
-            throw WegasErrorMessage.error("You are already registered to this game.");// Current user is already registered to target game
-
-        } catch (WegasNoResultException e) {                                         // If there is no WegasNoResultException, everything is ok, we can pursue
-
-            SecurityHelper.checkAnyPermission(game, Arrays.asList("View", "Token"));
-            if (game.getGameModel().getProperties().getFreeForAll()) {          // If game is "freeForAll" (single team)
-                //if (game.getTeams().isEmpty()) {
-
-                // Version 1: Create a team for each user 
-                Team team = new Team("Team-" + Helper.genToken(20));
-                teamFacade.create(game.getId(), team);
-
-                // Version 2: Use same team for everybody
-                //if (game.getTeams().size() <= 1) {                            // Create a team if none present (first team is debug team)
-                //    teamFacade.create(game.getId(), new Team("Default"));
-                //}
-                //Team team = game.getTeams().get(1);                           // Join the first team available
-                gameFacade.joinTeam(team.getId(), currentUser.getId());         // Finally join the team
-
-                return Arrays.asList(team, game);
-            } else {
-                return game;
-            }
-        }
+        return r;
     }
 
     /**
@@ -260,6 +276,8 @@ public class GameController {
     @GET
     @Path("/JoinTeam/{teamId : .*}/")
     public Game joinTeam(@PathParam("teamId") Long teamId) {
+
+        // IN USE 
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
                 Arrays.asList("View", "Token"));                                // Make sure the user can join
         return gameFacade.joinTeam(teamId, userFacade.getCurrentUser().getId()).getGame();
@@ -273,6 +291,7 @@ public class GameController {
      */
     @POST
     @Path("/JoinTeam/{teamId : .*}/")
+    @Deprecated
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, List<AbstractAccount> accounts) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
                 Arrays.asList("View", "Token"));                                // Make sure the user can join
@@ -301,6 +320,7 @@ public class GameController {
 
     @POST
     @Path("/JoinTeam/{teamId : .*}/{token : .+}")
+    @Deprecated
     public Game joinTeamByGroup(@PathParam("teamId") Long teamId, @PathParam("token") String token,
             List<AbstractAccount> accounts) {
         SecurityHelper.checkAnyPermission(teamFacade.find(teamId).getGame(),
@@ -323,6 +343,7 @@ public class GameController {
      */
     @POST
     @Path("{gameId : .*}/CreateTeam/{name : .*}/")
+    @Deprecated
     public Team createTeam(@PathParam("gameId") Long gameId, @PathParam("name") String name) {
 
         SecurityHelper.checkAnyPermission(gameFacade.find(gameId), Arrays.asList("View", "Token"));
@@ -341,6 +362,7 @@ public class GameController {
      */
     @POST
     @Path("{gameId : .*}/CreateTeam")
+    @Deprecated
     public Team createTeam(@PathParam("gameId") Long gameId) {
 
         SecurityHelper.checkAnyPermission(gameFacade.find(gameId), Arrays.asList("View", "Token"));
@@ -360,6 +382,7 @@ public class GameController {
      */
     @POST
     @Path("{gameId : [1-9][0-9]*}/CreateGameAccount/{accountNumber : [1-9][0-9]*}")
+    @Deprecated
     public Game createGameAccount(@PathParam("gameId") Long gameId, @PathParam("accountNumber") Long accountNumber) {
         Game g = gameFacade.find(gameId);
         SecurityUtils.getSubject().checkPermission("GameModel:Edit:g" + gameId);
