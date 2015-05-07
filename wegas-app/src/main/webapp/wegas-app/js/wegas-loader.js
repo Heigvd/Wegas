@@ -62,7 +62,7 @@ YUI().use(function(Y) {
              * Persistence
              */
             "wegas-datasource": {
-                requires: ["datasource-io", "json"]
+                requires: ["datasource-io", "json", "widget"]
             },
             "wegas-scripteval": {
                 path: "js/persistence/wegas-scripteval-min.js",
