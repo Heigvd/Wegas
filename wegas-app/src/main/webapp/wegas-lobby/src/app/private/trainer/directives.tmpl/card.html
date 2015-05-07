@@ -13,10 +13,9 @@
     <div class="card__actions__access">
       <div class="line">Access to new players</div>
       <label 
-          class="choice choice--toogle"
-          ng-click="editAccess(session)" >
+          class="choice choice--toogle">
           <div class="choice__box">
-              <input ng-model="open" type="checkbox" /> 
+              <input ng-model="open" ng-change="editAccess(session)" type="checkbox" /> 
               <div class="choice__box__display"></div>
           </div>
       </label>

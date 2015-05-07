@@ -62,7 +62,6 @@ angular.module('private.player.join.directives', [])
                     $interval.cancel(refresher);
                     SessionsModel.createTeam(ctrl.sessionToJoin, ctrl.newTeam.name).then(function(responseCreate){
                         if(!responseCreate.isErroneous()){
-                            $rootScope.$emit('newSession', true);
                             ctrl.newTeam = false;
                             refresher = $interval(function() {
                                 findSessionToJoin();
@@ -83,8 +82,8 @@ angular.module('private.player.join.directives', [])
         if(ctrl.sessionToJoin.access != "CLOSE"){
             SessionsModel.joinTeam(ctrl.sessionToJoin.id, teamId).then(function(response){
                 if(!response.isErroneous()){
-                    $rootScope.$emit('newSession', true);
                     $interval.cancel(refresher);
+                    $rootScope.$emit('newSession', true);
                     $scope.close();
                 }else{
                     response.flash();
