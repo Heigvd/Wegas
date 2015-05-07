@@ -52,7 +52,6 @@
     overflow: hidden;
 }
 
-/**/
 .yui3-skin-sam .wegas-dashboard .yui3-datatable-col-menu textarea.enabled {
     height: 100px;
     transition: none;
@@ -64,6 +63,9 @@
 
 .yui3-skin-sam .dashboard-impact-panel .inputEx-ListField > fieldset > div {
     padding-left: 20px;
+}
+.yui3-skin-sam .dashboard-impact-panel  div.inputEx-label label{
+    color:white;
 }
 
 .yui3-skin-sam .dashboard-impact-panel .inputEx-WysiwygScript .inputEx-ListField .wegas-removebutton {

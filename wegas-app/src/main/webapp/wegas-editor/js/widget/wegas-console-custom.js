@@ -123,6 +123,10 @@ YUI.add('wegas-console-custom', function(Y) {
                     for (i = 0; i < inputs.length; i += 1) {
                         if (Y.Array.some(inputs[i].getArray(), validateItem)) {
                             valid = valid && inputs[i].validate();
+                        } else {
+                            Y.Array.each(inputs[i].inputs, function(item) {
+                                item.setClassFromState("valid");
+                            });
                         }
                     }
                     return valid;

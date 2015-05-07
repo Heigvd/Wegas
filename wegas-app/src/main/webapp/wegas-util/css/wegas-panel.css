@@ -31,7 +31,8 @@
 .yui3-skin-sam .wegas-panel .wegas-panel-content .yui3-widget-ft{
     background: none;
 }
-.yui3-skin-sam .wegas-panel-content .yui3-widget-ft button{
+.yui3-skin-sam .wegas-panel-content .yui3-widget-ft button,
+.yui3-skin-sam .wegas-panel-content .yui3-widget-hd button{
     background-color: rgba(160, 160, 160, 0.8);
     color: white;
     margin-left: 0.3em;
