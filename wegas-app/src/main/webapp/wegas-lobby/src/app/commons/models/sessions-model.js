@@ -728,8 +728,7 @@ angular.module('wegas.models.sessions', [])
                                     if (player) {
                                         player.teamId = teamId;
                                         player.userId = user.id;
-                                        session = cachePlayer(session, player);
-                                        sessions.cache.played.data = cacheSession(sessions.cache.played.data, session);
+                                        sessions.cache.played.data = cacheSession(sessions.cache.played.data, session, true);
                                         if (user.isTrainer || user.isScenarist || user.isAdmin) {
                                             sessions.findSession("managed", session.id).then(function(managedSession) {
                                                 if (managedSession) {
