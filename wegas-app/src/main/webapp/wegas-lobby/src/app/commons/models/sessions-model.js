@@ -664,13 +664,20 @@ angular.module('wegas.models.sessions', [])
             var deferred = $q.defer();
             Auth.getAuthenticatedUser().then(function(user) {
                 if (user != null) {
-                    var cachedSession = _.find(sessions.cache.played.data, function(s) {
-                        return s.token == token;
-                    });
+                    var cachedSession = null;
+                    if(!sessions.cache.played){
+                        sessions.cache.played = {
+                            data: [],
+                            loading: false
+                        };
+                    }else{
+                        cachedSession = _.find(sessions.cache.played.data, function(s) {
+                            return s.token == token;
+                        });
+                    }
                     if (cachedSession) {
                         deferred.resolve(Responses.info("You have already join this session", false));
                     } else {
-                        console.log(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended");
                         $http.get(ServiceURL + "rest/GameModel/Game/JoinGame/" + token + "?view=Extended").success(function(data) {
                             var team = _.find(data[1].teams, function(t) {
                                 return t.id == data[0].id;
@@ -688,10 +695,10 @@ angular.module('wegas.models.sessions', [])
                                             if (managedSession) {
                                                 managedSession = cachePlayer(managedSession, player);
                                             }
-                                            deferred.resolve(Responses.success("You have join the session", cachedSession));
+                                            deferred.resolve(Responses.success("You have join the session", data[1]));
                                         });
                                     } else {
-                                        deferred.resolve(Responses.success("You have join the session", cachedSession));
+                                        deferred.resolve(Responses.success("You have join the session", data[1]));
                                     }
                                 } else {
                                     deferred.resolve(Responses.danger("Error during creating player", false));

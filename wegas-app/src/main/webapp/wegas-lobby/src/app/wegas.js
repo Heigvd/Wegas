@@ -14,7 +14,8 @@ angular.module('Wegas', [
     'wegas.behaviours.modals',
     'wegas.behaviours.tools',
     'public',
-    'private'
+    'private',
+    'autologin'
 ])
 .config(function ($stateProvider, $urlRouterProvider, cfpLoadingBarProvider) {
     // Configurate loading bar
