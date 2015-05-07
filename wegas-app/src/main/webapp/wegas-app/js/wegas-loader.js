@@ -743,64 +743,7 @@ YUI().use(function(Y) {
             }
         }
     });
-    /* Lobby */
-    YUI.addGroup("wegas-lobby", {
-        base: "./wegas-lobby/",
-        root: "/wegas-lobby/",
-        modules: {
-            "wegas-inputex-permissionselect": {
-                requires: ["inputex-list", "inputex-checkbox", "wegas-inputex-roleselect"],
-                ws_provides: "RolePermissionList"
-            },
-            "wegas-inputex-gamemodelselect": {
-                requires: ["inputex-select", "inputex-list", "inputex-uneditable"],
-                ix_provides: ["gamemodelselect", "enrolmentkeylist", "accountkeylist"]
-            },
-            "wegas-inputex-roleselect": {
-                requires: "inputex-select",
-                ix_provides: "roleselect"
-            },
-            "wegas-gameinformation": {
-                path: "js/wegas-gameinformation-min.js",
-                requires: "wegas-teamcss",
-                ws_provides: "GameInformation"
-            },
-            "wegas-join-token": {
-                requires: "wegas-team",
-                ws_provides: "TokenJoin"
-            },
-            "wegas-loginwidget": {
-                requires: ["inputex-group", "inputex-password", "inputex-string",
-                    "inputex-hidden", "inputex-email", "inputex-checkbox", "button",
-                    "event-key", "wegas-widget", "wegas-button", "wegas-logincss",
-                    "wegas-gameinformation"],
-                ws_provides: "LoginWidget"
-            },
-            "wegas-logincss": {
-                type: CSS
-            },
-            "wegas-sharerole": {
-                requires: ["inputex-select", "inputex-list", "inputex-string", "inputex-checkbox"],
-                ws_provides: ["ShareRole", "TeamsList"]
-            },
-            "wegas-shareuser": {
-                requires: ["inputex-list", "inputex-checkbox", "inputex-autocomplete",
-                    "autocomplete-highlighters", "inputex-hidden", "wegas-inputex-markup"],
-                ws_provides: "ShareUser"
-            },
-            "wegas-lobby-datatable": {
-                requires: ["datatable", "button-group", "event-valuechange", "wegas-lobby-datatablecss"],
-                ws_provides: "GameDataTable"
-            },
-            "wegas-lobby-datatablecss": {
-                type: CSS
-            },
-            "wegas-lobby-button": {
-                requires: ["uploader-html5", "treeview"],
-                ws_provides: ["UploadFileButton", "GameModelHistory"]
-            }
-        }
-    });
+    
     //YUI.addGroup("wegas-form", {
     //    base: "./wegas-form/",
     //    root: "/wegas-form/",

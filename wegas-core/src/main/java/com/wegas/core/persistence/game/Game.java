@@ -483,7 +483,6 @@ public class Game extends NamedEntity {
      *
      */
     public enum GameAccess {
-
         /**
          *
          */

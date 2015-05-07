@@ -1,0 +1,38 @@
+<form class="form">
+	<div class="modal__header">
+	    <div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_user"></div>
+	    <h5 class="modal__title">{{adminGroupsEditIndexCtrl.group.name}}</h5>
+	    <a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+	        <span class="button__label">Close</span>
+	    </a>
+	</div>
+	<div class="modal__content modal__content--nav-off">
+    	<div>
+			<strong>Edit name</strong>
+		</div>
+		<div class="form__row">
+            <input class="input" type="text" ng-model="adminGroupsEditIndexCtrl.group.name" placeholder="Group name" autocomplete="off">
+        </div>
+    	<div>
+    		<strong>Edit permissions</strong>
+    		<a class="button button--small button--round button--label-off button--reverse-default button--add" ng-click="adminGroupsEditIndexCtrl.addPermission()">
+            <span class="button__label">Add permission</span></a>
+        </div>
+       	<div class="form__row" ng-repeat="permission in adminGroupsEditIndexCtrl.group.permissions">
+			<div class="col-xs-1">
+		        <button ng-click="adminGroupsEditIndexCtrl.removePermission(permission)" class="col-xs-1 button button--remove button--label-off button--round"><span class="button__label">Remove</span></button>
+		    </div>
+		    <div class="col-xs-11">
+           		<input class="input" type="text" ng-model="permission.value" placeholder="Permission chain" autocomplete="off">
+		    </div>
+        </div>
+	</div>
+	<div class="modal__tools">
+	 	<a 
+	 		class="button button--small button--success button--valid col-xs-push-9" 
+ 			confirmed-click="adminGroupsEditIndexCtrl.save()" 
+ 			ng-confirm-click="Are you sure you want to save your changes ? This action is irreversible.">
+            <span class="button__label">Save changes</span>
+        </a>
+	</div>
+</form>

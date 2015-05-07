@@ -202,7 +202,7 @@ YUI.add('wegas-datasource', function(Y) {
 
             this.on("ExceptionEvent", function(e) {
                 var type = e.type.split(":").pop(),
-                    val, node, min, max;
+                    val, node, min, max, msg, level;
 
                 if (e.serverEvent) {
                     val = e.serverEvent.get("val.exceptions")[0].get("val");
@@ -216,10 +216,12 @@ YUI.add('wegas-datasource', function(Y) {
 
                         switch (val["@class"]) {
                             case "WegasErrorMessage":
-                                node.showMessage(val.level, val.message);
+                                level = val.level;
+                                msg = val.message;
                                 break;
                             case "WegasNotFoundException":
-                                node.showMessage("error", val.message);
+                                level = "error";
+                                msg = val.message;
                                 break;
                             case "WegasOutOfBoundException":
                                 min = (val.min !== null ? val.min : "-∞");
@@ -234,15 +236,32 @@ YUI.add('wegas-datasource', function(Y) {
                                 }
                                 break;
                             case "WegasScriptException":
-                                node.showMessage("error",
-                                    val.message + " at line " + val.lineNumber + " in script " + val.script);
+                                level = "error";
+                                msg = val.message + " at line " + val.lineNumber + " in script " + val.script;
                                 break;
                             case "WegasWrappedException":
-                                node.showMessage(type, "Unexpected error: " + val.message);
+                                level = type;
+                                msg = "Unexpected error: " + val.message;
                                 break;
                             default:
-                                node.showMessage(type, "Severe error: " + val.message);
+                                level = type;
+                                msg = type, "Severe error: " + val.message;
                                 break;
+                        }
+
+
+                        if (Y.Widget) {
+                            node = Y.Widget.getByNode(".wegas-login-page") ||
+                                (Y.Widget.getByNode("#centerTabView") &&
+                                    Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                                Y.Widget.getByNode(".wegas-playerview");
+
+                        }
+                        
+                        if (node) {
+                            node.showMessage(level, msg);
+                        } else {
+                            alert(msg);
                         }
                     }
                     this.get(HOST).fire("ExceptionEvent", e.serverEvent.get("val.exceptions")[0]);
