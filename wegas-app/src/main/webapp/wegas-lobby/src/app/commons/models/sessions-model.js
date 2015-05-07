@@ -574,7 +574,9 @@ angular.module('wegas.models.sessions', [])
                         sessionBeforeChange.access = "OPEN";
                         message = "Session open";
                     }
-                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange).success(function(data) {
+                    $http.put(ServiceURL + "rest/GameModel/Game/" + sessionToSet.id, sessionBeforeChange, {
+                      ignoreLoadingBar: true
+                    }).success(function(data) {
                         deferred.resolve(Responses.success(message, data));
                     }).error(function(data) {
                         deferred.resolve(Responses.danger(message, false));

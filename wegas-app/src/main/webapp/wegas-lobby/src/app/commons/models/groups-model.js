@@ -3,8 +3,8 @@ angular.module('wegas.models.groups', [])
     .service('GroupsModel', function($http, $q, $interval, Responses, Auth) {
         var model = this,
             groups = null,
-            loadingGroups = false;
-
+            loadingGroups = false,
+            
             /* Cache a group, passing the group to add in parameter */
             cacheGroup = function(group) {
                 if (group && groups) {
