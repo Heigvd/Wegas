@@ -1,0 +1,33 @@
+#flash-messages {
+  position: fixed;
+  top: 50px;
+  left: 50%;
+  z-index: 10000;
+
+  li{
+    padding: 5px 15px;
+    display: block;
+    text-align: center;
+    width: 500px;
+    color: white;
+    margin-left: -250px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    font-size: 1.7em;
+    &.ng-enter {
+      animation: fadeIn 1s;
+    }
+    &.ng-leave {
+      animation: fadeOut 1s;
+    }
+  }
+
+  @each $flash in $buttons-types {
+    $flash-name: nth($flash, 1);
+    $flash-color: nth($flash, 2);
+
+    .#{$flash-name} {
+      background-color: lighten($flash-color, 10%);
+    }
+  }
+}

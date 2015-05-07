@@ -1,0 +1,7 @@
+<div 
+	ng-repeat="icon in icons" 
+	ng-class="{true:'icon--selected', false: ''}[icon.key == activeIcon]" 
+	class="icon illustration illustration--round illustration--icon illustration--medium"
+	illustration="ICON_NONE_{{icon.key}}"
+	ng-click="change(icon.key)">
+</div>

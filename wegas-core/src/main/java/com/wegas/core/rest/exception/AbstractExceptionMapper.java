@@ -33,7 +33,9 @@ public abstract class AbstractExceptionMapper {
     public static Response processException(Throwable exception) {
         logger.warn("ProcessException: " + exception);
 
-        if (exception instanceof RollbackException
+        if (exception instanceof RollbackException){
+           return Response.status(Response.Status.FORBIDDEN).entity(exception).build();
+       } else if (exception instanceof RollbackException
                 || exception instanceof TransactionRolledbackException
                 || exception instanceof ObserverException
                 || exception instanceof PersistenceException
