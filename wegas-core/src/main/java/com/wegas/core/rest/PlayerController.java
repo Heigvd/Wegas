@@ -11,6 +11,7 @@ import com.wegas.core.ejb.GameFacade;
 import com.wegas.core.ejb.PlayerFacade;
 import com.wegas.core.ejb.TeamFacade;
 import com.wegas.core.persistence.game.Player;
+import com.wegas.core.persistence.game.Team;
 import com.wegas.core.security.ejb.UserFacade;
 import com.wegas.core.security.util.SecurityHelper;
 import java.util.Collection;
@@ -85,6 +86,7 @@ public class PlayerController {
      * @return
      */
     @POST
+    @Deprecated
     public Player create(@PathParam("teamId") Long teamId, Player entity) {
         SecurityHelper.checkPermission(teamFacade.find(teamId).getGame(), "Edit");
         playerFacade.create(teamId, entity);
@@ -113,11 +115,15 @@ public class PlayerController {
     @Path("{playerId: [1-9][0-9]*}")
     public Player delete(@PathParam("playerId") Long playerId) {
         Player p = playerFacade.find(playerId);
-
         if (!userFacade.getCurrentUser().equals(p.getUser())) {
             SecurityHelper.checkPermission(p.getGame(), "Edit");
         }
-        playerFacade.remove(playerId);
+        Team team = teamFacade.find(p.getTeamId());
+        if(team.getPlayers().size() == 1){
+            teamFacade.remove(team);
+        }else{
+            playerFacade.remove(playerId);
+        }
         return p;
     }
 

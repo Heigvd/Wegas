@@ -1,0 +1,31 @@
+<div class="modal__header">
+	<h5 class="modal__title">Create account</h5>
+	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+   		<span class="button__label">Close</span>
+	</a>
+</div>
+<div class="modal__content--nav-tools-off">
+	<form class="view__login-form form" ng-submit="publicSignupCtrl.signup()">
+	  <div class="form__row">
+	      <input class="form__row__entry input input--secondary" ng-model="publicSignupCtrl.newUser.email" type="email" id="login" placeholder="Email" autocomplete="off">
+	  </div>
+	  <div class="form__row">
+	      <input class="form__row__entry input input--secondary" ng-model="publicSignupCtrl.newUser.username" type="text" id="username" placeholder="Username" autocomplete="off">
+	  </div>
+	  <div class="form__row">
+	      <input class="form__row__entry input input--secondary" ng-model="publicSignupCtrl.newUser.p1" type="password" id="password1" placeholder="Password" autocomplete="off">
+	  </div>
+	    <div class="form__row">
+	      <input class="form__row__entry input input--secondary" ng-model="publicSignupCtrl.newUser.p2" type="password" id="password2" placeholder="Please retype your password" autocomplete="off">
+	  </div>
+	  <div class="form__row">
+	      <input class="form__row__entry input input--secondary" ng-model="publicSignupCtrl.newUser.firstname" type="text" id="firstname" placeholder="Firstname" autocomplete="off">
+	  </div>
+	  <div class="form__row">
+	      <input class="form__row__entry input input--secondary" ng-model="publicSignupCtrl.newUser.lastname" type="text" id="lastname" placeholder="Lastname" autocomplete="off">
+	  </div>
+	  <div class="form__row form__row--right">
+	      <input class="form__row__btn button button--default" type="submit" value="Create account" />
+	  </div>
+	</form>
+</div>

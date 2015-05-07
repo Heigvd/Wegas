@@ -1,0 +1,44 @@
+<div class="modal__header">
+	<div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_{{settingsIndexCtrl.infos.color}}_{{settingsIndexCtrl.infos.icon}}"></div>
+	<h5 class="modal__title">{{settingsIndexCtrl.session.name | limitTo: settingsIndexCtrl.MAX_DISPLAYED_CHARS}}<span ng-if="settingsIndexCtrl.session.name.length > settingsIndexCtrl.MAX_DISPLAYED_CHARS">...</span></h5>
+	<a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+   		<span class="button__label">Close</span>
+	</a>
+</div>
+<div class="modal__nav modal__nav--2tab">
+   	<a 	class="modal__nav__tab modal__nav__tab--left" 
+   		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.infos}"
+   		ng-click="settingsIndexCtrl.activeTab('infos')">Infos</a> 
+   	<a 	class="modal__nav__tab modal__nav__tab--right"  
+   		ng-class="{'modal__nav__tab--active': settingsIndexCtrl.tabs.display}"
+   		ng-click="settingsIndexCtrl.activeTab('display')">Icons & colors</a> 
+</div>
+<div 	ng-if="settingsIndexCtrl.tabs.infos" 
+		class="modal__content"
+		active-infos="settingsIndexCtrl.infos"
+		check-change="settingsIndexCtrl.checkChanges"
+		trainer-sessions-customize-infos>
+</div>
+<div 	ng-if="settingsIndexCtrl.tabs.display" class="modal__content">
+	<div 
+		class="modal__content__colors"
+		active-color="settingsIndexCtrl.infos.color" 
+		change="settingsIndexCtrl.changeColor" 
+		trainer-sessions-customize-colors>	
+	</div>
+	<div 
+		class="modal__content__icons"
+		active-icon="settingsIndexCtrl.infos.icon" 
+		change="settingsIndexCtrl.changeIcon"
+		trainer-sessions-customize-icons >	
+	</div>
+</div>
+<div class="modal__tools">
+	<p ng-if="settingsIndexCtrl.hasChanges.all" class="modal__tools__message"><i class="fa fa-warning"></i> Some changes aren't saved</p>
+	<a class="modal__tools__button button button--small button--success" ng-click="settingsIndexCtrl.save()">
+   		<span class="button__label">Save change</span>
+	</a>
+	<a class="modal__tools__button button button--small button--default" ng-click="settingsIndexCtrl.cancel()">
+   		<span class="button__label">Cancel</span>
+	</a>
+</div>
