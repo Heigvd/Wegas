@@ -718,27 +718,37 @@ app.once("render",
     });
 Y.namespace("Wegas.Config").Dashboard = {
     columns: [{
-            "label": "Phase"
-        }, {
-            "label": "Period"
-        }, {
-            "label": "Questions"
-        }, {
-            "label": "Management",
-            "formatter": "colored"
-        }, {
-            "label": "User",
-            "formatter": "colored"
-        }, {
-            "label": "Quality",
-            "formatter": "colored"
-        }, {
-            "label": "Cost",
-            "formatter": "colored"
-        }, {
-            "label": "Schedule",
-            "formatter": "colored"
-        }
-    ],
+        "label": "Phase"
+    }, {
+        "label": "Period"
+    }, {
+        "label": "Questions"
+    }, {
+        "label": "Management",
+        "formatter": "colored"
+    }, {
+        "label": "User",
+        "formatter": "colored"
+    }, {
+        "label": "Quality",
+        "formatter": "colored"
+    }, {
+        "label": "Cost",
+        "formatter": "colored"
+    }, {
+        "label": "Schedule",
+        "formatter": "colored"
+    }],
     remoteScript: "PMGDashboard.dashboard()"
 };
+Y.namespace("Wegas.Config").CustomImpacts = [
+    ["Send Mail",
+        'PMGHelper.sendMessage(${"type":"string", "label":"From"}, ${"type":"string", "label":"Subject"}, ${"type":"html", "label":"Body", "required":true}, []);'],
+    ["Add to project variables",
+        'Variable.find(gameModel, "managementApproval").add(self, ${"type":"number", "label": "Management"});'],
+    'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "User"});',
+    'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
+    'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
+    'Variable.find(gameModel, "projectFixedCosts").add(self, ${"type":"number", "label": "Fixed costs"});',
+    'Variable.find(gameModel, "bonusRatio").add(self, ${"type":"number", "label": "Bonus ratio"});'
+];
