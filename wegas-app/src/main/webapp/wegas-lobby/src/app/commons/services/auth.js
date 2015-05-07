@@ -155,4 +155,34 @@ angular.module('wegas.service.auth', [
                 });
             return deferred.promise;
         };
+
+        service.loginAsGuest = function() {
+            var deferred = $q.defer(),
+                url = "rest/User/GuestLogin/";
+            service.getAuthenticatedUser().then(function(noUser) {
+                if (noUser == null) {
+                    $http.post(ServiceURL + url, {
+                        "@class": "AuthenticationInformation",
+                        "login": "",
+                        "password": "",
+                        "remember": true
+                    }, {
+                        "headers": {
+                            "managed-mode": "true"
+                        }
+                    })
+                        .success(function(data) {
+                            service.getAuthenticatedUser().then(function(guest){
+                                deferred.resolve(Responses.success("Connected as guest", guest));
+                            });
+                        })
+                        .error(function(data) {
+                            deferred.resolve(Responses.danger("Error during connection", false));
+                        });
+                }else{
+                    deferred.resolve(Responses.danger("Error during connection", false));
+                }
+            });
+            return deferred.promise;
+        };
     });
