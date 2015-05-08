@@ -111,6 +111,20 @@ public class UserFacade extends BaseFacade<User> {
             throw new WegasNotFoundException("Unable to find user");
         }
     }
+    
+    /**
+     *
+     *
+     * @param username String representing the username
+     * @return a User entity, based on the username
+     */
+    public User getUserByUsername(String username) {
+        User u = null;
+        try{
+            u = accountFacade.findByUsername(username).getUser();
+        }catch(WegasNoResultException e){}
+        return u;
+    }
 
     @Override
     public void create(User user) {

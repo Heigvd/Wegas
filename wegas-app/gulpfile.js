@@ -46,7 +46,9 @@ gulp.task("compress-js", ["submodule"], function() {
     return gulp.src(["target/Wegas/**/*.js",
             "!target/Wegas/lib/**",
             "!**/*-min.js",
-            "!**/gulpfile.js"],
+            "!**/gulpfile.js",
+            "!target/Wegas/wegas-lobby/**/*.js",
+            "!target/Wegas/scripts/*.js"],
         {base: "target/Wegas"})
         .pipe(sourcemaps.init())
         .pipe(cache(uglify()))

@@ -1,0 +1,26 @@
+<div class="card__illustration illustration illustration--big illustration--icon" illustration="{{session.properties.iconUri}}"></div>
+<div 
+	class="card__description"
+	ng-class="{true:'card__description--one-line', false:'card__description--two-lines'}[session.properties.freeForAll]" >
+    <div class="line line--primary">
+      {{ session.name | limitTo : MAX_DISPLAYED_CHARS}}<span ng-if="session.name.length > MAX_DISPLAYED_CHARS">...</span>
+    </div>
+    <div ng-if="!session.properties.freeForAll" class="line line--secondary">
+    	Team "{{team.name | limitTo : (MAX_DISPLAYED_CHARS - 10)}}<span ng-if="team.name.length > (MAX_DISPLAYED_CHARS - 10)">...</span>"
+    </div>
+</div>
+<div class="card__actions">
+    <a ng-if="!session.properties.freeForAll" class="button button--medium button--round button--default-reverse button--label-off button--team" title="View team" ui-sref="wegas.private.player.team({id: session.id})">
+      <span class="button__label">View team</span>
+    </a> 
+    <a 
+      class="button button--medium button--round button--danger-reverse button--label-off button--sign-out" 
+      title="Leave Session" 
+      confirmed-click="leave(session.id)" 
+      ng-confirm-click="Are you sure you want to leave the session ? This action is irreversible.">
+      <span class="button__label">Leave session</span>
+    </a>  
+    <a class="button button--medium button--round button--info button--label-off button--play" title="Play session" href="{{ServiceURL}}game-play.html?gameId={{session.id}}" target="_blank">
+      <span class="button__label">Play session</span>
+    </a>
+</div>

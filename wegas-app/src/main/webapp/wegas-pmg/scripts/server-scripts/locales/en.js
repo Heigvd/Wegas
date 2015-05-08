@@ -124,12 +124,6 @@ i18nTable.en = {
             wholeWeek: "the whole week"
         }
     },
-    phase: {
-        phase1: "Initiation",
-        phase2: "Planning",
-        phase3: "Execution",
-        phase4: "Closing"
-    },
     question: {
         question: "Question",
         action: "Action"

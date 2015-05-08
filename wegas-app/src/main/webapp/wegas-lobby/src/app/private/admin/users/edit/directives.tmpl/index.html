@@ -1,0 +1,49 @@
+<div class="modal__header">
+    <div class="modal__illustration illustration illustration--medium illustration--icon" illustration="ICON_grey_user"></div>
+    <h5 class="modal__title">{{adminUsersEditIndexCtrl.user.account.name}}</h5>
+    <a class="modal__close button button--medium button--label-off button--default-reverse button--close" ng-click="close()">
+        <span class="button__label">Close</span>
+    </a>
+</div>
+
+<div class="modal__content modal__content--nav-off modal__content--nav-tools-off">
+
+    <h2>Edit</h2>
+
+    <form class="form form__create-scenario">
+        <div class="form__row">
+            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.firstname" placeholder="Please enter user firstname" autocomplete="off">
+        </div>
+        <div class="form__row">
+            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.lastname" placeholder="Please enter user lastname" autocomplete="off">
+        </div>
+        <div class="form__row">
+            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.email" placeholder="Please enter user email" autocomplete="off">
+        </div>
+        <div class="form__row">
+            <input class="input" type="text" ng-model="adminUsersEditIndexCtrl.user.account.username" placeholder="Please enter user username" autocomplete="off">
+        </div>
+        <div class="form__row">
+            <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password" placeholder="Password" autocomplete="off">
+        </div>
+        <div class="form__row">
+            <input class="input" type="password" ng-model="adminUsersEditIndexCtrl.user.account.password2" placeholder="Confirm password" autocomplete="off">
+        </div>
+        <div class="form__row">
+            <hr/>
+        </div>
+
+       	<admin-users-edit-groups user="adminUsersEditIndexCtrl.user"></admin-users-edit-groups>
+
+        <div class="form__row">
+            <hr/>
+        </div>
+
+        <div class="form__row form__row--right">
+            <a class="button button--small button--success button--valid col-xs-push-9" ng-click="adminUsersEditIndexCtrl.save()">
+                <span class="button__label">Save changes</span>
+            </a>
+        </div>
+    </form>
+
+</div>

@@ -178,7 +178,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                             defaultSort: null
                         }, {
                             type: "Text",
-                            content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div>\n<div class=\"editable\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"notEditable\">&nbsp;</div>\nNot Available</div>\n</div>"
+                            content: "<div class=\"pmg-legend\">\n<div>\n<div class=\"engagementDelay\">&nbsp;</div>\nDelayed</div>\n<div><div class=\"worked\">&nbsp;</div>\nWorked</div>\n<div><div class=\"booked\">&nbsp;</div>\nAssigned</div>\n<div>\n<div class=\"unavailable\">&nbsp;</div>\nNot Available</div>\n</div>"
                         }]
                 }).render(this.get(CONTENTBOX));
                 if (!autoReserve) {

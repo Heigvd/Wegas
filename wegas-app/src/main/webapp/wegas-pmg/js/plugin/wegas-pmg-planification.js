@@ -57,7 +57,7 @@ YUI.add('wegas-pmg-planification', function(Y) {
                         if (method === "DELETE") {
                             cell.setContent("");
                         } else {
-                            cell.append('<span class="editable plannification"></span>');
+                            cell.append('<span class="booked planning"></span>');
                         }
                     }
                 }

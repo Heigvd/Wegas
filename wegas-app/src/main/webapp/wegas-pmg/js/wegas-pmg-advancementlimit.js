@@ -36,35 +36,40 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
          */
         renderUI: function() {
             var cb = this.get(CONTENTBOX),
-                nbPeriodPhase1 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase1").getMaxValue(),
-                nbPeriodPhase2 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase2").getMaxValue(),
-                nbPeriodPhase3 = Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue(),
-                nbPeriodPhase4 = Y.Wegas.Facade.Variable.cache.find("name", "periodPhase4").getMaxValue();
+                nbPeriods = [],
+                i, name,
+                defaultNames = ["Initiation", "Planning", "Execution", "Closing"];
 
-            cb.append(this.phaseNode("Initiation", "initiation", nbPeriodPhase1));
-            cb.append(this.phaseNode("Planning", "planning", nbPeriodPhase2));
-            cb.append(this.phaseNode("Execution", "execution", nbPeriodPhase3));
-            cb.append(this.phaseNode("Closing", "closing", nbPeriodPhase4));
+            nbPeriods.push(Y.Wegas.Facade.Variable.cache.find("name", "periodPhase1").getMaxValue());
+            nbPeriods.push(Y.Wegas.Facade.Variable.cache.find("name", "periodPhase2").getMaxValue());
+            nbPeriods.push(Y.Wegas.Facade.Variable.cache.find("name", "executionPeriods").getValue());
+            nbPeriods.push(Y.Wegas.Facade.Variable.cache.find("name", "periodPhase4").getMaxValue());
+
+            for (i = 1; i < 5; i += 1) {
+                name = Y.Wegas.Facade.Variable.cache.find("name", "phase" + i + "Name");
+                name = (name ? name.getValue() : defaultNames[i-1]);
+                cb.append(this.phaseNode(name, nbPeriods[i - 1], i));
+            }
         },
-        valueBoxNode: function(period, phase) {
-            var node = Y.Node.create("<div class='wegas-template-valuebox " + phase + "'></div>"),
+        valueBoxNode: function(period, phaseNumber) {
+            var node = Y.Node.create("<div class='wegas-template-valuebox box-phase" + phaseNumber + "'></div>"),
                 boxUnits = Y.Node.create("<div class='wegas-template-valuebox-units'></div>"),
                 i;
 
             for (i = 1; i <= period; i += 1) {
                 boxUnits.append("<div class='wegas-template-valuebox-unit'>" + i + "</div>");
-                if (phase === "box-execution" && i === period) {
+                if (phaseNumber === 3 && i === period) {
                     boxUnits.append("<div class='wegas-template-valuebox-unit'>...</div>");
                 }
             }
             node.append(boxUnits);
             return node;
         },
-        phaseNode: function(phaseName, phaseClass, period) {
-            var phaseNode = Y.Node.create("<div class='phase phase-" + phaseClass + "'></div>");
-            phaseNode.append("<p>" + phaseName + " :</p>");
-            phaseNode.append(this.valueBoxNode(period, "box-" + phaseClass));
-            return phaseNode;
+        phaseNode: function(phaseName, nbPeriod, phaseNumber) {
+            var node = Y.Node.create("<div class='phase'></div>");
+            node.append("<p>" + phaseName + " :</p>");
+            node.append(this.valueBoxNode(nbPeriod, phaseNumber));
+            return node;
         },
         bindUI: function() {
             var cb = this.get(CONTENTBOX);
@@ -197,12 +202,16 @@ YUI.add('wegas-pmg-advancementlimit', function(Y) {
                 };
 
             for (key in phaseInstList) {
-                max.phase = Math.max(max.phase, phaseInstList[key].get("value"));
+                if (phaseInstList.hasOwnProperty(key)) {
+                    max.phase = Math.max(max.phase, phaseInstList[key].get("value"));
+                }
             }
 
             playerCurrentPeriodList = currentPeriodList.item(max.phase - 1).get("scope").get("variableInstances");
             for (key in playerCurrentPeriodList) {
-                max.period = Math.max(max.period, playerCurrentPeriodList[key].get("value"));
+                if (playerCurrentPeriodList.hasOwnProperty(key)) {
+                    max.period = Math.max(max.period, playerCurrentPeriodList[key].get("value"));
+                }
             }
             return max;
         },

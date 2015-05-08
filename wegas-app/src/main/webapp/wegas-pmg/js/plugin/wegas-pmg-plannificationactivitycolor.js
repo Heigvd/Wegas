@@ -96,7 +96,7 @@ YUI.add('wegas-pmg-plannificationactivitycolor', function(Y) {
             return activitiesToAdd;
         },
         addColor: function(cell) {
-            cell.append("<span class='editable activity'></span>");
+            cell.append("<span class='activity'></span>");
         }
     }, {
         NS: "plannificationactivitycolor"

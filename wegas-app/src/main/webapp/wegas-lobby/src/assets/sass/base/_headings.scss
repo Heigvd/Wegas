@@ -1,0 +1,29 @@
+h1{
+    font-weight: 300;
+    font-size: 48px;
+    margin: 32px 0px 0px 0px;
+}
+
+h2{
+    display:inline-block;
+    font-size:16px;
+    font-weight:300;
+    margin:16px 0px 16px 8px;
+}
+
+h3{
+    color: $default-color;
+    font-weight: 200;
+    font-size:30px;
+    padding:0px;
+    margin:32px 0px 16px 0px
+}
+
+h4{
+    font-weight: 300;
+    padding:0px;
+}
+
+h5, h6{
+    font-weight: 300;
+}
