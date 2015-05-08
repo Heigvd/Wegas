@@ -1,0 +1,57 @@
+<form class="form form__create-scenario" ng-submit="updateInformations()">
+  <div class="form__row">
+    <div class="col-xs-3">
+      <h4>Firstname</h4>
+    </div>
+    <div class="col-xs-9">
+      <input class="input" type="text" ng-model="user.account.firstname" placeholder="Please enter your firstname" autocomplete="off">
+    </div>
+  </div>
+  <div class="form__row">
+    <div class="col-xs-3">
+      <h4>Lastname</h4>
+    </div>
+    <div class="col-xs-9">
+      <input class="input" type="text" ng-model="user.account.lastname" placeholder="Please enter your lastname" autocomplete="off">
+    </div>
+  </div>
+    <div class="form__row">
+    <div class="col-xs-3">
+      <h4>Email</h4>
+    </div>
+    <div class="col-xs-9">
+      <input class="input" type="text" ng-model="user.account.email" placeholder="Please enter your email" autocomplete="off">
+    </div>
+  </div>
+  <div class="form__row">
+    <div class="col-xs-3">
+      <h4>Username</h4>
+    </div>
+    <div class="col-xs-9">
+      <input class="input" type="text" ng-model="user.account.username" placeholder="Please enter your username" autocomplete="off">
+    </div>
+  </div>
+  <div class="form__row">
+    <div class="col-xs-3">
+      <h4>Password</h4>
+    </div>
+    <div class="col-xs-9">
+      <input class="input" type="password" ng-model="user.account.password" placeholder="Password" autocomplete="off">
+    </div>
+  </div>
+  <div class="form__row">
+
+    <div class="col-xs-3">
+      <h4>Password</h4>
+    </div>
+    <div class="col-xs-9">
+
+      <input class="input" type="password" ng-model="user.account.password2" placeholder="Confirm password" autocomplete="off">
+      </div>
+  </div>
+  <div class="form__row form__row--right">
+    <div class="col-xs-12">
+      <input class="form__row__btn button button--success" type="submit"  value="Save changes" />
+    </div>
+  </div>
+</form>
