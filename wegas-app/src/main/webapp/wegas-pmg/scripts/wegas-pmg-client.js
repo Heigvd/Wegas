@@ -15,7 +15,7 @@ app.once("render",
         var STRING = "string", HIDDEN = "hidden", ARRAY = "array", SELF = "self",
             NUMBER = "number", SELECT = "select", VALUE = "value", GROUP = "group",
             persistence = Y.Wegas.persistence,
-            centerTab, dashboard, properties;
+            dashboard, properties;
 
         Y.use("wegas-variabledescriptor-entities", function() {
             persistence.ListDescriptor.EDITMENU[1].plugins[0].cfg.children.push({
@@ -372,10 +372,8 @@ app.once("render",
             };
             persistence.ResourceDescriptor.METHODS = Y.Object.filter(persistence.ResourceDescriptor.METHODS,
                 function(m, k) {
-                    return !(k.match(/confidence/i)
-                             || k.match(/salary/i)
-                             || k.match(/experience/i)
-                             || k.match(/leadership/i));
+                    return !(k.match(/confidence/i) || k.match(/salary/i) || k.match(/experience/i) ||
+                             k.match(/leadership/i));
                 });
             Y.mix(persistence.ResourceDescriptor.METHODS, {
                 getNumberInstanceProperty: {
@@ -443,8 +441,8 @@ app.once("render",
                  */
                 countRequiredResources: function() {
                     var total = {}, i, req;
-                    for (i = 0; i < this.requirements.size(); i++) {
-                    }
+//                    for (i = 0; i < this.requirements.size(); i++) {
+//                    }
                 }
             });
 
@@ -656,55 +654,6 @@ app.once("render",
             });
         });
 
-        // Game properties & dashboard page
-        centerTab = Y.Widget.getByNode("#centerTabView");
-
-        if (centerTab) {
-            Y.use(['wegas-pmg-advancementlimit'], function() {
-                var hostMode = Y.one(".wegas-hostmode");
-
-                //                if (hostMode) {
-                //                    // Add dashboard tab in first position
-                //                    dashboard = centerTab.add({
-                //                        label: "Overview",
-                //                        children: [{
-                //                            type: "PageLoader",
-                //                            pageLoaderId: "properties",
-                //                            defaultPageId: 17
-                //                        }],
-                //                        plugins: [{
-                //                            fn: "FullWidthTab"
-                //                        }]
-                //                    }, 0).item(0);
-                //                    dashboard.set("selected", 2);
-                //                }
-
-                centerTab.some(function(child) {
-                    if (child.get("label") === "Properties") {
-                        centerTab.remove(child.get("index"));
-                        return true;
-                    }
-                });
-                var cfg = {
-                    label: "Properties",
-                    children: [{
-                        type: "PageLoader",
-                        pageLoaderId: "properties",
-                        defaultPageId: 16
-                    }]
-                };
-                // Add properties tab
-                Y.Wegas.Widget.use(cfg, function() {
-
-                    properties = centerTab.add(cfg).item(0);
-                });
-
-                if (!hostMode) {
-                    properties.plug(Y.Plugin.TabDocker);
-                }
-            });
-        }
-
         /*
          *  Custom Error definition
          */
@@ -767,5 +716,13 @@ app.once("render",
             'Variable.find(gameModel, "bonusRatio").add(self, ${"type":"number", "label": "Bonus ratio"});'
         ];
     };
+    Y.namespace("Wegas.Config").ExtraTabs = [{
+        label: "Properties",
+        children: [{
+            type: "PageLoader",
+            pageLoaderId: "properties",
+            defaultPageId: 16
+        }]
+    }];
 })();
 
