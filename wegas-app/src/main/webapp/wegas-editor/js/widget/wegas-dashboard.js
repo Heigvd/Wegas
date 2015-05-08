@@ -52,7 +52,7 @@ YUI.add('wegas-dashboard', function(Y) {
             cfg.columns = Y.Array.map(cfg.columns, function(c) {                // Add some default properties to columns
                 return Y.mix(c, {
                     allowHTML: true,
-                    sortable: true,
+                    sortable: false,
                     key: c.label,
                     emptyCellValue: "-"
                 });
@@ -243,19 +243,24 @@ YUI.add('wegas-dashboard', function(Y) {
                     }]
                 },
                 getter: function(v) {
-                    var clone = Y.clone(v);
-                    clone.columns = clone.columns.concat(Y.namespace("Wegas.Config.Dashboard").columns);
+                    var clone = Y.clone(v), dashboard = Y.namespace("Wegas.Config.Dashboard"),
+                        cols = Y.Lang.isFunction(dashboard) ? dashboard().columns : dashboard.columns;
+                    clone.columns = clone.columns.concat(cols);
                     return clone;
                 }
             },
             /**
              * server script to get table data.
              * format: [{id:TEAMID[, TABLE_KEY:VALUE]*}*]
+             * or a function which should return this array
              */
             remoteScript: {
                 value: "",
                 getter: function() {
-                    return Y.namespace("Wegas.Config.Dashboard").remoteScript;
+                    var dashboard = Y.namespace("Wegas.Config.Dashboard");
+                    return Y.Lang.isFunction(dashboard) ?
+                        dashboard().remoteScript :
+                        dashboard.remoteScript;
                 }
             }
         }

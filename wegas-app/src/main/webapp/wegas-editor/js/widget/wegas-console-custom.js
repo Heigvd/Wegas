@@ -151,6 +151,7 @@ YUI.add('wegas-console-custom', function(Y) {
                         value: Y.namespace("Wegas.Config").CustomImpacts,
                         validator: Y.Lang.isArray,
                         setter: function(v) {
+                            v = Y.Lang.isFunction(v) ? v() : v;
                             return Y.Array.map(v, function(i) {
                                 return Y.Lang.isArray(i) ? i : [undefined, i];
                             });
