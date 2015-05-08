@@ -252,29 +252,31 @@ YUI.add('wegas-scriptlibrary', function(Y) {
                 label: "<span class=\"wegas-icon wegas-icon-delete\"></span>Delete",
                 on: {
                     click: Y.bind(function() {
-                        this.showOverlay();
-
-                        Wegas.Facade.GameModel.sendRequest({
-                            request: "/" + Wegas.Facade.GameModel.get("currentGameModelId")
-                                + "/Library/" + this.get("library") + "/" + this.currentScriptName,
-                            cfg: {
-                                method: "DELETE",
-                                updateCache: false
-                            },
-                            on: Wegas.superbind({
-                                success: function() {
-                                    this.showMessage("success", "Script deleted");
-                                    if (this.get("library") === "CSS") {
-                                        this.updateStyleSheet(this.currentScriptName, "");
-                                    }
-                                    this.currentScriptName = null;
-                                    this.syncUI();
-                                },
-                                failure: function() {
-                                    this.showMessage("error", "Error while deleting script.");
-                                }
-                            }, this)
-                        });
+                        Wegas.Panel.confirm("Are you sure you want to delete the \"" +
+                            this.currentScriptName + "\" script ?", Y.bind(function() {
+                                this.showOverlay();
+                                Wegas.Facade.GameModel.sendRequest({
+                                    request: "/" + Wegas.Facade.GameModel.get("currentGameModelId")
+                                        + "/Library/" + this.get("library") + "/" + this.currentScriptName,
+                                    cfg: {
+                                        method: "DELETE",
+                                        updateCache: false
+                                    },
+                                    on: Wegas.superbind({
+                                        success: function() {
+                                            this.showMessage("success", "Script deleted");
+                                            if (this.get("library") === "CSS") {
+                                                this.updateStyleSheet(this.currentScriptName, "");
+                                            }
+                                            this.currentScriptName = null;
+                                            this.syncUI();
+                                        },
+                                        failure: function() {
+                                            this.showMessage("error", "Error while deleting script.");
+                                        }
+                                    }, this)
+                                });
+                            }, this));
                     }, this)
                 }
             }).render(toolbarNode);
