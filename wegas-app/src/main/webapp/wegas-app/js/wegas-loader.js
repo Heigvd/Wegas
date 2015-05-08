@@ -319,11 +319,6 @@ YUI().use(function(Y) {
                 requires: "wegas-cssstyles",
                 ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
             },
-            "wegas-teacherpage": {
-                path: "js/plugin/wegas-teacherpage-min.js",
-                requires: "wegas-plugin, wegas-tabview",
-                ws_provides: "TeacherPage"
-            },
             "wegas-conditionaldisable": {
                 path: "js/plugin/wegas-conditionaldisable-min.js",
                 ws_provides: "ConditionalDisable"
@@ -762,7 +757,7 @@ YUI().use(function(Y) {
             }
         }
     });
-    
+
     //YUI.addGroup("wegas-form", {
     //    base: "./wegas-form/",
     //    root: "/wegas-form/",

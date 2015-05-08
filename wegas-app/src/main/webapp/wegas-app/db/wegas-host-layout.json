@@ -48,7 +48,8 @@
                             }
                         ]
                     }
-                ]
+                ],
+                "plugins": [{"fn": "ExtraTabs"}]
             }
         ]
     }
