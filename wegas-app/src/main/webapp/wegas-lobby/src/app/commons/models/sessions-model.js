@@ -280,9 +280,9 @@ angular.module('wegas.models.sessions', [])
                     gameModelSetted = false,
                     scenarioBeforeChange = sessionBeforeChange.gameModel;
 
-                if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon)) {
-                    sessionBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
-                    scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon;
+                if (scenarioBeforeChange.properties.iconUri !== ("ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library)) {
+                    sessionBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library;
+                    scenarioBeforeChange.properties.iconUri = "ICON_" + sessionInfos.color + "_" + sessionInfos.icon.key + "_" + sessionInfos.icon.library;
                     gameModelSetted = true;
                 }
                 if (scenarioBeforeChange.properties.freeForAll !== sessionInfos.individual) {
