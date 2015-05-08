@@ -40,6 +40,10 @@ var PMGDashboard = (function() {
         return Variable.find(gameModel, name).getScope().getVariableInstances();
     }
 
+    function getLabel(name) {
+        return Variable.find(gameModel, name).getLabel();
+    }
+
     function dashboard() {
         var teams = self.getGame().getTeams(),
             currentPhase = getInstances("currentPhase"),
@@ -49,23 +53,27 @@ var PMGDashboard = (function() {
             quality = getInstances("quality"),
             cost = getInstances("costs"),
             schedule = getInstances("delay"),
-            arr = [], teamId, t, currentPeriod,
-            phaseName = ['Initiation', 'Planning', 'Executing', 'Closing'];
+            arr = [], teamId, t,
+            phaseName = ['Initiation', 'Planning', 'Executing', 'Closing'],
+            managementLabel = getLabel("managementApproval"),
+            userLabel = getLabel("userApproval"),
+            obj;
         for (t = 0; t < teams.size(); t++) {
             teamId = teams.get(t).getId();
             currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() -
                                                                            1).getScope().getVariableInstances()[teamId].getValue();
-            arr.push({
+            obj = {
                 "id": teamId,
                 "Phase": phaseName[currentPhase[teamId].getValue() - 1],
                 "Period": currentPeriod,
                 "Questions": questionAnswered(teamId, currentPhase[teamId].getValue(), currentPeriod),
-                "Management": management[teamId].getValue(),
-                "User": user[teamId].getValue(),
                 "Quality": quality[teamId].getValue(),
-                "Cost": cost[teamId].getValue(),
+                "Costs": cost[teamId].getValue(),
                 "Schedule": schedule[teamId].getValue()
-            });
+            };
+            obj[managementLabel] = management[teamId].getValue();
+            obj[userLabel] = user[teamId].getValue();
+            arr.push(obj);
         }
         return JSON.stringify(arr);
     }

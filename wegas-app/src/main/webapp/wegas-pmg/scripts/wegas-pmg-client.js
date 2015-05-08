@@ -660,7 +660,7 @@ app.once("render",
         centerTab = Y.Widget.getByNode("#centerTabView");
 
         if (centerTab) {
-            Y.use(['wegas-pmg-advancementlimit', 'wegas-pageloader'], function() {
+            Y.use(['wegas-pmg-advancementlimit'], function() {
                 var hostMode = Y.one(".wegas-hostmode");
 
                 //                if (hostMode) {
@@ -685,16 +685,19 @@ app.once("render",
                         return true;
                     }
                 });
-
-                // Add properties tab
-                properties = centerTab.add({
+                var cfg = {
                     label: "Properties",
                     children: [{
                         type: "PageLoader",
                         pageLoaderId: "properties",
                         defaultPageId: 16
                     }]
-                }).item(0);
+                };
+                // Add properties tab
+                Y.Wegas.Widget.use(cfg, function() {
+
+                    properties = centerTab.add(cfg).item(0);
+                });
 
                 if (!hostMode) {
                     properties.plug(Y.Plugin.TabDocker);
@@ -702,51 +705,67 @@ app.once("render",
             });
         }
 
-
-    /*
-     *  Custom Error definition
-     */
-    Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
-        if (e.variableName === "Time cards") {
-            var node = (Y.Widget.getByNode("#centerTabView") && Y.Widget.getByNode("#centerTabView").get("selection")) ||
-                Y.Widget.getByNode(".wegas-playerview");
-            node.showMessage("warn", "You don't have enough time");
-            e.halt();
-        }
+        /*
+         *  Custom Error definition
+         */
+        Y.Wegas.Facade.Variable.on("WegasOutOfBoundException", function(e) {
+            if (e.variableName === "Time cards") {
+                var node = (Y.Widget.getByNode("#centerTabView") &&
+                            Y.Widget.getByNode("#centerTabView").get("selection")) ||
+                           Y.Widget.getByNode(".wegas-playerview");
+                node.showMessage("warn", "You don't have enough time");
+                e.halt();
+            }
+        });
     });
-Y.namespace("Wegas.Config").Dashboard = {
-    columns: [{
-        "label": "Phase"
-    }, {
-        "label": "Period"
-    }, {
-        "label": "Questions"
-    }, {
-        "label": "Management",
-        "formatter": "colored"
-    }, {
-        "label": "User",
-        "formatter": "colored"
-    }, {
-        "label": "Quality",
-        "formatter": "colored"
-    }, {
-        "label": "Cost",
-        "formatter": "colored"
-    }, {
-        "label": "Schedule",
-        "formatter": "colored"
-    }],
-    remoteScript: "PMGDashboard.dashboard()"
-};
-Y.namespace("Wegas.Config").CustomImpacts = [
-    ["Send Mail",
-        'PMGHelper.sendMessage(${"type":"string", "label":"From"}, ${"type":"string", "label":"Subject"}, ${"type":"html", "label":"Body", "required":true}, []);'],
-    ["Add to project variables",
-        'Variable.find(gameModel, "managementApproval").add(self, ${"type":"number", "label": "Management"});'],
-    'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "User"});',
-    'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
-    'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
-    'Variable.find(gameModel, "projectFixedCosts").add(self, ${"type":"number", "label": "Fixed costs"});',
-    'Variable.find(gameModel, "bonusRatio").add(self, ${"type":"number", "label": "Bonus ratio"});'
-];
+(function() {
+    "use strict";
+    var varLabel = function(name) {
+        return Y.Wegas.Facade.Variable.cache.find("name", name).get("label");
+    };
+    Y.namespace("Wegas.Config").Dashboard = function() {
+
+        return {
+            columns: [{
+                "label": "Phase"
+            }, {
+                "label": "Period"
+            }, {
+                "label": "Questions"
+            }, {
+                "label": varLabel("managementApproval"),
+                "formatter": "colored"
+            }, {
+                "label": varLabel("userApproval"),
+                "formatter": "colored"
+            }, {
+                "label": "Quality",
+                "formatter": "colored"
+            }, {
+                "label": "Costs",
+                "formatter": "colored"
+            }, {
+                "label": "Schedule",
+                "formatter": "colored"
+            }],
+            remoteScript: "PMGDashboard.dashboard()"
+        };
+    };
+
+    Y.namespace("Wegas.Config").CustomImpacts = function() {
+        return [
+            ["Send Mail",
+                'PMGHelper.sendMessage(${"type":"string", "label":"From"}, ${"type":"string", "label":"Subject"}, ${"type":"html", "label":"Body", "required":true}, []);'],
+            ["Add to project variables",
+                'Variable.find(gameModel, "managementApproval").add(self, ${"type":"number", "label":"' +
+                varLabel("managementApproval") + '"});'],
+            'Variable.find(gameModel, "userApproval").add(self, ${"type":"number", "label": "' +
+            varLabel("userApproval") + '"});',
+            'Variable.find(gameModel, "qualityImpacts").add(self, ${"type":"number", "label": "Quality"});',
+            'Variable.find(gameModel, "timeCards").add(self, ${"type":"number", "label": "Time cards"});',
+            'Variable.find(gameModel, "projectFixedCosts").add(self, ${"type":"number", "label": "Fixed costs"});',
+            'Variable.find(gameModel, "bonusRatio").add(self, ${"type":"number", "label": "Bonus ratio"});'
+        ];
+    };
+})();
+
