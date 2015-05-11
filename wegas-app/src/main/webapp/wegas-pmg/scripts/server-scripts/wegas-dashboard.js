@@ -6,17 +6,20 @@
  * Licensed under the MIT License
  */
 
-/*global Variable, gameModel, self, Y, PMGSimulation, debug, com, java */
+/*global Variable, gameModel, self, Y, PMGSimulation, debug, com, java, Java */
 var PMGDashboard = (function() {
     "use strict";
+    var Long = Java.type("java.lang.Long");
 
     function questionAnswered(teamId, currentPhase, currentPeriod) {
+        if (Variable.find(gameModel, 'questions').size() < currentPhase) {
+            return "0/0";
+        }
         var q = Variable.find(gameModel, 'questions').item(currentPhase - 1),
             i = 0, items = new java.util.LinkedList(), questions, item, inst, count = 0, total = 0;
         if (q) {
             for (i = 0; i < q.size(); i += 1) {
                 item = q.item(i);
-                print(item);
                 if (item instanceof com.wegas.mcq.persistence.QuestionDescriptor) {
                     items.add(item);
                 } else if (i === currentPeriod - 1 &&
@@ -59,7 +62,7 @@ var PMGDashboard = (function() {
             userLabel = getLabel("userApproval"),
             obj;
         for (t = 0; t < teams.size(); t++) {
-            teamId = teams.get(t).getId();
+            teamId = new Long(teams.get(t).getId());
             currentPeriod = Variable.find(gameModel, 'currentPeriod').item(currentPhase[teamId].getValue() -
                                                                            1).getScope().getVariableInstances()[teamId].getValue();
             obj = {
