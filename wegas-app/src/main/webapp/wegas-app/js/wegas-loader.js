@@ -18,454 +18,449 @@ YUI().use(function(Y) {
 
     if (!YUI_config) {
         YUI_config = {};
-        }
-        if (!YUI_config.groups) {
-            YUI_config.groups = {
-                inputex: {
-                    modulesByType: {}
-                }
-            };
-        }
-        if (!YUI_config.Wegas) {
-            YUI_config.Wegas = {};
-        }
-        YUI_config.Wegas.modulesByType = {};
-
-        /**
-         *
-         */
-        YUI.addGroup = function(name, group) {
-            YUI_config.groups[name] = group;
-            group.combine = !YUI_config.debug;
-            group.filter = YUI_config.debug ? "raw" : "min";                        // Select raw files
-            group.base = YUI_config.Wegas.base + group.root;                        // Set up path
-            group.comboBase = YUI_config.Wegas.comboBase;                           // Set up combo path
-            loadModules(group);
-            //YUI.applyConfig(YUI_config);
+    }
+    if (!YUI_config.groups) {
+        YUI_config.groups = {
+            inputex: {
+                modulesByType: {}
+            }
         };
+    }
+    if (!YUI_config.Wegas) {
+        YUI_config.Wegas = {};
+    }
+    YUI_config.Wegas.modulesByType = {};
 
-        YUI.addGroup("wegas", {
-            base: "./wegas-app/",
-            root: "/wegas-app/",
-            modules: {
-                /**
-                 * Base
-                 */
-                "wegas-app": {
-                    requires: ["base", "plugin", "array-extras", "timers",
-                        "wegas-helper", "wegas-entity", "wegas-datasource"]
-                },
-                "wegas-editable": {
-                    requires: "inputex-jsonschema"
-                },
-                /**
-                 * Persistence
-                 */
-                "wegas-datasource": {
-                    requires: ["datasource-io", "json"]
-                },
-                "wegas-scripteval": {
-                    path: "js/persistence/wegas-scripteval-min.js",
-                    requires: "wegas-variabledescriptor-entities",
-                    ws_provides: "ScriptEval"
-                },
-                "wegas-websocketlistener": {
-                    path: "js/persistence/wegas-websocketlistener-min.js",
-                    ws_provides: "WebSocketListener"
-                },
-                "wegas-pusher-connector": {
-                    path: "js/persistence/wegas-pusher-connector-min.js",
-                    requires: "pusher",
-                    ws_provides: "PusherDataSource"
-                },
-                "wegas-entity": {
-                    path: "js/persistence/wegas-entity-min.js",
-                    requires: "wegas-editable",
-                    ws_provides: ["Entity", "GameModel"]
-                },
-                "wegas-variabledescriptor-entities": {
-                    path: "js/persistence/wegas-variabledescriptor-entities-min.js",
-                    requires: "wegas-entity",
-                    ws_provides: ["NumberDescriptor", "TextDescriptor"]
-                },
-                "wegas-statemachine-entities": {
-                    path: "js/persistence/wegas-statemachine-entities-min.js",
-                    ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
-                },
-                "wegas-content-entities": {
-                    path: "js/persistence/wegas-content-entities-min.js"
-                },
-                "wegas-object-entities": {
-                    path: "js/persistence/wegas-object-entities-min.js",
-                    ws_provides: "ObjectDescriptor"
-                },
-                "wegas-resourcemanagement-entities": {
-                    path: "js/persistence/wegas-resourcemanagement-entities-min.js",
-                    ws_provides: ["ResourceDescriptor", "TaskDescriptor"]
-                },
-                /**
-                 * Widgets
-                 */
-                "wegas-widget": {
-                    requires: ["widget", "widget-child", "widget-parent", "wegas-editable"]
-                },
-                "wegas-parent": {
-                    requires: "wegas-widget"
-                },
-                "wegas-layout-panel": {
-                    path: "js/widget/wegas-layout-panel-min.js",
-                    requires: "panel",
-                    ws_provides: "PanelWidget"
-                },
-                "wegas-layout-list": {
-                    path: "js/widget/wegas-layout-list-min.js",
-                    requires: "wegas-parent",
-                    ws_provides: "List"
-                },
-                "wegas-layout-absolute": {
-                    path: "js/widget/wegas-layout-absolute-min.js",
-                    requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssstyles-extra", "wegas-parent"],
-                    ws_provides: ["AbsoluteLayout", "Position", "ParametrizedLayout"]
-                },
-                "wegas-layout-absolutecss": {
-                    type: CSS
-                },
-                "wegas-layout-choicelist": {
-                    path: "js/widget/wegas-layout-choicelist-min.js",
-                    requires: ["wegas-layout-list", "wegas-layout-choicelistcss"],
-                    ws_provides: "ChoiceList"
-                },
-                "wegas-layout-choicelistcss": {
-                    type: CSS
-                },
-                "wegas-layout-resizable": {
-                    path: "js/widget/wegas-layout-resizable-min.js",
-                    requires: ["wegas-widget", "widget-stdmod", "event-resize", "resize", "wegas-layout-resizablecss"],
-                    ws_provides: "ResizableLayout"
-                },
-                "wegas-layout-resizablecss": {
-                    type: CSS
-                },
-                "wegas-pageloader": {
-                    path: "js/widget/wegas-pageloader-min.js",
-                    ws_provides: "PageLoader",
-                    requires: "wegas-widget"
-                },
-                "wegas-popuplistener": {
-                    path: "js/plugin/wegas-popuplistener-min.js",
-                    ws_provides: "PopupListener",
-                    requires: "wegas-panel"
-                },
-                "wegas-button": {
-                    path: "js/widget/wegas-button-min.js",
-                    requires: ["wegas-widget", "wegas-plugin", "button", "wegas-tooltip", "wegas-button-css"],
-                    ws_provides: "Button"
-                },
-                "wegas-button-css": {
-                    type: CSS
-                },
-                "wegas-loginbutton": {
-                    path: "js/widget/wegas-loginbutton-min.js",
-                    requires: "wegas-widgetmenu",
-                    ws_provides: ["LoginButton", "UserLoginButton", "RestartButton"]
-                },
-                "wegas-chat": {
-                    path: "js/widget/wegas-chat-min.js",
-                    requires: ["inputex-textarea", "button"],
-                    ws_provides: "Chat"
-                },
-                "wegas-chart": {
-                    path: "js/widget/wegas-chart-min.js",
-                    requires: ["charts", "charts-legend"],
-                    ws_provides: "Chart"
-                },
-                "wegas-langselector": {
-                    path: "js/widget/wegas-langselector-min.js",
-                    ws_provides: "LangSelector"
-                },
-                "wegas-text-input": {
-                    path: "js/widget/wegas-text-input-min.js",
-                    ws_provides: "TextInput",
-                    requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
-                },
-                "wegas-text": {
-                    path: "js/widget/wegas-text-min.js",
-                    ws_provides: "Text",
-                    requires: "wegas-widget"
-                },
-                "wegas-image": {
-                    path: "js/widget/wegas-image-min.js",
-                    ws_provides: "Image"
-                },
-                "wegas-box": {
-                    path: "js/widget/wegas-box-min.js",
-                    ws_provides: "Box",
-                    requires: "wegas-widget"
-                },
-                "wegas-tabview": {
-                    path: "js/widget/wegas-tabview-min.js",
-                    requires: ["tabview", "wegas-parent", "wegas-tabviewcss", "wegas-popuplistener"],
-                    ws_provides: "TabView"
-                },
-                "wegas-tabviewcss": {
-                    type: CSS
-                },
-                "wegas-gaugedisplay": {
-                    path: "js/widget/wegas-gaugedisplay-min.js",
-                    requires: ["gauge", "wegas-templatecss"],
-                    ws_provides: "GaugeDisplay"
-                },
-                "wegas-inbox": {
-                    path: "js/widget/wegas-inbox-min.js",
-                    requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss",
-                        "wegas-widgettoolbar", "wegas-translator", "template-micro"],
-                    ws_provides: "InboxDisplay"
-                },
-                "wegas-inboxcss": {
-                    type: CSS
-                },
-                "wegas-inbox-list": {
-                    path: "js/widget/wegas-inbox-list-min.js",
-                    requires: ["template-micro", "wegas-inboxcss"],
-                    ws_provides: "InboxList"
-                },
-                "wegas-form": {
-                    path: "js/widget/wegas-form-min.js",
-                    requires: ["wegas-inputex", "wegas-widgettoolbar",
-                        "inputex-group", "event-valuechange"],
-                    ws_provides: "Form"
-                },
-                "wegas-gallery": {
-                    path: "js/widget/wegas-gallery-min.js",
-                    requires: ["wegas-widget", "wegas-imageloader", "scrollview-base",
-                        "scrollview-paginator", "scrollview-scrollbars", "wegas-gallerycss",
-                        "stylesheet", "event-resize"],
-                    ws_provides: "Gallery"
-                },
-                "wegas-gallerycss": {
-                    type: CSS
-                },
-                "wegas-googletranslate": {
-                    path: "js/widget/wegas-googletranslate-min.js",
-                    requires: "googletranslate",
-                    ws_provides: "GoogleTranslate"
-                },
-                "wegas-team": {
-                    path: "js/widget/wegas-team-min.js",
-                    requires: ["wegas-inputex", "wegas-button",
-                        "wegas-editor-action", "wegas-inputex-multipleoptions",
-                        "inputex-select", "inputex-string", "inputex-list", "inputex-hidden",
-                        "inputex-group", "inputex-autocomplete", "inputex-password", "inputex-email",
-                        "wegas-gameinformation", "wegas-teamcss", "autocomplete-highlighters"],
-                    ws_provides: ["Team", "JoinTeam", "EditTeam"]
-                },
-                "wegas-teamcss": {
-                    type: CSS
-                },
-                "wegas-translator": {
-                    pkg: "js/",
-                    lang: ["fr"]
-                },
-                /** Plugins **/
-                "wegas-plugin": {
-                    requires: "timers"
-                },
-                "wegas-userpreferences": {
-                    path: "js/plugin/wegas-userpreferences-min.js",
-                    requires: "wegas-plugin",
-                    ws_provides: "UserPreferences"
-                },
-                "wegas-tooltip": {
-                    path: "js/plugin/wegas-tooltip-min.js",
-                    requires: ["wegas-plugin", "event-mouseenter", "widget", "widget-stack",
-                        "widget-position", "widget-position-constrain"],
-                    ws_provides: "Tooltip"
-                },
-                "wegas-templatecss": {
-                    type: CSS
-                },
-                "wegas-template": {
-                    path: "js/widget/wegas-template-min.js",
-                    requires: ["template-micro", "wegas-templatecss"],
-                    ws_provides: ["Template", "ValueboxTemplate", "BoxTemplate",
-                        "NumberTemplate", "TitleTemplate", "FractionTemplate", "TextTemplate"]
-                },
-                "wegas-treeview": {
-                    path: "js/widget/wegas-treeview-min.js",
-                    requires: "treeview",
-                    ws_provides: "TreeViewWidget"
-                },
-                "wegas-injector": {
-                    path: "js/plugin/wegas-injector-min.js",
-                    ws_provides: "Injector"
-                },
-                "wegas-cssloader": {
-                    path: "js/plugin/wegas-cssloader-min.js",
-                    requires: "stylesheet",
-                    ws_provides: "CSSLoader"
-                },
-                "wegas-slideshow": {
-                    path: "js/plugin/wegas-slideshow-min.js",
-                    requires: "wegas-plugin",
-                    ws_provides: "SlideShow"
-                },
-                "wegas-cssstyles": {
-                    path: "js/plugin/wegas-cssstyles-min.js",
-                    requires: "wegas-plugin",
-                    ws_provides: "CSSStyles"
-                },
-                "wegas-cssstyles-extra": {
-                    path: "js/plugin/wegas-cssstyles-extra-min.js",
-                    requires: "wegas-cssstyles",
-                    ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
-                },
-                "wegas-teacherpage": {
-                    path: "js/plugin/wegas-teacherpage-min.js",
-                    requires: "wegas-plugin, wegas-tabview",
-                    ws_provides: "TeacherPage"
-                },
-                "wegas-conditionaldisable": {
-                    path: "js/plugin/wegas-conditionaldisable-min.js",
-                    ws_provides: "ConditionalDisable"
-                },
-                "wegas-blockrightclick": {
-                    path: "js/plugin/wegas-blockrightclick-min.js",
-                    ws_provides: "BlockRightclick"
-                },
-                "wegas-visibilitytimer": {
-                    path: "js/plugin/wegas-visibilitytimer-min.js",
-                    requires: "wegas-plugin",
-                    ws_provides: ["ShowAfter", "HideAfter"]
-                },
-                "wegas-simpledialogue": {
-                    path: "js/widget/wegas-simpledialogue-min.js",
-                    requires: ["wegas-dialogcss"],
-                    ws_provides: "SimpleDialogue"
-                },
-                "wegas-historydialog": {
-                    path: "js/widget/wegas-historydialog-min.js",
-                    requires: ["wegas-simpledialogue"],
-                    ws_provides: ["HistoryDialog"]
-                },
-                "wegas-dialogcss": {
-                    type: CSS
-                },
-                "wegas-entitychooser": {
-                    path: "js/widget/wegas-entitychooser-min.js",
-                    requires: ["wegas-entitychoosercss"],
-                    ws_provides: ["EntityChooser"]
-                },
-                "wegas-entitychoosercss": {
-                    type: CSS
-                }
-            }
-        });
+    /**
+     *
+     */
+    YUI.addGroup = function(name, group) {
+        YUI_config.groups[name] = group;
+        group.combine = !YUI_config.debug;
+        group.filter = YUI_config.debug ? "raw" : "min";                        // Select raw files
+        group.base = YUI_config.Wegas.base + group.root;                        // Set up path
+        group.comboBase = YUI_config.Wegas.comboBase;                           // Set up combo path
+        loadModules(group);
+        //YUI.applyConfig(YUI_config);
+    };
 
-        /**
-         * Utilities
-         */
-        YUI.addGroup("wegas-util", {
-            base: "./wegas-util/",
-            root: "/wegas-util/",
-            modules: {
-                "wegas-helper": {},
-                "datatable-csv": {
-                    ws_provides: "DatatableCSV"
-                },
-                "event-mouse-startstop": {
-                    requires: "event-base"
-                },
-                /** Treeview **/
-                "treeview": {
-                    requires: ["widget", "widget-parent", "widget-child", "treeviewcss"]
-                },
-                "treeviewcss": {
-                    type: CSS
-                },
-                "treeview-filter": {},
-                "treeview-sortable": {
-                    requires: ["sortable", "sortable-scroll"]
-                },
-                "wegas-progressbar": {
-                    requires: "widget"
-                },
-                "wegas-widgetmenu": {
-                    requires: ["event-mouseenter", "event-outside",
-                        "widget-stack", "widget-position", "widget-position-align", "widget-position-constrain",
-                        "wegas-button", "wegas-widgetmenucss"]
-                },
-                "wegas-widgetmenucss": {
-                    type: CSS
-                },
-                "wegas-widgettoolbar": {
-                    requires: ["wegas-widgettoolbarcss", "wegas-widgetmenu"],
-                    ws_provides: "WidgetToolbar"
-                },
-                "wegas-widgettoolbarcss": {
-                    type: CSS
-                },
-                "wegas-panel": {
-                    ws_provides: "Panel",
-                    requires: ["wegas-panelcss", "widget-buttons", "widget-modality",
-                        "widget-position", "widget-position-align", "widget-stack",
-                        "widget-stdmod", "transition"]
-                },
-                "wegas-panelcss": {
-                    type: CSS
-                },
-                "wegas-menu": {
-                    requires: ["button", "wegas-menucss"],
-                    ws_provides: "WegasMenu"
-                },
-                "wegas-menucss": {
-                    type: CSS
-                },
-                "wegas-imageloader": {
-                    requires: ["io-base", "imageloader"]
-                },
-                "wegas-panel-node": {
-                    requires: ["dd-drag", "plugin"],
-                    ws_provides: "PanelNode"
-                }
+    YUI.addGroup("wegas", {
+        base: "./wegas-app/",
+        root: "/wegas-app/",
+        modules: {
+            /**
+             * Base
+             */
+            "wegas-app": {
+                requires: ["base", "plugin", "array-extras", "timers",
+                    "wegas-helper", "wegas-entity", "wegas-datasource"]
+            },
+            "wegas-editable": {
+                requires: "inputex-jsonschema"
+            },
+            /**
+             * Persistence
+             */
+            "wegas-datasource": {
+                requires: ["datasource-io", "json", "widget"]
+            },
+            "wegas-scripteval": {
+                path: "js/persistence/wegas-scripteval-min.js",
+                requires: "wegas-variabledescriptor-entities",
+                ws_provides: "ScriptEval"
+            },
+            "wegas-websocketlistener": {
+                path: "js/persistence/wegas-websocketlistener-min.js",
+                ws_provides: "WebSocketListener"
+            },
+            "wegas-pusher-connector": {
+                path: "js/persistence/wegas-pusher-connector-min.js",
+                requires: "pusher",
+                ws_provides: "PusherDataSource"
+            },
+            "wegas-entity": {
+                path: "js/persistence/wegas-entity-min.js",
+                requires: "wegas-editable",
+                ws_provides: ["Entity", "GameModel"]
+            },
+            "wegas-variabledescriptor-entities": {
+                path: "js/persistence/wegas-variabledescriptor-entities-min.js",
+                requires: "wegas-entity",
+                ws_provides: ["NumberDescriptor", "TextDescriptor"]
+            },
+            "wegas-statemachine-entities": {
+                path: "js/persistence/wegas-statemachine-entities-min.js",
+                ws_provides: ["DialogueDescriptor", "TriggerDescriptor", "FSMDescriptor"]
+            },
+            "wegas-content-entities": {
+                path: "js/persistence/wegas-content-entities-min.js"
+            },
+            "wegas-object-entities": {
+                path: "js/persistence/wegas-object-entities-min.js",
+                ws_provides: "ObjectDescriptor"
+            },
+            "wegas-resourcemanagement-entities": {
+                path: "js/persistence/wegas-resourcemanagement-entities-min.js",
+                ws_provides: ["ResourceDescriptor", "TaskDescriptor"]
+            },
+            /**
+             * Widgets
+             */
+            "wegas-widget": {
+                requires: ["widget", "widget-child", "widget-parent", "wegas-editable"]
+            },
+            "wegas-parent": {
+                requires: "wegas-widget"
+            },
+            "wegas-layout-panel": {
+                path: "js/widget/wegas-layout-panel-min.js",
+                requires: "panel",
+                ws_provides: "PanelWidget"
+            },
+            "wegas-layout-list": {
+                path: "js/widget/wegas-layout-list-min.js",
+                requires: "wegas-parent",
+                ws_provides: "List"
+            },
+            "wegas-layout-absolute": {
+                path: "js/widget/wegas-layout-absolute-min.js",
+                requires: ["wegas-plugin", "wegas-layout-absolutecss", "wegas-cssstyles-extra", "wegas-parent"],
+                ws_provides: ["AbsoluteLayout", "Position", "ParametrizedLayout"]
+            },
+            "wegas-layout-absolutecss": {
+                type: CSS
+            },
+            "wegas-layout-choicelist": {
+                path: "js/widget/wegas-layout-choicelist-min.js",
+                requires: ["wegas-layout-list", "wegas-layout-choicelistcss"],
+                ws_provides: "ChoiceList"
+            },
+            "wegas-layout-choicelistcss": {
+                type: CSS
+            },
+            "wegas-layout-resizable": {
+                path: "js/widget/wegas-layout-resizable-min.js",
+                requires: ["wegas-widget", "widget-stdmod", "event-resize", "resize", "wegas-layout-resizablecss"],
+                ws_provides: "ResizableLayout"
+            },
+            "wegas-layout-resizablecss": {
+                type: CSS
+            },
+            "wegas-pageloader": {
+                path: "js/widget/wegas-pageloader-min.js",
+                ws_provides: "PageLoader",
+                requires: "wegas-widget"
+            },
+            "wegas-popuplistener": {
+                path: "js/plugin/wegas-popuplistener-min.js",
+                ws_provides: "PopupListener",
+                requires: "wegas-panel"
+            },
+            "wegas-button": {
+                path: "js/widget/wegas-button-min.js",
+                requires: ["wegas-widget", "wegas-plugin", "button", "wegas-tooltip", "wegas-button-css"],
+                ws_provides: "Button"
+            },
+            "wegas-button-css": {
+                type: CSS
+            },
+            "wegas-loginbutton": {
+                path: "js/widget/wegas-loginbutton-min.js",
+                requires: "wegas-widgetmenu",
+                ws_provides: ["LoginButton", "UserLoginButton", "RestartButton"]
+            },
+            "wegas-chat": {
+                path: "js/widget/wegas-chat-min.js",
+                requires: ["inputex-textarea", "button"],
+                ws_provides: "Chat"
+            },
+            "wegas-chart": {
+                path: "js/widget/wegas-chart-min.js",
+                requires: ["charts", "charts-legend"],
+                ws_provides: "Chart"
+            },
+            "wegas-langselector": {
+                path: "js/widget/wegas-langselector-min.js",
+                ws_provides: "LangSelector"
+            },
+            "wegas-text-input": {
+                path: "js/widget/wegas-text-input-min.js",
+                ws_provides: "TextInput",
+                requires: ["wegas-widget", "tinymce", "wegas-panel-fileselect", "wegas-button"]
+            },
+            "wegas-text": {
+                path: "js/widget/wegas-text-min.js",
+                ws_provides: "Text",
+                requires: "wegas-widget"
+            },
+            "wegas-image": {
+                path: "js/widget/wegas-image-min.js",
+                ws_provides: "Image"
+            },
+            "wegas-box": {
+                path: "js/widget/wegas-box-min.js",
+                ws_provides: "Box",
+                requires: "wegas-widget"
+            },
+            "wegas-tabview": {
+                path: "js/widget/wegas-tabview-min.js",
+                requires: ["tabview", "wegas-parent", "wegas-tabviewcss", "wegas-popuplistener"],
+                ws_provides: "TabView"
+            },
+            "wegas-tabviewcss": {
+                type: CSS
+            },
+            "wegas-gaugedisplay": {
+                path: "js/widget/wegas-gaugedisplay-min.js",
+                requires: ["gauge", "wegas-templatecss"],
+                ws_provides: "GaugeDisplay"
+            },
+            "wegas-inbox": {
+                path: "js/widget/wegas-inbox-min.js",
+                requires: ["tabview", "wegas-inboxcss", "wegas-tabviewcss",
+                    "wegas-widgettoolbar", "wegas-translator", "template-micro"],
+                ws_provides: "InboxDisplay"
+            },
+            "wegas-inboxcss": {
+                type: CSS
+            },
+            "wegas-inbox-list": {
+                path: "js/widget/wegas-inbox-list-min.js",
+                requires: ["template-micro", "wegas-inboxcss"],
+                ws_provides: "InboxList"
+            },
+            "wegas-form": {
+                path: "js/widget/wegas-form-min.js",
+                requires: ["wegas-inputex", "wegas-widgettoolbar",
+                    "inputex-group", "event-valuechange"],
+                ws_provides: "Form"
+            },
+            "wegas-gallery": {
+                path: "js/widget/wegas-gallery-min.js",
+                requires: ["wegas-widget", "wegas-imageloader", "scrollview-base",
+                    "scrollview-paginator", "scrollview-scrollbars", "wegas-gallerycss",
+                    "stylesheet", "event-resize"],
+                ws_provides: "Gallery"
+            },
+            "wegas-gallerycss": {
+                type: CSS
+            },
+            "wegas-googletranslate": {
+                path: "js/widget/wegas-googletranslate-min.js",
+                requires: "googletranslate",
+                ws_provides: "GoogleTranslate"
+            },
+            "wegas-team": {
+                path: "js/widget/wegas-team-min.js",
+                requires: ["wegas-inputex", "wegas-button",
+                    "wegas-editor-action", "wegas-inputex-multipleoptions",
+                    "inputex-select", "inputex-string", "inputex-list", "inputex-hidden",
+                    "inputex-group", "inputex-autocomplete", "inputex-password", "inputex-email",
+                    "wegas-gameinformation", "wegas-teamcss", "autocomplete-highlighters"],
+                ws_provides: ["Team", "JoinTeam", "EditTeam"]
+            },
+            "wegas-teamcss": {
+                type: CSS
+            },
+            "wegas-translator": {
+                pkg: "js/",
+                lang: ["fr"]
+            },
+            /** Plugins **/
+            "wegas-plugin": {
+                requires: "timers"
+            },
+            "wegas-userpreferences": {
+                path: "js/plugin/wegas-userpreferences-min.js",
+                requires: "wegas-plugin",
+                ws_provides: "UserPreferences"
+            },
+            "wegas-tooltip": {
+                path: "js/plugin/wegas-tooltip-min.js",
+                requires: ["wegas-plugin", "event-mouseenter", "widget", "widget-stack",
+                    "widget-position", "widget-position-constrain"],
+                ws_provides: "Tooltip"
+            },
+            "wegas-templatecss": {
+                type: CSS
+            },
+            "wegas-template": {
+                path: "js/widget/wegas-template-min.js",
+                requires: ["template-micro", "wegas-templatecss"],
+                ws_provides: ["Template", "ValueboxTemplate", "BoxTemplate",
+                    "NumberTemplate", "TitleTemplate", "FractionTemplate", "TextTemplate"]
+            },
+            "wegas-treeview": {
+                path: "js/widget/wegas-treeview-min.js",
+                requires: "treeview",
+                ws_provides: "TreeViewWidget"
+            },
+            "wegas-injector": {
+                path: "js/plugin/wegas-injector-min.js",
+                ws_provides: "Injector"
+            },
+            "wegas-cssloader": {
+                path: "js/plugin/wegas-cssloader-min.js",
+                requires: "stylesheet",
+                ws_provides: "CSSLoader"
+            },
+            "wegas-slideshow": {
+                path: "js/plugin/wegas-slideshow-min.js",
+                requires: "wegas-plugin",
+                ws_provides: "SlideShow"
+            },
+            "wegas-cssstyles": {
+                path: "js/plugin/wegas-cssstyles-min.js",
+                requires: "wegas-plugin",
+                ws_provides: "CSSStyles"
+            },
+            "wegas-cssstyles-extra": {
+                path: "js/plugin/wegas-cssstyles-extra-min.js",
+                requires: "wegas-cssstyles",
+                ws_provides: ["CSSBackground", "CSSText", "CSSPosition", "CSSSize"]
+            },
+            "wegas-conditionaldisable": {
+                path: "js/plugin/wegas-conditionaldisable-min.js",
+                ws_provides: "ConditionalDisable"
+            },
+            "wegas-blockrightclick": {
+                path: "js/plugin/wegas-blockrightclick-min.js",
+                ws_provides: "BlockRightclick"
+            },
+            "wegas-visibilitytimer": {
+                path: "js/plugin/wegas-visibilitytimer-min.js",
+                requires: "wegas-plugin",
+                ws_provides: ["ShowAfter", "HideAfter"]
+            },
+            "wegas-simpledialogue": {
+                path: "js/widget/wegas-simpledialogue-min.js",
+                requires: ["wegas-dialogcss"],
+                ws_provides: "SimpleDialogue"
+            },
+            "wegas-historydialog": {
+                path: "js/widget/wegas-historydialog-min.js",
+                requires: ["wegas-simpledialogue"],
+                ws_provides: ["HistoryDialog"]
+            },
+            "wegas-dialogcss": {
+                type: CSS
+            },
+            "wegas-entitychooser": {
+                path: "js/widget/wegas-entitychooser-min.js",
+                requires: ["wegas-entitychoosercss"],
+                ws_provides: ["EntityChooser"]
+            },
+            "wegas-entitychoosercss": {
+                type: CSS
             }
-        });
-        /**
-         * Editor
-         */
-        YUI.addGroup("wegas-editor", {
-            base: "./wegas-editor/",
-            root: "/wegas-editor/",
-            modules: {
-                /**
-                 * Inputex Fields
-                 */
-                "wegas-inputex": {
-                    type: CSS,
-                    requires: "inputex"
-                },
-                "wegas-inputex-object": {
-                    path: "js/inputex/wegas-inputex-object-min.js",
-                    requires: "inputex-object",
-                    ix_provides: "wegasobject"
-                },
-                "wegas-inputex-multipleoptions": {
-                    path: "js/inputex/wegas-inputex-multipleoptions-min.js",
-                    requires: "inputex-group",
-                    ix_provides: "multipleoptions"
-                },
-                "wegas-inputex-colorpicker": {
-                    path: "js/inputex/wegas-inputex-colorpicker-min.js",
-                    requires: ["inputex-field", "overlay"],
-                    ix_provides: "colorpicker"
-                },
-                "wegas-inputex-keyvalue": {
-                    path: "js/inputex/wegas-inputex-keyvalue-min.js",
-                    requires: "inputex-keyvalue",
-                    ix_provides: "wegaskeyvalue"
-                },
-                "wegas-inputex-rte": {
-                    path: "js/inputex/wegas-inputex-rte-min.js",
-                    requires: ["wegas-inputex", "inputex-textarea", "tinymce", "wegas-panel-fileselect"],
+        }
+    });
+
+    /**
+     * Utilities
+     */
+    YUI.addGroup("wegas-util", {
+        base: "./wegas-util/",
+        root: "/wegas-util/",
+        modules: {
+            "wegas-helper": {},
+            "datatable-csv": {
+                ws_provides: "DatatableCSV"
+            },
+            "event-mouse-startstop": {
+                requires: "event-base"
+            },
+            /** Treeview **/
+            "treeview": {
+                requires: ["widget", "widget-parent", "widget-child", "treeviewcss"]
+            },
+            "treeviewcss": {
+                type: CSS
+            },
+            "treeview-filter": {},
+            "treeview-sortable": {
+                requires: ["sortable", "sortable-scroll"]
+            },
+            "wegas-progressbar": {
+                requires: "widget"
+            },
+            "wegas-widgetmenu": {
+                requires: ["event-mouseenter", "event-outside",
+                    "widget-stack", "widget-position", "widget-position-align", "widget-position-constrain",
+                    "wegas-button", "wegas-widgetmenucss"]
+            },
+            "wegas-widgetmenucss": {
+                type: CSS
+            },
+            "wegas-widgettoolbar": {
+                requires: ["wegas-widgettoolbarcss", "wegas-widgetmenu"],
+                ws_provides: "WidgetToolbar"
+            },
+            "wegas-widgettoolbarcss": {
+                type: CSS
+            },
+            "wegas-panel": {
+                ws_provides: "Panel",
+                requires: ["wegas-panelcss", "widget-buttons", "widget-modality",
+                    "widget-position", "widget-position-align", "widget-stack",
+                    "widget-stdmod", "transition"]
+            },
+            "wegas-panelcss": {
+                type: CSS
+            },
+            "wegas-menu": {
+                requires: ["button", "wegas-menucss"],
+                ws_provides: "WegasMenu"
+            },
+            "wegas-menucss": {
+                type: CSS
+            },
+            "wegas-imageloader": {
+                requires: ["io-base", "imageloader"]
+            },
+            "wegas-panel-node": {
+                requires: ["dd-drag", "plugin"],
+                ws_provides: "PanelNode"
+            }
+        }
+    });
+    /**
+     * Editor
+     */
+    YUI.addGroup("wegas-editor", {
+        base: "./wegas-editor/",
+        root: "/wegas-editor/",
+        modules: {
+            /**
+             * Inputex Fields
+             */
+            "wegas-inputex": {
+                type: CSS,
+                requires: "inputex"
+            },
+            "wegas-inputex-object": {
+                path: "js/inputex/wegas-inputex-object-min.js",
+                requires: "inputex-object",
+                ix_provides: "wegasobject"
+            },
+            "wegas-inputex-multipleoptions": {
+                path: "js/inputex/wegas-inputex-multipleoptions-min.js",
+                requires: "inputex-group",
+                ix_provides: "multipleoptions"
+            },
+            "wegas-inputex-colorpicker": {
+                path: "js/inputex/wegas-inputex-colorpicker-min.js",
+                requires: ["inputex-field", "overlay"],
+                ix_provides: "colorpicker"
+            },
+            "wegas-inputex-keyvalue": {
+                path: "js/inputex/wegas-inputex-keyvalue-min.js",
+                requires: "inputex-keyvalue",
+                ix_provides: "wegaskeyvalue"
+            },
+            "wegas-inputex-rte": {
+                path: "js/inputex/wegas-inputex-rte-min.js",
+                requires: ["wegas-inputex", "inputex-textarea", "tinymce", "wegas-panel-fileselect"],
                 ix_provides: "html"
             },
             "wegas-inputex-list": {
@@ -601,11 +596,12 @@ YUI().use(function(Y) {
             },
             "wegas-preview-fullscreen": {
                 path: "js/plugin/wegas-preview-fullscreen-min.js",
-                ws_provides: ["PreviewFullScreen", "ToggleBlockAction", "BlockAction"],
+                ws_provides: ["PreviewFullScreen", "ToggleBlockAction", "BlockAction", "BlockAnyAction"],
                 requires: "wegas-pageeditorcss"
             },
             'wegas-fullwidthtab': {
                 path: "js/plugin/wegas-fullwidthtab-min.js",
+                requires: "event-resize",
                 ws_provides: "FullWidthTab"
             },
             "wegas-console": {
@@ -615,8 +611,13 @@ YUI().use(function(Y) {
             },
             "wegas-console-wysiwyg": {
                 path: "js/widget/wegas-console-wysiwyg-min.js",
-                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden"],
+                requires: ["wegas-console", "wegas-inputex-wysiwygscript", "inputex-hidden", "wegas-widgettoolbar"],
                 ws_provides: "WysiwygConsole"
+            },
+            "wegas-console-custom": {
+                path: "js/widget/wegas-console-custom-min.js",
+                requires: ["wegas-inputex-wysiwygscript", "wegas-formcss"],
+                provides: "CustomConsole"
             },
             "wegas-editor-treeview": {
                 path: "js/widget/wegas-editor-treeview-min.js",
@@ -663,9 +664,12 @@ YUI().use(function(Y) {
             "gallery-colorpickercss": {
                 type: CSS
             },
+            "wegas-dashboardcss": {
+                type: CSS
+            },
             "wegas-dashboard": {
                 path: "js/widget/wegas-dashboard-min.js",
-                requires: "datatable",
+                requires: ["datatable", "template", "wegas-dashboardcss", "event-focus", "wegas-console-custom"],
                 ws_provides: "Dashboard"
             },
             "wegas-resetter": {
@@ -731,19 +735,29 @@ YUI().use(function(Y) {
         root: '/wegas-reviewing/',
         modules: {
             "wegas-review-css": {
-                type : CSS
+                type: CSS
             },
             "wegas-reviewing-entities": {
                 requires: "wegas-entity",
                 ws_provides: "PeerReviewDescriptor"
             },
             "wegas-review-widgets": {
-                requires: ["wegas-review-css", "wegas-reviewing-entities", "slider", "wegas-text-input", "wegas-tabview"],
-                ws_provides: ["ReviewVariableEditor", "ReviewOrchestrator", "ReviewTabView", "ReviewWidget", "GradeInput", "TextEvalInput", "CategorizationInput"]
+                requires: ["wegas-review-css",
+                    "wegas-reviewing-entities",
+                    "slider",
+                    "wegas-text-input",
+                    "wegas-tabview"],
+                ws_provides: ["ReviewVariableEditor",
+                    "ReviewOrchestrator",
+                    "ReviewTabView",
+                    "ReviewWidget",
+                    "GradeInput",
+                    "TextEvalInput",
+                    "CategorizationInput"]
             }
         }
     });
-    
+
     //YUI.addGroup("wegas-form", {
     //    base: "./wegas-form/",
     //    root: "/wegas-form/",

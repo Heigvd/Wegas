@@ -1750,7 +1750,8 @@
                             "formatter": "colored"
                         }
                     ]
-                }
+                },
+                "remoteScript": "PMGDashboard.dashboard()"
             }
         ],
         "@name": "Dashboard"
