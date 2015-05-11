@@ -112,7 +112,7 @@ YUI.addGroup("wegas-pmg", {
         },
         "wegas-pmg-advancementlimit": {
             path: 'js/wegas-pmg-advancementlimit-min.js',
-            requires: [],
+            requires: ["wegas-template"],
             ws_provides: "AdvancementLimit"
         }
     }

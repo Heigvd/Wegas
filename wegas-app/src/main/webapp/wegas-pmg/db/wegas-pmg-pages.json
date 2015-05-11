@@ -1672,7 +1672,8 @@
                             "formatter": "colored"
                         }
                     ]
-                }
+                },
+                "remoteScript": "PMGDashboard.dashboard()"
             }
         ]
     },

@@ -13,14 +13,18 @@ import com.wegas.core.ejb.LibraryFacade;
 import com.wegas.core.persistence.game.Game;
 import com.wegas.core.persistence.game.GameModel;
 import com.wegas.core.persistence.game.Player;
-import java.io.Serializable;
-import java.util.Locale;
+import com.wegas.core.rest.ComboController;
+
 import javax.ejb.EJB;
 import javax.faces.bean.ManagedProperty;
 import javax.faces.context.FacesContext;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
- *
  * @author Francois-Xavier Aeberhard <fx@red-agent.com>
  */
 public class AbstractGameController implements Serializable {
@@ -30,11 +34,19 @@ public class AbstractGameController implements Serializable {
      */
     @ManagedProperty("#{param.id}")
     protected Long playerId;
+
+    /**
+     *
+     */
+    @EJB
+    private ComboController comboController;
+
     /**
      *
      */
     @EJB
     private LibraryFacade libraryFacade;
+
     /**
      *
      */
@@ -76,6 +88,17 @@ public class AbstractGameController implements Serializable {
 //        return locale;
     }
 
+    public String getStaticClientScripts() throws IOException {
+        String clientScriptUri = this.getCurrentGameModel().getProperties().getClientScriptUri();
+        final List<String> files = new ArrayList<>();
+        for (String s : clientScriptUri.split(";")) {
+            s = s.trim();
+            s = s.startsWith("/") ? s : "/" + s;
+            files.add(s);
+        }
+        return comboController.getCombinedFile(files, ComboController.MediaTypeJs);
+    }
+
     public String getClientScripts() {
         return libraryFacade.getLibraryContent(this.getCurrentGameModel().getId(), "ClientScript");
     }
@@ -85,7 +108,6 @@ public class AbstractGameController implements Serializable {
     }
 
     /**
-     *
      * @return the game the game the current player belongs to.
      */
     public Game getCurrentGame() {
@@ -93,7 +115,6 @@ public class AbstractGameController implements Serializable {
     }
 
     /**
-     *
      * @return
      */
     public GameModel getCurrentGameModel() {
