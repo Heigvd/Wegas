@@ -59,7 +59,8 @@ YUI.add("wegas-text-input", function(Y) {
                     toolbar_items_size: 'small',
                     hidden_tootlbar: [2, 3],
                     setup: Y.bind(function(editor) {
-                        editor.on('change', Y.bind(this._onChange, this)); // Update on editor update
+                        //editor.on('keyUp', Y.bind(this._keyup, this)); // Update on editor update
+                        editor.on('keyUp', Y.bind(this._onChange, this)); // Update on editor update
                         //editor.on('NodeChange', Y.bind(this.setContent, this)); // Update on editor update
                         this.editor = editor;
                     }, this),
@@ -121,30 +122,35 @@ YUI.add("wegas-text-input", function(Y) {
             return this.get("variable.evaluated").getInstance().get("value");
         },
         setStatus: function(msg) {
-            this.get("contentBox").one(".status").setContent("<p>" + msg + "</p>");
+            if (this.get("showStatus")) {
+                this.get("contentBox").one(".status").setContent("<p>" + msg + "</p>");
+            }
         },
         _onChange: function() {
+            this.setStatus("Not saved");
             this.valueChanged(this.editor.getContent());
 
-            if (this.get("showSaveButton")) {
-                this.setStatus("Not saved");
-            } else {
-                this.save();
+            if (!this.get("showSaveButton")) {
+                if (this.wait) {
+                    this.wait.cancel();
+                }
+                this.wait = Y.later(750, this, function() {
+                    this.wait = null;
+                    this.onSave();
+                });
             }
         },
         valueChanged: function(newValue) {
             // To Be Overwritten
         },
         onSave: function() {
-            var msg = (this.save() ? "Saved" : "Something went wrong");
+            var value = this.editor.getContent(),
+                msg = (this.save(value) ? "Saved" : "Something went wrong");
             this.setStatus(msg);
-            Y.later("2000", this, function() {
-                this.setStatus("");
-            });
         },
-        save: function() {
+        save: function(value) {
             var theVar = this.get("variable.evaluated").getInstance();
-            theVar.set("value", this.editor.getContent());
+            theVar.set("value", value);
             Y.Wegas.Facade.Variable.cache.put(theVar.toObject());
             return true;
         },
@@ -190,7 +196,13 @@ YUI.add("wegas-text-input", function(Y) {
                 type: "boolean",
                 value: true,
                 optional: true
+            },
+            showStatus: {
+                type: "boolean",
+                value: true,
+                optional: true
             }
+
         }
     });
     Y.Wegas.TextInput = TextInput;
