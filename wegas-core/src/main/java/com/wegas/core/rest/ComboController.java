@@ -142,7 +142,7 @@ public class ComboController {
         return Response.ok().build();
     }
 
-    private String getCombinedFile(List<String> fileList, String mediaType) throws IOException {
+    public String getCombinedFile(List<String> fileList, String mediaType) throws IOException {
         StringBuilder acc = new StringBuilder();
         for (String fileName : fileList) {
             try {

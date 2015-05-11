@@ -1,6 +1,7 @@
 var defaultIcon = {
     color: "orange",
-    name: "gamepad"
+    name: "gamepad",
+    library: "fa"
 };
 angular.module('wegas.directives.illustrations', [
     'wegas.behaviours.illustrations'
@@ -18,10 +19,14 @@ angular.module('wegas.directives.illustrations', [
                     element.removeClass("illustration--" + scope.icon.color);
                     if (illustration != null && illustration != "") {
                         var infos = illustration.split("_");
-                        if (infos.length == 3 && infos[0] == "ICON") {
+                        if (infos.length >= 3 && infos[0] == "ICON") {
+                            if(!infos[3]){
+                                infos[3] = "fa";
+                            }
                             scope.icon = {
                                 color: infos[1],
-                                name: infos[2]
+                                name: infos[2],
+                                library: infos[3]
                             };
                         } else {
                             scope.icon = defaultIcon;

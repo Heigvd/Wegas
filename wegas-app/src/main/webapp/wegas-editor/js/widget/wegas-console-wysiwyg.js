@@ -13,7 +13,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
     'use strict';
 
     /**
-     *  @class wysiwyg console for impacts 
+     *  @class wysiwyg console for impacts
      *  @name Y.Wegas.WysiwygConsole
      *  @extends Y.Wegas.Console
      *  @constructor
@@ -131,9 +131,10 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
             selection = treeview.get("selection") || new Y.ArrayList();
 
             if (!selection.size()) {
-                this.showMessage("info", (freeForAll)
-                    ? "No player is selected. This impact has not been run"
-                    : "No team is selected. This impact has not been run");
+                this.showMessage("info",
+                    (freeForAll) ?
+                        "No player is selected. This impact has not been run" :
+                        "No team is selected. This impact has not been run");
             }
 
             selection.each(function(item) {
@@ -170,7 +171,7 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
         /**
          * @function
          * @private
-         * @description adds the necessary elements for display the checkbox 
+         * @description adds the necessary elements for display the checkbox
          * and a button for select or deselct all teams/player with the corresponding events.
          */
         addCheckbox: function() {
@@ -195,8 +196,10 @@ YUI.add('wegas-console-wysiwyg', function(Y) {
 
             this.nodeClick = editorTreeview.treeView.on("nodeClick", function(e) {
                 this.selectAll.toggleClass("yui3-treenode-selected",
-                    e.currentTarget.get("selection")
-                    && e.currentTarget.get("selection").size() >= this.getTeams().length);// Update selectAll visibility when all teams are selected
+                    e.currentTarget.get("selection") &&
+                    e.currentTarget.get("selection").size() >= this.getTeams().length);// Update selectAll
+                // visibility when all teams
+                // are selected
 
                 if (this.isEmptyTeam(e.node)) {                                 // Not allowed to select empty teams
                     e.node.deselectAll();

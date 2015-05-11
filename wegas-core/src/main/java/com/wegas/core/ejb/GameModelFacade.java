@@ -208,7 +208,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public GameModel duplicateWithDebugGame(final Long gameModelId) throws IOException {
         GameModel gm = this.duplicate(gameModelId);
         this.addGame(gm, new DebugGame());
-        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
+//        userFacade.duplicatePermissionByInstance("gm" + gameModelId, "gm" + gm.getId());
         return gm;
     }
 
@@ -216,7 +216,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
     public void remove(final GameModel gameModel) {
         super.remove(gameModel);
         //Remove jcr repo.
-        // @TODO : in fact, removes all files but not the workspace. 
+        // @TODO : in fact, removes all files but not the workspace.
         // @fx Why remove files? The may be referenced in other workspaces
         try (ContentConnector connector = ContentConnectorFactory.getContentConnectorFromGameModel(gameModel.getId())) {
             connector.deleteWorkspace();
@@ -279,7 +279,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
                 .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();
     }
-    
+
     /**
      * @return
      */
@@ -290,7 +290,7 @@ public class GameModelFacade extends BaseFacade<GameModel> {
         Root e = query.from(entityClass);
         query.select(e)
             .where(criteriaBuilder.and(
-                    criteriaBuilder.equal(e.get("status"), status), 
+                    criteriaBuilder.equal(e.get("status"), status),
                     criteriaBuilder.isTrue(e.get("template"))))
             .orderBy(criteriaBuilder.asc(e.get("name")));
         return getEntityManager().createQuery(query).getResultList();

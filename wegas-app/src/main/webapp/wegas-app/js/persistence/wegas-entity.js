@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Wegas
  * http://wegas.albasim.ch
  *
@@ -155,46 +155,46 @@ YUI.add("wegas-entity", function(Y) {
                 _inputex: {
                     required: false,
                     fields: [{
-                            name: "freeForAll",
-                            type: "radio",
-                            label: "Game is played",
+                        name: "freeForAll",
+                        type: "radio",
+                        label: "Game is played",
+                        value: false,
+                        choices: [{
+                            value: true,
+                            label: "individually"
+                        }, {
                             value: false,
-                            choices: [{
-                                    value: true,
-                                    label: "individually"
-                                }, {
-                                    value: false,
-                                    label: "in team"
-                                }]
-                        }, {
-                            name: "imageUri",
-                            label: "Thumbnail",
-                            type: "wegasurl"
-                        }, {
-                            name: "iconUri",
-                            label: "Icon",
-                            type: "wegasurl"
-                        }, {
-                            name: "scriptUri",
-                            label: "Server scripts",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
-                        }, {
-                            name: "clientScriptUri",
-                            label: "Client scripts",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
-                        }, {
-                            name: "cssUri",
-                            label: "Stylesheets",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
-                        }, {
-                            name: "pagesUri",
-                            label: "Pages",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
-                        }, {
-                            name: "websocket",
-                            label: "Websocket",
-                            wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                            label: "in team"
                         }]
+                    }, {
+                        name: "imageUri",
+                        label: "Thumbnail",
+                        type: "wegasurl"
+                    }, {
+                        name: "iconUri",
+                        label: "Icon",
+                        type: "wegasurl"
+                    }, {
+                        name: "scriptUri",
+                        label: "Server scripts",
+                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    }, {
+                        name: "clientScriptUri",
+                        label: "Client scripts",
+                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    }, {
+                        name: "cssUri",
+                        label: "Stylesheets",
+                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    }, {
+                        name: "pagesUri",
+                        label: "Pages",
+                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    }, {
+                        name: "websocket",
+                        label: "Websocket",
+                        wrapperClassName: "inputEx-fieldWrapper wegas-advanced-feature"
+                    }]
                 }
             },
             description: {
@@ -290,27 +290,45 @@ YUI.add("wegas-entity", function(Y) {
             access: {
                 type: STRING,
                 choices: [{
-                        value: "SINGLEUSAGEENROLMENTKEY",
-                        label: "Restricted number of players may join"
-                    }, {
-                        value: "ENROLMENTKEY",
-                        label: "Unlimited number of players may join"
-                    }],
+                    value: "SINGLEUSAGEENROLMENTKEY",
+                    label: "Restricted number of players may join"
+                }, {
+                    value: "ENROLMENTKEY",
+                    label: "Unlimited number of players may join"
+                }],
                 _inputex: {
                     _type: "radio",
                     label: "",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-access",
                     interactions: [{
-                            valueTrigger: "ENROLMENTKEY",
-                            actions: [{name: "token", action: "show"},
-                                {name: "keys", action: "hide"},
-                                {name: "accountkeys", action: "hide"}]
-                        }, {
-                            valueTrigger: "SINGLEUSAGEENROLMENTKEY",
-                            actions: [{name: "token", action: "hide"},
-                                {name: "keys", action: "show"},
-                                {name: "accountkeys", action: "show"}]
-                        }]
+                        valueTrigger: "ENROLMENTKEY",
+                        actions: [{
+                            name: "token",
+                            action: "show"
+                        },
+                            {
+                                name: "keys",
+                                action: "hide"
+                            },
+                            {
+                                name: "accountkeys",
+                                action: "hide"
+                            }]
+                    }, {
+                        valueTrigger: "SINGLEUSAGEENROLMENTKEY",
+                        actions: [{
+                            name: "token",
+                            action: "hide"
+                        },
+                            {
+                                name: "keys",
+                                action: "show"
+                            },
+                            {
+                                name: "accountkeys",
+                                action: "show"
+                            }]
+                    }]
                 }
             },
             token: {
@@ -320,7 +338,7 @@ YUI.add("wegas-entity", function(Y) {
                     label: "Option 1: Player accesses through his account",
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-token",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                        + "The enrolment key can be used by an unlimited number of players."
+                                 + "The enrolment key can be used by an unlimited number of players."
                 }
             },
             keys: {
@@ -331,7 +349,7 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-keys",
                     _type: "enrolmentkeylist",
                     description: "Players log in and joins game with an <b>enrolment key</b>.<br />"
-                        + "Each enrolment key can be used only once."
+                                 + "Each enrolment key can be used only once."
                 }
             },
             accountkeys: {
@@ -343,7 +361,7 @@ YUI.add("wegas-entity", function(Y) {
                     wrapperClassName: "inputEx-fieldWrapper wegas-game-users",
                     index: 2,
                     description: "Player directly joins the game with username/password.<br />"
-                        + " Each username/password can be used only once."
+                                 + " Each username/password can be used only once."
                 }
             },
             playersCount: {
@@ -373,6 +391,12 @@ YUI.add("wegas-entity", function(Y) {
             },
             name: {
                 type: STRING
+            },
+            notes: {
+                value: "",
+                _inputex: {
+                    _type: HIDDEN
+                }
             },
             players: {
                 value: [],
@@ -460,29 +484,29 @@ YUI.add("wegas-entity", function(Y) {
                     _inputex: {
                         _type: GROUP,
                         fields: [{
-                                name: "id",
-                                type: HIDDEN,
-                                value: null
-                            }, {
-                                name: "@class",
-                                type: HIDDEN,
-                                value: "Permission"
-                            }, {
-                                name: "value"
-                            }, {
-                                name: "inducedPermission",
-                                value: null
-                            }]
+                            name: "id",
+                            type: HIDDEN,
+                            value: null
+                        }, {
+                            name: "@class",
+                            type: HIDDEN,
+                            value: "Permission"
+                        }, {
+                            name: "value"
+                        }, {
+                            name: "inducedPermission",
+                            value: null
+                        }]
                     }
                 }
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit group"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+            type: "EditEntityButton",
+            label: "Edit group"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -579,19 +603,19 @@ YUI.add("wegas-entity", function(Y) {
                     _inputex: {
                         _type: GROUP,
                         fields: [{
-                                name: "id",
-                                type: HIDDEN,
-                                value: null
-                            }, {
-                                name: "@class",
-                                type: HIDDEN,
-                                value: "Permission"
-                            }, {
-                                name: "value"
-                            }, {
-                                name: "inducedPermission",
-                                value: ""
-                            }]
+                            name: "id",
+                            type: HIDDEN,
+                            value: null
+                        }, {
+                            name: "@class",
+                            type: HIDDEN,
+                            value: "Permission"
+                        }, {
+                            name: "value"
+                        }, {
+                            name: "inducedPermission",
+                            value: ""
+                        }]
                     }
                 },
                 _inputex: {
@@ -600,11 +624,11 @@ YUI.add("wegas-entity", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "EditEntityButton",
-                label: "Edit user"
-            }, {
-                type: "DeleteEntityButton"
-            }]
+            type: "EditEntityButton",
+            label: "Edit user"
+        }, {
+            type: "DeleteEntityButton"
+        }]
     });
 
     /**
@@ -625,7 +649,7 @@ YUI.add("wegas-entity", function(Y) {
             }
         },
         EDITMENU: [{
-                type: "DeleteEntityButton"
-            }]
+            type: "DeleteEntityButton"
+        }]
     });
 });
