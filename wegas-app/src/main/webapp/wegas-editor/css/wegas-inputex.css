@@ -101,6 +101,8 @@ div.inputEx-fieldWrapper {
 .wegas-form select {
     width: 100%;
     padding: 1px 0;
+    box-sizing: content-box;
+    max-width: 30em;
 }
 
 .wegas-form textarea,
@@ -124,10 +126,10 @@ div.inputEx-fieldWrapper {
     display: inline-block;
     vertical-align: top;
     width: 100%;
+    max-width: 30em;
 }
 
 .wegas-editmode .wegas-form div.inputEx-StringField-wrapper {
-    width: 80%;
     float: left;
 }
 
