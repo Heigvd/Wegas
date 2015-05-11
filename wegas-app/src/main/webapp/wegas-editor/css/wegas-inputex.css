@@ -108,7 +108,8 @@ div.inputEx-fieldWrapper {
 .wegas-form textarea,
 .wegas-form input[type=text],
 .wegas-form input[type=password] {
-    width: 99%;
+    width: 100%;
+    box-sizing: border-box;
     padding: 2px 0.5%;
 }
 
