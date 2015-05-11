@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptor;
 import com.wegas.core.persistence.AbstractEntity;
+import com.wegas.core.persistence.game.Player;
 import com.wegas.core.persistence.variable.VariableDescriptor;
 import com.wegas.core.rest.util.Views;
 import com.wegas.reviewing.persistence.evaluation.EvaluationDescriptorContainer;
@@ -251,4 +252,17 @@ public class PeerReviewDescriptor extends VariableDescriptor<PeerReviewInstance>
         this.fbComments = fbComments;
     }
 
+    /*
+     * SUGAR
+     */
+
+
+    /**
+     * Get the review state of the given player's instance
+     * @param p the player 
+     * @return player's instance state
+     */
+    public ReviewingState getState(Player p){
+        return this.getInstance(p).getReviewState();
+    }
 }
