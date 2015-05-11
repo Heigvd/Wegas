@@ -308,7 +308,7 @@
         	@include make-row(0px);
         	padding:0px;
         	margin:0px;
-			.icon{
+			.icon--chooser{
 				float:left;
 				margin: 0 7px;
 				border:solid 0px white;
@@ -337,7 +337,9 @@
 			}
 			.color{
 				float: left;
-				margin: 16px;
+				margin: 0px;
+				width:32px;
+				height:32px;
 				border: 0px;
 				transition: .3s;
 

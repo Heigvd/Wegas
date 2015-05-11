@@ -33,7 +33,10 @@ angular.module('private.trainer.settings.directives', [
             token : "", 
             comments :"",
             color: "orange",
-            icon:"gamepad",
+            icon:{
+                key:"gamepad",
+                library:'fa'
+            },
             scenario: "",
             individual: false
         };
@@ -46,9 +49,12 @@ angular.module('private.trainer.settings.directives', [
                     response.flash();
                 }else{
                     var icon = ctrl.session.properties.iconUri.split("_");
-                    if (icon.length == 3 && icon[0] == "ICON") {
+                    if (icon.length >= 3 && icon[0] == "ICON") {
                         ctrl.infos.color = icon[1];
-                        ctrl.infos.icon = icon[2];
+                        ctrl.infos.icon.key = icon[2];
+                        if(icon[3]){
+                            ctrl.infos.icon.library = icon[3];
+                        }
                     }
                     ctrl.infos.name = ctrl.session.name;
                     ctrl.infos.token = ctrl.session.token;
@@ -63,17 +69,19 @@ angular.module('private.trainer.settings.directives', [
             if(ctrl.session['@class'] == "Game"){
                 var oldColor = "orange",
                     oldIcon = "gamepad",
+                    oldLibrary = "fa",
                     icon = ctrl.session.properties.iconUri.split("_");
-                if (icon.length == 3 && icon[0] == "ICON") {
+                if (icon.length >= 3 && icon[0] == "ICON") {
                     oldColor = icon[1];
                     oldIcon = icon[2];
+                    oldLibrary = icon[3] || "fa";
                 }
                 switch(type){
                     case "color":
                         ctrl.hasChanges.color = (oldColor !== changes);
                         break;
                     case "icon":
-                        ctrl.hasChanges.icon = (oldIcon !== changes);
+                        ctrl.hasChanges.icon = (oldIcon !== changes.key) || (oldLibrary !== changes.library);
                         break;
                     case "name":
                         ctrl.hasChanges.name = (ctrl.session.name !== changes);
@@ -101,9 +109,12 @@ angular.module('private.trainer.settings.directives', [
             ctrl.infos.color = newColor;
             ctrl.checkChanges("color", newColor);
         }
-        ctrl.changeIcon = function(newIcon) {
-            ctrl.infos.icon = newIcon;
-            ctrl.checkChanges("icon", newIcon);
+        ctrl.changeIcon = function(iconKey, iconLib) {
+            ctrl.infos.icon = {
+                key:iconKey,
+                library:iconLib
+            };
+            ctrl.checkChanges("icon", ctrl.infos.icon);
         }
 
         ctrl.save = function() {
