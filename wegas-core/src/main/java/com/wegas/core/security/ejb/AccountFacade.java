@@ -60,9 +60,9 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
     @EJB
     private UserFacade userFacade;
 
-    @Inject 
+    @Inject
     private RequestManager requestManager;
-    
+
     /**
      *
      */
@@ -78,14 +78,6 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
      */
     @Override
     public AbstractAccount update(final Long entityId, final AbstractAccount account) {
-        Set<Role> revivedRoles = new HashSet<>();
-        for (Role r : account.getRoles()) {
-            try {
-                revivedRoles.add(roleFacade.find(r.getId()));
-            } catch (EJBException e) {
-                // not able to revive this role
-            }
-        }
         if (!account.getUsername().equals("") && account.getUsername() != null) {// If the provided username is not null
             try {
                 AbstractAccount a = this.findByUsername(account.getUsername());
@@ -96,8 +88,24 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
                 // GOTCHA no username could be found, do not use
             }
         }
+        if (false){
+            // RESTORE PERMISSION
+        }
         AbstractAccount oAccount = super.update(entityId, account);
-        oAccount.setRoles(revivedRoles);
+        // TODO CHECK ADMIN
+
+        // TODO CHECK ADMIN
+        if (true) {
+            Set<Role> revivedRoles = new HashSet<>();
+            for (Role r : account.getRoles()) {
+                try {
+                    revivedRoles.add(roleFacade.find(r.getId()));
+                } catch (EJBException e) {
+                    // not able to revive this role
+                }
+            }
+            oAccount.setRoles(revivedRoles);
+        }
 
         return oAccount;
     }
@@ -340,6 +348,7 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
         return returnValue;
     }
+
     public List<JpaAccount> findAccountsByName(List<String> values) {
         List<JpaAccount> returnValue = new ArrayList<>();
         List<String> notValidValue = new ArrayList<>();
@@ -355,6 +364,5 @@ public class AccountFacade extends BaseFacade<AbstractAccount> {
         requestManager.addEvent(new WarningEvent("NotAddedAccount", notValidValue));
         return returnValue;
     }
-
 
 }
