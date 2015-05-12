@@ -172,7 +172,7 @@ YUI.add("wegas-pmg-slidepanel", function(Y) {
                                     sortable: true
                                 }, {
                                     label: "Motiv.",
-                                    key: "instance.moral",
+                                    key: "instance.properties.motivation",
                                     sortable: true
                                 }],
                             defaultSort: null
