@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
+import jdk.nashorn.api.scripting.ScriptObjectMirror;
 import jdk.nashorn.internal.runtime.ScriptFunction;
 import org.apache.commons.collections.map.MultiValueMap;
 
@@ -132,16 +133,17 @@ public class ScriptEventFacade {
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
-                ScriptFunction fcn = (ScriptFunction) ((Object[]) cb)[0];
+                ScriptObjectMirror sob = (ScriptObjectMirror) ((Object[])cb)[0];
+
                 Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
                 /*
                  *       JAVA BUG
                  *       http://bugs.java.com/view_bug.do?bug_id=8050977
                  *       
-                 *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptFunction.toSource()
+                 *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptObjectMirror.toString()
                  */
                 try {
-                    ((Invocable) engine).invokeMethod(engine.eval(fcn.toSource()), "call", scope, params);
+                    ((Invocable) engine).invokeMethod(engine.eval(sob.toString()), "call", scope, params);
                 } catch (ScriptException | NoSuchMethodException ex) {
                     throw new WegasScriptException("Event exception" , ex);
                 }
