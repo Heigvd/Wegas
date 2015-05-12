@@ -488,12 +488,23 @@ td.yui3-datatable-col-Realised:after {
 }
 
 /*---------------------------- project-page ---------------------------------*/
-.project-page .wegas-pmg-slidepanel{
+.project-page .pmg-project-overview {
     position:relative;
     float: left;
-    width: 50%;
-    height: 250px;
+    width: 35%;
 }
+
+.project-page .charts-column {
+    width: 60%;
+    padding-left: 5%;
+    height: 100%;
+}
+
+.project-page .charts-column .chart {
+    height: 50%;
+    /* width: 60%; */
+}
+
 .project-page h2 {
     padding-top: 21px;
     padding-left: 16px;
@@ -504,7 +515,8 @@ td.yui3-datatable-col-Realised:after {
 }
 .project-page .pmg-project-overview .wegas-pmg-slidepanel-content, .project-page .finances .wegas-pmg-slidepanel-content {
     margin-top: 15px;
-    margin-left: 30px;
+    padding-left: 30px;
+    box-sizing: border-box;
 }
 .project-page .current-time, .project-page .projectCompleteness, .project-page .projectFixedCost, .project-page .taskTotal {
     font-weight: bold;
@@ -532,7 +544,7 @@ td.yui3-datatable-col-Realised:after {
 .project-page .current-period .variableValue,
 .project-page .current-stage .variableValue {
     float: right;
-    margin-right: 280px;
+    /* margin-right: 280px; */
 }
 
 /*---------------------------- Resources page ---------------------*/

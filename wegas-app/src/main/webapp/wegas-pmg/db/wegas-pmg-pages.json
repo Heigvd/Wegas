@@ -830,7 +830,7 @@
     "2": {
         "cssClass": "project-page",
         "type": "List",
-        "direction": "vertical",
+        "direction": "horizontal",
         "children": [{
                 "type": "PmgSlidePanel",
                 "title": "Project Overview",
@@ -840,18 +840,11 @@
                         "type": "Template",
                         "data": {
                         },
-                        "custom": "<%  var names = ['Initiation', 'Planning', 'Executing', 'Closing'], projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>\n<div class=\"current-time\">\n<span class='label'>Current Time</span></div>\n<div class='current-stage'><span class='label'>- Phase</span><span class='variableValue'><%= names[currentPhase -1] %></span></div>\n<div class='current-period'><span class='label'>- Period</span><span class='variableValue'><%= currentPeriod %></span></div>\n\n",
+                        "custom": "<%  var projectCompleteness = Y.Wegas.Facade.Variable.cache.find('name', 'projectCompleteness').getInstance().get('value'), currentPhase = Y.Wegas.Facade.Variable.cache.find('name', 'currentPhase').getInstance().get('value'),currentPeriod = Y.Wegas.Facade.Variable.cache.find('name', 'currentPeriod').item(currentPhase -1).getInstance().get('value');%>\n\n<div class='projectCompleteness'><span class='label'>Progress</span><span class='variableValue'><%= parseInt(projectCompleteness) %>%</span></div>",
                         "variable": {
                             "name": "currentPhase"
                         }
-                    }
-                ]
-            }, {
-                "type": "PmgSlidePanel",
-                "title": "Finances",
-                "cssClass": "finances",
-                "animation": false,
-                "children": [{
+                    }, {
                         "type": "Template",
                         "data": {
                         },
@@ -862,66 +855,71 @@
                     }
                 ]
             }, {
-                "type": "PmgSlidePanel",
-                "title": "Indicators History: Management and Users",
-                "cssClass": "indicators-management",
-                "animation": false,
+                "type": "List",
+                "direction": "vertical",
+                "cssClass": "charts-column",
                 "children": [{
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "minValue": 0,
-                        "maxValue": 200,
-                        "vStepValue": 25,
-                        "variables": [{
-                                "name": "managementApproval",
-                                "label": "Management"
-                            }, {
-                                "name": "userApproval",
-                                "label": "Users"
+                        "type": "PmgSlidePanel",
+                        "title": "Indicators History: Management and Users",
+                        "cssClass": "indicators-management chart",
+                        "animation": false,
+                        "children": [{
+                                "height": "250px",
+                                "chartType": "combo",
+                                "width": "55%",
+                                "horizontalGridlines": true,
+                                "legendPosition": "bottom",
+                                "type": "Chart",
+                                "verticalGridlines": true,
+                                "hMinEnd": {
+                                    "name": "executionPeriods"
+                                },
+                                "minValue": 0,
+                                "maxValue": 200,
+                                "vStepValue": 25,
+                                "variables": [{
+                                        "name": "managementApproval",
+                                        "label": "Management"
+                                    }, {
+                                        "name": "userApproval",
+                                        "label": "Users"
+                                    }
+                                ]
                             }
                         ]
-                    }
-                ]
-            }, {
-                "type": "PmgSlidePanel",
-                "title": "Indicators History: Quality, Costs, and Shedule",
-                "cssClass": "indicators-quality",
-                "animation": false,
-                "children": [{
-                        "height": "200px",
-                        "chartType": "combo",
-                        "width": "90%",
-                        "horizontalGridlines": true,
-                        "legendPosition": "bottom",
-                        "type": "Chart",
-                        "verticalGridlines": true,
-                        "hMinEnd": {
-                            "name": "executionPeriods"
-                        },
-                        "minValue": 0,
-                        "maxValue": 200,
-                        "vStepValue": 25,
-                        "variables": [ {
-                                "name": "costs",
-                                "label": "Costs"
-                            }, {
-                                "name": "delay",
-                                "label": "Shedule"
-                            }, {
-                                "name": "quality",
-                                "label": "Quality"
+                    }, {
+                        "type": "PmgSlidePanel",
+                        "title": "Indicators History: Quality, Costs, and Shedule",
+                        "cssClass": "indicators-quality chart",
+                        "animation": false,
+                        "children": [{
+                                "height": "250px",
+                                "chartType": "combo",
+                                "width": "55%",
+                                "horizontalGridlines": true,
+                                "legendPosition": "bottom",
+                                "type": "Chart",
+                                "verticalGridlines": true,
+                                "hMinEnd": {
+                                    "name": "executionPeriods"
+                                },
+                                "minValue": 0,
+                                "maxValue": 200,
+                                "vStepValue": 25,
+                                "variables": [{
+                                        "name": "costs",
+                                        "label": "Costs"
+                                    }, {
+                                        "name": "delay",
+                                        "label": "Shedule"
+                                    }, {
+                                        "name": "quality",
+                                        "label": "Quality"
+                                    }
+                                ]
                             }
                         ]
-                    }
-                ]
+                    }]
             }
         ],
         "@name": "Project"
