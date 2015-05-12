@@ -137,6 +137,16 @@ public class ScriptEventFacade {
                 Object obj = ((Object[]) cb)[0];
 
                 Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
+                String fcnSource;
+                
+                if (obj instanceof ScriptObjectMirror) {
+                    // @hack openjdk 1.8.0_45
+                    fcnSource = obj.toString();
+                } else {
+                    // @hack openjdk 1.8.0_31, oracle jdk
+                    fcnSource = ((ScriptFunction) ((Object[]) cb)[0]).toSource();
+                }
+
                 /*
                  *       JAVA BUG
                  *       http://bugs.java.com/view_bug.do?bug_id=8050977
@@ -144,7 +154,7 @@ public class ScriptEventFacade {
                  *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptObjectMirror.toString()
                  */
                 try {
-                    ((Invocable) engine).invokeMethod(engine.eval(obj.toString()), "call", scope, params);
+                    ((Invocable) engine).invokeMethod(engine.eval(fcnSource), "call", scope, params);
                 } catch (ScriptException | NoSuchMethodException ex) {
                     throw new WegasScriptException("Event exception", ex);
                 }
