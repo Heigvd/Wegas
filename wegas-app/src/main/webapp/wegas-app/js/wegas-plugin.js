@@ -152,14 +152,14 @@ YUI.add("wegas-plugin", function(Y) {
                 type: "string",
                 value: "GET",
                 choices: [{
-                    value: "GET"
-                }, {
-                    value: "POST"
-                }, {
-                    value: "DELETE"
-                }, {
-                    value: "PUT"
-                }
+                        value: "GET"
+                    }, {
+                        value: "POST"
+                    }, {
+                        value: "DELETE"
+                    }, {
+                        value: "PUT"
+                    }
                 ],
                 _inputex: {
                     label: ""
@@ -207,12 +207,12 @@ YUI.add("wegas-plugin", function(Y) {
                 type: "string",
                 value: "blank",
                 choices: [{
-                    value: "blank",
-                    label: "In a new page"
-                }, {
-                    value: "self",
-                    label: "In the same page"
-                }],
+                        value: "blank",
+                        label: "In a new page"
+                    }, {
+                        value: "self",
+                        label: "In the same page"
+                    }],
                 _inputex: {
                     label: ""
                 }
@@ -230,6 +230,7 @@ YUI.add("wegas-plugin", function(Y) {
     var PrintActionPlugin = Y.Base.create("PrintActionPlugin", Action, [], {
         execute: function() {
             var outputType = this.get("outputType"),
+                title = this.get("title.evaluated"),
                 playerId = Wegas.Facade.Game.get("currentPlayerId"),
                 roots = this.get("root.evaluated"),
                 root = "",
@@ -245,8 +246,10 @@ YUI.add("wegas-plugin", function(Y) {
                 root = root.slice(0, -1);
             }
 
-            printUrl = Wegas.app.get("base") + "print.html?id=" + playerId + "&outputType=" + outputType + "&root=" +
-                       encodeURIComponent(root);
+            printUrl = Wegas.app.get("base") + "print.html?id=" + playerId +
+                "&outputType=" + outputType +
+                (title ? "&title=" + title : "") +
+                "&root=" + encodeURIComponent(root);
             window.open(printUrl);
         }
     }, {
@@ -257,6 +260,13 @@ YUI.add("wegas-plugin", function(Y) {
                  * The target variable, returned either based on the name attribute,
                  * and if absent by evaluating the expr attribute.
                  */
+                getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
+                _inputex: {
+                    _type: "variableselect",
+                    label: "Variable"
+                }
+            },
+            title: {
                 getter: Wegas.Widget.VARIABLEDESCRIPTORGETTER,
                 _inputex: {
                     _type: "variableselect",
@@ -388,9 +398,9 @@ YUI.add("wegas-plugin", function(Y) {
                     this.showOverlay();
                     Wegas.Facade.Variable.script.remoteEval(this.get("onClick"), {
                         on: {
-                            success: Y.bind(function(){
+                            success: Y.bind(function() {
                                 this.hideOverlay();
-                                }, this),
+                            }, this),
                             failure: Y.bind(this.hideOverlay, this)
                         }
                     });
@@ -427,8 +437,8 @@ YUI.add("wegas-plugin", function(Y) {
             } else {
                 new Wegas.Panel({
                     bodyContent: "<div class=''> <span class=\"fa fa-4x fa-bullhorn\"></span> <span>Please listen to that <a target=\"_blank\" href=\"" +
-                                 url +
-                                 "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
+                        url +
+                        "\">sound</a>. <br /><br /><p style=\"font-size: 0.6em;color: rgba(153, 153, 153, 0.99);\">(And, btw, upgrade your browser...)</p><span></div>",
                 }).render();
             }
         }
@@ -495,7 +505,7 @@ YUI.add("wegas-plugin", function(Y) {
 
             for (i in e.value) {
                 script += data + ".put('" + (i + "").replace(/'/g, "\\'") + "','" +
-                          (e.value[i] + "").replace(/'/g, "\\'") + "');";
+                    (e.value[i] + "").replace(/'/g, "\\'") + "');";
             }
 
             Wegas.Facade.Variable.script.run(script, {

@@ -508,7 +508,7 @@ public class UIVariableDescriptor extends UIComponentBase {
             List<Reply> replies = instance.getReplies();
 
             if (!replies.isEmpty()) {
-                UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
+                //UIHelper.printText(context, writer, "Results:", UIHelper.CSS_CLASS_VARIABLE_SUBTITLE);
                 for (Reply r : replies) {
                     //UIHelper.printText(context, writer, r.getResult().getChoiceDescriptor().getLabel(), UIHelper.CSS_CLASS_VARIABLE_SUBSUBTITLE);
                     UIResult uiResult = new UIResult(r.getResult(), player, editorMode, defaultValues);
