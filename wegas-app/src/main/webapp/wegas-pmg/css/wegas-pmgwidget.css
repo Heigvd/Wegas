@@ -20,12 +20,13 @@
     height: 14px;
 }
 
-.yui3-datatable-table .baseline,
+.gantt-execution-page .baseline,
 .pmg-legend .baseline {
     background-color: #878787;
     opacity: 0.3;
 }
 
+.gantt-planning-page .baseline,
 .pmg-legend .booked,
 .yui3-datatable-table .booked {
     background-color: #2C96FF;
