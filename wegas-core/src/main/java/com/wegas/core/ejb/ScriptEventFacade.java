@@ -133,7 +133,8 @@ public class ScriptEventFacade {
         if (this.registeredEvents.containsKey(eventName)) {
             Collection callbacks = this.registeredEvents.getCollection(eventName);
             for (Object cb : callbacks) {
-                ScriptObjectMirror sob = (ScriptObjectMirror) ((Object[])cb)[0];
+                //ScriptObjectMirror sob = (ScriptObjectMirror) ((Object[]) cb)[0];
+                Object obj = ((Object[]) cb)[0];
 
                 Object scope = (((Object[]) cb).length == 2 ? ((Object[]) cb)[1] : new EmptyObject());
                 /*
@@ -143,9 +144,9 @@ public class ScriptEventFacade {
                  *       workaround: re-eval function through nashorn INTERNAL (O_o) ScriptObjectMirror.toString()
                  */
                 try {
-                    ((Invocable) engine).invokeMethod(engine.eval(sob.toString()), "call", scope, params);
+                    ((Invocable) engine).invokeMethod(engine.eval(obj.toString()), "call", scope, params);
                 } catch (ScriptException | NoSuchMethodException ex) {
-                    throw new WegasScriptException("Event exception" , ex);
+                    throw new WegasScriptException("Event exception", ex);
                 }
                 /*
                  *  ONCE RESOLVED, REPLACE WITH
@@ -159,7 +160,7 @@ public class ScriptEventFacade {
      *
      * @param eventName
      * @return Object[] array of corresponding parameters fired. Length
-     * correspond to number of times eventName has been fired.
+     *         correspond to number of times eventName has been fired.
      */
     public Object[] getFiredParameters(String eventName) {
         if (this.eventsFired.containsKey(eventName)) {
