@@ -1073,6 +1073,7 @@
                         "cfg": {
                             "styles": {
                                 "bottom": "0px",
+                                "left": "0px",
                                 "position": "absolute"
                             }
                         }
@@ -1122,6 +1123,7 @@
                         "cfg": {
                             "styles": {
                                 "bottom": "0px",
+                                "left": "0px",
                                 "position": "absolute"
                             }
                         }
